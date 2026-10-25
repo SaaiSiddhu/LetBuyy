@@ -1,0 +1,111 @@
+{
+  "pipeline": "explicit v2 catalog factory → real buildSectionDataPlan with bounded preloaded synthetic products → real productToLiquidDrop → LiquidRenderer → assembleLiquidPageFromRenderResult",
+  "scope": "Isolated renderer-only review; supplied edition fixtures are resolved canonical DTOs, not a live variant interaction. No hydration/API/DB/publish/transactions/lifecycle or production performance claim.",
+  "fonts": "Approved M1 Inter bytes served locally, no source art changes. Hindi uses platform fallback where Inter lacks glyphs; production font delivery remains separate.",
+  "scenes": [
+    {
+      "name": "home",
+      "template": "index",
+      "locale": "en-IN",
+      "warnings": [],
+      "bindings": [
+        "playfield-product-grid"
+      ],
+      "bytes": 48909
+    },
+    {
+      "name": "collection",
+      "template": "collection",
+      "locale": "en-IN",
+      "warnings": [],
+      "bindings": [
+        "playfield-results"
+      ],
+      "bytes": 46260
+    },
+    {
+      "name": "collection-all",
+      "template": "collection",
+      "locale": "en-IN",
+      "warnings": [],
+      "bindings": [
+        "playfield-results"
+      ],
+      "bytes": 46829
+    },
+    {
+      "name": "product",
+      "template": "product",
+      "locale": "en-IN",
+      "warnings": [],
+      "bindings": [
+        "product-detail-default",
+        "product-related"
+      ],
+      "bytes": 53106
+    },
+    {
+      "name": "missing",
+      "template": "product",
+      "locale": "en-IN",
+      "warnings": [],
+      "bindings": [
+        "product-detail-default",
+        "product-related"
+      ],
+      "bytes": 46884
+    },
+    {
+      "name": "edition-cleared",
+      "template": "product",
+      "locale": "en-IN",
+      "warnings": [],
+      "bindings": [
+        "product-detail-default",
+        "product-related"
+      ],
+      "bytes": 50959
+    },
+    {
+      "name": "edition-different",
+      "template": "product",
+      "locale": "en-IN",
+      "warnings": [],
+      "bindings": [
+        "product-detail-default",
+        "product-related"
+      ],
+      "bytes": 47646
+    },
+    {
+      "name": "empty",
+      "template": "collection",
+      "locale": "en-IN",
+      "warnings": [],
+      "bindings": [
+        "playfield-results"
+      ],
+      "bytes": 44897
+    },
+    {
+      "name": "long-copy",
+      "template": "index",
+      "locale": "en-IN",
+      "warnings": [],
+      "bindings": [
+        "playfield-product-grid"
+      ],
+      "bytes": 49056
+    },
+    {
+      "name": "hindi",
+      "template": "index",
+      "locale": "hi-IN",
+      "warnings": [],
+      "bindings": [
+        "playfield-product-grid"
+      ],
+      "bytes": 49220
+    }
+  ]
+}

@@ -1,0 +1,147 @@
+{
+  "classification": "OWNED_NATIVE392_PASSED_AWAITING_ROOT_ACCEPTANCE_DEPENDENT_LATEST_AND_EMISSION",
+  "recordedAt": "2026-10-23T16:46:28.489360+00:00",
+  "runId": "3273631a2c5b",
+  "migrationCeiling": 391,
+  "pass": 8,
+  "fail": 0,
+  "skip": 0,
+  "suite": {
+    "path": "services/api-gateway/src/__tests__/owned-db/storefront-electronics-search.postgres.test.ts",
+    "sha256": "58d87deaf18c7582a8d13918aea1cf63289436fa1abdd4d4c6961bf7ca900da7"
+  },
+  "result": {
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/result.json",
+    "sha256": "4c5a8c703244f682049fbbaacf794eb93439c295694b117b0bbe10b590d7e17c"
+  },
+  "sourceBefore": {
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/source-before.json",
+    "sha256": "68ee7c93203ec0a4e3da4f8aed412b41437851738395cd65a79f58220185f2a5"
+  },
+  "sourceAfter": {
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/source-after.json",
+    "sha256": "d12d2230f05fbfbda647fb525c3304a73ea593f72b43dc2be108816292906e33"
+  },
+  "sourceInputsConserved": 215,
+  "frozen47Exact": true,
+  "rawProvenanceRecords": 341,
+  "proofOperationCounts": {
+    "predecessor391": 1,
+    "body": 5,
+    "entry": 1,
+    "business-rows": 27,
+    "unsupported-variant-persistence-denial": 1,
+    "browse": 183,
+    "catalog": 37,
+    "role-privilege": 20,
+    "role-denial": 20,
+    "refusal-before": 10,
+    "refusal-error": 10,
+    "refusal-conserved": 10,
+    "role-edges": 8,
+    "inherited-privilege-mutant": 2,
+    "public-http": 4,
+    "finite-explain": 1,
+    "suite-after": 1
+  },
+  "actualBodySequence": [
+    "95cda4d15f36172c5457ad5045600cde",
+    "95cda4d15f36172c5457ad5045600cde",
+    "bdaec8db8f836e94294e4bdd9c449346",
+    "95cda4d15f36172c5457ad5045600cde",
+    "bdaec8db8f836e94294e4bdd9c449346"
+  ],
+  "catalogProofs": {
+    "functions": 13,
+    "before390": {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0048-catalog.json",
+      "sha256": "e90e05eff7302d1ab97f5f46260048eaf66b2bc074d0e4767b50b95e4c140f08"
+    },
+    "after392": {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0236-catalog.json",
+      "sha256": "a47023c61865283b76497fef792780a7ddd006708fda9631851521fded7f49fc"
+    },
+    "restored390": {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0293-catalog.json",
+      "sha256": "45646b253a347b9352033bb025e3bc075782bbce2b5f10dbdedcdfd9fdb80b21"
+    },
+    "final392": {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0338-catalog.json",
+      "sha256": "158e306ea48107a94baea68d8ea54f43e5227144424a1a2436d0a4049162bc4a"
+    },
+    "exactNonBodyAndHelperCatalogConservation": true,
+    "fullBusinessHashSnapshotsAfterSetupConserved": 25,
+    "strictRefusalOperationsConserved": 10
+  },
+  "actualPublicHttp": [
+    {
+      "path": "/v1/storefront/syn-search392-a-45a1fa4a/products?search=Synthetic%20H1",
+      "status": 200,
+      "requestId": "b8884b78-ba3e-4bf6-856b-663621e85780",
+      "evidence": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0215-public-http.json",
+      "sha256": "8d8bb1e77b02220bb75dcc4be744aed3a1ad29cd8181ad24c9f425cf9d5b7470"
+    },
+    {
+      "path": "/v1/storefront/store/3dd5b4b0-b93c-4c37-a981-e2808ca478f2/products?search=Synthetic%20H1",
+      "status": 200,
+      "requestId": "d7232495-e81c-49d3-ae21-ed98239735e3",
+      "evidence": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0216-public-http.json",
+      "sha256": "c5cf207e819fa40d9130d8cabd2ef9a3c88c7540ca63bcb41e19cb13a7e3a1a4"
+    },
+    {
+      "path": "/v1/storefront/syn-search392-a-45a1fa4a/products?connector_role=power-input",
+      "status": 400,
+      "requestId": "e4ff947a-c501-44c3-8824-ef2947f54c83",
+      "evidence": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0217-public-http.json",
+      "sha256": "77fee5f2a4653f8d6014d257b18658c07da1c88a6e1615f58affc43c5d24d949"
+    },
+    {
+      "path": "/v1/storefront/syn-search392-a-45a1fa4a/products?search=UncachedFault392",
+      "status": 500,
+      "requestId": "3c3e57a7-a932-4745-bef8-f1792e916b01",
+      "evidence": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0218-public-http.json",
+      "sha256": "ce6fec40ead0bfce43fbfecc489c8d7bce16b15839a995d2102627da18b52b77"
+    }
+  ],
+  "finiteOwnedFixturePerformance": {
+    "executionMs": 38.772,
+    "budgetMs": 5000,
+    "productionOrLoadAcceptance": false
+  },
+  "coverage": [
+    "Actual390model/connector miss beforeUP and positivevalidatedsuppliedmodel/kind afterUP",
+    "CanonicalZod andactualSQL validator rejecteleven malformedconnectorcases;missing/private/malformedfactsnotsearchable",
+    "Unsupportedvariantnamespace rejected atpersistencewithnamedconstraint/fullbusinesshashconservation;notstoredlegacyreadproof",
+    "Exacttenant/collection/IDscope,knownempty, sameavailablevariant conjunctiveprice/options, soldonlywithoutinventedavailablewitness",
+    "Allnineoriginaldomainname/description/tags/author/filterparity;390capabilities/stablesort/page/count/facets",
+    "ActualmountedWorkerbyhandle+byStore200;unsupportedquery400;fault500sanitized",
+    "NativeACL/grantor/inheritance/cost/defaultASTpoisonsrefusedonbothlegs;exactcatalog/businessUP-DOWN-UP"
+  ],
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "reaped": [],
+  "priorRed": {
+    "runId": "e9e26bcac125",
+    "pass": 0,
+    "hookFailed": 8,
+    "skip": 0,
+    "cause": "Unsupported electronics variant fixture correctly rejected by canonical metadata constraint before migration application",
+    "preserved": "native-runs/01",
+    "sourceInputsConserved": 190,
+    "proofs": 5
+  },
+  "notClaimed": [
+    "Cross-tenant RLS suite qualification",
+    "Installed Circuit25case acceptance",
+    "Current9cdmodelsearchrepair",
+    "DefaultLATEST392dependentconsumer qualification",
+    "Active392sourceemission or deployment"
+  ],
+  "current9cdMutated": false
+}

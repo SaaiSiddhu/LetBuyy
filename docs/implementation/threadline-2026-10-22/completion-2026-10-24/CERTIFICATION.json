@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-24T08:39:41.061457+00:00",
+  "classification": "ENGINEERING_ACCEPTANCE_NOT_REGULATORY_OR_PROVIDER_ENDORSEMENT",
+  "theme": "Threadline",
+  "preset": "sense",
+  "slug": "letbuyy-sense",
+  "baselineVersion": "2.0.0",
+  "bundleSha256": "61082be647eadae9b6e42002be241a82ba6c3627427568f6e64e2cf961c3742e",
+  "completionCandidate": null,
+  "goalStatus": "active",
+  "LOCAL_E2E_VERIFIED": "NOT_RUN",
+  "RAZORPAY_TEST_VERIFIED": "NOT_RUN",
+  "REVIEW_ACCEPTED": "PENDING",
+  "FULL_THEME_CERTIFIED": false,
+  "PRODUCTION_DEPLOYED": "NOT_REQUESTED",
+  "requiredGates": {
+    "capability_inventory_complete": {
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    "all_declared_editor_sections_blocks_fields": {
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    "normal_buyer_signup_signin_and_store_customer_entry": {
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    "product_and_discovery": {
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    "canonical_cart_and_hosted_COD": {
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    "actual_Razorpay_Test_Mode_purchase_and_provider_evidence": {
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    "immutable_buyer_merchant_order_history_after_catalog_edit": {
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    "negative_security_concurrency_and_recovery": {
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    "responsive_accessibility_and_performance": {
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    "exact_source_installed_runtime_lineage": {
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    "independent_review_accepted": {
+      "status": "PENDING",
+      "evidence": []
+    },
+    "preservation_and_owned_cleanup": {
+      "status": "NOT_RUN",
+      "evidence": []
+    }
+  },
+  "originalObligationCounts": {
+    "NOT_RUN": 26
+  },
+  "coverageRecordCounts": {
+    "NOT_RUN": 318
+  },
+  "countMeaning": "Requirement records and operation slots; no new executed test total.",
+  "blockingDependencies": [
+    "TL-DEP-01",
+    "TL-DEP-02",
+    "TL-DEP-03",
+    "TL-DEP-04",
+    "TL-DEP-05",
+    "TL-DEP-06"
+  ],
+  "evidence": [
+    "CAPABILITY_INVENTORY.json",
+    "COVERAGE.json",
+    "SOURCE_SNAPSHOT.json",
+    "HISTORICAL_EVIDENCE.json",
+    "FINDINGS.md",
+    "HANDOFF.json",
+    "RUNBOOK.md",
+    "JOURNEY_CONTRACTS.json",
+    "PROPOSAL_REVIEW.md",
+    "PROPOSAL.v2.json",
+    "VALIDATION.v2.json"
+  ],
+  "independentReviewer": null,
+  "limitations": [
+    "All original pending groups retained.",
+    "22 historical pins rehashed unchanged; this is integrity, not current-candidate acceptance.",
+    "Source-derived inventory and private proposals are not runtime/provider proof.",
+    "Full certification requires all applicable required operations and accepted independent evidence."
+  ],
+  "proposalState": {
+    "v1": "PRESERVED; REJECTED_FOR_FULL_HEADING_CUSTOMIZATION",
+    "v2": "UNAPPLIED; INDEPENDENT_REVIEW_PENDING"
+  }
+}

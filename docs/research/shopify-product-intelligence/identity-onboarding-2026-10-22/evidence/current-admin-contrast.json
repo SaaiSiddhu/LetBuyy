@@ -1,0 +1,54 @@
+{
+  "method": "WCAG sRGB relative luminance; channel <= 0.04045 uses /12.92, otherwise ((channel+0.055)/1.055)^2.4; weights 0.2126 0.7152 0.0722; ratio (Lmax+0.05)/(Lmin+0.05). Opaque pairs only.",
+  "pairs": [
+    {
+      "pair": "Primary text / white",
+      "foreground": "#101010",
+      "background": "#FFFFFF",
+      "ratio": 19.028110547666497,
+      "displayRatio": "19.03:1"
+    },
+    {
+      "pair": "Secondary text / white",
+      "foreground": "#4A4A4A",
+      "background": "#FFFFFF",
+      "ratio": 8.862392129950916,
+      "displayRatio": "8.86:1"
+    },
+    {
+      "pair": "Navigation token / shell",
+      "foreground": "#D0D0D0",
+      "background": "#0A0A0A",
+      "ratio": 12.835932360819639,
+      "displayRatio": "12.84:1"
+    },
+    {
+      "pair": "Sampled navigation / shell",
+      "foreground": "#DCDCDC",
+      "background": "#0A0A0A",
+      "ratio": 14.437439516789626,
+      "displayRatio": "14.44:1"
+    },
+    {
+      "pair": "Navigation icon / shell",
+      "foreground": "#8C8C8C",
+      "background": "#0A0A0A",
+      "ratio": 5.887603824742959,
+      "displayRatio": "5.89:1"
+    },
+    {
+      "pair": "Input border / white",
+      "foreground": "#8C8C8C",
+      "background": "#FFFFFF",
+      "ratio": 3.362683071052112,
+      "displayRatio": "3.36:1"
+    },
+    {
+      "pair": "Divider / white",
+      "foreground": "#DDDDDD",
+      "background": "#FFFFFF",
+      "ratio": 1.3582472461753565,
+      "displayRatio": "1.36:1"
+    }
+  ]
+}

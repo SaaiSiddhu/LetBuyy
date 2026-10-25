@@ -1,0 +1,81 @@
+Browser tab: 19, Title: "Secure Checkout", URL: "https://checkout.localhost:62082/checkout?[query-redacted]".
+1 AXWebArea Secure Checkout, URL: checkout.localhost:62082/checkout?[query-redacted]
+	2 container
+		3 link Description: Threadline, Value: checkout.localhost:62082/store/syn-threadline-ui-33be9d94
+		4 text Secure checkout
+	5 link Description: Back to Cart, Value: checkout.localhost:62082/store/syn-threadline-ui-33be9d94/cart
+	6 text 1
+	7 text Address
+	8 text 2
+	9 text Payment
+	10 heading Delivery Address, Value: 2
+		11 text Delivery Address
+	12 text Enter delivery address
+	13 text Saved addresses are not loaded on this checkout link. Enter the address for this order below.
+	14 text Full Name *
+	15 text field (settable)
+	16 text Phone *
+	17 text field (settable)
+	18 text Email *
+	19 text field (settable)
+	20 text Address *
+	21 text entry area (settable)
+	22 text City *
+	23 text field (settable)
+	24 text State *
+	25 pop up button (collapsed, settable) Value: Select state…, Secondary Actions: Expand
+		26 menu
+			27 (selected) Select state…
+			28 Jammu & Kashmir
+			29 Himachal Pradesh
+			30 Punjab
+			31 Chandigarh
+			32 Uttarakhand
+			33 Haryana
+			34 Delhi
+			35 Rajasthan
+			36 Uttar Pradesh
+			37 Bihar
+			38 Sikkim
+			39 Arunachal Pradesh
+			40 Nagaland
+			41 Manipur
+			42 Mizoram
+			43 Tripura
+			44 Meghalaya
+			45 Assam
+			46 West Bengal
+			47 Jharkhand
+			48 Odisha
+			49 Chhattisgarh
+			50 Madhya Pradesh
+			51 Gujarat
+			52 Dadra & Nagar Haveli and Daman & Diu
+			53 Maharashtra
+			54 Karnataka
+			55 Goa
+			56 Lakshadweep
+			57 Kerala
+			58 Tamil Nadu
+			59 Puducherry
+			60 Andaman & Nicobar Islands
+			61 Telangana
+			62 Andhra Pradesh
+			63 Ladakh
+			64 Other Territory
+	65 text Pincode *
+	66 text field (settable)
+	67 heading Delivery options, Value: 3
+		68 text Delivery options
+	69 text Enter your state and six-digit pincode to check delivery options.
+	70 button Continue to Payment
+	71 container
+		72 heading Order Summary, Value: 2
+			73 text Order Summary
+		74 text Subtotal ( 2  items) ₹ 1,120 Delivery Choose a delivery option Total ₹ 1,120
+		75 text field (settable)
+		76 button Apply
+		77 text Secure Fast Safe
+		78 image Razorpay
+
+The focused UI element is 1 AXWebArea Secure Checkout, URL: checkout.localhost:62082/checkout?[query-redacted]

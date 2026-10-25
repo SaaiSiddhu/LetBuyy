@@ -1,0 +1,58 @@
+{
+  "id": "section-404-page",
+  "status": "PASS_SOURCE_DATA_CONTRACT",
+  "observed": {
+    "type": "404-page",
+    "group": "template",
+    "firstId": "section-e88fd222-b282-4872-a832-f298b17f90d9",
+    "finalId": "section-d07c2732-4de3-46f2-9226-5b6b14304859",
+    "phases": [
+      {
+        "phase": "edited",
+        "data": {
+          "type": "404-page",
+          "settings": {},
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      {
+        "phase": "hidden-reordered",
+        "data": {
+          "type": "404-page",
+          "settings": {},
+          "blocks": {},
+          "block_order": [],
+          "disabled": true
+        }
+      },
+      {
+        "phase": "shown",
+        "data": {
+          "type": "404-page",
+          "settings": {},
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      {
+        "phase": "removed",
+        "pinnedGroupSectionRetained": false
+      },
+      {
+        "phase": "readded",
+        "data": {
+          "type": "404-page",
+          "settings": {},
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      }
+    ],
+    "actualUICallbacksExecuted": false,
+    "resourceAuthorityProved": false
+  }
+}

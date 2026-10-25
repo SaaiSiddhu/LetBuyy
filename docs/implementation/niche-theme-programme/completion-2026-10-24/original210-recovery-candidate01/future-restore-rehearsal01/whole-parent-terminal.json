@@ -1,0 +1,12 @@
+{
+  "finishedAt": "2026-10-25T04:47:39.582826+00:00",
+  "runnerPid": 69357,
+  "terminalExit": 71,
+  "wholeParentSeconds": 3.6186169169999998,
+  "deadlineExceeded": false,
+  "supervisionFailureClass": null,
+  "maxAttempts": 1,
+  "signals": [],
+  "originalRuntimeActions": 0,
+  "cleanup": "Read actual canonical result and durable checkpoint receipt; this monitor never reaps or removes resources. Any failure requires retained protected resources and independent review, never automatic retry."
+}

@@ -1,3 +1,6 @@
+import type { CatalogDemoContent } from '@/lib/demo/catalog-demo-dispatch';
+import { assertCatalogDemoContext, catalogDemoRoute, catalogDemoStoreId, catalogDemoSubdomain, catalogDemoPage } from '@/lib/theme-engine/catalog-demo-data';
+import { THREADLINE_DEMO_PRODUCTS, THREADLINE_DEMO_COLLECTIONS, THREADLINE_DEMO_NAVIGATION, withThreadlineDemoContent } from '@/lib/demo/threadline-demo';
 import '../store/[subdomain]/liquid-theme.css';
 import { loadCollectionDiscovery } from '@/lib/theme-engine/collection-discovery';
 import { CartProvider } from '@/context/cart-context';
@@ -10,6 +13,8 @@ import {
 } from '@/lib/demo/urban-kicks-demo';
 import { ProductService } from '@/lib/product-service';
 import { StoreService } from '@/lib/store-service';
+import { ContentService } from '@/lib/content-service';
+import { createStorefrontApiClient } from '@/lib/api/client';
 import { buildSectionDataPlan } from '@/lib/theme-engine/data-binding-engine';
 import StorefrontCompositionEngine, { StorefrontSectionGroupRenderer } from '@/lib/theme-engine/composition-engine';
 import { createProductDetailFallbackSection, createProductListingFallbackSection } from '@/lib/theme-engine/product-route';
@@ -18,22 +23,19 @@ import { resolveStorefrontTemplate } from '@/lib/theme-engine/template-resolver'
 import { resolveThemePreviewToken } from '@/lib/theme-preview-server';
 import type { ProductModel } from '@letbuyy/commerce-core';
 import type { StoreModel } from '@letbuyy/tenant-core';
-import { DEFAULT_THEME_SETTINGS, type SectionModel, type ThemeSettings, type StoreTemplateConfig } from '@letbuyy/theme-engine';
+import { DEFAULT_THEME_SETTINGS, EXPERIENCE_FONT_REGISTRY, buildGoogleFontsHref, fontFamilyWithFallback, type SectionModel, type ThemeSettings, type StoreTemplateConfig } from '@letbuyy/theme-engine';
 import { EmptyState, Package } from '@letbuyy/ui';
 import StorefrontPreviewBridge from './storefront-preview-bridge';
+import { EditorPreviewContextSchema, ThemeEditorTemplateKeySchema, parseTemplateKey, toThemeDocumentV2, createEditorPreviewIdentityIndex } from '@letbuyy/theme-engine';
+import type { StorefrontRouteType } from '@/lib/theme-engine/types';
 
-const FONT_MAP: Record<string, string> = {
-    Inter: 'var(--font-inter)',
-    Outfit: 'var(--font-outfit)',
-    Poppins: 'var(--font-poppins)',
-    Lora: 'var(--font-lora)',
-    'Space Grotesk': 'var(--font-space-grotesk)',
-    'Playfair Display': 'var(--font-playfair)',
-    Nunito: 'var(--font-nunito)',
-    'Open Sans': 'var(--font-open-sans)',
-    'DM Sans': 'var(--font-dm-sans)',
-    Montserrat: 'var(--font-montserrat)',
-};
+const FONT_MAP: Record<string, string> = Object.assign(
+    Object.create(null) as Record<string, string>,
+    Object.fromEntries([...new Set([
+        "Inter", "Outfit", "Poppins", "Lora", "Space Grotesk", "Playfair Display", "Nunito", "Open Sans", "DM Sans", "Montserrat",
+        ...Object.keys(EXPERIENCE_FONT_REGISTRY),
+    ])].map(family => [family, fontFamilyWithFallback(family)])),
+);
 
 const COLOR_PATTERN = /^(#[0-9a-fA-F]{3}|#[0-9a-fA-F]{4}|#[0-9a-fA-F]{6}|#[0-9a-fA-F]{8}|rgba?\(\s*[0-9]{1,3}%?\s*,\s*[0-9]{1,3}%?\s*,\s*[0-9]{1,3}%?(?:\s*,\s*(?:0|1|0?\.[0-9]+))?\s*\))$/;
 const SUBDOMAIN_PATTERN = /^[a-z0-9]([a-z0-9-]*[a-z0-9])?$/;
@@ -57,7 +59,64 @@ export type PreviewSearchParams = {
     // harness can cover more than the home template. Same isDemoPreview gate as `engine`: a real
     // merchant's preview always renders its own 'index' template, exactly as before this phase.
     route_type?: string | string[];
+    template?: string | string[];
+    resource_id?: string | string[];
+    page?: string | string[];
 };
+
+/** The store was loaded through the token-verified private preview endpoint.
+ * URL context selects an existing template; it never changes an assignment. */
+function resolveEditorPreviewContext(store: StoreModel, template: unknown, resourceId?: string, page?: unknown) {
+    const key = ThemeEditorTemplateKeySchema.safeParse(template ?? 'index');
+    const manifest = asRecord(store.templateConfig.releaseManifest);
+    const bundle = store.templateConfig.liquidBundle;
+    if (!key.success || ['header', 'footer'].includes(key.data) || manifest.preview !== true || !bundle || !Object.hasOwn(bundle.templates, key.data)) return null;
+    const parsed = EditorPreviewContextSchema.safeParse({ sessionId: manifest.preview_session_id, revision: store.templateConfig.releaseVersion, templateKey: key.data, ...(resourceId ? { resourceId } : {}), ...(page !== undefined ? { page: typeof page === 'string' && /^[1-9]\d*$/.test(page) ? Number(page) : page } : {}) });
+    if (!parsed.success) return null;
+    const base = parseTemplateKey(key.data).baseType;
+    const routeTypes: readonly StorefrontRouteType[] = ['index', 'product', 'collection', 'page', 'policy', 'blog', 'article', 'cart', 'search', 'list_collections', 'contact', 'customer_account', 'customer_orders', 'customer_wishlist', 'customer_settings', 'customer_addresses', 'customer_order', 'password', 'not_found'];
+    const candidate = base.startsWith('customers/') ? `customer_${base.slice('customers/'.length)}` : base.replace(/-/g, '_');
+    // An auth template can be inspected without requesting buyer account data.
+    // The explicit templateKey always controls the actual Liquid template.
+    const type = routeTypes.find(route => route === candidate) || 'page';
+    const document = toThemeDocumentV2(bundle);
+    const sections = ['header', key.data, 'footer'].flatMap(name => document.templates.find(item => item.key === name)?.sections || []);
+    return {
+        context: parsed.data,
+        identities: createEditorPreviewIdentityIndex(sections),
+        route: { type, path: '/preview', subdomain: store.subdomain, templateKey: key.data, ...(resourceId ? { resourceId } : {}),
+            searchParams: { ...(parsed.data.page ? { page: String(parsed.data.page) } : {}), ...(type === 'collection' && resourceId ? { collection_id: resourceId } : {}) },
+        } satisfies StorefrontRouteContext,
+    };
+}
+
+function editorPreviewLiquidContent(payload: NonNullable<Awaited<ReturnType<typeof ContentService.getPreviewContent>>>): Record<string, unknown> {
+    if (payload.resource === 'blog') return { _blog: {
+        articles: payload.articles.map(post => ({ id: post.id, title: post.title, slug: post.slug, excerpt: post.excerpt, image: post.featuredImage, featured_image: post.featuredImage, published_at: post.publishedAt })),
+        current_page: payload.pagination.page,
+        has_more: payload.pagination.has_more,
+        ...(Number.isInteger(payload.pagination.total_pages) && Number(payload.pagination.total_pages) >= 1 ? { pages_count: payload.pagination.total_pages } : {}),
+        ...(Number.isInteger(payload.pagination.total) && Number(payload.pagination.total) >= 0 ? { total: payload.pagination.total } : {}),
+    } };
+    const resource = payload.content;
+    if (!resource) return {};
+    return { title: resource.title, content: resource.content,
+        body_html: typeof resource.content.body === 'string' && resource.content.body ? resource.content.body : typeof resource.content.html === 'string' ? resource.content.html : null,
+        slug: resource.slug, page_type: resource.pageType, publishedAt: resource.publishedAt,
+        featured_image: typeof resource.content.image === 'string' ? resource.content.image : null,
+    };
+}
+
+async function loadEditorPreviewCollection(subdomain: string, token: string, collectionId: string) {
+    try {
+        const collection = await createStorefrontApiClient({ cache: 'no-store' }).storefront.themePreviewCollection(subdomain, token, collectionId);
+        if (!collection || collection.id !== collectionId || typeof collection.title !== 'string') throw new Error('Invalid preview collection');
+        return collection;
+    } catch {
+        // Upstream failures may contain the private capability URL.
+        throw new Error('The selected preview collection is unavailable. Retry the preview.');
+    }
+}
 
 type PreviewViewport = 'desktop' | 'tablet' | 'mobile';
 
@@ -248,6 +307,7 @@ function buildThemeCss(themeSettings: ThemeSettings): string {
           --accent: ${accentColor};
           --background: ${backgroundColor};
           --text: ${textColor};
+          --foreground: ${textColor};
           --radius: ${radius}px;
           --font-main: ${fontCss}, system-ui, sans-serif;
           --font-heading: ${headingFontCss}, system-ui, sans-serif;
@@ -259,7 +319,7 @@ function buildThemeCss(themeSettings: ThemeSettings): string {
           --text-hint: ${isDark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)'};
           --text-inverse: ${isDark ? 'rgb(0 0 0)' : 'rgb(255 255 255)'};
           --border-color: ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'};
-          --surface: ${isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)'};
+          --surface: ${surfaceColor};
           --surface-hover: ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'};
           --card-bg: ${isDark ? surfaceColor : 'rgb(255 255 255)'};
           --card-bg-secondary: ${isDark ? 'rgba(255,255,255,0.08)' : surfaceColor};
@@ -354,13 +414,42 @@ function PreviewUnavailable() {
     );
 }
 
+/** Public catalog rendering uses the same builder/compositor and never initializes live providers. */
+async function renderCatalogDemoPreview(content: CatalogDemoContent) {
+    assertCatalogDemoContext(content);
+    const baseStore = StoreService.getCatalogThemePreview(content.template, content.name);
+    const store: StoreModel = {
+        ...baseStore, id: catalogDemoStoreId(content), subdomain: catalogDemoSubdomain(content),
+        name: content.name, logoUrl: undefined, storeUrl: `/theme-preview/${content.slug}`,
+        selectedProductIds: content.products.map(product => product.id), navigation: content.navigation,
+    };
+    const route = catalogDemoRoute(content);
+    if (route.type === 'cart' || route.type.startsWith('customer_')) return <section role="status"><h1>Sample shopping is unavailable</h1><p>Cart, checkout and account actions are disabled in this read-only preview. Your real cart and account were not loaded.</p></section>;
+    const plan = resolveStorefrontTemplate(store, route);
+    if (plan.liquidTemplateMiss || plan.rendererEngine !== 'liquid') return <section role="status"><h1>This sample page is unavailable</h1><p>Explore another page or return to the theme catalog.</p></section>;
+    try {
+        const sectionData = await buildSectionDataPlan({ store, sections: plan.template.sections, route: plan.route, catalogDemo: content });
+        return <>
+            <style>{buildThemeCss(store.templateConfig.themeSettings)}</style>
+            {buildGoogleFontsHref([store.templateConfig.themeSettings.fontFamily, store.templateConfig.themeSettings.headingFontFamily]) ? <link rel="stylesheet" href={buildGoogleFontsHref([store.templateConfig.themeSettings.fontFamily, store.templateConfig.themeSettings.headingFontFamily])!} /> : null}
+            <div className="storefront-preview-route__canvas" data-catalog-demo-read-only="true">
+                <StorefrontCompositionEngine store={store} plan={plan} sectionData={sectionData} catalogDemo={content} liquidPage={catalogDemoPage(content, route)} collectionSummaries={content.collections} />
+            </div>
+        </>;
+    } catch {
+        return <section role="status"><h1>This sample page is not ready</h1><p>Its sample data could not be confirmed. Explore all sample products or return to the catalog.</p></section>;
+    }
+}
+
 export default async function PreviewContent({
-    searchParams, catalogTemplate, catalogName,
+    searchParams, catalogTemplate, catalogName, catalogDemo,
 }: {
     searchParams?: Promise<PreviewSearchParams>;
     catalogTemplate?: StoreTemplateConfig;
     catalogName?: string;
+    catalogDemo?: CatalogDemoContent;
 }) {
+    if (catalogDemo) return renderCatalogDemoPreview(catalogDemo);
     const query = await searchParams;
     const isDemoPreview = isUrbanKicksDemoPreview(query);
     const requestedSubdomain = normalizeSubdomain(
@@ -375,9 +464,29 @@ export default async function PreviewContent({
 
     if (!store) return <PreviewUnavailable />;
 
+    const editorPreview = !isDemoPreview && !catalogTemplate
+        ? resolveEditorPreviewContext(store, singleParam(query?.template), singleParam(query?.resource_id), query?.page) : null;
+    if (!isDemoPreview && !catalogTemplate && !editorPreview) return <PreviewUnavailable />;
+    let privateLiquidContent: Record<string, unknown> | null = null;
+    if (editorPreview && subdomain && previewToken && ['page', 'article', 'blog'].includes(editorPreview.route.type)) {
+        const kind = editorPreview.route.type;
+        if (kind === 'blog' || editorPreview.route.resourceId) {
+            try {
+                const resource = await ContentService.getPreviewContent(subdomain, previewToken, { resource: kind as 'page' | 'article' | 'blog', ...(kind !== 'blog' ? { resource_id: editorPreview.route.resourceId } : {}), page: editorPreview.context.page || 1, limit: 20 });
+                if (!resource) return <PreviewUnavailable />;
+                privateLiquidContent = editorPreviewLiquidContent(resource);
+            } catch { return <PreviewUnavailable />; }
+        }
+    }
+
     const draftThemeSettings = extractDraftThemeSettings(decodeSettingsPayload(query || {}));
     let previewStore = applyDraftThemeSettings(store, draftThemeSettings);
-    if (isDemoPreview && catalogTemplate) previewStore = StoreService.getCatalogThemePreview(catalogTemplate as unknown as Record<string, unknown>, catalogName || previewStore.name);
+    const isThreadlineDemo = isDemoPreview && catalogTemplate?.themeId === 'letbuyy-sense';
+    if (isDemoPreview && catalogTemplate) {
+        const config = isThreadlineDemo ? withThreadlineDemoContent(catalogTemplate as unknown as Record<string, unknown>) : catalogTemplate as unknown as Record<string, unknown>;
+        previewStore = StoreService.getCatalogThemePreview(config, catalogName || previewStore.name);
+        if (isThreadlineDemo) previewStore = { ...previewStore, logoUrl: undefined, selectedProductIds: THREADLINE_DEMO_PRODUCTS.map(p => p.id), navigation: THREADLINE_DEMO_NAVIGATION };
+    }
     // S6/W2 — demo-only engine override for the concurrent-load harness (see resolveEngineOverride).
     // Gated on isDemoPreview: a real merchant's ?subdomain= preview never reaches this branch, so its
     // store's own liquidRenderingCanary resolution is never touched by this query param.
@@ -394,9 +503,9 @@ export default async function PreviewContent({
     // real merchant preview; product/collection route contexts mirror exactly what
     // app/store/[subdomain]/product/[productId]/page.tsx and .../collections/[slug]/page.tsx build,
     // using the same demo product fixture the 'index'-route demo path already relies on.
-    const routeType = isDemoPreview ? resolveDemoRouteType(singleParam(query?.route_type)) : 'index';
-    const demoProduct = routeType !== 'index' ? (getUrbanKicksDemoProduct('demo-air-runner-90') || null) : null;
-    const routeContext: StorefrontRouteContext = routeType === 'product' && demoProduct
+    const routeType = editorPreview?.route.type || (isDemoPreview ? resolveDemoRouteType(singleParam(query?.route_type)) : 'index');
+    const demoProduct = isDemoPreview && routeType !== 'index' ? (isThreadlineDemo ? THREADLINE_DEMO_PRODUCTS[0] : getUrbanKicksDemoProduct('demo-air-runner-90') || null) : null;
+    const routeContext: StorefrontRouteContext = editorPreview?.route || (routeType === 'product' && demoProduct
         ? {
             type: 'product',
             path: '/preview',
@@ -416,15 +525,28 @@ export default async function PreviewContent({
                 type: 'index',
                 path: '/preview',
                 subdomain: subdomain || '',
-            };
+            });
     const renderPlan = resolveStorefrontTemplate(previewStore, routeContext);
     const previewCatalog = !isDemoPreview && subdomain && previewToken && previewStore.siteType === 'store'
         ? await ProductService.getPreviewProducts(subdomain, previewToken)
         : undefined;
-    const previewCollections = !isDemoPreview && subdomain && previewToken && previewStore.siteType === 'store'
+    let selectedPreviewProduct: ProductModel | undefined;
+    if (editorPreview?.route.type === 'product' && editorPreview.route.resourceId && subdomain && previewToken) {
+        try {
+            selectedPreviewProduct = previewCatalog?.find(product => product.id === editorPreview.route.resourceId)
+                || (await ProductService.getPreviewProducts(subdomain, previewToken, [editorPreview.route.resourceId])).find(product => product.id === editorPreview.route.resourceId);
+            if (!selectedPreviewProduct) return <PreviewUnavailable />;
+        } catch { return <PreviewUnavailable />; }
+    }
+    const previewCollections = isThreadlineDemo ? THREADLINE_DEMO_COLLECTIONS : !isDemoPreview && subdomain && previewToken && previewStore.siteType === 'store'
         ? await loadCollectionDiscovery(subdomain, previewToken)
         : [];
-    const products = previewCatalog
+    let selectedPreviewCollection: Awaited<ReturnType<typeof loadEditorPreviewCollection>> | undefined;
+    if (editorPreview?.route.type === 'collection' && editorPreview.route.resourceId && subdomain && previewToken) {
+        try { selectedPreviewCollection = await loadEditorPreviewCollection(subdomain, previewToken, editorPreview.route.resourceId); }
+        catch { return <PreviewUnavailable />; }
+    }
+    const products = isThreadlineDemo ? THREADLINE_DEMO_PRODUCTS : previewCatalog
         ? previewStore.selectedProductIds.length
             ? previewStore.selectedProductIds.flatMap((id) => previewCatalog.filter((product) => product.id === id))
             : previewCatalog
@@ -447,9 +569,11 @@ export default async function PreviewContent({
             rating: demoReviewData.summary.averageRating,
             reviewCount: demoReviewData.summary.totalReviews,
         };
-        sectionData = new Map(renderPlan.template.sections.map((section) => [section.id, { product: demoProduct, reviews }]));
-    } else if (routeType === 'collection') {
-        const collectionProducts = products.filter((product) => product.category === 'Sneakers');
+        sectionData = isThreadlineDemo
+            ? await buildSectionDataPlan({ store: previewStore, sections: renderPlan.template.sections, route: renderPlan.route, preloadedProducts: products })
+            : new Map(renderPlan.template.sections.map((section) => [section.id, { product: demoProduct, reviews }]));
+    } else if (isDemoPreview && routeType === 'collection') {
+        const collectionProducts = isThreadlineDemo ? products : products.filter((product) => product.category === 'Sneakers');
         sectionData = new Map(renderPlan.template.sections.map((section) => [section.id, { products: collectionProducts }]));
     } else {
         sectionData = await buildSectionDataPlan({
@@ -457,7 +581,16 @@ export default async function PreviewContent({
             sections: renderPlan.template.sections,
             route: renderPlan.route,
             preloadedProducts: isDemoPreview ? products : previewCatalog,
+            previewToken: !isDemoPreview ? previewToken : undefined,
         });
+    }
+    const firstTemplateSectionId = renderPlan.template.sections[0]?.id;
+    if (selectedPreviewProduct && firstTemplateSectionId) {
+        // Set the route's global product; authored per-section product lists stay intact.
+        sectionData = new Map([[firstTemplateSectionId, { ...sectionData.get(firstTemplateSectionId), product: selectedPreviewProduct }], ...Array.from(sectionData).filter(([id]) => id !== firstTemplateSectionId)]);
+    }
+    if (selectedPreviewCollection && firstTemplateSectionId) {
+        sectionData = new Map([[firstTemplateSectionId, { ...sectionData.get(firstTemplateSectionId), collection: selectedPreviewCollection }], ...Array.from(sectionData).filter(([id]) => id !== firstTemplateSectionId)]);
     }
     const headerSections = renderPlan.sectionGroups.header;
     const footerSections = renderPlan.sectionGroups.footer;
@@ -485,6 +618,8 @@ export default async function PreviewContent({
                     sectionData={sectionData}
                     editorMode={!catalogTemplate}
                     collectionSummaries={previewCollections}
+                    liquidPage={privateLiquidContent}
+                    discoveryPreviewToken={!isDemoPreview ? previewToken : undefined}
                 />
             </main>
             {renderPlan.rendererEngine !== 'liquid' && <StorefrontSectionGroupRenderer
@@ -500,7 +635,8 @@ export default async function PreviewContent({
     return (
         <>
             <style>{buildThemeCss(previewStore.templateConfig.themeSettings)}</style>
-            {!catalogTemplate && <StorefrontPreviewBridge initialViewport={viewport} sectionIds={sectionIds} sectionTypes={Object.fromEntries([...headerSections, ...renderPlan.template.sections, ...footerSections].map(section => [section.id, section.type]))} />}
+            {buildGoogleFontsHref([previewStore.templateConfig.themeSettings.fontFamily, previewStore.templateConfig.themeSettings.headingFontFamily]) ? <link rel="stylesheet" href={buildGoogleFontsHref([previewStore.templateConfig.themeSettings.fontFamily, previewStore.templateConfig.themeSettings.headingFontFamily])!} /> : null}
+            {!catalogTemplate && <StorefrontPreviewBridge initialViewport={viewport} sectionIds={sectionIds} identities={editorPreview?.identities || {}} context={editorPreview?.context || null} />}
             <div
                 className={`storefront-preview-route storefront-preview-route--${viewport}`}
                 data-letbuyy-preview-route="true"

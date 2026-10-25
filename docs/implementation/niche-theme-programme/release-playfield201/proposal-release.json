@@ -1,0 +1,171 @@
+{
+  "recordedAt": "2026-10-23T19:53:44.899561+00:00",
+  "status": "IMMUTABLE_PLAYFIELD201_CAPTURE_AND_PAIRED393_DOCS_PROPOSAL_READY_FOR_ROOT_REVIEW_NOT_NATIVE_QUALIFIED",
+  "manifestSha256": "6bd27e70ca6f0a2169a15c3fe850d07bebb948a276002a483f730ac1f690885c",
+  "immutableDirectory": "docs/implementation/niche-theme-programme/release-playfield201/proposals/6bd27e70ca6f0a2169a15c3fe850d07bebb948a276002a483f730ac1f690885c",
+  "immutableFiles": [
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/release-playfield201/proposals/6bd27e70ca6f0a2169a15c3fe850d07bebb948a276002a483f730ac1f690885c/393_playfield_catalog_201.down.draft.sql",
+      "sha256": "75a2288863c1a1b5e1082e5cba5b1e76db1c9a95c79fb505955288b68e5a35e8",
+      "bytes": 1284605
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/release-playfield201/proposals/6bd27e70ca6f0a2169a15c3fe850d07bebb948a276002a483f730ac1f690885c/393_playfield_catalog_201.up.draft.sql",
+      "sha256": "d4c0a6cc909709b07702cc2bc730bb1ff9f7f89bc8ad1ade486afa74f63da783",
+      "bytes": 1286907
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/release-playfield201/proposals/6bd27e70ca6f0a2169a15c3fe850d07bebb948a276002a483f730ac1f690885c/letbuyy-bloom-2.0.1.json",
+      "sha256": "68bd7e7031f4e330d09fa7a7643c4159266c7ef04885917fe40320e4f9810c23",
+      "bytes": 641651
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/release-playfield201/proposals/6bd27e70ca6f0a2169a15c3fe850d07bebb948a276002a483f730ac1f690885c/manifest.json",
+      "sha256": "3908686ae847a493df721538bdc47afd69f1e9fbe72dfd8edda710621b130928",
+      "bytes": 9242
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/release-playfield201/proposals/6bd27e70ca6f0a2169a15c3fe850d07bebb948a276002a483f730ac1f690885c/semantic-diff.json",
+      "sha256": "5cbf422c27f9e18bd2f58c5194b46bc3524c82374eaf67bc929e7fb692faf563",
+      "bytes": 125
+    }
+  ],
+  "sourceQualification": {
+    "rootAdmission": {
+      "path": "docs/implementation/niche-theme-programme/playfield201-order-url-interim-admission.json",
+      "sha256": "c8420182d002cf4a5584656e3a43c3e542705d4f69eb131738de9225c326225d"
+    },
+    "stableSourcePins": 61,
+    "rawFactorySha256": "91dd7e6239aefa6a341dfc04ba5d8cc79d8136f1c4d46b48fda66799ecbbe9d7",
+    "canonicalBundleSha256": "63fdb0ebefb7312d0a227f64aa8b53a239ef3430aab9c12946909e4c7f08ffeb",
+    "payloadSha256": "22ee2bedacfc8efb024a8b6e657f260eb6b0040820f0c80bbd047812986f1e7d",
+    "semanticDifferencePaths": [
+      "/package/version",
+      "/package/version_number",
+      "/sections/product-detail/source"
+    ],
+    "movingHydrationCartNotCaptured": true,
+    "finalRuntimeCombinedPostCartGate": "PENDING_SEPARATE_OWNER; not claimed by catalog capture"
+  },
+  "generatorSources": [
+    {
+      "path": "docs/implementation/niche-theme-programme/release-playfield201/generate-playfield201.ts",
+      "sha256": "f1fd482cc4116b5c28d032d7bd7ca68c1ae769724043b7531aa9eee64714f5d9",
+      "bytes": 20908
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/release-playfield201/generate-playfield201.test.ts",
+      "sha256": "b5cc9be33cda7eb3a1d67bc3dd4c4673ad373d3fb872650738358eed966cdbc4",
+      "bytes": 5514
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/release-playfield201/tsconfig.proposal.json",
+      "sha256": "e8a65490ddd88eb7cd0131cc3bff3ffa995de47e2f2bd53751f2f1eb1948ba0b",
+      "bytes": 474
+    }
+  ],
+  "admissionRefreshDiff": {
+    "path": "docs/implementation/niche-theme-programme/release-playfield201/proposal-source-refresh-01/generator-admission-refresh.diff",
+    "sha256": "adf2277ebb2fb119e8cddf1b96ec8e5ca69d9b2097e70b902ffe2a3449bee129",
+    "bytes": 6605
+  },
+  "checks": {
+    "strictProposalTests": {
+      "pass": 6,
+      "fail": 0,
+      "skip": 0,
+      "tap": {
+        "path": "docs/implementation/niche-theme-programme/release-playfield201/proposal-tests-04-final.tap",
+        "sha256": "0b0860b63ebc1ddd6ce86f4049b5ca12c700c9522c7494d193a48041b809245a",
+        "bytes": 1849
+      },
+      "command": "node --import tsx --test docs/implementation/niche-theme-programme/release-playfield201/generate-playfield201.test.ts"
+    },
+    "scopedNoEmit": {
+      "exitCode": 0,
+      "log": {
+        "path": "docs/implementation/niche-theme-programme/release-playfield201/proposal-noemit-03-final.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "command": "node_modules/.bin/tsc -p docs/implementation/niche-theme-programme/release-playfield201/tsconfig.proposal.json",
+      "nodeTypeResolution": "Explicitly uses existing Commerce-declared @types/node; no install or app source import"
+    },
+    "integrity": {
+      "path": "docs/implementation/niche-theme-programme/release-playfield201/proposal-integrity-review.json",
+      "sha256": "49ad3c7ce2e35bc0b50cc6a59ed08fbe67457551a5171b8e39b16edba39f7d2d",
+      "bytes": 2090
+    },
+    "conservedHistoricalInputs": 616,
+    "all20DefaultAnd200BuildersExact": true,
+    "allNinePriorDescriptorFilesExact": true,
+    "exactOldPlayfieldOrderAndWholeLayout": true
+  },
+  "preservedEarlierResults": {
+    "c8SemanticOmissionRed": {
+      "path": "docs/implementation/niche-theme-programme/release-playfield201/proposal-tests-01.tap",
+      "sha256": "ac0ad6f7bbb6ce3223fd3907680d68f502f1832608de72dc7dcde20ef773b688",
+      "bytes": 2443
+    },
+    "originalC8Source73AndRepair81ReceiptsUnchanged": true,
+    "firstStandaloneNoEmitFailure": {
+      "log": {
+        "path": "docs/implementation/niche-theme-programme/release-playfield201/proposal-noemit-01.log",
+        "sha256": "5626ac22c4a14102fb4ee270063aee4f7fd7185144af2c6aa48a8688ab09caea",
+        "bytes": 6157
+      },
+      "reason": "Standalone docs project could not discover Node typings, so assert narrowing also failed. Explicit existing Node typeRoots/types fix only; no dependency installation or runtime code change."
+    },
+    "earlierPassingProposalLogs": [
+      {
+        "path": "docs/implementation/niche-theme-programme/release-playfield201/proposal-tests-02.tap",
+        "sha256": "dfb287d06665febe7d4b2826947824fce9aa5875705895db8ac3c6151fd53c07",
+        "bytes": 1848
+      },
+      {
+        "path": "docs/implementation/niche-theme-programme/release-playfield201/proposal-tests-03.tap",
+        "sha256": "d733c85f2e4927948e582462856b84b3ac88012344b32b30e54ad323f84987d9",
+        "bytes": 1847
+      }
+    ],
+    "firstSuccessfulNoEmit": {
+      "path": "docs/implementation/niche-theme-programme/release-playfield201/proposal-noemit-02.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "uniqueStrictTestCount": 6,
+    "overlappingRunsNotSummed": true
+  },
+  "catalogSemantics": {
+    "newIdentity": {
+      "id": "7b669c70-0000-4000-8000-000000000008",
+      "slug": "letbuyy-bloom",
+      "version": "2.0.1",
+      "version_number": 3
+    },
+    "up": "Validate exact prior catalog/package/captures; append version/schema/renderer and move only Playfield managed catalog metadata; strict replay/no implicit merchant upgrade.",
+    "down": "Restore exact prior managed metadata/fullconfig through hashed checkpoint; retain all captures and installed/draft/release history; refuse stale/corrupted state.",
+    "timestampsAndStatistics": "Existing migration convention updates catalog updated_at; legitimate install_count/statistics are retained. Full-row timestamp equality is not claimed; native gates must qualify these separately.",
+    "merchantRowMutationsInSql": false,
+    "newSchemaIssuerRuntimeOrArchitecture": false
+  },
+  "nativeQualification": {
+    "status": "NOT_RUN_TEST_SOURCE_NOT_YET_AUTHORED_OR_FROZEN",
+    "plan": {
+      "path": "docs/implementation/niche-theme-programme/release-playfield201/NATIVE393-QUALIFICATION-PLAN.md",
+      "sha256": "78b1d8e4644141237bf04c77a0d8fc4ce492fa1d4aeaf32ec731439ae1b59785",
+      "bytes": 7807
+    },
+    "intendedEntry": "Fresh default-LATEST392/no migration ceiling, candidate393 applied explicitly inside canonical owned suite after Root admission",
+    "plannedChildPhases": 8,
+    "plannedTAPIncludingParent": 9,
+    "resourceAllocationGrantedHere": false
+  },
+  "actualDatabaseSourceMax": 392,
+  "migration393Emitted": false,
+  "databaseApplied": false,
+  "nativeDatabaseOrBrowserOrRuntimeOrCandidateAction": false,
+  "currentFixturesTabsLoginsTouched": false,
+  "PF05InstalledVisualAccepted": false,
+  "next": "Root reviews immutable capture/proposal and exact pins; then prepare/freeze canonical owned-test source and admission before one allocated native lane."
+}

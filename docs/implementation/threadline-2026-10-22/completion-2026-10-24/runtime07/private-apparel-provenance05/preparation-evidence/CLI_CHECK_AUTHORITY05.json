@@ -1,0 +1,14 @@
+{
+  "recordedAt": "2026-10-25T04:35:13.000551+00:00",
+  "status": "USER_APPROVED_NARROW_CLI_CHECKS_COMPLETED",
+  "directUserAnswer": "Approve only these CLI checks",
+  "scope": "Exact TSX --version, exact harmless TypeScript smoke, read-only check for the owned interrupted smoke process. No database retry/restore/app change/payment.",
+  "actualCliProof": {
+    "path": "/private/tmp/letbuyy-apparel-provenance-prep-20261025-05/preparation-evidence/launcher-smoke.json",
+    "sha256": "0a5426cfbada4223187bff7aead7f81068582f3b927a9f72c2cfc219630fd0ac"
+  },
+  "readOnlyProcessCheck": "No matching owned interrupted smoke process observed; no signals issued.",
+  "earlierInterruptionAndRefusal": "Initial smoke call interrupted before receipt; no CLI credit assigned. Initial read-only process inspection hit sandbox denial, then automatic review rejected stale project-pause rationale. No rejected command executed. These exact CLI checks were subsequently explicitly approved by human and completed.",
+  "nativeStarts": 0,
+  "databaseDockerProviderBrowserActions": 0
+}

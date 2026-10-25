@@ -1,0 +1,42 @@
+- generic: Pantry Runtime07 A — everyday staples
+- link:
+  - /url: ""
+- banner:
+  - navigation "Primary"
+  - link "Threadline":
+    - /url: /store/syn-threadline-ui-ae3f0477
+  - button "Search":
+    - generic: Search
+  - link "Log in":
+    - /url: /store/syn-threadline-ui-ae3f0477/customers/login
+    - generic: Log in
+  - link "Cart ( 1 )":
+    - /url: /store/syn-threadline-ui-ae3f0477/cart
+    - generic: Cart
+    - text: (
+    - generic: "1"
+    - text: )
+- heading "Your cart" [level=1]
+- list:
+  - text: Pantry lifecycle red lentils
+  - generic: "Pack: 250 g"
+  - generic: "Saved options Pack: 250 g Food details Per-item net quantity: 250 g Ingredients: Split red lentils (100%). Allergen statement: Not recorded with this order. Storage: Keep cool and dry. Preparation: Rinse before cooking. Nutrition statement: Not recorded with this order."
+  - 'button "Decrease quantity of Pantry lifecycle red lentils, Pack: 250 g"': "-"
+  - generic: "1"
+  - 'button "Increase quantity of Pantry lifecycle red lentils, Pack: 250 g"': +
+  - 'button "Remove Pantry lifecycle red lentils, Pack: 250 g"': Remove
+- generic: Subtotal
+- generic: ₹180
+- generic: Total
+- generic: ₹180
+- link "Proceed to checkout":
+  - /url: /store/syn-threadline-ui-ae3f0477/checkout
+- contentinfo:
+  - heading "Threadline" [level=3]
+  - heading "Contact" [level=4]
+  - link "Contact us":
+    - /url: /store/syn-threadline-ui-ae3f0477/contact
+  - paragraph: © Threadline. All rights reserved.
+  - link "Powered by LetBuyy":
+    - /url: https://letbuyy.com
+- alert

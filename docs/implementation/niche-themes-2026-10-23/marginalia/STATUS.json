@@ -1,0 +1,452 @@
+{
+  "phase": "runtime07_preservation_maintenance_editor_subchecks_reconciled",
+  "theme": "Marginalia",
+  "version": "2.0.0",
+  "updatedAt": "2026-10-24T12:43:47.901102+00:00",
+  "currentAction": "Fresh three-turn blocked audit passed. Root acknowledges completedsource46 but returnedindependent review and actualfresh Marginalia runtime/browsergrant are still missing. No permitted independent execution remains; no rerun or unallocated action. Full scope/evidence retained; certification incomplete.",
+  "ownedDeliveryReady": true,
+  "complete": false,
+  "tests": {
+    "unitContractLiquid": {
+      "passed": 18,
+      "failed": 0
+    },
+    "actualMapperLiquid": {
+      "passed": 10,
+      "failed": 0
+    },
+    "merchantEditor": {
+      "passed": 8,
+      "failed": 0
+    },
+    "variantEditor": {
+      "passed": 9,
+      "failed": 0
+    },
+    "demoMembership": {
+      "passed": 4,
+      "failed": 0
+    },
+    "combined": {
+      "passed": 54,
+      "failed": 0,
+      "evidence": "all-targeted-tests.tap",
+      "scope": "Initial full 54-test checkpoint archived; only the five affected actual-registration cases were rerun after the final released shared refinements."
+    },
+    "focusedMerchantEditorTypecheck": "passed",
+    "focusedVariantEditorTypecheck": "passed",
+    "packageTypechecks": "commerce-core and theme-engine passed prior checks; no new full shared-build claim",
+    "selectedEditionActualRegistration": {
+      "passed": 5,
+      "failed": 0,
+      "finalSharedReleaseMatched": true,
+      "sourcesStableThroughoutRun": true,
+      "evidence": "selected-edition-tests.tap",
+      "browserPixelAcceptance": false
+    },
+    "optionValueRename": {
+      "sharedRegressionPassed": 79,
+      "newTests": 10,
+      "existingTests": 69,
+      "failed": 0,
+      "skipped": 0,
+      "merchantNoEmit": "passed",
+      "evidence": "option-value-rename/source-release.json",
+      "installedProof": false
+    },
+    "absentApparelFacts": {
+      "passed": 95,
+      "failed": 0,
+      "skipped": 0,
+      "newTests": 16,
+      "merchantNoEmit": "passed",
+      "sourceRelease": "absent-apparel-facts/source-release.json",
+      "installedProof": false
+    },
+    "optionAxisAddition": {
+      "passed": 107,
+      "previousPassed": 95,
+      "newTests": 12,
+      "failed": 0,
+      "skipped": 0,
+      "merchantNoEmit": "passed",
+      "lintErrors": 0,
+      "newWarnings": 0,
+      "sourceRelease": "option-axis-addition/source-release.json",
+      "installedProof": false,
+      "sharedNormalUIRepairControlVerified": true,
+      "sharedLiveControlReview": "installed-lifecycle-readiness/live-option-axis-tuple-review.json"
+    },
+    "stockEditIntent": {
+      "passed": 124,
+      "previousPassed": 107,
+      "newTests": 17,
+      "failed": 0,
+      "skipped": 0,
+      "cancelled": 0,
+      "merchantNoEmit": "passed",
+      "lintErrors": 0,
+      "newWarnings": 0,
+      "sourceRelease": "stock-edit-intent/source-release.json",
+      "sourceEpoch": "c0bfcfa9dc6055989c3c3c1f79c8fdb4dcc4d2f69e8e958d64625336e67b3403",
+      "rootAdmitted": true,
+      "installedProof": false,
+      "rootAdmission": "docs/implementation/niche-theme-programme/merchant-stock-intent-source-admission.json",
+      "sharedLiveComponentVerified": true,
+      "sharedLiveComponentReview": "installed-lifecycle-readiness/29-stock-live-component-review.json"
+    },
+    "optionAxisNameRename": {
+      "passed": 51,
+      "newTests": 12,
+      "relatedExistingTests": 39,
+      "failed": 0,
+      "skipped": 0,
+      "cancelled": 0,
+      "genuineReds": 3,
+      "merchantNoEmit": "passed",
+      "lintErrors": 0,
+      "introducedLintMessages": 0,
+      "sourceRelease": "option-axis-rename/source-release.json",
+      "installedProof": false,
+      "rootAdmitted": true,
+      "rootAdmission": "docs/implementation/niche-theme-programme/merchant-axis-name-source-admission.json",
+      "sharedLiveComponentVerified": true,
+      "sharedLiveComponentReview": "installed-lifecycle-readiness/38-axis-name-live-component-review.json"
+    }
+  },
+  "browser": {
+    "capturedSnapshotPassed": true,
+    "screenshots": 45,
+    "measuredCases": 41,
+    "nativeInteractionStates": 4,
+    "fontsVerified": true,
+    "currentSharedSourceAcceptance": false,
+    "sourceHashDriftAfterCapture": [
+      "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "apps/commerce/web/src/lib/theme-engine/product-liquid-drop.ts",
+      "apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx"
+    ],
+    "slot": 1,
+    "port": 43277,
+    "slotReleased": true,
+    "browserClosed": true,
+    "serverClosed": true,
+    "liveServiceEffects": 0,
+    "evidence": "browser-review.md",
+    "newControllerDomCheckpointPassed": true,
+    "newControllerEvidence": "selected-edition-validation.json"
+  },
+  "sharedDependencies": [
+    "Canonical parent variant mount/save/conflict/version/recovery/readback using same-transaction variant.metadata.books writes",
+    "Immutable selected-variant accepted order facts and canonical cart/checkout lifecycle",
+    "Allocated focused real-browser layout/keyboard/glyph acceptance; final released actual registration DOM checkpoint passes",
+    "Merchant selected-resource editor persistence and install/publish/reload/rollback/reapply lifecycle",
+    "Paginated live books discovery/search and facet capability",
+    "Full programme governance/security/build/performance/release gates"
+  ],
+  "nextStep": "Await Root qualified preserved recovery and exact sole Editor additive product setup grant. Create only NEW2products/3bookvariants/1collection/2memberships normally; no existing catalogue/stock/draft/releasecontent writes. Literal MG-ID/MG-INSTALL setup clauses remain OPEN; later Test/COD/history retains its existing finite budget.",
+  "installedLifecycle": {
+    "readiness": "INSTALLED-LIFECYCLE-READINESS.md",
+    "check": "installed-lifecycle-readiness/34-fresh936-runtime-handoff.json",
+    "cases": 16,
+    "allStatus": "MIXED",
+    "runtimeAllocated": false,
+    "heartbeatId": "marginalia-installed-lifecycle-follow-up",
+    "originReview": "origin-repair/REVIEW.md",
+    "renamePrerequisite": "variant-value-rename-gap.json",
+    "directCoordinationAuthorized": true,
+    "renameSourceRelease": "option-value-rename/source-release.json",
+    "browserQueuePosition": 9,
+    "sourceAdmission": "docs/implementation/niche-theme-programme/merchant-source-repairs-admission.json",
+    "trustedHttps": "PASS_REAL_BROWSER_DELIVERY_FORM;COD_NOT_RUN",
+    "candidateAudit": "installed-lifecycle-readiness/corrected-candidate-closure-review.json",
+    "correctedRunId": "936e5f577646",
+    "normalSaveReview": "installed-lifecycle-readiness/corrected-normal-save-review.json",
+    "absentApparelSourceRelease": "absent-apparel-facts/source-release.json",
+    "browserHttpsReview": "installed-lifecycle-readiness/trusted-https-browser-review.json",
+    "absentApparelRootAdmission": {
+      "path": "docs/implementation/niche-theme-programme/absent-apparel-source-admission.json",
+      "sha256": "b2e974283e6b3ae7f25533c1bc0dac9ba35f47799661c46ef1e853ccec0c34f6"
+    },
+    "concreteSlotRequested": true,
+    "currentSlotGranted": false,
+    "runtimeUpdateHandoff": "installed-lifecycle-readiness/runtime-update-handoff.json",
+    "slotReservation": "installed-lifecycle-readiness/slot-reservation.json",
+    "slotReserved": true,
+    "entryGate": "Previous sole Editor nonorder grant completed finite boundary. Any purchase/history/edit phase requires checkout repair/admission/retest plus fresh named grant.",
+    "optionAxisAdditionSourceRelease": "option-axis-addition/source-release.json",
+    "optionAxisAdditionRootAdmission": {
+      "path": "docs/implementation/niche-theme-programme/merchant-option-axis-source-admission.json",
+      "sha256": "03ebd5eb5ceaf900ec724eec6f998cf8cf8c92cbdade7063c097efc4259ba7d9"
+    },
+    "sharedCartQuantityDefect": "installed-lifecycle-readiness/shared-cart-quantity-failure-review.json",
+    "liveOptionAxisReview": "installed-lifecycle-readiness/live-option-axis-preservation-review.json",
+    "liveOptionAxisTupleReview": "installed-lifecycle-readiness/live-option-axis-tuple-review.json",
+    "stockEditIntentSourceRelease": "stock-edit-intent/source-release.json",
+    "stockIntentRuntimeReview": "installed-lifecycle-readiness/28-stock-runtime-admission-review.json",
+    "stockIntentLiveReview": "installed-lifecycle-readiness/29-stock-live-component-review.json",
+    "cartRecoveryLiveReview": "installed-lifecycle-readiness/30-cart-recovery-live-review.json",
+    "historicalSlotReserved": true,
+    "historicalQueuePosition": 9,
+    "freshQueueCarryForwardRequested": false,
+    "historicalRunId": "f6074d90e894",
+    "currentRuntimeBindings": {
+      "scope": "Current936 general runtime plus actual acknowledged MG products/variants/collection under sole Editor NONORDER grant; no MG cart/order bindings.",
+      "runId": "936e5f577646",
+      "origins": {
+        "identity": "http://accounts.threadline-936e5f577646.localhost:50492",
+        "merchant": "http://admin.threadline-936e5f577646.localhost:50493",
+        "commerce": "http://syn-threadline-ui-6815276b.localhost:50494",
+        "checkout": "https://checkout.localhost:50497",
+        "api": "http://127.0.0.1:50498"
+      },
+      "siteId": "2f958a36-71bf-4e8f-89fd-d3363f4fe42c",
+      "supplementalClients": {
+        "merchant-next-production": "http://admin.threadline-936e5f577646.localhost:58090",
+        "commerce-next-production": "http://syn-threadline-ui-6815276b.localhost:58091"
+      },
+      "originalBuyerCommerce": "http://syn-threadline-ui-6815276b.localhost:50494",
+      "previewPlatform": "http://localhost:58091"
+    },
+    "freshFixtureEntryGates": "installed-lifecycle-readiness/fresh-fixture-entry-gates.json",
+    "historicalLatestSupplementalMerchantOrigin": "http://admin.threadline-f6074d90e894.localhost:49943",
+    "historicalLatestSupplementalCommerceOrigin": "http://syn-threadline-ui-33be9d94.localhost:49944",
+    "historicalSupplementalMerchantOrigin": "http://admin.threadline-f6074d90e894.localhost:54183",
+    "oldPinkBaselineRestoredBeforeInterruption": false,
+    "timeoutCleanupOfflineReview": "installed-lifecycle-readiness/32-timeout-cleanup-offline-review.json",
+    "freshSourceGateReview": "installed-lifecycle-readiness/33-stable392-source-gates-review.json",
+    "freshSlotReservation": "installed-lifecycle-readiness/34-fresh936-runtime-handoff.json",
+    "freshQueueCarryForwardConfirmed": true,
+    "runtimeAdmission": {
+      "path": "docs/implementation/niche-theme-programme/editor-stable392-02-runtime-admission.json",
+      "sha256": "33b3d8c93eb9a63a7833ed4ae9a15faedde06a6ff44706d862cce773cc0cb174"
+    },
+    "freshWorkingCutoffUtc": "2026-10-24T08:50:00Z",
+    "freshWorkingCutoffIst": "2026-10-24 14:20:00 IST",
+    "optionAxisNameRenameSourceRelease": "option-axis-rename/source-release.json",
+    "latestSourceCheck": "installed-lifecycle-readiness/36-axis-name-root-source-admission.json",
+    "current936AxisNameSourceApplied": false,
+    "optionAxisNameRootAdmission": "docs/implementation/niche-theme-programme/merchant-axis-name-source-admission.json",
+    "latestClientAdmissionReview": "installed-lifecycle-readiness/39-preview-origin-config-owner-admission.json",
+    "supplementalAxisNameSourceAdmitted": true,
+    "normalAxisNameSaveReloadReview": "installed-lifecycle-readiness/38-axis-name-live-component-review.json",
+    "sharedCheckoutRefreshFailure": "installed-lifecycle-readiness/40-shared-checkout-refresh-owner-failure.json",
+    "nonorderPacket": "stable936-nonorder-editor-packet.md",
+    "nonorderPreparation": "installed-lifecycle-readiness/41-nonorder-packet-prepared.json",
+    "caseCounts": {
+      "PASS": 9,
+      "FAIL": 0,
+      "NOT_RUN": 7
+    },
+    "results": "stable936-installed-lifecycle.results.json",
+    "full16Granted": false,
+    "activeScope": "FINITE_NONORDER_ENDED;READONLY_AUDIT_ONLY;PURCHASE_HELD",
+    "marginaliaChatBrowserGranted": false,
+    "actualBindings": {
+      "product.books": "f2382fe0-6a3e-4241-9aef-9a54c765433f",
+      "books.en_hardback": "760cb43c-ecfc-490f-8cee-080bfdcd6281",
+      "books.hi_paperback": "ec05efc6-dce5-4948-ae3e-a1c173542cc9",
+      "books.en_paperback_oos": "9e4fbca8-6bef-4a03-b9d4-274f524575ad",
+      "product.stationery": "43fba2a8-bc4d-4939-917e-8430991fbd09",
+      "collection.books_and_paper": "d5609b77-743c-45b5-b435-814f2ca95058",
+      "cart.book": null,
+      "cart.stationery": null,
+      "order.id": null,
+      "order.book": null,
+      "order.stationery": null
+    },
+    "currentReview": "installed-lifecycle-readiness/48-MG-INSTALL-lineage-actual-review.json",
+    "currentCheckpoint": {
+      "recordedAt": "2026-10-24T07:23:55.779417+00:00",
+      "classification": "ACTUAL_NINE_PASS_SEVEN_NOT_RUN_NONORDER_LINEAGE_CLOSED_PURCHASE_HELD",
+      "runId": "936e5f577646",
+      "counts": {
+        "PASS": 9,
+        "FAIL": 0,
+        "NOT_RUN": 7
+      },
+      "results": "stable936-installed-lifecycle.results.json",
+      "latestReview": "installed-lifecycle-readiness/48-MG-INSTALL-lineage-actual-review.json",
+      "nativeReview": "installed-lifecycle-readiness/46-native-discovery-controls-review.json",
+      "bindings": {
+        "product.books": "f2382fe0-6a3e-4241-9aef-9a54c765433f",
+        "books.en_hardback": "760cb43c-ecfc-490f-8cee-080bfdcd6281",
+        "books.hi_paperback": "ec05efc6-dce5-4948-ae3e-a1c173542cc9",
+        "books.en_paperback_oos": "9e4fbca8-6bef-4a03-b9d4-274f524575ad",
+        "product.stationery": "43fba2a8-bc4d-4939-917e-8430991fbd09",
+        "collection.books_and_paper": "d5609b77-743c-45b5-b435-814f2ca95058",
+        "cart.book": null,
+        "cart.stationery": null,
+        "order.id": null,
+        "order.book": null,
+        "order.stationery": null
+      },
+      "finiteBoundary": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-marginalia-finite-nonorder-boundary.json at07:15:45UTC",
+      "activeMGLease": false,
+      "passed": [
+        "MG-ID-01",
+        "MG-INSTALL-01",
+        "MG-BK-EN-01",
+        "MG-BK-HI-01",
+        "MG-PAPER-01",
+        "MG-RULING-01",
+        "MG-AUTHOR-01",
+        "MG-QUERY-01",
+        "MG-CLEAR-01"
+      ],
+      "notRun": [
+        "MG-BK-OOS-01",
+        "MG-CART-01",
+        "MG-CART-RELOAD-01",
+        "MG-COD-01",
+        "MG-HIST-BASELINE-01",
+        "MG-LATE-EDIT-01",
+        "MG-HIST-AFTER-EDIT-01"
+      ],
+      "B00": "PASS wholeMG-INSTALL: normal installed B00 behavior in45/47 plus actual instance/package/version/catalog FK join/full stored manifest equality against admitted immutable artifact verified offline in48.",
+      "conservation": "Twenty of22 protected tables exact initial→final; inventory_levels differs only approved newOOS0 row already reviewed; outbox differs. After booksetup onlyoutbox differs. Cart/checkout/orders/orderitems/reservations/inventorybusiness exact; both old order projections exact.",
+      "remaining": "MG-BK-OOS purchase-attempt/no-effect clause and6cart/COD/history/lateredit cases NOT_RUN. Await shared checkout recovery correction/admission/normal retest and fresh named purchase allocation. No liveMG lease.",
+      "safeWorkingCutoffUtc": "2026-10-24T08:50:00Z",
+      "actionsHere": "Offline receipt review/documentation only; no live/runtime/build/database/API/browser/source/test actions.",
+      "lineageRootReceipt": "docs/implementation/niche-theme-programme/marginalia-installed-package-lineage-root-readonly-936.json"
+    },
+    "nonorderGrantCompleted": true,
+    "nonorderNativeReview": "installed-lifecycle-readiness/46-native-discovery-controls-review.json",
+    "installLineageVerified": true,
+    "nonorderBehaviorAndLineageAccepted": true,
+    "historicalBaselineScope": "Originalrun936 evidence preserved; current completion candidate not admitted."
+  },
+  "release389": {
+    "pairedSourceEmitted": true,
+    "receipt": "../../niche-theme-programme/release-v2/389-emission-receipt.json",
+    "nativeQualificationGreen": true,
+    "rollbackQualified": true
+  },
+  "completion": {
+    "path": "completion-2026-10-24",
+    "goalStatus": "paused_tracker_stale_after_verified_new_human_resume",
+    "authorityRequestThread": "01a16ce5-e5ba-7191-ab2c-a1b76947d2b5",
+    "inventory": {
+      "templates": 23,
+      "sectionTypes": 45,
+      "sectionInstances": 29,
+      "sectionScopedBlockTypes": 15,
+      "globalBlockDefinitions": 1,
+      "sectionAndBlockSettingDescriptors": 128,
+      "themeSettingDescriptors": 12,
+      "catalogueFactPathsByOwnerAndKind": 45
+    },
+    "newRequiredCases": 286,
+    "newExecutedCases": 0,
+    "originalHistoricalCaseCounts": {
+      "PASS": 9,
+      "FAIL": 0,
+      "NOT_RUN": 7
+    },
+    "candidate": null,
+    "helperActivationObserved": {
+      "themes": "RESUME_DELIVERED_AND_ACTIVE_TURN_OBSERVED",
+      "editor": "RESUME_DELIVERED_AND_ACTIVE_TURN_OBSERVED",
+      "marketplace": "NOT_RESUMED_PRESERVE_RUNNING_LOCAL_APP"
+    },
+    "activeBrowserLease": null,
+    "activeWriterLease": null,
+    "oldHeartbeat": "PAUSED_NOT_REACTIVATED",
+    "certification": "NOT_ISSUED",
+    "sourceControlTrace": "completion-2026-10-24/SOURCE_CONTROL_TRACE.json",
+    "sourceControlRequests": "completion-2026-10-24/SOURCE_CONTROL_REQUESTS.md",
+    "newSourceObservedGaps": [
+      "MG-C-GAP-08",
+      "MG-C-GAP-09",
+      "MG-C-GAP-10"
+    ],
+    "appActivationApplicability": "CONSTITUTIONALLY_EXCLUDED_APP-SEAM-01_GUARDS_REQUIRED_NOT_RUN",
+    "latestDependencyObservation": "completion-2026-10-24/DEPENDENCY_WAIT.json",
+    "latestGoalTurnClassification": "PROGRESS_EXISTING_EDITOR_EVIDENCE_RECONCILED_NO_WHOLE_CASE_CLOSURE",
+    "blockedAudit": "completion-2026-10-24/BLOCKED_AUDIT_03.json",
+    "pauseSourceThread": "01a164a4-a342-76d3-ab33-65e021ed57db",
+    "priorBlockedAuditRetained": "completion-2026-10-24/BLOCKED_AUDIT.json",
+    "humanWorkIntent": "RESUMED_NEW_DIRECT_HUMAN_VERIFIED_20261025_02",
+    "platformGoalStatusObserved": "paused",
+    "goalResumeLimitation": "update_goal cannot set active; same objective preserved, work resumes under newer verified human mandate without replacement goal.",
+    "latestResumption": "completion-2026-10-24/RESUMPTION_ACK_20261025_02.json",
+    "badgeContextHandoff": "completion-2026-10-24/BADGE_CONTEXT_HANDOFF.json",
+    "priorBlockedAuditIsHistorical": true,
+    "sharedHarnessRequest": "completion-2026-10-24/HARNESS_SLICE_REQUEST.json",
+    "coordinationResumeHandoff": "SENT_ONCE_TO_AUTHORIZED_THEMES_ALLOCATOR",
+    "badgeContextCases": 6,
+    "sourceHarnessCaseMap": "completion-2026-10-24/SOURCE_HARNESS_CASE_MAP.json",
+    "harnessStatus": "ONE_RUN_COMPLETED_EXIT0_SOURCE_ONLY",
+    "directExecutionRequest": "completion-2026-10-24/DIRECT_EXECUTION_REQUEST_20261024.json",
+    "latestAdmissionRefusal": "completion-2026-10-24/ADMISSION_PRECHECK_REFUSAL_01.json",
+    "sourceHarnessResult": "completion-2026-10-24/SHARED_SOURCE_RUN01_RECONCILIATION.json",
+    "sourceHarnessPass": 46,
+    "sourceHarnessFail": 0,
+    "sourceHarnessFields": 138,
+    "sourceSlot": "ENDED_FIRST_RUN_EXIT",
+    "freshEditorQueuePacket": "completion-2026-10-24/FRESH_EDITOR_QUEUE_PACKET_01.json",
+    "E2EReviewQueueRequest": "completion-2026-10-24/E2E_REVIEW_QUEUE_REQUEST_01.json",
+    "originalExpandedLaneDecision": "completion-2026-10-24/ORIGINAL_EXPANDED_LANE_RECONCILIATION_01.json",
+    "latestBlockedAuditHistoricalAfterHumanResume": true,
+    "resumedBlockedAuditCounter": 0,
+    "currentSourceReview": "ACCEPTED_HISTORICAL46_SOURCE_DATA_ONLY",
+    "freshEditorAllocation": "PREPAUSE_FINITE_ALLOCATION_FOUND;CURRENT_ACTIVATION_HELD_ROOT_RECOVERY",
+    "currentGeneralRuntime": {
+      "runId": "49ada80bc494",
+      "candidate": "/private/tmp/letbuyy-shared-completion-20261024-06",
+      "readiness": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/SHARED_READINESS_GATE.json",
+      "exactMGGrant": null,
+      "state": "ROOT_REPORTS_STOPPED;RECOVERY_OWNED_BY_ROOT;NO_OWN_PROBE"
+    },
+    "currentFiniteQueue": "completion-2026-10-24/FRESH_EDITOR_QUEUE_PACKET_01.json",
+    "sourceReviewReceipt": "docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/MARGINALIA_HISTORICAL_SOURCE_REVIEW.json",
+    "localEditorCycle": "completion-2026-10-24/COVERAGE.json#localEditorCycleReview",
+    "partialExpandedCases": 9,
+    "expandedCaseCounts": {
+      "NOT_RUN": 277,
+      "PARTIAL": 9,
+      "PASS": 0,
+      "FAIL": 0
+    },
+    "currentOriginalCaseCounts": {
+      "NOT_RUN": 15,
+      "PARTIAL": 1
+    },
+    "runtimeMaintenance": {
+      "receipt": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/PRESERVATION_STOP_EXECUTION_20261025_01.json",
+      "state": "OWNED_QA_MAINTENANCE_STOPPED_FOR_DATA_PRESERVATION",
+      "noLiveTesting": true,
+      "projectPaused": false
+    },
+    "nextExecutableOriginalCase": "MG-CART-01",
+    "chosenCatalogueStrategy": {
+      "path": "ADDITIVE_FIXTURE_ALTERNATIVE_01.json",
+      "proposalSha256": "1f47553bbc5d2a79f30ffd10b5f7ec494ce875a76cb392369c5b435bdd042d65",
+      "status": "ACCEPT_SAFER_ADDITIVE_FIXTURE_STRATEGY_NOT_CURRENT_EXECUTION",
+      "disposition": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/MARGINALIA_ADDITIVE_STRATEGY_DISPOSITION_02.json",
+      "dispositionSha256": "a59188ae75d919c75701e74b15c07e38ed284602f072a0223dde8437f4ee274d",
+      "acceptedBudget": {
+        "newProducts": 2,
+        "bookVariants": 3,
+        "optionAxes": 1,
+        "optionValues": 3,
+        "newCollections": 1,
+        "newMemberships": 2,
+        "newSitesOrAccountsOrMediaUploads": 0,
+        "existingCatalogueFactStockWrites": 0,
+        "existingDraftOrReleaseContentWritesInProductSetupSlice": 0,
+        "directSqlApiMutationSubstitutes": 0,
+        "payments": "Existing maximum one intended Razorpay Test order plus one distinct COD order, no extra purchase for evidence"
+      },
+      "unacceptedSetupClausesRetained": [
+        "MG-ID-01",
+        "MG-INSTALL-01"
+      ],
+      "draftAndPublicationBudget": "NOT_ADMITTED;no new fork/branch mechanism; product setup0existingdraft/releasecontentwrites",
+      "oldCommonFactClearing": "NOT_CHOSEN;historical/unapplied;no retry",
+      "currentExecution": "HELD_ROOT_QUALIFIED_PRESERVED_RECOVERY_AND_FUTURE_EXACT_SOLE_EDITOR_SLICE",
+      "changesExecuted": 0,
+      "newCasePasses": 0
+    }
+  }
+}

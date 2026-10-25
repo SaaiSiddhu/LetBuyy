@@ -1,0 +1,27 @@
+{
+  "recordedAt": "2026-10-24T17:53:21.640534+00:00",
+  "id": "SPAY03_CAPTURE_AFTER_HANDOFF_EXPIRY",
+  "runId": "20b861608061",
+  "reproduction": "RealPSPcapturedpay_TrpVkfPZLoSlVJafter10minutehandoffexpired;normalbrowserconfirm401;order10002pending;existingcartconvertedandretained",
+  "knownSourceCause": [
+    "services/api-gateway/src/routes/checkout.ts verifyCheckoutHandoff deniesall expiredcapabilities beforeexistingintentread",
+    "services/webhook-service/src/index.ts validcapturecalls canonicalinternalpaymentsconfirm",
+    "services/api-gateway/src/routes/storefront/cart-routes.ts checkoutrecoveryrequires hostedcheckoutcompleted+order_id",
+    "apps/commerce/web/src/lib/checkout/cart-lifecycle.ts correctlyretainsunknownpendingcart"
+  ],
+  "securityConstraints": [
+    "Noexpiryblanketbypass",
+    "NoforgedSDKorwebhooksignatures",
+    "Nodirectorder/payment/ledgerwrites",
+    "Retaincartandpersonalizationdraft",
+    "Onlycanonicalcaptureproofmaysettleexistingboundorder",
+    "Noadditionalorderorledgeroncallbackretry"
+  ],
+  "nextCases": [
+    "VerifyfreshactualprovidersignatureafterhumanSave",
+    "Qualifycanonicalwebhookfirstcapturecompletionandcartrecovery",
+    "Reconcileexistingcapturedpendingattemptthroughsupportedcanonicalflow",
+    "Proveexpired/forged/foreign/mismatch/duplicateattemptsnevercreateextraeffects"
+  ],
+  "status": "OPEN_NO_FIX_CLAIMED"
+}

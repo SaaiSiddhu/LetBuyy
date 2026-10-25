@@ -25,13 +25,26 @@ class AppConfig {
 
   /// Public Merchant origin used to validate pasted invitation destinations.
   static const String adminBaseUrl = String.fromEnvironment(
-    'ADMIN_BASE_URL', defaultValue: 'https://admin.letbuyy.com');
+    'ADMIN_BASE_URL',
+    defaultValue: 'https://admin.letbuyy.com',
+  );
 
   /// Storefront base URL used for merchant preview and live links.
   static const String storefrontBaseUrl = String.fromEnvironment(
     'STOREFRONT_BASE_URL',
     defaultValue: 'https://letbuyy.com',
   );
+
+  /// Resolve the running local storefront while retaining canonical public URLs
+  /// outside local development (including verified custom domains).
+  static String storefrontUrlFor({
+    required String subdomain,
+    required String publicUrl,
+  }) {
+    if (environment != 'local') return publicUrl;
+    final base = storefrontBaseUrl.replaceFirst(RegExp(r'/$'), '');
+    return '$base/store/${Uri.encodeComponent(subdomain)}';
+  }
 
   /// Publishable Razorpay key id only. Secrets must stay server-side.
   static const String razorpayKeyId = String.fromEnvironment('RAZORPAY_KEY_ID');
@@ -55,6 +68,14 @@ class AppConfig {
   static const String mobilePushDeviceToken = String.fromEnvironment(
     'MOBILE_PUSH_DEVICE_TOKEN',
   );
+
+  // Public Android client configuration. Server credentials never belong here.
+  static const pushApiKey = String.fromEnvironment('FCM_ANDROID_API_KEY');
+  static const pushAppId = String.fromEnvironment('FCM_ANDROID_APP_ID');
+  static const pushSenderId = String.fromEnvironment('FCM_SENDER_ID');
+  static const pushProjectId = String.fromEnvironment('FCM_PROJECT_ID');
+  static bool get hasAndroidPushConfiguration =>
+      [pushApiKey,pushAppId,pushSenderId,pushProjectId].every((value)=>value.isNotEmpty && !value.startsWith('SKIP_NEEDS_HUMAN_'));
 
   /// Runtime environment label attached to diagnostics and telemetry.
   static const String environment = String.fromEnvironment(

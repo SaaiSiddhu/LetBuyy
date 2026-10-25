@@ -1,0 +1,369 @@
+{
+  "runId": "786c7515c57a",
+  "operation": "browse",
+  "value": {
+    "siteId": "9e19c664-ae28-4b5e-b9e1-3ebb3c1071ae",
+    "query": {
+      "page": 3,
+      "limit": 20,
+      "search": "Maker",
+      "sort": "price-asc",
+      "compatibility_evidence": "unconfirmed"
+    },
+    "raw": {
+      "data": [
+        {
+          "id": "fae5c8fb-5061-4fa4-9bad-a08a30c39fab",
+          "name": "Maker 8",
+          "slug": "syn-fae5c8fb-5061-4fa4-9bad-a08a30c39fab",
+          "tags": [],
+          "price": 100,
+          "stock": 8,
+          "images": [],
+          "category": "Circuit facets",
+          "metadata": {
+            "electronics": {
+              "kind": "other",
+              "manufacturer": "Maker 8"
+            }
+          },
+          "store_id": "9e19c664-ae28-4b5e-b9e1-3ebb3c1071ae",
+          "variants": [],
+          "is_active": true,
+          "seo_title": null,
+          "created_at": "2026-10-24T15:53:08.72666+00:00",
+          "updated_at": "2026-10-24T15:53:08.72666+00:00",
+          "description": null,
+          "is_featured": false,
+          "product_type": null,
+          "compare_price": null,
+          "seo_description": null,
+          "track_inventory": true,
+          "importer_details": null,
+          "country_of_origin": "India"
+        },
+        {
+          "id": "fbbe7954-fdce-4cb7-ba0a-b28767404906",
+          "name": "Maker 40",
+          "slug": "syn-fbbe7954-fdce-4cb7-ba0a-b28767404906",
+          "tags": [],
+          "price": 100,
+          "stock": 8,
+          "images": [],
+          "category": "Circuit facets",
+          "metadata": {
+            "electronics": {
+              "kind": "other",
+              "manufacturer": "Maker 40"
+            }
+          },
+          "store_id": "9e19c664-ae28-4b5e-b9e1-3ebb3c1071ae",
+          "variants": [],
+          "is_active": true,
+          "seo_title": null,
+          "created_at": "2026-10-24T15:53:09.932882+00:00",
+          "updated_at": "2026-10-24T15:53:09.932882+00:00",
+          "description": null,
+          "is_featured": false,
+          "product_type": null,
+          "compare_price": null,
+          "seo_description": null,
+          "track_inventory": true,
+          "importer_details": null,
+          "country_of_origin": "India"
+        }
+      ],
+      "count": 42,
+      "facets": [
+        {
+          "key": "category",
+          "count": 42,
+          "label": "Circuit facets",
+          "value": "Circuit facets"
+        },
+        {
+          "key": "compatibility_evidence",
+          "count": 42,
+          "label": "unconfirmed",
+          "value": "unconfirmed"
+        },
+        {
+          "key": "country_of_origin",
+          "count": 42,
+          "label": "India",
+          "value": "india"
+        },
+        {
+          "key": "electronics_kind",
+          "count": 42,
+          "label": "other",
+          "value": "other"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 0",
+          "value": "maker 0"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 1",
+          "value": "maker 1"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 10",
+          "value": "maker 10"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 11",
+          "value": "maker 11"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 12",
+          "value": "maker 12"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 13",
+          "value": "maker 13"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 14",
+          "value": "maker 14"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 15",
+          "value": "maker 15"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 16",
+          "value": "maker 16"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 17",
+          "value": "maker 17"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 18",
+          "value": "maker 18"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 19",
+          "value": "maker 19"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 2",
+          "value": "maker 2"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 20",
+          "value": "maker 20"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 21",
+          "value": "maker 21"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 22",
+          "value": "maker 22"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 23",
+          "value": "maker 23"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 24",
+          "value": "maker 24"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 25",
+          "value": "maker 25"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 26",
+          "value": "maker 26"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 27",
+          "value": "maker 27"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 28",
+          "value": "maker 28"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 29",
+          "value": "maker 29"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 3",
+          "value": "maker 3"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 30",
+          "value": "maker 30"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 31",
+          "value": "maker 31"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 32",
+          "value": "maker 32"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 33",
+          "value": "maker 33"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 34",
+          "value": "maker 34"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 35",
+          "value": "maker 35"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 36",
+          "value": "maker 36"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 37",
+          "value": "maker 37"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 38",
+          "value": "maker 38"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 39",
+          "value": "maker 39"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 4",
+          "value": "maker 4"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 40",
+          "value": "maker 40"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 41",
+          "value": "maker 41"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 5",
+          "value": "maker 5"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 6",
+          "value": "maker 6"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 7",
+          "value": "maker 7"
+        }
+      ],
+      "matches": [
+        {
+          "price": 100,
+          "product_id": "fae5c8fb-5061-4fa4-9bad-a08a30c39fab",
+          "variant_ids": []
+        },
+        {
+          "price": 100,
+          "product_id": "fbbe7954-fdce-4cb7-ba0a-b28767404906",
+          "variant_ids": []
+        }
+      ],
+      "measurement_capabilities": {
+        "max_depth_cm": {
+          "available": false
+        },
+        "max_width_cm": {
+          "available": false
+        },
+        "equipment_length": {
+          "available": false,
+          "allowed_units": []
+        }
+      }
+    }
+  }
+}

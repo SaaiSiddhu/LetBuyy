@@ -1,0 +1,1177 @@
+{
+  "research_date": "2026-10-22",
+  "purpose": "Privacy-safe research exhibits, including nested follow-up captures; not application authority",
+  "files": [
+    {
+      "path": "admin-analytics-dom.txt",
+      "bytes": 8424,
+      "sha256": "7e7de530bd7df3e85bf94907aeb982d4a7fe203cb5b3c62dc01d186dcbee6503"
+    },
+    {
+      "path": "admin-analytics-stable-dom.txt",
+      "bytes": 33893,
+      "sha256": "0952a9cc85b292cffd1e1758a9b4b13b40c338c3ab495c37470305318a851f48"
+    },
+    {
+      "path": "admin-analytics-stable-metrics.json",
+      "bytes": 27696,
+      "sha256": "a13b4ce532c9b3df3650319f3554a27bdd5f7c69e0b57a2fa1a90cd380f9648a"
+    },
+    {
+      "path": "admin-analytics-stable.jpg",
+      "bytes": 57410,
+      "sha256": "82ff8d176a11140085d905537eec5516c349a8fa34bd9cb9afc2e1915da97581"
+    },
+    {
+      "path": "admin-customer-address-dialog-dom.txt",
+      "bytes": 13135,
+      "sha256": "d164754f2b9062f542a561cbbde95f21bc18c17f1eff0997fa9030fb9f9ef568"
+    },
+    {
+      "path": "admin-customer-address-dialog.jpg",
+      "bytes": 36700,
+      "sha256": "c956f5c183c7b94b1701ef89e731c017922b108f18ba3880df20debff140ee71"
+    },
+    {
+      "path": "admin-customer-form-dom.txt",
+      "bytes": 5197,
+      "sha256": "cda62b02a928b9bb823d2b9f7af8b8d59c31755054eeffd906f918734960bc54"
+    },
+    {
+      "path": "admin-customer-form-metrics.json",
+      "bytes": 35000,
+      "sha256": "d2f3f6c59182ed574a4b81d8f04f822804608021c09a992f59fe601d0111f75e"
+    },
+    {
+      "path": "admin-customer-form.jpg",
+      "bytes": 45375,
+      "sha256": "38419e7820b7b1ac49e12d0da424000bad3d405fb201958c0717923b69a1603e"
+    },
+    {
+      "path": "admin-customers-dom.txt",
+      "bytes": 5464,
+      "sha256": "0d6fca37575e9df627b6bf5f303d34263694ba8d0c573b1d0b1b0054c9ff92c2"
+    },
+    {
+      "path": "admin-discount-chooser-dom.txt",
+      "bytes": 4764,
+      "sha256": "5c7d394b5fce4dc4cec6744ac0697a14309d8d6f6302be55fd0dc3b6fbfca481"
+    },
+    {
+      "path": "admin-discount-chooser.jpg",
+      "bytes": 19852,
+      "sha256": "5450af7c38490c0eb8d95c7a796f1024fc29e89dbdfba738d9ba306fbcbcc358"
+    },
+    {
+      "path": "admin-discounts-dom.txt",
+      "bytes": 4172,
+      "sha256": "b9e1794cf4286786970879550cf6deef0f2c6ad0f5d3823839f9377a626b892e"
+    },
+    {
+      "path": "admin-domain-connect-dialog-roles.txt",
+      "bytes": 804,
+      "sha256": "3e72ba99d1de4e8044568519b410721fd958fa41f5dd945ba36778180c2b9d03"
+    },
+    {
+      "path": "admin-domain-connect-dialog.jpg",
+      "bytes": 9785,
+      "sha256": "9fe078e4c1fe4f4e20b35c98716b442b8153c26404a99048f177fec7cd1369e3"
+    },
+    {
+      "path": "admin-domains-action-metrics.json",
+      "bytes": 2037,
+      "sha256": "692eefada079ddd41964fb680c3731d31627d1b54309399481376c48563b5290"
+    },
+    {
+      "path": "admin-domains-heading-metrics.json",
+      "bytes": 217,
+      "sha256": "d7fbe7dba746fe79176dcac2dcfc9a64ecf78f754e4b9e7d9e9c206576ef694a"
+    },
+    {
+      "path": "admin-domains-safe.json",
+      "bytes": 29751,
+      "sha256": "9e2fbb0abae4a5ba4ab27d879902c21a499547d20a12bd0b2b956b5823a5d986"
+    },
+    {
+      "path": "admin-domains-upper-content.jpg",
+      "bytes": 27328,
+      "sha256": "035c4f19cadecbed70181d9248c7addeda786920c49c5065477f7c7b8c060887"
+    },
+    {
+      "path": "admin-global-search-dom.txt",
+      "bytes": 6673,
+      "sha256": "ed101ad15bd8fa3ffe71fe4cefdbcebb3ed4856344430e07fdc6e7473206d96c"
+    },
+    {
+      "path": "admin-growth-dom.txt",
+      "bytes": 6516,
+      "sha256": "f7721997e03396c3b170bdf668b089c7450efb3c685f40cd9ed7b5bba53f6535"
+    },
+    {
+      "path": "admin-growth-metrics.json",
+      "bytes": 27696,
+      "sha256": "df0cc130aee4608213f5f3feceb9f65f98275f20c68a5852d0bde5f2ca088a2a"
+    },
+    {
+      "path": "admin-growth.jpg",
+      "bytes": 51849,
+      "sha256": "97a873eb316fe354462df3366afadbb0a5c96e7484d09c2a6e04f4119f7d065e"
+    },
+    {
+      "path": "admin-home-heading-metrics.json",
+      "bytes": 3451,
+      "sha256": "b5b257656eaadeee04946c1a4de4cd49708fe6e9bc40b1ef88ebc4e0f3ee3815"
+    },
+    {
+      "path": "admin-home-motion-styles.json",
+      "bytes": 19811,
+      "sha256": "9830cf26aa6dfccf2226f14fcb1be7457e2c8f8f93d19c0c47c9ed280c04081c"
+    },
+    {
+      "path": "admin-home-motion.json",
+      "bytes": 28384,
+      "sha256": "2c772eef15e44d9c483c8d1b5728f3d99f6f4634296cbd3811e0fd990626646d"
+    },
+    {
+      "path": "admin-home-safe-dom.txt",
+      "bytes": 5764,
+      "sha256": "b469d69007a0782ad1065e43edf0bdd6b429fb314d001efa6028f395f8af4fcc"
+    },
+    {
+      "path": "admin-home-task-cards.jpg",
+      "bytes": 35137,
+      "sha256": "1937993efb5de56a56fb4ed29b2de84860cba4f52ae6b111601603e0e8afe92f"
+    },
+    {
+      "path": "admin-orders-dom.txt",
+      "bytes": 3381,
+      "sha256": "eda7716b91b5101dee4bf28407cd6a3def6ff48aed27805b1772aa61687d90c7"
+    },
+    {
+      "path": "admin-product-form-top-dom.txt",
+      "bytes": 10496,
+      "sha256": "bc5db96db8aa214daa4be79ca7f21aad60ce114d49c45ae4cf22d15e48639751"
+    },
+    {
+      "path": "admin-product-form-top-metrics.json",
+      "bytes": 39368,
+      "sha256": "e1a1a34b8fc73110976f8983f4a32713107b19b4aa53a91a3e5b4ad7ab31b848"
+    },
+    {
+      "path": "admin-product-form-top.jpg",
+      "bytes": 46173,
+      "sha256": "9176e1a9378d6f5ff7e66c165742eb0e802bee867698ce2532301e9b7e80da13"
+    },
+    {
+      "path": "admin-product-html-preview-dom.txt",
+      "bytes": 10851,
+      "sha256": "f26c4934ce249f91f74b253a79de85e3ee87171dd304ac4f2848daab8ab38fa2"
+    },
+    {
+      "path": "admin-product-html-preview-metrics.json",
+      "bytes": 41136,
+      "sha256": "255bc3eec19b8e7f2d74c06196e45cd3f476abc8ce4ee52ab092ad4112ed3393"
+    },
+    {
+      "path": "admin-product-html-preview.jpg",
+      "bytes": 54958,
+      "sha256": "5accc3f0104a12e9a4bef84a92bfa49b755c1f2dc7888717ee98d3b28f846986"
+    },
+    {
+      "path": "admin-products-empty-dom.txt",
+      "bytes": 4552,
+      "sha256": "f505b9d1e82e0eb7621b09640e5d456609ca63f70abdad45b437faa7f0f6ba1d"
+    },
+    {
+      "path": "admin-products-empty-metrics.json",
+      "bytes": 37228,
+      "sha256": "479e5a758a48d3ecef5b26d00d8306dcc965522dd16614374d51c750ea775e92"
+    },
+    {
+      "path": "admin-products-empty.jpg",
+      "bytes": 35876,
+      "sha256": "9c284ec79ef21d4afbe86c93a0166221063b9a2319ecb52b3bacfb75e16b5bdb"
+    },
+    {
+      "path": "admin-reports-search-empty-dom.txt",
+      "bytes": 3817,
+      "sha256": "34e7beca0f873e055b29543410e3efcf7046297aadc46475a5518bc334a846fc"
+    },
+    {
+      "path": "admin-reports-table-dom.txt",
+      "bytes": 33863,
+      "sha256": "24c3b84fd4ec2ce6411c12a2e3c5fc588fbfebbb5ff9af5b8cfc714224cb33bd"
+    },
+    {
+      "path": "admin-reports-table-metrics.json",
+      "bytes": 46080,
+      "sha256": "33775ffad4a73653494375bc820066bb64070613a8f10ed4453903bf38c5f9b7"
+    },
+    {
+      "path": "admin-reports-table.jpg",
+      "bytes": 72742,
+      "sha256": "c593f826de7d6a7ef345d47ff4cc64ab624af75e4d194ea2be37e885f2f1f278"
+    },
+    {
+      "path": "admin-sidebar-collapsed-dom.txt",
+      "bytes": 3404,
+      "sha256": "ea7f566b38631139281d6f1ebcb13a66f2d5d5d36e43712c7edd0656eb3b24ea"
+    },
+    {
+      "path": "admin-sidebar-collapsed-metrics.json",
+      "bytes": 33876,
+      "sha256": "ee6f2b0fd01e820574706ec3f78534966d5b428f2442899c74e498881ade1732"
+    },
+    {
+      "path": "admin-sidebar-collapsed-upper.jpg",
+      "bytes": 17899,
+      "sha256": "f2a155cbd9b9ae0e166889a9185899ead8e80f7c988cc395b5b26ea724b0d7df"
+    },
+    {
+      "path": "admin-sidekick-dom.txt",
+      "bytes": 4097,
+      "sha256": "8a7ea9b35005db175a204b3f7e3397fe5c425ec90f3e94cb7196d036667e881f"
+    },
+    {
+      "path": "admin-sidekick-options-dom.txt",
+      "bytes": 4475,
+      "sha256": "0d72d13e2e2cc5a259df0b24a75472801e6e03c3c6701d5d09c13e4794e4b8f1"
+    },
+    {
+      "path": "admin-sidekick.jpg",
+      "bytes": 10786,
+      "sha256": "48e29d59ded416fe42a0c7f358e30189890e169ca65bdbac460137d461ab918c"
+    },
+    {
+      "path": "admin-store-menu-dom.txt",
+      "bytes": 4925,
+      "sha256": "58bca329eebd188b9be5f73a7d8c7dc10a447e7d56e4f7506251c4f108550589"
+    },
+    {
+      "path": "archived-color-reference.csv",
+      "bytes": 25846,
+      "sha256": "0c889eaab2ba992aac100c4090f13619673aa369fa02fefb2efc9fc06526af53"
+    },
+    {
+      "path": "archived-polaris-token-reference.json",
+      "bytes": 120875,
+      "sha256": "41b0d96a7f8ef847c3ae4999ff563e9093d60cb38129a4f709da22fbb15001d3"
+    },
+    {
+      "path": "archived-source-manifest.json",
+      "bytes": 6411,
+      "sha256": "63dbd3cc8d428192b0eb3ad4a085d7308ecfe9778e3020450d81bd0ec70899d3"
+    },
+    {
+      "path": "channel-agentic-dom.txt",
+      "bytes": 6720,
+      "sha256": "999f1f3c5e6efdd6483bbbcfa89a84fdf0ac1dc18cbfa1ffaa2e33d448062591"
+    },
+    {
+      "path": "channel-online-store-dom.txt",
+      "bytes": 7914,
+      "sha256": "27415447b467524f23c1c499662053037862c6eac149d64d1a9bf193ad5f90a3"
+    },
+    {
+      "path": "color-atlas.png",
+      "bytes": 70863,
+      "sha256": "bd6c8ae250d5f5f12fd493be1472ccb45da659623a68b6aed8312a653416589d"
+    },
+    {
+      "path": "color-atlas.svg",
+      "bytes": 7727,
+      "sha256": "402a07f2b3971c6c4db07c133a75bac52c0e76d2464cdcd611d7c3fdb91f50b8"
+    },
+    {
+      "path": "content-blog-posts-roles.txt",
+      "bytes": 349,
+      "sha256": "3dde516a47ae1ef21e5dcc1c84b32c5b4085c8f934908b6c7be4304ccbb5bc3b"
+    },
+    {
+      "path": "content-files-roles.txt",
+      "bytes": 391,
+      "sha256": "2dd241db0ddc53c764b6404f488417d50657a83b1c59165289ee1ba139aa24d2"
+    },
+    {
+      "path": "content-menus-roles.txt",
+      "bytes": 446,
+      "sha256": "183a88fc938e7a8d291166ebca06048a2650b5ea39db4ebb1362f99c01e4911a"
+    },
+    {
+      "path": "content-metaobjects-roles.txt",
+      "bytes": 1094,
+      "sha256": "cb980b8043a8513d0c6edf7e59ae3bb7d41268c8aaf1cb9b3500697aeb2d9dc0"
+    },
+    {
+      "path": "contrast-pairs.json",
+      "bytes": 2227,
+      "sha256": "5917e31ba76b03a107c5315894bf153fd92a704567dd406d09332f2a9d39d6ad"
+    },
+    {
+      "path": "core-collections-dom.txt",
+      "bytes": 5394,
+      "sha256": "129567e2df569f7c2121168ed907c44f1323f77d01ea8662b98e5c8f521a971c"
+    },
+    {
+      "path": "core-gift-cards-dom.txt",
+      "bytes": 3989,
+      "sha256": "b143213b3502a543cb9ec3bdb9de291ff7bcbfbdd7849a2ea217baba0e328488"
+    },
+    {
+      "path": "core-inventory-dom.txt",
+      "bytes": 4811,
+      "sha256": "646e74e4f51053915904b00254b4b43023306724cd5157638d03f19a084abad5"
+    },
+    {
+      "path": "core-purchase-orders-dom.txt",
+      "bytes": 4424,
+      "sha256": "a31debbdc65c59ee0bac9d0050bf36a2504c392eb3abdf9896f8a50b14541fbc"
+    },
+    {
+      "path": "core-transfers-dom.txt",
+      "bytes": 3821,
+      "sha256": "50bf0f03d630ea1a189b1214bf0d1cf125ea9d47d641f4a6d19306add2237735"
+    },
+    {
+      "path": "create-gift-card-roles.txt",
+      "bytes": 590,
+      "sha256": "530d6f50e1a42db5da1cae2188e608f74f1b1856e67bb747914c7b1f8a945996"
+    },
+    {
+      "path": "create-purchase-order-roles.txt",
+      "bytes": 1003,
+      "sha256": "d2af93e97422313a023b46ff21ed4b9b9f158c66b15fa15f1de91232317c0ca1"
+    },
+    {
+      "path": "create-transfer-roles.txt",
+      "bytes": 663,
+      "sha256": "a4c46dc54216ca7c8de4aee05d34f5af390c6e79c76ec78f9bc1dcfb588ab904"
+    },
+    {
+      "path": "current-admin-contrast.json",
+      "bytes": 1479,
+      "sha256": "aa9ec9f4f44cab5385b9fe68d49315a91c837fa2203968200e5f404817f70275"
+    },
+    {
+      "path": "deep-dive-02/app-privacy-expanded-dom.txt",
+      "bytes": 9953,
+      "sha256": "37676b1610b4cfafbb703e8358a9f906eb8de1833342e7d865801c31bcc8e4f9"
+    },
+    {
+      "path": "deep-dive-02/app-store-detail-header.jpg",
+      "bytes": 43441,
+      "sha256": "71b340d2ee5d794ac4ff9dc8e62c72e8be90ffae7070d2bef890e3fa5b96938a"
+    },
+    {
+      "path": "deep-dive-02/app-store-detail-metrics.json",
+      "bytes": 7606,
+      "sha256": "851d5546ea8c8aa44f8f9029d6fb6aff3836a433c519e26aec4e3deb498aa605"
+    },
+    {
+      "path": "deep-dive-02/app-store-detail-roles.txt",
+      "bytes": 1823,
+      "sha256": "552b01616be2d1eeb2df643cadd093ba3285570d9e0e2017733c15ba1892b051"
+    },
+    {
+      "path": "deep-dive-02/apps-development-dom.txt",
+      "bytes": 6582,
+      "sha256": "5c294bffe91c4fa74068efefba324102aafe31902611680fa3257674e83b6bb7"
+    },
+    {
+      "path": "deep-dive-02/apps-discovery-dom.txt",
+      "bytes": 11950,
+      "sha256": "c30f5eae8b8582b6a4e55ea6788aff2e4a940638fc9dfb0c8fb3f471963d71ad"
+    },
+    {
+      "path": "deep-dive-02/apps-discovery-geometry.json",
+      "bytes": 157,
+      "sha256": "95abad1e1f63d1a5876378881e60f43f837e8f87a84e1204db6707c773862c9a"
+    },
+    {
+      "path": "deep-dive-02/apps-discovery-inner-geometry.json",
+      "bytes": 74432,
+      "sha256": "ddc8b2c80f051580d53dd8a2e844f191c64ff700377b63c746180bfbb69942fd"
+    },
+    {
+      "path": "deep-dive-02/apps-discovery.jpg",
+      "bytes": 90800,
+      "sha256": "b407c015d53556cd8690b02fc4079afb6b07cdeda12c0a0c871d40a218c7ecdb"
+    },
+    {
+      "path": "deep-dive-02/apps-settings-empty-dom.txt",
+      "bytes": 6513,
+      "sha256": "d4857eb38d83f8612d765b51fa8a1a0bab8cc1d8980d958cc2bd985b82812ffe"
+    },
+    {
+      "path": "deep-dive-02/apps-settings-empty.jpg",
+      "bytes": 31204,
+      "sha256": "143d83ff9e16afc5e1e9a3996a811bb14a6fb2f4fdce3066baa062a07300f172"
+    },
+    {
+      "path": "deep-dive-02/apps-settings-metrics.json",
+      "bytes": 4564,
+      "sha256": "352ff65651b6f9ee8126f38782bc188bd01b9ac241682a5b8de25d56cbd1350b"
+    },
+    {
+      "path": "deep-dive-02/apps-sidebar-launcher-dom.txt",
+      "bytes": 9724,
+      "sha256": "a733140db6fdb0e03706250f8f1e97fbd6c6c615b178cd7f89c8e0c05d8f4c84"
+    },
+    {
+      "path": "deep-dive-02/editor-actions-and-embeds-stable-dom.txt",
+      "bytes": 4104,
+      "sha256": "ce8ab3804c477ed3fb7426590288ed236b5a9ecdc345e40a849dec34a5aa4297"
+    },
+    {
+      "path": "deep-dive-02/editor-add-section-initial-dom.txt",
+      "bytes": 11029,
+      "sha256": "48e5c205558bde0cf86d0bb3955c6fd3c999fc5910092a8c8ffb13f7914b173f"
+    },
+    {
+      "path": "deep-dive-02/editor-app-blocks-dom.txt",
+      "bytes": 8840,
+      "sha256": "7a2f5f77b6829329699a5e4020cf74d2334a06798bde6c1c528533f750e5e550"
+    },
+    {
+      "path": "deep-dive-02/editor-app-embeds-dom.txt",
+      "bytes": 3139,
+      "sha256": "9e78f97f542b1304af6cb9e312ea82a69ec264a8f01aa5a1263297fcf3f3bfff"
+    },
+    {
+      "path": "deep-dive-02/editor-block-picker-all-dom.txt",
+      "bytes": 12772,
+      "sha256": "a8d56718557076dd832715024f13298a4bc4a33346de1001a422e1aa5056d1d7"
+    },
+    {
+      "path": "deep-dive-02/editor-block-picker-dom.txt",
+      "bytes": 9935,
+      "sha256": "a2bd954c94de10148c9659295172ecb7ff3bb9a4d136bcda408a0ca5b3d00cd6"
+    },
+    {
+      "path": "deep-dive-02/editor-color-palette-dom.txt",
+      "bytes": 3673,
+      "sha256": "2006319d6a578378024d13dea958918c46c366e21d86b7b636b689e70c90a900"
+    },
+    {
+      "path": "deep-dive-02/editor-color-picker-dom.txt",
+      "bytes": 1285,
+      "sha256": "4ca8fd327d84aaa49d12a06690957a2e31162f88bd22da77a5af4008af22822a"
+    },
+    {
+      "path": "deep-dive-02/editor-color-picker.jpg",
+      "bytes": 10105,
+      "sha256": "0f03573ee5caa6f610e2a29237735877e91caa9fbac99d1484e4472fcf025751"
+    },
+    {
+      "path": "deep-dive-02/editor-color-picker.json",
+      "bytes": 342,
+      "sha256": "343827baf006585a5c84ae40a0b440b1bc28f254f2676a4788772cbba83938b2"
+    },
+    {
+      "path": "deep-dive-02/editor-dynamic-source-dom.txt",
+      "bytes": 1112,
+      "sha256": "c6a2639437020970b14d8be22317ffd12a040867e74af8a6d477a6846477d3e9"
+    },
+    {
+      "path": "deep-dive-02/editor-heading-block-dom.txt",
+      "bytes": 6808,
+      "sha256": "ab4726a8938eca1fc151e3ea2d1365991ab0291e73ce77075237782bba5165b6"
+    },
+    {
+      "path": "deep-dive-02/editor-heading-panel.jpg",
+      "bytes": 31506,
+      "sha256": "cf0ad102e0ddee2163305b4c7d01472b6b67f4df5d89c91523332d8e12071bdd"
+    },
+    {
+      "path": "deep-dive-02/editor-hero-layout.json",
+      "bytes": 33425,
+      "sha256": "2396630be1c8203c6cc1db8c53afcbec4ab5f4261501aa045f1d65b6aaa8fa89"
+    },
+    {
+      "path": "deep-dive-02/editor-hero-panel.jpg",
+      "bytes": 29035,
+      "sha256": "91298a83eeb92a93d004e6dbb7a30d5e939358eb061b2c8bb428804542048cdd"
+    },
+    {
+      "path": "deep-dive-02/editor-hero-settings-dom.txt",
+      "bytes": 8523,
+      "sha256": "54dba0fa724ce225994b1ac468e3a909ade53c125ec0fa6422eacae54f658e52"
+    },
+    {
+      "path": "deep-dive-02/editor-hero-settings-metrics.json",
+      "bytes": 277420,
+      "sha256": "3b6ec005ee5df1e16ae8b74dccf96a3fee66516904fcd9ff52e8416158609d56"
+    },
+    {
+      "path": "deep-dive-02/editor-home-1440-metrics.json",
+      "bytes": 131438,
+      "sha256": "326b982cd89fd15ed4e1f025b0bc9b7b19e9ad82bc7d6a03c7659ef626f61b8b"
+    },
+    {
+      "path": "deep-dive-02/editor-home-dom.txt",
+      "bytes": 3779,
+      "sha256": "8608481cede918e9253a4e87cc46992de85419b7cf2692b7881e51235e74229e"
+    },
+    {
+      "path": "deep-dive-02/editor-keyboard-shortcuts-dom.txt",
+      "bytes": 1746,
+      "sha256": "b8b1e6ccaeab106f5a44149e7764887a8503aa274c70865195292f75760a529a"
+    },
+    {
+      "path": "deep-dive-02/editor-mobile-preview-and-sheet.jpg",
+      "bytes": 1832,
+      "sha256": "32438e0198705efb050a98fc8b383fa4294c63bf47c124c814aec8875839a2d2"
+    },
+    {
+      "path": "deep-dive-02/editor-mobile-preview-content.jpg",
+      "bytes": 1688,
+      "sha256": "a03e80d65a019dc99e002a88f1100c3ea8ef84049838bcc5cf9478744925128d"
+    },
+    {
+      "path": "deep-dive-02/editor-mobile-preview-rect.json",
+      "bytes": 60,
+      "sha256": "3cfd5c694f572663522246a289d701184fff91d236041471810ea08f86b2328b"
+    },
+    {
+      "path": "deep-dive-02/editor-mobile-sheet-expanded.jpg",
+      "bytes": 11025,
+      "sha256": "9563df1209cd719fdf3779bc26eda9bc3df4c66759c2e1a8885439e33b966b93"
+    },
+    {
+      "path": "deep-dive-02/editor-mobile-sheet-geometry.json",
+      "bytes": 14553,
+      "sha256": "b804b0249e0f2ceda76f72952489c5abacf1036758a05b37f9501d4f9e02d9cb"
+    },
+    {
+      "path": "deep-dive-02/editor-mobile-shell-dom.txt",
+      "bytes": 5138,
+      "sha256": "633f8a44cb55279aad44d5f7de80f089f797a088b47156b622b66d4bf53f42f1"
+    },
+    {
+      "path": "deep-dive-02/editor-no-change-check.json",
+      "bytes": 171,
+      "sha256": "50a43c43ef95f66ae0886fadf474d84e6d47a3e464543ba65fb0b39d58427fc0"
+    },
+    {
+      "path": "deep-dive-02/editor-opaque-contrast.json",
+      "bytes": 535,
+      "sha256": "ec94b007535341e731e260418424a90f3ec3aa4afa4eac0c4ce7182514a86f83"
+    },
+    {
+      "path": "deep-dive-02/editor-outline-1440.jpg",
+      "bytes": 14736,
+      "sha256": "17bc518fb8421a3b7894800990dcf19b61ab9c16f440f64d76d612c9d6e3d1c9"
+    },
+    {
+      "path": "deep-dive-02/editor-product-template-empty-dom.txt",
+      "bytes": 4257,
+      "sha256": "0d6ce5c6d1972bd27946940b2a559aac42c49158e9fc98d00c447d1513147883"
+    },
+    {
+      "path": "deep-dive-02/editor-section-css-dom.txt",
+      "bytes": 9042,
+      "sha256": "3e064bb8118705abb5247bbdacf281e9590e815080c51dc299d2c92b406008f8"
+    },
+    {
+      "path": "deep-dive-02/editor-section-picker-dom.txt",
+      "bytes": 2105,
+      "sha256": "1e850bc4a5a733ae27afdd16e5355006293568166f63fb87968853d479030bb0"
+    },
+    {
+      "path": "deep-dive-02/editor-section-picker.jpg",
+      "bytes": 32684,
+      "sha256": "8d2957df91095ad3311c82b300c9f9dd614d75582ad23e22c8d7fc8bf8588915"
+    },
+    {
+      "path": "deep-dive-02/editor-section-picker.json",
+      "bytes": 343,
+      "sha256": "252df6508da6ddfd71b92ffd83572085587046293b4d8e8946b2d742c0e94de1"
+    },
+    {
+      "path": "deep-dive-02/editor-selection-outline.jpg",
+      "bytes": 41078,
+      "sha256": "39205260d421455488259e8bfa588b49f8749d16fcedae59a32da429e63c5f1c"
+    },
+    {
+      "path": "deep-dive-02/editor-template-picker-dom.txt",
+      "bytes": 4915,
+      "sha256": "0429308ddc57026b00229bff20d25ac59c0c7ec862b042368cf2845cafb95847"
+    },
+    {
+      "path": "deep-dive-02/editor-template-picker.jpg",
+      "bytes": 15976,
+      "sha256": "bb3d5ac5518b28bdeb20f333134b09f8ff355fed3b0a9f365a9c8f49e697deb8"
+    },
+    {
+      "path": "deep-dive-02/editor-theme-settings-dom.txt",
+      "bytes": 3527,
+      "sha256": "4803caac0413f308bd3979e499c729cfd01d6b1f26e8ae97c35e11706089894e"
+    },
+    {
+      "path": "deep-dive-02/editor-theme-settings-panel.jpg",
+      "bytes": 23577,
+      "sha256": "79d283027fda712b18178434d8d56bf7b64d99571bd554f5b2a134f1cd3f23d5"
+    },
+    {
+      "path": "deep-dive-02/editor-wide-1920-geometry.json",
+      "bytes": 85930,
+      "sha256": "4f1c2b49859d1023f217ac1cf4a3a0f242de64ee7b14a68dda6a227d99bf6c8b"
+    },
+    {
+      "path": "deep-dive-02/editor-wide-outline.jpg",
+      "bytes": 19372,
+      "sha256": "a589d235c8347efac6b329551a9b5ab59682afa1909534fa4540b46696cb66b3"
+    },
+    {
+      "path": "deep-dive-02/editor-wide-properties.jpg",
+      "bytes": 24849,
+      "sha256": "6fe6be45b51e407171ca296313e88b800852f15ee8ffe6df4700ba76fe7bbda9"
+    },
+    {
+      "path": "deep-dive-02/final-themes-state-ax.txt",
+      "bytes": 7638,
+      "sha256": "b17dd82c129a3475359fff4e699d71e567e4e39cb91d14f9097b7a134fc3c8a2"
+    },
+    {
+      "path": "deep-dive-02/navigation-analytics-samples.json",
+      "bytes": 19146,
+      "sha256": "914703064708446b3b83d256f8985c6dc324a1992586abbfbc40f19d287f4c43"
+    },
+    {
+      "path": "deep-dive-02/navigation-customers-first-dom.txt",
+      "bytes": 4871,
+      "sha256": "de12597ae4c8637cef0a38ac890320caba41a8924fe5a37da91270ba842879ab"
+    },
+    {
+      "path": "deep-dive-02/navigation-customers-first-main.jpg",
+      "bytes": 41110,
+      "sha256": "5a169e550e4481560e095528281771a86320cdc60aa613c8e62a85969227bed4"
+    },
+    {
+      "path": "deep-dive-02/navigation-customers-samples.json",
+      "bytes": 13848,
+      "sha256": "eedc0a123d7fbc787ef87bade2bef06096f82280a71fb07cb7bc18e9c8bf1ccf"
+    },
+    {
+      "path": "deep-dive-02/navigation-progress-style.json",
+      "bytes": 216,
+      "sha256": "7621e7f16eb90cf05dc381336fd57ecd136fdf10a29638baac756116c0e13286"
+    },
+    {
+      "path": "deep-dive-02/navigation-to-themes-early-dom.txt",
+      "bytes": 5991,
+      "sha256": "d864f95b92d6da751a9facf6b7b207b0d8df21084440230eb5ab11b5a75a8f73"
+    },
+    {
+      "path": "deep-dive-02/navigation-to-themes-early.json",
+      "bytes": 850,
+      "sha256": "5e5f19a1b6ca61d3dd3db40303b388ce41c170e1c743a60e5abb3782117762fc"
+    },
+    {
+      "path": "deep-dive-02/navigation-top-strip.jpg",
+      "bytes": 1237,
+      "sha256": "15599efb0715212e9358c536c416d16cd78c626f617f3a7dcd0dee17d78fe695"
+    },
+    {
+      "path": "deep-dive-02/observation-notes.json",
+      "bytes": 2710,
+      "sha256": "49fd0a9ff24ca0916ce50bb74813cc332e3edd15890fd10e0813459d434b0655"
+    },
+    {
+      "path": "deep-dive-02/online-store-channel-management-dom.txt",
+      "bytes": 9413,
+      "sha256": "a02c6a93ab7eef70b66d4daea40c4cb23735ab84aa3c8eedbf72ba2ac4584315"
+    },
+    {
+      "path": "deep-dive-02/online-store-channel-management-metrics.json",
+      "bytes": 39251,
+      "sha256": "c81c167b39f8734d3a6d9b0a1306a19e67ac7672d14c5e97ebb4380fe10ebd63"
+    },
+    {
+      "path": "deep-dive-02/online-store-channel-management.jpg",
+      "bytes": 62883,
+      "sha256": "001e068a4b693c90b88b8cb03f725f9c7fc13fb45f4a02cd521f71101cb4a94d"
+    },
+    {
+      "path": "deep-dive-02/settings-exit-observation.json",
+      "bytes": 398,
+      "sha256": "1f01523bd46860507d110f09f024bf3fca56c5567d85644c3c3322886c0a7b85"
+    },
+    {
+      "path": "deep-dive-02/theme-code-editor-dom.txt",
+      "bytes": 4720,
+      "sha256": "37a0b644d0f35b2e85bf1552c02231e699ea3f241972635879440891e5df937d"
+    },
+    {
+      "path": "deep-dive-02/theme-code-editor-explorer.jpg",
+      "bytes": 10619,
+      "sha256": "ecf44c53cc41be92d72a693eb8e6bd078a497db4ed6dfba8e4c1df71fbd1c32b"
+    },
+    {
+      "path": "deep-dive-02/theme-code-editor-geometry.json",
+      "bytes": 8400,
+      "sha256": "e25e12626ded29608d7c1ae3d95fc2d40b082e54df63290e385fd0bea99d33f2"
+    },
+    {
+      "path": "deep-dive-02/theme-content-filter-dom.txt",
+      "bytes": 11018,
+      "sha256": "068ae04d5cde70fae290c5f57d21c525e148a64f6176ce7a10a30bf060a703dd"
+    },
+    {
+      "path": "deep-dive-02/theme-default-content-editor-dom.txt",
+      "bytes": 11611,
+      "sha256": "5395ce55c563efb58bf754713423793dd919a7278ccbeb6594ad315de632f59c"
+    },
+    {
+      "path": "deep-dive-02/theme-rename-dialog-dom.txt",
+      "bytes": 2475,
+      "sha256": "250c8e0275e4b1e371e32c608b9265108f77420f693468de36cb37811e799d74"
+    },
+    {
+      "path": "deep-dive-02/theme-rename-dialog.jpg",
+      "bytes": 6592,
+      "sha256": "f7dd4504b29b924dd5f6737e5dc16eb50561e5ea07569487424b55c788b4154e"
+    },
+    {
+      "path": "deep-dive-02/theme-rename-dialog.json",
+      "bytes": 446,
+      "sha256": "d2b148ac46b09762e05ec4baa2cb5ddf8edfd6cfcf2828524ba241e4a16db2ab"
+    },
+    {
+      "path": "deep-dive-02/theme-setting-animations-dom.txt",
+      "bytes": 4046,
+      "sha256": "48c52fb880fdfc66cab35093a99fc828913356999d0e63eff17f34d1d610977f"
+    },
+    {
+      "path": "deep-dive-02/theme-setting-badges-dom.txt",
+      "bytes": 5136,
+      "sha256": "e8c4a73e71f0a9bfb1b6b4d189d28bab0ce3a67c1ef9548f0809006c92bca07f"
+    },
+    {
+      "path": "deep-dive-02/theme-setting-buttons-dom.txt",
+      "bytes": 5970,
+      "sha256": "40a551779e2a3fac141039a211be06b5541c1627b79dd062e5e92655027a4161"
+    },
+    {
+      "path": "deep-dive-02/theme-setting-cart-dom.txt",
+      "bytes": 5219,
+      "sha256": "3cf25c80778019256081038a0baee997ba29a40d50f6a97f4665d383db75f1aa"
+    },
+    {
+      "path": "deep-dive-02/theme-setting-custom-css-dom.txt",
+      "bytes": 3866,
+      "sha256": "ff758b7702291f911f60b6545a3d847f5fefb4b99cb0b7b460f019cfb1b63278"
+    },
+    {
+      "path": "deep-dive-02/theme-setting-drawers-dom.txt",
+      "bytes": 4196,
+      "sha256": "53ecd83ba779822683c6147d5921e5ba1caebce1cd56faa75e9e52ad3b30ce64"
+    },
+    {
+      "path": "deep-dive-02/theme-setting-icons-dom.txt",
+      "bytes": 3739,
+      "sha256": "6688cfa8312c3120b7d669d4d1f8d4053fd8a268350f7904191983c1855faf18"
+    },
+    {
+      "path": "deep-dive-02/theme-setting-input-fields-dom.txt",
+      "bytes": 4650,
+      "sha256": "ed3cfd8b9e636d819cb3af1ddab9ccaf8ec76b49a06b63860ecdb7c0e73bdcaf"
+    },
+    {
+      "path": "deep-dive-02/theme-setting-logo-and-favicon-dom.txt",
+      "bytes": 4505,
+      "sha256": "e4a0f99ccc2146766e53f291daa01507693e83039c287023daf682d08b9a85be"
+    },
+    {
+      "path": "deep-dive-02/theme-setting-page-dom.txt",
+      "bytes": 3958,
+      "sha256": "0965ad232b23dc10fe3d6cbd3cdfa1eff6fb1785da49d6d43ff482bae1387ca3"
+    },
+    {
+      "path": "deep-dive-02/theme-setting-popovers-and-modals-dom.txt",
+      "bytes": 4646,
+      "sha256": "a27816aa6ceb81c7da584b2d81aa9b58bd9c22b77b643df6b88c1c92ebeec30b"
+    },
+    {
+      "path": "deep-dive-02/theme-setting-prices-dom.txt",
+      "bytes": 3808,
+      "sha256": "8f9fded02cd8afbea068f448db42bc7ce31474cbe898e43a3d983488e0521d68"
+    },
+    {
+      "path": "deep-dive-02/theme-setting-product-cards-dom.txt",
+      "bytes": 4266,
+      "sha256": "5966377985fd562a8f2a588572f9c0cfee7ea6d4e90a91e3931d437480a3990a"
+    },
+    {
+      "path": "deep-dive-02/theme-setting-search-dom.txt",
+      "bytes": 4133,
+      "sha256": "b4bcf384a98b08ff14af44dc0e7f7397dc531493d066a82e6baff880ed161e6b"
+    },
+    {
+      "path": "deep-dive-02/theme-setting-swatches-dom.txt",
+      "bytes": 4190,
+      "sha256": "2b55ad966aa8a0a8c7261fb94e0e1060e3d0c345f7b170b9e54ad69a9f93ea4d"
+    },
+    {
+      "path": "deep-dive-02/theme-setting-theme-style-dom.txt",
+      "bytes": 3999,
+      "sha256": "47273cc7218c58003ba0bf4fd686991b98b150d82bc086e872e50be86c69bd62"
+    },
+    {
+      "path": "deep-dive-02/theme-setting-typography-dom.txt",
+      "bytes": 12074,
+      "sha256": "f104633d59bc170c1f7c8ccac97b340107ff449d3a562a7762739c078a99109a"
+    },
+    {
+      "path": "deep-dive-02/theme-setting-variant-pickers-dom.txt",
+      "bytes": 5187,
+      "sha256": "07664f2cf901773be65cf53ce34aee82ccd0dcb129db855679c781e6414379e2"
+    },
+    {
+      "path": "deep-dive-02/theme-upload-dialog-dom.txt",
+      "bytes": 483,
+      "sha256": "98cb0bccaa9d7ac8bfa239ec4c817a9b3c2279d25b18619e5f2e340a403206ea"
+    },
+    {
+      "path": "deep-dive-02/theme-upload-dialog.jpg",
+      "bytes": 5827,
+      "sha256": "8bd572f1cd2af6dc94e1e05006a4c8d6ce9294e3ac5a1764722b4fcba9a41858"
+    },
+    {
+      "path": "deep-dive-02/themes-actions-dom.txt",
+      "bytes": 9025,
+      "sha256": "b87c4867e3aa498c32d6101f35ce3a631618b65668654b9918247194b65b72d3"
+    },
+    {
+      "path": "deep-dive-02/themes-channel-actions-dom.txt",
+      "bytes": 8183,
+      "sha256": "549f0fdc0031bb8edd4cfadcc8da4c0645e445e1aa5a2961e32d6bdee79b4ec8"
+    },
+    {
+      "path": "deep-dive-02/themes-current-preview-probe.png",
+      "bytes": 2968,
+      "sha256": "a6629d2e95a5c61c69a4aa15af849b6f28474ae6196fab9b58fdf06c7e0c3bb6"
+    },
+    {
+      "path": "deep-dive-02/themes-discovery-lower.jpg",
+      "bytes": 67240,
+      "sha256": "923b625ac6e6c191d3400c7d5f1a5e10980d2464864cbc2e5a0bb1306f72fd42"
+    },
+    {
+      "path": "deep-dive-02/themes-discovery-viewport.json",
+      "bytes": 49,
+      "sha256": "d746eaea7ca4d112bc69914ec72e4e8eea002eef045b53f991949350a55a1633"
+    },
+    {
+      "path": "deep-dive-02/themes-import-menu-dom.txt",
+      "bytes": 8162,
+      "sha256": "9e944e72bb6feeccefa3dc1685391071e910762e940b4786a9dd78600693c9d3"
+    },
+    {
+      "path": "deep-dive-02/themes-mobile-discovery.jpg",
+      "bytes": 14951,
+      "sha256": "b68c12edb35a2a2c8f3a1a611f344898721b695116f2a02a16206afad8f0c45b"
+    },
+    {
+      "path": "deep-dive-02/themes-page-1440-metrics.json",
+      "bytes": 30692,
+      "sha256": "f7279a6443390552aae5b116b9798471d7e89f98ede751d12841dc21ed43fc23"
+    },
+    {
+      "path": "deep-dive-02/themes-page-390-metrics.json",
+      "bytes": 29480,
+      "sha256": "c9d369380e51fb642afb2cb3a2d0dcdc874825f4d960e1d74987d02871ac8068"
+    },
+    {
+      "path": "deep-dive-02/themes-page-dom.txt",
+      "bytes": 7926,
+      "sha256": "2aa32ecadde2080ceeb9d70ad28ce3566f2af5e861fc5dba4ef98a6582c77892"
+    },
+    {
+      "path": "deep-dive-02/themes-page-frame-metrics.json",
+      "bytes": 60155,
+      "sha256": "498244403322a776c44cea25379e4f1a55df69587ee7a0473678d9111bad0b4b"
+    },
+    {
+      "path": "deep-dive-02/themes-preview-and-grid-ancestry.json",
+      "bytes": 5465,
+      "sha256": "3890261323e1da984e3fee1d5e2251b835641b3974c83ddeb9feeb9fd3fd1aa1"
+    },
+    {
+      "path": "deep-dive-02/themes-preview-art.jpg",
+      "bytes": 5473,
+      "sha256": "faa0f6abeb4232aff7948e733e6fde1462e95d279151d85e4d7c83b1b136a8d7"
+    },
+    {
+      "path": "deep-dive-02/themes-visibility-controls-dom.txt",
+      "bytes": 8307,
+      "sha256": "506eab81822c90a645abc2ea99e46f907fb092728c13764c0536ba5e19529372"
+    },
+    {
+      "path": "live-admin-css-variables.json",
+      "bytes": 13769,
+      "sha256": "672895bdbc3e1599c151b92b753dd92127a2d61dca90df57757c4f2336e51169"
+    },
+    {
+      "path": "live-admin-role-tokens.json",
+      "bytes": 1736,
+      "sha256": "3f0afd5e9aa9d6bf54a36a700bd4d99c4bd2488e0c3c2fa28b14ab5648cf8c10"
+    },
+    {
+      "path": "login-1440.jpg",
+      "bytes": 33151,
+      "sha256": "0926d0161adbf88c913e935802dd3871a023f7c1c1bba1af7745bb5bfbb947e0"
+    },
+    {
+      "path": "login-711.jpg",
+      "bytes": 31379,
+      "sha256": "4c7601b17b840b8531b80aefde8f726d769a806ae94d73653d668bac65972b1b"
+    },
+    {
+      "path": "login-711.json",
+      "bytes": 28908,
+      "sha256": "6a279b93b5cdf38c3066b70f542ca030a148d32462e94bbbe84806d1d90161ef"
+    },
+    {
+      "path": "login-empty-error-1440.jpg",
+      "bytes": 35414,
+      "sha256": "9b6e0e6c53104197e3c5bc5aacd5b74a3b1d5261c72c87490ceac8a79b9c48ee"
+    },
+    {
+      "path": "login-empty-error.json",
+      "bytes": 2495,
+      "sha256": "6f62aed37d943c844f4feff5b6a0c6e62f205885ec64da14676b7f8e3686c5e1"
+    },
+    {
+      "path": "login-error-390.jpg",
+      "bytes": 28680,
+      "sha256": "8540f5e0f854b0b1263c3f8277dce79831d29a521ff5516c3eb65e779573ec47"
+    },
+    {
+      "path": "login-returning-390.jpg",
+      "bytes": 26918,
+      "sha256": "88ff4008c5e2a864a00e6dea902b93015aa23b9e6656106547adf6e38b5c9d9b"
+    },
+    {
+      "path": "login-returning-390.json",
+      "bytes": 14180,
+      "sha256": "d97aeced655ff4f85b5582fdc07850c1bcf7e48bf6c0eee1d24fd226e21ab6c6"
+    },
+    {
+      "path": "product-ai-preview-dom.txt",
+      "bytes": 10891,
+      "sha256": "28dfd73588949a4fe4eaa34a8b462731740567bc5d9123f7d8afee2354a33a44"
+    },
+    {
+      "path": "product-ai-probe.json",
+      "bytes": 605,
+      "sha256": "3ad64d2aa34c4ad73a7e2118f6ce815c412e664c1bb52e06c9ef9c91b9034254"
+    },
+    {
+      "path": "product-editor-benign-html-dom.txt",
+      "bytes": 10851,
+      "sha256": "f26c4934ce249f91f74b253a79de85e3ee87171dd304ac4f2848daab8ab38fa2"
+    },
+    {
+      "path": "product-editor-toolbar-dom.txt",
+      "bytes": 10790,
+      "sha256": "bd2c3bdcd0477ff70e1696f26bfda2af8d62186768ae1f10ac4f163f1f1db49b"
+    },
+    {
+      "path": "route-observation-timings.json",
+      "bytes": 926,
+      "sha256": "4ae5c264c7dfcb62c3555648eb081c840db6eaaf515e71d1ef61b19dc4bf0496"
+    },
+    {
+      "path": "settings-apps-roles.txt",
+      "bytes": 575,
+      "sha256": "80d9c1f075f1e8af9f55aa65867cf622b806e3a8470faeefc5fd5a8e71ce422b"
+    },
+    {
+      "path": "settings-billing-controls.json",
+      "bytes": 937,
+      "sha256": "aa5fda06b5018bf2831fe22089c8983b59bcefc0b8d9a98ae7c0dc68280a6bee"
+    },
+    {
+      "path": "settings-billing-roles.txt",
+      "bytes": 762,
+      "sha256": "3eb218cdedff92e4bc56268663d9f1eddcb2ffa9c7ed11da633a52d638e00960"
+    },
+    {
+      "path": "settings-checkout-roles.txt",
+      "bytes": 1585,
+      "sha256": "7808a30eb74f830e35ba3e2b2b723cf1f348180d379af8b4c7930531b33118f9"
+    },
+    {
+      "path": "settings-customer-accounts-roles.txt",
+      "bytes": 663,
+      "sha256": "d363bc316f536debc129f02d9db3cdfc4e5e94a8527ddf962d836fb0c0cd153a"
+    },
+    {
+      "path": "settings-customer-events-roles.txt",
+      "bytes": 695,
+      "sha256": "11444557bd03f7a93cfeb86a1d6637d4778235cdd8da41f870eaf557c4f82efc"
+    },
+    {
+      "path": "settings-customer-privacy-roles.txt",
+      "bytes": 774,
+      "sha256": "73fabca33605c0364431cac86b8362334692a52f6f8b4219a440cd2f84e1fd48"
+    },
+    {
+      "path": "settings-domains-roles.txt",
+      "bytes": 659,
+      "sha256": "9cc1acbf6b23d71d834b5b8ea1118a5f99d2641fb1c9599dcaeb6cbe0ccb8491"
+    },
+    {
+      "path": "settings-general-controls.json",
+      "bytes": 1019,
+      "sha256": "4382fba93c83ede09d7c10afca65cfdaafda0e333072c96ff526a0463d99d391"
+    },
+    {
+      "path": "settings-general-roles.txt",
+      "bytes": 1465,
+      "sha256": "3a87fdcbde032675b4d8cf61df68453d40d4c963d92f7f8cadd99fd5fcae0d32"
+    },
+    {
+      "path": "settings-languages-roles.txt",
+      "bytes": 517,
+      "sha256": "1efaa5ad84d9d786539636a029462a62cf2a3f0d466839dab8eb636b790b9234"
+    },
+    {
+      "path": "settings-locations-roles.txt",
+      "bytes": 561,
+      "sha256": "7f0b0e4329b421027697ac1518039f18f22b0f9f7d54a89d22ecedf6c2f32cae"
+    },
+    {
+      "path": "settings-markets-roles.txt",
+      "bytes": 764,
+      "sha256": "2ff4aa1cc57a2260708c56b6e0e370b672d8f4c19a7718461b672a8604ca3fe8"
+    },
+    {
+      "path": "settings-metafields-and-metaobjects-roles.txt",
+      "bytes": 1366,
+      "sha256": "7a3ab34f2601d9b7940cfdeba87fdeea9a183aaf723e29bcb01dc958bb506def"
+    },
+    {
+      "path": "settings-notifications-roles.txt",
+      "bytes": 534,
+      "sha256": "f2ad7724c02dc49af514cf9efbb9fe6436e18d4843c242d8497a8a90bcf4c4a4"
+    },
+    {
+      "path": "settings-payments-controls.json",
+      "bytes": 553,
+      "sha256": "5b92c613c968be3ca9226cc91af40968765061d97331f1f3d0e96639b6098e0c"
+    },
+    {
+      "path": "settings-payments-roles.txt",
+      "bytes": 705,
+      "sha256": "f8997f5150dde201b1bba46a8e311075423eb0781814a98f57839c0abf7959cf"
+    },
+    {
+      "path": "settings-plan-controls.json",
+      "bytes": 256,
+      "sha256": "b6b41dfc7bb3d14f6b7b7dee83ca760668d30ad46a956869f9cbb58b684eb48d"
+    },
+    {
+      "path": "settings-plan-roles.txt",
+      "bytes": 361,
+      "sha256": "643d339a56cbfd659f5fc62992d3608d2becb406a1f6ff17ab6a6818adbd0d43"
+    },
+    {
+      "path": "settings-policies-roles.txt",
+      "bytes": 617,
+      "sha256": "513c5cdab5a15b1c987ced8f15e5d8ed485584141e5ce5f6649acb5d27411731"
+    },
+    {
+      "path": "settings-sales-channels-roles.txt",
+      "bytes": 470,
+      "sha256": "ce4bfa3455bf380df479b8043c1accd19bf0123d94a866681e80a35224182639"
+    },
+    {
+      "path": "settings-shipping-and-delivery-roles.txt",
+      "bytes": 1268,
+      "sha256": "391efb8a04d857daeb9120356d0b79a457450c0e49ed5a63afa812f95e88ea59"
+    },
+    {
+      "path": "settings-taxes-and-duties-roles.txt",
+      "bytes": 1457,
+      "sha256": "b34bd308fdc7bb138b5424105d8a3839910754e148a32ffc29d1d4cbd24551cf"
+    },
+    {
+      "path": "settings-users-controls.json",
+      "bytes": 687,
+      "sha256": "96f7425a32600313f59ff7b3c74b7c2506006b744248bfd06b4798aa2dd7a9ef"
+    },
+    {
+      "path": "settings-users-roles.txt",
+      "bytes": 449,
+      "sha256": "14bd710ae229b01de83a0afe43acb9c8d545b8e0b6e0ab662ef3faf6b9770d34"
+    },
+    {
+      "path": "signup-1440-deep.json",
+      "bytes": 15615,
+      "sha256": "cc1ec05dd40cfdaef19cafbfb74a71f3418be688ff5024efe5115227db711bdd"
+    },
+    {
+      "path": "signup-1440.jpg",
+      "bytes": 37249,
+      "sha256": "acb992cdd30d6101965185e1f531c95929f37648014409bf652d475b7b75f7c6"
+    },
+    {
+      "path": "signup-1440.json",
+      "bytes": 5024,
+      "sha256": "f589c1c3a563a73fa88ac6f2e10714d92ba28b71be7b89f5fccfff5962652486"
+    },
+    {
+      "path": "signup-390.jpg",
+      "bytes": 27024,
+      "sha256": "fab0e66774f7504edb2bde115200b73d8ef5170b9942227a45feb1ea141537c5"
+    },
+    {
+      "path": "signup-390.json",
+      "bytes": 15575,
+      "sha256": "43f7f49e5b6991e73127a78358bc17814b7d6b9977b57ed9d87991c58f40c512"
+    },
+    {
+      "path": "whatsapp-login-1440.jpg",
+      "bytes": 36872,
+      "sha256": "4ea26c37612b42295333c913c00b77a280925454a8d49a836e46be409e33d380"
+    },
+    {
+      "path": "whatsapp-login-1440.json",
+      "bytes": 9458,
+      "sha256": "90b997b523345b2b100f69cf2a36f213522eb8a2548d3e1f52078f1344e38e16"
+    },
+    {
+      "path": "whatsapp-login-390.jpg",
+      "bytes": 24636,
+      "sha256": "a36e4905125a27015d522f0539313145be2c837abcc744213a6c92a0f7a6a1cd"
+    },
+    {
+      "path": "whatsapp-login-390.json",
+      "bytes": 10203,
+      "sha256": "3a5c5c9c05336bebafb7e38d0268ab564dd8daed4905decb22112a4bd63c5e3f"
+    },
+    {
+      "path": "whatsapp-signup-1440.jpg",
+      "bytes": 39206,
+      "sha256": "b52a81cfdbe3b39a79436f556241b3332b8d7fe71af8884867a5d8d4802675d0"
+    },
+    {
+      "path": "whatsapp-signup-1440.json",
+      "bytes": 10330,
+      "sha256": "8a6bb01ce4cc5c250c9bdf3de8e2cfe6fd0feb30198984e17b88e516a47bc953"
+    },
+    {
+      "path": "whatsapp-signup-390.jpg",
+      "bytes": 25733,
+      "sha256": "800cf171d5b53f01632bcd0b6e4b2ed6bca62161a0d6555a77a9447fb00da954"
+    },
+    {
+      "path": "whatsapp-signup-390.json",
+      "bytes": 11075,
+      "sha256": "69dd74b5ed6113bc2d5ca7f6a34bfa0a29200413e5e0045a6524620218631a9b"
+    }
+  ],
+  "file_count": 234
+}

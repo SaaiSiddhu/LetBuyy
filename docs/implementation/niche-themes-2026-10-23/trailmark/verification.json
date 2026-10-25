@@ -1,0 +1,90 @@
+{
+  "theme": "Trailmark",
+  "version": "2.0.0",
+  "status": "owned_checks_pass_shared_lifecycle_pending",
+  "focusedTests": {
+    "domain": 6,
+    "theme": 10,
+    "productEditor": 8,
+    "variantEditor": 7,
+    "total": 31
+  },
+  "boundedEditorAndTestTypecheck": "pass",
+  "baselineBrowser": {
+    "responsiveCaptures": 32,
+    "stressPresentationCases": 6,
+    "scope": "Pinned baseline; final affected states qualified by supplemental"
+  },
+  "supplemental": {
+    "status": "pass",
+    "cases": 7,
+    "bodyOverflow": 0,
+    "documentOverflow": 0,
+    "visibleElementOverflow": 0,
+    "actualTextBoundsOverflow": 0,
+    "brokenImages": 0,
+    "smallFormControls": 0,
+    "headerFocusContrast": 13.458230121416461,
+    "closedNavSkipped": true,
+    "glyphEvidence": "Loaded Inter400/600/700/800 faces; actual Range bounds and Canvas glyph probes distinguish Inter fromArial fallback; close-up PNGs visually checked",
+    "sourceChecks": [
+      {
+        "file": "apps/commerce/web/src/app/store/[subdomain]/liquid-theme.css",
+        "sameAsCapture": true
+      },
+      {
+        "file": "packages/theme-engine/src/trailmark-theme.ts",
+        "sameAsCapture": true
+      },
+      {
+        "file": "packages/theme-engine/src/trailmark-styles.ts",
+        "sameAsCapture": true
+      },
+      {
+        "file": "packages/theme-engine/src/trailmark-discovery.ts",
+        "sameAsCapture": true
+      },
+      {
+        "file": "packages/theme-engine/src/theme-renderer.ts",
+        "sameAsCapture": true
+      },
+      {
+        "file": "packages/theme-engine/src/first-party-theme-catalog.ts",
+        "sameAsCapture": true
+      },
+      {
+        "file": "packages/commerce-core/src/trailmark-facts.ts",
+        "sameAsCapture": true
+      },
+      {
+        "file": "packages/commerce-core/src/product-fact-presentation.ts",
+        "sameAsCapture": true
+      },
+      {
+        "file": "apps/commerce/web/src/lib/theme-engine/product-liquid-drop.ts",
+        "sameAsCapture": true
+      },
+      {
+        "file": "apps/commerce/web/src/lib/theme-engine/liquid-page-assembly.ts",
+        "sameAsCapture": true
+      },
+      {
+        "file": "apps/commerce/web/src/lib/demo/trailmark-demo.ts",
+        "sameAsCapture": true
+      }
+    ]
+  },
+  "resourceLease": {
+    "port": 43278,
+    "browser": "closed; process exited0",
+    "serverPid": 5208,
+    "server": "stopped; process exited0",
+    "slot": "explicitly released to coordinator"
+  },
+  "notCertified": [
+    "integrated Next font delivery and hydration",
+    "variant parent durable save/readback/order snapshot",
+    "full install/editor/publish/checkout/buyer/security lifecycle",
+    "production/provider/performance"
+  ]
+}

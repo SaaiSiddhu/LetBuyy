@@ -1,0 +1,9 @@
+{
+  "recordedAt": "2026-10-24T03:32:56.202Z",
+  "runId": "936e5f577646",
+  "maximumAttempts": 1,
+  "commandSha256": "6eaa155e8af4eb6267955f022aed7507336899b8279f404659043e405954795b",
+  "selector": "version=14 against current15",
+  "currentVersion": 15,
+  "stockOmitted": true
+}

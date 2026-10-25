@@ -1,0 +1,3457 @@
+{
+  "scope": "Actual explicit v2 factory and trusted demo dispatcher → actual app section binder → public product mapper → LiquidRenderer → canonical assembly and unchanged storefront CSS. Owned helper is bound for no-network UI only; synthetic base eligibility is not canonical variant/cart hydration. No Next routing, auth, API, DB, order or purchase claim.",
+  "context": "Only margin/input-font reset, approved local Inter assets and existing app layout variable context. No repair stylesheet. Hindi expansion is UI stress; it does not expand the Latin-name product capability.",
+  "generatedAt": "2026-10-23T07:25:40.694Z",
+  "sources": [
+    {
+      "file": "apps/commerce/web/src/app/store/[subdomain]/liquid-theme.css",
+      "sha256": "f7f31610c85bf37430fe96fe5cbde8366d3fd9b30e0e43fe7ebfa0ecf3d2f24b"
+    },
+    {
+      "file": "packages/theme-engine/src/madeyours-theme.ts",
+      "sha256": "81e23b9d0ea149050ff8968777263126920036abadeb06c1a7f4aaf38f850097"
+    },
+    {
+      "file": "packages/theme-engine/src/madeyours-styles.ts",
+      "sha256": "5253e57fcb217526d7bf46e8ddc54b921a5f64ec42f69c7c0dae177eadb5ee6e"
+    },
+    {
+      "file": "packages/theme-engine/src/madeyours-discovery.ts",
+      "sha256": "ef00d65baaba0d7fcef3eb0534d9986868246e89998de7190fd8e71f903862ea"
+    },
+    {
+      "file": "packages/theme-engine/src/theme-renderer.ts",
+      "sha256": "f5ed1b555d293089f6560b42ce4a916a539feaf830d237b2adfcfaa369b375d6"
+    },
+    {
+      "file": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "sha256": "88e4189bf1703a938c9cabac6e2f5ba7bc78ddeeeafc2b45b780579becb08e14"
+    },
+    {
+      "file": "packages/commerce-core/src/madeyours-facts.ts",
+      "sha256": "4428e76412e4189fe09815d18b9c2d7d8643c95f01822d783e536a6304b22813"
+    },
+    {
+      "file": "packages/commerce-core/src/product-fact-presentation.ts",
+      "sha256": "17f291e91a8888d943363643f2f203ec52b95d308b999865fd9df6cd91947084"
+    },
+    {
+      "file": "apps/commerce/web/src/lib/demo/madeyours-demo.ts",
+      "sha256": "dde879421819cdacea741a440a905d8f03216a20d99f1346dd4045d5e2784af6"
+    },
+    {
+      "file": "apps/commerce/web/src/lib/demo/catalog-demo-dispatch.ts",
+      "sha256": "da96f8ef94d79e956a433dbe0eee17726ee99e702a3226561c3f8aeb917782a5"
+    },
+    {
+      "file": "apps/commerce/web/src/lib/theme-engine/data-binding-engine.ts",
+      "sha256": "8a2bb2a9c650704ba7c70c31d0795f435df126d28247bf287ee44f671a068975"
+    },
+    {
+      "file": "apps/commerce/web/src/lib/theme-engine/product-liquid-drop.ts",
+      "sha256": "431a91090afd25f2d21b3fe954d5404cef8835422e7ca4325328359e2c68913d"
+    },
+    {
+      "file": "apps/commerce/web/src/lib/theme-engine/liquid-page-assembly.ts",
+      "sha256": "e87118f925cca189a94f7c934c7270175305842b210cbf5ea3bf5bec785ea765"
+    },
+    {
+      "file": "apps/commerce/web/src/lib/theme-engine/madeyours-personalization.ts",
+      "sha256": "ea47cfea00f91bd0ab12731cf4ce7ef06ed23b26715920979417362f5bb0f8dc"
+    }
+  ],
+  "results": [
+    {
+      "scene": "home",
+      "device": "desktop",
+      "kind": "baseline",
+      "width": 1440,
+      "height": 1000,
+      "documentWidth": 1440,
+      "bodyWidth": 1440,
+      "bounds": [],
+      "textBounds": [],
+      "contrastFailures": [],
+      "smallTargets": [],
+      "closedNavigation": [
+        {
+          "trigger": "Search",
+          "visible": false,
+          "tabbableDescendants": 0
+        }
+      ],
+      "brokenImages": [],
+      "media": [
+        {
+          "src": "/theme-assets/madeyours/v2/hero.webp",
+          "width": 1280,
+          "height": 853
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/block.webp",
+          "width": 960,
+          "height": 960
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/notebook.webp",
+          "width": 960,
+          "height": 960
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/notebook.webp",
+          "width": 960,
+          "height": 960
+        }
+      ],
+      "fonts": {
+        "status": "loaded",
+        "body": "Inter, system-ui, -apple-system, sans-serif",
+        "loaded": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          }
+        ]
+      },
+      "title": "Make something everyday feel like you.",
+      "screenshot": "screenshots/home-desktop-baseline.png"
+    },
+    {
+      "scene": "collection",
+      "device": "desktop",
+      "kind": "baseline",
+      "width": 1440,
+      "height": 1000,
+      "documentWidth": 1440,
+      "bodyWidth": 1440,
+      "bounds": [],
+      "textBounds": [],
+      "contrastFailures": [],
+      "smallTargets": [],
+      "closedNavigation": [
+        {
+          "trigger": "Search",
+          "visible": false,
+          "tabbableDescendants": 0
+        }
+      ],
+      "brokenImages": [],
+      "media": [
+        {
+          "src": "/theme-assets/madeyours/v2/block.webp",
+          "width": 960,
+          "height": 960
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/notebook.webp",
+          "width": 960,
+          "height": 960
+        }
+      ],
+      "fonts": {
+        "status": "loaded",
+        "body": "Inter, system-ui, -apple-system, sans-serif",
+        "loaded": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          }
+        ]
+      },
+      "title": "Choose your base",
+      "screenshot": "screenshots/collection-desktop-baseline.png"
+    },
+    {
+      "scene": "product",
+      "device": "desktop",
+      "kind": "baseline",
+      "width": 1440,
+      "height": 1000,
+      "documentWidth": 1440,
+      "bodyWidth": 1440,
+      "bounds": [],
+      "textBounds": [],
+      "contrastFailures": [],
+      "smallTargets": [],
+      "closedNavigation": [
+        {
+          "trigger": "Search",
+          "visible": false,
+          "tabbableDescendants": 0
+        }
+      ],
+      "brokenImages": [],
+      "media": [
+        {
+          "src": "/theme-assets/madeyours/v2/block.webp",
+          "width": 960,
+          "height": 960
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/notebook.webp",
+          "width": 960,
+          "height": 960
+        }
+      ],
+      "fonts": {
+        "status": "loaded",
+        "body": "Inter, system-ui, -apple-system, sans-serif",
+        "loaded": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          }
+        ]
+      },
+      "title": "Desk name block",
+      "screenshot": "screenshots/product-desktop-baseline.png"
+    },
+    {
+      "scene": "notebook",
+      "device": "desktop",
+      "kind": "baseline",
+      "width": 1440,
+      "height": 1000,
+      "documentWidth": 1440,
+      "bodyWidth": 1440,
+      "bounds": [],
+      "textBounds": [],
+      "contrastFailures": [],
+      "smallTargets": [],
+      "closedNavigation": [
+        {
+          "trigger": "Search",
+          "visible": false,
+          "tabbableDescendants": 0
+        }
+      ],
+      "brokenImages": [],
+      "media": [
+        {
+          "src": "/theme-assets/madeyours/v2/notebook.webp",
+          "width": 960,
+          "height": 960
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/block.webp",
+          "width": 960,
+          "height": 960
+        }
+      ],
+      "fonts": {
+        "status": "loaded",
+        "body": "Inter, system-ui, -apple-system, sans-serif",
+        "loaded": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          }
+        ]
+      },
+      "title": "Linen notebook",
+      "screenshot": "screenshots/notebook-desktop-baseline.png"
+    },
+    {
+      "scene": "missing",
+      "device": "desktop",
+      "kind": "baseline",
+      "width": 1440,
+      "height": 1000,
+      "documentWidth": 1440,
+      "bodyWidth": 1440,
+      "bounds": [],
+      "textBounds": [],
+      "contrastFailures": [],
+      "smallTargets": [],
+      "closedNavigation": [
+        {
+          "trigger": "Search",
+          "visible": false,
+          "tabbableDescendants": 0
+        }
+      ],
+      "brokenImages": [],
+      "media": [
+        {
+          "src": "/theme-assets/madeyours/v2/notebook.webp",
+          "width": 960,
+          "height": 960
+        }
+      ],
+      "fonts": {
+        "status": "loaded",
+        "body": "Inter, system-ui, -apple-system, sans-serif",
+        "loaded": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          }
+        ]
+      },
+      "title": "Personalization details not supplied",
+      "screenshot": "screenshots/missing-desktop-baseline.png"
+    },
+    {
+      "scene": "unicode",
+      "device": "desktop",
+      "kind": "baseline",
+      "width": 1440,
+      "height": 1000,
+      "documentWidth": 1440,
+      "bodyWidth": 1440,
+      "bounds": [],
+      "textBounds": [],
+      "contrastFailures": [],
+      "smallTargets": [],
+      "closedNavigation": [
+        {
+          "trigger": "Search",
+          "visible": false,
+          "tabbableDescendants": 0
+        }
+      ],
+      "brokenImages": [],
+      "media": [
+        {
+          "src": "/theme-assets/madeyours/v2/block.webp",
+          "width": 960,
+          "height": 960
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/notebook.webp",
+          "width": 960,
+          "height": 960
+        }
+      ],
+      "fonts": {
+        "status": "loaded",
+        "body": "Inter, system-ui, -apple-system, sans-serif",
+        "loaded": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          }
+        ]
+      },
+      "title": "Unicode letter capability sample",
+      "screenshot": "screenshots/unicode-desktop-baseline.png"
+    },
+    {
+      "scene": "unavailable",
+      "device": "desktop",
+      "kind": "baseline",
+      "width": 1440,
+      "height": 1000,
+      "documentWidth": 1440,
+      "bodyWidth": 1440,
+      "bounds": [],
+      "textBounds": [],
+      "contrastFailures": [],
+      "smallTargets": [],
+      "closedNavigation": [
+        {
+          "trigger": "Search",
+          "visible": false,
+          "tabbableDescendants": 0
+        }
+      ],
+      "brokenImages": [],
+      "media": [
+        {
+          "src": "/theme-assets/madeyours/v2/block.webp",
+          "width": 960,
+          "height": 960
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/notebook.webp",
+          "width": 960,
+          "height": 960
+        }
+      ],
+      "fonts": {
+        "status": "loaded",
+        "body": "Inter, system-ui, -apple-system, sans-serif",
+        "loaded": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          }
+        ]
+      },
+      "title": "Desk name block",
+      "screenshot": "screenshots/unavailable-desktop-baseline.png"
+    },
+    {
+      "scene": "empty",
+      "device": "desktop",
+      "kind": "baseline",
+      "width": 1440,
+      "height": 1000,
+      "documentWidth": 1440,
+      "bodyWidth": 1440,
+      "bounds": [],
+      "textBounds": [],
+      "contrastFailures": [],
+      "smallTargets": [],
+      "closedNavigation": [
+        {
+          "trigger": "Search",
+          "visible": false,
+          "tabbableDescendants": 0
+        }
+      ],
+      "brokenImages": [],
+      "media": [],
+      "fonts": {
+        "status": "loaded",
+        "body": "Inter, system-ui, -apple-system, sans-serif",
+        "loaded": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          }
+        ]
+      },
+      "title": "Choose your base",
+      "screenshot": "screenshots/empty-desktop-baseline.png"
+    },
+    {
+      "scene": "home",
+      "device": "desktop",
+      "kind": "text2x",
+      "width": 1440,
+      "height": 1000,
+      "documentWidth": 1440,
+      "bodyWidth": 1440,
+      "bounds": [],
+      "textBounds": [],
+      "contrastFailures": [],
+      "smallTargets": [],
+      "closedNavigation": [
+        {
+          "trigger": "Search",
+          "visible": false,
+          "tabbableDescendants": 0
+        }
+      ],
+      "brokenImages": [],
+      "media": [
+        {
+          "src": "/theme-assets/madeyours/v2/hero.webp",
+          "width": 1280,
+          "height": 853
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/block.webp",
+          "width": 960,
+          "height": 960
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/notebook.webp",
+          "width": 960,
+          "height": 960
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/notebook.webp",
+          "width": 960,
+          "height": 960
+        }
+      ],
+      "fonts": {
+        "status": "loaded",
+        "body": "Inter, system-ui, -apple-system, sans-serif",
+        "loaded": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          }
+        ]
+      },
+      "title": "Make something everyday feel like you.",
+      "screenshot": "screenshots/home-desktop-text2x.png"
+    },
+    {
+      "scene": "collection",
+      "device": "desktop",
+      "kind": "text2x",
+      "width": 1440,
+      "height": 1000,
+      "documentWidth": 1440,
+      "bodyWidth": 1440,
+      "bounds": [],
+      "textBounds": [],
+      "contrastFailures": [],
+      "smallTargets": [],
+      "closedNavigation": [
+        {
+          "trigger": "Search",
+          "visible": false,
+          "tabbableDescendants": 0
+        }
+      ],
+      "brokenImages": [],
+      "media": [
+        {
+          "src": "/theme-assets/madeyours/v2/block.webp",
+          "width": 960,
+          "height": 960
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/notebook.webp",
+          "width": 960,
+          "height": 960
+        }
+      ],
+      "fonts": {
+        "status": "loaded",
+        "body": "Inter, system-ui, -apple-system, sans-serif",
+        "loaded": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          }
+        ]
+      },
+      "title": "Choose your base",
+      "screenshot": "screenshots/collection-desktop-text2x.png"
+    },
+    {
+      "scene": "product",
+      "device": "desktop",
+      "kind": "text2x",
+      "width": 1440,
+      "height": 1000,
+      "documentWidth": 1440,
+      "bodyWidth": 1440,
+      "bounds": [],
+      "textBounds": [],
+      "contrastFailures": [],
+      "smallTargets": [],
+      "closedNavigation": [
+        {
+          "trigger": "Search",
+          "visible": false,
+          "tabbableDescendants": 0
+        }
+      ],
+      "brokenImages": [],
+      "media": [
+        {
+          "src": "/theme-assets/madeyours/v2/block.webp",
+          "width": 960,
+          "height": 960
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/notebook.webp",
+          "width": 960,
+          "height": 960
+        }
+      ],
+      "fonts": {
+        "status": "loaded",
+        "body": "Inter, system-ui, -apple-system, sans-serif",
+        "loaded": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          }
+        ]
+      },
+      "title": "Desk name block",
+      "screenshot": "screenshots/product-desktop-text2x.png"
+    },
+    {
+      "scene": "product",
+      "device": "desktop",
+      "kind": "long-hindi",
+      "width": 1440,
+      "height": 1000,
+      "documentWidth": 1440,
+      "bodyWidth": 1440,
+      "bounds": [],
+      "textBounds": [],
+      "contrastFailures": [],
+      "smallTargets": [],
+      "closedNavigation": [
+        {
+          "trigger": "Search",
+          "visible": false,
+          "tabbableDescendants": 0
+        }
+      ],
+      "brokenImages": [],
+      "media": [
+        {
+          "src": "/theme-assets/madeyours/v2/block.webp",
+          "width": 960,
+          "height": 960
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/notebook.webp",
+          "width": 960,
+          "height": 960
+        }
+      ],
+      "fonts": {
+        "status": "loaded",
+        "body": "Inter, system-ui, -apple-system, sans-serif",
+        "loaded": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          }
+        ]
+      },
+      "title": "आपके अपने शब्दों से बने रोज़मर्रा के सामान — नाम, तरीका, शैली और स्थान की पूरी जानकारी ध्यान से जाँचें",
+      "screenshot": "screenshots/product-desktop-long-hindi.png"
+    },
+    {
+      "scene": "product",
+      "device": "desktop",
+      "kind": "review",
+      "width": 1440,
+      "height": 1000,
+      "documentWidth": 1440,
+      "bodyWidth": 1440,
+      "bounds": [],
+      "textBounds": [],
+      "contrastFailures": [],
+      "smallTargets": [],
+      "closedNavigation": [
+        {
+          "trigger": "Search",
+          "visible": false,
+          "tabbableDescendants": 0
+        }
+      ],
+      "brokenImages": [],
+      "media": [
+        {
+          "src": "/theme-assets/madeyours/v2/block.webp",
+          "width": 960,
+          "height": 960
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/notebook.webp",
+          "width": 960,
+          "height": 960
+        }
+      ],
+      "fonts": {
+        "status": "loaded",
+        "body": "Inter, system-ui, -apple-system, sans-serif",
+        "loaded": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          }
+        ]
+      },
+      "title": "Desk name block",
+      "screenshot": "screenshots/product-desktop-review.png"
+    },
+    {
+      "scene": "product",
+      "device": "desktop",
+      "kind": "invalid",
+      "width": 1440,
+      "height": 1000,
+      "documentWidth": 1440,
+      "bodyWidth": 1440,
+      "bounds": [],
+      "textBounds": [],
+      "contrastFailures": [],
+      "smallTargets": [],
+      "closedNavigation": [
+        {
+          "trigger": "Search",
+          "visible": false,
+          "tabbableDescendants": 0
+        }
+      ],
+      "brokenImages": [],
+      "media": [
+        {
+          "src": "/theme-assets/madeyours/v2/block.webp",
+          "width": 960,
+          "height": 960
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/notebook.webp",
+          "width": 960,
+          "height": 960
+        }
+      ],
+      "fonts": {
+        "status": "loaded",
+        "body": "Inter, system-ui, -apple-system, sans-serif",
+        "loaded": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          }
+        ]
+      },
+      "title": "Desk name block",
+      "screenshot": "screenshots/product-desktop-invalid.png"
+    },
+    {
+      "scene": "home",
+      "device": "tablet",
+      "kind": "baseline",
+      "width": 834,
+      "height": 1112,
+      "documentWidth": 834,
+      "bodyWidth": 834,
+      "bounds": [],
+      "textBounds": [],
+      "contrastFailures": [],
+      "smallTargets": [],
+      "closedNavigation": [
+        {
+          "trigger": "Search",
+          "visible": false,
+          "tabbableDescendants": 0
+        }
+      ],
+      "brokenImages": [],
+      "media": [
+        {
+          "src": "/theme-assets/madeyours/v2/hero.webp",
+          "width": 1280,
+          "height": 853
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/block.webp",
+          "width": 960,
+          "height": 960
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/notebook.webp",
+          "width": 960,
+          "height": 960
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/notebook.webp",
+          "width": 960,
+          "height": 960
+        }
+      ],
+      "fonts": {
+        "status": "loaded",
+        "body": "Inter, system-ui, -apple-system, sans-serif",
+        "loaded": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          }
+        ]
+      },
+      "title": "Make something everyday feel like you.",
+      "screenshot": "screenshots/home-tablet-baseline.png"
+    },
+    {
+      "scene": "collection",
+      "device": "tablet",
+      "kind": "baseline",
+      "width": 834,
+      "height": 1112,
+      "documentWidth": 834,
+      "bodyWidth": 834,
+      "bounds": [],
+      "textBounds": [],
+      "contrastFailures": [],
+      "smallTargets": [],
+      "closedNavigation": [
+        {
+          "trigger": "Search",
+          "visible": false,
+          "tabbableDescendants": 0
+        }
+      ],
+      "brokenImages": [],
+      "media": [
+        {
+          "src": "/theme-assets/madeyours/v2/block.webp",
+          "width": 960,
+          "height": 960
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/notebook.webp",
+          "width": 960,
+          "height": 960
+        }
+      ],
+      "fonts": {
+        "status": "loaded",
+        "body": "Inter, system-ui, -apple-system, sans-serif",
+        "loaded": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          }
+        ]
+      },
+      "title": "Choose your base",
+      "screenshot": "screenshots/collection-tablet-baseline.png"
+    },
+    {
+      "scene": "product",
+      "device": "tablet",
+      "kind": "baseline",
+      "width": 834,
+      "height": 1112,
+      "documentWidth": 834,
+      "bodyWidth": 834,
+      "bounds": [],
+      "textBounds": [],
+      "contrastFailures": [],
+      "smallTargets": [],
+      "closedNavigation": [
+        {
+          "trigger": "Search",
+          "visible": false,
+          "tabbableDescendants": 0
+        }
+      ],
+      "brokenImages": [],
+      "media": [
+        {
+          "src": "/theme-assets/madeyours/v2/block.webp",
+          "width": 960,
+          "height": 960
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/notebook.webp",
+          "width": 960,
+          "height": 960
+        }
+      ],
+      "fonts": {
+        "status": "loaded",
+        "body": "Inter, system-ui, -apple-system, sans-serif",
+        "loaded": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          }
+        ]
+      },
+      "title": "Desk name block",
+      "screenshot": "screenshots/product-tablet-baseline.png"
+    },
+    {
+      "scene": "notebook",
+      "device": "tablet",
+      "kind": "baseline",
+      "width": 834,
+      "height": 1112,
+      "documentWidth": 834,
+      "bodyWidth": 834,
+      "bounds": [],
+      "textBounds": [],
+      "contrastFailures": [],
+      "smallTargets": [],
+      "closedNavigation": [
+        {
+          "trigger": "Search",
+          "visible": false,
+          "tabbableDescendants": 0
+        }
+      ],
+      "brokenImages": [],
+      "media": [
+        {
+          "src": "/theme-assets/madeyours/v2/notebook.webp",
+          "width": 960,
+          "height": 960
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/block.webp",
+          "width": 960,
+          "height": 960
+        }
+      ],
+      "fonts": {
+        "status": "loaded",
+        "body": "Inter, system-ui, -apple-system, sans-serif",
+        "loaded": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          }
+        ]
+      },
+      "title": "Linen notebook",
+      "screenshot": "screenshots/notebook-tablet-baseline.png"
+    },
+    {
+      "scene": "missing",
+      "device": "tablet",
+      "kind": "baseline",
+      "width": 834,
+      "height": 1112,
+      "documentWidth": 834,
+      "bodyWidth": 834,
+      "bounds": [],
+      "textBounds": [],
+      "contrastFailures": [],
+      "smallTargets": [],
+      "closedNavigation": [
+        {
+          "trigger": "Search",
+          "visible": false,
+          "tabbableDescendants": 0
+        }
+      ],
+      "brokenImages": [],
+      "media": [
+        {
+          "src": "/theme-assets/madeyours/v2/notebook.webp",
+          "width": 960,
+          "height": 960
+        }
+      ],
+      "fonts": {
+        "status": "loaded",
+        "body": "Inter, system-ui, -apple-system, sans-serif",
+        "loaded": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          }
+        ]
+      },
+      "title": "Personalization details not supplied",
+      "screenshot": "screenshots/missing-tablet-baseline.png"
+    },
+    {
+      "scene": "unicode",
+      "device": "tablet",
+      "kind": "baseline",
+      "width": 834,
+      "height": 1112,
+      "documentWidth": 834,
+      "bodyWidth": 834,
+      "bounds": [],
+      "textBounds": [],
+      "contrastFailures": [],
+      "smallTargets": [],
+      "closedNavigation": [
+        {
+          "trigger": "Search",
+          "visible": false,
+          "tabbableDescendants": 0
+        }
+      ],
+      "brokenImages": [],
+      "media": [
+        {
+          "src": "/theme-assets/madeyours/v2/block.webp",
+          "width": 960,
+          "height": 960
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/notebook.webp",
+          "width": 960,
+          "height": 960
+        }
+      ],
+      "fonts": {
+        "status": "loaded",
+        "body": "Inter, system-ui, -apple-system, sans-serif",
+        "loaded": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          }
+        ]
+      },
+      "title": "Unicode letter capability sample",
+      "screenshot": "screenshots/unicode-tablet-baseline.png"
+    },
+    {
+      "scene": "unavailable",
+      "device": "tablet",
+      "kind": "baseline",
+      "width": 834,
+      "height": 1112,
+      "documentWidth": 834,
+      "bodyWidth": 834,
+      "bounds": [],
+      "textBounds": [],
+      "contrastFailures": [],
+      "smallTargets": [],
+      "closedNavigation": [
+        {
+          "trigger": "Search",
+          "visible": false,
+          "tabbableDescendants": 0
+        }
+      ],
+      "brokenImages": [],
+      "media": [
+        {
+          "src": "/theme-assets/madeyours/v2/block.webp",
+          "width": 960,
+          "height": 960
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/notebook.webp",
+          "width": 960,
+          "height": 960
+        }
+      ],
+      "fonts": {
+        "status": "loaded",
+        "body": "Inter, system-ui, -apple-system, sans-serif",
+        "loaded": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          }
+        ]
+      },
+      "title": "Desk name block",
+      "screenshot": "screenshots/unavailable-tablet-baseline.png"
+    },
+    {
+      "scene": "empty",
+      "device": "tablet",
+      "kind": "baseline",
+      "width": 834,
+      "height": 1112,
+      "documentWidth": 834,
+      "bodyWidth": 834,
+      "bounds": [],
+      "textBounds": [],
+      "contrastFailures": [],
+      "smallTargets": [],
+      "closedNavigation": [
+        {
+          "trigger": "Search",
+          "visible": false,
+          "tabbableDescendants": 0
+        }
+      ],
+      "brokenImages": [],
+      "media": [],
+      "fonts": {
+        "status": "loaded",
+        "body": "Inter, system-ui, -apple-system, sans-serif",
+        "loaded": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          }
+        ]
+      },
+      "title": "Choose your base",
+      "screenshot": "screenshots/empty-tablet-baseline.png"
+    },
+    {
+      "scene": "home",
+      "device": "tablet",
+      "kind": "text2x",
+      "width": 834,
+      "height": 1112,
+      "documentWidth": 834,
+      "bodyWidth": 834,
+      "bounds": [],
+      "textBounds": [],
+      "contrastFailures": [],
+      "smallTargets": [],
+      "closedNavigation": [
+        {
+          "trigger": "Search",
+          "visible": false,
+          "tabbableDescendants": 0
+        }
+      ],
+      "brokenImages": [],
+      "media": [
+        {
+          "src": "/theme-assets/madeyours/v2/hero.webp",
+          "width": 1280,
+          "height": 853
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/block.webp",
+          "width": 960,
+          "height": 960
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/notebook.webp",
+          "width": 960,
+          "height": 960
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/notebook.webp",
+          "width": 960,
+          "height": 960
+        }
+      ],
+      "fonts": {
+        "status": "loaded",
+        "body": "Inter, system-ui, -apple-system, sans-serif",
+        "loaded": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          }
+        ]
+      },
+      "title": "Make something everyday feel like you.",
+      "screenshot": "screenshots/home-tablet-text2x.png"
+    },
+    {
+      "scene": "collection",
+      "device": "tablet",
+      "kind": "text2x",
+      "width": 834,
+      "height": 1112,
+      "documentWidth": 834,
+      "bodyWidth": 834,
+      "bounds": [],
+      "textBounds": [],
+      "contrastFailures": [],
+      "smallTargets": [],
+      "closedNavigation": [
+        {
+          "trigger": "Search",
+          "visible": false,
+          "tabbableDescendants": 0
+        }
+      ],
+      "brokenImages": [],
+      "media": [
+        {
+          "src": "/theme-assets/madeyours/v2/block.webp",
+          "width": 960,
+          "height": 960
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/notebook.webp",
+          "width": 960,
+          "height": 960
+        }
+      ],
+      "fonts": {
+        "status": "loaded",
+        "body": "Inter, system-ui, -apple-system, sans-serif",
+        "loaded": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          }
+        ]
+      },
+      "title": "Choose your base",
+      "screenshot": "screenshots/collection-tablet-text2x.png"
+    },
+    {
+      "scene": "product",
+      "device": "tablet",
+      "kind": "text2x",
+      "width": 834,
+      "height": 1112,
+      "documentWidth": 834,
+      "bodyWidth": 834,
+      "bounds": [],
+      "textBounds": [],
+      "contrastFailures": [],
+      "smallTargets": [],
+      "closedNavigation": [
+        {
+          "trigger": "Search",
+          "visible": false,
+          "tabbableDescendants": 0
+        }
+      ],
+      "brokenImages": [],
+      "media": [
+        {
+          "src": "/theme-assets/madeyours/v2/block.webp",
+          "width": 960,
+          "height": 960
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/notebook.webp",
+          "width": 960,
+          "height": 960
+        }
+      ],
+      "fonts": {
+        "status": "loaded",
+        "body": "Inter, system-ui, -apple-system, sans-serif",
+        "loaded": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          }
+        ]
+      },
+      "title": "Desk name block",
+      "screenshot": "screenshots/product-tablet-text2x.png"
+    },
+    {
+      "scene": "product",
+      "device": "tablet",
+      "kind": "long-hindi",
+      "width": 834,
+      "height": 1112,
+      "documentWidth": 834,
+      "bodyWidth": 834,
+      "bounds": [],
+      "textBounds": [],
+      "contrastFailures": [],
+      "smallTargets": [],
+      "closedNavigation": [
+        {
+          "trigger": "Search",
+          "visible": false,
+          "tabbableDescendants": 0
+        }
+      ],
+      "brokenImages": [],
+      "media": [
+        {
+          "src": "/theme-assets/madeyours/v2/block.webp",
+          "width": 960,
+          "height": 960
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/notebook.webp",
+          "width": 960,
+          "height": 960
+        }
+      ],
+      "fonts": {
+        "status": "loaded",
+        "body": "Inter, system-ui, -apple-system, sans-serif",
+        "loaded": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          }
+        ]
+      },
+      "title": "आपके अपने शब्दों से बने रोज़मर्रा के सामान — नाम, तरीका, शैली और स्थान की पूरी जानकारी ध्यान से जाँचें",
+      "screenshot": "screenshots/product-tablet-long-hindi.png"
+    },
+    {
+      "scene": "product",
+      "device": "tablet",
+      "kind": "review",
+      "width": 834,
+      "height": 1112,
+      "documentWidth": 834,
+      "bodyWidth": 834,
+      "bounds": [],
+      "textBounds": [],
+      "contrastFailures": [],
+      "smallTargets": [],
+      "closedNavigation": [
+        {
+          "trigger": "Search",
+          "visible": false,
+          "tabbableDescendants": 0
+        }
+      ],
+      "brokenImages": [],
+      "media": [
+        {
+          "src": "/theme-assets/madeyours/v2/block.webp",
+          "width": 960,
+          "height": 960
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/notebook.webp",
+          "width": 960,
+          "height": 960
+        }
+      ],
+      "fonts": {
+        "status": "loaded",
+        "body": "Inter, system-ui, -apple-system, sans-serif",
+        "loaded": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          }
+        ]
+      },
+      "title": "Desk name block",
+      "screenshot": "screenshots/product-tablet-review.png"
+    },
+    {
+      "scene": "product",
+      "device": "tablet",
+      "kind": "invalid",
+      "width": 834,
+      "height": 1112,
+      "documentWidth": 834,
+      "bodyWidth": 834,
+      "bounds": [],
+      "textBounds": [],
+      "contrastFailures": [],
+      "smallTargets": [],
+      "closedNavigation": [
+        {
+          "trigger": "Search",
+          "visible": false,
+          "tabbableDescendants": 0
+        }
+      ],
+      "brokenImages": [],
+      "media": [
+        {
+          "src": "/theme-assets/madeyours/v2/block.webp",
+          "width": 960,
+          "height": 960
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/notebook.webp",
+          "width": 960,
+          "height": 960
+        }
+      ],
+      "fonts": {
+        "status": "loaded",
+        "body": "Inter, system-ui, -apple-system, sans-serif",
+        "loaded": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          }
+        ]
+      },
+      "title": "Desk name block",
+      "screenshot": "screenshots/product-tablet-invalid.png"
+    },
+    {
+      "scene": "home",
+      "device": "mobile",
+      "kind": "baseline",
+      "width": 390,
+      "height": 844,
+      "documentWidth": 390,
+      "bodyWidth": 390,
+      "bounds": [],
+      "textBounds": [],
+      "contrastFailures": [],
+      "smallTargets": [],
+      "closedNavigation": [
+        {
+          "trigger": "Menu",
+          "visible": false,
+          "tabbableDescendants": 0
+        },
+        {
+          "trigger": "Search",
+          "visible": false,
+          "tabbableDescendants": 0
+        }
+      ],
+      "brokenImages": [],
+      "media": [
+        {
+          "src": "/theme-assets/madeyours/v2/hero.webp",
+          "width": 1280,
+          "height": 853
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/block.webp",
+          "width": 960,
+          "height": 960
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/notebook.webp",
+          "width": 960,
+          "height": 960
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/notebook.webp",
+          "width": 960,
+          "height": 960
+        }
+      ],
+      "fonts": {
+        "status": "loaded",
+        "body": "Inter, system-ui, -apple-system, sans-serif",
+        "loaded": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          }
+        ]
+      },
+      "title": "Make something everyday feel like you.",
+      "screenshot": "screenshots/home-mobile-baseline.png"
+    },
+    {
+      "scene": "collection",
+      "device": "mobile",
+      "kind": "baseline",
+      "width": 390,
+      "height": 844,
+      "documentWidth": 390,
+      "bodyWidth": 390,
+      "bounds": [],
+      "textBounds": [],
+      "contrastFailures": [],
+      "smallTargets": [],
+      "closedNavigation": [
+        {
+          "trigger": "Menu",
+          "visible": false,
+          "tabbableDescendants": 0
+        },
+        {
+          "trigger": "Search",
+          "visible": false,
+          "tabbableDescendants": 0
+        }
+      ],
+      "brokenImages": [],
+      "media": [
+        {
+          "src": "/theme-assets/madeyours/v2/block.webp",
+          "width": 960,
+          "height": 960
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/notebook.webp",
+          "width": 960,
+          "height": 960
+        }
+      ],
+      "fonts": {
+        "status": "loaded",
+        "body": "Inter, system-ui, -apple-system, sans-serif",
+        "loaded": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          }
+        ]
+      },
+      "title": "Choose your base",
+      "screenshot": "screenshots/collection-mobile-baseline.png"
+    },
+    {
+      "scene": "product",
+      "device": "mobile",
+      "kind": "baseline",
+      "width": 390,
+      "height": 844,
+      "documentWidth": 390,
+      "bodyWidth": 390,
+      "bounds": [],
+      "textBounds": [],
+      "contrastFailures": [],
+      "smallTargets": [],
+      "closedNavigation": [
+        {
+          "trigger": "Menu",
+          "visible": false,
+          "tabbableDescendants": 0
+        },
+        {
+          "trigger": "Search",
+          "visible": false,
+          "tabbableDescendants": 0
+        }
+      ],
+      "brokenImages": [],
+      "media": [
+        {
+          "src": "/theme-assets/madeyours/v2/block.webp",
+          "width": 960,
+          "height": 960
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/notebook.webp",
+          "width": 960,
+          "height": 960
+        }
+      ],
+      "fonts": {
+        "status": "loaded",
+        "body": "Inter, system-ui, -apple-system, sans-serif",
+        "loaded": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          }
+        ]
+      },
+      "title": "Desk name block",
+      "screenshot": "screenshots/product-mobile-baseline.png"
+    },
+    {
+      "scene": "notebook",
+      "device": "mobile",
+      "kind": "baseline",
+      "width": 390,
+      "height": 844,
+      "documentWidth": 390,
+      "bodyWidth": 390,
+      "bounds": [],
+      "textBounds": [],
+      "contrastFailures": [],
+      "smallTargets": [],
+      "closedNavigation": [
+        {
+          "trigger": "Menu",
+          "visible": false,
+          "tabbableDescendants": 0
+        },
+        {
+          "trigger": "Search",
+          "visible": false,
+          "tabbableDescendants": 0
+        }
+      ],
+      "brokenImages": [],
+      "media": [
+        {
+          "src": "/theme-assets/madeyours/v2/notebook.webp",
+          "width": 960,
+          "height": 960
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/block.webp",
+          "width": 960,
+          "height": 960
+        }
+      ],
+      "fonts": {
+        "status": "loaded",
+        "body": "Inter, system-ui, -apple-system, sans-serif",
+        "loaded": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          }
+        ]
+      },
+      "title": "Linen notebook",
+      "screenshot": "screenshots/notebook-mobile-baseline.png"
+    },
+    {
+      "scene": "missing",
+      "device": "mobile",
+      "kind": "baseline",
+      "width": 390,
+      "height": 844,
+      "documentWidth": 390,
+      "bodyWidth": 390,
+      "bounds": [],
+      "textBounds": [],
+      "contrastFailures": [],
+      "smallTargets": [],
+      "closedNavigation": [
+        {
+          "trigger": "Menu",
+          "visible": false,
+          "tabbableDescendants": 0
+        },
+        {
+          "trigger": "Search",
+          "visible": false,
+          "tabbableDescendants": 0
+        }
+      ],
+      "brokenImages": [],
+      "media": [
+        {
+          "src": "/theme-assets/madeyours/v2/notebook.webp",
+          "width": 960,
+          "height": 960
+        }
+      ],
+      "fonts": {
+        "status": "loaded",
+        "body": "Inter, system-ui, -apple-system, sans-serif",
+        "loaded": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          }
+        ]
+      },
+      "title": "Personalization details not supplied",
+      "screenshot": "screenshots/missing-mobile-baseline.png"
+    },
+    {
+      "scene": "unicode",
+      "device": "mobile",
+      "kind": "baseline",
+      "width": 390,
+      "height": 844,
+      "documentWidth": 390,
+      "bodyWidth": 390,
+      "bounds": [],
+      "textBounds": [],
+      "contrastFailures": [],
+      "smallTargets": [],
+      "closedNavigation": [
+        {
+          "trigger": "Menu",
+          "visible": false,
+          "tabbableDescendants": 0
+        },
+        {
+          "trigger": "Search",
+          "visible": false,
+          "tabbableDescendants": 0
+        }
+      ],
+      "brokenImages": [],
+      "media": [
+        {
+          "src": "/theme-assets/madeyours/v2/block.webp",
+          "width": 960,
+          "height": 960
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/notebook.webp",
+          "width": 960,
+          "height": 960
+        }
+      ],
+      "fonts": {
+        "status": "loaded",
+        "body": "Inter, system-ui, -apple-system, sans-serif",
+        "loaded": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          }
+        ]
+      },
+      "title": "Unicode letter capability sample",
+      "screenshot": "screenshots/unicode-mobile-baseline.png"
+    },
+    {
+      "scene": "unavailable",
+      "device": "mobile",
+      "kind": "baseline",
+      "width": 390,
+      "height": 844,
+      "documentWidth": 390,
+      "bodyWidth": 390,
+      "bounds": [],
+      "textBounds": [],
+      "contrastFailures": [],
+      "smallTargets": [],
+      "closedNavigation": [
+        {
+          "trigger": "Menu",
+          "visible": false,
+          "tabbableDescendants": 0
+        },
+        {
+          "trigger": "Search",
+          "visible": false,
+          "tabbableDescendants": 0
+        }
+      ],
+      "brokenImages": [],
+      "media": [
+        {
+          "src": "/theme-assets/madeyours/v2/block.webp",
+          "width": 960,
+          "height": 960
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/notebook.webp",
+          "width": 960,
+          "height": 960
+        }
+      ],
+      "fonts": {
+        "status": "loaded",
+        "body": "Inter, system-ui, -apple-system, sans-serif",
+        "loaded": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          }
+        ]
+      },
+      "title": "Desk name block",
+      "screenshot": "screenshots/unavailable-mobile-baseline.png"
+    },
+    {
+      "scene": "empty",
+      "device": "mobile",
+      "kind": "baseline",
+      "width": 390,
+      "height": 844,
+      "documentWidth": 390,
+      "bodyWidth": 390,
+      "bounds": [],
+      "textBounds": [],
+      "contrastFailures": [],
+      "smallTargets": [],
+      "closedNavigation": [
+        {
+          "trigger": "Menu",
+          "visible": false,
+          "tabbableDescendants": 0
+        },
+        {
+          "trigger": "Search",
+          "visible": false,
+          "tabbableDescendants": 0
+        }
+      ],
+      "brokenImages": [],
+      "media": [],
+      "fonts": {
+        "status": "loaded",
+        "body": "Inter, system-ui, -apple-system, sans-serif",
+        "loaded": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          }
+        ]
+      },
+      "title": "Choose your base",
+      "screenshot": "screenshots/empty-mobile-baseline.png"
+    },
+    {
+      "scene": "home",
+      "device": "mobile",
+      "kind": "text2x",
+      "width": 390,
+      "height": 844,
+      "documentWidth": 390,
+      "bodyWidth": 390,
+      "bounds": [],
+      "textBounds": [],
+      "contrastFailures": [],
+      "smallTargets": [],
+      "closedNavigation": [
+        {
+          "trigger": "Menu",
+          "visible": false,
+          "tabbableDescendants": 0
+        },
+        {
+          "trigger": "Search",
+          "visible": false,
+          "tabbableDescendants": 0
+        }
+      ],
+      "brokenImages": [],
+      "media": [
+        {
+          "src": "/theme-assets/madeyours/v2/hero.webp",
+          "width": 1280,
+          "height": 853
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/block.webp",
+          "width": 960,
+          "height": 960
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/notebook.webp",
+          "width": 960,
+          "height": 960
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/notebook.webp",
+          "width": 960,
+          "height": 960
+        }
+      ],
+      "fonts": {
+        "status": "loaded",
+        "body": "Inter, system-ui, -apple-system, sans-serif",
+        "loaded": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          }
+        ]
+      },
+      "title": "Make something everyday feel like you.",
+      "screenshot": "screenshots/home-mobile-text2x.png"
+    },
+    {
+      "scene": "collection",
+      "device": "mobile",
+      "kind": "text2x",
+      "width": 390,
+      "height": 844,
+      "documentWidth": 390,
+      "bodyWidth": 390,
+      "bounds": [],
+      "textBounds": [],
+      "contrastFailures": [],
+      "smallTargets": [],
+      "closedNavigation": [
+        {
+          "trigger": "Menu",
+          "visible": false,
+          "tabbableDescendants": 0
+        },
+        {
+          "trigger": "Search",
+          "visible": false,
+          "tabbableDescendants": 0
+        }
+      ],
+      "brokenImages": [],
+      "media": [
+        {
+          "src": "/theme-assets/madeyours/v2/block.webp",
+          "width": 960,
+          "height": 960
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/notebook.webp",
+          "width": 960,
+          "height": 960
+        }
+      ],
+      "fonts": {
+        "status": "loaded",
+        "body": "Inter, system-ui, -apple-system, sans-serif",
+        "loaded": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          }
+        ]
+      },
+      "title": "Choose your base",
+      "screenshot": "screenshots/collection-mobile-text2x.png"
+    },
+    {
+      "scene": "product",
+      "device": "mobile",
+      "kind": "text2x",
+      "width": 390,
+      "height": 844,
+      "documentWidth": 390,
+      "bodyWidth": 390,
+      "bounds": [],
+      "textBounds": [],
+      "contrastFailures": [],
+      "smallTargets": [],
+      "closedNavigation": [
+        {
+          "trigger": "Menu",
+          "visible": false,
+          "tabbableDescendants": 0
+        },
+        {
+          "trigger": "Search",
+          "visible": false,
+          "tabbableDescendants": 0
+        }
+      ],
+      "brokenImages": [],
+      "media": [
+        {
+          "src": "/theme-assets/madeyours/v2/block.webp",
+          "width": 960,
+          "height": 960
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/notebook.webp",
+          "width": 960,
+          "height": 960
+        }
+      ],
+      "fonts": {
+        "status": "loaded",
+        "body": "Inter, system-ui, -apple-system, sans-serif",
+        "loaded": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          }
+        ]
+      },
+      "title": "Desk name block",
+      "screenshot": "screenshots/product-mobile-text2x.png"
+    },
+    {
+      "scene": "product",
+      "device": "mobile",
+      "kind": "long-hindi",
+      "width": 390,
+      "height": 844,
+      "documentWidth": 390,
+      "bodyWidth": 390,
+      "bounds": [],
+      "textBounds": [],
+      "contrastFailures": [],
+      "smallTargets": [],
+      "closedNavigation": [
+        {
+          "trigger": "Menu",
+          "visible": false,
+          "tabbableDescendants": 0
+        },
+        {
+          "trigger": "Search",
+          "visible": false,
+          "tabbableDescendants": 0
+        }
+      ],
+      "brokenImages": [],
+      "media": [
+        {
+          "src": "/theme-assets/madeyours/v2/block.webp",
+          "width": 960,
+          "height": 960
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/notebook.webp",
+          "width": 960,
+          "height": 960
+        }
+      ],
+      "fonts": {
+        "status": "loaded",
+        "body": "Inter, system-ui, -apple-system, sans-serif",
+        "loaded": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          }
+        ]
+      },
+      "title": "आपके अपने शब्दों से बने रोज़मर्रा के सामान — नाम, तरीका, शैली और स्थान की पूरी जानकारी ध्यान से जाँचें",
+      "screenshot": "screenshots/product-mobile-long-hindi.png"
+    },
+    {
+      "scene": "product",
+      "device": "mobile",
+      "kind": "review",
+      "width": 390,
+      "height": 844,
+      "documentWidth": 390,
+      "bodyWidth": 390,
+      "bounds": [],
+      "textBounds": [],
+      "contrastFailures": [],
+      "smallTargets": [],
+      "closedNavigation": [
+        {
+          "trigger": "Menu",
+          "visible": false,
+          "tabbableDescendants": 0
+        },
+        {
+          "trigger": "Search",
+          "visible": false,
+          "tabbableDescendants": 0
+        }
+      ],
+      "brokenImages": [],
+      "media": [
+        {
+          "src": "/theme-assets/madeyours/v2/block.webp",
+          "width": 960,
+          "height": 960
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/notebook.webp",
+          "width": 960,
+          "height": 960
+        }
+      ],
+      "fonts": {
+        "status": "loaded",
+        "body": "Inter, system-ui, -apple-system, sans-serif",
+        "loaded": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          }
+        ]
+      },
+      "title": "Desk name block",
+      "screenshot": "screenshots/product-mobile-review.png"
+    },
+    {
+      "scene": "product",
+      "device": "mobile",
+      "kind": "invalid",
+      "width": 390,
+      "height": 844,
+      "documentWidth": 390,
+      "bodyWidth": 390,
+      "bounds": [],
+      "textBounds": [],
+      "contrastFailures": [],
+      "smallTargets": [],
+      "closedNavigation": [
+        {
+          "trigger": "Menu",
+          "visible": false,
+          "tabbableDescendants": 0
+        },
+        {
+          "trigger": "Search",
+          "visible": false,
+          "tabbableDescendants": 0
+        }
+      ],
+      "brokenImages": [],
+      "media": [
+        {
+          "src": "/theme-assets/madeyours/v2/block.webp",
+          "width": 960,
+          "height": 960
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/notebook.webp",
+          "width": 960,
+          "height": 960
+        }
+      ],
+      "fonts": {
+        "status": "loaded",
+        "body": "Inter, system-ui, -apple-system, sans-serif",
+        "loaded": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          }
+        ]
+      },
+      "title": "Desk name block",
+      "screenshot": "screenshots/product-mobile-invalid.png"
+    },
+    {
+      "scene": "home",
+      "device": "narrow",
+      "kind": "baseline",
+      "width": 320,
+      "height": 844,
+      "documentWidth": 320,
+      "bodyWidth": 320,
+      "bounds": [],
+      "textBounds": [],
+      "contrastFailures": [],
+      "smallTargets": [],
+      "closedNavigation": [
+        {
+          "trigger": "Menu",
+          "visible": false,
+          "tabbableDescendants": 0
+        },
+        {
+          "trigger": "Search",
+          "visible": false,
+          "tabbableDescendants": 0
+        }
+      ],
+      "brokenImages": [],
+      "media": [
+        {
+          "src": "/theme-assets/madeyours/v2/hero.webp",
+          "width": 1280,
+          "height": 853
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/block.webp",
+          "width": 960,
+          "height": 960
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/notebook.webp",
+          "width": 960,
+          "height": 960
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/notebook.webp",
+          "width": 960,
+          "height": 960
+        }
+      ],
+      "fonts": {
+        "status": "loaded",
+        "body": "Inter, system-ui, -apple-system, sans-serif",
+        "loaded": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          }
+        ]
+      },
+      "title": "Make something everyday feel like you.",
+      "screenshot": "screenshots/home-narrow-baseline.png"
+    },
+    {
+      "scene": "collection",
+      "device": "narrow",
+      "kind": "baseline",
+      "width": 320,
+      "height": 844,
+      "documentWidth": 320,
+      "bodyWidth": 320,
+      "bounds": [],
+      "textBounds": [],
+      "contrastFailures": [],
+      "smallTargets": [],
+      "closedNavigation": [
+        {
+          "trigger": "Menu",
+          "visible": false,
+          "tabbableDescendants": 0
+        },
+        {
+          "trigger": "Search",
+          "visible": false,
+          "tabbableDescendants": 0
+        }
+      ],
+      "brokenImages": [],
+      "media": [
+        {
+          "src": "/theme-assets/madeyours/v2/block.webp",
+          "width": 960,
+          "height": 960
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/notebook.webp",
+          "width": 960,
+          "height": 960
+        }
+      ],
+      "fonts": {
+        "status": "loaded",
+        "body": "Inter, system-ui, -apple-system, sans-serif",
+        "loaded": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          }
+        ]
+      },
+      "title": "Choose your base",
+      "screenshot": "screenshots/collection-narrow-baseline.png"
+    },
+    {
+      "scene": "product",
+      "device": "narrow",
+      "kind": "baseline",
+      "width": 320,
+      "height": 844,
+      "documentWidth": 320,
+      "bodyWidth": 320,
+      "bounds": [],
+      "textBounds": [],
+      "contrastFailures": [],
+      "smallTargets": [],
+      "closedNavigation": [
+        {
+          "trigger": "Menu",
+          "visible": false,
+          "tabbableDescendants": 0
+        },
+        {
+          "trigger": "Search",
+          "visible": false,
+          "tabbableDescendants": 0
+        }
+      ],
+      "brokenImages": [],
+      "media": [
+        {
+          "src": "/theme-assets/madeyours/v2/block.webp",
+          "width": 960,
+          "height": 960
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/notebook.webp",
+          "width": 960,
+          "height": 960
+        }
+      ],
+      "fonts": {
+        "status": "loaded",
+        "body": "Inter, system-ui, -apple-system, sans-serif",
+        "loaded": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          }
+        ]
+      },
+      "title": "Desk name block",
+      "screenshot": "screenshots/product-narrow-baseline.png"
+    },
+    {
+      "scene": "notebook",
+      "device": "narrow",
+      "kind": "baseline",
+      "width": 320,
+      "height": 844,
+      "documentWidth": 320,
+      "bodyWidth": 320,
+      "bounds": [],
+      "textBounds": [],
+      "contrastFailures": [],
+      "smallTargets": [],
+      "closedNavigation": [
+        {
+          "trigger": "Menu",
+          "visible": false,
+          "tabbableDescendants": 0
+        },
+        {
+          "trigger": "Search",
+          "visible": false,
+          "tabbableDescendants": 0
+        }
+      ],
+      "brokenImages": [],
+      "media": [
+        {
+          "src": "/theme-assets/madeyours/v2/notebook.webp",
+          "width": 960,
+          "height": 960
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/block.webp",
+          "width": 960,
+          "height": 960
+        }
+      ],
+      "fonts": {
+        "status": "loaded",
+        "body": "Inter, system-ui, -apple-system, sans-serif",
+        "loaded": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          }
+        ]
+      },
+      "title": "Linen notebook",
+      "screenshot": "screenshots/notebook-narrow-baseline.png"
+    },
+    {
+      "scene": "missing",
+      "device": "narrow",
+      "kind": "baseline",
+      "width": 320,
+      "height": 844,
+      "documentWidth": 320,
+      "bodyWidth": 320,
+      "bounds": [],
+      "textBounds": [],
+      "contrastFailures": [],
+      "smallTargets": [],
+      "closedNavigation": [
+        {
+          "trigger": "Menu",
+          "visible": false,
+          "tabbableDescendants": 0
+        },
+        {
+          "trigger": "Search",
+          "visible": false,
+          "tabbableDescendants": 0
+        }
+      ],
+      "brokenImages": [],
+      "media": [
+        {
+          "src": "/theme-assets/madeyours/v2/notebook.webp",
+          "width": 960,
+          "height": 960
+        }
+      ],
+      "fonts": {
+        "status": "loaded",
+        "body": "Inter, system-ui, -apple-system, sans-serif",
+        "loaded": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          }
+        ]
+      },
+      "title": "Personalization details not supplied",
+      "screenshot": "screenshots/missing-narrow-baseline.png"
+    },
+    {
+      "scene": "unicode",
+      "device": "narrow",
+      "kind": "baseline",
+      "width": 320,
+      "height": 844,
+      "documentWidth": 320,
+      "bodyWidth": 320,
+      "bounds": [],
+      "textBounds": [],
+      "contrastFailures": [],
+      "smallTargets": [],
+      "closedNavigation": [
+        {
+          "trigger": "Menu",
+          "visible": false,
+          "tabbableDescendants": 0
+        },
+        {
+          "trigger": "Search",
+          "visible": false,
+          "tabbableDescendants": 0
+        }
+      ],
+      "brokenImages": [],
+      "media": [
+        {
+          "src": "/theme-assets/madeyours/v2/block.webp",
+          "width": 960,
+          "height": 960
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/notebook.webp",
+          "width": 960,
+          "height": 960
+        }
+      ],
+      "fonts": {
+        "status": "loaded",
+        "body": "Inter, system-ui, -apple-system, sans-serif",
+        "loaded": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          }
+        ]
+      },
+      "title": "Unicode letter capability sample",
+      "screenshot": "screenshots/unicode-narrow-baseline.png"
+    },
+    {
+      "scene": "unavailable",
+      "device": "narrow",
+      "kind": "baseline",
+      "width": 320,
+      "height": 844,
+      "documentWidth": 320,
+      "bodyWidth": 320,
+      "bounds": [],
+      "textBounds": [],
+      "contrastFailures": [],
+      "smallTargets": [],
+      "closedNavigation": [
+        {
+          "trigger": "Menu",
+          "visible": false,
+          "tabbableDescendants": 0
+        },
+        {
+          "trigger": "Search",
+          "visible": false,
+          "tabbableDescendants": 0
+        }
+      ],
+      "brokenImages": [],
+      "media": [
+        {
+          "src": "/theme-assets/madeyours/v2/block.webp",
+          "width": 960,
+          "height": 960
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/notebook.webp",
+          "width": 960,
+          "height": 960
+        }
+      ],
+      "fonts": {
+        "status": "loaded",
+        "body": "Inter, system-ui, -apple-system, sans-serif",
+        "loaded": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          }
+        ]
+      },
+      "title": "Desk name block",
+      "screenshot": "screenshots/unavailable-narrow-baseline.png"
+    },
+    {
+      "scene": "empty",
+      "device": "narrow",
+      "kind": "baseline",
+      "width": 320,
+      "height": 844,
+      "documentWidth": 320,
+      "bodyWidth": 320,
+      "bounds": [],
+      "textBounds": [],
+      "contrastFailures": [],
+      "smallTargets": [],
+      "closedNavigation": [
+        {
+          "trigger": "Menu",
+          "visible": false,
+          "tabbableDescendants": 0
+        },
+        {
+          "trigger": "Search",
+          "visible": false,
+          "tabbableDescendants": 0
+        }
+      ],
+      "brokenImages": [],
+      "media": [],
+      "fonts": {
+        "status": "loaded",
+        "body": "Inter, system-ui, -apple-system, sans-serif",
+        "loaded": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          }
+        ]
+      },
+      "title": "Choose your base",
+      "screenshot": "screenshots/empty-narrow-baseline.png"
+    },
+    {
+      "scene": "home",
+      "device": "narrow",
+      "kind": "text2x",
+      "width": 320,
+      "height": 844,
+      "documentWidth": 320,
+      "bodyWidth": 320,
+      "bounds": [],
+      "textBounds": [],
+      "contrastFailures": [],
+      "smallTargets": [],
+      "closedNavigation": [
+        {
+          "trigger": "Menu",
+          "visible": false,
+          "tabbableDescendants": 0
+        },
+        {
+          "trigger": "Search",
+          "visible": false,
+          "tabbableDescendants": 0
+        }
+      ],
+      "brokenImages": [],
+      "media": [
+        {
+          "src": "/theme-assets/madeyours/v2/hero.webp",
+          "width": 1280,
+          "height": 853
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/block.webp",
+          "width": 960,
+          "height": 960
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/notebook.webp",
+          "width": 960,
+          "height": 960
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/notebook.webp",
+          "width": 960,
+          "height": 960
+        }
+      ],
+      "fonts": {
+        "status": "loaded",
+        "body": "Inter, system-ui, -apple-system, sans-serif",
+        "loaded": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          }
+        ]
+      },
+      "title": "Make something everyday feel like you.",
+      "screenshot": "screenshots/home-narrow-text2x.png"
+    },
+    {
+      "scene": "collection",
+      "device": "narrow",
+      "kind": "text2x",
+      "width": 320,
+      "height": 844,
+      "documentWidth": 320,
+      "bodyWidth": 320,
+      "bounds": [],
+      "textBounds": [],
+      "contrastFailures": [],
+      "smallTargets": [],
+      "closedNavigation": [
+        {
+          "trigger": "Menu",
+          "visible": false,
+          "tabbableDescendants": 0
+        },
+        {
+          "trigger": "Search",
+          "visible": false,
+          "tabbableDescendants": 0
+        }
+      ],
+      "brokenImages": [],
+      "media": [
+        {
+          "src": "/theme-assets/madeyours/v2/block.webp",
+          "width": 960,
+          "height": 960
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/notebook.webp",
+          "width": 960,
+          "height": 960
+        }
+      ],
+      "fonts": {
+        "status": "loaded",
+        "body": "Inter, system-ui, -apple-system, sans-serif",
+        "loaded": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          }
+        ]
+      },
+      "title": "Choose your base",
+      "screenshot": "screenshots/collection-narrow-text2x.png"
+    },
+    {
+      "scene": "product",
+      "device": "narrow",
+      "kind": "text2x",
+      "width": 320,
+      "height": 844,
+      "documentWidth": 320,
+      "bodyWidth": 320,
+      "bounds": [],
+      "textBounds": [],
+      "contrastFailures": [],
+      "smallTargets": [],
+      "closedNavigation": [
+        {
+          "trigger": "Menu",
+          "visible": false,
+          "tabbableDescendants": 0
+        },
+        {
+          "trigger": "Search",
+          "visible": false,
+          "tabbableDescendants": 0
+        }
+      ],
+      "brokenImages": [],
+      "media": [
+        {
+          "src": "/theme-assets/madeyours/v2/block.webp",
+          "width": 960,
+          "height": 960
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/notebook.webp",
+          "width": 960,
+          "height": 960
+        }
+      ],
+      "fonts": {
+        "status": "loaded",
+        "body": "Inter, system-ui, -apple-system, sans-serif",
+        "loaded": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          }
+        ]
+      },
+      "title": "Desk name block",
+      "screenshot": "screenshots/product-narrow-text2x.png"
+    },
+    {
+      "scene": "product",
+      "device": "narrow",
+      "kind": "long-hindi",
+      "width": 320,
+      "height": 844,
+      "documentWidth": 320,
+      "bodyWidth": 320,
+      "bounds": [],
+      "textBounds": [],
+      "contrastFailures": [],
+      "smallTargets": [],
+      "closedNavigation": [
+        {
+          "trigger": "Menu",
+          "visible": false,
+          "tabbableDescendants": 0
+        },
+        {
+          "trigger": "Search",
+          "visible": false,
+          "tabbableDescendants": 0
+        }
+      ],
+      "brokenImages": [],
+      "media": [
+        {
+          "src": "/theme-assets/madeyours/v2/block.webp",
+          "width": 960,
+          "height": 960
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/notebook.webp",
+          "width": 960,
+          "height": 960
+        }
+      ],
+      "fonts": {
+        "status": "loaded",
+        "body": "Inter, system-ui, -apple-system, sans-serif",
+        "loaded": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          }
+        ]
+      },
+      "title": "आपके अपने शब्दों से बने रोज़मर्रा के सामान — नाम, तरीका, शैली और स्थान की पूरी जानकारी ध्यान से जाँचें",
+      "screenshot": "screenshots/product-narrow-long-hindi.png"
+    },
+    {
+      "scene": "product",
+      "device": "narrow",
+      "kind": "review",
+      "width": 320,
+      "height": 844,
+      "documentWidth": 320,
+      "bodyWidth": 320,
+      "bounds": [],
+      "textBounds": [],
+      "contrastFailures": [],
+      "smallTargets": [],
+      "closedNavigation": [
+        {
+          "trigger": "Menu",
+          "visible": false,
+          "tabbableDescendants": 0
+        },
+        {
+          "trigger": "Search",
+          "visible": false,
+          "tabbableDescendants": 0
+        }
+      ],
+      "brokenImages": [],
+      "media": [
+        {
+          "src": "/theme-assets/madeyours/v2/block.webp",
+          "width": 960,
+          "height": 960
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/notebook.webp",
+          "width": 960,
+          "height": 960
+        }
+      ],
+      "fonts": {
+        "status": "loaded",
+        "body": "Inter, system-ui, -apple-system, sans-serif",
+        "loaded": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          }
+        ]
+      },
+      "title": "Desk name block",
+      "screenshot": "screenshots/product-narrow-review.png"
+    },
+    {
+      "scene": "product",
+      "device": "narrow",
+      "kind": "invalid",
+      "width": 320,
+      "height": 844,
+      "documentWidth": 320,
+      "bodyWidth": 320,
+      "bounds": [],
+      "textBounds": [],
+      "contrastFailures": [],
+      "smallTargets": [],
+      "closedNavigation": [
+        {
+          "trigger": "Menu",
+          "visible": false,
+          "tabbableDescendants": 0
+        },
+        {
+          "trigger": "Search",
+          "visible": false,
+          "tabbableDescendants": 0
+        }
+      ],
+      "brokenImages": [],
+      "media": [
+        {
+          "src": "/theme-assets/madeyours/v2/block.webp",
+          "width": 960,
+          "height": 960
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/notebook.webp",
+          "width": 960,
+          "height": 960
+        }
+      ],
+      "fonts": {
+        "status": "loaded",
+        "body": "Inter, system-ui, -apple-system, sans-serif",
+        "loaded": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          }
+        ]
+      },
+      "title": "Desk name block",
+      "screenshot": "screenshots/product-narrow-invalid.png"
+    },
+    {
+      "scene": "unicode",
+      "device": "mobile",
+      "kind": "normalized-review",
+      "width": 390,
+      "height": 844,
+      "documentWidth": 390,
+      "bodyWidth": 390,
+      "bounds": [],
+      "textBounds": [],
+      "contrastFailures": [],
+      "smallTargets": [],
+      "closedNavigation": [
+        {
+          "trigger": "Menu",
+          "visible": false,
+          "tabbableDescendants": 0
+        },
+        {
+          "trigger": "Search",
+          "visible": false,
+          "tabbableDescendants": 0
+        }
+      ],
+      "brokenImages": [],
+      "media": [
+        {
+          "src": "/theme-assets/madeyours/v2/block.webp",
+          "width": 960,
+          "height": 960
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/notebook.webp",
+          "width": 960,
+          "height": 960
+        }
+      ],
+      "fonts": {
+        "status": "loaded",
+        "body": "Inter, system-ui, -apple-system, sans-serif",
+        "loaded": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          }
+        ]
+      },
+      "title": "Unicode letter capability sample",
+      "screenshot": "screenshots/unicode-mobile-normalized-review.png"
+    },
+    {
+      "scene": "product",
+      "device": "mobile",
+      "kind": "description-open",
+      "width": 390,
+      "height": 844,
+      "documentWidth": 390,
+      "bodyWidth": 390,
+      "bounds": [],
+      "textBounds": [],
+      "contrastFailures": [],
+      "smallTargets": [],
+      "closedNavigation": [
+        {
+          "trigger": "Menu",
+          "visible": false,
+          "tabbableDescendants": 0
+        },
+        {
+          "trigger": "Search",
+          "visible": false,
+          "tabbableDescendants": 0
+        }
+      ],
+      "brokenImages": [],
+      "media": [
+        {
+          "src": "/theme-assets/madeyours/v2/block.webp",
+          "width": 960,
+          "height": 960
+        },
+        {
+          "src": "/theme-assets/madeyours/v2/notebook.webp",
+          "width": 960,
+          "height": 960
+        }
+      ],
+      "fonts": {
+        "status": "loaded",
+        "body": "Inter, system-ui, -apple-system, sans-serif",
+        "loaded": [
+          {
+            "family": "Inter",
+            "weight": "400"
+          },
+          {
+            "family": "Inter",
+            "weight": "600"
+          },
+          {
+            "family": "Inter",
+            "weight": "700"
+          }
+        ]
+      },
+      "title": "Desk name block",
+      "screenshot": "screenshots/product-mobile-description-open.png"
+    }
+  ],
+  "interactions": [
+    {
+      "device": "desktop",
+      "review": true,
+      "editFocus": true,
+      "invalidDraftRetained": true,
+      "lastValidPreview": "Asha",
+      "staleReviewRejected": true,
+      "correctedReview": "Kabir"
+    },
+    {
+      "device": "tablet",
+      "review": true,
+      "editFocus": true,
+      "invalidDraftRetained": true,
+      "lastValidPreview": "Asha",
+      "staleReviewRejected": true,
+      "correctedReview": "Kabir"
+    },
+    {
+      "device": "mobile",
+      "review": true,
+      "editFocus": true,
+      "invalidDraftRetained": true,
+      "lastValidPreview": "Asha",
+      "staleReviewRejected": true,
+      "correctedReview": "Kabir"
+    },
+    {
+      "device": "narrow",
+      "review": true,
+      "editFocus": true,
+      "invalidDraftRetained": true,
+      "lastValidPreview": "Asha",
+      "staleReviewRejected": true,
+      "correctedReview": "Kabir"
+    },
+    {
+      "scenario": "notebook13CharactersRejected",
+      "pass": true
+    },
+    {
+      "scenario": "NFCRequiresExplicitActionAndReview",
+      "pass": true
+    },
+    {
+      "scenario": "unavailableBaseRemainsBlockedAfterReview",
+      "pass": true
+    },
+    {
+      "scenario": "nativeDisclosureAndKeyboardFocus",
+      "pass": true,
+      "focus": {
+        "outline": "solid",
+        "width": "3px"
+      }
+    }
+  ],
+  "keyboard": [
+    {
+      "label": "",
+      "inClosedPanel": false
+    },
+    {
+      "label": "Menu",
+      "inClosedPanel": false
+    },
+    {
+      "label": "MadeYours",
+      "inClosedPanel": false
+    },
+    {
+      "label": "Search",
+      "inClosedPanel": false
+    },
+    {
+      "label": "Log in",
+      "inClosedPanel": false
+    },
+    {
+      "label": "Cart (0)",
+      "inClosedPanel": false
+    },
+    {
+      "label": "Choose your base",
+      "inClosedPanel": false
+    },
+    {
+      "label": "",
+      "inClosedPanel": false
+    },
+    {
+      "label": "Desk name block",
+      "inClosedPanel": false
+    },
+    {
+      "label": "Choose and personalize",
+      "inClosedPanel": false
+    },
+    {
+      "label": "",
+      "inClosedPanel": false
+    },
+    {
+      "label": "Linen notebook",
+      "inClosedPanel": false
+    },
+    {
+      "label": "Choose and personalize",
+      "inClosedPanel": false
+    },
+    {
+      "label": "Desk details",
+      "inClosedPanel": false
+    },
+    {
+      "label": "Paper and plans",
+      "inClosedPanel": false
+    },
+    {
+      "label": "Contact us",
+      "inClosedPanel": false
+    },
+    {
+      "label": "Powered by LetBuyy",
+      "inClosedPanel": false
+    },
+    {
+      "label": "Choose. Specify. Review.\n    \n  \n\n\n  \n    \n      Menu\n      \n        M",
+      "inClosedPanel": false
+    },
+    {
+      "label": "",
+      "inClosedPanel": false
+    },
+    {
+      "label": "Menu",
+      "inClosedPanel": false
+    },
+    {
+      "label": "MadeYours",
+      "inClosedPanel": false
+    },
+    {
+      "label": "Search",
+      "inClosedPanel": false
+    }
+  ],
+  "pageErrors": [],
+  "failedRequests": [],
+  "status": "pass",
+  "failures": []
+}

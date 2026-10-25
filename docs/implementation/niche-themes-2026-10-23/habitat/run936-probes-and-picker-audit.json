@@ -1,0 +1,94 @@
+{
+  "recordedAt": "2026-10-24T05:50:42.674418+00:00",
+  "runId": "936e5f577646",
+  "status": "PASS_PROBE_SETUP_AND_VISIBLE_NEGATIVE_PICKER_COMPONENTS",
+  "probesExactlyFrozenRecipe": true,
+  "bindings": {
+    "DIMENSIONS_ONLY": "d0269c4f-8175-4499-b13c-fb59f4d18eac",
+    "WIDTH_ONLY": "29c731cc-8b16-4e08-8f50-11e219310844",
+    "probeCollection": "6e25118a-9f39-4ad9-8374-d0b5bf3e4e25"
+  },
+  "probeCollectionEmptyToSaved": {
+    "emptyTotal": 0,
+    "savedTotal": 2,
+    "exactOnlyTwoProbeMembership": true,
+    "publicWholeCapabilitiesFalseToTrue": true,
+    "noInventedMaterialOrFinishChoices": true
+  },
+  "pickerVisibleComponents": {
+    "initial-common": {
+      "commonFactsExact": true,
+      "addDisabled": true,
+      "visibleOnly": true,
+      "selectedUUIDCarrierNotCapturedInAX": true
+    },
+    "finish-only": {
+      "commonFactsExact": true,
+      "addDisabled": true,
+      "visibleOnly": true,
+      "selectedUUIDCarrierNotCapturedInAX": true
+    },
+    "unmatched": {
+      "commonFactsExact": true,
+      "addDisabled": true,
+      "visibleOnly": true,
+      "selectedUUIDCarrierNotCapturedInAX": true
+    }
+  },
+  "limits": [
+    "Setup receipts do not execute HQ08/HQ09 scoped requests or prove supported controls individually.",
+    "Desk collection selected-membership AX is positive; actual saved/public scoped receipt still pending.",
+    "AX does not expose data-lb variant UUID carriers; retain HI06 partial until actual DOM receipt.",
+    "HI14-HI17 explicitly unallocated NOT_RUN; no own runtime/network/database action."
+  ],
+  "evidence": [
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-habitat-HI02-probes-readback.json",
+      "sha256": "ab97956edd2a24279647874571931f663dbfdd1b26d7ad02a0029f84d5d42692"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-habitat-probe-collection-empty.json",
+      "sha256": "80e10b3b8e0132587d7c24d8027d393aff16bd0c3dfd0f9c609b347028c9c188"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-habitat-probe-collection-saved.json",
+      "sha256": "b03aa6439a464c1fdf1d9a410def5c4c87abb2a8f09af761bd3652d3bc6dc9ed"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-habitat-HI02-dimensions-probe-create-draft.ax.txt",
+      "sha256": "28dfdc8728a62450ce1b595d0dcc56a07a451483a429cb62d0f9928e63b89006"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-habitat-HI02-dimensions-probe-created-reloaded.ax.txt",
+      "sha256": "20136e003d043d4e247f377336f51143dc6ebe8525ecdbd2df092f36f100cea8"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-habitat-HI02-width-probe-create-draft.ax.txt",
+      "sha256": "88f37e3491613eb6a25628cbd1a872950a4825f97ecd33b3108e1cd21a923bad"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-habitat-HI02-width-probe-created-reloaded.ax.txt",
+      "sha256": "f8e3223596f15f8980508c7ebba35dae1159b1a290107f1644e6535575858d24"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-habitat-HI05-desk-membership-positive.ax.txt",
+      "sha256": "938a9783c3a3e74ae4544bfe452a04284c4c9c85fab0fe644659c76799bf93dd"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-habitat-HI05-probes-two-selected.ax.txt",
+      "sha256": "2ca9e4bb03b6301838159a4c2a7ea2c9d60e68b8b13894f9876b83bf5531e63c"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-habitat-HI06-initial-common.ax.txt",
+      "sha256": "92e320481694aa8ddd265781038b2ec9528aaede3019f1ecbd9b1b1290802933"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-habitat-HI06-finish-only.ax.txt",
+      "sha256": "d21adceea3aaa308849f3e9b3d7eaf55b060bb5278daf5360b8657c9f48410a0"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-habitat-HI06-unmatched.ax.txt",
+      "sha256": "0887e9609aa71ac667a395ab03935986be410f242d589be3ff7465ba08180b45"
+    }
+  ]
+}

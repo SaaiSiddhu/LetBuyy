@@ -1,0 +1,70 @@
+TAP version 13
+# Subtest: all five real editors compose without creating metadata when only the view category changes
+ok 1 - all five real editors compose without creating metadata when only the view category changes
+  ---
+  duration_ms: 880.117208
+  type: 'test'
+  ...
+# Subtest: actual Food child edits flow into only its raw namespace and retain incomplete values until corrected
+ok 2 - actual Food child edits flow into only its raw namespace and retain incomplete values until corrected
+  ---
+  duration_ms: 43.644666
+  type: 'test'
+  ...
+# Subtest: actual Toy child edits preserve Food and exact explicit clear markers
+ok 3 - actual Toy child edits preserve Food and exact explicit clear markers
+  ---
+  duration_ms: 49.773416
+  type: 'test'
+  ...
+# Subtest: a real child null removes one namespace and the final removal still emits explicit empty metadata
+ok 4 - a real child null removes one namespace and the final removal still emits explicit empty metadata
+  ---
+  duration_ms: 30.5185
+  type: 'test'
+  ...
+# Subtest: wrapper selected clear preserves siblings and all-clear is an explicit independent action
+ok 5 - wrapper selected clear preserves siblings and all-clear is an explicit independent action
+  ---
+  duration_ms: 14.29825
+  type: 'test'
+  ...
+# Subtest: unsupported draft fields remain visible validation failures while supported child edits are retained
+ok 6 - unsupported draft fields remain visible validation failures while supported child edits are retained
+  ---
+  duration_ms: 21.887125
+  type: 'test'
+  ...
+# Subtest: unreadable top-level metadata is kept until an explicit clear and disabled recovery emits nothing
+ok 7 - unreadable top-level metadata is kept until an explicit clear and disabled recovery emits nothing
+  ---
+  duration_ms: 9.028
+  type: 'test'
+  ...
+# Subtest: disabled composition and clear controls cannot emit metadata changes
+ok 8 - disabled composition and clear controls cannot emit metadata changes
+  ---
+  duration_ms: 11.511375
+  type: 'test'
+  ...
+# Subtest: controlled row replacement and common-context changes never reintroduce a prior row draft
+ok 9 - controlled row replacement and common-context changes never reintroduce a prior row draft
+  ---
+  duration_ms: 31.539959
+  type: 'test'
+  ...
+# Subtest: hostile text stays inert and repeated wrappers retain unique labelled controls without nested forms
+ok 10 - hostile text stays inert and repeated wrappers retain unique labelled controls without nested forms
+  ---
+  duration_ms: 36.365084
+  type: 'test'
+  ...
+1..10
+# tests 10
+# suites 0
+# pass 10
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1520.669458

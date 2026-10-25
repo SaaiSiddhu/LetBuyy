@@ -300,6 +300,7 @@ export default function PaymentsSettingsPage() {
     if (loading) {
         return (
             <SettingsPane
+                navigationKey="payments"
                 title="Payments"
                 description="Connect provider credentials and review storefront payment availability."
                 store={store}
@@ -324,6 +325,7 @@ export default function PaymentsSettingsPage() {
 
     return (
         <SettingsPane
+                navigationKey="payments"
             title="Payments"
             description="Connect provider credentials and review storefront payment availability."
             store={store}

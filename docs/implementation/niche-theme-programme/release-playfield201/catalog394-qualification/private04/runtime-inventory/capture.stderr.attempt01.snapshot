@@ -1,0 +1,17 @@
+node:fs:1590
+  const result = binding.readdir(
+                         ^
+
+Error: ENOENT: no such file or directory, scandir '/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private04/empty-overlay/docs/implementation/niche-theme-programme/release-playfield201/proposals394/f5f54a8009732ff71ba248e1f3356f58441e8b2340225c47b19e5ac386ac790e/'
+    at readdirSync (node:fs:1590:26)
+    at file:///Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private04/runtime-inventory/capture-inputs.v3.mjs:22:16
+    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5) {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'scandir',
+  path: '/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private04/empty-overlay/docs/implementation/niche-theme-programme/release-playfield201/proposals394/f5f54a8009732ff71ba248e1f3356f58441e8b2340225c47b19e5ac386ac790e/'
+}
+
+Node.js v22.23.3

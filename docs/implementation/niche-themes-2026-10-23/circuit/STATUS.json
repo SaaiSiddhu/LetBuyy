@@ -1,0 +1,80 @@
+{
+  "phase": "M2_owned_theme_and_merchant_editor_ready",
+  "theme": "Circuit",
+  "preset": "forge",
+  "version": "2.0.0",
+  "chatId": "01a164ba-a97f-7d80-9430-57924218664b",
+  "currentAction": "Owned implementation and isolated review complete; parent lifecycle qualification pending coordinator",
+  "sourceBaseline": "docs/implementation/niche-theme-programme/implementation-baseline.json",
+  "tests": {
+    "focusedSchemaThemeDemoMapper": {
+      "passed": 21,
+      "failed": 0,
+      "log": "unit.log"
+    },
+    "actualResourceBinding": {
+      "passed": 2,
+      "failed": 0,
+      "log": "resource-bindings.log"
+    },
+    "mountedMerchantEditor": {
+      "passed": 5,
+      "failed": 0,
+      "log": "merchant-editor.log"
+    },
+    "commerceTypecheck": {
+      "exitCode": 0,
+      "log": "commerce-typecheck.log"
+    },
+    "themeTypecheck": {
+      "exitCode": 0,
+      "log": "theme-typecheck.log"
+    },
+    "scopedDemoTypecheck": {
+      "exitCode": 0,
+      "log": "demo-typecheck.log"
+    },
+    "scopedMerchantEditorTypecheck": {
+      "exitCode": 0,
+      "log": "merchant-editor-typecheck.log"
+    },
+    "packageLint": {
+      "errors": 0,
+      "introducedWarnings": 0,
+      "inheritedWarnings": 20,
+      "log": "package-audit.json"
+    },
+    "scopedMerchantEditorEslint": {
+      "exitCode": 0,
+      "log": "merchant-editor-lint.log"
+    }
+  },
+  "staticVisualReview": {
+    "passed": 33,
+    "failed": 0,
+    "pngs": 27,
+    "viewports": [
+      1440,
+      834,
+      390,
+      320
+    ],
+    "textScale2xViewports": [
+      834,
+      390,
+      320
+    ],
+    "scope": "Actual public-v2 factory\u2192bounded app data plan\u2192app mapper\u2192Liquid\u2192assembly; no hydration",
+    "bodyElementAndTextBounds": "pass",
+    "actualFontsAndMedia": "pass; local M1 Inter delivery is a deterministic QA override",
+    "textContrastAndKeyboardFocus": "bounded observed checks pass; not WCAG certification",
+    "log": "visual-audit.json"
+  },
+  "captureSlot": "released_to_coordinator",
+  "ownedRuntimeCleanup": "owned headless browser and 127.0.0.1:43272 server closed",
+  "nextStep": "Coordinator integrates merchant parent save/conflict/version and completes shared facet/query/lifecycle/hydrated-commerce/security/performance gates",
+  "implementation": "owned_allocation_complete",
+  "integration": "public catalog/export/mapper/resource binding demonstrated; parent persistence and full lifecycle not yet qualified",
+  "browserVerified": "isolated static Liquid only",
+  "deployed": false
+}

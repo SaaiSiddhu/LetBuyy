@@ -1,0 +1,32 @@
+# Shared Razorpay secure readiness — read-only handoff
+
+**Review complete; actual provider execution is not admitted.** Kindred is the one shared read-only readiness owner under completion-razorpay-secure-readiness-allocation-20261024-01.json. This reuses MadeYours' existing RAZORPAY_READINESS.md and Kindred's source-path audit. It replaces the earlier proposed ownership label, not the existing checkout/payment implementation.
+
+| Required item | Verified state | Remaining evidence |
+| --- | --- | --- |
+| Approved dedicated TEST account and credential owner | Unverified; no approved receipt in inspected handoffs | Nonsecret approved account alias, owner and Test-only mode attestation |
+| Secure runtime credentials | Source binding contract verified; actual bindings unverified | Gateway TEST API pair through protected Env bindings; webhook matching TEST secret and same-account API access where needed |
+| Real provider selection and capture | Source paths traced; actual runtime/account unverified | Confirm real adapter rather than HOSTED_RAZORPAY_TEST_ADAPTER, actual account Test mode and capture/method support |
+| Synthetic scope and current fixture | No active browser/runtime grant | Fresh owned source/runtime/site/buyer/cart/order scope; old936 and protected sessions remain unusable |
+| Owned provider-accepted public HTTPS receiver | No admitted origin/route ownership receipt | Existing approved endpoint routed to canonical webhook-service POST /razorpay, actual listener/account/secret identity |
+| Expiry and cleanup ownership | Unverified for future credentials/ingress/runtime | Named owners, expiry/revocation and owned cleanup boundary |
+
+These states mean **not verified/not admitted**, not that the account, credentials or endpoint do not exist. No account, credential store, ambient env file or old private fixture state was accessed. The current programme/ownership/contracts and named sanctioned redacted handoffs supply no approved Test account or accepted-ingress receipt. Historic local HTTPS checkout readiness, Marketplace operation and local subscription setup are separate evidence. They cannot grant this payment scope.
+
+The normal hosted client goes through contact/delivery, gateway payment-intent and server-stored order binding, then real Razorpay Checkout and confirm. The gateway branch uses its Env API credentials; merchant own-account UI settings alone do not attest those bindings. It creates a canonical pending order before opening the provider UI. Confirm verifies the stored order/signature/replay ownership and fetches provider payment state; captured=true/status=captured and matching order/payment/INR amount are required. Authorized-only remains pending. A sandbox label or successful injected adapter test does not establish a provider transaction. Razorpay documents server-side order creation and the distinction between authorized and captured state. [Integration steps](https://razorpay.com/docs/payments/payment-gateway/web-integration/standard/integration-steps/).
+
+The existing webhook-service receiver is POST /razorpay. It verifies original raw request text before JSON parsing and claims events with duplicate/in-progress handling. Actual delivery, durable effects, races and reconciliation remain NOT_RUN. Razorpay requires public delivery routing and restricts localhost and several common tunnel/interceptor domains; no endpoint is invented or provisioned here. A matching secret must belong to the approved Test webhook/account and be bound securely at the admitted receiver. [Webhook validation/testing](https://razorpay.com/docs/webhooks/validate-test/).
+
+## Single coordinator setup instruction
+
+First consult the already authorized credential/ingress owner for an existing admission receipt. If that detail is still unavailable, ask the human once for the approved dedicated Razorpay TEST account/owner and existing owned, provider-accepted public HTTPS TEST webhook route. Have that owner configure the API pair and matching webhook secret through protected runtime bindings and supply only a nonsecret receipt: account alias/approval, real-adapter and Test-mode verification, capture/test-method support, exact candidate/service identity, synthetic scope, accepted route/secret ownership, expiry and cleanup owners. **Do not paste keys, tokens, secret values, real personal data or old fixture credentials.** If an account or endpoint is unavailable, name the capability; new account/ingress/configuration work needs its own allocation. This is setup information, not a repeated approval request for the already requested Test purchase.
+
+No account/config/provider operation, login, tunnel, deployment, exposure, browser, native test, build or runtime action is granted by this readiness assignment. Each theme still needs its own actual normal browser Test Mode purchase; shared mock/native/COD evidence cannot set RAZORPAY_TEST_VERIFIED. The eventual evidence must join actual local/provider order/payment/event IDs, amount/currency/capture state, normal buyer/merchant views, immutable history, exact inventory/ledger/outbox effects, shared negative/race/recovery controls and owned cleanup. Preserve the original intent on uncertainty; do not manufacture another order or delete financial history.
+
+## Current cleanup and evidence correction
+
+No external resource or runtime lease was acquired, changed, closed or returned. No credential values were read and no provider call was made. No expiry is specified for this read-only assignment; it confers no future resource authority. The allocator may close the work item on this handoff. Future credential/ingress/runtime expiry and cleanup owners remain to be admitted. Source, accepted artifacts and previous evidence remain untouched.
+
+Correction to Kindred's earlier child review: missing allowed_child_types means unrestricted eligible first-party children under the canonical schema; it does not mean nesting is banned. Explicit[] denies and explicit allowlists restrict. The earlier shared block-source admission is conditional until followup03 passes; no full child/render/browser acceptance is carried forward. Earlier receipts remain preserved. Required child coverage must be reconciled additively.
+
+KQA-01 stays **OPEN P2**. Original19 results are unchanged. No provider or full-theme certification is issued. Detailed scope, source pins, unknown fields and input receipts are in the adjacent JSON.

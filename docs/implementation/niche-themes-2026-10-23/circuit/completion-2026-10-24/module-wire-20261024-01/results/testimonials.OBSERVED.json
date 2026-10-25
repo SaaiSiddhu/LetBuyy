@@ -1,0 +1,163 @@
+{
+  "classification": "SOURCE_STATE_SERIALIZATION_ONLY_NOT_ACTUAL_UI_OPERATIONS",
+  "type": "testimonials",
+  "group": "template",
+  "originalId": "section-9c818cd9-d88c-43b4-8d6d-9a78d8997b73",
+  "finalId": "section-ecdc9b60-4b0f-4907-b3ab-0ce6cbab8e00",
+  "sectionFieldsExercised": [
+    "title"
+  ],
+  "effectiveBlockFieldsExercised": [
+    "testimonial.quote",
+    "testimonial.author"
+  ],
+  "phases": [
+    {
+      "phase": "edited",
+      "observed": {
+        "settings": {
+          "title": "Circuit source title"
+        },
+        "disabled": false,
+        "block_order": [
+          "block-107aeb08-9dca-4363-8a79-b444bddb1407",
+          "block-53c5ce1a-41fb-4bd9-9884-9f7128495837"
+        ],
+        "blocks": {
+          "block-107aeb08-9dca-4363-8a79-b444bddb1407": {
+            "type": "testimonial",
+            "settings": {
+              "quote": "Circuit source quote",
+              "author": "Circuit source author"
+            },
+            "disabled": false,
+            "blocks": {},
+            "block_order": []
+          },
+          "block-53c5ce1a-41fb-4bd9-9884-9f7128495837": {
+            "type": "testimonial",
+            "settings": {
+              "quote": "Circuit source quote",
+              "author": "Circuit source author"
+            },
+            "disabled": false,
+            "blocks": {},
+            "block_order": []
+          }
+        }
+      }
+    },
+    {
+      "phase": "hidden-reordered",
+      "observed": {
+        "settings": {
+          "title": "Circuit source title"
+        },
+        "disabled": true,
+        "block_order": [
+          "block-53c5ce1a-41fb-4bd9-9884-9f7128495837",
+          "block-107aeb08-9dca-4363-8a79-b444bddb1407"
+        ],
+        "blocks": {
+          "block-53c5ce1a-41fb-4bd9-9884-9f7128495837": {
+            "type": "testimonial",
+            "settings": {
+              "quote": "Circuit source quote",
+              "author": "Circuit source author"
+            },
+            "disabled": true,
+            "blocks": {},
+            "block_order": []
+          },
+          "block-107aeb08-9dca-4363-8a79-b444bddb1407": {
+            "type": "testimonial",
+            "settings": {
+              "quote": "Circuit source quote",
+              "author": "Circuit source author"
+            },
+            "disabled": true,
+            "blocks": {},
+            "block_order": []
+          }
+        }
+      }
+    },
+    {
+      "phase": "shown",
+      "observed": {
+        "settings": {
+          "title": "Circuit source title"
+        },
+        "disabled": false,
+        "block_order": [
+          "block-53c5ce1a-41fb-4bd9-9884-9f7128495837",
+          "block-107aeb08-9dca-4363-8a79-b444bddb1407"
+        ],
+        "blocks": {
+          "block-53c5ce1a-41fb-4bd9-9884-9f7128495837": {
+            "type": "testimonial",
+            "settings": {
+              "quote": "Circuit source quote",
+              "author": "Circuit source author"
+            },
+            "disabled": false,
+            "blocks": {},
+            "block_order": []
+          },
+          "block-107aeb08-9dca-4363-8a79-b444bddb1407": {
+            "type": "testimonial",
+            "settings": {
+              "quote": "Circuit source quote",
+              "author": "Circuit source author"
+            },
+            "disabled": false,
+            "blocks": {},
+            "block_order": []
+          }
+        }
+      }
+    },
+    {
+      "phase": "removed",
+      "originalSectionAbsent": true,
+      "protectedGroupIdentityRetained": false
+    },
+    {
+      "phase": "readded",
+      "observed": {
+        "settings": {
+          "title": "Circuit source title"
+        },
+        "disabled": false,
+        "block_order": [
+          "block-304dcf4d-273e-406b-956c-115d3f758331",
+          "block-7c201677-fea0-4185-9721-8bddff689a3b"
+        ],
+        "blocks": {
+          "block-304dcf4d-273e-406b-956c-115d3f758331": {
+            "type": "testimonial",
+            "settings": {
+              "quote": "Circuit source quote",
+              "author": "Circuit source author"
+            },
+            "disabled": false,
+            "blocks": {},
+            "block_order": []
+          },
+          "block-7c201677-fea0-4185-9721-8bddff689a3b": {
+            "type": "testimonial",
+            "settings": {
+              "quote": "Circuit source quote",
+              "author": "Circuit source author"
+            },
+            "disabled": false,
+            "blocks": {},
+            "block_order": []
+          }
+        }
+      }
+    }
+  ],
+  "resourceAuthorityProved": false,
+  "actualUiCallbacksExecuted": false
+}

@@ -1,0 +1,11 @@
+Browser tab: 44, Title: "Pantry lifecycle red lentils | Threadline", URL: "http://syn-threadline-ui-33be9d94.localhost:49944/store/syn-threadline-ui-33be9d94/product/d9bd8cae-b211-48c5-8440-5f446dc57c0e?[query-redacted]".
+0 AXWebArea Pantry lifecycle red lentils | Threadline, URL: syn-threadline-ui-33be9d94.localhost:49944/store/syn-threadline-ui-33be9d94/product/d9bd8cae-b211-48c5-8440-5f446dc57c0e?[query-redacted]
+	1 container Shopping cart
+		2 button Close cart
+		3 heading Cart, Value: 2
+			4 text Cart
+		5 text Your bag is empty.
+		6 link Description: View cart, Value: syn-threadline-ui-33be9d94.localhost:49944/store/syn-threadline-ui-33be9d94/cart
+		7 link Description: Checkout, Value: syn-threadline-ui-33be9d94.localhost:49944/store/syn-threadline-ui-33be9d94/checkout
+
+The focused UI element is 2 button Close cart

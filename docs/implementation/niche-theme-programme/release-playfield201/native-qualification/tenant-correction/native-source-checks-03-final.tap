@@ -1,0 +1,46 @@
+TAP version 13
+# Subtest: native source has eight ordered child phases and an owned, non-skipping execution boundary
+ok 1 - native source has eight ordered child phases and an owned, non-skipping execution boundary
+  ---
+  duration_ms: 4.632125
+  type: 'test'
+  ...
+# Subtest: native phase assertions retain real API install/update, private history, rollback picker and exact profile gates
+ok 2 - native phase assertions retain real API install/update, private history, rollback picker and exact profile gates
+  ---
+  duration_ms: 2.054459
+  type: 'test'
+  ...
+# Subtest: pure admission prefix accepts the exact immutable source closure using an in-memory simulated admission only
+ok 3 - pure admission prefix accepts the exact immutable source closure using an in-memory simulated admission only
+  ---
+  duration_ms: 217.886458
+  type: 'test'
+  ...
+# Subtest: missing/pending/wrong-source admission refuses before any owned database code
+ok 4 - missing/pending/wrong-source admission refuses before any owned database code
+  ---
+  duration_ms: 30.631625
+  type: 'test'
+  ...
+# Subtest: tampered dependencies or newly emitted393 migration refuse in the pure prefix
+ok 5 - tampered dependencies or newly emitted393 migration refuse in the pure prefix
+  ---
+  duration_ms: 359.767667
+  type: 'test'
+  ...
+# Subtest: actual safe-update probe remains source-only and proves repaired patch application plus downgrade refusal
+ok 6 - actual safe-update probe remains source-only and proves repaired patch application plus downgrade refusal
+  ---
+  duration_ms: 0.9105
+  type: 'test'
+  ...
+1..6
+# tests 6
+# suites 0
+# pass 6
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1465.718083

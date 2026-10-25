@@ -1,0 +1,12 @@
+{
+  "scope": "pre-capture source/assets QA only",
+  "scenes": 15,
+  "localFontFiles": 5,
+  "originalRasterAssets": 4,
+  "syntax": "Python builders/validator parsed",
+  "labels": "All explicit field labels matched unique IDs across 15 scene sources",
+  "palette": "7 opaque sRGB semantic pairs pass chosen text/boundary criteria",
+  "identity": "Current admin/light brand ink + Geist; explicit Continue state applied before exports",
+  "exportStatus": "45 PNGs / 15 boards captured and locally validated; source unchanged after final render",
+  "boundaries": "No production source, user browser, DB, ports or shared programme indexes changed"
+}

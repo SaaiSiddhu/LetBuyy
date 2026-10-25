@@ -11,7 +11,9 @@ const previouslyFlaggedMigrations = [
   "313_protect_sensitive_approval_authority.sql",
   "319_protect_trust_mutation_authority.sql",
   "357_buyer_review_ownership.sql",
+  "388_cart_order_fact_snapshots.sql",
 ].map(name => "database/supabase/migrations/" + name);
+const liquidArtifactMigration = 'database/supabase/migrations/382_threadline_catalog_v2.sql';
 
 test("Supabase migration history is replay-safe against destructive table operations", () => {
   const result = spawnSync(process.execPath, ["scripts/validators/migration-safety-validator.mjs"], {
@@ -53,6 +55,7 @@ test("migration validator includes untracked source without staging or changing 
     "scripts/migration/run-hot-table-partition-maintenance.mjs", ".github/workflows/hot-table-partition-maintenance.yml",
     "infrastructure/deployment/migration-orchestration.yaml",
     ...previouslyFlaggedMigrations,
+    liquidArtifactMigration,
     ...["000_baseline.sql","079_partition_worker_request_logs.sql","090_custom_domains_and_store_access.sql",
       "114_mobile_onboarding_attempt_progress.sql","115_product_review_merchant_replies.sql","116_mobile_draft_orders.sql",
       "117_mobile_customer_notes_tags.sql","118_mobile_shipping_labels.sql","119_mobile_money_ledgers.sql",
@@ -66,7 +69,7 @@ test("migration validator includes untracked source without staging or changing 
   const beforeHashes=Object.fromEntries(staticInputs.map(path=>[path,hash(join(maintainedRoot,path))]));
   const env={...process.env,GIT_CONFIG_GLOBAL:"/dev/null",GIT_CONFIG_NOSYSTEM:"1",GIT_OPTIONAL_LOCKS:"0",GIT_TERMINAL_PROMPT:"0"};
   for(const name of ["GIT_DIR","GIT_WORK_TREE","GIT_INDEX_FILE","GIT_COMMON_DIR"])delete env[name];
-  const git=(cwd,...args)=>spawnSync("git",["--no-optional-locks",...args],{cwd,env,encoding:"utf8"});
+  const git=(cwd,...args)=>spawnSync("git",["--no-optional-locks",...args],{cwd,env,encoding:"utf8",maxBuffer:32*1024*1024});
   const beforeStatus=git(maintainedRoot,"status","--porcelain=v1","--untracked-files=all");assert.equal(beforeStatus.status,0,beforeStatus.stderr);
   const temporary=mkdtempSync(join(tmpdir(),"letbuyy-migration-validator-untracked-"));
   const unsafeName="database/supabase/migrations/999_syn_unsafe_untracked.sql",safeName="database/supabase/migrations/999_syn_safe_guard_untracked.sql";
@@ -82,10 +85,10 @@ test("migration validator includes untracked source without staging or changing 
       "DO $control$ BEGIN EXECUTE 'TRUNCATE TABLE public.syn_migration_safety'; END $control$;",
       "CREATE FUNCTION public.syn_migration_safety() RETURNS void LANGUAGE plpgsql AS $control$ BEGIN TRUNCATE TABLE public.syn_migration_safety; END $control$;",
     ];
-    for (const [index,path] of previouslyFlaggedMigrations.entries()) {
+    for (const [index,path] of [...previouslyFlaggedMigrations, liquidArtifactMigration].entries()) {
       const target=join(temporary,path);
       try {
-        writeFileSync(target,readFileSync(target,"utf8")+"\n"+destructiveControls[index]+"\n");
+        writeFileSync(target,readFileSync(target,"utf8")+"\n"+destructiveControls[index % destructiveControls.length]+"\n");
         const rejected=run();
         assert.notEqual(rejected.status,0,`Real destructive SQL in ${path} must fail`);
         assert.ok((rejected.stderr+rejected.stdout).includes(path),"The validator must name the modified migration");
@@ -95,10 +98,28 @@ test("migration validator includes untracked source without staging or changing 
       }
       const restored=run();assert.equal(restored.status,0,restored.stderr||restored.stdout);
     }
+    const closedInGuard="a.privilege_type IN ('INSERT','UPDATE','DELETE','TRUNCATE')";
     writeFileSync(join(temporary,unsafeName),"TRUNCATE TABLE public.syn_untracked_guard;\n");
     const untracked=git(temporary,"status","--porcelain=v1","--untracked-files=all", "--",unsafeName);assert.equal(untracked.status,0,untracked.stderr);assert.equal(untracked.stdout.trim(),"?? "+unsafeName);
     assert.equal(git(temporary,"ls-files").stdout.trim(),"","Fixture has an empty Git index; no staging masks the untracked case");
     const unsafe=run();assert.notEqual(unsafe.status,0);assert.ok((unsafe.stderr+unsafe.stdout).includes(unsafeName),"The actual validator must name the unsafe untracked migration");assert.match(unsafe.stderr+unsafe.stdout,/TRUNCATE is forbidden/);
+    for (const sql of [
+      `SELECT 1 WHERE ${closedInGuard}; TRUNCATE TABLE public.syn_untracked_guard;`,
+      `TRUNCATE TABLE public.syn_untracked_guard; SELECT 1 WHERE ${closedInGuard};`,
+      `DO $control$ BEGIN IF ${closedInGuard} THEN NULL; END IF; TRUNCATE TABLE public.syn_untracked_guard; END $control$;`,
+      `SELECT 1 WHERE ${closedInGuard}; DO $control$ BEGIN EXECUTE 'TRUNCATE TABLE public.syn_untracked_guard'; END $control$;`,
+      `SELECT 1 WHERE ${closedInGuard}; DO $control$ BEGIN EXECUTE $cmd$TRUNCATE TABLE public.syn_untracked_guard$cmd$; END $control$;`,
+      `SELECT 1 WHERE ${closedInGuard}; DO $control$ BEGIN EXECUTE format('TRUNCATE TABLE %I','syn_untracked_guard'); END $control$;`,
+      "SELECT 1 WHERE a.privilege_type IN ('TRUNCATE','UNKNOWN');",
+      "SELECT 1 WHERE a.privilege_type IN ('TRUNCATE', current_setting('privilege'));",
+      "SELECT 1 WHERE a.privilege_type IN ('TRUNCATE'||target_table);",
+      "SELECT 1 WHERE a.privilege_type IN ('TRUNCATE'; TRUNCATE TABLE public.syn_untracked_guard;",
+    ]) {
+      writeFileSync(join(temporary,unsafeName),sql+"\n");
+      const rejected=run();assert.notEqual(rejected.status,0,sql);
+      assert.ok((rejected.stderr+rejected.stdout).includes(unsafeName),"The validator must name the guard/control migration");
+      assert.match(rejected.stderr+rejected.stdout,/TRUNCATE is forbidden/,sql);
+    }
     unlinkSync(join(temporary,unsafeName));
     writeFileSync(join(temporary,safeName),"CREATE TABLE public.syn_untracked_guard(id integer);\nCREATE FUNCTION public.syn_guard_reject() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF TG_OP='TRUNCATE' THEN RAISE EXCEPTION 'retained'; END IF; RETURN NULL; END $$;\nCREATE TRIGGER syn_guard BEFORE TRUNCATE ON public.syn_untracked_guard FOR EACH STATEMENT EXECUTE FUNCTION public.syn_guard_reject();\n");
     const safe=run();assert.equal(safe.status,0,safe.stderr||safe.stdout);assert.equal(git(temporary,"status","--porcelain=v1","--untracked-files=all","--",safeName).stdout.trim(),"?? "+safeName);
@@ -115,6 +136,29 @@ test("closed ACL metadata reads retain destructive-statement protection", () => 
   const sql="IF a.privilege_type=ANY(ARRAY['INSERT','DELETE','TRUNCATE','TRIGGER']) THEN NULL; END IF; SELECT jsonb_object_agg(p,has_table_privilege('service_role',v_table,p)) INTO v_backend FROM unnest(ARRAY['SELECT','INSERT','UPDATE','DELETE','TRUNCATE','REFERENCES','TRIGGER']) p;";
   assert.doesNotMatch(stripTruncateGuardDeclarations(sql), /\bTRUNCATE\b/i);
   assert.match(stripTruncateGuardDeclarations(sql+" EXECUTE (ARRAY['TRUNCATE','SELECT'])[1]||target_table;"), /\bTRUNCATE\b/i);
+});
+
+test("closed ACL privilege IN guards recognize only whitelisted literal metadata", () => {
+  const guards = [
+    "privilege_type IN ('INSERT','UPDATE','DELETE','TRUNCATE')",
+    "a.privilege_type IN ('SELECT', 'TRUNCATE', 'REFERENCES', 'TRIGGER', 'MAINTAIN')",
+    "a.privilege_type\n in ( 'truncate' )",
+    "split_part(privilege, ' WITH GRANT OPTION', 1) IN ('SELECT','TRUNCATE')",
+  ];
+  for (const guard of guards) {
+    assert.doesNotMatch(stripTruncateGuardDeclarations(guard), /\bTRUNCATE\b/i, guard);
+    for (const command of ["TRUNCATE public.products;", "EXECUTE 'TRUNCATE public.products';", "EXECUTE (ARRAY['TRUNCATE','SELECT'])[1]||target_table;"]) {
+      assert.match(stripTruncateGuardDeclarations(guard+"; "+command), /\bTRUNCATE\b/i, command);
+    }
+  }
+  for (const sql of [
+    "a.privilege_type IN ('TRUNCATE','UNKNOWN')",
+    "a.privilege_type IN ('TRUNCATE', requested_privilege)",
+    "a.privilege_type IN ('TRUNCATE'||target_table)",
+    "a.privilege_type IN ('TRUNCATE'; TRUNCATE public.products;",
+    "operation IN ('TRUNCATE')",
+    "EXECUTE 'TRUNCATE'||target_table;",
+  ]) assert.match(stripTruncateGuardDeclarations(sql), /\bTRUNCATE\b/i, sql);
 });
 
 

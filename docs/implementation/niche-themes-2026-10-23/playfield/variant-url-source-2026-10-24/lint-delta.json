@@ -1,0 +1,10 @@
+{
+  "baselineErrors": 1,
+  "baselineWarnings": 23,
+  "currentErrors": 1,
+  "currentWarnings": 23,
+  "introducedDiagnostics": 0,
+  "normalizedRuleMessageSourceLineEquality": true,
+  "entireHydrationLint": "BASELINE_FAILURE_RETAINED_OUTSIDE_ALLOCATED_PICKER",
+  "newHelperAndTestsLintExitCode": 0
+}

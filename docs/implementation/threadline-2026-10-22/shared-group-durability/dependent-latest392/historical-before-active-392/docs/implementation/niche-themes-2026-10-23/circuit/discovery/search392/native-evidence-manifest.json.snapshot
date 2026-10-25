@@ -1,0 +1,1844 @@
+{
+  "recordedAt": "2026-10-23T16:46:28.494763+00:00",
+  "nativeQualification": {
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-qualification.json",
+    "sha256": "b44f4d9ad37798dcdca3c31ad30dfeb93bebbf60fd0c843274da18945d342aa2"
+  },
+  "files": [
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/01/command-result.json",
+      "sha256": "b1b067caf218f84cd8dd0969fcdfbba93fad3bbf8f095421fe68a0b934e79a5b",
+      "bytes": 611
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/01/evidence-copy-receipt.json",
+      "sha256": "ad65921fc4f62b6f3c5bc4ebd0e6b3db7c5a8fd0daad47c58c65973af791bc60",
+      "bytes": 2389
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/01/provenance/0001-predecessor391.json",
+      "sha256": "f8c530ef12f35ec509132251225635f980f2116be98dc52186b0169b16141c47",
+      "bytes": 933
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/01/provenance/0002-body.json",
+      "sha256": "c81cb39ebdfc0dc739eb4e000bfe49533a28889646b922b10f79f46216c4a325",
+      "bytes": 873
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/01/provenance/0003-entry.json",
+      "sha256": "e09dde441cf94022bdbf7b546fba2a5e93e7c705c6dd58ebaeb1de8ea197540a",
+      "bytes": 1443
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/01/provenance/0004-body.json",
+      "sha256": "70d7f5a8222eabb33f8675096a9bc2743ebb65cd947032498f4d954033294f70",
+      "bytes": 873
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/01/provenance/0005-suite-after.json",
+      "sha256": "a4941c7adbe2a1899995f1c67f2c48f21cd35e36e356a864c37b17ccfb75a8bd",
+      "bytes": 790
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/01/result.json",
+      "sha256": "c4d04476f374c6f68bf068e4e93e7bf868af3d3603a1bf4e73ea622e30c66dcb",
+      "bytes": 67715
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/01/runner.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/01/runner.stdout",
+      "sha256": "214967bf813fffbee92f3aaf1e3e5bf4452446beafad01d602fdbdacab252e69",
+      "bytes": 67716
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/01/source-after.json",
+      "sha256": "e21b6bd3933fb90a4cc4d1b0b11de2f0441c6f9c3e24ce5a13bd0a06276b3932",
+      "bytes": 40628
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/01/source-before.json",
+      "sha256": "afb8a271017ebc781c1c77acb41fb555f06c2bb10c809f32d476f5d3c9cdf0e2",
+      "bytes": 41539
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/01/source-snapshot/docs/implementation/niche-theme-programme/circuit-search392-evidence-source-admission.json",
+      "sha256": "40e56b9e2f6ac9f8a2c8a05edd77f66b94524cb3cd7d0c19ba671c173a996e2e",
+      "bytes": 1613
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/01/source-snapshot/docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/admission.json",
+      "sha256": "7365adc5beeb9a86c2b05f43e1aefde8a7342fa2384579da0a971f21625b6afe",
+      "bytes": 1652
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/01/source-snapshot/docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/evidence-writer-release.json",
+      "sha256": "5b45fb36212709435dfb387ad9c76703f04e46d96f34b7ffb5c6a786f816144b",
+      "bytes": 2231
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/01/source-snapshot/services/api-gateway/src/__tests__/owned-db/storefront-electronics-search.postgres.test.ts",
+      "sha256": "f0893696d1104c7f46e382eab4eb44ea48758eceeed223e52a6f052385ce1617",
+      "bytes": 31294
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/01/source-snapshot.json",
+      "sha256": "22147aef3ba87a333df791e73441c2d520fa099e540838f6370ea5666e447421",
+      "bytes": 1635
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/01/suite-logs/storefront-electronics-search.postgres.log",
+      "sha256": "ca08fa935bea0c0cf06daa760aed83298f7ddb57f0096c0e7e9f3f774f92284c",
+      "bytes": 20312
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/command-result.json",
+      "sha256": "3c0de99d9c8cf06fd40d3b87e33fbe9da158babd56be1bf265db1d7b07b4eb50",
+      "bytes": 611
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/evidence-copy-receipt.json",
+      "sha256": "05b008f02aa73a19d2fd308b95317267654be12e3bd5220d0c12b2de5bd680b3",
+      "bytes": 160373
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0001-predecessor391.json",
+      "sha256": "d7e741cc39fb0c096e7678e037e02d4a1fff4fb760e65fad6f918c282c79cc6d",
+      "bytes": 933
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0002-body.json",
+      "sha256": "b99ed7c33963d5db64d9cb48c375b21eca5e85923e429f448351a7063be5389f",
+      "bytes": 873
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0003-entry.json",
+      "sha256": "fb62c6de94929966b0c5a1de45e9570b4301cfe88fd38cb0f64ed502b8b36623",
+      "bytes": 1443
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0004-body.json",
+      "sha256": "2d9a0cf28f7724b5b24cddc513fc4510769053233b8a8a3d68c1734a5e07b345",
+      "bytes": 873
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0005-business-rows.json",
+      "sha256": "a1cf31215b3fc809ddadc0d5fa1bc74de2623c261384c9f92f9b3a22ce76be01",
+      "bytes": 1465
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0006-unsupported-variant-persistence-denial.json",
+      "sha256": "d0bd489b8bc8a4ef5cdd664d3800abe41e846fdde21565343cc98592c47f2c4e",
+      "bytes": 2142
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0007-business-rows.json",
+      "sha256": "77eda90e0cf06a053688d9e6963411ba02c7b94c153ce0499a851a37f5a6eefa",
+      "bytes": 1465
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0008-browse.json",
+      "sha256": "6e757b173d544fe06c5fa8e79e6186375d7522b4a066e80aa0de2864636c04b5",
+      "bytes": 3083
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0009-browse.json",
+      "sha256": "c7716a8a528aae71d6f3f70a184400019caaecc976a9911c20c8cefb4ac8a284",
+      "bytes": 3090
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0010-browse.json",
+      "sha256": "88a8ef978e7df9fc97257eafa6cdb416858524703e641cdd2e1bef4e229c873e",
+      "bytes": 3083
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0011-browse.json",
+      "sha256": "26958a13093f1e7db62fcbe6fc7e63dd26cad9e2938f6cd793420f85d95d088a",
+      "bytes": 3187
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0012-browse.json",
+      "sha256": "4c9c80d4b422b6cd0df5aa9a91bd11cdbebcf64773134958aecfd70fcfac8793",
+      "bytes": 3194
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0013-browse.json",
+      "sha256": "4fc454457a72667b763c61b40efb655277c997028c1acca3a49431663a4af485",
+      "bytes": 3186
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0014-browse.json",
+      "sha256": "e1bc79b2ccaa094e5c70c010393191ca1cac5f9c4703506f830544c41cc6c8c4",
+      "bytes": 3040
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0015-browse.json",
+      "sha256": "c7163522f229c993d668a4ab699621537557480eddd566c51dffad252cc1f0c9",
+      "bytes": 3047
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0016-browse.json",
+      "sha256": "cde4f095fca569dca7d1f442a1c86fdf446c295d7416b582d284ac2c6903b83f",
+      "bytes": 3039
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0017-browse.json",
+      "sha256": "d03283a00c26d7c8eb3ccf8343fb2781b624e6762357d6c9d82a2bfc3e81c68c",
+      "bytes": 3322
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0018-browse.json",
+      "sha256": "4f3d1ac7483b1fadd53aa955bb1f48d3a73fdff1eb0ea70146eeed5d28864664",
+      "bytes": 3329
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0019-browse.json",
+      "sha256": "5f3eee3fec1b088b83d8343241599bb529535c221e927ba8c3b818a08f58fdfa",
+      "bytes": 3321
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0020-browse.json",
+      "sha256": "fbfa832baca613112d70bd9c1fe09f6a6a8ae9716678ec9050cba59b21e117f3",
+      "bytes": 3219
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0021-browse.json",
+      "sha256": "099a4908a8a5f7c833609bbe1a26f857ef2f5273daa8e134bca78cc07a816789",
+      "bytes": 3226
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0022-browse.json",
+      "sha256": "e0dbb8f13b40b6de26a790980c2863f50424105af6c72c840a978d62690bdde2",
+      "bytes": 3218
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0023-browse.json",
+      "sha256": "7db6fbc5e9c084ef6eff5e2e53da794f02f4e554e465f2f51f10a1175cdea863",
+      "bytes": 3685
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0024-browse.json",
+      "sha256": "09c0104e4c5f6ed8b17ca7f66791aa9ae60c8c40b63e6f0ec4a27a4f53a2aebd",
+      "bytes": 3692
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0025-browse.json",
+      "sha256": "f59ef57bac77531eec8cf4c6531b04f55b3568f57238d48bf9994c345c3d9c9a",
+      "bytes": 3684
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0026-browse.json",
+      "sha256": "6306b05313c6000cf140695fdad3ee3f76dca51358332c68390c67800fff532c",
+      "bytes": 3142
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0027-browse.json",
+      "sha256": "8fc18e3e4bbcff607c4da0dcdf343e5e70ce1c8e0e8019944eb3bdb582c93ae1",
+      "bytes": 3149
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0028-browse.json",
+      "sha256": "d088c565b4bed765e890038f8a1b9842a9cc0434c1a22e96ae1e4ec5502164be",
+      "bytes": 3141
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0029-browse.json",
+      "sha256": "bbda6017a45a7fdc69c30102b2c0abec8756ed483760b7f4eb56598a2c7c9fc0",
+      "bytes": 3349
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0030-browse.json",
+      "sha256": "78564d694849eb927fc1e6829cc0fe64cf3332ea3ec73604c9b40afb5fdc6fc8",
+      "bytes": 3356
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0031-browse.json",
+      "sha256": "bb46cc6d48b7091d18f4b7a31d4f3cb6599a53ecad1a34f52e58dee488edc3eb",
+      "bytes": 3348
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0032-browse.json",
+      "sha256": "65d07d274d98bf1a8bd449c76bb235dc9de873e47f0a5745db7315e743062d9f",
+      "bytes": 3604
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0033-browse.json",
+      "sha256": "191ce2e6c90b8825f20fc2cc740f5b104d75cd34f86410bac43232bccc761734",
+      "bytes": 3611
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0034-browse.json",
+      "sha256": "8f9e010264997450bc856b72335ccead2fe2113b0da06f99978678d7a3ddeac4",
+      "bytes": 3603
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0035-browse.json",
+      "sha256": "4673167b08a615a14648d30b35d95d4b827922a20dff0c01f35a4e72a7b74952",
+      "bytes": 3604
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0036-browse.json",
+      "sha256": "5a252727a3d47db3109fe10c8b63560e50c6409b3b24d3a66bfe8f91588a2be0",
+      "bytes": 3033
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0037-browse.json",
+      "sha256": "c6756c5753bc89119d28f3a896cd79bb5a22a97e5282777809201d8c7e2e7a2f",
+      "bytes": 3202
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0038-browse.json",
+      "sha256": "263f711c376ad54046e1f0b94b9dbfe29ac5c181a348d499b4dc8aa12b256a39",
+      "bytes": 3362
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0039-browse.json",
+      "sha256": "93531c78fb91c0b878a79a37972aac93458d2e18536f2d53ad38e557ded07dfc",
+      "bytes": 3366
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0040-browse.json",
+      "sha256": "fa275ecae7451b9de133e7b3a61f397c5d52cec86ea92b8f4fa20d7946b1a4eb",
+      "bytes": 3161
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0041-browse.json",
+      "sha256": "32f97efb4f47d634dde6fdad68139940488320c6958a07caa97c298d6e714298",
+      "bytes": 3242
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0042-browse.json",
+      "sha256": "5e57157e718a1bd061f2c00e2561bbed52f52b36b9bf36990b8b8d045064e381",
+      "bytes": 3682
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0043-browse.json",
+      "sha256": "323c3b232184f17afd1fc57d6a2c4f6379bdd780d0d1cc1266f87546a51d9cbf",
+      "bytes": 3645
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0044-browse.json",
+      "sha256": "b9a1f24ece31f6459115e1c9493865fd90ec9be628af723c9cd8978bdad3fe41",
+      "bytes": 36124
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0045-browse.json",
+      "sha256": "50e4f6497827b32f879582b355aee0878d65623ea5538b278ee8b7600507ef0b",
+      "bytes": 7861
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0046-browse.json",
+      "sha256": "5bfa311b6f89a445332d3581698416dca8cc3f8f6f3308518dfdd62eac1ff309",
+      "bytes": 6518
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0047-browse.json",
+      "sha256": "dea642449c60a995e25a4b1ca8db6fe0584583e7d9d201716b930debc158a067",
+      "bytes": 10186
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0048-catalog.json",
+      "sha256": "e90e05eff7302d1ab97f5f46260048eaf66b2bc074d0e4767b50b95e4c140f08",
+      "bytes": 180469
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0049-business-rows.json",
+      "sha256": "d551d6969ad7f41f75f0400fdb3f94db612cbf1825fbee34bd0b09cb9496967c",
+      "bytes": 1466
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0050-browse.json",
+      "sha256": "c90247f253678f05db977d6958e1547ef854bf8a21bfc1fc554474d4525041d4",
+      "bytes": 4234
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0051-browse.json",
+      "sha256": "44322c63ab51f50b20cfc36a455f0ea04d7c9b506e981fb9bd4663b12ce3c7f1",
+      "bytes": 1403
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0052-browse.json",
+      "sha256": "b29203eb74e020b760d6152a7e9ac564e07bcccf725cf5ce3117acb9a5ca8d86",
+      "bytes": 1396
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0053-role-privilege.json",
+      "sha256": "55e8964ca41ef91fd0fc8a18aa96ec265358d5b31d52fe8d5aa06e44afe2610d",
+      "bytes": 876
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0054-role-denial.json",
+      "sha256": "de6ea2ab02acddeb5ac124541a938d86a3c3426031100bdb4e657353fe9eb01e",
+      "bytes": 936
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0055-role-privilege.json",
+      "sha256": "b05094790f374bedf8c9d5d39de09dbf551da972f9f96c5f156d5255ef8698fb",
+      "bytes": 885
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0056-role-denial.json",
+      "sha256": "c633e6d84e98e93cd32edbddaa3b63ab1253b5864bf409e8a06d3d07211fb66d",
+      "bytes": 945
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0057-role-privilege.json",
+      "sha256": "e35ece54fa71a815994c3d53b51a2fb8d356df415be299fab9942c987a2b734f",
+      "bytes": 882
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0058-role-denial.json",
+      "sha256": "f49f9ddb6c6dcff7b8bcf3948621df92223af110bc85a070a05cf73253af62eb",
+      "bytes": 942
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0059-role-privilege.json",
+      "sha256": "22e32243106c155e131e5f7d95a9e50b357986f14c3d24a4efcb599c29ec20d8",
+      "bytes": 885
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0060-role-denial.json",
+      "sha256": "c566009f7ebddd4de9390c45c24bd5725fb71e6f47c56f313d264561462c2b9f",
+      "bytes": 945
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0061-catalog.json",
+      "sha256": "0c12ca5e95eaf8f405ed40390b076b2acf467bca15f820396297cee39b30b476",
+      "bytes": 180469
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0062-catalog.json",
+      "sha256": "a86b741277497d0bccfe3b8bc8d6befed186032af830c6659d19145cb2365258",
+      "bytes": 180716
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0063-business-rows.json",
+      "sha256": "d291de76deaa8ab4fc9eafb11b555ec697cc032f2b5f37846dbc67425ea859f1",
+      "bytes": 1466
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0064-refusal-before.json",
+      "sha256": "6a6b034bd28d194d7b0116de7baf49586d66ea4ef300f242c7292abf3cbb883a",
+      "bytes": 183589
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0065-refusal-error.json",
+      "sha256": "36697b5721e5e8075d2cb91c62472a9eed4ac3cda3edb3b8299b7b17e0f642c9",
+      "bytes": 1246
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0066-catalog.json",
+      "sha256": "6c6e6d5ee748a014377c751de13fed467c5cda84a656e33850320f9a0d95369d",
+      "bytes": 180716
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0067-business-rows.json",
+      "sha256": "e7ad460f2d6dcc0a78c776cc20f0a6bb39c354cb8a9cd5fb745d453507f163da",
+      "bytes": 1466
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0068-refusal-conserved.json",
+      "sha256": "ddbcfbe49ab07480b77e2f78e8c2fe07dace2153c01db3151b361a49c966bc82",
+      "bytes": 1083
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0069-catalog.json",
+      "sha256": "3ed50f4b2e1fdcededbbeebc531fef928ea3eb24345902d9b44de22bb6759c3e",
+      "bytes": 180469
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0070-catalog.json",
+      "sha256": "0341db75a2537e45b200faa2cbb62e394b73fa754442b14941ec3c8881ec0607",
+      "bytes": 180469
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0071-business-rows.json",
+      "sha256": "4088479c8d5deb70beee12e1632811619481f756c6c7529639833fdd755c7faf",
+      "bytes": 1466
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0072-refusal-before.json",
+      "sha256": "d055bc68510da64c49aa694e1a8b897edab6ffc1d95e0f21e91c7c88a26fb00b",
+      "bytes": 183322
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0073-refusal-error.json",
+      "sha256": "9fe0b0ee61a01c99bf00e946b2d8d2ffbfaeca3a804caffa4ff6353745010463",
+      "bytes": 1246
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0074-catalog.json",
+      "sha256": "81a865314b34dc1a909416cc7955ace6fde66cdf8448c9294fc0a620f439994e",
+      "bytes": 180469
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0075-business-rows.json",
+      "sha256": "883b5cdc7bf08ef2957695169eb6600dc3917a5f061e0db342f2358642c7bff8",
+      "bytes": 1466
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0076-refusal-conserved.json",
+      "sha256": "fbfd8b760519f48a908a40fce3dd7907373848548bdf85513b33e1fc65fb30c1",
+      "bytes": 1083
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0077-catalog.json",
+      "sha256": "bab38acdc2c83ec6bb7b4e677ad41e9a785732c3a08cac481c44bdb00a7bfe57",
+      "bytes": 180469
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0078-catalog.json",
+      "sha256": "47dac876acd56684123036890b9c92e68af1c526392ebe9a32bb079af7c93c09",
+      "bytes": 180469
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0079-business-rows.json",
+      "sha256": "f097f2c0ca60bc5bcd0e5b74f10088af17640b74cbd2e55aa8f45be2271b9461",
+      "bytes": 1466
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0080-refusal-before.json",
+      "sha256": "4f9e91c3380b760a29ae32642afe09867c88efc08093851d60420368e7c8cb8d",
+      "bytes": 183322
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0081-refusal-error.json",
+      "sha256": "397361a87077afa7981745df6dc782ca52151bcbff9d59ef140caf6029a695e0",
+      "bytes": 1232
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0082-catalog.json",
+      "sha256": "e6adfb1709599fd2223915d4c6c57757614b79054a234006535daf47386ee8dc",
+      "bytes": 180469
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0083-business-rows.json",
+      "sha256": "2756c2375953b58442dabb4820b3c278d65ddbffb4ed5e4513c4fb7f4476dc4a",
+      "bytes": 1466
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0084-refusal-conserved.json",
+      "sha256": "268ab9bf1156664c640aa8e2166f6e08c84173434d13ed7b3ec36dd38d284948",
+      "bytes": 1083
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0085-catalog.json",
+      "sha256": "139e67d408ab7a03f66f217fd8be5200d0b045a2b87f4d09d6a9e6904d4000f8",
+      "bytes": 180469
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0086-catalog.json",
+      "sha256": "b7f35e464133d9c63b8ed50fec922161195c145e36d4c53e484f2c80132b4afe",
+      "bytes": 180465
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0087-business-rows.json",
+      "sha256": "206a23327451c4cef067e281777f2595807bf61f9456413e2cbc7f64576885cc",
+      "bytes": 1466
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0088-refusal-before.json",
+      "sha256": "bad0c090b3dc59041ad83de85a0d5cdc5a33d1946045183a935b86e7f6e5c29f",
+      "bytes": 183318
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0089-refusal-error.json",
+      "sha256": "e325965d10e723457e87d6cb25ee42059ecb5f9cebf6eeb4f19afd319bee314a",
+      "bytes": 1246
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0090-catalog.json",
+      "sha256": "e5fe15b84177a719f9e2ed62ca87bddb922e3e37943b08ca0fbe10f07adfef58",
+      "bytes": 180465
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0091-business-rows.json",
+      "sha256": "3e018e198ee1dd859f584cf97cd9393a52b75f48897a5abe26ec442d04db5930",
+      "bytes": 1466
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0092-refusal-conserved.json",
+      "sha256": "6bb2f488bc64a89f687c6a320feb78a7e6d4565947ffd640bb27d5c140444e1f",
+      "bytes": 1083
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0093-catalog.json",
+      "sha256": "80ed7b1d6adb144e17b6b22d47336fe06c1e80eb2355e8daf04f2afe96976625",
+      "bytes": 180469
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0094-role-edges.json",
+      "sha256": "d0f12c2d3272972bcdabd7c6b0ab2fa1d3b00543d81219d884a12460ee5407cf",
+      "bytes": 1031
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0095-role-edges.json",
+      "sha256": "72046349c514fee96295e7dc54228bf88a7f077e5ce358fc23b5c0a7f1d97700",
+      "bytes": 829
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0096-inherited-privilege-mutant.json",
+      "sha256": "50549f7f01f39cf7f6c89020016cbbcc63179f3a2b267b46864cf67a0c071476",
+      "bytes": 894
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0097-catalog.json",
+      "sha256": "5bb153c8940c922d0ea40aa951d94a28731cbc6eb54ff248cdd21fb66e973a20",
+      "bytes": 180469
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0098-business-rows.json",
+      "sha256": "cf9710b978a173ee9bc25447e78eeb236c6f19d3e89098b02e46064af02924c1",
+      "bytes": 1466
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0099-refusal-before.json",
+      "sha256": "d6dbf76340c1ef0ea9b83c3dd8f01e9604309ba24f913bd60c3986041e9e3f7a",
+      "bytes": 183322
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0100-refusal-error.json",
+      "sha256": "2e09d7aa599039c65cc8420d85c19892c1461deea1be53cf6a62eb77f74a1562",
+      "bytes": 1246
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0101-catalog.json",
+      "sha256": "8d7c54fc6b4aad5d7325b58c41d088b2283d58b9fd9722e93645f0758faaed91",
+      "bytes": 180470
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0102-business-rows.json",
+      "sha256": "516d2162a09f351229db68246b2a0c3bb09a95f5d793d528275a319f9a03db73",
+      "bytes": 1467
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0103-refusal-conserved.json",
+      "sha256": "7af8b3d333dfa84fe3561268cee204376e7218413c9c1d6da699f51b1c979d3c",
+      "bytes": 1084
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0104-role-edges.json",
+      "sha256": "dd8e95f8e66ed7a4f25c7eb80b1dfc0cfe700faff8d72aa7343cc5328d142c22",
+      "bytes": 1032
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0105-role-edges.json",
+      "sha256": "f7565fd54a2a5e842299e8cca40db6527c012b44e27aa3317d05535492c7348c",
+      "bytes": 830
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0106-role-privilege.json",
+      "sha256": "fe146044a0c68609d47a52971db77b9704b9ea0afc9ef9b386c06d5e8a1d35d3",
+      "bytes": 877
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0107-role-denial.json",
+      "sha256": "21661a8399933216c41fcc1c370e74552d212b367c528c87fe822ba75ad523c3",
+      "bytes": 937
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0108-role-privilege.json",
+      "sha256": "07bcf4be66c062c8585406ed82bd894cd3a33e1eacbd02c554c1c5185ba22a0f",
+      "bytes": 886
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0109-role-denial.json",
+      "sha256": "f7bac6ac2b23cf34cede6b4e5ac2f54d95f740976cfa06932cfa0d9ef9283e6d",
+      "bytes": 946
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0110-role-privilege.json",
+      "sha256": "f167e6cf9f47a12c1c3c5ef519964e5eb91689e00994464410e0acd3ba2e6712",
+      "bytes": 883
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0111-role-denial.json",
+      "sha256": "540d8ecaa0bf2e677cd42fee41d57ce27dbc75727cd6fc4c60e243481effd85a",
+      "bytes": 943
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0112-role-privilege.json",
+      "sha256": "9ada1f0f532c7931b3514a09ccf54d5152fd66f88c83907fb382490b9b2ed4ab",
+      "bytes": 886
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0113-role-denial.json",
+      "sha256": "a276938a935f029756adc0c414aa65e62d57ac70980eec1b3c4872dc2e1f349e",
+      "bytes": 946
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0114-catalog.json",
+      "sha256": "13d6f3d49f742bbdc515cd36f7084595c9e8e8082bea17fb2b32c17dd6e08b0c",
+      "bytes": 180470
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0115-catalog.json",
+      "sha256": "d327ccfc3419438075dc35ef87f28566e7c92fca5186eb418991c0a8f783ad9f",
+      "bytes": 180470
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0116-body.json",
+      "sha256": "c525b3625d27fd31b429dcd2dac0a4c9c94832bb2d7ae078a7b561b86cd42592",
+      "bytes": 875
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0117-business-rows.json",
+      "sha256": "98a16ac30e29e71f8ea6fa273c9fe4561b793c492d894a120e94ec5333ab27f2",
+      "bytes": 1467
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0118-browse.json",
+      "sha256": "b5b2948a12ac5ea0ab04e20aea7d6700477466316122d58ae626b3d3822808ab",
+      "bytes": 4226
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0119-browse.json",
+      "sha256": "64e49a4c99ec422a0b469008803d103089784285f7d1b2465eb2150ef3bf8404",
+      "bytes": 4226
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0120-browse.json",
+      "sha256": "e2ffa8fc94ad6773a0de8874ab6b7722b2672be4640d86ed70687bec38c64d05",
+      "bytes": 3830
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0121-browse.json",
+      "sha256": "75e56064970feb09b6a8446385962602c0da11afdf55e89760bf3a5ac0b1cfe7",
+      "bytes": 2983
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0122-browse.json",
+      "sha256": "74c94af780dcf4b86c6ae6a07a9c29f4fd9f834181c03a5535cb086dde8cb9af",
+      "bytes": 3810
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0123-browse.json",
+      "sha256": "f5fdc83c1f8da0f48b4fb3b900410b5fdd104be94fd217ecad5aa12a8e537116",
+      "bytes": 3223
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0124-browse.json",
+      "sha256": "0fcf065716ac893bffed32b2b9479bfbff5b7ea2daf9d07291ad368995d34105",
+      "bytes": 10291
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0125-browse.json",
+      "sha256": "1fc758fec9f535f16fecaa2057ee83e9b426979ea00317291455314754b3936a",
+      "bytes": 4235
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0126-browse.json",
+      "sha256": "4ac2ce24b4863f681cb1cc0eaabbc4b8e5655675ada0df8873457f2b0c7af627",
+      "bytes": 1402
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0127-browse.json",
+      "sha256": "c0eb4bf494b4350ce876fe7b16765640f342d7564af86a300a107b1baad04d2b",
+      "bytes": 1402
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0128-browse.json",
+      "sha256": "7d3447dfef9d7dd66ce51af466c90c6a1340a06d78545d83da623b56a33262ab",
+      "bytes": 1404
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0129-browse.json",
+      "sha256": "cdb82d2d095da81a1e81f7bc4010ac850b2d6fedc871dc4493887cbf2ef25aae",
+      "bytes": 1401
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0130-browse.json",
+      "sha256": "dc3173dda14f4deb2efb01115e20b7ba2b11350be977ee1ec6e72f11d568d234",
+      "bytes": 1410
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0131-browse.json",
+      "sha256": "54ba55c4945ac7506f61624af37a982e2b5d1bf434bf2da58204e5b5a2469991",
+      "bytes": 1414
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0132-browse.json",
+      "sha256": "72bb7e2ad83ec5eabe4cc46fe78e026b514351d128fe01254957e8790a9d267d",
+      "bytes": 1417
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0133-browse.json",
+      "sha256": "b33abc2c325f08912c10bd8135f465c334710ea01077ac4a872b36e09810fed1",
+      "bytes": 1409
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0134-browse.json",
+      "sha256": "6b6746c1e3e8db1c0e619335a1994593ab8a5e15506f6a9e08684d674bf8a57b",
+      "bytes": 1403
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0135-browse.json",
+      "sha256": "ad538d19ba54e615fbc30d4d67c00a1cdf260b318a608b08af361ad9808dc767",
+      "bytes": 1406
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0136-browse.json",
+      "sha256": "05392fa8bd34dcfd4892f665deb949a654d2c2862120301882fdbf58a660c11e",
+      "bytes": 1397
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0137-browse.json",
+      "sha256": "8bed01e82d3403d6fd5ce49e6b6b76fce5df27195e58aeb48b5d3995ca9735e1",
+      "bytes": 1397
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0138-browse.json",
+      "sha256": "2edbb108d23a3d9265d62dc9d2d2c33353399a03297a0a4a975ef5b41e32648c",
+      "bytes": 1398
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0139-browse.json",
+      "sha256": "dfcc8e58ab3b8d5d2374b10cb625a540ac9abb8d710be4be2b450ae485b1fcf6",
+      "bytes": 1409
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0140-browse.json",
+      "sha256": "10f8919dfc13b442a0db2b424d20f4cc7fad8a74e22611ac23337fa2c6745f75",
+      "bytes": 1404
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0141-browse.json",
+      "sha256": "2b214b977223ac6bf1717fee1c9239e74080d944dfe72f4e9ad8e82ecc26be1a",
+      "bytes": 1401
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0142-browse.json",
+      "sha256": "61c5b96caa694c6b033f1f5d5137ed6c2a3059b124d599828e3a234abf7ae119",
+      "bytes": 1418
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0143-browse.json",
+      "sha256": "66f26f366c83964b2b82e02259d97f356afb66e3841f89c499cc0089553da15d",
+      "bytes": 1418
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0144-browse.json",
+      "sha256": "f853bf666c5289e3add0b81d1684bd8e703b5f6fb1ec3c5d59dca31578e9999a",
+      "bytes": 1418
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0145-browse.json",
+      "sha256": "5b3b990eeaab380d72fa2f30616fbb879d03a9dc71d63954b39cf8aa2ceef4fa",
+      "bytes": 1418
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0146-browse.json",
+      "sha256": "43d510f6885f783231c0d8458e2a63ff739c865868c163883f63ec813efda5e5",
+      "bytes": 1418
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0147-browse.json",
+      "sha256": "a1121de26d3bedcb2908b44a330e1b5c0ee64a67ff7bed0f9100816c9d8e1b98",
+      "bytes": 1418
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0148-browse.json",
+      "sha256": "a7903cf6730116b999cc7c9bf6214113b88bf84acd2fd33f085f9f1af0fd3e4f",
+      "bytes": 1418
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0149-browse.json",
+      "sha256": "9af40b71327aabd29bd7f9960e6b51d0f372345833a6d3956307294774e61d0b",
+      "bytes": 1418
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0150-browse.json",
+      "sha256": "dded507f75cfc1ba808b87b3d2993db9a1941dcd22041ed00fbf92ebfdb9a6d6",
+      "bytes": 1418
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0151-browse.json",
+      "sha256": "e9e9462353eb14c2cc336a7773965c13251448dbb9ae0d5c885b550626417e0e",
+      "bytes": 1418
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0152-browse.json",
+      "sha256": "0d44f7e63c3fc2d4ef8a5b0d28ef53c198e2e8565568c505cb8c9e793422941a",
+      "bytes": 1419
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0153-browse.json",
+      "sha256": "02244b055a2c688042ad91945f5fb8c128a6778796be75d3e1741ac741c80354",
+      "bytes": 10291
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0154-browse.json",
+      "sha256": "6c60b30840c13287125ef05c7ec2db866ad88f4986e35a736bb10f0d671f001d",
+      "bytes": 10291
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0155-browse.json",
+      "sha256": "beaa6ceb635a8e2dc5b04a1acc589d7038308700e9eb859cc1e120ff6b2d88f4",
+      "bytes": 10291
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0156-browse.json",
+      "sha256": "3d05bb6519e9dd2acf40e9dea411731ccdbbc6acbd6f1f6bef61bd37a90876ab",
+      "bytes": 3069
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0157-browse.json",
+      "sha256": "0bae0922e03e32ee1d0bd4cb2747ccaeb2952f08966a0cc1d86a3fdffb6ec6e1",
+      "bytes": 4222
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0158-browse.json",
+      "sha256": "ba439865f406cfe577d51fe3b586000b9be05598fac3129ff2d864ad0b36f50d",
+      "bytes": 4289
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0159-browse.json",
+      "sha256": "5c4258324959299a0077c191954c88d6b08104d9fc2ec741916bf239624ee35c",
+      "bytes": 1467
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0160-browse.json",
+      "sha256": "4648397024a48a4be233801cdd3d41b83faf9c0433a0b95f1c0b83edbfcfa216",
+      "bytes": 1467
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0161-browse.json",
+      "sha256": "9146f713a44ad3bf3cdef573a878ce66951106ab9b091cce4442f54f8cf97190",
+      "bytes": 1467
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0162-browse.json",
+      "sha256": "f38ca295159d301003defcf078a10d3c285a5e452bd22942f427e6e62814c50a",
+      "bytes": 1452
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0163-browse.json",
+      "sha256": "56d2abc6ff329ee937dd02649e05a34fd8069b4a671f75cb5895981424a4d4a3",
+      "bytes": 1450
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0164-browse.json",
+      "sha256": "ec4cc610f5fd2f75eb3f465b27eefcd56336ab86c0972282c2d6f5b783c87ee8",
+      "bytes": 1450
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0165-browse.json",
+      "sha256": "9527365c295477f0b9e6f46ee5b7a61a6ae6f83ba1bd3a131d987e5d2259ff45",
+      "bytes": 6670
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0166-browse.json",
+      "sha256": "eac49e487081e2bb3b4049126d8e524f053b7c4042979456de8ac3c37912ad73",
+      "bytes": 3162
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0167-browse.json",
+      "sha256": "75c9f24035792e9632237268b40330cc58d90e1e8a54e4112c88f1cf34352b16",
+      "bytes": 1430
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0168-browse.json",
+      "sha256": "0f300dcc32ca3a5a3e394ea59529d8c64393fde1e812b028be66161f675869cf",
+      "bytes": 3511
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0169-browse.json",
+      "sha256": "fb34df868f8459a5d2fe1eb81b63f2e54aa9339ce76492db07b816b7d44126b7",
+      "bytes": 1448
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0170-browse.json",
+      "sha256": "e658c5483ed5cc2014367989e92722e15d27d36af4aee5b4a8c16c0113ca86b1",
+      "bytes": 3085
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0171-browse.json",
+      "sha256": "6b2e4c1c90fc97d1260a1747ba8c31cb2b854e6f35b0a5bdc7301c71f55b1784",
+      "bytes": 3092
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0172-browse.json",
+      "sha256": "ceec02486b74634ec90853b3047b41477bc41bb4ac58d656cca7b7a4c000a801",
+      "bytes": 3084
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0173-browse.json",
+      "sha256": "83ba3bdda8275e2dc06c58b8126d5055b574d9c44a34567cd24e4fc2d028d084",
+      "bytes": 3188
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0174-browse.json",
+      "sha256": "723f7efb0a5a54d024dcc3f1dfa367390bd808de6999d1a54230675669ce6f75",
+      "bytes": 3195
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0175-browse.json",
+      "sha256": "8dd905ab74800cab42246f7f8403a54e2dc11288d1eba85f0606912d21ac1f5e",
+      "bytes": 3187
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0176-browse.json",
+      "sha256": "55609e3b399d9ec2f523fcdd05872261c641ea03b1fc72c752355d40d570276d",
+      "bytes": 3041
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0177-browse.json",
+      "sha256": "34be25483ec4e927514b6b4c668e3d87fcb784141d3665210bfda1aaf9e06772",
+      "bytes": 3048
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0178-browse.json",
+      "sha256": "a5e63ff89c9a6834397d5cb7c1790bee1cfe74bcaf0ca576ed21a25d3d0a95d9",
+      "bytes": 3040
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0179-browse.json",
+      "sha256": "c605bda98a8a2eb3f8d0fcb04e5e9323d1813cab8d4cc82855131ab5d3be5402",
+      "bytes": 3323
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0180-browse.json",
+      "sha256": "22fe592c1aebf78e06844bc819037bbedfa7294641eb2200b4d80053acc5603b",
+      "bytes": 3330
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0181-browse.json",
+      "sha256": "37ebb89df62f81f59b58fbb9137873b16af2986d42b224a53f2702ed36df5510",
+      "bytes": 3322
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0182-browse.json",
+      "sha256": "de16f03bd39bc9ab981ad0de6e926ccc508065d11f6514ba212beb685f1f9129",
+      "bytes": 3220
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0183-browse.json",
+      "sha256": "e3291832d97d11dcacd5dfa91d6cc673d3c156c9e0bb8682aceae6e79d98281e",
+      "bytes": 3227
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0184-browse.json",
+      "sha256": "77995ce8022882ca32c7af4bce61859ece2bb2e7d88b666892d2012829416cf3",
+      "bytes": 3219
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0185-browse.json",
+      "sha256": "a536377cb3be82e578c98f9192c483b860e38d9c59b99caa674f9dd1146be8be",
+      "bytes": 3686
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0186-browse.json",
+      "sha256": "efddf8f6508630acdd3c2c872658b86c7baf9b18732c4bb053b8caeec99265dc",
+      "bytes": 3693
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0187-browse.json",
+      "sha256": "cbdb729c60109c3a9c5c1a34c0d4be409f50693bb4f1aeda761a47dad84c9e18",
+      "bytes": 3685
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0188-browse.json",
+      "sha256": "8885638f1ca6fb95b27af70e5d757a2a8adb7ce2bc48a5e7f2f8ebd98633aa2c",
+      "bytes": 3143
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0189-browse.json",
+      "sha256": "03f3a2554c8aa6aaed6b91e7ea98ba67e5e6a830876a916ca3ae2e28bf8e8996",
+      "bytes": 3150
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0190-browse.json",
+      "sha256": "a0b4d7e32ffc62381849bfb102288d2ecd5b78104accb4d883d55997310722d3",
+      "bytes": 3142
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0191-browse.json",
+      "sha256": "193396585f88a4c2ea9b87d4ffda9e66381ef54adad9073ed5d0cabcbc5e8188",
+      "bytes": 3350
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0192-browse.json",
+      "sha256": "f37a932376200ed8d0deedab62ff0bf494d25f7a5656431173f09d5bff49cfc9",
+      "bytes": 3357
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0193-browse.json",
+      "sha256": "cb511b2e21dc328b3e01491ec9f03518acdd9473d692d4d6b507da1d601d1350",
+      "bytes": 3349
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0194-browse.json",
+      "sha256": "99ae5095eb0938e19e713b5626544284f3c16d308595b2d3579c4968b71e29ad",
+      "bytes": 3605
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0195-browse.json",
+      "sha256": "0164ff791e0156f486bf1fd123711665789ff87c3f4fe5b81186693805aea06e",
+      "bytes": 3612
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0196-browse.json",
+      "sha256": "9a88edea0a5b7899a681a4665970912aa91fad164d9948ce0080a8534c75fa5d",
+      "bytes": 3604
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0197-browse.json",
+      "sha256": "f1277aaae6d178a7deebbf58c534a53a0ceec0f5d311f2f86ffaebcb9af92c6a",
+      "bytes": 3605
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0198-browse.json",
+      "sha256": "b2c790ce5c78db410ade1552d12519951d7fb60a027e7b71f7c8a0bae76c2a97",
+      "bytes": 3034
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0199-browse.json",
+      "sha256": "baa304b9a81bac7bc03dcb1ffdf85b4320c6a0cf9662da06af57e0f9a4c7ae3b",
+      "bytes": 3203
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0200-browse.json",
+      "sha256": "48dacf6878d93e3b4044f4eb4ebe2ca94977d8abf73a5060d04e5ea47ba1dc5c",
+      "bytes": 3363
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0201-browse.json",
+      "sha256": "8ad961a6436d504dbc32372d8b37fc175d2c7c449a42d0189971576cd939289a",
+      "bytes": 3367
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0202-browse.json",
+      "sha256": "e188c5d7517a7432c824f43a858f6996652a20b2a9da2651066740978126049f",
+      "bytes": 3162
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0203-browse.json",
+      "sha256": "b44d3fecc8987b89b12ddcb5c48526029fff761784dc2fea9318cd6e1e195b5e",
+      "bytes": 3243
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0204-browse.json",
+      "sha256": "9b77819f281aa1253170a51a4b8aee3053309397ad4b4c7088fda53b1d695f9e",
+      "bytes": 3683
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0205-browse.json",
+      "sha256": "3fdef43847205307186f50cf51a5c15ef96fcd04f139a5e091aac18691a03821",
+      "bytes": 3646
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0206-browse.json",
+      "sha256": "a0af90fbd1da7369128b3a0896aa8639c39a95910b15c03ba60a10d4a633b1e7",
+      "bytes": 36125
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0207-browse.json",
+      "sha256": "c7b040f44c60da803760b03686f1aee25e42d6d0ccef415f9c818fe5323d9677",
+      "bytes": 7862
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0208-browse.json",
+      "sha256": "82b1b52a66df66ced546090621ad3d4c68800aa4afd20038d5b14e4a29797e53",
+      "bytes": 6519
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0209-browse.json",
+      "sha256": "ec4240e5c85bef80b6f9aed1fa3b570a55739f16169afcb0d149c399de1266ca",
+      "bytes": 10187
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0210-browse.json",
+      "sha256": "33a12e144769deeffbb146345ba6378816c9393a9e2a6f389cd6af75f0a3fa40",
+      "bytes": 4433
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0211-browse.json",
+      "sha256": "f1215ce923afde52b2ee78e2b99cea4f57223319c55c2a330135e62d7c28eb7f",
+      "bytes": 4444
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0212-browse.json",
+      "sha256": "b15272ae63be29bdb3a13a23fd083cceb5e9bafed0075df8f0b4606d3be5a075",
+      "bytes": 4134
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0213-browse.json",
+      "sha256": "6e0c36b20ea3f67db0757dc95d0178baa4a3a0639f5c95703a62bd8ba8e2c539",
+      "bytes": 2977
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0214-browse.json",
+      "sha256": "50c693d62b2a1968341f93f01d04b810bfb639be6e1069e998b99a31fef6f6a1",
+      "bytes": 1812
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0215-public-http.json",
+      "sha256": "8d8bb1e77b02220bb75dcc4be744aed3a1ad29cd8181ad24c9f425cf9d5b7470",
+      "bytes": 7400
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0216-public-http.json",
+      "sha256": "c5cf207e819fa40d9130d8cabd2ef9a3c88c7540ca63bcb41e19cb13a7e3a1a4",
+      "bytes": 7418
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0217-public-http.json",
+      "sha256": "77fee5f2a4653f8d6014d257b18658c07da1c88a6e1615f58affc43c5d24d949",
+      "bytes": 1209
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0218-public-http.json",
+      "sha256": "ce6fec40ead0bfce43fbfecc489c8d7bce16b15839a995d2102627da18b52b77",
+      "bytes": 1176
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0219-finite-explain.json",
+      "sha256": "e037f42b7f09bc779305242bb99a56ce94e423116689436b875536b23d707cef",
+      "bytes": 1384
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0220-role-privilege.json",
+      "sha256": "b5304dfb8aaf573cfc91ad1697cd3880310db59158e47fb693d5973cd861b71a",
+      "bytes": 877
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0221-role-denial.json",
+      "sha256": "9b9025050730276e44f3c23af058247a7cdd061a99910a14e627539df17d4f77",
+      "bytes": 937
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0222-role-privilege.json",
+      "sha256": "aafb3e35348ec7b3942595ab08abc2f24b0c9820750943595cec2d4ae83941c4",
+      "bytes": 886
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0223-role-denial.json",
+      "sha256": "a995888bdef36bea64f6b89d1035dc7f95ceb63a8b12aa07cacd20236034caa5",
+      "bytes": 946
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0224-role-privilege.json",
+      "sha256": "a1e17c535ca8a86cf88aea286d5a961b649147b57c6793ef8f04be3a0b01f255",
+      "bytes": 883
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0225-role-denial.json",
+      "sha256": "076029bbd1008d7b0fdfe96aee4428a9a97c0672b39097d2ad0675aea8797020",
+      "bytes": 943
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0226-role-privilege.json",
+      "sha256": "ed8a39b3fb1a3b628468b58f7bf853d7b688c025d2c5625401a14b08518d6056",
+      "bytes": 886
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0227-role-denial.json",
+      "sha256": "3f6af914b6b73bf69db6143686b8e1d340f51c024a07a8f09e017d4f35d00c31",
+      "bytes": 946
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0228-role-privilege.json",
+      "sha256": "a99fec11aec5d91ec7fdbc79ac305e4d9ece16e1e4253ff34e7305a2c55e16f6",
+      "bytes": 877
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0229-role-denial.json",
+      "sha256": "c78486caac47cd08fb4e17511a85bfe7ae4724de2652c42e5db99e0f9d5d4fae",
+      "bytes": 937
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0230-role-privilege.json",
+      "sha256": "ddc899b75ff7af13be9b06154d2e7bda3fab87f2dd4d347a9a61ba96ed63b2bd",
+      "bytes": 886
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0231-role-denial.json",
+      "sha256": "3a8bc8125e984936b18da5552120e49e80a597457bf2298d2b2c3c354a3817f9",
+      "bytes": 946
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0232-role-privilege.json",
+      "sha256": "1b870765c39f42fbcedbcb69a8166a3713279141bd05d796942db66adf3437ff",
+      "bytes": 883
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0233-role-denial.json",
+      "sha256": "a6abc7ea9857cca1d483ae3f74e8c69dc9d3e18c07a01cf1d5e9a2f9437d5bfc",
+      "bytes": 943
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0234-role-privilege.json",
+      "sha256": "df1e92a78937ebfb776877447a73971a62a875bdf67999324e13568ca1abfc21",
+      "bytes": 886
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0235-role-denial.json",
+      "sha256": "60696a4ee04750b2ea28b70773acf835854654b9be4f2d5c1bd4ef0291e06934",
+      "bytes": 946
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0236-catalog.json",
+      "sha256": "a47023c61865283b76497fef792780a7ddd006708fda9631851521fded7f49fc",
+      "bytes": 181144
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0237-catalog.json",
+      "sha256": "e78dfb3bc17688f77242e7c8307c9d5ed1e19310d7d027c51e8e441824ae1b09",
+      "bytes": 181391
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0238-business-rows.json",
+      "sha256": "780404f7be3450131c2664c9bdd568fefe6df7b7acc23e59ebe1a18e6036de4a",
+      "bytes": 1467
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0239-refusal-before.json",
+      "sha256": "29ee9e1cb471d415eccaa104b7d1be2fa22fc9ede3e96b075fd34b4c484a234a",
+      "bytes": 184264
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0240-refusal-error.json",
+      "sha256": "d3d397e6f0c449001cef493b1e680b57d09535a272a237535ac2946f92070f0e",
+      "bytes": 1247
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0241-catalog.json",
+      "sha256": "9fee098b2fe37021972dfdb84b4b31a1bd5d573d018538f5696de920b309d688",
+      "bytes": 181391
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0242-business-rows.json",
+      "sha256": "77c59517c94065d82840dc636e077c0fd47aedbc209cae53367d65c88454d697",
+      "bytes": 1467
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0243-refusal-conserved.json",
+      "sha256": "c71b7e56d0e646e8b7fffece24a269e92ba34af2aa6c32a193c08d012e295cd8",
+      "bytes": 1084
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0244-catalog.json",
+      "sha256": "a3841ff17dc985bcfb62139a081dbf777ca7f6e68545c95244d63bd28945d116",
+      "bytes": 181144
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0245-catalog.json",
+      "sha256": "b47a0125c672e16d3e06989322eef3f9645e2d0cce0227bd63752557a1953a8d",
+      "bytes": 181144
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0246-business-rows.json",
+      "sha256": "183d368d815b09f64325c23becfe7c8ddf25e173f4028c49635c55890c849431",
+      "bytes": 1467
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0247-refusal-before.json",
+      "sha256": "a227fb7b4c1475ba3e01d2e5cc05d0e812cf817e0143d9c58a55a6938da266d3",
+      "bytes": 183997
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0248-refusal-error.json",
+      "sha256": "dbb65fdcfbe1b2b5257baa45ae36591ed57ff15a1b409e4e192c382782dc4f10",
+      "bytes": 1247
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0249-catalog.json",
+      "sha256": "7b4a030743f6456d5abf39c554c3b41b8ba2de8573e9f489158bfe7258ab6adc",
+      "bytes": 181144
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0250-business-rows.json",
+      "sha256": "05e940fd87d1c4726cada27c713f92c0c7dfe0a3c78f40739e94d72d02eaef9c",
+      "bytes": 1467
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0251-refusal-conserved.json",
+      "sha256": "1c43f67494691db614ac8ca19647958fb1d9762faea6ceffed83f8f3e12ef675",
+      "bytes": 1084
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0252-catalog.json",
+      "sha256": "b908daa93557619b20ad4effdd074490843addfb574c1a26a0cb3b92806b134f",
+      "bytes": 181144
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0253-catalog.json",
+      "sha256": "661b63c804a038b33403138179d70ad889b651a35cbd71d3640265024ea99f38",
+      "bytes": 181144
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0254-business-rows.json",
+      "sha256": "f1147b03a80773991b733cab2ee6171591314ce76af07deec207a69e19442a03",
+      "bytes": 1467
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0255-refusal-before.json",
+      "sha256": "61981bf30d4d72d02b1f4ef6de8bc73331c45337bc7dcdfc2a68c4f8eb6a697f",
+      "bytes": 183997
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0256-refusal-error.json",
+      "sha256": "5989d0aa096e4f74ad7c3b8cf5a2111746d6dca6bef2daaf0aea65059d7c9a9f",
+      "bytes": 1233
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0257-catalog.json",
+      "sha256": "994fff5cda6d029218c1ce5eee39dd5dfe992db81ba71fa0cab7973b88809f81",
+      "bytes": 181144
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0258-business-rows.json",
+      "sha256": "0e6024de0cafa283d41f54b280e65c8f1c4718a2a34f3e5a2be1a66a01b89eec",
+      "bytes": 1467
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0259-refusal-conserved.json",
+      "sha256": "77ee709707491698e7056154322deca584b85c234f050be0b7fa3baf486b57a9",
+      "bytes": 1084
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0260-catalog.json",
+      "sha256": "8d443a89143bd3e2df010890c20e0dbe03100019b5fd0ea0c67ad258804ce3aa",
+      "bytes": 181144
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0261-catalog.json",
+      "sha256": "96431e23e9af812d1b9c4fbff2f3ccfc837ec735cce4b38dd346a1c587277dec",
+      "bytes": 181140
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0262-business-rows.json",
+      "sha256": "aafe07222e23559aa79b69f237d244aa15b1af2f4a4533bd59f08884f6ac442b",
+      "bytes": 1467
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0263-refusal-before.json",
+      "sha256": "2632320dbcc929ba69f843c3f82f381165f8124f02363b23ba90001b3a88d5f4",
+      "bytes": 183993
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0264-refusal-error.json",
+      "sha256": "ab967639f3741fe5298a767a7768f97ff8d94a0fed848408adf570cbbaf3a77d",
+      "bytes": 1247
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0265-catalog.json",
+      "sha256": "57be2f03653f3d9878732dc7b8c837cdf93b563c14f25e24beb2fd4bb7bb6c1d",
+      "bytes": 181140
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0266-business-rows.json",
+      "sha256": "85b72a82a07f8f641010c2222e93bdaee253f099fd66d627f5e4a2d0ba491a7c",
+      "bytes": 1467
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0267-refusal-conserved.json",
+      "sha256": "6bce42831e2a1c0c0f8b38df5d66150d6ede199254edc3f39c158864be0aaa92",
+      "bytes": 1084
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0268-catalog.json",
+      "sha256": "688032e12083cbed0013b86ce70128d37f9fd77ea924448a5cb7847c529eb605",
+      "bytes": 181144
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0269-role-edges.json",
+      "sha256": "df08f76c4183eb0dfc124867fed0957d1d3b72bc530df989c880ba9c8a9f2d00",
+      "bytes": 1032
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0270-role-edges.json",
+      "sha256": "17d826513c0df20b4f2fb83e4d47452acd42e67ae3ed61e5d91200b0595c9ac6",
+      "bytes": 830
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0271-inherited-privilege-mutant.json",
+      "sha256": "f8b876722d47807efa96ab53529adc4ab6e55a987ec88dfb5114e940dca8e88b",
+      "bytes": 895
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0272-catalog.json",
+      "sha256": "9f1dddb6de81261ea38a525c9f9f3bafc456995934a8f1df7664b36696693018",
+      "bytes": 181144
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0273-business-rows.json",
+      "sha256": "5e413702790e150fe60ae94c6eb68566696d5a157efa2ef646d0d4aa7673957e",
+      "bytes": 1467
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0274-refusal-before.json",
+      "sha256": "dd6c27473db66e7fcb3462724503d9aeefdc676d31a9bec2e9b509474f20a4df",
+      "bytes": 183997
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0275-refusal-error.json",
+      "sha256": "14f2b82b4af563917b90bb2a3daa4b625ec54fb363ae81178b10d07f3c63629e",
+      "bytes": 1246
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0276-catalog.json",
+      "sha256": "d1a5f44a00c0acbc7be25706dfb44116bd5bf8fe3e914d6b263a97e1138d0d3f",
+      "bytes": 181144
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0277-business-rows.json",
+      "sha256": "b133227ea814f36fce06443cd4208b8680af42ab3c67741edde2ea12b9965d01",
+      "bytes": 1467
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0278-refusal-conserved.json",
+      "sha256": "417ed2e4c96374a8dbae522e5d58064cbcdf40d06c33b799868ee8d2b95a94fc",
+      "bytes": 1084
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0279-role-edges.json",
+      "sha256": "e40cb436bcbd02f59b267325b47bd6e02e3f7d5fbe8f5b76b057bec6e329d00a",
+      "bytes": 1032
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0280-role-edges.json",
+      "sha256": "9ae9ce1970ccad6d2522e38d503bcd1f100350aac1243daf22c76c73856b7082",
+      "bytes": 830
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0281-role-privilege.json",
+      "sha256": "838cd5712a87187461f44d287b980116521696e1afbea2da4f97b61938bc6093",
+      "bytes": 877
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0282-role-denial.json",
+      "sha256": "ff92f384b993eb972c85b27943d82a5f44c78b835f2b37e815363e3c4c2387f9",
+      "bytes": 937
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0283-role-privilege.json",
+      "sha256": "9fe701e1039c772803d07e9fa5379ab203c97bcbc42a8a4dda71e0f2e24b832c",
+      "bytes": 886
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0284-role-denial.json",
+      "sha256": "aef8e2ed8e0d64931b145a23bf114f7f5ad082401b11abb3cf27852701e53f71",
+      "bytes": 946
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0285-role-privilege.json",
+      "sha256": "4ee623b1746457254dc8c68f3e8a48a277776c748a247469b8268d6eca7bd0e5",
+      "bytes": 883
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0286-role-denial.json",
+      "sha256": "2983b1d9b688c29b4d811c0ea1f6216d622c27752f5f716df4acf40cb5850f5c",
+      "bytes": 943
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0287-role-privilege.json",
+      "sha256": "746d7e7d9c3b8a54d4f145263d808eb15d9c495b900f574287e475c250a691e2",
+      "bytes": 886
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0288-role-denial.json",
+      "sha256": "6a9a2dbd8490a2f5777ab1b3071cec4da3ab2d3d66359b4bb9e4458684be7cf3",
+      "bytes": 946
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0289-catalog.json",
+      "sha256": "49adbfe091b7b709c8c43fefdd69ab620f5b9694379ff91c0c49351e0faf2593",
+      "bytes": 181144
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0290-catalog.json",
+      "sha256": "00f25a457b6fc9468ad28735e80500db81bccb189538051c34a521c3f182750d",
+      "bytes": 181144
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0291-business-rows.json",
+      "sha256": "1905b6739b8617316e12ab7f37262173bd559b7dafe031a7105d8a554fa04d8b",
+      "bytes": 1467
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0292-body.json",
+      "sha256": "91de35cd1cdef22e47bfd3e41b9cd41c2269593bee61311fd378257d732cf112",
+      "bytes": 875
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0293-catalog.json",
+      "sha256": "45646b253a347b9352033bb025e3bc075782bbce2b5f10dbdedcdfd9fdb80b21",
+      "bytes": 180470
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0294-business-rows.json",
+      "sha256": "44901951f81d778604e5a8d3083a9dc7570a8362d2b3b64855a52c511e807b08",
+      "bytes": 1467
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0295-browse.json",
+      "sha256": "a0cd4ae136b7cd83b620149f6000d2934605de4a5b91587aea8420ffe6478aee",
+      "bytes": 1404
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0296-browse.json",
+      "sha256": "21f568fd87f5ee2a2be728c348ab70e26005212dd82bbeddcf555656793eaeda",
+      "bytes": 4235
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0297-browse.json",
+      "sha256": "2c805053a94b854f118c70a75450a759470415945973bd6d03e7595d76a0033d",
+      "bytes": 3085
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0298-browse.json",
+      "sha256": "6b49c0d6ab062a94ff118e15e046f44e7e294f1e53ad84281eb60605a6b05106",
+      "bytes": 3092
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0299-browse.json",
+      "sha256": "3e9869ed31b120ec4c45b317bb62f89535fb936451cf4f0b762d05bfa7007cdd",
+      "bytes": 3084
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0300-browse.json",
+      "sha256": "0365a35e2f71f2e5cae088da4a54905747ea2b707ddd61ac3b2eaa014d746ee5",
+      "bytes": 3188
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0301-browse.json",
+      "sha256": "427b0d36a2d72cfe852551b932922a8a44b00084fa02ab53bd6ad029956250a4",
+      "bytes": 3195
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0302-browse.json",
+      "sha256": "cbd20842d07bc31c3adf638ae37019a0bbe98f094526a935fd3c1f8e480c8d87",
+      "bytes": 3187
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0303-browse.json",
+      "sha256": "08947d239895cd5424a89a34d4b47da9dcf542c46f090fec7cf9486b930248bc",
+      "bytes": 3041
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0304-browse.json",
+      "sha256": "d5fb9cd6039f8eeaf88815f31c92399ef0d8bbca9ddde53d97dcd68c1402d8a2",
+      "bytes": 3048
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0305-browse.json",
+      "sha256": "8bc4b159f0bda9bab0db91bad1e96fd5c86480790f5b108ce9334b2f45de6734",
+      "bytes": 3040
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0306-browse.json",
+      "sha256": "8c8903780b94d4438a4863810631bed84e177ede555cdec0e3b85499625a33ea",
+      "bytes": 3323
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0307-browse.json",
+      "sha256": "65d756be4ff277e9abdf3f22209adff908b5f92cb765955b0af1723da62d0318",
+      "bytes": 3330
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0308-browse.json",
+      "sha256": "443209cd4b20c5e8d47851a1d0ea123958a3f57f75e9144e532958973fa21493",
+      "bytes": 3322
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0309-browse.json",
+      "sha256": "7acf84f58fba18bf5f690171c7a13415272567cc91e203017faeffbbfc1cfa1f",
+      "bytes": 3220
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0310-browse.json",
+      "sha256": "97e23c815f0ad53dadfb8d3516bc33ad57556b7c9ec9273691fe59cb774029fd",
+      "bytes": 3227
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0311-browse.json",
+      "sha256": "b30d26429adc4d13e004e3843f9febd99bda325b1d636add55295b29db9dfdac",
+      "bytes": 3219
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0312-browse.json",
+      "sha256": "e3ca7300ab6eac0edbf396baf3269e3c3bb8348e9b937b895ead67343f40d53e",
+      "bytes": 3686
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0313-browse.json",
+      "sha256": "130ba61edb8c3609f23ff83c73b0ab3e925bd808445b0a2a2aa6c0f5144a089f",
+      "bytes": 3693
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0314-browse.json",
+      "sha256": "5b982b9608c578f8997b26d169e7474c757225fc700221d98327cf5fbb73d798",
+      "bytes": 3685
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0315-browse.json",
+      "sha256": "c403e0e49ec466fd1b4afa0f2bfbc07cdbf0c8998d95488f31b96bcdca5703f4",
+      "bytes": 3143
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0316-browse.json",
+      "sha256": "4d2a917b32712d1b59e580868d254d9923120f1fae6464232fa4bd409d42073a",
+      "bytes": 3150
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0317-browse.json",
+      "sha256": "15a214eac9a6e74f99b3db8089bdd115f0448b4bc2d9b412137ab55444887a63",
+      "bytes": 3142
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0318-browse.json",
+      "sha256": "d2d6884e0d868c1949783dc470d738e2c63e9de54641601a295697475f339aca",
+      "bytes": 3350
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0319-browse.json",
+      "sha256": "e8013e47e03ac2599797a0872f562b5bf7572d72520779efd18c8b21fe8d6378",
+      "bytes": 3357
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0320-browse.json",
+      "sha256": "6c075aa6dfebf4322c777e46ca1d16ae67d910783f347dae1c3b15150666cf01",
+      "bytes": 3349
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0321-browse.json",
+      "sha256": "bac7a21d75d0dd67328d4ac0643d8f362c502187b29ab0526b9e3c69dd46f795",
+      "bytes": 3605
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0322-browse.json",
+      "sha256": "092cd49c243d69564d0023685f62bbacaf2bcbfb9afc3d41390b8c960c84a2bd",
+      "bytes": 3612
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0323-browse.json",
+      "sha256": "ce3261420394444906ad83e62c03b66fbe6a32cc95fa41427218c62b4a5e3395",
+      "bytes": 3604
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0324-browse.json",
+      "sha256": "90400d1f33581aede8528b15d169f1e9b66ed63c950c36627639ea22b9cfe771",
+      "bytes": 3605
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0325-browse.json",
+      "sha256": "c6d433ae2631572d598f60193c4047738d311188c12b56dfb8f1cbc0a8faaf94",
+      "bytes": 3034
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0326-browse.json",
+      "sha256": "2275f52c7d7c706ef7d86b54b36957f054e78cae98d679e17459b1a781639112",
+      "bytes": 3203
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0327-browse.json",
+      "sha256": "db071d975b7a1eb661ac69326b95bbb38070d84d12c0b2262e1e2d216d61373f",
+      "bytes": 3363
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0328-browse.json",
+      "sha256": "97aa139c0e03b8804cf969bf2fb2aef0562a3d4d4c4d735f4570c70bfb46e8b8",
+      "bytes": 3367
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0329-browse.json",
+      "sha256": "7a703ed649cc73dd3cb2485e374eed3cc4d37e25a175c2f7ca8009307d906dcf",
+      "bytes": 3162
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0330-browse.json",
+      "sha256": "cd93fe10112424841ee3dcaf927752ecb9da275f4363fa5e39395ec0bfdb6f0c",
+      "bytes": 3243
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0331-browse.json",
+      "sha256": "347174bb4c3c27c469fb48caf56c9a273ab7d007fbc2ccf994b4a025a24cd46e",
+      "bytes": 3683
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0332-browse.json",
+      "sha256": "923febd8f93403ef20df4a5310d87ca43a12f1961db7ead747aa286fe9f81359",
+      "bytes": 3646
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0333-browse.json",
+      "sha256": "8ffda94203847856da3c78b8c299e13574b37a872f4cf89569fec6a8b9de2821",
+      "bytes": 36125
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0334-browse.json",
+      "sha256": "258a11b8225187aef1399b84b82e415781d6a8b3972da3f682067c7c8c30186e",
+      "bytes": 7862
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0335-browse.json",
+      "sha256": "3113435d3872defad8262d92489a83e58c90eb03cb1617f1bd124a0d1f36850f",
+      "bytes": 6519
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0336-browse.json",
+      "sha256": "86427f440fd7ad1f5d73757440c47516603adf01a9dd3f2832dd2b25528ccf9d",
+      "bytes": 10187
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0337-body.json",
+      "sha256": "ba68d0a2cfc39ed7f0f5a8499381485b442c264a5ed48857e05c34be8c59731f",
+      "bytes": 875
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0338-catalog.json",
+      "sha256": "158e306ea48107a94baea68d8ea54f43e5227144424a1a2436d0a4049162bc4a",
+      "bytes": 181144
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0339-business-rows.json",
+      "sha256": "18b94de64f833129fa6a4aa086c451f2662376860f6e340f459191a9d11d7655",
+      "bytes": 1467
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0340-browse.json",
+      "sha256": "12cc0804f8e2fa80ed7e78e92d37360cb5788ac1b7ae4890e2e17734c2e8b5e2",
+      "bytes": 4226
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/provenance/0341-suite-after.json",
+      "sha256": "208103036232114c51c38e5a1b704139346c59e3580ff286969f0894dc7a6dfe",
+      "bytes": 794
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/result.json",
+      "sha256": "4c5a8c703244f682049fbbaacf794eb93439c295694b117b0bbe10b590d7e17c",
+      "bytes": 66573
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/runner.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/runner.stdout",
+      "sha256": "a0ebd9a2ba2d6f2a711fccadc1dd460d4cbf69ae1d1997eeda29cc86e0b4ad0c",
+      "bytes": 66574
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/source-after.json",
+      "sha256": "d12d2230f05fbfbda647fb525c3304a73ea593f72b43dc2be108816292906e33",
+      "bytes": 47076
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/source-before.json",
+      "sha256": "68ee7c93203ec0a4e3da4f8aed412b41437851738395cd65a79f58220185f2a5",
+      "bytes": 47928
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/02/suite-logs/storefront-electronics-search.postgres.log",
+      "sha256": "1966c926bd97f275c093946b0c711e512385ecd7da927ba95a3fe9d8cf84e881",
+      "bytes": 77559
+    }
+  ]
+}

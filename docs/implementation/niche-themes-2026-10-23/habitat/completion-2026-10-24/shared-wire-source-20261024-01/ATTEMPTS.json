@@ -1,0 +1,17 @@
+{
+  "attempts": [
+    {
+      "stage": "input01 manifest preparation",
+      "exitCode": 1,
+      "reason": "Assumed packages/ui/package.json; actual source package is packages/typescript/ui/package.json",
+      "productCasesRun": 0
+    },
+    {
+      "stage": "input01 CLI startup",
+      "exitCode": 1,
+      "reason": "Missing input.json after preceding failed generator; empty results folder preserved",
+      "productCasesRun": 0
+    }
+  ],
+  "correction": "Resolved actual public token dependency via merchant package createRequire; input-02 and fresh results-02 preserve the earlier attempt."
+}

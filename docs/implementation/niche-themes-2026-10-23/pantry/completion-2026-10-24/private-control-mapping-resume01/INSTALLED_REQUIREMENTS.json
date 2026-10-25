@@ -1,0 +1,61 @@
+{
+  "recordedAt": "2026-10-24T11:47:14.186027+00:00",
+  "classification": "PENDING_FRESH_SINGLE_EDITOR_LEASE",
+  "requirements": [
+    {
+      "id": "PNCTRL-E2E01",
+      "status": "NOT_RUN",
+      "scope": "All three listing schemas: normal editor responsive\u2192one\u2192responsive save/full reload and fresh published buyer CSS/DOM at desktop/mobile; retain original section/resource identities."
+    },
+    {
+      "id": "PNCTRL-E2E02",
+      "status": "NOT_RUN",
+      "scope": "PDP ingredients\u2192stacked\u2192ingredients save/full reload/preview and publication; gallery, food/allergen warnings then purchase remain reachable; no overflow or warning occlusion."
+    },
+    {
+      "id": "PNCTRL-E2E03",
+      "status": "NOT_RUN",
+      "scope": "Global standard\u2192comfortable\u2192standard save/full reload; actual loaded fonts, effective text sizes, long copy and320/768/1440viewport usability."
+    },
+    {
+      "id": "PNCTRL-E2E04",
+      "status": "NOT_RUN",
+      "scope": "Each card-storage toggle false\u2192true\u2192false with supplied/absent/hostile storage; unchanged authoritative price, stock, pack/net/unit guidance and product links."
+    },
+    {
+      "id": "PNCTRL-E2E05",
+      "status": "NOT_RUN",
+      "scope": "Normal merchant CMS Page create/edit/publish on nonreserved single slug; existing about guide link-only route in preview and fresh buyer page; actual title/body and same page identity on reload."
+    },
+    {
+      "id": "PNCTRL-E2E06",
+      "status": "NOT_RUN",
+      "scope": "Guide incomplete/clear/unsafe link handling and existing content/image combinations; honest missing state and no invented expiry claim."
+    },
+    {
+      "id": "PNCTRL-E2E07",
+      "status": "NOT_RUN",
+      "scope": "Draft-save versus public publication separation, preview authorization/session expiry and permitted visual switching/document preservation."
+    },
+    {
+      "id": "PNCTRL-E2E08",
+      "status": "NOT_RUN",
+      "scope": "Keyboard/focus/touch/reflow/contrast/missing media on both layouts and scales; static source rendering is insufficient."
+    },
+    {
+      "id": "PNCTRL-E2E09",
+      "status": "NOT_RUN",
+      "scope": "Positive own-tenant saved state before negative cross-tenant/CSRF/forged settings write; unchanged same-record GET after refusal."
+    },
+    {
+      "id": "PNCTRL-E2E10",
+      "status": "NOT_RUN",
+      "scope": "Original P09\u2013P12: real normally accepted primary order and both immutable histories; distinct accepted pre-P11 250gcart; same variant300gedit; one stale confirm exact HTTP/code/requestId, no-order/no-inventory deltas, old order/hash and histories unchanged, normal current-product reacceptance."
+    }
+  ],
+  "sourceCasesDoNotDischargeThese": true,
+  "providerActionsByPantry": 0,
+  "soleBrowserController": "Theme Editor \u2014 End-to-End",
+  "allocator": "Themes",
+  "old936Reuse": false
+}

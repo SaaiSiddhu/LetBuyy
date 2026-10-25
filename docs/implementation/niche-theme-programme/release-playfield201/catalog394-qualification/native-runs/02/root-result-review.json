@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-24T09:25:39.003555+00:00",
+  "status": "FAILED_STOPPED_NO_RETRY_NO_EMISSION_LANE_RELEASED",
+  "runId": "1cdc5140072f",
+  "parentAndSubtestCounts": {
+    "tests": 5,
+    "PASS": 3,
+    "FAIL": 2,
+    "skipped": 0,
+    "cancelled": 0
+  },
+  "phaseCoverage": {
+    "completed": [
+      1,
+      2,
+      3
+    ],
+    "failed": 4,
+    "notRun": [
+      5,
+      6,
+      7,
+      8
+    ]
+  },
+  "failure": {
+    "operation": "Temporary-table shadow refusal control in production tenant publication wrapper",
+    "expected": "TenantPublicationContextError before privilege use",
+    "actual": "PostgresError permission denied for table migration_privilege_journal",
+    "location": "services/api-gateway/src/__tests__/owned-db/playfield201-catalog394-qualification.manual.ts:310",
+    "classification": "OBSERVED_PRIVILEGE_CONTEXT_OR_REPLAY_COMPATIBILITY_FAILURE; SOURCE_DIAGNOSIS_REQUIRED; NOT_QUALIFIED"
+  },
+  "files": [
+    {
+      "path": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/native-runs/02/execution-grant.json",
+      "sha256": "b51c2d6dfb05296f2b611be6168ee459327642b64cc8790acdae3792eeee458f"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/native-runs/02/result.json",
+      "sha256": "83e6965be24a0b96d5c2fac8df52076d9ee87718f274d717d87f9d2cc5ac8f17"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/native-runs/02/run-receipt.json",
+      "sha256": "e7469227803ea177cff5b2a8dfe7c7fe580592c94e908b7d3738171c21600179"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/native-runs/02/at-execution-admission.json",
+      "sha256": "a680f3f9d891c0523dbb92256b3058770b7f2be623ca24db88a97ec997fe2987"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/native-runs/02/at-execution-source-input-closure.json",
+      "sha256": "4915164907934c91ec6662111eb7bb898f10f41890374832de79cd0e1a4e73e3"
+    }
+  ],
+  "postRunAll1092MainInputsExact": true,
+  "runnerOwnedCleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "reaped": [],
+  "independentDockerRead": {
+    "containers": {
+      "exitCode": 0,
+      "output": ""
+    },
+    "networks": {
+      "exitCode": 0,
+      "output": ""
+    },
+    "volumes": {
+      "exitCode": 0,
+      "output": ""
+    },
+    "scope": "Exact run1cdc5140072f / containerBaseletbuyy-exec-24004-mvm6xxk9-318b98 name filters; escalated read-only Docker access",
+    "cleanupEmptyIndependentlyVerified": true
+  },
+  "nativeGrantedAttemptsConsumed": 1,
+  "nextNativeOwner": "01a16ce5-e5ba-7191-ab2c-a1b76947d2b5",
+  "release": "IMMEDIATE_EXCLUSIVE_LANE_RELEASE_TO_REQUESTING_REVIEWER_CHECKOUT07_AFFECTED7",
+  "newNativeOrCanonical394EmissionAllowed": false
+}

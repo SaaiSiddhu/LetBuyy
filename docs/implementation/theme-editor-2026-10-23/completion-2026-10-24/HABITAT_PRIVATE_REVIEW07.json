@@ -1,0 +1,223 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-24T13:04:12.969959+00:00",
+  "classification": "INDEPENDENT_STATIC_HABITAT_PRIVATE_SUCCESSOR_REVIEW_NO_NEW_EXECUTION",
+  "scope": "DirecthumanHabitatreview request relayed toexistingEditor underfullten-themegoal; ownlocalartifact/Rootrelay only",
+  "candidateFiles": [
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/habitat/completion-2026-10-24/private-habitat-v201-02/PROPOSAL.json",
+      "sha256": "2ad5cf08907d9357706056c060b3f6df7972273a282bd24ef5180968063e1d37",
+      "bytes": 2063
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/habitat/completion-2026-10-24/private-habitat-v201-02/habitat-theme-v201.intended.ts.txt",
+      "sha256": "eeb653768fd6d2bb23dc89fcb6c4c2b56bb18ececb078f075b8abe65f3c811aa",
+      "bytes": 2984
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/habitat/completion-2026-10-24/private-habitat-v201-02/habitat-theme-v201.ts",
+      "sha256": "2f14105fdb9cfe1af72439b79cef2716a1dcfb538cdc9d4175cd23f0aea180cf",
+      "bytes": 3110
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/habitat/completion-2026-10-24/private-habitat-v201-02/habitat-successor.UNAPPLIED.diff",
+      "sha256": "e62164317ad5199c13a4991717c8f261ee967e42c0d98e799709ea99988069ff",
+      "bytes": 3117
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/habitat/completion-2026-10-24/private-habitat-v201-02/QUALIFICATION.json",
+      "sha256": "e66b678198d7dbd75a90de9ff6fbecd6e3382dbd79ca70e7e1a6f14e4fcc961e",
+      "bytes": 7880
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/habitat/completion-2026-10-24/private-habitat-v201-02/proposal.test.mjs",
+      "sha256": "a124b8bf6e6799dd36024bb97fd28d1f032456b8750df8a091a10193bb5a9b1f",
+      "bytes": 12902
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/habitat/completion-2026-10-24/private-habitat-v201-02/source-run-01.tap",
+      "sha256": "ee05d77bb0ca22dbc1a3e326a4bdd6f9d8c708dcd21907ae125756eba9cbe729",
+      "bytes": 2201
+    }
+  ],
+  "actualSourceInputs": [
+    {
+      "path": "packages/theme-engine/src/habitat-theme.ts",
+      "recordedSHA256": "0144fdf830ab3c5ddf42ebfcb86258b99e74ed8a8d724469012479705352e8c3",
+      "actualSHA256": "0144fdf830ab3c5ddf42ebfcb86258b99e74ed8a8d724469012479705352e8c3",
+      "matches": true
+    },
+    {
+      "path": "packages/theme-engine/src/theme-bundle.ts",
+      "recordedSHA256": "cdbad4b28277431a3ab06e56ed0ce16539e04837bb107f5f951a3df39a92ed76",
+      "actualSHA256": "cdbad4b28277431a3ab06e56ed0ce16539e04837bb107f5f951a3df39a92ed76",
+      "matches": true
+    },
+    {
+      "path": "packages/theme-engine/src/schema-field-extensions.ts",
+      "recordedSHA256": "a5c53fdfc687bc9c7913ff64c1af1d51e496b70fd74b2a78e2b000bb66ee4d71",
+      "actualSHA256": "a5c53fdfc687bc9c7913ff64c1af1d51e496b70fd74b2a78e2b000bb66ee4d71",
+      "matches": true
+    },
+    {
+      "path": "packages/theme-engine/src/experience-fonts.ts",
+      "recordedSHA256": "3ee9bdb23a8c18410fd36ee6302f0f8fae929484a7c2dbfd9bc6a424e30f64be",
+      "actualSHA256": "3ee9bdb23a8c18410fd36ee6302f0f8fae929484a7c2dbfd9bc6a424e30f64be",
+      "matches": true
+    },
+    {
+      "path": "packages/theme-engine/src/theme-presets.ts",
+      "recordedSHA256": "283028890199a34e67863c337ebd0c788c830c60ddaa87854c3bad28f9581e82",
+      "actualSHA256": "283028890199a34e67863c337ebd0c788c830c60ddaa87854c3bad28f9581e82",
+      "matches": true
+    },
+    {
+      "path": "packages/theme-engine/src/built-in-section-schemas.ts",
+      "recordedSHA256": "5e44b89d7ebc3d40b82e7d12dfccf399f7a336d39e1a1b04c7deaf4c57486734",
+      "actualSHA256": "5e44b89d7ebc3d40b82e7d12dfccf399f7a336d39e1a1b04c7deaf4c57486734",
+      "matches": true
+    },
+    {
+      "path": "packages/theme-engine/src/theme-registry.ts",
+      "recordedSHA256": "df47c3ff4a6bfb0b4dfb56a49559249ab69d44f876bf1d422ecda385f09533ce",
+      "actualSHA256": "df47c3ff4a6bfb0b4dfb56a49559249ab69d44f876bf1d422ecda385f09533ce",
+      "matches": true
+    },
+    {
+      "path": "packages/theme-engine/src/theme-document.ts",
+      "recordedSHA256": "7ba285a54d71a01545c4cb1e4a3c1540a30caae2db793079b2b3cb32b8612412",
+      "actualSHA256": "7ba285a54d71a01545c4cb1e4a3c1540a30caae2db793079b2b3cb32b8612412",
+      "matches": true
+    },
+    {
+      "path": "packages/theme-engine/src/template-registry.ts",
+      "recordedSHA256": "2ab00379414a40769d793175dac97d4b795668587a48f081414326cfbb1555c7",
+      "actualSHA256": "2ab00379414a40769d793175dac97d4b795668587a48f081414326cfbb1555c7",
+      "matches": true
+    },
+    {
+      "path": "packages/theme-engine/src/habitat-discovery.ts",
+      "recordedSHA256": "342843da57a6eef8488d906218d4225338f9f3c0afe2bbcc49073f3f34a1f873",
+      "actualSHA256": "342843da57a6eef8488d906218d4225338f9f3c0afe2bbcc49073f3f34a1f873",
+      "matches": true
+    },
+    {
+      "path": "packages/theme-engine/src/habitat-styles.ts",
+      "recordedSHA256": "e4b89a41c526cc9a96e0e3106e084124717eb56d9837bcf09214045d7fa817e6",
+      "actualSHA256": "e4b89a41c526cc9a96e0e3106e084124717eb56d9837bcf09214045d7fa817e6",
+      "matches": true
+    },
+    {
+      "path": "packages/theme-engine/src/theme-bundle-core.ts",
+      "recordedSHA256": "0e1650a4d71ef358792c0f877f4ae678794fb6d2cfdebbb30d79563e4a2f452f",
+      "actualSHA256": "0e1650a4d71ef358792c0f877f4ae678794fb6d2cfdebbb30d79563e4a2f452f",
+      "matches": true
+    },
+    {
+      "path": "packages/theme-engine/src/niche-order-presentation.ts",
+      "recordedSHA256": "5683e413e48bc11d6b0906dc344ec6c3b0c7413113172b11bda91c49d08cb444",
+      "actualSHA256": "5683e413e48bc11d6b0906dc344ec6c3b0c7413113172b11bda91c49d08cb444",
+      "matches": true
+    },
+    {
+      "path": "packages/theme-engine/src/theme-renderer.ts",
+      "recordedSHA256": "794cbc6ff9ae71f995560f302e1b0d5f0d4ff4da59fa31191585851b1e822164",
+      "actualSHA256": "794cbc6ff9ae71f995560f302e1b0d5f0d4ff4da59fa31191585851b1e822164",
+      "matches": true
+    },
+    {
+      "path": "packages/theme-engine/src/theme-settings.ts",
+      "recordedSHA256": "3ac7b069b156f89d8f412103cbe6003775524fe4660f47c16a82b13c6a1a2e00",
+      "actualSHA256": "3ac7b069b156f89d8f412103cbe6003775524fe4660f47c16a82b13c6a1a2e00",
+      "matches": true
+    }
+  ],
+  "all15Match": true,
+  "testedVsIntendedBodyAfterThreeImportLinesExact": true,
+  "retainedEvidence": {
+    "sourceTests": {
+      "PASS": 8,
+      "FAIL": 0,
+      "newlyRerun": false,
+      "overlap": "Includesfiveearlierchecks;not13."
+    },
+    "originalNestedBaseline": "Actual0PASS/1FAIL withrootpositive/childrenabsent retained inownerQUALIFICATION;no installedcasecredit"
+  },
+  "disposition": "CONDITIONAL_SOURCE_ACCEPTANCE_REQUIRES_EXACT_CATALOGUE_BASE_CALLER_PROOF_BEFORE_INTEGRATION",
+  "findings": [
+    {
+      "id": "HAB-REVIEW-CATALOG-BASE07",
+      "severity": "P1_IF_DIRECT_CATALOGUE_CALL_IS_USED",
+      "status": "SOURCE_OBSERVED_CALLER_PRECONDITION_NOT_EXECUTED_OR_LIVE",
+      "location": "createHabitatThemeV201 versionguard before createHabitatTheme(base)",
+      "cause": "Canonicalcatalogue createsCore1.0.0, relabels package.slug toletbuyy-craft before leafdispatch. Proposedfactory rejects anyletbuyy-craft version otherthan2.0.0/2.0.1 before reaching its frozenfactoryfallback. Otherexplicit201branchescurrentlyreceive configuredCore directly.",
+      "concreteCounterexample": {
+        "inputPackage": {
+          "slug": "letbuyy-craft",
+          "version": "1.0.0"
+        },
+        "inputOrigin": "Existing createFirstPartyCatalogBundle configuredCore path",
+        "proposedDirectCall": "createHabitatThemeV201(configured)",
+        "expectedGuardOutcome": "Throws Habitat successor input version is not supported.",
+        "scope": "CurrentMainhasnoHabitat201dispatcher,so thisis an integrationcondition,not a deployedcallfailure."
+      },
+      "minimalDisposition": "Retain privatefactory and call createHabitatThemeV201(createHabitatTheme(configured)) in theexplicitHabitat201cataloguebranch, then test thatrealbranch. Alternativelyallocatesmallguardcorrection supportingtheexactknownconfiguredCoreinput;preservefuture/corruptrefusal. Do notsilentlyreplaceNICHE_V2.craft.factorywithnewfactorydirectly.",
+      "evidence": [
+        {
+          "path": "packages/theme-engine/src/theme-bundle.ts",
+          "detail": "CanonicalUrbanKicksbasepackageversion1.0.0, thenCorewrapperretainsversion."
+        },
+        {
+          "path": "packages/theme-engine/src/theme-bundle-core.ts",
+          "detail": "Corewrapperbrandsclone andsetscoreslug/name only;versionstays1.0.0."
+        },
+        {
+          "path": "packages/theme-engine/src/first-party-theme-catalog.ts",
+          "detail": "Setsconfigured bundle.package.slug=targetslug beforeNICHEV2factory; currentCore-derived inputintoHabitatleafis craft1.0.0."
+        },
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/habitat/completion-2026-10-24/private-habitat-v201-02/habitat-theme-v201.intended.ts.txt",
+          "detail": "Guardrejects ownslug non200/non201beforecreateHabitatTheme(base)."
+        }
+      ]
+    },
+    {
+      "id": "HAB-REVIEW-OUTLET07",
+      "severity": "REVIEWED",
+      "status": "SOURCE_REVIEWED_WITH_OWNER_DYNAMIC_EVIDENCE_RETAINED",
+      "detail": "Reusablebadge uses existing canonicalrenderer recursion/sanitized child.html. Same guarded CHILD_OUTLET asKindred excludes app drops. Appending afterexistingrootspan is anexplicit leafplacement; zero-childHTML parity is retainedownerproof. No sharedinline rendererchange is needed for this reusablecase; FAQinline additionsremainunsupported."
+    },
+    {
+      "id": "HAB-REVIEW-HEADING07",
+      "severity": "REVIEWED",
+      "status": "SOURCE_REVIEWED",
+      "detail": "Usesexisting withConfiguredOrderHeading/withNicheOrderPresentation, verifies oneheading/savedfacts/stylemarker, clonesdata, assigns explicit201/version_number3 andremoveschecksum. Doesnoteditfrozenfactory/schema/defaultdispatch. Owner8checkscoverdefault/blank/custom/hostile heading andchildordering/hide/delete/escape controls only within source scope."
+    },
+    {
+      "id": "HAB-REVIEW-ASSERT07",
+      "severity": "P2_CANDIDATE_ASSERTION_HARDENING",
+      "status": "SOURCE_OBSERVED_OPTIONAL_FOCUSED_FOLLOWUP",
+      "detail": "Reusablelabel assertion verifiesonefield/idlabelbutdoesnotverifyfield.type===text. If claimingcorruptsameversiondefinition refusal, add thisexacttypecheck andone changedlabeltype negative at nextallocatedrevision. Canonicalbundleparse accepts otherfieldtypes; currentfrozeninputremainsunchanged. NotabuyerXSSclaim."
+    }
+  ],
+  "sharedImplementationDisposition": "KeepKindredas sole proposedsharedrendererfixowner. Habitatneeds no duplicate renderer/serializer andneed not waitforinlineexpansion. A later sharedfirst-partyoutletconstant can be reused fromcanonicalpackageifRootallocatesit; neverimportKindredprivateNodehelper/docs into production.",
+  "requiredIntegrationEvidence": [
+    "ExplicitRootleaf/test/export/catalogueallocationwithactualversionedfactoryandpackagehashes",
+    "ActualexplicitHabitat201cataloguebranchfromconfiguredCorepositive+default200outputunchanged+own200/201idempotence/future/corruptnegatives",
+    "Focusedsource/security/defaultparityqualificationforactualnewbytes; do notcarryowner8forwardblindlyifchanged",
+    "Exactcurrentcompiledruntime/install/actor/site andnormalSave/reload/preview/publish/readback/recovery plus original26/expanded337/per-themeRazorpayobligations remainrequired"
+  ],
+  "originalLane": "Frozen200original26mayproceedon itsownsafeadmission; thisprivate201reviewmustnotholdit. Preserve21PASS/1PARTIAL/4NOTRUNhistoricalstatuses untilactualfreshcaseproof.",
+  "noActions": {
+    "MainSourceEdits": 0,
+    "privateCandidateEdits": 0,
+    "testReruns": 0,
+    "native": 0,
+    "build": 0,
+    "DB": 0,
+    "browser": 0,
+    "provider": 0,
+    "newInstalledPasses": 0
+  },
+  "allTenCertified": false
+}

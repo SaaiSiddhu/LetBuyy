@@ -104,9 +104,8 @@ export const getSessionUser = cache(async (): Promise<SessionUser | null> => {
     }
 })
 
-export const getStoreForUser = cache(async (
-    storeName: string,
-    _userId: string
+const getStoreForCurrentSession = cache(async (
+    storeName: string
 ): Promise<{
     id: string
     name: string
@@ -149,6 +148,13 @@ export const getStoreForUser = cache(async (
         throw error
     }
 })
+
+/** The gateway authorizes the current cookie; user hints never grant access.
+ * Cache by handle within this request so layout/page callers share that read. */
+export function getStoreForUser(storeName: string, _userId?: string) {
+    void _userId // Compatibility only; the current session is the authority.
+    return getStoreForCurrentSession(storeName)
+}
 
 export const getUserStores = cache(async (
     _userId: string

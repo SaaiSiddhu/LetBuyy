@@ -1,0 +1,66 @@
+{
+  "recordedAt": "2026-10-25T00:26:12.803179+00:00",
+  "classification": "FOCUSED_NO_EMIT_PROGRAM_COMPARISON_NOT_FULL_PROJECT_TYPECHECK",
+  "baseline01": {
+    "sourceFiles": 1011,
+    "diagnostics": 6,
+    "touched": [
+      {
+        "file": "services/api-gateway/src/__tests__/owned-db/first-party-order-heading211-qualification.manual.ts",
+        "line": 53,
+        "code": 2339,
+        "category": "Error",
+        "message": "Property 'close' does not exist on type 'OwnedPooledSqlProxy'."
+      }
+    ],
+    "exitCode": 1
+  },
+  "current02": {
+    "sourceFiles": 1011,
+    "diagnostics": 5,
+    "touched": [],
+    "exitCode": 0
+  },
+  "unchangedExternalDiagnostics": [
+    {
+      "file": "services/api-gateway/src/lib/crypto.ts",
+      "line": 95,
+      "code": 2322,
+      "category": "Error",
+      "message": "Type 'Uint8Array<ArrayBufferLike>' is not assignable to type 'BufferSource'.\n  Type 'Uint8Array<ArrayBufferLike>' is not assignable to type 'ArrayBufferView<ArrayBuffer>'.\n    Types of property 'buffer' are incompatible.\n      Type 'ArrayBufferLike' is not assignable to type 'ArrayBuffer'.\n        Type 'SharedArrayBuffer' is not assignable to type 'ArrayBuffer'.\n          Types of property '[Symbol.toStringTag]' are incompatible.\n            Type '\"SharedArrayBuffer\"' is not assignable to type '\"ArrayBuffer\"'."
+    },
+    {
+      "file": "services/api-gateway/src/lib/storefront-cache.ts",
+      "line": 29,
+      "code": 2339,
+      "category": "Error",
+      "message": "Property 'default' does not exist on type 'CacheStorage'."
+    },
+    {
+      "file": "services/api-gateway/src/lib/totp.ts",
+      "line": 75,
+      "code": 2769,
+      "category": "Error",
+      "message": "No overload matches this call.\n  The last overload gave the following error.\n    Argument of type 'Uint8Array<ArrayBufferLike>' is not assignable to parameter of type 'BufferSource'.\n      Type 'Uint8Array<ArrayBufferLike>' is not assignable to type 'ArrayBufferView<ArrayBuffer>'.\n        Types of property 'buffer' are incompatible.\n          Type 'ArrayBufferLike' is not assignable to type 'ArrayBuffer'.\n            Type 'SharedArrayBuffer' is not assignable to type 'ArrayBuffer'.\n              Types of property '[Symbol.toStringTag]' are incompatible.\n                Type '\"SharedArrayBuffer\"' is not assignable to type '\"ArrayBuffer\"'."
+    },
+    {
+      "file": "services/api-gateway/src/lib/totp.ts",
+      "line": 80,
+      "code": 2345,
+      "category": "Error",
+      "message": "Argument of type 'Uint8Array<ArrayBufferLike>' is not assignable to parameter of type 'BufferSource'.\n  Type 'Uint8Array<ArrayBufferLike>' is not assignable to type 'ArrayBufferView<ArrayBuffer>'.\n    Types of property 'buffer' are incompatible.\n      Type 'ArrayBufferLike' is not assignable to type 'ArrayBuffer'.\n        Type 'SharedArrayBuffer' is not assignable to type 'ArrayBuffer'.\n          Types of property '[Symbol.toStringTag]' are incompatible.\n            Type '\"SharedArrayBuffer\"' is not assignable to type '\"ArrayBuffer\"'."
+    },
+    {
+      "file": "services/api-gateway/src/routes/products.ts",
+      "line": 1000,
+      "code": 2345,
+      "category": "Error",
+      "message": "Argument of type 'string' is not assignable to parameter of type '`${string}-${string}-${string}-${string}-${string}`'."
+    }
+  ],
+  "newDiagnostics": [],
+  "correctedPreparationTypeError": "OwnedPooledSqlProxy exposes stop(), not close(); only prepared teardown corrected.",
+  "fullFocusedGraphGreen": false,
+  "noEmit": true,
+  "buildOrNativeExecuted": false
+}

@@ -1,0 +1,99 @@
+{
+  "ownedDomainTheme": {
+    "pass": 19,
+    "fail": 0
+  },
+  "newAndExistingVariantContract": {
+    "pass": 10,
+    "fail": 0
+  },
+  "adapter": {
+    "pass": 2,
+    "fail": 0
+  },
+  "storefrontRegression": {
+    "pass": 15,
+    "fail": 0
+  },
+  "merchantFoodEditor": {
+    "pass": 6,
+    "fail": 0
+  },
+  "appVariantProjection": {
+    "pass": 2,
+    "fail": 0
+  },
+  "actualMapperToLiquid": {
+    "pass": 3,
+    "fail": 0
+  },
+  "ownedDatabase385": {
+    "pass": 11,
+    "fail": 0,
+    "skip": 0,
+    "runId": "fda7d2c5db61",
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    }
+  },
+  "commerceCoreTypecheck": "PASS",
+  "gatewayAndMerchantTypechecks": "Merchant latest PASS; Gateway previous run had other-owner diagnostic, no new Gateway edits",
+  "acceptedVisualFreeze": {
+    "files": 99,
+    "changed": 0
+  },
+  "dbSlot": "released",
+  "sharedSourceLease": "RELEASED_TO_COORDINATOR; shared-source-release.json pins final six-file hashes",
+  "merchantVariantEditor": {
+    "pass": 6,
+    "fail": 0,
+    "skip": 0
+  },
+  "demoCollectionMembership": {
+    "pass": 3,
+    "fail": 0,
+    "skip": 0,
+    "actualEmptyCollections": 0,
+    "emptyCase": "cloned test membership through real shared resolver"
+  },
+  "merchantTypecheck": "PASS: merchant-variant-typecheck.log",
+  "staticBrowser": {
+    "status": "PASS",
+    "cases": 80,
+    "widths": [
+      1440,
+      834,
+      390,
+      320
+    ],
+    "textScales": [
+      1,
+      2
+    ],
+    "pageErrors": 0,
+    "failedRequests": 0,
+    "closedNavigationTabFailures": 0,
+    "browser": "155.0.8059.85",
+    "fonts": "Actual custom Inter and native Kohinoor Devanagari glyph usage verified; production font network delivery untested"
+  },
+  "packShelfBrowser": {
+    "pass": 24,
+    "fail": 0
+  },
+  "browserSlot": "SLOT2_RELEASED; both fresh browsers/servers closed; no listener43270",
+  "selectedVariantNativeIntegration": {
+    "pass": 35,
+    "fail": 0,
+    "skip": 0,
+    "retainedRootCohort": 27,
+    "newNativeCases": 8,
+    "scope": "actual mapper\u2192depth4 Liquid\u2192sanitizer\u2192native classes in JSDOM; no facts fetch/DB/browser/heavybuild"
+  },
+  "selectedVariantSourceLease": "RELEASED_TO_COORDINATOR; selected-variant-source-release.json",
+  "latestCommerceTypecheck": "exit2;0owneddiagnostics;4external discoveryPreviewToken prop mismatches"
+}

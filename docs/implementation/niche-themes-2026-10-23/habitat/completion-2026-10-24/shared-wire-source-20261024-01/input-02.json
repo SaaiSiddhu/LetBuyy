@@ -1,0 +1,462 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-24T12:17:01.854569+00:00",
+  "classification": "OWNED_FROZEN_SOURCE_CANDIDATE_CONTRACT_ONLY_NOT_INSTALLED_OR_RUNTIME_ADMISSION",
+  "sourceAdmissionReference": "docs/implementation/niche-themes-2026-10-23/habitat/completion-2026-10-24/EXPLICIT_RESUME_AND_DISPATCH_20261024_02.json",
+  "expectedIdentity": {
+    "slug": "letbuyy-craft",
+    "version": "2.0.0",
+    "bundleSha256": "2a652a7435f8a8a6ff699f02db829ce1ae1399d5b7609471d9e7192eb13ccd3d"
+  },
+  "expectedIdentityProvenance": "Existing independent frozen Habitat source inventory digest and unchanged owned-source manifest; not derived from a fallback factory result.",
+  "bundleFactory": {
+    "module": "docs/implementation/niche-themes-2026-10-23/habitat/completion-2026-10-24/shared-wire-source-20261024-01/factory.mjs",
+    "export": "frozenHabitatSource",
+    "args": []
+  },
+  "adapters": {
+    "domainModule": "packages/theme-engine/src/index.ts",
+    "editorPage": "apps/merchant/web/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx",
+    "registryAdapter": "services/api-gateway/src/execution/schema-registry-execution.adapter.ts",
+    "tokenPackage": "apps/merchant/web/package.json"
+  },
+  "sourcePins": [
+    {
+      "path": "apps/merchant/web/package.json",
+      "sha256": "d8f36114e974952c712c7145c351f15e5fe9bf849d1771026eef492040ef77a3"
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx",
+      "sha256": "39bf43e867e33fb397c643ec474ffadd30ea9fd9004c6441b0cb6286cc7fdf1b"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/editor-block-actions.ts",
+      "sha256": "b287ef171ab4ae6df11683b5068e8ae787aa78e063d19c081adb21da142aef0f"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/editor-view-state.ts",
+      "sha256": "80d4d2b3fb4b3c61bfa30830360f393a0c0f773084176cb269997002b2366d68"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/shared-roundtrip-harness/canonical-adapters.mjs",
+      "sha256": "eb6f0188d1340b5f5d1ef57dad5e509413e003d0105054a4575d0b2f09e2dd6c"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/shared-roundtrip-harness/identity-guards.test.mjs",
+      "sha256": "01a04362c0b87ba4346371b37da07150c7da3a44812fc8ac6fc4d752fac682c4"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/shared-roundtrip-harness/run.mjs",
+      "sha256": "d1d3c46992dc937f48093e00fe1be756a6bbd396e325bb2a5a9b790915c82434"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/shared-roundtrip-harness/theme-data-contract.mjs",
+      "sha256": "1c70e5d11a6c039bed9cf90d58c876ec90a0131f199796c8a8691d876215a831"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/habitat/completion-2026-10-24/shared-wire-source-20261024-01/factory.mjs",
+      "sha256": "f1dfc8dafb350336598b716786dacc82c1c9607d962d7700fe45a912c4713762"
+    },
+    {
+      "path": "packages/theme-engine/src/ai-accessibility.ts",
+      "sha256": "b3bd3cdf32f0060c6f683cd8b0e181a738f72dba2372e209ee44e40a370daaa5"
+    },
+    {
+      "path": "packages/theme-engine/src/ai-color-system.ts",
+      "sha256": "00998c3d696b59f5dd7d3f12df15b57d0132929a72cc2774fafad6481489d81f"
+    },
+    {
+      "path": "packages/theme-engine/src/ai-intent-parser.ts",
+      "sha256": "056e07ef9b9ffec32b6f10a28f6db48581b2b8ee0ff604a8f1a5fae97f9b19b7"
+    },
+    {
+      "path": "packages/theme-engine/src/ai-layout.ts",
+      "sha256": "585a53ab5cfc99a34f1137f5877acbc8be418824e5b3a28fb11b78d972217747"
+    },
+    {
+      "path": "packages/theme-engine/src/ai-optimizer.ts",
+      "sha256": "335b041aa174eeb280ab648c0813aa7b098eb6af608e7bd95f021bd3ea888bdf"
+    },
+    {
+      "path": "packages/theme-engine/src/ai-personalization.ts",
+      "sha256": "55905619b2fe0d4bd3f972e785de53d00f542c1a886dc40f418c35387787339b"
+    },
+    {
+      "path": "packages/theme-engine/src/ai-theme-generator.ts",
+      "sha256": "0d48c1920b7035456f0d0a064368f67dbf5c27d1dca2a0b90912069e651c6d68"
+    },
+    {
+      "path": "packages/theme-engine/src/ai-typography.ts",
+      "sha256": "13a318f2e0ce76904bb3eb12deff2d05dc5bc894cd9ae1c8db25061411e9003e"
+    },
+    {
+      "path": "packages/theme-engine/src/app-block-model.ts",
+      "sha256": "11d98cf696bb9e635348233b10c685295f4ea6f2c4e263fa3a7fc3f47290866d"
+    },
+    {
+      "path": "packages/theme-engine/src/built-in-section-schemas.ts",
+      "sha256": "5e44b89d7ebc3d40b82e7d12dfccf399f7a336d39e1a1b04c7deaf4c57486734"
+    },
+    {
+      "path": "packages/theme-engine/src/circuit-discovery.ts",
+      "sha256": "160c6a61a567f87bbcab20bf337336ede6e748c1326110ab977f61ec9c14523b"
+    },
+    {
+      "path": "packages/theme-engine/src/circuit-styles.ts",
+      "sha256": "09c1be83d56d1640770bcf8c76df249f4fa309aa227d81a3d46d0f81879911c2"
+    },
+    {
+      "path": "packages/theme-engine/src/circuit-theme-v201.ts",
+      "sha256": "ec2d68c29434e96404496cec44b10c2c293364cbfa98da113d2efa6f21c7c9be"
+    },
+    {
+      "path": "packages/theme-engine/src/circuit-theme.ts",
+      "sha256": "44f78cdaa4d9241723b7bc9ae0f0952d946e72b11775c05160c9949f87a69d2a"
+    },
+    {
+      "path": "packages/theme-engine/src/custom-css-sanitizer.ts",
+      "sha256": "2a958ce9b14aea26277a79b8024dcd359dd84836785543abf435e48ad20f321c"
+    },
+    {
+      "path": "packages/theme-engine/src/dewdrop-discovery.ts",
+      "sha256": "a9d866eeb5dedc2b123bdf2a287b9a0be23789b39c93c1e1872471c975de1fe1"
+    },
+    {
+      "path": "packages/theme-engine/src/dewdrop-styles.ts",
+      "sha256": "693a0be116d404baac41ef0b044ce69f6c8dcf35d4dfe26b02ac507678ba129e"
+    },
+    {
+      "path": "packages/theme-engine/src/dewdrop-theme-v201.ts",
+      "sha256": "3b276b6513f0860092a8f2bdf03217c9f8d8a1fa27de9d7318e886d3bb8ea10c"
+    },
+    {
+      "path": "packages/theme-engine/src/dewdrop-theme.ts",
+      "sha256": "ec0cf0890c607056c1da13087b1c51ee6931d120c46370802360b740f0693190"
+    },
+    {
+      "path": "packages/theme-engine/src/dynamic-source-binding.ts",
+      "sha256": "28b23de56c2069bb02f73ddb444b8d8c266f66714e45a820d3a738060771e421"
+    },
+    {
+      "path": "packages/theme-engine/src/editor-bridge-protocol.ts",
+      "sha256": "7cff1ccbb9725ece155a9d1c08c9fee7706c3f8dc9ea27a860f9a23bd3c8ca66"
+    },
+    {
+      "path": "packages/theme-engine/src/execution-runtime.ts",
+      "sha256": "9fee29e7031948e9a27640c2bbb9a78de00207965fd2da1c9ca1f0b3afef168e"
+    },
+    {
+      "path": "packages/theme-engine/src/experience-apply.ts",
+      "sha256": "fcf62ca230b604f6dd4d33cc34a1b0d990caa131f815fc3666dae4fbce15f6b4"
+    },
+    {
+      "path": "packages/theme-engine/src/experience-compositions.ts",
+      "sha256": "25b73068b7a4fcce5b4bad3768a376e08c7e384e843f707c3cf8f8fb361abc68"
+    },
+    {
+      "path": "packages/theme-engine/src/experience-fonts.ts",
+      "sha256": "3ee9bdb23a8c18410fd36ee6302f0f8fae929484a7c2dbfd9bc6a424e30f64be"
+    },
+    {
+      "path": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "sha256": "ec2166ba230387d152fbd0629d12c19de6281b451c651166918adcd47c48eaf3"
+    },
+    {
+      "path": "packages/theme-engine/src/habitat-discovery.ts",
+      "sha256": "342843da57a6eef8488d906218d4225338f9f3c0afe2bbcc49073f3f34a1f873"
+    },
+    {
+      "path": "packages/theme-engine/src/habitat-styles.ts",
+      "sha256": "e4b89a41c526cc9a96e0e3106e084124717eb56d9837bcf09214045d7fa817e6"
+    },
+    {
+      "path": "packages/theme-engine/src/habitat-theme.ts",
+      "sha256": "0144fdf830ab3c5ddf42ebfcb86258b99e74ed8a8d724469012479705352e8c3"
+    },
+    {
+      "path": "packages/theme-engine/src/index.ts",
+      "sha256": "1544081a6b4e1c7c276ed6cbfd1a9bd39fdbe10fca6406cd72b7ba1eb1d584e5"
+    },
+    {
+      "path": "packages/theme-engine/src/industry-experience-map.ts",
+      "sha256": "e647df5605fc6bac525c6104a0f60e67cfc6b6f0ba6ea6db323e1e795fc404b3"
+    },
+    {
+      "path": "packages/theme-engine/src/jsdom-runtime.d.ts",
+      "sha256": "5a45588b3aadc8ddbd324a645220217a823326811ba5d8ea5bcbf11baefd59aa"
+    },
+    {
+      "path": "packages/theme-engine/src/kindred-discovery.ts",
+      "sha256": "14dd29777737158a61287bf54e98571c6b3abf1e07ec542d2e7f678180ad473f"
+    },
+    {
+      "path": "packages/theme-engine/src/kindred-styles.ts",
+      "sha256": "15e6670f6556a7b9cfd8e56891088f0abe9a8ffa1105822be1a1902ecd7282cf"
+    },
+    {
+      "path": "packages/theme-engine/src/kindred-theme.ts",
+      "sha256": "3a47dc979dbdf5dce395fd44a858e007567820f4fac569fade603ff6da4fd551"
+    },
+    {
+      "path": "packages/theme-engine/src/madeyours-discovery.ts",
+      "sha256": "d1fc0993efd1d876e67c60f997e6cea53efd65a4fd7aba69bafe377f02803eda"
+    },
+    {
+      "path": "packages/theme-engine/src/madeyours-styles.ts",
+      "sha256": "5253e57fcb217526d7bf46e8ddc54b921a5f64ec42f69c7c0dae177eadb5ee6e"
+    },
+    {
+      "path": "packages/theme-engine/src/madeyours-theme.ts",
+      "sha256": "c56bdba5b9e9376c4a296cadc2d4f31a33598a033692d2f6c21daa71b3e98193"
+    },
+    {
+      "path": "packages/theme-engine/src/marginalia-discovery.ts",
+      "sha256": "a1c2c75b3497fc3f0edc1280686b75c7434e1a400c0944154c462561b62cc8d3"
+    },
+    {
+      "path": "packages/theme-engine/src/marginalia-styles.ts",
+      "sha256": "112747bc358f7fb1fcaafbec32d2bc4f866cec76f0a4324003650bf4dd80e88d"
+    },
+    {
+      "path": "packages/theme-engine/src/marginalia-theme.ts",
+      "sha256": "a109aa33018aa786dffaea7a067415b13fe73ddc17beca7ef18a83f58301b7e9"
+    },
+    {
+      "path": "packages/theme-engine/src/niche-order-presentation.ts",
+      "sha256": "5683e413e48bc11d6b0906dc344ec6c3b0c7413113172b11bda91c49d08cb444"
+    },
+    {
+      "path": "packages/theme-engine/src/pantry-discovery.ts",
+      "sha256": "d9c09fe8097123623d26cde25ec9951233792adadbdf8d0eb6628659234759d0"
+    },
+    {
+      "path": "packages/theme-engine/src/pantry-styles.ts",
+      "sha256": "3a7e53583942a5188970d4f5e2901ce4e894ab3b4da55a30176073eaa03db278"
+    },
+    {
+      "path": "packages/theme-engine/src/pantry-theme-v201.ts",
+      "sha256": "e08e3d16b831a7cb8fd7ca3d5ada6fda75a5e21f48c38ff40563541f7ccfca22"
+    },
+    {
+      "path": "packages/theme-engine/src/pantry-theme.ts",
+      "sha256": "9c440d32f146b8155ba78f522da52979fd09a0f3d32c4b25e5c3e289ef390925"
+    },
+    {
+      "path": "packages/theme-engine/src/playfield-discovery.ts",
+      "sha256": "876769a92360a5cc8cd89ab69a436c12c1eda6df32eb4466bdda10111ef297a8"
+    },
+    {
+      "path": "packages/theme-engine/src/playfield-styles.ts",
+      "sha256": "7cb3da13790ec83dcb4bcf6a837abc68e53ebf9a8a49f44b5582af55b1d59243"
+    },
+    {
+      "path": "packages/theme-engine/src/playfield-theme-v201.ts",
+      "sha256": "f2d428503df3630bcb79141488d109e10284412a2a523fa8ad77343aa47ae132"
+    },
+    {
+      "path": "packages/theme-engine/src/playfield-theme-v202.ts",
+      "sha256": "25aaec88541f8c46521596c1c01c3903018750e7057d1038a8ba13a773256bb1"
+    },
+    {
+      "path": "packages/theme-engine/src/playfield-theme.ts",
+      "sha256": "00493cb361c8fc796941524d9673ee4c1bfa3a12785017e2397e408b924edb63"
+    },
+    {
+      "path": "packages/theme-engine/src/portable-to-liquid.ts",
+      "sha256": "c981e822ec3f51bd7975e72862a957fc011b14a7f8984cdd0b38f8ba9a27803b"
+    },
+    {
+      "path": "packages/theme-engine/src/schema-field-extensions.ts",
+      "sha256": "a5c53fdfc687bc9c7913ff64c1af1d51e496b70fd74b2a78e2b000bb66ee4d71"
+    },
+    {
+      "path": "packages/theme-engine/src/section-schema-migrations.ts",
+      "sha256": "e28f3f3e3835aa5fa0d0c6418ff9e773f0a077c7ed46c0d001749f2d93e87523"
+    },
+    {
+      "path": "packages/theme-engine/src/section-type-map.ts",
+      "sha256": "b262e6d801be599399f18a53944507ab6886c6d9488784381297f72658331d94"
+    },
+    {
+      "path": "packages/theme-engine/src/server-dom-runtime.ts",
+      "sha256": "309b16baf1fb3b51c45358f6569e1b02277a403d16728023a7ff57fad1d01184"
+    },
+    {
+      "path": "packages/theme-engine/src/server-dom-unavailable.ts",
+      "sha256": "101394ab995695bd3118e3a039ba3a1e952b7979d19c24196e42ef2d7be9bb8e"
+    },
+    {
+      "path": "packages/theme-engine/src/settings-schema-canonical.ts",
+      "sha256": "ed5f84c47a5beebf26385d11b67f7068aadfcc09ba40f0f5e0fa693f564b8f86"
+    },
+    {
+      "path": "packages/theme-engine/src/template-registry.ts",
+      "sha256": "2ab00379414a40769d793175dac97d4b795668587a48f081414326cfbb1555c7"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-ai-sdk.ts",
+      "sha256": "36d3be49894dfffd8a484e69b23ad782963f3c5b027385705603bc3f3cf06afb"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-analytics.ts",
+      "sha256": "62aa70aafea1e7413a9ff71fdae81a3242fa77aa8c89082dc1b7d18170af1442"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-artifact-exporter.ts",
+      "sha256": "a1e0728346eecc15c39d80a3b26b1209f2b3406b97171dbd2ea8215eb7fb41a1"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-bundle-core.ts",
+      "sha256": "0e1650a4d71ef358792c0f877f4ae678794fb6d2cfdebbb30d79563e4a2f452f"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-bundle.ts",
+      "sha256": "cdbad4b28277431a3ab06e56ed0ce16539e04837bb107f5f951a3df39a92ed76"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-cli.ts",
+      "sha256": "efcb0eac0c1f8df2d098bf7746062a03845e4bf02538f7dc3dcf4d2e97ec1538"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-document-migrations.ts",
+      "sha256": "1e402455eae328a2d57d87ec6d440fd17e29a9329016953033056ad3ade8e573"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-document.ts",
+      "sha256": "7ba285a54d71a01545c4cb1e4a3c1540a30caae2db793079b2b3cb32b8612412"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-governance.ts",
+      "sha256": "3f1eb0be28d36a16f058d7623f396a9224e4ae7be787e906f9ec3880f03b0004"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-install-receipt.ts",
+      "sha256": "278368a657420943e69bd955649e962ae88327736ce8abf1ae12cde69d905d71"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-install.ts",
+      "sha256": "28fb25bebc530a2aa27624060b96c31a2ec631ea30dfe13233806bfcf3c9112d"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-library-schemas.ts",
+      "sha256": "7839ac1a705e0c6132b6e79a13d0984de12d24bd437ba10035b1de692d6087af"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-linter.ts",
+      "sha256": "e79f69b0435203c1bafd19730f7641f03a47e9ee4474dd10372a40b4087027e9"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-locale.ts",
+      "sha256": "11e94cc5be985504989cb805b28a0017e14966b61460f5d7922a9aaac0d584e9"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-marketplace-contract.ts",
+      "sha256": "65dd0aca7f44aca7fbb38d90a9810db525fc371d7ea27ce2e5046742b200478f"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-packager.ts",
+      "sha256": "0347bc39a986e673ad0ee90ab10dd884eb4ed195535da5aa01aeb52d58c01601"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-presets.ts",
+      "sha256": "283028890199a34e67863c337ebd0c788c830c60ddaa87854c3bad28f9581e82"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-publish.ts",
+      "sha256": "763c73ba074ec2a5654d5a7a2c7a4ab5faac6281c5e321f7f525aa0eb4472be8"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-registry.ts",
+      "sha256": "df47c3ff4a6bfb0b4dfb56a49559249ab69d44f876bf1d422ecda385f09533ce"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-renderer.ts",
+      "sha256": "794cbc6ff9ae71f995560f302e1b0d5f0d4ff4da59fa31191585851b1e822164"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-safe-update.ts",
+      "sha256": "10a4b866dbe3167e879d9af43fd61b8c3d751d605ca181e5b2c65adfaa39f539"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-sdk.ts",
+      "sha256": "e1f39b4262a24f046b914b752e522160c79f811a0a37523e6e136eb677bb7786"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-settings.ts",
+      "sha256": "3ac7b069b156f89d8f412103cbe6003775524fe4660f47c16a82b13c6a1a2e00"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-upgrade.ts",
+      "sha256": "82ed19d6f3004eda81be013ae49f4d6813b5109faf37aae82c698d7c35ded280"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-version.ts",
+      "sha256": "69042dfc322608cfa34a7f3a370defabe0e10978b2881aa7988e3aad7598f84e"
+    },
+    {
+      "path": "packages/theme-engine/src/threadline-discovery.ts",
+      "sha256": "a3fba143d1217f0da83cf70ab335da66e82bc79cb883a9ad0e3b48773459e4b8"
+    },
+    {
+      "path": "packages/theme-engine/src/threadline-styles.ts",
+      "sha256": "19927c48340b3ff3403b13a945ebe186bf928de638f47281b0fe0421ded48385"
+    },
+    {
+      "path": "packages/theme-engine/src/threadline-theme-v201.ts",
+      "sha256": "a8bba702d94d8e5719ba50058d0e70229c1b261fdc5d49d258df99532b521de7"
+    },
+    {
+      "path": "packages/theme-engine/src/threadline-theme.ts",
+      "sha256": "1e922e6c056de5017f35dfe08827eef0b41212b96bbff5b6695ab087422d523b"
+    },
+    {
+      "path": "packages/theme-engine/src/trailmark-discovery.ts",
+      "sha256": "f69edf5815a19e513416ebb970e661793a88994a12f70e1e0e6d214f021741cb"
+    },
+    {
+      "path": "packages/theme-engine/src/trailmark-styles.ts",
+      "sha256": "5dc2ae055b560a56842f4d3399f5b3b88b59c37ab5ede6c62731e44da3d1c4b0"
+    },
+    {
+      "path": "packages/theme-engine/src/trailmark-theme-v201.ts",
+      "sha256": "9b70794b7bd71f8d0e83bc63e2eba0da46a888491985198fa52e0c157536c763"
+    },
+    {
+      "path": "packages/theme-engine/src/trailmark-theme.ts",
+      "sha256": "ec412bcee2940769612323c2155ac807cef8d73bd1a06caa754cbb1fd11e90b5"
+    },
+    {
+      "path": "packages/typescript/ui/package.json",
+      "sha256": "b727183a149dbb6073da7d146cd98e1790d818c1e4f2a5653cc9d729db6fa187"
+    },
+    {
+      "path": "packages/typescript/ui/src/tokens.ts",
+      "sha256": "0016d74e707c0173e4e1ff5422e558ebeff3de12b12ba74241774201d46c0918"
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "sha256": "15fd89109bbc17e0624e29d5a1b56db07e19f1f880c44d9a9abf847b52b6d09a"
+    },
+    {
+      "path": "services/api-gateway/src/execution/schema-registry-execution.adapter.ts",
+      "sha256": "a742187900a03f2c1c74745c06bf46d797653d4e1309d98762332286972d5a43"
+    }
+  ],
+  "sourcePinScope": "All top-level engine source, named actual adapter/helper/package/lock and shared harness; selected execution inputs rather than a complete native/runtime closure. Resolved token entry is an execution dependency, not generated-source authority.",
+  "templateKey": "index",
+  "fixtures": {
+    "resourceFixture": {
+      "value": "22222222-2222-4222-8222-222222222222",
+      "provenance": "Synthetic syntax-only UUID for pure source retention; not an existing/owned/foreign resource or browser fixture"
+    },
+    "fieldValues": {
+      "theme/headingFontFamily": "Playfair Display",
+      "theme/bodyFontFamily": "Lato"
+    }
+  },
+  "limits": [
+    "Flat source state/JSON/validation/compile/document roundtrip only; not real UI permissions, nesting effects, rendered fields, SQL, resource ownership or buyer/payment acceptance",
+    "Original26 and expanded337 runtime statuses unchanged",
+    "Private201 render results separate; no opt-in dispatch/publication claim"
+  ]
+}

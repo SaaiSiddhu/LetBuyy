@@ -1,0 +1,43 @@
+{
+  "purpose": "Isolated actual Liquid visual review, not a live storefront or hydrated commerce test",
+  "pipeline": "public explicit v2 catalog → real app bounded data binding → real app product mapper → LiquidRenderer → real page assembly",
+  "fontDelivery": "Approved M1 Inter font bytes served locally for deterministic offline review; production canonical Google Fonts delivery remains a separate integration/performance gate",
+  "scenes": [
+    {
+      "scene": "home",
+      "key": "index",
+      "warnings": [],
+      "bytes": 45990
+    },
+    {
+      "scene": "collection",
+      "key": "collection",
+      "warnings": [],
+      "bytes": 44034
+    },
+    {
+      "scene": "product",
+      "key": "product",
+      "warnings": [],
+      "bytes": 48431
+    },
+    {
+      "scene": "missing",
+      "key": "product",
+      "warnings": [],
+      "bytes": 43608
+    },
+    {
+      "scene": "empty",
+      "key": "collection",
+      "warnings": [],
+      "bytes": 40974
+    },
+    {
+      "scene": "invalid",
+      "key": "product",
+      "warnings": [],
+      "bytes": 43608
+    }
+  ]
+}

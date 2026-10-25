@@ -1,0 +1,118 @@
+{
+  "recordedAt": "2026-10-23T17:01:47.113732+00:00",
+  "status": "TWO_ACTIVE_DEPENDENT392_CONSUMERS_SOURCE_RELEASED_FROZEN_NO_NATIVE_EXECUTION",
+  "archiveBeforeEdits": {
+    "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/historical-before-active-392/archive-manifest.json",
+    "sha256": "3469b33ffa04eecf01f4f65e8e6f73a4fe8ad3b35220f8875fc93ddb0af4920f",
+    "bytes": 15545
+  },
+  "archivedFilesVerified": 31,
+  "originalAdmissionsAndRootReceiptsUnchanged": true,
+  "sources": [
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/theme-shared-groups.postgres.test.ts",
+      "sha256": "cab467f13d4a381aecffb23ad7b63789e8608a501429a3ea7aee9c55ee2fd72a",
+      "bytes": 43309,
+      "historicalSha256": "d549131349081802288196440f21bf1f7387543da126a1e5460cc44117a6044c",
+      "snapshot": {
+        "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/historical-before-active-392/services/api-gateway/src/__tests__/owned-db/theme-shared-groups.postgres.test.ts.snapshot",
+        "sha256": "d549131349081802288196440f21bf1f7387543da126a1e5460cc44117a6044c",
+        "bytes": 33370
+      },
+      "diff": {
+        "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/theme-shared-groups.postgres.test.ts.active.diff",
+        "sha256": "8ee1ea08fc4f6654f6b53ff18d74e993619ba3f0abeb679cd89a4eeca5958a7c",
+        "bytes": 14479
+      },
+      "childPhasesPreserved": 5
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/niche-theme-promotion.postgres.test.ts",
+      "sha256": "7a4477a1255529c7cc9eaaef41f2bf36700022976fbeb4172c9ca6125eddd64e",
+      "bytes": 52083,
+      "historicalSha256": "c162f341fae53183bb73606322ebb291e339700562cd5f499918dd8602376739",
+      "snapshot": {
+        "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/historical-before-active-392/services/api-gateway/src/__tests__/owned-db/niche-theme-promotion.postgres.test.ts.snapshot",
+        "sha256": "c162f341fae53183bb73606322ebb291e339700562cd5f499918dd8602376739",
+        "bytes": 41419
+      },
+      "diff": {
+        "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/niche-theme-promotion.postgres.test.ts.active.diff",
+        "sha256": "4326e9907ff0ba241429d6cf341dafe055bc1e9663fa0f0368a53b81856d03f1",
+        "bytes": 20379
+      },
+      "childPhasesPreserved": 4
+    }
+  ],
+  "root392NativeAdmission": {
+    "path": "docs/implementation/niche-theme-programme/circuit-search392-native-admission.json",
+    "sha256": "1238543d37f951a0402f05ee94e7dca85284e3dc6bfb149073da387de95673cc",
+    "bytes": 2099
+  },
+  "qualified392": {
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-qualification.json",
+    "sha256": "b44f4d9ad37798dcdca3c31ad30dfeb93bebbf60fd0c843274da18945d342aa2",
+    "bytes": 6423
+  },
+  "native392SchemaBinding": {
+    "actualStatus": "ROOT_NATIVE392_THROUGH391_QUALIFIED_SOURCE_AND_RAW_PROOFS_VERIFIED",
+    "actualRunId": "3273631a2c5b",
+    "migrationFieldAssumed": false,
+    "pass": 8,
+    "fail": 0,
+    "skip": 0,
+    "qualificationPathAndHashPinned": true,
+    "resultPathAndHashPinned": true
+  },
+  "focusedSourceChecks": {
+    "tests": 12,
+    "pass": 12,
+    "fail": 0,
+    "skip": 0,
+    "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/active-source-evidence/source-contracts-final.tap",
+    "scope": "Structural phase/order/unknown-body preservation plus actual extracted pure admission helper with controlled admission reads. Native test modules never imported; no SQL/HTTP.",
+    "negativeAdmissionFixture": "Controlled pending JSON; does not depend on the real file remaining pending after root admission.",
+    "testSource": {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/consumer-source-contracts.test.mjs",
+      "sha256": "9e5acd46ca1826fa3b35bf9f94c39250166f3b122f8cf936e4f3cfc67dc6e6e7",
+      "bytes": 8246
+    }
+  },
+  "gatewayNoEmit": {
+    "exitCode": 0,
+    "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/active-source-evidence/gateway-noemit.log"
+  },
+  "preservedInitialRed": {
+    "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/active-source-evidence/source-contracts-initial-module-resolution-red.tap",
+    "cause": "Docs-level ESM could not resolve service-local zod before test cases; fixed test-only resolution through the gateway declared dependency."
+  },
+  "frozen47Unchanged": true,
+  "newNativeTestsOrHarnesses": false,
+  "newConsumerAdmissionTemplate": {
+    "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/admission.template.actual-qualified392.json",
+    "sha256": "b7193047b437c5864f57bf105dbf45cd1594928c2e660727d92edf917dd947d6",
+    "bytes": 1763
+  },
+  "currentConsumerAdmission": {
+    "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/admission.json",
+    "sha256": "9cc828684907ab05778d651f1e5ab5eac5e18110cf7ae0e27de216448049038b",
+    "bytes": 173
+  },
+  "currentConsumerAdmissionStatus": "AWAITING_QUALIFIED392_PAIR_AND_ROOT_ACTIVE_SOURCE_LEASE",
+  "nativeStarted": false,
+  "databaseStarted": false,
+  "active392EmissionByThisWork": false,
+  "pendingRootOnly": [
+    "Write new dependent admission pins for exact released sources; old391/389 admissions stay immutable",
+    "Emit exact qualified392 pair once",
+    "Allocate one fresh default-LATEST392 lane for all three existing full suites:8+6+5, jobs1/no-reap",
+    "Review actual results/source conservation/cleanup before any retained-fixture application"
+  ],
+  "retained9cdD4ebFf994AndOwnerTabsTouched": false,
+  "writerLeaseReleased": true,
+  "historicalCurrentSourceDelta": {
+    "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/historical-current-source-delta.json",
+    "sha256": "fdfa1ec3495ae6a9352fc3cea2e90ff83346626920486500092d78035a728625",
+    "bytes": 3450
+  }
+}

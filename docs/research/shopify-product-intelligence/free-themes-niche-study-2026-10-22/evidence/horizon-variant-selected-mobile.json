@@ -1,0 +1,504 @@
+{
+  "body": {
+    "background": "rgb(255, 255, 255)",
+    "color": "rgba(0, 0, 0, 0.81)",
+    "font": "Inter, sans-serif",
+    "fontSize": "14px"
+  },
+  "controls": [
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Menu",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Account",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Cart",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Slide 1 of 6",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Slide 2 of 6",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Slide 3 of 6",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Slide 4 of 6",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Slide 5 of 6",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Slide 6 of 6",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "XS",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "S",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "M",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "L",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "XL",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "XXL",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": true,
+      "expanded": null,
+      "label": "Decrease quantity",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Quantity",
+      "tag": "INPUT",
+      "type": "number"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Increase quantity",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Add to cart",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Email address",
+      "tag": "INPUT",
+      "type": "email"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Sign up",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close dialog",
+      "tag": "BUTTON",
+      "type": "submit"
+    }
+  ],
+  "headings": [
+    {
+      "font": "Inter, sans-serif",
+      "height": 15.3984375,
+      "line": "15.4px",
+      "size": "14px",
+      "tag": "H3",
+      "text": "1Tuck Tapered Pants",
+      "weight": "400",
+      "width": 166.8203125,
+      "x": 77.59375,
+      "y": 901.296875
+    },
+    {
+      "font": "Inter, sans-serif",
+      "height": 35.1953125,
+      "line": "35.2px",
+      "size": "32px",
+      "tag": "H1",
+      "text": "1Tuck Tapered Pants",
+      "weight": "700",
+      "width": 358,
+      "x": 16,
+      "y": 245.5
+    },
+    {
+      "font": "Inter, sans-serif",
+      "height": 24,
+      "line": "24px",
+      "size": "24px",
+      "tag": "H3",
+      "text": "You may also like",
+      "weight": "700",
+      "width": 193.609375,
+      "x": 16,
+      "y": 915.5625
+    },
+    {
+      "font": "Inter, sans-serif",
+      "height": 24,
+      "line": "24px",
+      "size": "24px",
+      "tag": "H2",
+      "text": "Join the club",
+      "weight": "700",
+      "width": 145.5078125,
+      "x": 16,
+      "y": 1573.84375
+    }
+  ],
+  "links": [
+    {
+      "text": "Skip to content",
+      "url": "https://theme-horizon-demo.myshopify.com/products/1tuck-tapered-pants-424?variant=50385431167297#MainContent"
+    },
+    {
+      "text": "",
+      "url": "https://theme-horizon-demo.myshopify.com/collections/all"
+    },
+    {
+      "text": "",
+      "url": "https://theme-horizon-demo.myshopify.com/pages/contact"
+    },
+    {
+      "text": "",
+      "url": "https://theme-horizon-demo.myshopify.com/products/1tuck-tapered-pants-424"
+    },
+    {
+      "text": "",
+      "url": "https://theme-horizon-demo.myshopify.com/products/1tuck-tapered-pants-424-1"
+    },
+    {
+      "text": "",
+      "url": "https://theme-horizon-demo.myshopify.com/products/test-alex-merino-wool-open-placket-polo-324"
+    },
+    {
+      "text": "",
+      "url": "https://theme-horizon-demo.myshopify.com/products/allied-down-hooded-blouson-424"
+    },
+    {
+      "text": "Horizon",
+      "url": "https://theme-horizon-demo.myshopify.com/"
+    },
+    {
+      "text": "Skip to product information",
+      "url": "https://theme-horizon-demo.myshopify.com/products/1tuck-tapered-pants-424?variant=50385431167297#ProductInformation-template--25678738784577__main"
+    },
+    {
+      "text": "More payment options",
+      "url": "https://theme-horizon-demo.myshopify.com/products/1tuck-tapered-pants-424?variant=50385431167297#"
+    },
+    {
+      "text": "1Tuck Tapered Pants",
+      "url": "https://theme-horizon-demo.myshopify.com/products/1tuck-tapered-pants-424-1?variant=50385431724353"
+    },
+    {
+      "text": "Relaxed Chino Pants",
+      "url": "https://theme-horizon-demo.myshopify.com/products/relaxed-chino-pants-424-1?variant=50385474126145"
+    },
+    {
+      "text": "Field Corduroy Pant",
+      "url": "https://theme-horizon-demo.myshopify.com/products/field-corduroy-pant-324?variant=50385503125825"
+    },
+    {
+      "text": "Tota Convertible Pant",
+      "url": "https://theme-horizon-demo.myshopify.com/products/tota-convertible-pant-324?variant=50385500799297"
+    },
+    {
+      "text": "Horizon",
+      "url": "https://theme-horizon-demo.myshopify.com/"
+    }
+  ],
+  "sections": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--25678738784577__main",
+      "rect": {
+        "height": 1143.96875,
+        "width": 390,
+        "x": 0,
+        "y": -262
+      },
+      "tag": "DIV",
+      "text": "1Tuck Tapered Pants\nS\n$207.00\nSkip to product information\n1\n2\n3\n4\n5\n6\n1Tuck Tapered Pants\n$207.00\nSize\nXS\nS\nM\nL\nXL\nXXL\nDecrease quantity\nIncrease quantity\nAdd to cart\nMore payment "
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--25678738784577__product_recommendations_qggXJq",
+      "rect": {
+        "height": 657.28125,
+        "width": 390,
+        "x": 0,
+        "y": 881.96875
+      },
+      "tag": "DIV",
+      "text": "You may also like\n1Tuck Tapered Pants\n1Tuck Tapered Pants\n$207.00\nRelaxed Chino Pants\nRelaxed Chino Pants\n$161.00\nField Corduroy Pant\nField Corduroy Pant\n$179.00\nTota Convertible P"
+    }
+  ],
+  "title": "1Tuck Tapered Pants – Horizon",
+  "url": "https://theme-horizon-demo.myshopify.com/products/1tuck-tapered-pants-424?variant=50385431167297",
+  "viewport": {
+    "dpr": 1,
+    "height": 844,
+    "width": 390
+  },
+  "formGroups": [
+    "Size\nXS\nS\nM\nL\nXL\nXXL"
+  ],
+  "grids": [
+    {
+      "className": "product-information__grid product-information--media-left",
+      "columns": "subgrid [] [] [] []",
+      "display": "grid",
+      "gap": "normal",
+      "height": 1143.96875,
+      "tag": "DIV",
+      "width": 390
+    },
+    {
+      "className": "\n          resource-list\n          \n          \n          resource-list--grid\n        ",
+      "columns": "173px 173px",
+      "display": "grid",
+      "gap": "12px",
+      "height": 542.09375,
+      "tag": "DIV",
+      "width": 358
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "4px",
+      "height": 265.046875,
+      "tag": "DIV",
+      "width": 173
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "4px",
+      "height": 265.046875,
+      "tag": "DIV",
+      "width": 173
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "4px",
+      "height": 265.046875,
+      "tag": "DIV",
+      "width": 173
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "4px",
+      "height": 265.046875,
+      "tag": "DIV",
+      "width": 173
+    }
+  ],
+  "images": [
+    {
+      "alt": "Saturdays NYC. 1Tuck Tapered Pants. Full-body view of model wearing the black chinos, showcasing the tapered fit and single tuck at the waist.",
+      "complete": true,
+      "naturalWidth": 120,
+      "rect": {
+        "height": 52,
+        "width": 52
+      }
+    },
+    {
+      "alt": "Saturdays NYC. 1Tuck Tapered Pants. Full-body view of model wearing the black chinos, showcasing the tapered fit and single tuck at the waist.",
+      "complete": true,
+      "naturalWidth": 389,
+      "rect": {
+        "height": 487.5,
+        "width": 390
+      }
+    },
+    {
+      "alt": "Saturdays NYC. 1Tuck Tapered Pants. Tapered chinos in black, crafted from high-twisted cotton for a crisp, refined texture with a relaxed silhouette.",
+      "complete": true,
+      "naturalWidth": 389,
+      "rect": {
+        "height": 487.5,
+        "width": 390
+      }
+    },
+    {
+      "alt": "Saturdays NYC. 1Tuck Tapered Pants. Bottom view of the black chinos, showcasing the tapered hem and clean, structured finish.",
+      "complete": true,
+      "naturalWidth": 389,
+      "rect": {
+        "height": 487.5,
+        "width": 390
+      }
+    },
+    {
+      "alt": "Saturdays NYC. 1Tuck Tapered Pants. Back view of model wearing the black chinos, showcasing the tailored fit, relaxed silhouette, and clean back design.",
+      "complete": true,
+      "naturalWidth": 389,
+      "rect": {
+        "height": 487.5,
+        "width": 390
+      }
+    },
+    {
+      "alt": "Saturdays NYC. 1Tuck Tapered Pants. Close-up of the waistband, highlighting the single tuck and polished design, in black.",
+      "complete": true,
+      "naturalWidth": 389,
+      "rect": {
+        "height": 487.5,
+        "width": 390
+      }
+    },
+    {
+      "alt": "Saturdays NYC. 1Tuck Tapered Pants. Close-up of the high-twisted cotton fabric, showcasing the crisp texture and refined finish, in black.",
+      "complete": true,
+      "naturalWidth": 389,
+      "rect": {
+        "height": 487.5,
+        "width": 390
+      }
+    },
+    {
+      "alt": "Saturdays NYC. 1Tuck Tapered Pants. Full-body view of model wearing the black chinos, showcasing the tapered fit and single tuck at the waist.",
+      "complete": true,
+      "naturalWidth": 389,
+      "rect": {
+        "height": 0,
+        "width": 0
+      }
+    },
+    {
+      "alt": "Saturdays NYC. 1Tuck Tapered Pants. Tapered chinos in black, crafted from high-twisted cotton for a crisp, refined texture with a relaxed silhouette.",
+      "complete": true,
+      "naturalWidth": 389,
+      "rect": {
+        "height": 0,
+        "width": 0
+      }
+    },
+    {
+      "alt": "Saturdays NYC. 1Tuck Tapered Pants. Bottom view of the black chinos, showcasing the tapered hem and clean, structured finish.",
+      "complete": true,
+      "naturalWidth": 389,
+      "rect": {
+        "height": 0,
+        "width": 0
+      }
+    },
+    {
+      "alt": "Saturdays NYC. 1Tuck Tapered Pants. Back view of model wearing the black chinos, showcasing the tailored fit, relaxed silhouette, and clean back design.",
+      "complete": true,
+      "naturalWidth": 389,
+      "rect": {
+        "height": 0,
+        "width": 0
+      }
+    },
+    {
+      "alt": "Saturdays NYC. 1Tuck Tapered Pants. Close-up of the waistband, highlighting the single tuck and polished design, in black.",
+      "complete": true,
+      "naturalWidth": 389,
+      "rect": {
+        "height": 0,
+        "width": 0
+      }
+    }
+  ],
+  "bodyText": "Skip to content\nHorizon\nTotal items in cart: 0\n1Tuck Tapered Pants\nS\n$207.00\nSkip to product information\n1\n2\n3\n4\n5\n6\n1Tuck Tapered Pants\n$207.00\nSize\nXS\nS\nM\nL\nXL\nXXL\nDecrease quantity\nIncrease quantity\nAdd to cart\nMore payment options\n\nThis is a demonstration store. You can purchase products like this from Saturdays NYC.\n\nThese tapered chinos, made from high-twisted cotton, offer a crisp, refined texture. With a relaxed silhouette and a single tuck at the waist, they provide a comfortable fit. The length adds a sleek finish, making them perfect for effortless style.\n\nYou may also like\n1Tuck Tapered Pants\n1Tuck Tapered Pants\n$207.00\nRelaxed Chino Pants\nRelaxed Chino Pants\n$161.00\nField Corduroy Pant\nField Corduroy Pant\n$179.00\nTota Convertible Pant\nTota Convertible Pant\n$214.00\nJoin the club\n\nGet exclusive deals and early access to new products.\n\nEmail\n© 2026 Horizon, Powered by Shopify"
+}

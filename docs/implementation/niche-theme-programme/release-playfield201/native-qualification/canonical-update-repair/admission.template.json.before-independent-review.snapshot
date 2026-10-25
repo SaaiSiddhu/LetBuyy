@@ -1,0 +1,15 @@
+{
+  "status": "PENDING_ROOT_INDEPENDENT_SOURCE_REPAIR_REVIEW_AND_NATIVE_SLOT",
+  "suitePath": "services/api-gateway/src/__tests__/owned-db/playfield201-promotion.postgres.test.ts",
+  "suiteSha256": "f06e2e2185fcb97d58e2972a4e697cb82e6fc9bd0bdf70ef97f629ccfa7c08ea",
+  "rootProposalPath": "docs/implementation/niche-theme-programme/playfield201-proposal-admission.json",
+  "rootProposalSha256": "fafc7990283a89725841ce672b3136e034d33c72bc5ba66729beaf019d520a51",
+  "manifestSha256": "6bd27e70ca6f0a2169a15c3fe850d07bebb948a276002a483f730ac1f690885c",
+  "sourceMigrationMaximum": 392,
+  "migrationCeiling": null,
+  "candidateMigration": 393,
+  "candidateOutsideMigrationScan": true,
+  "inputClosurePath": "docs/implementation/niche-theme-programme/release-playfield201/native-qualification/source-input-closure.json",
+  "inputClosureSha256": "104aec2bf16fe1688e746bbdb749394235b94e4dfae7ee867aed97b0aa1b61d0",
+  "nativeLease": "NOT_GRANTED_PENDING_ROOT_SOURCE_REPAIR_REVIEW"
+}

@@ -1,0 +1,105 @@
+Browser tab: 70, Title: "Lifecycle accessories | Threadline", URL: "http://syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/collections/01f56eb8-89fa-4fc5-be47-02f3ec591f2f?limit=1&search=Circuit&category=Accessories&country_of_origin=India&sort=price-desc&collection_id=01f56eb8-89fa-4fc5-be47-02f3ec591f2f&max_price=2000&connector=ac-plug&connector=usb-a&electronics_kind=charger&pass_through_output_w=&power_input_w=&power_output_w=".
+1 AXWebArea Lifecycle accessories | Threadline, URL: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/collections/01f56eb8-89fa-4fc5-be47-02f3ec591f2f?limit=1&search=Circuit&category=Accessories&country_of_origin=India&sort=price-desc&collection_id=01f56eb8-89fa-4fc5-be47-02f3ec591f2f&max_price=2000&connector=ac-plug&connector=usb-a&electronics_kind=charger&pass_through_output_w=&power_input_w=&power_output_w=
+	2 container
+		3 text Circuit 936 B — saved recovery draft.
+		4 container Description: Primary, ID: lb-nav-panel-header-default
+		5 link Description: Threadline, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b
+		6 container
+			7 text Search products, models and connectors
+			8 search text field (settable) Search products, models and connectors, Value: Circuit, ID: ct-header-search-header-default
+			9 button Search
+		10 link Description: Log in, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/customers/login
+		11 link Description: Cart ( 2 ), Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/cart
+		12 container Filter products by country of origin
+			13 container
+				14 text Country of origin
+				15 text field (settable) Country of origin, Value: India, ID: lb-product-origin-filter
+				16 button Apply filter
+				17 link Description: Clear origin filter, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/collections/01f56eb8-89fa-4fc5-be47-02f3ec591f2f?limit=1&search=Circuit&category=Accessories&sort=price-desc&collection_id=01f56eb8-89fa-4fc5-be47-02f3ec591f2f&max_price=2000&electronics_kind=charger&connector=ac-plug&connector=usb-a
+		18 text THE CONNECTION DESK
+		19 heading Lifecycle accessories, Value: 1
+			20 text Lifecycle accessories
+		21 text 1 products
+		22 container
+			23 text Search products, models and connectors
+			24 search text field (settable) Search products, models and connectors, Value: Circuit, ID: ct-search-forge-discovery-collection
+			25 button Search
+		26 text Results for “Circuit”
+		27 container
+			28 heading Filter accessories, Value: 2
+				29 text Filter accessories
+			30 container Connector
+				31 text Connector
+				32 container
+					33 checkbox (settable, integer) Description: ac-plug (1 matching product), Value: 1
+					34 text ac-plug (1 matching product)
+				35 container
+					36 checkbox (settable, integer) Description: usb-c (1 matching product), Value: 0
+					37 text usb-c (1 matching product)
+				38 container
+					39 checkbox (settable, integer) Description: usb-a (0 matching products), Value: 1
+					40 text usb-a (0 matching products)
+			41 container Accessory type
+				42 text Accessory type
+				43 radio button (settable, integer) Description: Any, Value: 0
+				44 container
+					45 radio button (settable, integer) Description: charger (1 matching product), Value: 1
+					46 text charger (1 matching product)
+			47 container Power input (W)
+				48 text Power input (W)
+				49 radio button (settable, integer) Description: Any, Value: 1
+				50 container
+					51 radio button (settable, integer) Description: 70 (1 matching product), Value: 0
+					52 text 70 (1 matching product)
+			53 container Power output (W)
+				54 text Power output (W)
+				55 radio button (settable, integer) Description: Any, Value: 1
+				56 container
+					57 radio button (settable, integer) Description: 65 (1 matching product), Value: 0
+					58 text 65 (1 matching product)
+			59 button Apply filters
+			60 link Description: Clear filters, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/collections/01f56eb8-89fa-4fc5-be47-02f3ec591f2f?limit=1&search=Circuit&sort=price-desc&collection_id=01f56eb8-89fa-4fc5-be47-02f3ec591f2f
+		61 container
+			62 text Sort by
+			63 pop up button (collapsed, settable) Sort by, Value: Price: high to low, ID: ct-sort-forge-results-collection, Secondary Actions: Expand
+				64 menu
+					65 Featured
+					66 Price: low to high
+					67 (selected) Price: high to low
+					68 Newest
+					69 Name
+			70 button Sort
+		71 container Applied filters
+			72 link Description: Remove Category: Accessories, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/collections/01f56eb8-89fa-4fc5-be47-02f3ec591f2f?limit=1&search=Circuit&country_of_origin=India&sort=price-desc&collection_id=01f56eb8-89fa-4fc5-be47-02f3ec591f2f&max_price=2000&electronics_kind=charger&connector=ac-plug&connector=usb-a
+			73 link Description: Remove Country of origin: India, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/collections/01f56eb8-89fa-4fc5-be47-02f3ec591f2f?limit=1&search=Circuit&category=Accessories&sort=price-desc&collection_id=01f56eb8-89fa-4fc5-be47-02f3ec591f2f&max_price=2000&electronics_kind=charger&connector=ac-plug&connector=usb-a
+			74 link Description: Remove Maximum price: 2000, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/collections/01f56eb8-89fa-4fc5-be47-02f3ec591f2f?limit=1&search=Circuit&category=Accessories&country_of_origin=India&sort=price-desc&collection_id=01f56eb8-89fa-4fc5-be47-02f3ec591f2f&electronics_kind=charger&connector=ac-plug&connector=usb-a
+			75 link Description: Remove Accessory type: charger, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/collections/01f56eb8-89fa-4fc5-be47-02f3ec591f2f?limit=1&search=Circuit&category=Accessories&country_of_origin=India&sort=price-desc&collection_id=01f56eb8-89fa-4fc5-be47-02f3ec591f2f&max_price=2000&connector=ac-plug&connector=usb-a
+			76 link Description: Remove Connector: ac-plug, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/collections/01f56eb8-89fa-4fc5-be47-02f3ec591f2f?limit=1&search=Circuit&category=Accessories&country_of_origin=India&sort=price-desc&collection_id=01f56eb8-89fa-4fc5-be47-02f3ec591f2f&max_price=2000&electronics_kind=charger&connector=usb-a
+			77 link Description: Remove Connector: usb-a, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/collections/01f56eb8-89fa-4fc5-be47-02f3ec591f2f?limit=1&search=Circuit&category=Accessories&country_of_origin=India&sort=price-desc&collection_id=01f56eb8-89fa-4fc5-be47-02f3ec591f2f&max_price=2000&electronics_kind=charger&connector=ac-plug
+		78 container
+			79 link Description: Product image not supplied, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/product/8e65cb28-74c6-41cf-9702-05348faf5f26
+			80 text Synthetic Lab · Synthetic C65
+			81 heading Circuit lifecycle finish charger, Value: 3
+				82 link Description: Circuit lifecycle finish charger, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/product/8e65cb28-74c6-41cf-9702-05348faf5f26
+			83 definition list
+				84 container Output maximum
+					85 text Output maximum
+				86 text 65 W
+				87 container Power outputs
+					88 text Power outputs
+				89 text 2 × USB-C
+			90 text INR 1,900.00
+			91 link Description: View product →, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/product/8e65cb28-74c6-41cf-9702-05348faf5f26
+			92 text Available
+		93 container Product pages
+			94 text Page 1 of 1
+		95 heading Threadline, Value: 3
+			96 text Threadline
+		97 text Circuit 936 B footer saved
+		98 heading CONTACT, Value: 4
+			99 text CONTACT
+		100 link Description: Contact us, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/contact
+		101 text © Threadline. All rights reserved.
+		102 link Description: Powered by LetBuyy, Value: letbuyy.com/
+
+The focused UI element is 1 AXWebArea Lifecycle accessories | Threadline, URL: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/collections/01f56eb8-89fa-4fc5-be47-02f3ec591f2f?limit=1&search=Circuit&category=Accessories&country_of_origin=India&sort=price-desc&collection_id=01f56eb8-89fa-4fc5-be47-02f3ec591f2f&max_price=2000&connector=ac-plug&connector=usb-a&electronics_kind=charger&pass_through_output_w=&power_input_w=&power_output_w=

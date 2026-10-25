@@ -1,0 +1,45 @@
+{
+  "recordedAt": "2026-10-25T01:20:13.321095+00:00",
+  "status": "REDACTED_ROOT_BACKUP_AND_EDITOR_FENCE_RECEIPTS_REVIEWED_NOT_ARCHIVE_OR_RESTORE_VALIDATION",
+  "backupReceipt": {
+    "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/FINAL_DATA_BACKUP_FINAL_PREMAINTENANCE_20261025_01.json",
+    "sha256": "a0e0272ceb4d7a24a6e6d3f77a7cb056e9e5fe677a328bf918ce8afb394173ff"
+  },
+  "fenceReceipt": {
+    "path": "/Volumes/Projects/LetBuyy/docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/BACKUP_FENCE_ACK_20261025_01.json",
+    "expectedSha256": "99220d0aad6ad0470ba2d67a49ab7b41ddf06e3b02f1c34d0c37ab417328d925",
+    "actualSha256": "99220d0aad6ad0470ba2d67a49ab7b41ddf06e3b02f1c34d0c37ab417328d925",
+    "matches": true
+  },
+  "RootReported": {
+    "backupStatus": "FINAL_FENCED_CONSISTENT_ARCHIVE_FULL_READ_VERIFIED_RESTORE_NOT_RUN",
+    "recordedAt": "2026-10-25T01:16:27.126794+00:00",
+    "bytes": 25353695,
+    "archiveSha256": "cd0be171bbbda8ef6236cfd0d71cfcffb81cf69e916051dd0b80248c0a2a43a3",
+    "privateIgnoredCopy": true,
+    "pgDumpExit": 0,
+    "fullReadExit": 0,
+    "restorePerformed": false,
+    "databaseMutations": 0
+  },
+  "savedBoundary": {
+    "theme": "Playfield",
+    "slug": "letbuyy-bloom",
+    "uiRevision": "v17",
+    "status": "Active, Saved",
+    "template": "Playfield activity home",
+    "selectedSection": "Choosing information",
+    "viewport": "Desktop",
+    "saveDisabled": true,
+    "publishEnabled": true,
+    "openDialogs": 0,
+    "unsavedChanges": false,
+    "uncertainAction": false,
+    "checkoutInFlight": false,
+    "paymentInFlight": false,
+    "buyerCartCount": 0
+  },
+  "privateArchiveContentsReadByThemes": false,
+  "processSignalsOrRuntimeActionsByThemes": 0,
+  "pending": "Root exact maintenance/recovery disposition. No source-allocation timer extension; no restore over later acceptedwork. Threadline exact8path proposal stillsource-only/unsealed."
+}

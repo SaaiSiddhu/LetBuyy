@@ -1,0 +1,33 @@
+Browser tab: 17, Title: "Fixture Soft Colour | Threadline", URL: "http://syn-threadline-ui-33be9d94.localhost:62076/product/2bcbdf71-270c-40ac-8819-82d8921e35f0".
+1 AXWebArea Fixture Soft Colour | Threadline, URL: syn-threadline-ui-33be9d94.localhost:62076/product/2bcbdf71-270c-40ac-8819-82d8921e35f0
+	2 container Shopping cart
+		3 button Close cart
+		4 heading Cart, Value: 2
+			5 text Cart
+		6 text Fixture Soft Colour
+		7 text Shade name: Pink Clay · पैक आकार: एक इकाई
+		8 text Saved options
+Shade name: Pink Clay
+पैक आकार: एक इकाई
+
+Care details
+Routine stage: colour
+Product format: Lip tint
+Per-item net quantity: 6 ml
+Selected shade: Pink Clay
+Shade code: PC02
+Supplied colour reference: #a36a65
+Product ingredient statement: Common tint v1: fixture oil and wax; see named shade ingredients.
+Selected-shade ingredients: Pink Clay v1: fixture oil, CI 77492.
+Directions: Fixture directions v1: use as supplied.
+Warnings: Fixture warning v1: external use only.
+		9 text x2
+		10 button Remove Fixture Soft Colour, Shade name: Pink Clay · पैक आकार: एक इकाई
+		11 text Subtotal
+		12 text ₹1,120
+		13 text Total
+		14 text ₹1,120
+		15 link Description: View cart, Value: syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94/cart
+		16 link Description: Checkout, Value: syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94/checkout
+
+The focused UI element is 3 button Close cart

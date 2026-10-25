@@ -1,0 +1,109 @@
+{
+  "recordedAt": "2026-10-24T19:59:31.773979+00:00",
+  "classification": "BOUNDED_STATIC_210_APPLICABILITY_TRACE_NOT_EXECUTION_OR_INSTALLED_DESCRIPTOR_PROOF",
+  "runtime": "49ada80bc494",
+  "sourceReference": "packages/theme-engine/src/first-party-theme-catalog.ts",
+  "sourceSha256AtRead": "2a1775243185e982f19f511738167c280d237fc6d15ed2dd72844e425dc62488",
+  "factorySelection": "createFirstPartyCatalogBundle('letbuyy-dawn', { customizationVersion: '2.1.0' })",
+  "priorInventory": "CAPABILITY_INVENTORY.json 2.0.0 declaration baseline preserved",
+  "acceptedSharedQualification": "docs/implementation/niche-theme-programme/completion-2026-10-24/child-customization-integration01/SOURCE_NATIVE_HANDOFF.json",
+  "observedWrapperBehavior": [
+    "Explicit210 composes the existing Marginalia200 design factory and common order presentation; no Marginalia201 selector is present.",
+    "Wrapper clones the bundle, adds non-app child outlets inside canonical existing block loops, updates reusable badge source and sets version210/number5.",
+    "trust-badges gains a reusable badge declaration only when the host has no existing badge. Retained Marginalia declaration already has badge label+description, so do not assume a new root field or erase description.",
+    "Exact installed section/global definitions, not a version-only/substr match, govern inline-parent eligibility. Types already present in bundle.blocks are excluded from inline-only helper result."
+  ],
+  "predictedContextsFromRetainedDeclarations": {
+    "allFirstPartySectionScopedParents": 13,
+    "inlineOnlyParents": 11,
+    "existingReusableBadgeHosts": 2,
+    "appContextsExcluded": 2
+  },
+  "inlineOnlyParents": [
+    {
+      "sectionType": "banner-carousel",
+      "blockType": "slide",
+      "existingCaseId": "MG-C-BLOCK-BANNER-CAROUSEL-SLIDE"
+    },
+    {
+      "sectionType": "brand-marquee",
+      "blockType": "brand",
+      "existingCaseId": "MG-C-BLOCK-BRAND-MARQUEE-BRAND"
+    },
+    {
+      "sectionType": "category-grid",
+      "blockType": "subject",
+      "existingCaseId": "MG-C-BLOCK-CATEGORY-GRID-SUBJECT"
+    },
+    {
+      "sectionType": "experience-timeline",
+      "blockType": "experience",
+      "existingCaseId": "MG-C-BLOCK-EXPERIENCE-TIMELINE-EXPERIENCE"
+    },
+    {
+      "sectionType": "faq-accordion",
+      "blockType": "faq-item",
+      "existingCaseId": "MG-C-BLOCK-FAQ-ACCORDION-FAQ-ITEM"
+    },
+    {
+      "sectionType": "footer",
+      "blockType": "link",
+      "existingCaseId": "MG-C-BLOCK-FOOTER-LINK"
+    },
+    {
+      "sectionType": "header",
+      "blockType": "link",
+      "existingCaseId": "MG-C-BLOCK-HEADER-LINK"
+    },
+    {
+      "sectionType": "portfolio-grid",
+      "blockType": "project",
+      "existingCaseId": "MG-C-BLOCK-PORTFOLIO-GRID-PROJECT"
+    },
+    {
+      "sectionType": "services-grid",
+      "blockType": "service",
+      "existingCaseId": "MG-C-BLOCK-SERVICES-GRID-SERVICE"
+    },
+    {
+      "sectionType": "skills-section",
+      "blockType": "skill",
+      "existingCaseId": "MG-C-BLOCK-SKILLS-SECTION-SKILL"
+    },
+    {
+      "sectionType": "testimonials",
+      "blockType": "testimonial",
+      "existingCaseId": "MG-C-BLOCK-TESTIMONIALS-TESTIMONIAL"
+    }
+  ],
+  "existingReusableHosts": [
+    {
+      "sectionType": "spotlight",
+      "blockType": "badge",
+      "caseId": "MG-C-BLOCK-SPOTLIGHT-BADGE",
+      "rootDescriptorFields": []
+    },
+    {
+      "sectionType": "trust-badges",
+      "blockType": "badge",
+      "caseId": "MG-C-BLOCK-TRUST-BADGES-BADGE",
+      "rootDescriptorFields": [
+        "label",
+        "description"
+      ]
+    }
+  ],
+  "actualRuntimeReadbackRequired": [
+    "Installed210 immutable package/version/manifest/section/global schemas plus precise permissions/child depth/limits.",
+    "Preserve root trust-badges label+description versus reusable nested badge label-only; verify actual chosen parent descriptor and acknowledged saved fields.",
+    "Nested badge visible output, escaping, exact child identity, add/edit/move/hide/remove/re-add, Save/reload/private/public output and safe restrictions in each supported context.",
+    "Pinned shared header/footer group constraints remain enforced; absence of template instances does not remove advertised addable section coverage.",
+    "Source gap08 order heading, gap09 favicon and gap10 radius require actual210 UI/output readback or scoped canonical correction; source46 and shared210 outlet totals cannot close them."
+  ],
+  "defectsClaimed": [],
+  "currentCandidatePasses": 0,
+  "newCases": 0,
+  "newRequiredNestedSubchecks": true,
+  "browserSourceBuildNativeDbProviderActions": 0,
+  "independentReview": "PENDING"
+}

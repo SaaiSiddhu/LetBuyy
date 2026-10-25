@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-24T11:37:05.536685+00:00",
+  "classification": "PRIVATE_UNAPPLIED_HABITAT201_REVISION02_CANONICAL_SOURCE_PROPOSAL",
+  "predecessor": "docs/implementation/niche-themes-2026-10-23/habitat/completion-2026-10-24/private-order-heading-v201/PROPOSAL.json",
+  "predecessorRetainedExact": true,
+  "supersedesProposalScopeOnly": "Adds the evidenced permitted-reusable-child label outlet; preserves prior heading remedy and old sealed5 source tests. No published2.0.1 exists or is overwritten.",
+  "findings": [
+    "HAB-G10 inherited declared order heading inert",
+    "HAB-G11 reusable badge child/grandchild render effect absent despite canonical stored child support"
+  ],
+  "intendedDestination": "packages/theme-engine/src/habitat-theme-v201.ts",
+  "intendedSha256": "eeb653768fd6d2bb23dc89fcb6c4c2b56bb18ececb078f075b8abe65f3c811aa",
+  "testedPrivateSourceSha256": "2f14105fdb9cfe1af72439b79cef2716a1dcfb538cdc9d4175cd23f0aea180cf",
+  "privateImportAdaptation": "Only sibling import paths are changed for the evidence folder; body matches intended source.",
+  "patchSha256": "e62164317ad5199c13a4991717c8f261ee967e42c0d98e799709ea99988069ff",
+  "implementation": "Uses existing canonical order decorators and renderer-provided sanitized first-party block.sub_blocks HTML. Adds no child schema, renderer, serializer or app runtime. App output is excluded by the outlet.",
+  "preservation": [
+    "Frozen createHabitatTheme2.0.0 and all11 owned files unchanged",
+    "Default no-child badge HTML byte-identical to frozen",
+    "Existing merchant section/block IDs, templates, palette and schema retained",
+    "Default catalog dispatch/export/migration/persisted packages untouched"
+  ],
+  "integrationRequested": "Independent review, then exact additive leaf/test/export and explicit habitatVersion2.0.1 catalogue dispatch under Themes ownership. No automatic upgrade/default promotion.",
+  "catalogDispatchChanged": false,
+  "mainSourceEdited": false,
+  "browserOrDbActions": 0,
+  "qualified": "QUALIFICATION.json"
+}

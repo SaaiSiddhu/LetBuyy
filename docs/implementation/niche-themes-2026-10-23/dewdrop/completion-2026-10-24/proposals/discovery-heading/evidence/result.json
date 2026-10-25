@@ -1,0 +1,75 @@
+{
+  "recordedAtUtc": "2026-10-24T08:49:44.858393+00:00",
+  "classification": "PURE_EXISTING_LIQUID_ENGINE_SOURCE_PROPOSAL_TEST_NOT_BROWSER_API_DB_OR_PROVIDER",
+  "testLocalDependencyResolution": "createRequire at canonical theme-engine package declares its existing jsdom dependency; no install or node_modules change",
+  "preservedAttempt01": "Both module-load failures before actual cases, jsdom not resolvable from docs folder; not product defect results",
+  "results": [
+    {
+      "target": "current",
+      "command": [
+        "/usr/bin/env",
+        "DEWDROP_HEADING_TARGET=current",
+        "/opt/homebrew/bin/node",
+        "--import",
+        "tsx",
+        "--test",
+        "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/dewdrop/completion-2026-10-24/proposals/discovery-heading/heading.test.ts"
+      ],
+      "exitCode": 1,
+      "counts": {
+        "tests": 5,
+        "pass": 2,
+        "fail": 3,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "stdoutSha256": "387089213feb01cd8b32ac78d4e0b7605cf4150390d48264b1635bb23556a91e",
+      "stderrBytes": 0
+    },
+    {
+      "target": "proposal",
+      "command": [
+        "/usr/bin/env",
+        "DEWDROP_HEADING_TARGET=proposal",
+        "/opt/homebrew/bin/node",
+        "--import",
+        "tsx",
+        "--test",
+        "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/dewdrop/completion-2026-10-24/proposals/discovery-heading/heading.test.ts"
+      ],
+      "exitCode": 0,
+      "counts": {
+        "tests": 5,
+        "pass": 5,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "stdoutSha256": "bbda8007073570d4abd796ae376d1233a394404d11521b120a9154f79c6185e7",
+      "stderrBytes": 0
+    }
+  ],
+  "canonicalInputsBefore": {
+    "packages/theme-engine/src/dewdrop-theme.ts": "ec0cf0890c607056c1da13087b1c51ee6931d120c46370802360b740f0693190",
+    "packages/theme-engine/src/dewdrop-discovery.ts": "a9d866eeb5dedc2b123bdf2a287b9a0be23789b39c93c1e1872471c975de1fe1",
+    "packages/theme-engine/src/dewdrop-styles.ts": "693a0be116d404baac41ef0b044ce69f6c8dcf35d4dfe26b02ac507678ba129e",
+    "packages/theme-engine/src/theme-bundle.ts": "cdbad4b28277431a3ab06e56ed0ce16539e04837bb107f5f951a3df39a92ed76",
+    "packages/theme-engine/src/theme-bundle-core.ts": "0e1650a4d71ef358792c0f877f4ae678794fb6d2cfdebbb30d79563e4a2f452f",
+    "packages/theme-engine/src/theme-renderer.ts": "794cbc6ff9ae71f995560f302e1b0d5f0d4ff4da59fa31191585851b1e822164"
+  },
+  "canonicalInputsAfter": {
+    "packages/theme-engine/src/dewdrop-theme.ts": "ec0cf0890c607056c1da13087b1c51ee6931d120c46370802360b740f0693190",
+    "packages/theme-engine/src/dewdrop-discovery.ts": "a9d866eeb5dedc2b123bdf2a287b9a0be23789b39c93c1e1872471c975de1fe1",
+    "packages/theme-engine/src/dewdrop-styles.ts": "693a0be116d404baac41ef0b044ce69f6c8dcf35d4dfe26b02ac507678ba129e",
+    "packages/theme-engine/src/theme-bundle.ts": "cdbad4b28277431a3ab06e56ed0ce16539e04837bb107f5f951a3df39a92ed76",
+    "packages/theme-engine/src/theme-bundle-core.ts": "0e1650a4d71ef358792c0f877f4ae678794fb6d2cfdebbb30d79563e4a2f452f",
+    "packages/theme-engine/src/theme-renderer.ts": "794cbc6ff9ae71f995560f302e1b0d5f0d4ff4da59fa31191585851b1e822164"
+  },
+  "canonicalSourcesUnchanged": true,
+  "testFileSha256": "075f133cf717701c614b4a8004ec4e10800a64085d594afa4779a2edcd638c04",
+  "privateCandidateOnly": true,
+  "runtimeActions": [],
+  "currentThemeCertification": false
+}

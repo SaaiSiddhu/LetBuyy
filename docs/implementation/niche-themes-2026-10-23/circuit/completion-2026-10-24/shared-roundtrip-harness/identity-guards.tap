@@ -1,0 +1,40 @@
+TAP version 13
+# Subtest: an independently supplied matching actual slug/version/hash is accepted without mutation
+ok 1 - an independently supplied matching actual slug/version/hash is accepted without mutation
+  ---
+  duration_ms: 1.8905
+  type: 'test'
+  ...
+# Subtest: missing expected identity or wrong slug/version fails before schema/editor adapters
+ok 2 - missing expected identity or wrong slug/version fails before schema/editor adapters
+  ---
+  duration_ms: 1.449125
+  type: 'test'
+  ...
+# Subtest: an unrecognized successor factory option cannot silently qualify a 2.0.0 fallback
+ok 3 - an unrecognized successor factory option cannot silently qualify a 2.0.0 fallback
+  ---
+  duration_ms: 9.261125
+  type: 'test'
+  ...
+# Subtest: a changed package hash is refused even when the slug/version strings match
+ok 4 - a changed package hash is refused even when the slug/version strings match
+  ---
+  duration_ms: 0.955958
+  type: 'test'
+  ...
+# Subtest: canonical definition roundtrip preserves absent, empty and explicit child metadata distinctly
+ok 5 - canonical definition roundtrip preserves absent, empty and explicit child metadata distinctly
+  ---
+  duration_ms: 20.609542
+  type: 'test'
+  ...
+1..5
+# tests 5
+# suites 0
+# pass 5
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 274.023125

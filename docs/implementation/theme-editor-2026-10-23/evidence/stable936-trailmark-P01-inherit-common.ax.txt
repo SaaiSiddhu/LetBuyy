@@ -1,0 +1,126 @@
+Browser tab: 71, Title: "Trailmark lifecycle racket | Threadline", URL: "http://syn-threadline-ui-6815276b.localhost:50494/product/5dbce431-9870-4636-8b38-e65471737b52?[query-redacted]".
+0 AXWebArea Trailmark lifecycle racket | Threadline, URL: syn-threadline-ui-6815276b.localhost:50494/product/5dbce431-9870-4636-8b38-e65471737b52?[query-redacted]
+	1 container
+		2 text Trailmark 936 B — saved recovery draft.
+		3 link syn-threadline-ui-6815276b.localhost:50494/product/5dbce431-9870-4636-8b38-e65471737b52?[query-redacted]
+		4 container Description: Primary, ID: lb-nav-panel-header-default
+		5 link Description: THREADLINE, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b
+		6 button (collapsed) Description: Search, Secondary Actions: Expand
+		7 link Description: Log in, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/customers/login
+		8 link Description: Cart ( 2 ), Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/cart
+		9 container Breadcrumb
+			10 link Description: Home /, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b
+			11 link Description: Shop /, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/products
+			12 text Trailmark lifecycle racket
+		13 heading Trailmark lifecycle racket, Value: 1
+			14 text Trailmark lifecycle racket
+		112 text ₹1,800
+		16 container Product-level equipment measurements
+			17 text Product length
+			18 text 67.5 cm
+			19 text Product weight
+			20 text 85 g
+			21 text Activity
+			22 text Badminton
+		23 link Description: Equipment measurements & conditions ↗, Value: syn-threadline-ui-6815276b.localhost:50494/product/5dbce431-9870-4636-8b38-e65471737b52?[query-redacted]
+		24 container
+			25 text Length
+			26 checkbox 26.5 in, Value: 0
+			27 checkbox Common size, Value: 1
+		29 container Selected variant facts
+			113 text Common size.
+			114 heading Equipment facts, Value: 3
+				115 text Equipment facts
+			116 definition list
+				117 container Length
+					118 text Length
+				119 text 67.5 cm
+				120 container Weight
+					121 text Weight
+				122 text 85 g
+				123 container Dimensions
+					124 text Dimensions
+				125 text 67.5 × 26 × 2 cm
+		31 container
+			32 text Quantity
+			33 stepper (settable, integer) Quantity, Value: 1, ID: lb-quantity-product-detail-default
+			34 button Add to cart
+		35 container Add Trailmark lifecycle racket to wishlist
+			36 checkbox Description: Connect store account to use wishlist, Value: 0
+		37 button (collapsed) Description, Secondary Actions: Expand
+			38 text Description
+		39 container Description: Product measurements and conditions, ID: equipment-facts
+			40 heading Measure first. Choose second., Value: 2
+				41 text Measure first. Choose second.
+			42 table Merchant-supplied product facts; variant measurements follow below
+				43 text Merchant-supplied product facts; variant measurements follow below
+				44 row
+					45 cell
+						46 text Activity
+					47 cell
+						48 text Badminton
+				49 row
+					50 cell
+						51 text Equipment type
+					52 cell
+						53 text racket
+				54 row
+					55 cell
+						56 text Overall length
+					57 cell
+						58 text 67.5 cm
+				59 row
+					60 cell
+						61 text Weight
+					62 cell
+						63 text 85 g
+				64 row
+					65 cell
+						66 text Dimensions
+					67 cell
+						68 text 67.5 × 26 × 2 cm
+				69 row
+					70 cell
+						71 text Material
+					72 cell
+						73 text Not supplied
+			74 heading Measurements for 26.5 in, Value: 3
+				75 text Measurements for 26.5 in
+			76 text Length: 26.5 in
+			77 text Weight: 80 g
+			78 text Dimensions: 26.5 × 10 in
+			79 heading Measurements for Common size, Value: 3
+				80 text Measurements for Common size
+			81 text Length: 67.5 cm
+			82 text Weight: 85 g
+			83 text Dimensions: 67.5 × 26 × 2 cm
+			84 text Included contents have not been supplied.
+			85 text Compatibility: unconfirmed.
+		86 container
+			87 heading Write a review, Value: 3
+				88 text Write a review
+			89 Your rating
+				90 radio button (settable, integer) Value: 0, ID: lb-review-star-1
+				91 checkbox Description: 1 star, Value: 0
+				92 radio button (settable, integer) Value: 0, ID: lb-review-star-2
+				93 checkbox Description: 2 stars, Value: 0
+				94 radio button (settable, integer) Value: 0, ID: lb-review-star-3
+				95 checkbox Description: 3 stars, Value: 0
+				96 radio button (settable, integer) Value: 0, ID: lb-review-star-4
+				97 checkbox Description: 4 stars, Value: 0
+				98 radio button (settable, integer) Value: 0, ID: lb-review-star-5
+				99 checkbox Description: 5 stars, Value: 0
+			100 text field (settable)
+			101 text field (settable)
+			102 text entry area (settable)
+			103 button Submit review
+		104 heading Threadline, Value: 3
+			105 text Threadline
+		106 text Trailmark 936 B footer saved
+		107 heading CONTACT, Value: 4
+			108 text CONTACT
+		109 link Description: Contact us, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/contact
+		110 text © Threadline. All rights reserved.
+		111 link Description: Powered by LetBuyy, Value: letbuyy.com/
+
+The focused UI element is 27 checkbox Common size, Value: 1

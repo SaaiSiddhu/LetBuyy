@@ -1,0 +1,121 @@
+{
+  "recordedAt": "2026-10-23T16:17:43.314919+00:00",
+  "runId": "0a9c7010222a",
+  "qualification": {
+    "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/qualification.json",
+    "sha256": "83d81cd81559bc10a61f98ddba566fe4461bedb2130b58b46d10b82e9ee42622",
+    "bytes": 26997
+  },
+  "artifacts": [
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/baseline-real-worker-defect.json",
+      "sha256": "923f5fc33680e1dc7bbe06a998099c5e89fe8c555ad42e4b826c973b3272cbbe",
+      "bytes": 235
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/entry.json",
+      "sha256": "f6fca8b7438fdc66027d7ecc59e73f447ea489a2483d623a27b054484401b5c1",
+      "bytes": 42498
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/evidence-copy-receipt.json",
+      "sha256": "d894fbb4c75d6267dc0001d2db24ba01587a849d2954b059439ee5a10f0041f7",
+      "bytes": 5706
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/letbuyy-aura.json",
+      "sha256": "9f94004a44bf0941af3355dda11e18b3a58d6a5997157705e43595ae51ebf734",
+      "bytes": 2261
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/letbuyy-bloom.json",
+      "sha256": "481fccb29153cdbbc485decaf79f7831dfd952fbbd8e878a0fffe3576f83d504",
+      "bytes": 2270
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/letbuyy-craft.json",
+      "sha256": "d8222fccad3ec6be0e6ca636e91c3a2fffa1d4474b448eae673006286002f7a0",
+      "bytes": 2269
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/letbuyy-dawn.json",
+      "sha256": "b57393c356d45d03391d1642b95396d145e00f58f3a6b26605ecad89b1f639aa",
+      "bytes": 2256
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/letbuyy-forge.json",
+      "sha256": "f385f588b70368645f32196c18a8ffd7d9c08198687a72419b275dca67fbe455",
+      "bytes": 2268
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/letbuyy-nova.json",
+      "sha256": "1dc4f81b653aadae7e1418ed16c253e096f21a31407dfb63a4b94d4e3b8e1adb",
+      "bytes": 2254
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/letbuyy-refresh.json",
+      "sha256": "90813077f8fdfbc1bcfb9ae023b4cfba04fbf8df11f43c061bf9af0872a6601a",
+      "bytes": 2286
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/letbuyy-ride.json",
+      "sha256": "cccf7954aca42b29175a2cb489a4bef3dc8e3f3ec5cc0a977fc959cd10a51382",
+      "bytes": 2254
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/letbuyy-sense.json",
+      "sha256": "85e84d7d0628d7e7d637800158619f7c99c9ee8bca94f7c3f08b64c4cd6ab7d9",
+      "bytes": 2303
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/letbuyy-summit.json",
+      "sha256": "d93c8ff6ac2aee933b0337ed8c9896453b59ad1433ff36fefe55fd8017bba85e",
+      "bytes": 2284
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/profile-current-proposed.json",
+      "sha256": "dc93267053a46dcb42605440ac62cffb42daa048f8f1ebaad4b7033d9acd1ce7",
+      "bytes": 40634
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/qualified-restoration.json",
+      "sha256": "677c84d5e28fa275fdc1bceb15da7f33442e5d8f1be2d2ba6420f7e9b3bbc220",
+      "bytes": 925
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/result.json",
+      "sha256": "3af1783022ef9988ad2373d9004d3e1f9a195fa7e229917a2c93f6e78329817c",
+      "bytes": 66344
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/run-binding.json",
+      "sha256": "e1ccd9d0e0167e7327d62c6cf4c5a4ebb0a282f19cd5b28b53eda1da67e91893",
+      "bytes": 1083
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/runner.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/runner.stdout",
+      "sha256": "6187a7d163abff5389d1f6790d53eb81d63349ae1e9b565b8c466b9255b07d9a",
+      "bytes": 66345
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/source-after.json",
+      "sha256": "8b96e398020537ef2ca8f5e782c8b3e9f14a89d393bbc73c2249849143ce5de1",
+      "bytes": 16687
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/source-before.json",
+      "sha256": "01859cb8dd135456e3f962b079982babd8e3f967f7b46435f9d9bc0cb1a8b284",
+      "bytes": 16596
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/suite-logs/theme-shared-groups.postgres.log",
+      "sha256": "6f549ee4fa3707e6463130ce7b71b7e6cd4846ac3a44f18d3d91297efe77fae3",
+      "bytes": 110091
+    }
+  ]
+}

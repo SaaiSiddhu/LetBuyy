@@ -1,0 +1,180 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-24T10:02:29.612303+00:00",
+  "classification": "APPLIED_CANONICAL_CHILD_SEMANTICS_AND_DEPTH_AWARE_DESCRIPTOR_FOLLOWUP_NOT_BROWSER_ACCEPTANCE",
+  "lease": "completion-editor-child-contract-20261024-03",
+  "addendum": "completion-editor-child-contract-03a",
+  "originalHandoff": "SHARED_BLOCK_ACTIONS_HANDOFF.json",
+  "originalDisposition": "Historical first source proof is PARTIAL: its absent-child refusal expectation was incorrect and is superseded by this correction. Original files/logs/reviewer finding remain preserved.",
+  "files": [
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/editor-block-actions.ts",
+      "beforeSHA256": "4666df7afa9ad9a594c946ea5e5f350294e84606978809d3035ddcc391de34e3",
+      "afterSHA256": "b287ef171ab4ae6df11683b5068e8ae787aa78e063d19c081adb21da142aef0f"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/editor-block-actions.test.ts",
+      "beforeSHA256": "7c6f17831475b91373756e1fe48f086fc50867079d7e0d46df65373c0fcdcdd6",
+      "afterSHA256": "3047fbaf6af9baab89a3bccb290c8ee52fd090f39637b5f383ca9fee237f284d"
+    },
+    {
+      "path": "apps/merchant/web/tests/theme-editor-block-actions.test.mjs",
+      "beforeSHA256": "a337174e88fe69e145d01af91e7289d1c5175ecc02b9f1cb1d5c657cc3755aa6",
+      "afterSHA256": "907026b659ff0ffb9adf31781ee63863baf559eb0426cd4d87ac4031cf11c75d"
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx",
+      "beforeSHA256": "9dcee0fa73d47e3991faad1bd92dc5c259bbd1b6fe142d31cafadb4f6a495a90",
+      "afterSHA256": "39bf43e867e33fb397c643ec474ffadd30ea9fd9004c6441b0cb6286cc7fdf1b"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/BlockChildRow.tsx",
+      "beforeSHA256": "dc5de479b5c233e51a85a2d1828fbe6b701ecdad5ed0068fb1e58c39b33956a2",
+      "afterSHA256": "4ce7dbb8853bdb4edcb380bc2ab6aded04dd3654878809b1da9695f14d530eba"
+    }
+  ],
+  "beforeImages": "/private/tmp/theme-editor-child-contract-20261024-03/before",
+  "combinedSixFileClosure": [
+    {
+      "path": "apps/merchant/web/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx",
+      "afterSHA256": "39bf43e867e33fb397c643ec474ffadd30ea9fd9004c6441b0cb6286cc7fdf1b"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/SectionTreePanel.tsx",
+      "afterSHA256": "48d66fbaf330959fa9bd86081eff102389c84264eb437f623ea687281c9e9156"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/BlockChildRow.tsx",
+      "afterSHA256": "4ce7dbb8853bdb4edcb380bc2ab6aded04dd3654878809b1da9695f14d530eba"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/editor-block-actions.ts",
+      "afterSHA256": "b287ef171ab4ae6df11683b5068e8ae787aa78e063d19c081adb21da142aef0f"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/editor-block-actions.test.ts",
+      "afterSHA256": "3047fbaf6af9baab89a3bccb290c8ee52fd090f39637b5f383ca9fee237f284d"
+    },
+    {
+      "path": "apps/merchant/web/tests/theme-editor-block-actions.test.mjs",
+      "afterSHA256": "907026b659ff0ffb9adf31781ee63863baf559eb0426cd4d87ac4031cf11c75d"
+    }
+  ],
+  "fixed": [
+    "For installed reusable first-party parents, absent child allowlist resolves all eligible known installed reusable first-party children; explicit[]denies and explicitallowlist restricts. Unknown/app types remain refused.",
+    "Do not invent inline-parent recursion: actual renderer returns section-inline parents before its nested render branch. Existing data remains readable/preserved.",
+    "Nested reusable descriptors/defaults/labels are separate from root inline descriptors; actual389 Marginalia/MadeYours collision is tested.",
+    "Normal loading applies reusable defaults at nested depth without injecting inline description; root description survives; safe unknown saved data survives canonical roundtrip.",
+    "Actual page callback ignores an unsupported nested field control; existing root control remains connected."
+  ],
+  "checks": {
+    "actualActionAndRetainedRegression": {
+      "exitCode": 0,
+      "tests": 113,
+      "pass": 113,
+      "fail": 0,
+      "skip": 0,
+      "log": "theme-editor-child-contract-editor-regression-02.log",
+      "overlap": "Includes prior109/110 and12 document cases. These are not additive totals."
+    },
+    "merchantTypecheck": {
+      "exitCode": 0,
+      "incremental": false
+    },
+    "focusedLint": {
+      "exitCode": 0,
+      "errors": 0,
+      "warnings": 1,
+      "existingWarning": "page optionalString unused; unchanged from original source."
+    },
+    "structuralGovernance": {
+      "exitCode": 0,
+      "mode": "Existing theme validator WARN only; not a full behavioral/deploy gate."
+    },
+    "rejectedImports": {
+      "exitCode": 0
+    },
+    "diffCheck": {
+      "exitCode": 0
+    },
+    "capturedDefinitions": {
+      "source": "382/389 immutable captured2.0.0 catalog payloads",
+      "themesInspected": 10,
+      "unmodifiedReusableDefinitionSemantics": "All ten badge definitions omit allowed_child_types.",
+      "productionActionCompileReloadRoundtripPositive": 9,
+      "openReachability": 1,
+      "report": "captured-child-contract-roundtrip-03-final.json",
+      "actualFreshInstalledProof": false,
+      "note": "12 imported document test results in the probe overlap the113 suite; not new acceptance."
+    }
+  },
+  "retainedProbeFailuresAndCorrections": [
+    {
+      "log": "theme-editor-child-contract-captured-probe-01.log",
+      "exitCode": 1,
+      "cause": "Probe assumed every reusable definition has a declared root placement. CapturedBloom2.0.0does not."
+    },
+    {
+      "log": "theme-editor-child-contract-captured-probe-02.log",
+      "exitCode": 0,
+      "disposition": "Source compile only; its inline-parent fallback is NOT accepted as render/UI proof because renderer does not recurse there. Superseded by final probe03."
+    },
+    {
+      "source": "cross-theme-block-source-probe.json",
+      "disposition": "Retain as historical source evidence; do not reuse absent-child refusal credit."
+    }
+  ],
+  "requiredOpenFinding": {
+    "caseId": "PF-B-standalone-badge",
+    "relatedCase": "PF-F-package_block.badge.setting.label",
+    "status": "NOT_RUN_REACHABILITY_UNPROVEN",
+    "source": "Playfield completion CAPABILITY_INVENTORY.json standalonePackageBlocks and COVERAGE.json",
+    "observed": "CapturedBloom2.0.0 (and target2.0.1 inventory) declares reusable badge but no declared root host. Current picker follows section declarations; raw canonical document/bundle permit reusable roots. Public render/control intent requires explicit reconciliation, not a fabricated host or hidden N/A.",
+    "next": "Allocator/theme owner reconciles actual admitted2.0.1 block host/control and render output before full certification. No source scope expansion under this sealed lease."
+  },
+  "logs": [
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/child-contract03-evidence/theme-editor-child-contract-editor-regression-01.log",
+      "sha256": "c539196113e983f8d4d9bc9f4e494154e17abd0cd7f82a65ffe6abf0c4d8ea39"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/child-contract03-evidence/theme-editor-child-contract-editor-regression-02.log",
+      "sha256": "d930acf84fd2c8536394cb103af21b43b86eb94bdf86d3e1b0055deb7574ec3c"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/child-contract03-evidence/theme-editor-child-contract-merchant-typecheck-02.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/child-contract03-evidence/theme-editor-child-contract-lint-02.log",
+      "sha256": "2a108d39cb1ab9f8f863af7fb2b947e58a6e14ffb4f01217df6890e2152e5a01"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/child-contract03-evidence/theme-editor-child-contract-captured-probe-01.log",
+      "sha256": "3de7a525d1c789bd2075276b3a346b9fed7b4698f937a338b1c5192b360942ae"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/child-contract03-evidence/theme-editor-child-contract-captured-probe-02.log",
+      "sha256": "0309af1834f03d60b34184cd04b054270dd1d21a7d859dfce7c37931bf779d7e"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/child-contract03-evidence/theme-editor-child-contract-captured-probe-03.log",
+      "sha256": "38f24ca0335f04510464e3afb0c4578d4316243ad3d20dce9ae587f7e0542253"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/child-contract03-evidence/theme-editor-child-contract-governance-02.log",
+      "sha256": "7544f16c21c2dba16c1d21509b3cfd2fb5e9a2d3afac98da8e92ea1555795f57"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/child-contract03-evidence/theme-editor-child-contract-imports-02.log",
+      "sha256": "b3173f9591ddf6cb488128f4487368175f11d68fef0989e31fc14988e766b0cb"
+    }
+  ],
+  "observerHandoff": "CHECKOUT_OBSERVATION02_HANDOFF.json",
+  "sourceWritesSealed": true,
+  "leaseRelease": "03+03a five-file writer lease ends at this first sealed followup handoff. Further edits require new exact allocation.",
+  "independentReview": "PENDING",
+  "browserNativeDatabaseHeavyBuildProviderActions": 0,
+  "freshFixture": "NOT_ADMITTED_NO936ACTION",
+  "allTenCertified": false
+}

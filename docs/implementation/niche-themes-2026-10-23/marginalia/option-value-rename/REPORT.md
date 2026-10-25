@@ -1,0 +1,11 @@
+# Canonical option value rename — source release
+
+The normal product form now exposes Rename beside each option value, followed by a focused Save value / Cancel dialog. Save value changes the local draft; Save product continues to use the existing canonical versioned, idempotent command. Escape cancels and Enter saves the local value, with IME composition protected. The existing design-system modal traps focus and returns it to the stable trigger.
+
+The atomic helper updates only the selected axis and affected generated labels. It preserves UUIDs, row order, other axes, facts/baselines/raw edits, prices, stock and SKU. Sparse combinations stay sparse. Blank, duplicate, oversized, ambiguous, colliding and stale selections are refused without regeneration or merging. Canonical shared schemas supply value and combined-label limits. No endpoint, schema, backend, fact namespace or request contract changed.
+
+Validation: the original mounted red reproduction failed because Rename was absent (1 failure, zero skips). The corrected complete group passes **79/79**, including the previous 69 shared form/fact/recovery tests and 10 new state/mounted regressions. The real mounted form proves book UUIDs, sibling metadata, product images, post-order stock, canonical payload, version/context/idempotency, draft recovery and exact immutable retry bytes with a newer rename. Merchant noEmit passes. Scoped ESLint has zero errors and only the same 11 pre-existing warnings in the original mounted harness. An intermediate schema-access mistake was caught by tests/typecheck, corrected by unwrapping the canonical defaulted array, and its failed logs are retained.
+
+The page is 1,470 lines. Protected product/variant-fact helpers and Playfield's origin guard/test/staff wrapper remain byte-identical to their before hashes. Exact before copies and the source.patch are retained here.
+
+This is released for the coordinator's **next controlled candidate only**. Current runtime 9cd50e893016 was not rebuilt, restarted or written here. No browser, build, database or API write was taken. All 16 Marginalia installed cases remain NOT_RUN; actual normal Save product, same-UUID rename and historical order behavior still need the allocated browser fixture.

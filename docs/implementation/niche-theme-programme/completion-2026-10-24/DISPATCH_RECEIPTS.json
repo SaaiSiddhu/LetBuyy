@@ -1,0 +1,149 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-24",
+  "requestingThreadId": "01a16ce5-e5ba-7191-ab2c-a1b76947d2b5",
+  "classification": "DELIVERY_RECEIPTS_NOT_IMPLEMENTATION_OR_CERTIFICATION",
+  "recipients": [
+    {
+      "key": "threadline",
+      "threadId": "01a16d03-613e-71b0-a591-07d4d24347d4",
+      "status": "CREATED_AND_DISPATCHED",
+      "toolResponse": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"threadId\":\"01a16d03-613e-71b0-a591-07d4d24347d4\",\"hostId\":\"local\"}"
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "key": "dewdrop",
+      "threadId": "01a164ba-ec9f-7073-8f2a-66878e99b008",
+      "status": "MESSAGE_DELIVERED",
+      "toolResponse": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"threadId\":\"01a164ba-ec9f-7073-8f2a-66878e99b008\"}"
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "key": "pantry",
+      "threadId": "01a164ba-b882-7bd3-9d94-af94e6c0b4f2",
+      "status": "MESSAGE_DELIVERED",
+      "toolResponse": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"threadId\":\"01a164ba-b882-7bd3-9d94-af94e6c0b4f2\"}"
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "key": "habitat",
+      "threadId": "01a164ba-c402-7212-990d-ed4792274b37",
+      "status": "MESSAGE_DELIVERED",
+      "toolResponse": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"threadId\":\"01a164ba-c402-7212-990d-ed4792274b37\"}"
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "key": "circuit",
+      "threadId": "01a164ba-a97f-7d80-9430-57924218664b",
+      "status": "MESSAGE_DELIVERED",
+      "toolResponse": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"threadId\":\"01a164ba-a97f-7d80-9430-57924218664b\"}"
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "key": "trailmark",
+      "threadId": "01a164ba-f650-7f00-beea-90431a510973",
+      "status": "MESSAGE_DELIVERED",
+      "toolResponse": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"threadId\":\"01a164ba-f650-7f00-beea-90431a510973\"}"
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "key": "marginalia",
+      "threadId": "01a164bb-0749-7073-aef0-295ae3f64541",
+      "status": "MESSAGE_DELIVERED",
+      "toolResponse": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"threadId\":\"01a164bb-0749-7073-aef0-295ae3f64541\"}"
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "key": "kindred",
+      "threadId": "01a164ba-d306-7953-9745-b375f5cf21c9",
+      "status": "MESSAGE_DELIVERED",
+      "toolResponse": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"threadId\":\"01a164ba-d306-7953-9745-b375f5cf21c9\"}"
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "key": "madeyours",
+      "threadId": "01a164ba-e017-7b90-9053-efc5357459a6",
+      "status": "MESSAGE_DELIVERED",
+      "toolResponse": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"threadId\":\"01a164ba-e017-7b90-9053-efc5357459a6\"}"
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "key": "playfield",
+      "threadId": "01a164ba-4751-75e1-8148-605cd263848e",
+      "status": "MESSAGE_DELIVERED",
+      "toolResponse": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"threadId\":\"01a164ba-4751-75e1-8148-605cd263848e\"}"
+          }
+        ],
+        "isError": false
+      }
+    }
+  ],
+  "certificationClaimed": false
+}

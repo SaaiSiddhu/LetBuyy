@@ -1,0 +1,625 @@
+{
+  "controls": [
+    {
+      "class": "button admin-next size-base tone-auto variant-primary",
+      "label": "",
+      "rect": {
+        "h": 28,
+        "w": 126.375,
+        "x": 1289.625,
+        "y": 16
+      },
+      "role": "link",
+      "style": {
+        "bg": "rgb(16, 16, 16)",
+        "border": "0px none rgb(255, 255, 255)",
+        "borderRadius": "9999px",
+        "color": "rgb(255, 255, 255)",
+        "display": "flex",
+        "font": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "12px",
+        "fontWeight": "500",
+        "gap": "2px",
+        "lineHeight": "16px",
+        "padding": "6px 12px",
+        "position": "relative",
+        "shadow": "rgba(0, 0, 0, 0.13) 0px 1px 0.5px -0.5px, rgba(0, 0, 0, 0.13) 0px 1px 2px -0.5px, rgba(0, 0, 0, 0.13) 0px 4px 6px -2px, rgba(0, 0, 0, 0.13) 0px 2px 3px -1.5px, rgb(16, 16, 16) 0px 0px 4px 1px inset, rgba(255, 255, 255, 0.1) 0px 0px 4px 2px inset, rgba(255, 255, 255, 0.75) 0px 0px 12px -6px inset",
+        "top": "0px",
+        "zIndex": "auto"
+      },
+      "tag": "A"
+    },
+    {
+      "class": "Polaris-Button Polaris-Button--pressable Polaris-Button--variantSecondary Polaris-Button--sizeMedium Polaris-Button--textAlignCenter Polaris-Button--adminNext Polaris-Button--admin",
+      "label": "Explore apps",
+      "rect": {
+        "h": 28,
+        "w": 98.3125,
+        "x": 810.84375,
+        "y": 435
+      },
+      "role": null,
+      "style": {
+        "bg": "rgb(235, 235, 235)",
+        "border": "0px none rgb(16, 16, 16)",
+        "borderRadius": "9999px",
+        "color": "rgb(16, 16, 16)",
+        "display": "flex",
+        "font": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "13px",
+        "fontWeight": "400",
+        "gap": "2px",
+        "lineHeight": "20px",
+        "padding": "6px 12px",
+        "position": "relative",
+        "shadow": "none",
+        "top": "0px",
+        "zIndex": "auto"
+      },
+      "tag": "A"
+    },
+    {
+      "class": "button admin-next size-base tone-auto variant-tertiary",
+      "label": "",
+      "rect": {
+        "h": 28,
+        "w": 154.65625,
+        "x": 782.671875,
+        "y": 547
+      },
+      "role": null,
+      "style": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "0px none rgb(16, 16, 16)",
+        "borderRadius": "9999px",
+        "color": "rgb(16, 16, 16)",
+        "display": "inline-flex",
+        "font": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "12px",
+        "fontWeight": "500",
+        "gap": "2px",
+        "lineHeight": "16px",
+        "padding": "6px 12px",
+        "position": "relative",
+        "shadow": "none",
+        "top": "0px",
+        "zIndex": "auto"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "class": "button admin-next fill-layer size-base tone-auto variant-secondary",
+      "label": "Link to develop apps",
+      "rect": {
+        "h": 28,
+        "w": 101.3984375,
+        "x": 1182.2265625,
+        "y": 16
+      },
+      "role": "link",
+      "style": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "0px none rgb(16, 16, 16)",
+        "borderRadius": "9999px",
+        "color": "rgb(16, 16, 16)",
+        "display": "flex",
+        "font": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "12px",
+        "fontWeight": "500",
+        "gap": "2px",
+        "lineHeight": "16px",
+        "padding": "6px 12px",
+        "position": "relative",
+        "shadow": "none",
+        "top": "0px",
+        "zIndex": "auto"
+      },
+      "tag": "A"
+    }
+  ],
+  "dialogs": [],
+  "headerAncestors": [
+    {
+      "class": "heading",
+      "label": "Apps",
+      "rect": {
+        "h": 28,
+        "w": 31.3203125,
+        "x": 344,
+        "y": 24
+      },
+      "role": null,
+      "style": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "0px none rgb(16, 16, 16)",
+        "borderRadius": "0px",
+        "color": "rgb(16, 16, 16)",
+        "display": "block",
+        "font": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "13px",
+        "fontWeight": "500",
+        "gap": "normal",
+        "lineHeight": "28px",
+        "padding": "0px",
+        "position": "static",
+        "shadow": "none",
+        "top": "auto",
+        "zIndex": "auto"
+      },
+      "tag": "H1"
+    },
+    {
+      "class": "",
+      "label": "Apps",
+      "rect": {
+        "h": 0,
+        "w": 0,
+        "x": 0,
+        "y": 0
+      },
+      "role": null,
+      "style": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "0px none rgb(16, 16, 16)",
+        "borderRadius": "0px",
+        "color": "rgb(16, 16, 16)",
+        "display": "contents",
+        "font": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "13px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "20px",
+        "padding": "0px",
+        "position": "static",
+        "shadow": "none",
+        "top": "auto",
+        "zIndex": "auto"
+      },
+      "tag": "S-GRID"
+    },
+    {
+      "class": "heading-wrapper",
+      "label": "Apps",
+      "rect": {
+        "h": 28,
+        "w": 59.3203125,
+        "x": 316,
+        "y": 24
+      },
+      "role": null,
+      "style": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "0px none rgb(16, 16, 16)",
+        "borderRadius": "0px",
+        "color": "rgb(16, 16, 16)",
+        "display": "flex",
+        "font": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "13px",
+        "fontWeight": "400",
+        "gap": "8px",
+        "lineHeight": "20px",
+        "padding": "0px",
+        "position": "static",
+        "shadow": "none",
+        "top": "auto",
+        "zIndex": "auto"
+      },
+      "tag": "DIV"
+    },
+    {
+      "class": "",
+      "label": "Apps",
+      "rect": {
+        "h": 0,
+        "w": 0,
+        "x": 0,
+        "y": 0
+      },
+      "role": null,
+      "style": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "0px none rgb(16, 16, 16)",
+        "borderRadius": "0px",
+        "color": "rgb(16, 16, 16)",
+        "display": "contents",
+        "font": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "13px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "20px",
+        "padding": "0px",
+        "position": "static",
+        "shadow": "none",
+        "top": "auto",
+        "zIndex": "auto"
+      },
+      "tag": "S-GRID"
+    },
+    {
+      "class": "breadcrumbs-and-heading",
+      "label": "Apps",
+      "rect": {
+        "h": 28,
+        "w": 59.3203125,
+        "x": 316,
+        "y": 16
+      },
+      "role": null,
+      "style": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "0px none rgb(16, 16, 16)",
+        "borderRadius": "0px",
+        "color": "rgb(16, 16, 16)",
+        "display": "block",
+        "font": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "13px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "20px",
+        "padding": "0px",
+        "position": "static",
+        "shadow": "none",
+        "top": "auto",
+        "zIndex": "auto"
+      },
+      "tag": "DIV"
+    },
+    {
+      "class": "heading-and-accessory",
+      "label": "Apps",
+      "rect": {
+        "h": 28,
+        "w": 858.2265625,
+        "x": 316,
+        "y": 16
+      },
+      "role": null,
+      "style": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "0px none rgb(16, 16, 16)",
+        "borderRadius": "0px",
+        "color": "rgb(16, 16, 16)",
+        "display": "flex",
+        "font": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "13px",
+        "fontWeight": "400",
+        "gap": "8px",
+        "lineHeight": "20px",
+        "padding": "0px",
+        "position": "static",
+        "shadow": "none",
+        "top": "auto",
+        "zIndex": "auto"
+      },
+      "tag": "DIV"
+    },
+    {
+      "class": "header-content",
+      "label": "Apps Develop apps",
+      "rect": {
+        "h": 28,
+        "w": 1100,
+        "x": 316,
+        "y": 16
+      },
+      "role": null,
+      "style": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "0px none rgb(16, 16, 16)",
+        "borderRadius": "0px",
+        "color": "rgb(16, 16, 16)",
+        "display": "flex",
+        "font": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "13px",
+        "fontWeight": "400",
+        "gap": "8px",
+        "lineHeight": "20px",
+        "padding": "0px",
+        "position": "static",
+        "shadow": "none",
+        "top": "auto",
+        "zIndex": "auto"
+      },
+      "tag": "DIV"
+    },
+    {
+      "class": "heading page-heading",
+      "label": "Apps",
+      "rect": {
+        "h": 32,
+        "w": 62.6328125,
+        "x": 468,
+        "y": 64
+      },
+      "role": null,
+      "style": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "0px none rgb(16, 16, 16)",
+        "borderRadius": "0px",
+        "color": "rgb(16, 16, 16)",
+        "display": "block",
+        "font": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "26px",
+        "fontWeight": "500",
+        "gap": "normal",
+        "lineHeight": "32px",
+        "padding": "0px",
+        "position": "static",
+        "shadow": "none",
+        "top": "auto",
+        "zIndex": "auto"
+      },
+      "tag": "H1"
+    },
+    {
+      "class": "title-and-accessory",
+      "label": "Apps",
+      "rect": {
+        "h": 32,
+        "w": 784,
+        "x": 468,
+        "y": 64
+      },
+      "role": null,
+      "style": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "0px none rgb(16, 16, 16)",
+        "borderRadius": "0px",
+        "color": "rgb(16, 16, 16)",
+        "display": "flex",
+        "font": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "13px",
+        "fontWeight": "400",
+        "gap": "12px",
+        "lineHeight": "20px",
+        "padding": "0px",
+        "position": "static",
+        "shadow": "none",
+        "top": "auto",
+        "zIndex": "auto"
+      },
+      "tag": "DIV"
+    },
+    {
+      "class": "page-inline-header",
+      "label": "Apps",
+      "rect": {
+        "h": 44,
+        "w": 784,
+        "x": 468,
+        "y": 64
+      },
+      "role": null,
+      "style": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "0px none rgb(16, 16, 16)",
+        "borderRadius": "0px",
+        "color": "rgb(16, 16, 16)",
+        "display": "block",
+        "font": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "13px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "20px",
+        "padding": "0px 0px 12px",
+        "position": "static",
+        "shadow": "none",
+        "top": "auto",
+        "zIndex": "auto"
+      },
+      "tag": "DIV"
+    },
+    {
+      "class": "",
+      "label": "Apps",
+      "rect": {
+        "h": 0,
+        "w": 0,
+        "x": 0,
+        "y": 0
+      },
+      "role": null,
+      "style": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "0px none rgb(16, 16, 16)",
+        "borderRadius": "0px",
+        "color": "rgb(16, 16, 16)",
+        "display": "contents",
+        "font": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "13px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "20px",
+        "padding": "0px",
+        "position": "static",
+        "shadow": "none",
+        "top": "auto",
+        "zIndex": "auto"
+      },
+      "tag": "S-GRID"
+    },
+    {
+      "class": "page admin-next",
+      "label": "Apps Develop apps Apps",
+      "rect": {
+        "h": 607,
+        "w": 1120,
+        "x": 300,
+        "y": 4
+      },
+      "role": null,
+      "style": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "0px none rgb(16, 16, 16)",
+        "borderRadius": "0px",
+        "color": "rgb(16, 16, 16)",
+        "display": "block",
+        "font": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "13px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "20px",
+        "padding": "0px 0px 16px",
+        "position": "static",
+        "shadow": "none",
+        "top": "auto",
+        "zIndex": "auto"
+      },
+      "tag": "DIV"
+    },
+    {
+      "class": "",
+      "label": "Shopify App Store Add apps to your store Apps and sales channels add features and tools that take yo",
+      "rect": {
+        "h": 0,
+        "w": 0,
+        "x": 0,
+        "y": 0
+      },
+      "role": null,
+      "style": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "0px none rgb(16, 16, 16)",
+        "borderRadius": "0px",
+        "color": "rgb(16, 16, 16)",
+        "display": "contents",
+        "font": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "13px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "20px",
+        "padding": "0px",
+        "position": "static",
+        "shadow": "none",
+        "top": "auto",
+        "zIndex": "auto"
+      },
+      "tag": "S-INTERNAL-PAGE"
+    },
+    {
+      "class": "_ChildContainer_cfiu6_10",
+      "label": "Shopify App Store Add apps to your store Apps and sales channels add features and tools that take yo",
+      "rect": {
+        "h": 607,
+        "w": 1120,
+        "x": 300,
+        "y": 4
+      },
+      "role": null,
+      "style": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "0px none rgb(16, 16, 16)",
+        "borderRadius": "12px",
+        "color": "rgb(16, 16, 16)",
+        "display": "block",
+        "font": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "13px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "20px",
+        "padding": "0px",
+        "position": "static",
+        "shadow": "none",
+        "top": "auto",
+        "zIndex": "auto"
+      },
+      "tag": "DIV"
+    }
+  ],
+  "headings": [
+    {
+      "class": "heading",
+      "label": "Apps",
+      "rect": {
+        "h": 28,
+        "w": 31.3203125,
+        "x": 344,
+        "y": 24
+      },
+      "role": null,
+      "style": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "0px none rgb(16, 16, 16)",
+        "borderRadius": "0px",
+        "color": "rgb(16, 16, 16)",
+        "display": "block",
+        "font": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "13px",
+        "fontWeight": "500",
+        "gap": "normal",
+        "lineHeight": "28px",
+        "padding": "0px",
+        "position": "static",
+        "shadow": "none",
+        "top": "auto",
+        "zIndex": "auto"
+      },
+      "tag": "H1"
+    },
+    {
+      "class": "heading page-heading",
+      "label": "Apps",
+      "rect": {
+        "h": 32,
+        "w": 62.6328125,
+        "x": 468,
+        "y": 64
+      },
+      "role": null,
+      "style": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "0px none rgb(16, 16, 16)",
+        "borderRadius": "0px",
+        "color": "rgb(16, 16, 16)",
+        "display": "block",
+        "font": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "26px",
+        "fontWeight": "500",
+        "gap": "normal",
+        "lineHeight": "32px",
+        "padding": "0px",
+        "position": "static",
+        "shadow": "none",
+        "top": "auto",
+        "zIndex": "auto"
+      },
+      "tag": "H1"
+    }
+  ],
+  "layout": [],
+  "main": {
+    "class": "_Main_bbs9z_392 _NoScrollbarGutterLine_bbs9z_507",
+    "label": "Shopify App Store Add apps to your store Apps and sales channels add features and tools that take yo",
+    "rect": {
+      "h": 992,
+      "w": 1136,
+      "x": 300,
+      "y": 4
+    },
+    "role": null,
+    "style": {
+      "bg": "rgb(255, 255, 255)",
+      "border": "0px none rgb(16, 16, 16)",
+      "borderRadius": "16px",
+      "color": "rgb(16, 16, 16)",
+      "display": "flex",
+      "font": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "lineHeight": "20px",
+      "padding": "0px",
+      "position": "relative",
+      "shadow": "none",
+      "top": "0px",
+      "zIndex": "auto"
+    },
+    "tag": "MAIN"
+  },
+  "path": "/store/[store]/settings/apps",
+  "viewport": {
+    "dpr": 1,
+    "h": 1000,
+    "w": 1440
+  }
+}

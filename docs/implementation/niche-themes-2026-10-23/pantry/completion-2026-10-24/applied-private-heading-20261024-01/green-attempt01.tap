@@ -1,0 +1,104 @@
+TAP version 13
+# Subtest: applied private factory adds a canonical opt-in toggle while retaining every existing default and template
+ok 1 - applied private factory adds a canonical opt-in toggle while retaining every existing default and template
+  ---
+  duration_ms: 22.703458
+  type: 'test'
+  ...
+# Subtest: negative control: unchanged current factory ignores heading edits on a populated named collection
+ok 2 - negative control: unchanged current factory ignores heading edits on a populated named collection
+  ---
+  duration_ms: 96.995792
+  type: 'test'
+  ...
+# Subtest: enabled heading A/B edits affect normal populated search rows despite a nonblank collection title
+ok 3 - enabled heading A/B edits affect normal populated search rows despite a nonblank collection title
+  ---
+  duration_ms: 56.073833
+  type: 'test'
+  ...
+# Subtest: enabled heading A/B edits affect the intended populated collection rows while preserving product and page resources
+ok 4 - enabled heading A/B edits affect the intended populated collection rows while preserving product and page resources
+  ---
+  duration_ms: 52.016625
+  type: 'test'
+  ...
+# Subtest: empty search and collection results retain a custom heading and honest empty state without invented products
+ok 5 - empty search and collection results retain a custom heading and honest empty state without invented products
+  ---
+  duration_ms: 54.252042
+  type: 'test'
+  ...
+# Subtest: cleared, omitted and whitespace headings fall back to the current collection title when enabled
+not ok 6 - cleared, omitted and whitespace headings fall back to the current collection title when enabled
+  ---
+  duration_ms: 87.808417
+  type: 'test'
+  location: '/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/pantry/completion-2026-10-24/applied-private-heading-20261024-01/heading.test.mts:1:7412'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+    
+      [
+    +   'Everyday staples'
+    -   'Canonical shelf fallback'
+      ]
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    0: 'Canonical shelf fallback'
+  actual:
+    0: 'Everyday staples'
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/pantry/completion-2026-10-24/applied-private-heading-20261024-01/heading.test.mts:123:44)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: enabled blank heading plus missing collection title never emits an empty heading
+ok 7 - enabled blank heading plus missing collection title never emits an empty heading
+  ---
+  duration_ms: 46.212584
+  type: 'test'
+  ...
+# Subtest: hostile markup and Hindi/Tamil text remain escaped heading text through the canonical sanitizer
+ok 8 - hostile markup and Hindi/Tamil text remain escaped heading text through the canonical sanitizer
+  ---
+  duration_ms: 48.418958
+  type: 'test'
+  ...
+# Subtest: unchanged defaults render byte-identical body and style for home, PDP, collection and search, populated and empty
+ok 9 - unchanged defaults render byte-identical body and style for home, PDP, collection and search, populated and empty
+  ---
+  duration_ms: 309.46325
+  type: 'test'
+  ...
+# Subtest: explicit false or legacy omitted toggle preserves the original row display even with a supplied title
+ok 10 - explicit false or legacy omitted toggle preserves the original row display even with a supplied title
+  ---
+  duration_ms: 84.129292
+  type: 'test'
+  ...
+# Subtest: actual schema manifest, JSON wire, ThemeDocument and portable compile retain enabled edits and explicit false
+ok 11 - actual schema manifest, JSON wire, ThemeDocument and portable compile retain enabled edits and explicit false
+  ---
+  duration_ms: 27.396167
+  type: 'test'
+  ...
+# Subtest: Main source remains byte-identical and the executed factory is the materialized private module
+ok 12 - Main source remains byte-identical and the executed factory is the materialized private module
+  ---
+  duration_ms: 0.247792
+  type: 'test'
+  ...
+1..12
+# tests 12
+# suites 0
+# pass 11
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1676.274292

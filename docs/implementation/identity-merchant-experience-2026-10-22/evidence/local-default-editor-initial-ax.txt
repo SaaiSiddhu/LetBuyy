@@ -1,0 +1,133 @@
+Browser tab: 8, Title: "LetBuyy Admin", URL: "http://localhost:9001/ux-audit-1022/online-store/themes/letbuyy-core/editor".
+1 AXWebArea LetBuyy Admin, URL: localhost:9001/ux-audit-1022/online-store/themes/letbuyy-core/editor
+	2 container
+		3 link Description: Back to themes, Value: localhost:9001/ux-audit-1022/online-store/themes
+		4 checkbox Description: Toggle navigation panel, Value: 1
+		5 button Sections
+		6 button Theme settings
+		7 button Theme styles
+		8 button Versions
+		9 text LetBuyy Core Draft theme
+		10 text Saved
+		11 container Template
+			12 pop up button (collapsed, settable) Description: Template, Value: Home page, Secondary Actions: Expand
+				13 menu
+					14 (selected) Home page
+					15 Product page
+					16 Collection page
+					17 Content page
+					18 Cart page
+					19 Blog post
+		20 button (disabled) Undo
+		21 button (disabled) Redo
+		22 button (disabled) Save
+		23 button Publish
+		24 container Theme editor navigation
+			25 heading Home page, Value: 2
+				26 text Home page
+			27 text v1
+			28 container
+				29 text HEADER
+				30 container
+					31 button Header, 3 blocks
+					32 button Toggle visibility
+					33 button Navigation Link
+					34 button Navigation Link
+					35 button Navigation Link
+				36 text TEMPLATE
+				37 outline Template sections
+					38 row (selectable) Announcement Bar
+						39 button Announcement Bar
+					40 row (selectable) Hero Banner
+						41 button Hero Banner
+					42 row (selectable) Category Grid
+						43 button Category Grid
+					44 row (selectable) Featured Collection
+						45 button Featured Collection
+					46 row (selectable) Product Grid
+						47 button Product Grid
+					48 row (selectable) Newsletter
+						49 button Newsletter
+				50 pop up button (collapsed, settable) Value: Announcement Bar, Secondary Actions: Expand
+					51 menu
+						52 (selected) Announcement Bar
+						53 Hero Banner
+						54 Featured Collection
+						55 Product Grid
+						56 Category Grid
+						57 Brand Marquee
+						58 Testimonials
+						59 Trust Badges
+						60 Newsletter
+						61 App Block Slot
+				62 button Add
+				63 text FOOTER
+				64 container
+					65 button Footer, 2 blocks
+					66 button Footer Link
+					67 button Footer Link
+		68 container Live theme preview
+			69 text Live preview
+			70 text ux-audit-1022 . localhost  -  1440 px
+			71 container Preview device
+				72 checkbox Desktop, Value: 1
+				73 checkbox Tablet, Value: 0
+				74 checkbox Mobile, Value: 0
+			75 container
+				76 text ux-audit-1022 . localhost
+				77 container ux-audit-1022 storefront preview
+					78 AXWebArea about:blank
+		79 container Theme properties
+			80 text Selected section
+			81 heading Header, Value: 2
+				82 text Header
+			83 container
+				84 container Smart defaults
+					85 button (collapsed) Smart defaults, Secondary Actions: Expand
+						86 text Smart defaults
+				87 text Header Behavior
+				88 pop up button (collapsed, settable) Header Behavior, Value: Sticky, Secondary Actions: Expand
+					89 menu
+						90 (selected) Sticky
+						91 Scroll
+						92 Hide-on-scroll
+				93 container
+					94 text Store Name
+					95 text field (settable) Store Name
+				96 text Logo
+				97 text field (settable) Logo image URL
+				98 container
+					99 text Upload image
+					100 button Upload image file
+				101 button Browse media library for Logo
+				102 text Logo Position
+				103 pop up button (collapsed, settable) Logo Position, Value: Left, Secondary Actions: Expand
+					104 menu
+						105 (selected) Left
+						106 Center
+				107 text Display Mode
+				108 pop up button (collapsed, settable) Display Mode, Value: Name, Secondary Actions: Expand
+					109 menu
+						110 Logo
+						111 (selected) Name
+						112 Both
+				113 text Navigation Position
+				114 pop up button (collapsed, settable) Navigation Position, Value: Right, Secondary Actions: Expand
+					115 menu
+						116 Left
+						117 (selected) Right
+				118 container
+					119 text Show Search Icon
+					120 switch Description: Show Search Icon, Value: 1
+				121 container
+					122 text Show Cart Icon
+					123 switch Description: Show Cart Icon, Value: 1
+				124 container
+					125 text Show Account Icon
+					126 switch Description: Show Account Icon, Value: 1
+				127 text BLOCKS
+				128 button Add Navigation Link
+					129 text Add 
+					130 text Navigation Link
+
+The focused UI element is 1 AXWebArea LetBuyy Admin, URL: localhost:9001/ux-audit-1022/online-store/themes/letbuyy-core/editor

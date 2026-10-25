@@ -1,0 +1,147 @@
+--- /dev/null
++++ b/services/api-gateway/src/__tests__/owned-db/first-party-order-heading211-qualification.manual.ts
+@@ -0,0 +1,144 @@
++// PREPARATION ONLY until Themes/Root independently admit this exact source,
++// proposal and one fresh owned native lane. No discoverable test/migration.
++import assert from 'node:assert/strict';
++import test,{after} from 'node:test';
++import {readFileSync,writeFileSync,mkdtempSync,readdirSync} from 'node:fs';
++import {createHash,randomUUID} from 'node:crypto';
++import {resolve,join} from 'node:path';
++import {tmpdir} from 'node:os';
++import {z} from 'zod';
++import {LiquidThemePackageBundleSchema,qualifiedFirstPartyInlineChildParents,createFirstPartyCatalogBundle} from '@letbuyy/theme-engine';
++import {requireOwnedDatabase,startOwnedPooledSqlProxy,type OwnedPooledSqlProxy} from './owned-db-support';
++import {closePooledSqlClients} from '@letbuyy/infrastructure/pooled-sql-adapter';
++import {Gateway,gatewayEnv,newIdentityKeys,signedIdentityHeaders} from './gateway-harness';
++import {newSyntheticTenant,seedSyntheticTenant,seedSyntheticOrder} from './synthetic-tenant';
++
++const directory='docs/implementation/niche-theme-programme/completion-2026-10-24/order-heading211-integration01/';
++const read=(path:string)=>readFileSync(resolve(path),'utf8'),hash=(value:string)=>createHash('sha256').update(value).digest('hex');
++const pin=z.string().regex(/^[a-f0-9]{64}$/);
++// This file is deliberately absent from a preparation packet. Only the later
++// allocator may write it after reviewing source/profile/effect-budget/cleanup.
++const admission=z.object({status:z.literal('ROOT_ONE_FRESH_ORDER_HEADING211_NATIVE'),sourceClosurePath:z.string(),sourceClosureSha256:pin,sourceFiles:z.array(z.object({path:z.string(),sha256:pin})).min(100),proposalUpSha256:pin,proposalDownSha256:pin,migrationCount:z.number().int().positive(),migrationMaximum:z.number().int().positive(),migrationCeiling:z.null(),faithfulBootstrapSha256:pin,setupSql:z.array(z.object({path:z.string(),sha256:pin})).min(2),effectBudget:z.literal('EIGHT_NATIVE_SITES_INSTALLS_DRAFTS_RELEASES_FOUR_RPC_ORDERS_NOT_THEME_UI_CASES')}).strict().parse(JSON.parse(read(directory+'NATIVE_ADMISSION.json')));
++assert.equal(hash(read(admission.sourceClosurePath)),admission.sourceClosureSha256);
++for(const file of admission.sourceFiles)assert.equal(hash(read(file.path)),file.sha256,file.path);
++assert.equal(hash(read('scripts/governance/supabase-faithful-bootstrap.mjs')),admission.faithfulBootstrapSha256);
++const migrationNames=readdirSync('database/supabase/migrations').filter(name=>/^\d+.*\.sql$/.test(name));
++assert.equal(migrationNames.length,admission.migrationCount);assert.equal(Math.max(...migrationNames.map(name=>Number(name.match(/^\d+/)![0]))),admission.migrationMaximum);
++const up=read(directory+'heading211.up.proposal.sql'),down=read(directory+'heading211.down.proposal.sql');
++assert.equal(hash(up),admission.proposalUpSha256);assert.equal(hash(down),admission.proposalDownSha256);
++const setupExpected=["docs/implementation/niche-theme-programme/release-playfield201/proposals394/f5f54a8009732ff71ba248e1f3356f58441e8b2340225c47b19e5ac386ac790e/394_playfield_catalog_201.up.draft.sql", "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-integration01/cart-edit03.qualified-up.proposal.sql", "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-private-implementation-03/UNNUMBERED_circuit_facets.up.proposal.sql", "docs/implementation/niche-theme-programme/completion-2026-10-24/child-customization-integration01/customization210.up.proposal.sql"];
++const sharedSetup=z.object({status:z.literal('ROOT_QUALIFIED_SHARED_PROPOSALS_FOR_OWNED_BROWSER_FIXTURE'),upProposals:z.array(z.object({path:z.string(),sha256:pin})).length(4)}).passthrough().parse(JSON.parse(read('docs/implementation/niche-theme-programme/completion-2026-10-24/SHARED_RUNTIME_ADMISSION.json')));
++assert.deepEqual(admission.setupSql,sharedSetup.upProposals);
++assert.deepEqual(admission.setupSql.map(row=>row.path),setupExpected);
++for(const row of admission.setupSql)assert.equal(hash(read(row.path)),row.sha256);
++const owned=requireOwnedDatabase();
++const evidence=mkdtempSync(join(tmpdir(),'letbuyy-heading211-qualification-'+owned.runId+'-'));
++const q=(value:string)=>"'"+value.replaceAll("'","''")+"'",ident=(value:string)=>'"'+value.replaceAll('"','""')+'"';
++const slugs=['letbuyy-craft','letbuyy-dawn','letbuyy-nova','letbuyy-summit'],slugList=slugs.map(q).join(',');
++function proof(name:string,value:unknown){const bytes=JSON.stringify({runId:owned.runId,name,value},null,2)+'\n',path=join(evidence,name+'.json');writeFileSync(path,bytes,{mode:0o600,flag:'wx'});console.info('HEADING211_QUALIFICATION_PROVENANCE',JSON.stringify({path,sha256:hash(bytes)}));}
++function tables(){
++ const names=z.array(z.string()).parse(JSON.parse(owned.psql("SELECT jsonb_agg(c.relname ORDER BY c.relname) FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='public' AND c.relkind IN('r','p');")));
++ assert.ok(names.length>300,'A faithful populated public schema is required, not a narrow replacement database');
++ const raw=owned.scriptLarge('BEGIN ISOLATION LEVEL REPEATABLE READ READ ONLY;SET LOCAL jit=off;'+names.map(name=>`SELECT jsonb_build_object('table',${q(name)},'count',count(*),'hash',encode(sha256(convert_to(coalesce(jsonb_agg(to_jsonb(x) ORDER BY to_jsonb(x)::text),'[]')::text,'UTF8')),'hex')) FROM public.${ident(name)} x;`).join('\n')+'COMMIT;');
++ const rows=raw.split(/\r?\n/).filter(line=>line.startsWith('{')).map(line=>z.object({table:z.string(),count:z.number(),hash:pin}).parse(JSON.parse(line)));assert.deepEqual(rows.map(row=>row.table),names);return rows;
++}
++const snapshot=(table:string,predicate='true')=>owned.scriptLarge(`SELECT coalesce(jsonb_agg(to_jsonb(x) ORDER BY id),'[]') FROM public.${ident(table)} x WHERE ${predicate};`);
++const securityProfile=()=>owned.scriptLarge(`SELECT jsonb_build_object('relations',(SELECT jsonb_agg(jsonb_build_object('name',c.relname,'kind',c.relkind,'owner',c.relowner,'acl',c.relacl,'rls',c.relrowsecurity,'force',c.relforcerowsecurity) ORDER BY c.relname) FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='public' AND c.relkind IN('r','p','v','S')),'policies',(SELECT jsonb_agg(to_jsonb(p) ORDER BY p.oid) FROM pg_policy p WHERE p.polrelid IN(SELECT c.oid FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='public')),'functions',(SELECT jsonb_agg(to_jsonb(p) ORDER BY p.oid) FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace WHERE n.nspname='public'),'constraints',(SELECT jsonb_agg(to_jsonb(c) ORDER BY c.oid) FROM pg_constraint c JOIN pg_namespace n ON n.oid=c.connamespace WHERE n.nspname='public'));`);
++const managed=['name','category','version','default_template','section_schemas','block_schemas','settings_schema','renderer_manifest','schema_version','renderer_version','config','updated_at'];
++const unmanagedThemes=()=>owned.scriptLarge(`SELECT jsonb_agg(to_jsonb(t)-ARRAY[${managed.map(q).join(',')}] ORDER BY id) FROM public.themes t;`);
++const catalog=()=>owned.scriptLarge("SELECT jsonb_agg(to_jsonb(t)-'updated_at' ORDER BY id) FROM public.themes t;");
++const captures=['theme_packages','theme_package_versions','theme_schema_manifests','theme_renderer_manifests'];
++const transactionBody=(sql:string)=>sql.replace(/(^|\n)BEGIN;(?=\n)/,'$1').replace(/\nCOMMIT;\s*$/,'');
++let gateway:Gateway|undefined,proxy:OwnedPooledSqlProxy|undefined;
++after(async()=>{await gateway?.settle();await closePooledSqlClients();await proxy?.close();});
++
++test('four211 exact captures: positive installed/history conservation, replay/refusal, paired DOWN and final replay',async()=>{
++ for(const row of admission.setupSql)owned.scriptLarge(read(row.path));
++ assert.equal(owned.psql("SELECT count(*) FROM themes WHERE slug LIKE 'letbuyy-%' AND id::text LIKE '7b669c70-%' AND version='2.1.0';"),'10');
++ // Positive catalog population precedes direct role denials, so an empty
++ // schema cannot make isolation appear green. Keep the qualified393/404 fence.
++ for(const table of ['themes','theme_package_versions','theme_schema_manifests','theme_renderer_manifests']){
++  assert.equal(owned.psql(`SELECT has_table_privilege('app_tenant',${q('public.'+table)},'SELECT');`),'f');
++  assert.equal(owned.psql(`SELECT has_table_privilege('app_tenant',${q('public.'+table)},'UPDATE');`),'f');
++  assert.equal(owned.psql(`SELECT has_table_privilege('service_role',${q('public.'+table)},'SELECT');`),'t');
++ }
++ assert.equal(owned.psql("SELECT has_table_privilege('service_role','public.themes','UPDATE');"),'t');
++ assert.match(owned.psqlExpectError('SET ROLE app_tenant;SELECT id FROM public.themes LIMIT 1;'),/permission denied/);
++ assert.match(owned.psqlExpectError("SET ROLE app_tenant;UPDATE public.themes SET name=name WHERE slug='letbuyy-craft';"),/permission denied/);
++ const draftSignature='public.mutate_owned_theme_draft_v1(uuid,uuid,text,text,integer,text,text,jsonb,jsonb,uuid,text,jsonb)';
++ for(const role of ['anon','authenticated','app_tenant'])assert.equal(owned.psql(`SELECT has_function_privilege(${q(role)},${q(draftSignature)},'EXECUTE');`),'f');
++ // Positive conservation controls are created through the existing native
++ // tenant/RPC and signed canonical Worker routes. They are NOT primary buyer
++ // browser orders, actual PSP purchases or original HI15/HI17 acceptance.
++ proxy=await startOwnedPooledSqlProxy(owned);
++ gateway=new Gateway(gatewayEnv(owned,await newIdentityKeys(),{...proxy.env(),NEXT_PUBLIC_STORE_ROOT_DOMAIN:'letbuyy.com'}));
++ const makeControls=async(expectedVersion:'2.1.0'|'2.1.1',withOrders:boolean)=>{
++ const controls:Array<{slug:string;siteId:string;orderId:string|null}>=[],readbacks:Array<()=>Promise<void>>=[];
++ for(const [i,slug] of slugs.entries()){
++  const tenant=newSyntheticTenant('heading'+expectedVersion.replaceAll('.','')+'-'+i);seedSyntheticTenant(owned.psql,tenant,{gst:true,taxRates:true});
++  const actor=randomUUID(),email=`heading211-${actor}@example.invalid`;
++  owned.psql(`INSERT INTO users_custom(id,email,email_verified,full_name) VALUES(${q(actor)},${q(email)},true,'Synthetic211 owner');UPDATE sites SET custom_user_id=${q(actor)},theme_id='letbuyy-core' WHERE id=${q(tenant.siteId)};INSERT INTO subscriptions(user_id,store_id,plan,status) VALUES(${q(actor)},${q(tenant.siteId)},'enterprise','active');`);
++  const headers=await signedIdentityHeaders(actor,email,tenant.siteId);
++  const request=(path:string,body?:unknown,method=body?'POST':'GET')=>gateway!.request(path,{method,headers,...(body?{body:JSON.stringify(body)}:{})});
++  const descriptor=await request(`/v1/themes/${slug}/schema?store_id=${tenant.siteId}`);assert.equal(descriptor.status,200,descriptor.text);
++  const selected=descriptor.json!.data.theme;
++  const installed=await request(`/v1/themes/${slug}/install`,{store_id:tenant.siteId,config_overrides:{},expected_version:expectedVersion,expected_package_id:selected.theme_package_id,expected_package_version_id:selected.theme_package_version_id});assert.equal(installed.status,201,installed.text);
++  const editor=await request(`/v1/themes/${slug}/editor?store_id=${tenant.siteId}`);assert.equal(editor.status,200,editor.text);
++  const config=structuredClone(editor.json!.data.template_config),version=editor.json!.data.version;
++  config.themeSettings.primaryColor='#1E4060';
++  const saved=await request(`/v1/themes/${slug}/editor/draft`,{store_id:tenant.siteId,template_config:config,base_version:version,idempotency_key:randomUUID()},'PUT');assert.equal(saved.status,200,saved.text);
++  const published=await request(`/v1/themes/${slug}/publish`,{store_id:tenant.siteId,base_version:saved.json!.data.version,idempotency_key:randomUUID(),make_store_live:true});assert.equal(published.status,200,published.text);
++  const order=withOrders?seedSyntheticOrder(owned.psql,tenant):null;if(order)assert.match(order.orderId,/^[a-f0-9-]{36}$/);
++  controls.push({slug,siteId:tenant.siteId,orderId:order?.orderId??null});
++  readbacks.push(async()=>{const result=await request(`/v1/themes/${slug}/editor?store_id=${tenant.siteId}`);assert.equal(result.status,200,result.text);assert.equal(result.json!.data.template_config.liquidBundle.package.version,expectedVersion);});
++ }
++ return {controls,recheck:async()=>{for(const readback of readbacks)await readback();}};
++ };
++ const priorControls=await makeControls('2.1.0',true),controls=priorControls.controls;
++ await gateway.settle();
++ const baseline=tables(),priorCatalog=catalog(),priorUnmanaged=unmanagedThemes(),security=securityProfile();
++ assert.equal(owned.psql(`SELECT count(*) FROM sites WHERE id=ANY(ARRAY[${controls.map(row=>q(row.siteId)).join(',')}]::uuid[]) AND current_theme_release_id IS NOT NULL;`),'4');
++ for(const row of controls){assert.equal(owned.psql(`SELECT count(*) FROM theme_editor_drafts WHERE store_id=${q(row.siteId)} AND theme_id=${q(row.slug)};`),'1');assert.equal(owned.psql(`SELECT count(*) FROM orders WHERE id=${q(row.orderId!)} AND store_id=${q(row.siteId)};`),'1');}
++ for(const table of ['themes',...captures,'sites','theme_instances','theme_editor_drafts','theme_releases','orders','order_items'])assert.ok((baseline.find(row=>row.table===table)?.count??0)>0,'Positive baseline '+table);
++ const beforeCaptures=Object.fromEntries(captures.map(name=>[name,JSON.parse(snapshot(name)) as Array<{id:string}>]));
++ proof('phase1-positive-current-profile-and-installed-history',{tables:baseline,securityProfileSha256:hash(security),controls,nativeControlsNotThemeUiCases:true});
++ owned.scriptLarge(up);const promoted=tables();
++ assert.deepEqual(promoted.filter(row=>!['themes',...captures].includes(row.table)),baseline.filter(row=>!['themes',...captures].includes(row.table)));
++ assert.equal(unmanagedThemes(),priorUnmanaged);assert.equal(securityProfile(),security);
++ for(const name of captures){const ids=beforeCaptures[name].map(row=>q(row.id)).join(',');assert.deepEqual(JSON.parse(snapshot(name,`id=ANY(ARRAY[${ids}]::uuid[])`)),beforeCaptures[name]);assert.equal(promoted.find(row=>row.table===name)!.count,baseline.find(row=>row.table===name)!.count+(name==='theme_packages'?0:4));}
++ assert.equal(owned.psql(`SELECT count(*) FROM themes WHERE slug IN(${slugList}) AND version='2.1.1';`),'4');
++ assert.equal(owned.psql(`SELECT count(*) FROM themes WHERE id::text LIKE '7b669c70-%' AND slug NOT IN(${slugList}) AND version='2.1.0';`),'6');
++ proof('phase2-four-package-up-conservation',{tables:promoted,oldCaptureRowsUnchanged:true,otherSixUnchanged:true});
++ // Positive211 installed drafts/releases must also survive DOWN, not merely
++ // unused captures. This explicitly admitted setup is a separate effect stage.
++ const installed211=await makeControls('2.1.1',false);await gateway.settle();
++ const controlledPromoted=tables();
++ assert.equal(owned.psql(`SELECT count(*) FROM theme_instances i JOIN theme_package_versions v ON v.id=i.theme_package_version_id WHERE i.store_id=ANY(ARRAY[${installed211.controls.map(row=>q(row.siteId)).join(',')}]::uuid[]) AND v.version='2.1.1';`),'4');
++ proof('phase2b-positive211-installed-work',{tables:controlledPromoted,controls:installed211.controls,explicitSetupOnlyNotMigrationDelta:true});
++ owned.scriptLarge(up);assert.deepEqual(tables(),controlledPromoted);assert.equal(securityProfile(),security);proof('phase3-strict-up-replay',{tables:controlledPromoted});
++ const one=q(slugs[0]);
++ // Conflicting incoming capture bodies are safer negative fixtures than
++ // attempting to UPDATE an append-only capture table or disabling a trigger.
++ const alterPayload=(path:string[],value:unknown)=>{const match=up.match(/\$heading211\$([\s\S]*?)\$heading211\$::jsonb/);assert.ok(match);const rows=JSON.parse(match[1]) as Array<Record<string,unknown>>;let node=rows[0];for(const key of path.slice(0,-1))node=node[key] as Record<string,unknown>;node[path.at(-1)!]=value;return up.replace(match[1],JSON.stringify(rows));};
++ const refuse=(name:string,mutation:string,sql:string,expected:RegExp)=>{const before=tables();const error=owned.psqlScriptExpectError('BEGIN;'+mutation+'\n'+transactionBody(sql)+'\nROLLBACK;');assert.match(error,expected,name);assert.deepEqual(tables(),before,name+' must roll back all effects');assert.equal(securityProfile(),security);};
++ refuse('stale prior',`UPDATE themes SET version='2.1.2' WHERE slug=${one};`,up,/Heading211 stale prior catalog version/);
++ refuse('changed prior catalog',`UPDATE themes SET version='2.1.0',default_template=jsonb_set(default_template,'{rendererEngine}','"foreign"') WHERE slug=${one};`,up,/Heading211 prior catalog differs/);
++ refuse('immutable prior version','',alterPayload(["previousPersistence", "themePackageVersion", "checksum"],'conflict'),/Immutable heading211 previousPersistence version conflict/);
++ refuse('immutable new version','',alterPayload(["persistence", "themePackageVersion", "checksum"],'conflict'),/Immutable heading211 persistence version conflict/);
++ refuse('immutable new schema','',alterPayload(["persistence", "schemaManifest", "schema_manifest"],{unapproved211:true}),/Immutable heading211 persistence schema conflict/);
++ refuse('immutable new renderer','',alterPayload(["persistence", "rendererManifest", "renderer_manifest"],{unapproved211:true}),/Immutable heading211 persistence renderer conflict/);
++ refuse('checkpoint replay',`UPDATE themes SET config=jsonb_set(config,'{firstPartyOrderHeading211,payloadSha256}','"conflict"') WHERE slug=${one};`,up,/Heading211 checkpoint or replay conflict/);
++ refuse('stale DOWN',`UPDATE themes SET version='2.1.2' WHERE slug=${one};`,down,/Heading211 stale rollback conflict/);
++ proof('phase4-eight-transactional-refusal-controls',{controls:8,tables:tables(),noAcceptedMutation:true});
++ const afterCaptures=Object.fromEntries(captures.map(name=>[name,snapshot(name)]));
++ owned.scriptLarge(down);assert.equal(catalog(),priorCatalog);assert.equal(unmanagedThemes(),priorUnmanaged);assert.equal(securityProfile(),security);
++ const restored=tables();for(const name of captures)assert.equal(snapshot(name),afterCaptures[name]);assert.deepEqual(restored.filter(row=>row.table!=='themes'),controlledPromoted.filter(row=>row.table!=='themes'));
++ await installed211.recheck();await gateway.settle();assert.deepEqual(tables(),restored,'Normal existing211 editor read must not downgrade or mutate installed work after catalog DOWN');
++ proof('phase5-paired-down',{tables:restored,priorMetadataRestored:true,capturesInstalledWorkAndOrdersRetained:true});
++ owned.scriptLarge(down);assert.deepEqual(tables(),restored);assert.equal(securityProfile(),security);proof('phase6-strict-down-replay',{tables:restored});
++ owned.scriptLarge(up);const final=tables();owned.scriptLarge(up);assert.deepEqual(tables(),final);for(const name of captures)assert.equal(snapshot(name),afterCaptures[name]);assert.equal(unmanagedThemes(),priorUnmanaged);
++ for(const slug of slugs){const captured=LiquidThemePackageBundleSchema.parse(JSON.parse(owned.scriptLarge(`SELECT default_template->'liquidBundle' FROM themes WHERE slug=${q(slug)};`)));assert.deepEqual(captured,createFirstPartyCatalogBundle(slug,{customizationVersion:'2.1.1'}));for(const section of Object.keys(captured.sections))assert.deepEqual(qualifiedFirstPartyInlineChildParents(captured,section),qualifiedFirstPartyInlineChildParents(createFirstPartyCatalogBundle(slug,{customizationVersion:'2.1.0'}),section));}
++ proof('phase7-final-up-replay-and-captured-definitions',{tables:final,exactFour211Definitions:true});
++ assert.equal(securityProfile(),security);for(const file of admission.sourceFiles)assert.equal(hash(read(file.path)),file.sha256,file.path);
++ proof('phase8-final-security-source-and-full-conservation',{tables:tables(),securityProfileSha256:hash(security),sourcePinsExact:true,allPhaseProofsRetained:true,cleanupOwner:'Future exclusively owned runner; no resource created by preparation'});
++});

@@ -1,0 +1,456 @@
+{
+  "recordedAt": "2026-10-24T09:46:55.349190+00:00",
+  "classification": "INDEPENDENT_SHARED_CHECKOUT_RECOVERY_NATIVE_SOURCE_QUALIFICATION",
+  "decision": "ACCEPT_EXACT_PROPOSAL_FOR_SCOPED_MAIN_SOURCE_INTEGRATION",
+  "candidate": "/private/tmp/madeyours-checkout-reentry-proposal-20261024-08",
+  "newRecoveryRun": {
+    "runId": "ba87c354b15f",
+    "tests": 7,
+    "PASS": 7,
+    "FAIL": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "caseNames": [
+      "real worker re-entry preserves session and receipts, clears dependencies, then confirms fresh COD once",
+      "real PostgREST CAS makes contact-versus-confirm one winner; no stale write overwrites confirming",
+      "a lost post-order acknowledgement resumes the same original claim without a second inventory or ledger effect",
+      "closed and unknown-provider sessions refuse recovery; a revoked canonical buyer is not refreshed",
+      "commit converts the cart before hosted acknowledgement: exact key resumes confirming with one order and no new stock or ledger effect",
+      "verified minting continuity: foreign valid buyer, missing/forged/swapped proof and changed epoch cannot authorize reentry",
+      "a freshly minted legacy capability keeps forward verification but cannot acquire delegated reentry authority"
+    ],
+    "runner": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/runner.json",
+    "runnerSha256": "ad89cc51953931b5ba5fc91ef34ac802c6917775b50ee7ab16b768984943e2d6"
+  },
+  "unchangedExisting15": {
+    "runId": "34adae829d85",
+    "tests": 15,
+    "PASS": 15,
+    "FAIL": 0,
+    "proof": "Exact same ten production overlays,1126unchanged candidatefiles and identical existing suite; no redundant rerun"
+  },
+  "distinctQualifiedNativeCases": 22,
+  "ownedCleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "reaped": [],
+  "sourceInputsStillExact": true,
+  "ownedBusinessReceipts": [
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/001-business-effects.json",
+      "sha256": "a79656362dbf86e2025b8451d33f76086ac218faafbf44c63fa43964bb351c6a"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/002-business-effects.json",
+      "sha256": "ca4e2f3ae71b5add06632780ad820ac448a2e7f728dc56110b801ba3ad4cfbde"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/003-business-effects.json",
+      "sha256": "c537aa300e6e07a8c402e743334c22675466a947def7eb1b94e8a9d7bc685c13"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/004-allowed-acknowledgement-delta.json",
+      "sha256": "7477be73c9cde67ebe422a6ce9fdd053dbae17b09044caae51e1fc8dcd3fc2e0"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/005-business-effects.json",
+      "sha256": "c8dd190df6c6f6f6e34e64cc0c27c3fc6cac3305dc9c4c801281b4cf538a85b7"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/006-business-effects.json",
+      "sha256": "7e773444ab6d080eddd97b55dd17d410f4946631a9319b82ea83549e88a92f37"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/007-business-effects.json",
+      "sha256": "1124d52311db495735f583b0689f722e355be7c014fd28ee2bdc4f9983ec4152"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/008-allowed-acknowledgement-delta.json",
+      "sha256": "5ba74a6e3c9c31ad9107a0d852135843257fd88268afa6f489261d153aec1cbd"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/009-business-effects.json",
+      "sha256": "c88cb1e1319a4ffb1c811eb78c12497a99040d55974b7871e7582849fb601960"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/010-business-effects.json",
+      "sha256": "abb5db7ecd8bfdb1d1ee250e77bba87cd5d4af5d8a15b2b086273eac6a885f0e"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/011-allowed-acknowledgement-delta.json",
+      "sha256": "83d2971372d2c98794d19ed8fc6588c99ed7a4b407072c9c51746a49cf7a3e35"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/012-business-effects.json",
+      "sha256": "ee91db93da3be156980e37b05fee59740ac5d71e7e8265440d5bad8698d360d3"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/013-business-effects.json",
+      "sha256": "28899d2aa8efe52ecb5b0152817b9f21f99bf6e048702798fadcc507b9f3ce3b"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/014-allowed-acknowledgement-delta.json",
+      "sha256": "36c94bce98d3e463bbedc0ded1a8c9278865a5deeb18a9aa82fd151256ac1d27"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/015-business-effects.json",
+      "sha256": "3bd026021330224ac51f85f8d924d8f5b379d44a5ea3e74568868567136facae"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/016-business-effects.json",
+      "sha256": "9726131020a939a38fcea88bc995345c2220982d36aae2bbbbd13c873b07e3f5"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/017-one-owned-cod-commit.json",
+      "sha256": "872bca5bd12c5368e860b3d6d958244b7cc45c52ad317e9743c0484e40b233d8"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/018-business-effects.json",
+      "sha256": "8324c26a7783fafd3532a157e567437342e82603cb93da4961abd06f777a8917"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/019-business-effects.json",
+      "sha256": "5cd19d93f9fa90c81f8f0f83df933eccbc9bc712b4d0453555571dc327f195df"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/020-business-effects.json",
+      "sha256": "5979a34fa242e09a725704be67229bf04661be92d59ff8c53689d34fba733dd8"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/021-allowed-acknowledgement-delta.json",
+      "sha256": "c818dd1290baba18ec538c1baf18f3b2cb2423fd0b7740e40070d833d68b6df5"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/022-business-effects.json",
+      "sha256": "6583f70e9e3f15017f75e204ce74377033514d08a50e4cf1632f4bfba6ebe0d4"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/023-business-effects.json",
+      "sha256": "1091f56e04fc5d742f5afddafed60a5b8210c225f404cb818349668a1854c6cc"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/024-business-effects.json",
+      "sha256": "49dde11292e5c5985b9cc6c881c4785492776d73b62dec5e0bcdce43ddbd884c"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/025-allowed-acknowledgement-delta.json",
+      "sha256": "2c011f0c9fab69ec3fef0ff5959a510b4245042662a5be9df6e4f9260cf0e6e7"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/026-business-effects.json",
+      "sha256": "3491027bcb0d735ef16277d5fa13b56a152b06a73d402caf4e7d7ef5b58988ab"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/027-business-effects.json",
+      "sha256": "95984297261e15b8a2d8551270be1659ac6e19d4e4ebc6ff97cbc1937c188f93"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/028-business-effects.json",
+      "sha256": "2cee2105c4bcb5932852b98510dd195235cb77d340474909a04dc3dd60893d68"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/029-one-owned-cod-commit.json",
+      "sha256": "a8e0c018de923d755d1a16d7d7ba9f77051c061c20efce0cffa87fe35effbbc7"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/030-business-effects.json",
+      "sha256": "d8c399b2e7b5600fbceb2c7633d22113e690afec1ec6bfa023831cc7632198f1"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/031-business-effects.json",
+      "sha256": "2715f73ceab02d9fe5afa6ea74bc83636dfddc1af546eedf2423a1814b272f73"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/032-one-owned-cod-commit.json",
+      "sha256": "8632ec4d2008004ff1d8fedfec94872793b12dd6c1cfb7e6c30197c27ad37c94"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/033-business-effects.json",
+      "sha256": "fe564f0b90e55682c50b380f1175ba5bfab59fd2daa5e38b89c4c64fb61c8a91"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/034-business-effects.json",
+      "sha256": "88ade22caa754a04a471de2273cac04dc70d648fdd59889b1ad551d298318670"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/035-allowed-acknowledgement-delta.json",
+      "sha256": "1c1021229baf1154ed08bd98da4ea27bd04763227cc09900b5137c542a053ace"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/036-business-effects.json",
+      "sha256": "f15b537205a7811f39444a551d599b8455fdb895d059711b5b3fd2dadc0e8136"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/037-business-effects.json",
+      "sha256": "2d15a70b1032658303120d4b889109c606e02ce7b1808c99b0267ba81743cd3e"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/038-business-effects.json",
+      "sha256": "64d0ef1428b55f486a187daa97c76bccfc0a93fcd94e0db05492e7c9cbb71734"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/039-business-effects.json",
+      "sha256": "950de18d1f041aed3f21774597f45d7993c581a8b1ebc43171327028d198e5a0"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/040-allowed-acknowledgement-delta.json",
+      "sha256": "4dac84ad447dd33a108d8c0205f7acc3e6bcb699dcb46cdbb06476ec3cf9da17"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/041-business-effects.json",
+      "sha256": "cc3af1b379463f410de29a98ad433f3b1a5d76d4e34cef0f0cbdf118c515b732"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/042-business-effects.json",
+      "sha256": "93859f63a30d9004f2a14dacdc51f0d236664c98298c362334c25f70af00c6f1"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/043-business-effects.json",
+      "sha256": "876c68d332a1b2b02bcda8f3eaae22cf0e1cd36cca3e3d6a5144d91eff9b8f4d"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/044-business-effects.json",
+      "sha256": "8a67b02b6db3b8a35abde67e5eaa0018ac442199b175bed3d29db605ed19b790"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/045-allowed-acknowledgement-delta.json",
+      "sha256": "e45945accd40fbbf8f9d57605d51666e7670ff7b7e4e920e5661a33890ad0e8d"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/046-business-effects.json",
+      "sha256": "8c5c5671f1a0a88d540efac485531a44f2a555d4d5b7b54a80c7b6dd12610c58"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/047-business-effects.json",
+      "sha256": "6c9c4cc77f07ae64df10f58d8e5a580c235a5f9831201529ba7289cb23aa8520"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/048-business-effects.json",
+      "sha256": "6a813be66e1e1e0449704f815c46dce86babdd9f35336db6b4afe7d4224d451c"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/049-business-effects.json",
+      "sha256": "e4a5089529a46162a2f4dea782aa05004ec2ee3cd581931ab6fec9348d161911"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/050-allowed-acknowledgement-delta.json",
+      "sha256": "6e4fab1477a178809e5a0611e2f4d0889aec46e301349c4b50ba8942e13f9a77"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/051-business-effects.json",
+      "sha256": "d4c369cf6127b035868e864351b5dc2331b9320169e2e5f2044468941283c34b"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/052-business-effects.json",
+      "sha256": "0d97992b1830d43cbf543a91f6196be0e48b06b45f8c71ac2d022a51721a7d63"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/053-business-effects.json",
+      "sha256": "003cca1ea240ab18dd0cd1c98af7dd15e830405bbd5b84357413e1753a915e2c"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/054-business-effects.json",
+      "sha256": "4bd335d46817638ef36fa303c79ef7beacab30eba3ec9587439fc7f0df3872fc"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/055-allowed-acknowledgement-delta.json",
+      "sha256": "b8ce6ee4187461da9d4aa378698fdb975c6d277f8b69b0669d00ca7bf7cf7553"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/056-business-effects.json",
+      "sha256": "2d606c54222256580b5eab14025d4285265e25c971400dd7c4fd25b5de572a81"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/057-business-effects.json",
+      "sha256": "ad87d0d2314df043cd81311322d6f11376687d1108d2ea57a6e5620746642849"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/058-business-effects.json",
+      "sha256": "b49e2097ea7d14c9952fba001ec57bc0783308580072df88fa39f2f72a06e30d"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/059-business-effects.json",
+      "sha256": "c4a905a81d7336e690b935d12983002c63555b561a716415ccae726f29334605"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/060-allowed-acknowledgement-delta.json",
+      "sha256": "341a78591740d427fa67666d7effc5831c0557b39c4fa8d4f46d6fbd52ac970b"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/061-business-effects.json",
+      "sha256": "5392e5b7ddd6d034d0a29e0434f06a6432726a277c8c56cd02c0de9ae40f619f"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/062-business-effects.json",
+      "sha256": "b158cb3363184ea152a56148c0b251f5e8aa5d6c4d1f3c61a5e4bc945f89a9c9"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/063-business-effects.json",
+      "sha256": "3484999130e2b1ee433e7fcae894b85ef35969ce5e677c6136d0fe1a82f2cb9b"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/064-business-effects.json",
+      "sha256": "8708a1cecab29326f1a3a3f95ea45cf3ddedeb74c1658a8bf29f73125fff100e"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/065-allowed-acknowledgement-delta.json",
+      "sha256": "c171ccba3e2ebdbb39d250c55acde5deae8d7b84d8f5d0c9ed83213b9c76118b"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/066-business-effects.json",
+      "sha256": "cdb44b14e23bf05d8af5245dafa3f3d6b701b81b8d567b82f84e583012afa47f"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/067-business-effects.json",
+      "sha256": "a28b8bb02a4e8abd1bbe5bc0801436b3b204c88636759414eda1432054358f9d"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/068-business-effects.json",
+      "sha256": "8bfd47a21c0509348e3f2e3d11bf0d0e3b4b93943195a71f31a7380c5b8ff265"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/069-allowed-acknowledgement-delta.json",
+      "sha256": "0acd4ab69e5dede475b8bb1fe4629b6e4402f275a1da0186af416fc87e11f620"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/070-business-effects.json",
+      "sha256": "744e169d98d541bb5e46c2819893363fb2a4abe7d9b14673d5c5f4daf1baae5a"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/071-business-effects.json",
+      "sha256": "f7f5309f001e8ec94628933e061dc7a1e432814a595b13797138f728b30d2515"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/072-one-owned-cod-commit.json",
+      "sha256": "d5df6a469136adc9d0cacaf87ec9cc48bdf0630866ad2bbaf66869f638060c34"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/073-business-effects.json",
+      "sha256": "052304ab73aae576ed415988f1450f54dd40be99e6cdc59d93f472d75a897b10"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/074-business-effects.json",
+      "sha256": "3fd0ec4074328305b595b6dffed0264de8c9d91b0e905b6c936e4d85e708dc75"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/075-allowed-acknowledgement-delta.json",
+      "sha256": "8562841c93b2b0cd4b44fd1db0253d66fdb92f3e5f13fe483c4fcb5496094714"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/076-business-effects.json",
+      "sha256": "dc985530cd574efc1a8be6a8404b9bed226b325bafda463b4c9c9d9254962f75"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/077-business-effects.json",
+      "sha256": "a6d1d2754b36a8720359999687657c242bed0511035c25f77796484b03f2992d"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/078-business-effects.json",
+      "sha256": "98eb3fc1c7efc405ad7eae99bd662d1548ec4d7be48c582ac923fd88e0ac5d07"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/079-allowed-acknowledgement-delta.json",
+      "sha256": "6dcaf89d7fdcdef0dcaf28c6fe968085c4ec836b156cf0172332656b22c157f3"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/080-business-effects.json",
+      "sha256": "8388d96fc3fa6ae863a432548eb69ae3875ee14c79d9acf9922fa2847467357b"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/081-business-effects.json",
+      "sha256": "91eec581868dad9a88a1fd96746332738a7ce77dab93735a85629a5c90350291"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/082-business-effects.json",
+      "sha256": "e1dee85aca6c55fbe2deee166b069cb485085811a03a2e25462cf307f3981c75"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/083-business-effects.json",
+      "sha256": "9086ae578d3e62b2c3714a044556056325ec7b3d4df2650f9d31ee59e1f7d605"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/084-allowed-acknowledgement-delta.json",
+      "sha256": "1d69567f4d1fd211f99b3c8bab41f4d1491dedf8c8f2955a76234bc7b1c8de6b"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/085-business-effects.json",
+      "sha256": "e56c74ea3f11cf937d14d9e2e19fb0b5b7956857b1ff2b4441c1052ef10fa014"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/086-business-effects.json",
+      "sha256": "dad304021b5a1a295ff1a266b3590b33f4752e3d0ee9fd25bdbc088425351a9f"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/087-business-effects.json",
+      "sha256": "97176f6c69053f338bddc647ff8674869bcb4027c43aaed6e56a887e20abf9c8"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/088-allowed-acknowledgement-delta.json",
+      "sha256": "74f75bc7dc15711093e013e503d2241355152a45b855f7760d7b447c369d9bff"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/089-business-effects.json",
+      "sha256": "6e4830f195f981c2886cc9f0b4e0e4718a0541811dcd5958097bce55412ed35f"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/090-business-effects.json",
+      "sha256": "4aa9dc2307712dd8860a133c1acb95c8c3e91c836f3a9bf197c9f877f94d6ca2"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/091-business-effects.json",
+      "sha256": "88d19dbe6ebb584231cf2d796a735d17db87df6b3bf8218fd943b37cdd30afc4"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/092-allowed-acknowledgement-delta.json",
+      "sha256": "58b2e0ce9bf794dcf9f9872557b9efad731f574e296070019c6b4005932d40e7"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/093-business-effects.json",
+      "sha256": "f20516876ec972427482bd4ff7997b068e2e24416b7f201706a459f350bd24ff"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/094-business-effects.json",
+      "sha256": "9bc1957a62e5e161f914be832302474e7154be0128536fef7af4892e1fbe26b3"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/095-business-effects.json",
+      "sha256": "b2eeeb258ebcc1cb51ed4f43aa0548549fd55e938ecea1900733e596eb7c0ad9"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/096-allowed-acknowledgement-delta.json",
+      "sha256": "db3dde178b259c3339bac2147c9fc78acbc64e5ea01896c318fc7c6565c974e0"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/097-business-effects.json",
+      "sha256": "a3210e7b683fa81ba2c97e7b408bea21074b193a952d8dbdf8eb12d7dc2e0688"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/098-business-effects.json",
+      "sha256": "c0eef45975625c40704bca998eb7798df27427f9c741ce77ad90bae2b64a479c"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/099-business-effects.json",
+      "sha256": "41a2ca103740424abefd5a317d990acc1fe1d02b412ce47e15e8bfb035ec5ff9"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/100-allowed-acknowledgement-delta.json",
+      "sha256": "2be6c42a64e656f283e7b1da6c62af0fcca592de5f086c9ea8440ed514714326"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/checkout-native08-run01/owned-business-provenance/101-business-effects.json",
+      "sha256": "79871f2baaa82d7560624f142f725c210925836184061f3043009eab2f0dfc8f"
+    }
+  ],
+  "limits": [
+    "Private proposal source/native acceptance only; Main integration requires allocator exact source lease and checks",
+    "Fresh installed browser, ordinary signup/cart/checkout and per-theme acceptance remain NOT_RUN",
+    "Actual Razorpay Test Mode and provider-delivered callbacks remain NOT_RUN",
+    "Catalogue394 and editor followup are separate open gates"
+  ],
+  "allTenCertified": false
+}

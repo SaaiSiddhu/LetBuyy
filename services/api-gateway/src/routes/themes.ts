@@ -1,3 +1,4 @@
+import type { Theme } from '@letbuyy/shared-types';
 import { Hono } from 'hono';
 import { DiscardThemeDraftSchema } from '@letbuyy/theme-engine';
 import type { Context } from 'hono';
@@ -379,7 +380,7 @@ router.get('/', async (c) => {
 
     let query = db
         .from('themes')
-        .select('id,slug,name,site_type,category,description,thumbnail_url,preview_url,is_premium,price,config,author,version,is_active,sort_order,install_count,letbuyy_pricing_type,letbuyy_price_usd,letbuyy_price_inr,features,tags,rating_avg,review_count', { count: 'exact' })
+        .select(['id,slug,name,site_type,category,description,thumbnail_url,preview_url,is_premium,price', 'config:default_template->themeSettings,author,version,is_active,sort_order,install_count,letbuyy_pricing_type,letbuyy_price_usd,letbuyy_price_inr,features,tags,rating_avg,review_count'].join(','), { count: 'exact' })
         .eq('is_active', true).eq('catalog_visible', true).eq('is_site_private', false).is('owned_by_site_id', null);
 
     if (category) query = query.eq('category', category);
@@ -426,7 +427,7 @@ router.get('/', async (c) => {
 
     query = query.range(offset, offset + limit - 1);
 
-    const { data, error, count } = await query;
+    const { data, error, count } = await query.returns<Array<Pick<Theme, 'id' | 'slug'> & Record<string, unknown>>>();
 
     if (error) {
         return c.json(dbErrorBody(), 500);

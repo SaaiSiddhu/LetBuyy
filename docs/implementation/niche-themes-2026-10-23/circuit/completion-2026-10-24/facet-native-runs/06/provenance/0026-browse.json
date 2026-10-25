@@ -1,0 +1,168 @@
+{
+  "runId": "786c7515c57a",
+  "operation": "browse",
+  "value": {
+    "siteId": "9e19c664-ae28-4b5e-b9e1-3ebb3c1071ae",
+    "query": {
+      "page": 1,
+      "limit": 20,
+      "search": "Facet H1",
+      "sort": "display_order",
+      "compatibility_evidence": "supplied"
+    },
+    "only": [
+      "9ccdfb15-3d04-4348-a086-d073bc0fbddd"
+    ],
+    "raw": {
+      "data": [
+        {
+          "id": "9ccdfb15-3d04-4348-a086-d073bc0fbddd",
+          "name": "Circuit facet hub",
+          "slug": "syn-9ccdfb15-3d04-4348-a086-d073bc0fbddd",
+          "tags": [],
+          "price": 1200,
+          "stock": 8,
+          "images": [],
+          "category": "Circuit facets",
+          "metadata": {
+            "electronics": {
+              "kind": "hub",
+              "model": "Facet H1",
+              "connectors": [
+                {
+                  "kind": "usb-c",
+                  "role": "power-input",
+                  "count": 1
+                },
+                {
+                  "kind": "usb-c",
+                  "role": "power-output",
+                  "count": 2
+                },
+                {
+                  "kind": "hdmi",
+                  "role": "video",
+                  "count": 1
+                }
+              ],
+              "manufacturer": "Synthetic Lab",
+              "power_input_w": 65,
+              "power_output_w": 45,
+              "compatible_devices": [
+                {
+                  "model": "Fixture Host 1",
+                  "reference": "Synthetic merchant document A",
+                  "source_date": "2026-10-24",
+                  "manufacturer": "Synthetic Devices"
+                },
+                {
+                  "model": "Fixture Host 2",
+                  "reference": "Synthetic merchant document A",
+                  "source_date": "2026-10-24",
+                  "manufacturer": "Synthetic Devices"
+                }
+              ],
+              "pass_through_output_w": 60
+            }
+          },
+          "store_id": "9e19c664-ae28-4b5e-b9e1-3ebb3c1071ae",
+          "variants": [],
+          "is_active": true,
+          "seo_title": null,
+          "created_at": "2026-10-24T15:53:08.03647+00:00",
+          "updated_at": "2026-10-24T15:53:08.03647+00:00",
+          "description": null,
+          "is_featured": false,
+          "product_type": null,
+          "compare_price": null,
+          "seo_description": null,
+          "track_inventory": true,
+          "importer_details": null,
+          "country_of_origin": "India"
+        }
+      ],
+      "count": 1,
+      "facets": [
+        {
+          "key": "category",
+          "count": 1,
+          "label": "Circuit facets",
+          "value": "Circuit facets"
+        },
+        {
+          "key": "compatibility_evidence",
+          "count": 1,
+          "label": "supplied",
+          "value": "supplied"
+        },
+        {
+          "key": "connector",
+          "count": 1,
+          "label": "hdmi",
+          "value": "hdmi"
+        },
+        {
+          "key": "connector",
+          "count": 1,
+          "label": "usb-c",
+          "value": "usb-c"
+        },
+        {
+          "key": "country_of_origin",
+          "count": 1,
+          "label": "India",
+          "value": "india"
+        },
+        {
+          "key": "electronics_kind",
+          "count": 1,
+          "label": "hub",
+          "value": "hub"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Synthetic Lab",
+          "value": "synthetic lab"
+        },
+        {
+          "key": "pass_through_output_w",
+          "count": 1,
+          "label": "60",
+          "value": "60"
+        },
+        {
+          "key": "power_input_w",
+          "count": 1,
+          "label": "65",
+          "value": "65"
+        },
+        {
+          "key": "power_output_w",
+          "count": 1,
+          "label": "45",
+          "value": "45"
+        }
+      ],
+      "matches": [
+        {
+          "price": 1200,
+          "product_id": "9ccdfb15-3d04-4348-a086-d073bc0fbddd",
+          "variant_ids": []
+        }
+      ],
+      "measurement_capabilities": {
+        "max_depth_cm": {
+          "available": false
+        },
+        "max_width_cm": {
+          "available": false
+        },
+        "equipment_length": {
+          "available": false,
+          "allowed_units": []
+        }
+      }
+    }
+  }
+}

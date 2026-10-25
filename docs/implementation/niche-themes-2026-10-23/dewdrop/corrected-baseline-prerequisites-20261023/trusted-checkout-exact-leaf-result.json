@@ -1,0 +1,39 @@
+{
+  "recordedAt": "2026-10-23T18:12:48.814676+00:00",
+  "status": "EXACT_NON_CA_LEAF_SSL_TRUST_INSTALLED_AND_SCOPE_VERIFIED_BROWSER_PENDING",
+  "approval": "Same original direct human hostname-limited local HTTPS approval",
+  "leafSha256": "ED:31:FA:12:CC:B5:9E:65:9D:02:B6:7C:7D:C5:B6:4D:88:90:6A:B3:00:BD:05:FF:F1:99:3F:AD:D0:F6:F3:0B",
+  "userTrustReadback": {
+    "entryCount": 1,
+    "policyName": "sslServer",
+    "result": 2,
+    "exactCertificateOnly": true,
+    "nonCA": true,
+    "singleDNS": "checkout.localhost",
+    "noAllowedErrorOverride": true
+  },
+  "actualOsScopeChecks": {
+    "exactLeafCorrectHost": {
+      "exitCode": 0,
+      "diagnostic": "---\nNo extended validation result found\nCertificate Transparency (CT) status: \u001b[31mnot verified\u001b[0m\nUnable to find at least 2 signed certificate timestamps (SCTs) from approved logs\n"
+    },
+    "exactLeafWrongHost": {
+      "exitCode": 1,
+      "diagnostic": "---\nNo extended validation result found\nCertificate Transparency (CT) status: \u001b[31mnot verified\u001b[0m\nUnable to find at least 2 signed certificate timestamps (SCTs) from approved logs\n"
+    },
+    "leafIssuedDescendant_unrelated.localhost": {
+      "exitCode": 1,
+      "diagnostic": "---\nNo extended validation result found\nCertificate Transparency (CT) status: \u001b[31mnot verified\u001b[0m\nUnable to find at least 2 signed certificate timestamps (SCTs) from approved logs\n"
+    },
+    "leafIssuedDescendant_checkout.localhost": {
+      "exitCode": 1,
+      "diagnostic": "---\nNo extended validation result found\nCertificate Transparency (CT) status: \u001b[31mnot verified\u001b[0m\nUnable to find at least 2 signed certificate timestamps (SCTs) from approved logs\n"
+    }
+  },
+  "noExplicitAnchorsUsedInPostInstallChecks": true,
+  "originalHostScopedCaEntryUnchanged": true,
+  "systemTrustChanged": false,
+  "rootCaPrivateKeyRead": false,
+  "disposableProbeKeysRemoved": true,
+  "normalBrowserPositive": "PENDING_ONE_EDITOR_RETRY_AFTER_SCOPE_VERIFIED"
+}

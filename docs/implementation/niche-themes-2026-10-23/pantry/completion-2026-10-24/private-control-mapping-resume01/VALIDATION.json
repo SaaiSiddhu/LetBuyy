@@ -1,0 +1,73 @@
+{
+  "recordedAt": "2026-10-24T11:47:14.186027+00:00",
+  "classification": "PRIVATE_SOURCE_SCHEMA_LIQUID_ONLY",
+  "initial": {
+    "log": "test-initial01.tap",
+    "tests": 12,
+    "pass": 10,
+    "fail": 2,
+    "skip": 0,
+    "retainedInputs": "test-results/initial01/inputs",
+    "finding": "Inline style attributes are removed by the unchanged canonical sanitizer; PNCTRL05/08 were inert.",
+    "repair": "Conditional source-owned classes + fixed head CSS; no sanitizer edits."
+  },
+  "corrected": {
+    "log": "test-corrected01.tap",
+    "tests": 12,
+    "pass": 12,
+    "fail": 0,
+    "skip": 0,
+    "cancelled": 0,
+    "retainedInputs": "test-results/corrected01/inputs",
+    "renders": "test-results/corrected01/renders.json"
+  },
+  "catalogueDrift": {
+    "originalInputReceipt": "BASE_INPUTS.json",
+    "currentInputReceipt": "CURRENT_INPUTS.json",
+    "diff": "catalogue-rebind.diff",
+    "preflightRefusedStaleInput": true,
+    "finding": "Exact old catalogue snapshot matched the3464before hash; only Dewdrop201 import/option/aura branch changed. Pantry201 branch and other original pinned inputs unchanged.",
+    "affectedRecheck": {
+      "log": "test-corrected02.tap",
+      "tests": 1,
+      "pass": 1,
+      "fail": 0,
+      "skip": 0,
+      "case": "PNCTRL04",
+      "renders": "test-results/corrected02/renders.json"
+    },
+    "distinctAcceptedControlCases": 12,
+    "noDoubleCounting": true
+  },
+  "strictNoEmit": {
+    "target": "src/pantry-presentation-controls.ts",
+    "exitCode": 0,
+    "log": "strict-noemit-final.log",
+    "scope": "Private helper and actual canonical imported types only"
+  },
+  "defaultParity": {
+    "contexts": [
+      "index",
+      "collection",
+      "search",
+      "product",
+      "page",
+      "customers/order"
+    ],
+    "bodyAndSanitizedCssExact": true,
+    "contextCount": 6,
+    "viewportOrScreenshotAcceptance": false
+  },
+  "bundleBuild": {
+    "exitCode": 0,
+    "log": "build-proposal-final.log",
+    "output": "PROPOSED_BUNDLE.json",
+    "diff": "BUNDLE_DIFF.json"
+  },
+  "legacyHeading13AndSuccessor14Rerun": false,
+  "sharedWrites": 0,
+  "nativeBuilds": 0,
+  "runtimeBrowserDbOrProviderActions": 0,
+  "installedCasesCredited": 0,
+  "localE2ECertification": false
+}

@@ -1,0 +1,61 @@
+{
+  "recordedAt": "2026-10-24T08:53:55.142583+00:00",
+  "scope": "Source-only in-memory canonical factory and persistence-schema enumeration; no rendered fixture/server/browser/DB/build",
+  "commands": [
+    {
+      "command": "node --import tsx .../extract-capabilities.ts",
+      "attempt": 1,
+      "exitCode": 1,
+      "reason": "Evidence helper top-level await incompatible with root CJS; no product code changed"
+    },
+    {
+      "command": "node --import tsx .../extract-capabilities.ts",
+      "attempt": 2,
+      "exitCode": 1,
+      "reason": "Evidence helper assumed groups array; actual canonical settings schema is a keyed settings map"
+    },
+    {
+      "command": "node --import tsx .../extract-capabilities.ts",
+      "attempt": 3,
+      "exitCode": 0,
+      "result": "Canonical source inventory emitted"
+    },
+    {
+      "command": "node --import tsx .../extract-capabilities.ts",
+      "attempt": 4,
+      "exitCode": 0,
+      "result": "Added effective canonical persistence-adapter schemas; same canonical bundle digest"
+    },
+    {
+      "command": "node --import tsx .../extract-capabilities.ts",
+      "attempt": 5,
+      "exitCode": 0,
+      "result": "Included ten declared presets"
+    },
+    {
+      "command": "node --import tsx .../extract-capabilities.ts",
+      "attempt": 6,
+      "exitCode": 0,
+      "result": "Included locale leaf paths; bundle digest unchanged"
+    },
+    {
+      "command": "python3 /private/tmp/habitat-completion-phase0.py",
+      "attempt": 1,
+      "exitCode": 1,
+      "reason": "Evidence generator had an extra closing bracket in protected-seam operation comprehension; no product code changed"
+    },
+    {
+      "command": "python3 /private/tmp/habitat-completion-phase0.py",
+      "attempt": 2,
+      "exitCode": 0,
+      "result": "Corrected evidence generator emitted source-derived packet; no behavioral execution"
+    }
+  ],
+  "behavioralTestsRun": 0,
+  "runtimeActions": 0,
+  "sharedSourceEdits": 0,
+  "databaseActions": 0,
+  "messagesSent": 0,
+  "goalCreated": true,
+  "documentationBoundaryUpdatedAt": "2026-10-24T09:01:24.542074+00:00"
+}

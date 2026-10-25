@@ -1,0 +1,55 @@
+{
+  "recordedAt": "2026-10-24T08:45:11.883824+00:00",
+  "classification": "OFFLINE_PACKET_INTEGRITY_NOT_APPLICATION_TEST_OR_INDEPENDENT_REVIEW",
+  "checks": {
+    "unique_case_ids": true,
+    "exact_original_14": true,
+    "all_current_cases_and_operations_NOT_RUN": true,
+    "runtime_bindings_observations_not_invented": true,
+    "all_templates_mapped": true,
+    "all_sectionDefinitions_mapped": true,
+    "all_sectionInstances_mapped": true,
+    "all_blockDefinitions_mapped": true,
+    "all_standalonePackageBlocks_mapped": true,
+    "all_fieldDeclarations_mapped": true,
+    "all_catalogueFactControls_mapped": true,
+    "all_catalogue_leaf_paths_mapped": true,
+    "old_failures_retained": true,
+    "historical_saved_evidence_hashes_match": true,
+    "all_896_preexisting_Playfield_and_M1_files_match": true,
+    "all_pinned_product_source_and_owned_artifact_inputs_match": true,
+    "coordination_drift_explicitly_reported_no_grant_inferred": true,
+    "private_proposal_unapplied": true,
+    "certification_false": true,
+    "declaration_counts_exact": true,
+    "completion_no_active_runtime_or_writer_grant": true
+  },
+  "checksPassed": 21,
+  "checksFailed": 0,
+  "preservedFiles": 896,
+  "preservationMismatches": [],
+  "coordinationInputDrift": [
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/EXECUTION_STATE.json",
+      "originalSHA256": "e025bb69eb3fb0d05e495b9ad4c4166c07487318374e6f28fe7d4546475c8ef5",
+      "currentSHA256": "eb87db0c42522f26acea1a31d499869f8e443f31dcb1be527a98b7919f3384d1"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/EXECUTION_RUNBOOK.md",
+      "originalSHA256": "7af72970715c9899cd7c453002bb0b80d67633034b054abe9a2eba8f341e072b",
+      "currentSHA256": "7dc134bf44c3390b1c24087e527d0b53e5881b9dca53bdb24f25dad408589c09"
+    }
+  ],
+  "changedProductSourceOrOwnedEvidence": [],
+  "currentOriginal14Results": {
+    "PASS": 0,
+    "FAIL": 0,
+    "NOT_RUN": 14
+  },
+  "casesExecutedThisPhase": 0,
+  "caseGroups": 381,
+  "operationObligations": 4268,
+  "independentReview": "PENDING",
+  "failedPacketAttemptPreserved": "PACKET_VALIDATION_01.json",
+  "governanceGate": "INCOMPLETE_EXIT130_WITH_RETAINED_DEPENDENCY_GRAPH_FAILURE"
+}

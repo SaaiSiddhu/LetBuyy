@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-24T03:49:47.678065+00:00",
+  "classification": "SOURCE_ONLY_COUNT_IMPLEMENTATION_PRECONDITION_STOP_NO_PERMISSION_BROADENING",
+  "runId": "936e5f577646",
+  "status": "STOPPED_FOR_ROOT_BOUNDARY_DECISION_BEFORE_EDITS",
+  "grant": "Implement existing list count using resolveOwnedStoreScope -> validated scope.tenant -> withTenantTx/app_tenant; no service_role extension, hatch/grant/policy/function/migration; explicitly stop if canonical junction access blocked.",
+  "precondition": {
+    "tenantTransaction": "services/api-gateway/src/lib/tenant-transaction.ts:159 SET LOCAL ROLE app_tenant;155 fails if pooled SQL missing.",
+    "junctionAcl": "361 UP78 revokes ALL on collection_products from PUBLIC,anon,authenticated,app_tenant,service_role;79 grants SELECT only service_role.",
+    "snapshotCannotBypass": "361 UP281 revokes EXECUTE on private collection_membership_snapshot_v1 from app_tenant and other API roles. Its SQL is SECURITY INVOKER211.",
+    "approvedWriteIsNotARead": "361 UP282-283 grants app_tenant only the existing mutating apply_collection_membership_v1. A no-op call would still be a mutation with receipts/audit/version semantics and is not an acceptable count read.",
+    "sourceProfileConsequence": "Under this canonical stable392 source ACL profile, a direct collection_products count in withTenantTx has no app_tenant SELECT authority and cannot supply the required count. This is a source prerequisite finding, not a live database privilege observation.",
+    "laterSourceScan": "No explicit GRANT statement mentioning collection_products or ALL TABLES was found in migrations362-392; no schema/ACL was probed or changed.",
+    "existingListPagination": "The current StoreScopedQuery-only list607-646 is unpaginated and sorts created_at DESC. A future shared list-query contract must deliberately address pagination rather than claim it was already present."
+  },
+  "implementationDisposition": {
+    "productionEdits": 0,
+    "contractOrNativeTestSourceWritten": false,
+    "testOrCompileRuns": 0,
+    "proposedAdapterIfAdmissible": "services/api-gateway/src/execution/collection-membership.adapter.ts (existing canonical owner; not edited or expanded)",
+    "whatWasNotDone": [
+      "No added grant/policy/function/migration, role switch, publisher hatch reuse or service-role REST fallback.",
+      "No mutation used to obtain a count; no live SQL/API/browser/data read or write.",
+      "No source emission/build/private-candidate change or runtime action.",
+      "No pretend successful count, fake0 or passing native qualification."
+    ],
+    "next": "Root must decide an admissible existing canonical read boundary or separately own any required tenancy/schema work. Do not improvise beyond the source lease. Once a compliant read is available, the planned canonical shared read projection, SDK contract and focused test source can proceed within a renewed exact grant."
+  },
+  "beforeSourcePins": [
+    {
+      "path": "/Volumes/Projects/LetBuyy/services/api-gateway/src/routes/products.ts",
+      "relativePath": "services/api-gateway/src/routes/products.ts",
+      "sha256": "2b7c02e074499856a27a7b767702141c44aae3b3ba2e5ad56e2d01e3a5c54176",
+      "lines": [
+        607,
+        609,
+        617,
+        625,
+        629,
+        645
+      ]
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/services/api-gateway/src/execution/collection-membership.adapter.ts",
+      "relativePath": "services/api-gateway/src/execution/collection-membership.adapter.ts",
+      "sha256": "de4f7d0f588133307286ef0db942f8174b7a8c0c99a92a848df9cbb01a06a61b",
+      "lines": [
+        21,
+        26,
+        30,
+        52,
+        61,
+        63
+      ]
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/services/api-gateway/src/lib/tenant-transaction.ts",
+      "relativePath": "services/api-gateway/src/lib/tenant-transaction.ts",
+      "sha256": "8cbaa6e78b6cb4b580bd20168b194c6c4f9f77d9601de816cc02eec68dd6917c",
+      "lines": [
+        145,
+        155,
+        159,
+        160,
+        161
+      ]
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/database/supabase/migrations/361_collection_membership.sql",
+      "relativePath": "database/supabase/migrations/361_collection_membership.sql",
+      "sha256": "a15fdd1112ae0971fba49042cd00ef5220a48946aff3d32e2358932875d72534",
+      "lines": [
+        78,
+        79,
+        211,
+        281,
+        282,
+        283
+      ]
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/packages/shared-types/src/index.ts",
+      "relativePath": "packages/shared-types/src/index.ts",
+      "sha256": "d050c4e49249332f6026fc8fdfabf62021c7659bbbdd4070a944f04d41384362",
+      "lines": [
+        1427,
+        1453
+      ]
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/packages/typescript/api-client/src/index.ts",
+      "relativePath": "packages/typescript/api-client/src/index.ts",
+      "sha256": "bca9564794dc06352982fbcaa04d91bb095402d0b3f63cdeb8cfa7feab0bad47",
+      "lines": [
+        4950,
+        4951
+      ]
+    }
+  ],
+  "preserved": "All prior392/discovery/migration/cart freezes and current936 runtime/heldcart/memberships remain untouched."
+}

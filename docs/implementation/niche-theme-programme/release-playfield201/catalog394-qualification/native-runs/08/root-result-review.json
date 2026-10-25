@@ -1,0 +1,38 @@
+{
+  "recordedAt": "2026-10-24T14:13:26.471105+00:00",
+  "status": "FULL_EIGHT_PHASE_NATIVE_QUALIFICATION_PASS_PRESERVATION_AND_VISIBILITY_FIXED",
+  "runId": "0c23ed799a87",
+  "assertionsPassed": 9,
+  "assertionsFailed": 0,
+  "phaseCoverage": {
+    "PASS": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "FAIL": [],
+    "NOT_RUN": []
+  },
+  "proofReceiptsVerified": 83,
+  "sourceInputCount": 1161,
+  "allCurrentSourcePinsExactAfterRun": true,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "reaped": [],
+  "qualificationScope": "Actual mounted Worker plus owned PostgreSQL/PostgREST. Published200 content/private draft preserved across exact201 upgrade; replay/concurrency/security/fault rollback; actual captured Liquid; strict DOWN and final UP. Not buyer browser/provider or RLS-redteam acceptance.",
+  "canonical394Emission": false,
+  "allTenCertified": false,
+  "productionReleaseCertificate": "NOT_ISSUED",
+  "independentPeerDisposition": "PENDING; requesting chat implemented repair and executed qualification"
+}

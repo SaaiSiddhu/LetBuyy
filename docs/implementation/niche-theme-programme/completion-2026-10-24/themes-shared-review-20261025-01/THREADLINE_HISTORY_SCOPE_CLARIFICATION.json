@@ -1,0 +1,18 @@
+{
+  "recordedAt": "2026-10-24T20:29:51.678755+00:00",
+  "status": "DATA_PRESENT_TEMPLATE_SPECIFIC_DISPLAY_GAP_PENDING_TARGETED_RETEST",
+  "source": "Requesting CTO reports normal buyer history and full reload expanded saved-details views on existing Runtime07",
+  "observations": [
+    "Pantry actual intended Test order10002 confirmed, cart0, buyer history contains250g/options/food facts and unknown statements.",
+    "Threadline10001 viewed under current Pantry210 includes ColorOat/SizeM in expanded saved details.",
+    "These observations narrow prior Threadline-own-presentation gap to its Liquid order-detail template; they do not establish every Threadline history UI case as PASS."
+  ],
+  "doNotRepairWithoutEvidence": [
+    "No DB snapshot rewrite",
+    "No global order DTO repair inferred",
+    "No historical order edits",
+    "No second payment or provider API call needed solely to correlate current existing capture"
+  ],
+  "pending": "Targeted source/render/Threadline-own-template evidence and exact existing-payment callback/ledger/variant/stock readback; keep scope/run/version explicit",
+  "mainOrCandidateSourceChangesGranted": false
+}

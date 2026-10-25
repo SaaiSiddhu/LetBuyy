@@ -1,0 +1,324 @@
+{
+  "intentionalExclusions": "Unfocused offscreen skip link; closed offcanvas navigation wholly outside viewport, with raw panel bounds recorded. Body/document widths remain unfiltered.",
+  "scope": "Canonical Liquid output plus canonical page assembly served by allocated isolated fixture server; no Next runtime/HTTP catalog query/hydration lifecycle claim.",
+  "deviceScaleFactor": 1,
+  "results": [
+    {
+      "scene": "home",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 1000,
+      "bodyWidth": 1440,
+      "documentWidth": 1440,
+      "intentionalOffscreenChrome": [],
+      "brokenImages": [],
+      "overflow": [],
+      "h1": "A little care. A daily ritual.",
+      "smallPrimaryControls": [],
+      "screenshot": "screenshots/home-desktop.png"
+    },
+    {
+      "scene": "collection",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 1000,
+      "bodyWidth": 1440,
+      "documentWidth": 1440,
+      "intentionalOffscreenChrome": [],
+      "brokenImages": [],
+      "overflow": [],
+      "h1": "Your care shelf",
+      "smallPrimaryControls": [],
+      "screenshot": "screenshots/collection-desktop.png"
+    },
+    {
+      "scene": "product",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 1000,
+      "bodyWidth": 1440,
+      "documentWidth": 1440,
+      "intentionalOffscreenChrome": [],
+      "brokenImages": [],
+      "overflow": [],
+      "h1": "Soft Colour",
+      "smallPrimaryControls": [],
+      "screenshot": "screenshots/product-desktop.png"
+    },
+    {
+      "scene": "missing-product",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 1000,
+      "bodyWidth": 1440,
+      "documentWidth": 1440,
+      "intentionalOffscreenChrome": [],
+      "brokenImages": [],
+      "overflow": [],
+      "h1": "Palm Wash",
+      "smallPrimaryControls": [],
+      "screenshot": "screenshots/missing-product-desktop.png"
+    },
+    {
+      "scene": "home",
+      "viewport": "tablet",
+      "width": 834,
+      "height": 1112,
+      "bodyWidth": 834,
+      "documentWidth": 834,
+      "intentionalOffscreenChrome": [],
+      "brokenImages": [],
+      "overflow": [],
+      "h1": "A little care. A daily ritual.",
+      "smallPrimaryControls": [],
+      "screenshot": "screenshots/home-tablet.png"
+    },
+    {
+      "scene": "collection",
+      "viewport": "tablet",
+      "width": 834,
+      "height": 1112,
+      "bodyWidth": 834,
+      "documentWidth": 834,
+      "intentionalOffscreenChrome": [],
+      "brokenImages": [],
+      "overflow": [],
+      "h1": "Your care shelf",
+      "smallPrimaryControls": [],
+      "screenshot": "screenshots/collection-tablet.png"
+    },
+    {
+      "scene": "product",
+      "viewport": "tablet",
+      "width": 834,
+      "height": 1112,
+      "bodyWidth": 834,
+      "documentWidth": 834,
+      "intentionalOffscreenChrome": [],
+      "brokenImages": [],
+      "overflow": [],
+      "h1": "Soft Colour",
+      "smallPrimaryControls": [],
+      "screenshot": "screenshots/product-tablet.png"
+    },
+    {
+      "scene": "missing-product",
+      "viewport": "tablet",
+      "width": 834,
+      "height": 1112,
+      "bodyWidth": 834,
+      "documentWidth": 834,
+      "intentionalOffscreenChrome": [],
+      "brokenImages": [],
+      "overflow": [],
+      "h1": "Palm Wash",
+      "smallPrimaryControls": [],
+      "screenshot": "screenshots/missing-product-tablet.png"
+    },
+    {
+      "scene": "home",
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "bodyWidth": 390,
+      "documentWidth": 390,
+      "intentionalOffscreenChrome": [
+        {
+          "class": "lb-header__nav",
+          "left": 390,
+          "right": 780
+        }
+      ],
+      "brokenImages": [],
+      "overflow": [],
+      "h1": "A little care. A daily ritual.",
+      "smallPrimaryControls": [],
+      "screenshot": "screenshots/home-mobile.png"
+    },
+    {
+      "scene": "collection",
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "bodyWidth": 390,
+      "documentWidth": 390,
+      "intentionalOffscreenChrome": [
+        {
+          "class": "lb-header__nav",
+          "left": 390,
+          "right": 780
+        }
+      ],
+      "brokenImages": [],
+      "overflow": [],
+      "h1": "Your care shelf",
+      "smallPrimaryControls": [],
+      "screenshot": "screenshots/collection-mobile.png"
+    },
+    {
+      "scene": "product",
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "bodyWidth": 390,
+      "documentWidth": 390,
+      "intentionalOffscreenChrome": [
+        {
+          "class": "lb-header__nav",
+          "left": 390,
+          "right": 780
+        }
+      ],
+      "brokenImages": [],
+      "overflow": [],
+      "h1": "Soft Colour",
+      "smallPrimaryControls": [],
+      "screenshot": "screenshots/product-mobile.png"
+    },
+    {
+      "scene": "missing-product",
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "bodyWidth": 390,
+      "documentWidth": 390,
+      "intentionalOffscreenChrome": [
+        {
+          "class": "lb-header__nav",
+          "left": 390,
+          "right": 780
+        }
+      ],
+      "brokenImages": [],
+      "overflow": [],
+      "h1": "Palm Wash",
+      "smallPrimaryControls": [],
+      "screenshot": "screenshots/missing-product-mobile.png"
+    },
+    {
+      "scene": "home",
+      "viewport": "narrow",
+      "width": 320,
+      "height": 844,
+      "bodyWidth": 320,
+      "documentWidth": 320,
+      "intentionalOffscreenChrome": [
+        {
+          "class": "lb-header__nav",
+          "left": 320,
+          "right": 640
+        }
+      ],
+      "brokenImages": [],
+      "overflow": [],
+      "h1": "A little care. A daily ritual.",
+      "smallPrimaryControls": [],
+      "screenshot": "screenshots/home-narrow.png"
+    },
+    {
+      "scene": "collection",
+      "viewport": "narrow",
+      "width": 320,
+      "height": 844,
+      "bodyWidth": 320,
+      "documentWidth": 320,
+      "intentionalOffscreenChrome": [
+        {
+          "class": "lb-header__nav",
+          "left": 320,
+          "right": 640
+        }
+      ],
+      "brokenImages": [],
+      "overflow": [],
+      "h1": "Your care shelf",
+      "smallPrimaryControls": [],
+      "screenshot": "screenshots/collection-narrow.png"
+    },
+    {
+      "scene": "product",
+      "viewport": "narrow",
+      "width": 320,
+      "height": 844,
+      "bodyWidth": 320,
+      "documentWidth": 320,
+      "intentionalOffscreenChrome": [
+        {
+          "class": "lb-header__nav",
+          "left": 320,
+          "right": 640
+        }
+      ],
+      "brokenImages": [],
+      "overflow": [],
+      "h1": "Soft Colour",
+      "smallPrimaryControls": [],
+      "screenshot": "screenshots/product-narrow.png"
+    },
+    {
+      "scene": "missing-product",
+      "viewport": "narrow",
+      "width": 320,
+      "height": 844,
+      "bodyWidth": 320,
+      "documentWidth": 320,
+      "intentionalOffscreenChrome": [
+        {
+          "class": "lb-header__nav",
+          "left": 320,
+          "right": 640
+        }
+      ],
+      "brokenImages": [],
+      "overflow": [],
+      "h1": "Palm Wash",
+      "smallPrimaryControls": [],
+      "screenshot": "screenshots/missing-product-narrow.png"
+    }
+  ],
+  "keyboard": {
+    "namedShadeTab": {
+      "active": true,
+      "value": "Pink Clay",
+      "outline": "solid",
+      "outlineWidth": "2px"
+    },
+    "note": "Native focus and actual canonical island attributes only; hydration/purchase selection is a later app-integration check.",
+    "ingredientsDisclosureOpens": true,
+    "reducedMotion": "auto"
+  },
+  "textExpansion": {
+    "width": 390,
+    "height": 844,
+    "bodyWidth": 390,
+    "documentWidth": 390,
+    "intentionalOffscreenChrome": [
+      {
+        "class": "lb-header__nav",
+        "left": 390,
+        "right": 780
+      }
+    ],
+    "brokenImages": [],
+    "overflow": [],
+    "h1": "Soft Colour",
+    "smallPrimaryControls": []
+  },
+  "hindi": {
+    "width": 390,
+    "height": 844,
+    "bodyWidth": 390,
+    "documentWidth": 390,
+    "intentionalOffscreenChrome": [
+      {
+        "class": "lb-header__nav",
+        "left": 390,
+        "right": 780
+      }
+    ],
+    "brokenImages": [],
+    "overflow": [],
+    "h1": "हर दिन की देखभाल। अपनी गति से।",
+    "smallPrimaryControls": []
+  }
+}

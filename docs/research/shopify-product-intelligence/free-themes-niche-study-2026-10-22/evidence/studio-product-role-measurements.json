@@ -1,0 +1,213 @@
+{
+  "load": "load completed",
+  "images": [
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 1439
+    },
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 715
+    },
+    {
+      "alt": "Rachel Crummey",
+      "complete": true,
+      "naturalWidth": 366
+    },
+    {
+      "alt": "Leia Bryans",
+      "complete": true,
+      "naturalWidth": 366
+    },
+    {
+      "alt": "Melanie Keay",
+      "complete": true,
+      "naturalWidth": 366
+    },
+    {
+      "alt": "",
+      "complete": false,
+      "naturalWidth": 0
+    }
+  ],
+  "roles": [
+    {
+      "disabled": false,
+      "label": "Prints\nOriginals\nArt Objects\nShop by Artist\nGift Cards\nAbout\nCart",
+      "rect": {
+        "height": 155.03125,
+        "width": 1320,
+        "x": 60,
+        "y": 42.890625
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgba(16, 57, 72, 0.75)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgba(16, 57, 72, 0.75)",
+        "fontFamily": "Cormorant, serif",
+        "fontSize": "17.6px",
+        "fontWeight": "500",
+        "gap": "normal",
+        "lineHeight": "30.4px",
+        "padding": "22px 55px 0px"
+      },
+      "tag": "HEADER"
+    },
+    {
+      "disabled": false,
+      "label": "Give the gift of unique artwork that’s always the right size and style.",
+      "rect": {
+        "height": 183.5859375,
+        "width": 522.5,
+        "x": 458.75,
+        "y": 434.125
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(16, 57, 72)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(16, 57, 72)",
+        "fontFamily": "Cormorant, serif",
+        "fontSize": "48px",
+        "fontWeight": "500",
+        "gap": "normal",
+        "lineHeight": "61.2px",
+        "padding": "0px"
+      },
+      "tag": "H2"
+    },
+    {
+      "disabled": false,
+      "label": "Gift Card",
+      "rect": {
+        "height": 61.1953125,
+        "width": 379.5,
+        "x": 945.5,
+        "y": 893.921875
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(16, 57, 72)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(16, 57, 72)",
+        "fontFamily": "Cormorant, serif",
+        "fontSize": "48px",
+        "fontWeight": "500",
+        "gap": "normal",
+        "lineHeight": "61.2px",
+        "padding": "0px"
+      },
+      "tag": "H1"
+    },
+    {
+      "disabled": false,
+      "label": "Add to cart",
+      "rect": {
+        "height": 51.5,
+        "width": 379.5,
+        "x": 945.5,
+        "y": 1169.96875
+      },
+      "styles": {
+        "backgroundColor": "rgb(255, 255, 255)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(5, 44, 70)",
+        "borderRadius": "41px",
+        "boxShadow": "none",
+        "color": "rgb(5, 44, 70)",
+        "fontFamily": "Cormorant, serif",
+        "fontSize": "16.5px",
+        "fontWeight": "500",
+        "gap": "normal",
+        "lineHeight": "19.5px",
+        "padding": "0px 33px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": false,
+      "label": "Buy it now",
+      "rect": {
+        "height": 51.5,
+        "width": 379.5,
+        "x": 945.5,
+        "y": 1232.46875
+      },
+      "styles": {
+        "backgroundColor": "rgb(16, 57, 72)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(255, 255, 255)",
+        "borderRadius": "41px",
+        "boxShadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+        "color": "rgb(255, 255, 255)",
+        "fontFamily": "Cormorant, serif",
+        "fontSize": "16.5px",
+        "fontWeight": "500",
+        "gap": "normal",
+        "lineHeight": "19.5px",
+        "padding": "16.5px 33px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": false,
+      "label": "Share",
+      "rect": {
+        "height": 26.3984375,
+        "width": 72.3984375,
+        "x": 945.5,
+        "y": 1311.46875
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(5, 44, 70)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(5, 44, 70)",
+        "fontFamily": "Arial",
+        "fontSize": "15.4px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "normal",
+        "padding": "1px 6px 1px 0px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": false,
+      "label": "Build your collection",
+      "rect": {
+        "height": 61.1953125,
+        "width": 408.7734375,
+        "x": 192,
+        "y": 2398.7734375
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(255, 255, 255)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(255, 255, 255)",
+        "fontFamily": "Cormorant, serif",
+        "fontSize": "48px",
+        "fontWeight": "500",
+        "gap": "normal",
+        "lineHeight": "61.2px",
+        "padding": "0px"
+      },
+      "tag": "H2"
+    }
+  ],
+  "url": "https://theme-studio-demo.myshopify.com/products/gift-card"
+}

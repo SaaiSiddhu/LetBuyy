@@ -1,0 +1,181 @@
+- status
+- status: Welcome to Shopify Let’s set up [test identity]
+- link "Skip to content":
+  - /url: "#AppFrameMain"
+  - strong:
+    - generic: Skip to content
+- generic "Navigation":
+  - img "Shopify"
+  - button "Collapse navigation" [expanded]:
+  - button "Search":
+    - generic: Search
+    - generic: ⌘K
+  - navigation:
+    - list:
+      - link "Home":
+        - /url: /store/[test-store]
+        - generic: Home
+      - link "Orders":
+        - /url: /store/[test-store]/orders
+        - generic: Orders
+      - link "Products":
+        - /url: /store/[test-store]/products
+        - generic: Products
+      - link "Customers":
+        - /url: /store/[test-store]/customers
+        - generic: Customers
+      - link "Growth":
+        - /url: /store/[test-store]/growth
+        - generic: Growth
+      - link "Discounts":
+        - /url: /store/[test-store]/discounts
+        - generic: Discounts
+      - link "Content":
+        - /url: /store/[test-store]/content/metaobjects
+        - generic: Content
+      - link "Markets":
+        - /url: /store/[test-store]/markets
+        - generic: Markets
+      - link "Analytics":
+        - /url: /store/[test-store]/analytics
+        - generic: Analytics
+    - list:
+      - button "Sales channels":
+        - generic: Sales channels
+      - list:
+        - button "Online Store":
+          - list:
+            - link "Online Store":
+              - /url: /store/[test-store]/themes?[query omitted]
+              - generic: Online Store
+        - button "Agentic":
+          - list:
+            - link "Agentic" [active]:
+              - /url: /store/[test-store]/apps/agentic
+              - generic: Agentic
+      - status
+      - button "Apps":
+        - generic: Apps
+      - button "Add":
+        - text: Add
+    - list:
+      - link "Settings":
+        - /url: /store/[test-store]/settings
+        - generic: Settings
+      - button "[test identity]":
+        - img "[test identity]":
+          - generic: MS4
+        - paragraph: [test identity]
+      - generic: View Dev Dashboard
+      - button "Alerts Feed - 0 unread alerts":
+      - generic: Mark all as read
+      - generic: Alerts about your store and account will show here
+    - link "Trial ends in 2 days Subscribe for ₹20":
+      - /url: /store/[test-store]/subscribe/checkout
+      - generic: Trial ends in 2 days
+      - generic: Subscribe for ₹20
+- main:
+  - heading "Agentic" [level=1]
+  - button "More actions":
+  - heading "Agentic Storefronts aren’t live — but your products may still be surfacing in AI agents." [level=2]:
+    - generic: Agentic Storefronts aren’t live — but your products may still be surfacing in AI agents.
+  - heading "Get ready for Agentic Storefronts" [level=2]:
+    - generic: Get ready for Agentic Storefronts
+  - list:
+    - generic: Add your first product
+    - generic: Not started
+    - generic: AI agents need products in your store to recommend
+    - link "Add product":
+      - /url: /store/[test-store]/products/new
+      - generic: Add product
+    - generic: Update policies
+    - generic: Not started
+    - generic: Update your policies so AI agents can read them
+    - link "Review":
+      - /url: /store/[test-store]/settings/legal
+      - generic: Review
+  - status
+  - text: By selling on these sales channels, you agree to Agentic Storefronts
+  - link "Supplemental Terms":
+    - /url: https://www.shopify.com/legal/terms-agentic-storefronts
+    - generic: Supplemental Terms
+  - paragraph:
+    - button "Learn more about Agentic Storefronts":
+      - generic: Learn more about Agentic Storefronts
+  - complementary:
+    - heading "Channels" [level=2]:
+      - generic: Channels
+    - generic: Allow Shopify to manage for me
+    - checkbox "Allow Shopify to manage for me" [checked]
+    - 'button "ChatGPT, Channel details, Status: Inactive"':
+      - 'img "Status: Inactive"'
+      - generic: ChatGPT
+    - generic: ChatGPT
+    - generic: Your products aren't discoverable through the Shopify Catalog. They may still appear on ChatGPT through alternate sources. Customers check out on your online store.
+    - 'button "Microsoft Copilot, Channel details, Status: Inactive"':
+      - 'img "Status: Inactive"'
+      - generic: Microsoft Copilot
+    - generic: Microsoft Copilot
+    - generic: Your products aren't discoverable through the Shopify Catalog. They may still appear on Microsoft Copilot through alternate sources. Customers check out on your online store.
+    - 'button "Shop, Channel details, Status: Inactive"':
+      - 'img "Status: Inactive"'
+      - generic: Shop
+    - generic: Shop
+    - generic: Install
+    - generic: Your products aren't discoverable through the Shopify Catalog. They may still appear on Shop through alternate sources. Customers can check out directly on Shop.
+    - 'button "Other channels, Channel details, Status: Inactive"':
+      - 'img "Status: Inactive"'
+      - generic: Other channels
+    - generic: Other channels
+    - generic: Your products aren't discoverable on any channel that integrates with the Shopify Catalog. Customers check out on your online store.
+    - generic: Channel insights aren't available
+    - heading "Sources" [level=2]:
+      - generic: Sources
+    - link "Install Knowledge Base":
+      - /url: https://apps.shopify.com/login/authenticate?[query omitted]
+      - generic: Knowledge Base
+    - generic: Not installed
+    - generic: Shopify Catalog
+    - button "View Shopify Catalog details, Ineligible":
+      - generic: Ineligible
+    - generic: Shopify Catalog
+    - generic: Ineligible
+    - text: Your store doesn't currently meet the
+    - generic: requirements
+    - text: for Shopify Catalog access. A strong history of legitimate, well-managed orders will improve your standing over time.
+    - generic: Review your product data
+  - status
+- status
+- region "Sidekick":
+  - status
+  - paragraph
+  - button "Close" [disabled]:
+  - generic: Work with Sidekick
+  - textbox "Work with Sidekick"
+  - button "Add files and more":
+  - button "Voice":
+  - button "Open Sidekick":
+- generic: General shortcuts
+- generic: Adding items to your store
+- generic: Navigating your admin panel
+- generic: Navigating settings
+- separator "Resize sidebar"
+- complementary "Sidekick":
+  - button "Recents":
+    - generic: Recents
+  - button "Memory settings":
+  - generic: Memory
+  - generic: Allow Sidekick to update and access preferences you've shared.
+  - button "Close Sidekick":
+  - status
+  - heading "Where should we begin?" [level=2]:
+    - generic: Where should we begin?
+  - status
+  - paragraph
+  - button "Close" [disabled]:
+  - generic: Work with Sidekick
+  - textbox "Work with Sidekick"
+  - button "Add files and more":
+  - button "Voice":
+- status
+- alert

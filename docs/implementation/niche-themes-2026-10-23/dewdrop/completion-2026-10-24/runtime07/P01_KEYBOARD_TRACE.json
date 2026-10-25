@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "classification": "CONTROLLER_TOOL_OPERATION_TRACE_NOT_A_CAPTURED_RETURN_VALUE_ASSERTION",
+  "runId": "49ada80bc494",
+  "controllerThread": "01a16ce5-e5ba-7191-ab2c-a1b76947d2b5",
+  "operations": [
+    {
+      "toolId": "call_c086102b95164405a5001711f0779928",
+      "status": "completed",
+      "title": "Verify Dewdrop’s Rosewater selection by its actual UUID",
+      "code": "await runtime07QueueBuyerTab.playwright.getByRole('button',{name:'Rosewater RW01',exact:true}).press('Enter'); await runtime07QueueBuyerTab.playwright.getByRole('button',{name:'एक इकाई',exact:true}).press('Enter'); nodeRepl.write((await runtime07QueueBuyerTab.playwright.domSnapshot()).split('\\n').filter(x=>/pressed|₹|variant|RW01|PC02|Choose your|Add to cart/.test(x)).join('\\n')); nodeRepl.write(await runtime07QueueBuyerTab.playwright.evaluate(()=>({productPath:location.pathname,variant:new URL(location.href).searchParams.get('variant')})));"
+    },
+    {
+      "toolId": "call_7d490c11221c495db7acf3c31ff26e8d",
+      "status": "completed",
+      "title": "Verify distinct Pink Clay identity, ingredients and price",
+      "code": "await runtime07QueueBuyerTab.playwright.getByRole('button',{name:'Pink Clay PC02',exact:true}).press('Enter'); await runtime07QueueBuyerTab.playwright.getByText('Ingredients for Pink Clay · PC02',{exact:true}).click(); nodeRepl.write((await runtime07QueueBuyerTab.playwright.domSnapshot()).slice(-4700)); nodeRepl.write(await runtime07QueueBuyerTab.playwright.evaluate(()=>({productPath:location.pathname,variant:new URL(location.href).searchParams.get('variant')}))); nodeRepl.write(await rootQueueEvidence('dewdrop-pink-clay-selected'));"
+    },
+    {
+      "toolId": "call_8c0195f05e7842e78db7ee583c789cb6",
+      "status": "completed",
+      "title": "Verify the sold-out shade and restore the intended Pink Clay variant",
+      "code": "await runtime07QueueBuyerTab.playwright.getByRole('button',{name:'Terracotta TC03',exact:true}).press('Enter'); nodeRepl.write((await runtime07QueueBuyerTab.playwright.domSnapshot()).split('\\n').filter(x=>/Terracotta|pressed|Add to cart|Sold out|stock|Unavailable/.test(x)).join('\\n')); nodeRepl.write(await rootQueueEvidence('dewdrop-terracotta-oos-ui')); await runtime07QueueBuyerTab.playwright.getByRole('button',{name:'Pink Clay PC02',exact:true}).press('Enter'); nodeRepl.write((await runtime07QueueBuyerTab.playwright.domSnapshot()).split('\\n').filter(x=>/Pink Clay|pressed|Add to cart|₹/.test(x)).slice(-9).join('\\n'));"
+    }
+  ],
+  "scope": "Completed normal UI keyboard inputs are observed in the controller trace. Tool return values are unavailable in read_thread, so Rosewater pressed state and returned selected UUID cannot be inferred from completion alone.",
+  "caseResult": "P01 remains PARTIAL; current Pink Clay AX, canonical captured facts and actual purchased variant are proven separately.",
+  "ownerBrowserActions": 0,
+  "recordedAtUtc": "2026-10-24T20:46:02.574968+00:00"
+}

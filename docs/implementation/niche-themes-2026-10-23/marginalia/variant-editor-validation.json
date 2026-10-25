@@ -1,0 +1,14 @@
+{
+  "updatedAt": "2026-10-23T07:38:08.844212+00:00",
+  "export": "MarginaliaVariantFactsEditor",
+  "namespace": "variant.metadata.books",
+  "commonFacts": "Unwrapped product-level books namespace, read-only.",
+  "variantIdentity": "Enclosing canonical DTO only; none emitted inside facts.",
+  "tests": {
+    "passed": 9,
+    "failed": 0
+  },
+  "focusedNoEmit": "passed",
+  "handoff": "variant-editor.md",
+  "parentSaveReadbackAndSnapshotsProven": false
+}

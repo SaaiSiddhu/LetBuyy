@@ -1,0 +1,12 @@
+{
+  "classification": "FOCUSED_PRIVATE_NOEMIT_SOURCE_TYPECHECK_NOT_MAIN_BUILD",
+  "diagnostics": [],
+  "MainWorkspaceBusinessLeaks": [],
+  "sourceFiles": 271,
+  "roots": [
+    "/Volumes/Projects/LetBuyy/docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/core/src/product-fact-snapshot.ts",
+    "/Volumes/Projects/LetBuyy/docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/core/src/product-facts-summary.ts",
+    "/Volumes/Projects/LetBuyy/docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/order-fact-readback.private.ts",
+    "/Volumes/Projects/LetBuyy/docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/niche-order-presentation.private.ts"
+  ]
+}

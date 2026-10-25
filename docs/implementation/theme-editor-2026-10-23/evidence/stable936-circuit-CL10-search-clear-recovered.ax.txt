@@ -1,0 +1,174 @@
+Browser tab: 70, Title: "Search | Threadline", URL: "http://syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/search?limit=20&category=Accessories&country_of_origin=India&sort=display_order&collection_id=01f56eb8-89fa-4fc5-be47-02f3ec591f2f&search=".
+1 AXWebArea Search | Threadline, URL: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/search?limit=20&category=Accessories&country_of_origin=India&sort=display_order&collection_id=01f56eb8-89fa-4fc5-be47-02f3ec591f2f&search=
+	2 container
+		3 text Circuit 936 B — saved recovery draft.
+		4 container Description: Primary, ID: lb-nav-panel-header-default
+		5 link Description: Threadline, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b
+		6 container
+			7 text Search products, models and connectors
+			8 search text field (settable) Search products, models and connectors, ID: ct-header-search-header-default
+			9 button Search
+		10 link Description: Log in, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/customers/login
+		11 link Description: Cart ( 2 ), Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/cart
+		12 container Filter products by country of origin
+			13 container
+				14 text Country of origin
+				15 text field (settable) Country of origin, Value: India, ID: lb-product-origin-filter
+				16 button Apply filter
+				17 link Description: Clear origin filter, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/search?limit=20&category=Accessories&sort=display_order&collection_id=01f56eb8-89fa-4fc5-be47-02f3ec591f2f
+		18 text THE CONNECTION DESK
+		19 heading Search products, Value: 1
+			20 text Search products
+		21 text 4 products
+		22 container
+			23 text Search products, models and connectors
+			24 search text field (settable) Search products, models and connectors, ID: ct-search-forge-discovery-search
+			25 button Search
+		26 container
+			27 heading Filter accessories, Value: 2
+				28 text Filter accessories
+			29 container Connector
+				30 text Connector
+				31 container
+					32 checkbox (settable, integer) Description: ac-plug (1 matching product), Value: 0
+					33 text ac-plug (1 matching product)
+				34 container
+					35 checkbox (settable, integer) Description: usb-a (1 matching product), Value: 0
+					36 text usb-a (1 matching product)
+				37 container
+					38 checkbox (settable, integer) Description: usb-c (3 matching products), Value: 0
+					39 text usb-c (3 matching products)
+			40 container Data rate (Mbps)
+				41 text Data rate (Mbps)
+				42 radio button (settable, integer) Description: Any, Value: 1
+				43 container
+					44 radio button (settable, integer) Description: 480 (1 matching product), Value: 0
+					45 text 480 (1 matching product)
+			46 container Accessory type
+				47 text Accessory type
+				48 radio button (settable, integer) Description: Any, Value: 1
+				49 container
+					50 radio button (settable, integer) Description: cable (1 matching product), Value: 0
+					51 text cable (1 matching product)
+				52 container
+					53 radio button (settable, integer) Description: charger (1 matching product), Value: 0
+					54 text charger (1 matching product)
+				55 container
+					56 radio button (settable, integer) Description: hub (1 matching product), Value: 0
+					57 text hub (1 matching product)
+			58 container Length (mm)
+				59 text Length (mm)
+				60 radio button (settable, integer) Description: Any, Value: 1
+				61 container
+					62 radio button (settable, integer) Description: 1000 (1 matching product), Value: 0
+					63 text 1000 (1 matching product)
+			64 container Pass-through output (W)
+				65 text Pass-through output (W)
+				66 radio button (settable, integer) Description: Any, Value: 1
+				67 container
+					68 radio button (settable, integer) Description: 60 (1 matching product), Value: 0
+					69 text 60 (1 matching product)
+			70 container Capacity (W)
+				71 text Capacity (W)
+				72 radio button (settable, integer) Description: Any, Value: 1
+				73 container
+					74 radio button (settable, integer) Description: 100 (1 matching product), Value: 0
+					75 text 100 (1 matching product)
+			76 container Power input (W)
+				77 text Power input (W)
+				78 radio button (settable, integer) Description: Any, Value: 1
+				79 container
+					80 radio button (settable, integer) Description: 65 (1 matching product), Value: 0
+					81 text 65 (1 matching product)
+				82 container
+					83 radio button (settable, integer) Description: 70 (1 matching product), Value: 0
+					84 text 70 (1 matching product)
+			85 container Power output (W)
+				86 text Power output (W)
+				87 radio button (settable, integer) Description: Any, Value: 1
+				88 container
+					89 radio button (settable, integer) Description: 45 (1 matching product), Value: 0
+					90 text 45 (1 matching product)
+				91 container
+					92 radio button (settable, integer) Description: 65 (1 matching product), Value: 0
+					93 text 65 (1 matching product)
+			94 button Apply filters
+			95 link Description: Clear filters, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/search?limit=20&sort=display_order
+		96 container
+			97 text Sort by
+			98 pop up button (collapsed, settable) Sort by, Value: Featured, ID: ct-sort-forge-results-search, Secondary Actions: Expand
+				99 menu
+					100 (selected) Featured
+					101 Price: low to high
+					102 Price: high to low
+					103 Newest
+					104 Name
+			105 button Sort
+		106 container Applied filters
+			107 link Description: Remove Category: Accessories, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/search?limit=20&country_of_origin=India&sort=display_order&collection_id=01f56eb8-89fa-4fc5-be47-02f3ec591f2f
+			108 link Description: Remove Country of origin: India, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/search?limit=20&category=Accessories&sort=display_order&collection_id=01f56eb8-89fa-4fc5-be47-02f3ec591f2f
+			109 link Description: Remove Collection: 01f56eb8-89fa-4fc5-be47-02f3ec591f2f, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/search?limit=20&category=Accessories&country_of_origin=India&sort=display_order
+		110 container
+			111 link Description: Product image not supplied, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/product/3551ce5c-cead-4b90-a315-fe2c0371101d
+			112 text Synthetic Lab · Synthetic L100
+			113 heading Circuit lifecycle one metre cable, Value: 3
+				114 link Description: Circuit lifecycle one metre cable, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/product/3551ce5c-cead-4b90-a315-fe2c0371101d
+			115 definition list
+				116 container Cable power capacity
+					117 text Cable power capacity
+				118 text 100 W
+				119 container USB data maximum
+					120 text USB data maximum
+				121 text 480 Mb/s
+			122 text INR 400.00
+			123 link Description: View product →, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/product/3551ce5c-cead-4b90-a315-fe2c0371101d
+			124 text Available
+		125 container
+			126 link Description: Product image not supplied, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/product/53431d13-9339-471d-a8f1-c10a95b0dae1
+			127 heading Circuit lifecycle unknown accessory, Value: 3
+				128 link Description: Circuit lifecycle unknown accessory, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/product/53431d13-9339-471d-a8f1-c10a95b0dae1
+			129 text Technical facts not supplied INR 600.00
+			130 link Description: View product →, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/product/53431d13-9339-471d-a8f1-c10a95b0dae1
+			131 text Available
+		132 container
+			133 link Description: Product image not supplied, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/product/61d34f39-5c67-4e1f-88c8-549674f35b24
+			134 text Synthetic Lab · Synthetic H1
+			135 heading Circuit lifecycle hub, Value: 3
+				136 link Description: Circuit lifecycle hub, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/product/61d34f39-5c67-4e1f-88c8-549674f35b24
+			137 definition list
+				138 container Output maximum
+					139 text Output maximum
+				140 text 45 W
+				141 container Power outputs
+					142 text Power outputs
+				143 text 2 × USB-C
+			144 text INR 1,200.00
+			145 link Description: View product →, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/product/61d34f39-5c67-4e1f-88c8-549674f35b24
+			146 text Available
+		147 container
+			148 link Description: Product image not supplied, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/product/8e65cb28-74c6-41cf-9702-05348faf5f26
+			149 text Synthetic Lab · Synthetic C65
+			150 heading Circuit lifecycle finish charger, Value: 3
+				151 link Description: Circuit lifecycle finish charger, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/product/8e65cb28-74c6-41cf-9702-05348faf5f26
+			152 definition list
+				153 container Output maximum
+					154 text Output maximum
+				155 text 65 W
+				156 container Power outputs
+					157 text Power outputs
+				158 text 2 × USB-C
+			159 text INR 1,900.00
+			160 link Description: View product →, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/product/8e65cb28-74c6-41cf-9702-05348faf5f26
+			161 text Available
+		162 container Product pages
+			163 text Page 1 of 1
+		164 heading Threadline, Value: 3
+			165 text Threadline
+		166 text Circuit 936 B footer saved
+		167 heading CONTACT, Value: 4
+			168 text CONTACT
+		169 link Description: Contact us, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/contact
+		170 text © Threadline. All rights reserved.
+		171 link Description: Powered by LetBuyy, Value: letbuyy.com/
+
+The focused UI element is 1 AXWebArea Search | Threadline, URL: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/search?limit=20&category=Accessories&country_of_origin=India&sort=display_order&collection_id=01f56eb8-89fa-4fc5-be47-02f3ec591f2f&search=

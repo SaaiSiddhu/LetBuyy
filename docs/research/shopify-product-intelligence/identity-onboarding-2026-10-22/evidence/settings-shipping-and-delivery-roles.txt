@@ -1,0 +1,41 @@
+- heading [level=1]: Shipping and delivery
+- heading "Shipping and delivery" [level=1]
+- heading "Shipping" [level=2]:
+- heading "Shipping profiles" [level=3]:
+- button "Shipping profiles" [expanded]:
+- link "Learn more":
+- heading "Store default" [level=2]:
+- link "General profile All products 1 of 1 location 2 zones":
+- paragraph:
+- link "Add custom profile":
+- paragraph: Add custom profile
+- heading "Estimated delivery dates" [level=3]:
+- button "Estimated delivery dates":
+- heading "Shipping labels" [level=3]:
+- button "Shipping labels":
+- link "Learn more":
+- button "Calculate rates":
+- heading "Packages" [level=3]:
+- button "Packages":
+- link "Learn more":
+- heading "Carrier accounts" [level=3]:
+- button "Carrier accounts":
+- heading "Additional delivery methods" [level=2]:
+- link "Local delivery":
+- link "Pickup in store":
+- heading "Documents" [level=2]:
+- link "Packing slip template":
+- heading "Delivery customizations" [level=2]:
+- button "Add delivery customization":
+- heading "Custom order fulfillment" [level=2]:
+- button "Add a custom fulfillment service":
+- status
+- status
+- status
+- paragraph
+- button "Close" [disabled]:
+- textbox "Work with Sidekick"
+- button "Add files and more":
+- button "Voice":
+- button "Open Sidekick":
+- status

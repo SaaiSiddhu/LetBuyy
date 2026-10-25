@@ -1,0 +1,310 @@
+{
+  "schemaVersion": 1,
+  "files": [
+    {
+      "sourcePath": "apps/commerce/web/src/lib/theme-engine/playfield-v201-facts.test.ts",
+      "archivePath": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private03/frozen-builder/apps/commerce/web/src/lib/theme-engine/playfield-v201-facts.test.ts.snapshot",
+      "sha256": "d71ff4afa6fbd7417f7d836589a25b55f78fdb43ce8889b0cd3d382b48eb72e0"
+    },
+    {
+      "sourcePath": "apps/commerce/web/src/lib/theme-engine/product-liquid-drop.ts",
+      "archivePath": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private03/frozen-builder/apps/commerce/web/src/lib/theme-engine/product-liquid-drop.ts.snapshot",
+      "sha256": "58ad07c074f99c63a9ecfb2e40cf31f82a039a5b45a566d7602a936ebfd64fa7"
+    },
+    {
+      "sourcePath": "apps/commerce/web/src/lib/theme-engine/variant-facts-controller.ts",
+      "archivePath": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private03/frozen-builder/apps/commerce/web/src/lib/theme-engine/variant-facts-controller.ts.snapshot",
+      "sha256": "40b12590447f6689d59197e52f7f35841589d1b1b7da3e1ae3e11b84a50e9864"
+    },
+    {
+      "sourcePath": "apps/commerce/web/src/lib/theme-engine/variant-options-carrier.ts",
+      "archivePath": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private03/frozen-builder/apps/commerce/web/src/lib/theme-engine/variant-options-carrier.ts.snapshot",
+      "sha256": "829f6f49e4330c819a640ef11be87cd0f48eca02c03722c6072234c6c14b35dd"
+    },
+    {
+      "sourcePath": "docs/implementation/niche-theme-programme/playfield201-independent-revised-builder-review.json",
+      "archivePath": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private03/frozen-builder/docs/implementation/niche-theme-programme/playfield201-independent-revised-builder-review.json.snapshot",
+      "sha256": "a5f868c08db43c5e2678f5045c928e96f9a1ac040e5dded7e68a42abf450e480"
+    },
+    {
+      "sourcePath": "docs/implementation/niche-theme-programme/playfield201-order-url-interim-admission.json",
+      "archivePath": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private03/frozen-builder/docs/implementation/niche-theme-programme/playfield201-order-url-interim-admission.json.snapshot",
+      "sha256": "c8420182d002cf4a5584656e3a43c3e542705d4f69eb131738de9225c326225d"
+    },
+    {
+      "sourcePath": "docs/implementation/niche-theme-programme/playfield201-source-admission.json",
+      "archivePath": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private03/frozen-builder/docs/implementation/niche-theme-programme/playfield201-source-admission.json.snapshot",
+      "sha256": "c7eeecfc5474a89a928e974a5c1332122d6efb0424cd15ad7126ae7e365e5f75"
+    },
+    {
+      "sourcePath": "docs/implementation/niche-theme-programme/release-playfield201/generate-playfield201.test.ts",
+      "archivePath": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private03/frozen-builder/docs/implementation/niche-theme-programme/release-playfield201/generate-playfield201.test.ts.snapshot",
+      "sha256": "b5cc9be33cda7eb3a1d67bc3dd4c4673ad373d3fb872650738358eed966cdbc4"
+    },
+    {
+      "sourcePath": "docs/implementation/niche-theme-programme/release-playfield201/generate-playfield201.ts",
+      "archivePath": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private03/frozen-builder/docs/implementation/niche-theme-programme/release-playfield201/generate-playfield201.ts.snapshot",
+      "sha256": "f1fd482cc4116b5c28d032d7bd7ca68c1ae769724043b7531aa9eee64714f5d9"
+    },
+    {
+      "sourcePath": "docs/implementation/niche-theme-programme/release-playfield201/tsconfig.proposal.json",
+      "archivePath": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private03/frozen-builder/docs/implementation/niche-theme-programme/release-playfield201/tsconfig.proposal.json.snapshot",
+      "sha256": "e8a65490ddd88eb7cd0131cc3bff3ffa995de47e2f2bd53751f2f1eb1948ba0b"
+    },
+    {
+      "sourcePath": "docs/implementation/niche-theme-programme/release-v2/generate-release.ts",
+      "archivePath": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private03/frozen-builder/docs/implementation/niche-theme-programme/release-v2/generate-release.ts.snapshot",
+      "sha256": "ccbd78a2b0b47e8a6cfb33390965a32ddc611711cc4c369772199db5adb389b3"
+    },
+    {
+      "sourcePath": "docs/implementation/niche-themes-2026-10-23/playfield/v201-source-repair-2026-10-23/SOURCE_RELEASE.json",
+      "archivePath": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private03/frozen-builder/docs/implementation/niche-themes-2026-10-23/playfield/v201-source-repair-2026-10-23/SOURCE_RELEASE.json.snapshot",
+      "sha256": "222d37e7f7826ca47e7e883e311305e3ad8ab75c64a57396cc790ab6b7194217"
+    },
+    {
+      "sourcePath": "packages/theme-engine/package.json",
+      "archivePath": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private03/frozen-builder/packages/theme-engine/package.json.snapshot",
+      "sha256": "8eec1e66946b79412200297e8755d67f6769fe49beec86c5d7eeb2ccf013b763"
+    },
+    {
+      "sourcePath": "packages/theme-engine/src/built-in-section-schemas.ts",
+      "archivePath": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private03/frozen-builder/packages/theme-engine/src/built-in-section-schemas.ts.snapshot",
+      "sha256": "5e44b89d7ebc3d40b82e7d12dfccf399f7a336d39e1a1b04c7deaf4c57486734"
+    },
+    {
+      "sourcePath": "packages/theme-engine/src/circuit-discovery.ts",
+      "archivePath": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private03/frozen-builder/packages/theme-engine/src/circuit-discovery.ts.snapshot",
+      "sha256": "160c6a61a567f87bbcab20bf337336ede6e748c1326110ab977f61ec9c14523b"
+    },
+    {
+      "sourcePath": "packages/theme-engine/src/circuit-styles.ts",
+      "archivePath": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private03/frozen-builder/packages/theme-engine/src/circuit-styles.ts.snapshot",
+      "sha256": "09c1be83d56d1640770bcf8c76df249f4fa309aa227d81a3d46d0f81879911c2"
+    },
+    {
+      "sourcePath": "packages/theme-engine/src/circuit-theme.ts",
+      "archivePath": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private03/frozen-builder/packages/theme-engine/src/circuit-theme.ts.snapshot",
+      "sha256": "44f78cdaa4d9241723b7bc9ae0f0952d946e72b11775c05160c9949f87a69d2a"
+    },
+    {
+      "sourcePath": "packages/theme-engine/src/dewdrop-discovery.ts",
+      "archivePath": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private03/frozen-builder/packages/theme-engine/src/dewdrop-discovery.ts.snapshot",
+      "sha256": "a9d866eeb5dedc2b123bdf2a287b9a0be23789b39c93c1e1872471c975de1fe1"
+    },
+    {
+      "sourcePath": "packages/theme-engine/src/dewdrop-styles.ts",
+      "archivePath": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private03/frozen-builder/packages/theme-engine/src/dewdrop-styles.ts.snapshot",
+      "sha256": "693a0be116d404baac41ef0b044ce69f6c8dcf35d4dfe26b02ac507678ba129e"
+    },
+    {
+      "sourcePath": "packages/theme-engine/src/dewdrop-theme.ts",
+      "archivePath": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private03/frozen-builder/packages/theme-engine/src/dewdrop-theme.ts.snapshot",
+      "sha256": "ec0cf0890c607056c1da13087b1c51ee6931d120c46370802360b740f0693190"
+    },
+    {
+      "sourcePath": "packages/theme-engine/src/experience-apply.ts",
+      "archivePath": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private03/frozen-builder/packages/theme-engine/src/experience-apply.ts.snapshot",
+      "sha256": "fcf62ca230b604f6dd4d33cc34a1b0d990caa131f815fc3666dae4fbce15f6b4"
+    },
+    {
+      "sourcePath": "packages/theme-engine/src/experience-compositions.ts",
+      "archivePath": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private03/frozen-builder/packages/theme-engine/src/experience-compositions.ts.snapshot",
+      "sha256": "25b73068b7a4fcce5b4bad3768a376e08c7e384e843f707c3cf8f8fb361abc68"
+    },
+    {
+      "sourcePath": "packages/theme-engine/src/experience-fonts.ts",
+      "archivePath": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private03/frozen-builder/packages/theme-engine/src/experience-fonts.ts.snapshot",
+      "sha256": "3ee9bdb23a8c18410fd36ee6302f0f8fae929484a7c2dbfd9bc6a424e30f64be"
+    },
+    {
+      "sourcePath": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "archivePath": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private03/frozen-builder/packages/theme-engine/src/first-party-theme-catalog.ts.snapshot",
+      "sha256": "48e8126f5681d91fb1780b521bd5d53c4bf933156ca2b97c64932d95e0800605"
+    },
+    {
+      "sourcePath": "packages/theme-engine/src/habitat-discovery.ts",
+      "archivePath": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private03/frozen-builder/packages/theme-engine/src/habitat-discovery.ts.snapshot",
+      "sha256": "342843da57a6eef8488d906218d4225338f9f3c0afe2bbcc49073f3f34a1f873"
+    },
+    {
+      "sourcePath": "packages/theme-engine/src/habitat-styles.ts",
+      "archivePath": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private03/frozen-builder/packages/theme-engine/src/habitat-styles.ts.snapshot",
+      "sha256": "e4b89a41c526cc9a96e0e3106e084124717eb56d9837bcf09214045d7fa817e6"
+    },
+    {
+      "sourcePath": "packages/theme-engine/src/habitat-theme.ts",
+      "archivePath": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private03/frozen-builder/packages/theme-engine/src/habitat-theme.ts.snapshot",
+      "sha256": "0144fdf830ab3c5ddf42ebfcb86258b99e74ed8a8d724469012479705352e8c3"
+    },
+    {
+      "sourcePath": "packages/theme-engine/src/kindred-discovery.ts",
+      "archivePath": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private03/frozen-builder/packages/theme-engine/src/kindred-discovery.ts.snapshot",
+      "sha256": "14dd29777737158a61287bf54e98571c6b3abf1e07ec542d2e7f678180ad473f"
+    },
+    {
+      "sourcePath": "packages/theme-engine/src/kindred-styles.ts",
+      "archivePath": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private03/frozen-builder/packages/theme-engine/src/kindred-styles.ts.snapshot",
+      "sha256": "15e6670f6556a7b9cfd8e56891088f0abe9a8ffa1105822be1a1902ecd7282cf"
+    },
+    {
+      "sourcePath": "packages/theme-engine/src/kindred-theme.ts",
+      "archivePath": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private03/frozen-builder/packages/theme-engine/src/kindred-theme.ts.snapshot",
+      "sha256": "3a47dc979dbdf5dce395fd44a858e007567820f4fac569fade603ff6da4fd551"
+    },
+    {
+      "sourcePath": "packages/theme-engine/src/madeyours-discovery.ts",
+      "archivePath": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private03/frozen-builder/packages/theme-engine/src/madeyours-discovery.ts.snapshot",
+      "sha256": "d1fc0993efd1d876e67c60f997e6cea53efd65a4fd7aba69bafe377f02803eda"
+    },
+    {
+      "sourcePath": "packages/theme-engine/src/madeyours-styles.ts",
+      "archivePath": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private03/frozen-builder/packages/theme-engine/src/madeyours-styles.ts.snapshot",
+      "sha256": "5253e57fcb217526d7bf46e8ddc54b921a5f64ec42f69c7c0dae177eadb5ee6e"
+    },
+    {
+      "sourcePath": "packages/theme-engine/src/madeyours-theme.ts",
+      "archivePath": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private03/frozen-builder/packages/theme-engine/src/madeyours-theme.ts.snapshot",
+      "sha256": "c56bdba5b9e9376c4a296cadc2d4f31a33598a033692d2f6c21daa71b3e98193"
+    },
+    {
+      "sourcePath": "packages/theme-engine/src/marginalia-discovery.ts",
+      "archivePath": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private03/frozen-builder/packages/theme-engine/src/marginalia-discovery.ts.snapshot",
+      "sha256": "a1c2c75b3497fc3f0edc1280686b75c7434e1a400c0944154c462561b62cc8d3"
+    },
+    {
+      "sourcePath": "packages/theme-engine/src/marginalia-styles.ts",
+      "archivePath": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private03/frozen-builder/packages/theme-engine/src/marginalia-styles.ts.snapshot",
+      "sha256": "112747bc358f7fb1fcaafbec32d2bc4f866cec76f0a4324003650bf4dd80e88d"
+    },
+    {
+      "sourcePath": "packages/theme-engine/src/marginalia-theme.ts",
+      "archivePath": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private03/frozen-builder/packages/theme-engine/src/marginalia-theme.ts.snapshot",
+      "sha256": "a109aa33018aa786dffaea7a067415b13fe73ddc17beca7ef18a83f58301b7e9"
+    },
+    {
+      "sourcePath": "packages/theme-engine/src/niche-order-presentation.ts",
+      "archivePath": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private03/frozen-builder/packages/theme-engine/src/niche-order-presentation.ts.snapshot",
+      "sha256": "6c5f89356bab085cc8a3a359c5caad4503dc8442176df0b8a1558b849d651ac3"
+    },
+    {
+      "sourcePath": "packages/theme-engine/src/pantry-discovery.ts",
+      "archivePath": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private03/frozen-builder/packages/theme-engine/src/pantry-discovery.ts.snapshot",
+      "sha256": "d9c09fe8097123623d26cde25ec9951233792adadbdf8d0eb6628659234759d0"
+    },
+    {
+      "sourcePath": "packages/theme-engine/src/pantry-styles.ts",
+      "archivePath": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private03/frozen-builder/packages/theme-engine/src/pantry-styles.ts.snapshot",
+      "sha256": "3a7e53583942a5188970d4f5e2901ce4e894ab3b4da55a30176073eaa03db278"
+    },
+    {
+      "sourcePath": "packages/theme-engine/src/pantry-theme.ts",
+      "archivePath": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private03/frozen-builder/packages/theme-engine/src/pantry-theme.ts.snapshot",
+      "sha256": "9c440d32f146b8155ba78f522da52979fd09a0f3d32c4b25e5c3e289ef390925"
+    },
+    {
+      "sourcePath": "packages/theme-engine/src/playfield-discovery.ts",
+      "archivePath": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private03/frozen-builder/packages/theme-engine/src/playfield-discovery.ts.snapshot",
+      "sha256": "876769a92360a5cc8cd89ab69a436c12c1eda6df32eb4466bdda10111ef297a8"
+    },
+    {
+      "sourcePath": "packages/theme-engine/src/playfield-styles.ts",
+      "archivePath": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private03/frozen-builder/packages/theme-engine/src/playfield-styles.ts.snapshot",
+      "sha256": "7cb3da13790ec83dcb4bcf6a837abc68e53ebf9a8a49f44b5582af55b1d59243"
+    },
+    {
+      "sourcePath": "packages/theme-engine/src/playfield-theme-v201.ts",
+      "archivePath": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private03/frozen-builder/packages/theme-engine/src/playfield-theme-v201.ts.snapshot",
+      "sha256": "f2d428503df3630bcb79141488d109e10284412a2a523fa8ad77343aa47ae132"
+    },
+    {
+      "sourcePath": "packages/theme-engine/src/playfield-theme.ts",
+      "archivePath": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private03/frozen-builder/packages/theme-engine/src/playfield-theme.ts.snapshot",
+      "sha256": "00493cb361c8fc796941524d9673ee4c1bfa3a12785017e2397e408b924edb63"
+    },
+    {
+      "sourcePath": "packages/theme-engine/src/schema-field-extensions.ts",
+      "archivePath": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private03/frozen-builder/packages/theme-engine/src/schema-field-extensions.ts.snapshot",
+      "sha256": "a5c53fdfc687bc9c7913ff64c1af1d51e496b70fd74b2a78e2b000bb66ee4d71"
+    },
+    {
+      "sourcePath": "packages/theme-engine/src/section-type-map.ts",
+      "archivePath": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private03/frozen-builder/packages/theme-engine/src/section-type-map.ts.snapshot",
+      "sha256": "b262e6d801be599399f18a53944507ab6886c6d9488784381297f72658331d94"
+    },
+    {
+      "sourcePath": "packages/theme-engine/src/template-registry.ts",
+      "archivePath": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private03/frozen-builder/packages/theme-engine/src/template-registry.ts.snapshot",
+      "sha256": "2ab00379414a40769d793175dac97d4b795668587a48f081414326cfbb1555c7"
+    },
+    {
+      "sourcePath": "packages/theme-engine/src/theme-bundle-core.ts",
+      "archivePath": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private03/frozen-builder/packages/theme-engine/src/theme-bundle-core.ts.snapshot",
+      "sha256": "0e1650a4d71ef358792c0f877f4ae678794fb6d2cfdebbb30d79563e4a2f452f"
+    },
+    {
+      "sourcePath": "packages/theme-engine/src/theme-bundle.ts",
+      "archivePath": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private03/frozen-builder/packages/theme-engine/src/theme-bundle.ts.snapshot",
+      "sha256": "cdbad4b28277431a3ab06e56ed0ce16539e04837bb107f5f951a3df39a92ed76"
+    },
+    {
+      "sourcePath": "packages/theme-engine/src/theme-document.ts",
+      "archivePath": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private03/frozen-builder/packages/theme-engine/src/theme-document.ts.snapshot",
+      "sha256": "7ba285a54d71a01545c4cb1e4a3c1540a30caae2db793079b2b3cb32b8612412"
+    },
+    {
+      "sourcePath": "packages/theme-engine/src/theme-presets.ts",
+      "archivePath": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private03/frozen-builder/packages/theme-engine/src/theme-presets.ts.snapshot",
+      "sha256": "283028890199a34e67863c337ebd0c788c830c60ddaa87854c3bad28f9581e82"
+    },
+    {
+      "sourcePath": "packages/theme-engine/src/theme-registry.ts",
+      "archivePath": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private03/frozen-builder/packages/theme-engine/src/theme-registry.ts.snapshot",
+      "sha256": "df47c3ff4a6bfb0b4dfb56a49559249ab69d44f876bf1d422ecda385f09533ce"
+    },
+    {
+      "sourcePath": "packages/theme-engine/src/threadline-discovery.ts",
+      "archivePath": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private03/frozen-builder/packages/theme-engine/src/threadline-discovery.ts.snapshot",
+      "sha256": "a3fba143d1217f0da83cf70ab335da66e82bc79cb883a9ad0e3b48773459e4b8"
+    },
+    {
+      "sourcePath": "packages/theme-engine/src/threadline-styles.ts",
+      "archivePath": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private03/frozen-builder/packages/theme-engine/src/threadline-styles.ts.snapshot",
+      "sha256": "19927c48340b3ff3403b13a945ebe186bf928de638f47281b0fe0421ded48385"
+    },
+    {
+      "sourcePath": "packages/theme-engine/src/threadline-theme.ts",
+      "archivePath": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private03/frozen-builder/packages/theme-engine/src/threadline-theme.ts.snapshot",
+      "sha256": "1e922e6c056de5017f35dfe08827eef0b41212b96bbff5b6695ab087422d523b"
+    },
+    {
+      "sourcePath": "packages/theme-engine/src/trailmark-discovery.ts",
+      "archivePath": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private03/frozen-builder/packages/theme-engine/src/trailmark-discovery.ts.snapshot",
+      "sha256": "f69edf5815a19e513416ebb970e661793a88994a12f70e1e0e6d214f021741cb"
+    },
+    {
+      "sourcePath": "packages/theme-engine/src/trailmark-styles.ts",
+      "archivePath": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private03/frozen-builder/packages/theme-engine/src/trailmark-styles.ts.snapshot",
+      "sha256": "5dc2ae055b560a56842f4d3399f5b3b88b59c37ab5ede6c62731e44da3d1c4b0"
+    },
+    {
+      "sourcePath": "packages/theme-engine/src/trailmark-theme.ts",
+      "archivePath": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private03/frozen-builder/packages/theme-engine/src/trailmark-theme.ts.snapshot",
+      "sha256": "ec412bcee2940769612323c2155ac807cef8d73bd1a06caa754cbb1fd11e90b5"
+    },
+    {
+      "sourcePath": "packages/theme-engine/test/niche-order-presentation.test.ts",
+      "archivePath": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private03/frozen-builder/packages/theme-engine/test/niche-order-presentation.test.ts.snapshot",
+      "sha256": "20cef99b2deea24bb02b0c08ecfe7224eb3e8fe90b2a30c09c06afc88502eb19"
+    },
+    {
+      "sourcePath": "packages/theme-engine/test/playfield-v201.test.ts",
+      "archivePath": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private03/frozen-builder/packages/theme-engine/test/playfield-v201.test.ts.snapshot",
+      "sha256": "5253b640529109e96ce4c04c76085f79160f77be90bff06be992e7198ed20eae"
+    },
+    {
+      "sourcePath": "pnpm-lock.yaml",
+      "archivePath": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private03/frozen-builder/pnpm-lock.yaml.snapshot",
+      "sha256": "15fd89109bbc17e0624e29d5a1b56db07e19f1f880c44d9a9abf847b52b6d09a"
+    }
+  ]
+}

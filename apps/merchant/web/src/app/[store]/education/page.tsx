@@ -282,7 +282,8 @@ export default function EducationPage() {
     if (loading) {
         return (
             <Page>
-                <PageHeader
+                <PageHeader identity="content"
+                    recipe="index"
                     title="Education"
                     description="Add academic history and credentials to strengthen your resume."
                     breadcrumbs={[{ label: 'Resume' }, { label: 'Education' }]}
@@ -298,7 +299,8 @@ export default function EducationPage() {
 
     return (
         <Page>
-            <PageHeader
+            <PageHeader identity="content"
+                recipe="index"
                 title="Education"
                 description="Add academic history and credentials to strengthen your resume."
                 breadcrumbs={[{ label: 'Resume' }, { label: 'Education' }]}

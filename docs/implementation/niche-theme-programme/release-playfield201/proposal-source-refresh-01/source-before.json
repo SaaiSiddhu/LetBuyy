@@ -1,0 +1,20 @@
+{
+  "recordedAt": "2026-10-23T19:44:37.219782+00:00",
+  "scope": "Refresh proposal-only generator admission/digest to Rootc842/revised91; preserve strict3paths, no database emission/native/browser",
+  "files": [
+    {
+      "path": "docs/implementation/niche-theme-programme/release-playfield201/generate-playfield201.ts",
+      "sha256": "54f9f2e0052bf4f6a442cfe66357e8274edcd1645377adbaf69f137ba1e88e5c"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/release-playfield201/generate-playfield201.test.ts",
+      "sha256": "6537c4c59fc7e7a2d12d82d3c7feb68df4fbf658723f795553d3c31affdcc6fc"
+    }
+  ],
+  "rootAdmission": {
+    "path": "docs/implementation/niche-theme-programme/playfield201-order-url-interim-admission.json",
+    "sha256": "c8420182d002cf4a5584656e3a43c3e542705d4f69eb131738de9225c326225d"
+  },
+  "priorGeneratorStateArchived": true,
+  "movingHydrationBytesNotReadOrCaptured": true
+}

@@ -1,0 +1,52 @@
+{
+  "classification": "V2_REMAINING_ACTUAL_GATES_NOT_EXECUTED",
+  "requiredGates": [
+    {
+      "id": "NATIVE-OWNED",
+      "status": "NOT_RUN",
+      "assertion": "Existing real owned-helper one-day/keypair/SPKI/cleanup and forged-handle/binding denial; after Threadline391 release.",
+      "evidence": []
+    },
+    {
+      "id": "TRUST-POSITIVE",
+      "status": "NOT_RUN",
+      "assertion": "Preissued approved actual OS-trusted checkout leaf/key accepted by fixed manual mode; no supplied anchor.",
+      "evidence": []
+    },
+    {
+      "id": "TRUST-NEGATIVES",
+      "status": "NOT_RUN",
+      "assertion": "Actual approved chain alternatives/revocation policy as applicable; no automatic fallback or trust override.",
+      "evidence": []
+    },
+    {
+      "id": "ACTUAL-SOURCE-CHECK",
+      "status": "NOEMIT_AND_EXISTING_UNIT_CONTRACTS_PASS_OWNED_RUNTIME_STILL_NOT_RUN",
+      "assertion": "Full scoped source typecheck and existing affected owned/manual fixtures after exact source lease.",
+      "evidence": [
+        "source-handoff.json",
+        "gateway-noemit.log",
+        "owned-guard-lane-contracts.tap",
+        "existing-fixture-unit-contracts.tap"
+      ]
+    },
+    {
+      "id": "BROWSER-HTTPS",
+      "status": "NOT_RUN",
+      "assertion": "Editor-leased normal browser HTTPS, no authority error/interstitial/bypass/alternate browser.",
+      "evidence": []
+    },
+    {
+      "id": "NORMAL-COD",
+      "status": "NOT_RUN",
+      "assertion": "Normal signed buyer/cart/contact/delivery/COD/confirm/retry; actual new order and immutable history, no API substitute.",
+      "evidence": []
+    }
+  ],
+  "v1StubArchive": "revisions/issuance-v1/proposal-control-test-results.json",
+  "v2SourceContracts": "proposal-control-test-results.json",
+  "v2RealLeafFileAndOsDenial": "proposal-real-leaf-test-results.json",
+  "osTrustedPositive": false,
+  "sourceApplied": true,
+  "threadline391OwnsNativeDbLane": true
+}

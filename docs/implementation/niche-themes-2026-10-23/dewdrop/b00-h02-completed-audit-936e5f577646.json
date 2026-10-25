@@ -1,0 +1,185 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-24T03:30:38.932506+00:00",
+  "runId": "936e5f577646",
+  "classification": "INDEPENDENT_LOCAL_ACTUAL_RECEIPT_AND_SCREENSHOT_AUDIT_NO_LIVE_ACTOR",
+  "b00": {
+    "verdict": "PASS_FUNCTIONAL_CASE_SCOPE",
+    "sameBoundInstanceV2": true,
+    "normalUiInstallSaveReloadPublishRestoreReapplyReceipt": true,
+    "privateInstallationNoAutomaticPublish": true,
+    "productsBeforeAfter": [
+      17,
+      17
+    ],
+    "ordersDuringCycle": 0,
+    "allThreeExactPublicMarkersInA_B_restoredA_reappliedB": true,
+    "retainedBDraftExactDuringRestore": true,
+    "reappliedBManifestExact": true,
+    "draftHashesNotReleaseHashes": true,
+    "releaseAtPrimary": {
+      "packageVersion": "2.0.0",
+      "releaseId": "76b466cf-79ef-4768-9d61-5550dfbb7da9",
+      "sourceDraftVersion": 9,
+      "releaseSha256": "2bf97271c715ce889ed5e8eaa9b9f48bc4c8a09a7e624154c4f329dd1545093a"
+    },
+    "localImagesIndependentlyViewed": [
+      "stable936-B00-B-public.jpg",
+      "stable936-B00-editor-preview.jpg"
+    ],
+    "publicAndEmbeddedCloudImageActuallyRendered": true,
+    "visualObservation": {
+      "status": "OPEN_PENDING_ROOT_ALLOCATED_ONE_SETTLED_SAME_STATE_WIDTH_OBSERVATION",
+      "observation": "Public hero heading is serif; the initial editor-preview hero heading is sans.",
+      "cause": "UNQUALIFIED_LOADING_CSS_VIEWPORT_NOT_ESTABLISHED",
+      "wholeThemeFailureInferred": false,
+      "fixtureBrand": "Threadline is actual expected fixture data"
+    }
+  },
+  "h02": {
+    "verdict": "PASS",
+    "primaryOrderId": "84a52d92-6cb4-46bb-b941-8d7f37e8cb74",
+    "exactRetryStatus": 200,
+    "exactSameOrder": true,
+    "alteredCommandStatus": 409,
+    "alteredCommandCode": "CONFLICT",
+    "alteredCommandHashDifferent": true,
+    "originalCommandSha256": "b5d0aeb12d02938b7cc1467d5c48c33876a37eeb0f3810767233ae2464d6718c",
+    "alteredCommandSha256": "80a0c96c1d9e78215ed468024541098e01151c7ec559e2ec0496859da03b19d8",
+    "all22BeforeAfterCountAndHashRecordsEqualBothAttempts": true,
+    "observerBeforeAfterEqualBothAttempts": true,
+    "primarySnapshotSha256": "bdc27a9eb72ecf13f4f8b952a69b024e34f0687b6bc927225f0858b4e57ae705",
+    "siteOrderCountBeforeAndAfterEach": 1,
+    "requestIdField": {
+      "value": "8e81b7ad-508c-4b13-b7b3-1a0658feace6",
+      "qualification": "Original captured request tag retained by replay; not claimed to be a unique new ID for each replay."
+    },
+    "scopeLimit": "Only the listed22 tables plus supplied observer fields; no unlisted-table invariance asserted."
+  },
+  "s02": {
+    "status": "NOT_RUN",
+    "rootBoundGrant": {
+      "source": "docs/implementation/niche-theme-programme/dewdrop-s02-actual-boundary-grant.json",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/dewdrop-s02-actual-boundary-grant.json",
+      "sha256": "97700a64fc5338ddeac3af9aaa08bd561ffd368aa6519c4eca4ae914dcb3a17c",
+      "classification": "BOUND_PLAN_ONLY_EXECUTION_SUBSEQUENTLY_REJECTED_BEFORE_LAUNCH"
+    },
+    "automaticApprovalReview": "REJECTED_BEFORE_PROCESS_LAUNCH",
+    "reason": "Coordinator/tool scope did not establish explicit human authorization for direct database writes.",
+    "actualMutationOccurred": false,
+    "syntheticRowsOrOrderCount2Inferred": false,
+    "humanQuestionAlreadyPendingInEditorAndThemes": true,
+    "humanApprovalObserved": false,
+    "O03AndLegacyContrastDeferred": true
+  },
+  "m01": {
+    "status": "PARTIAL_COORDINATOR_VERIFIED",
+    "sixFieldAndInventoryPositive": "Actual owner-reported, finite files not yet independently received in this audit.",
+    "privateSiblingBeforeSave": "Root verified empty {} in all3 Cloud readbacks; prefix44136fa3.",
+    "preservationProven": false,
+    "laterControlAllocation": "One fresh canonical metadata-only marker setup, then normal UI preservation subcase; no old marker."
+  },
+  "evidence": [
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-B00-A-public.ax.txt",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-B00-A-public.ax.txt",
+      "sha256": "b692b80796e954c46c662564a9893d74e9a467f6662d47dd95c96a1ce5d7e47e"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-B00-A-restored-public.ax.txt",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-B00-A-restored-public.ax.txt",
+      "sha256": "7d51a32676a9594ff3abd6c71f70435f651f7d8565cd00c0091b5b9ad5d3ab62"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-B00-A-saved.ax.txt",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-B00-A-saved.ax.txt",
+      "sha256": "e676ebfbb5cfea1b3914c57c74e880a6d66e71fd7484880d8750c87aa8be7c9b"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-B00-B-public.ax.txt",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-B00-B-public.ax.txt",
+      "sha256": "c9379ce242037761822e8ce4a70b901e48df9f0c5b8f23756d03634e5801a2c6"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-B00-B-public.jpg",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-B00-B-public.jpg",
+      "sha256": "53ad8ccc32881eefd263dac53d1b6de461fa2703463768a6e937d5179df913a0"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-B00-B-reapplied-public.ax.txt",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-B00-B-reapplied-public.ax.txt",
+      "sha256": "c9379ce242037761822e8ce4a70b901e48df9f0c5b8f23756d03634e5801a2c6"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-B00-B-reloaded.ax.txt",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-B00-B-reloaded.ax.txt",
+      "sha256": "7fa8957277d9b95876c9d98668878f86702a5674c56bfa6bf6f090a710e4c1c2"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-B00-B-retained-after-rollback.ax.txt",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-B00-B-retained-after-rollback.ax.txt",
+      "sha256": "317fac550f6bbb2d90dbbb220e59110447bd3ecf9a27e7c73c73faaa124be781"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-B00-completed.json",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-B00-completed.json",
+      "sha256": "374dbd996eea3ed957444f7c82c8fed5c458e7cd5b54d2f2e6cb1914e3f2b5e7"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-B00-editor-preview.jpg",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-B00-editor-preview.jpg",
+      "sha256": "060da7aaba9fe0269c49109c6a8f166ff39162f1bb7b23ed4662efc3baca9b2b"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-B00-empty-library.ax.txt",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-B00-empty-library.ax.txt",
+      "sha256": "6310e0a9d3ee027643bb2fc507ae44fafcec65910c87ffd81bbe90c5f8d0feec"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-B00-installed-unpublished.ax.txt",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-B00-installed-unpublished.ax.txt",
+      "sha256": "d396f1b2efce1b1b692ffed371eb081abbc1a005d6963a72c3640b814412186c"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-b00-a-published-readback.json",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-b00-a-published-readback.json",
+      "sha256": "db58ab173d8ea87adccbcb9a3df36a00a25c3edec0b0b5e0a5082df7128d3801"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-b00-a-restored-readback.json",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-b00-a-restored-readback.json",
+      "sha256": "322fdd8f21074749e188325f17a88258ac70bb43a514cb12c039e68273ea2771"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-b00-b-published-readback.json",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-b00-b-published-readback.json",
+      "sha256": "8c4d4c1168143e132502951ca5ff256ea0176eb44e374ad4722559b41820c2fc"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-b00-b-reapplied-readback.json",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-b00-b-reapplied-readback.json",
+      "sha256": "6bd6d1b718756757844a674c03a243900bed9057c2899b24d8e54f2cf5bb137b"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-b00-b-saved-readback.json",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-b00-b-saved-readback.json",
+      "sha256": "a6ae485bf1a2d68f729d575e52eb09432454cbbd0bcc6173bd8f5fd3fc3d3ee3"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-dewdrop-H02-exact-confirm-retry.json",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-dewdrop-H02-exact-confirm-retry.json",
+      "sha256": "7a92a6011b1df83f21e51966b1115a6ebc3c1c4f182a709cfbf3b9ee59618280"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-dewdrop-H02-same-key-conflict-result.json",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-dewdrop-H02-same-key-conflict-result.json",
+      "sha256": "db3440a5a2718c95c9f615108f7fc1b0879330571444f555776e0f500404baea"
+    },
+    {
+      "source": "docs/implementation/niche-theme-programme/dewdrop-s02-actual-boundary-grant.json",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/dewdrop-s02-actual-boundary-grant.json",
+      "sha256": "97700a64fc5338ddeac3af9aaa08bd561ffd368aa6519c4eca4ae914dcb3a17c",
+      "classification": "BOUND_PLAN_ONLY_EXECUTION_SUBSEQUENTLY_REJECTED_BEFORE_LAUNCH"
+    }
+  ]
+}

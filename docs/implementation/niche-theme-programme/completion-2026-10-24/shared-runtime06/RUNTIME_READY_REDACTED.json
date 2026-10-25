@@ -1,0 +1,25 @@
+{
+  "runId": "63c55b066db3",
+  "identityOrigin": "http://accounts.threadline-63c55b066db3.localhost:50244",
+  "merchantOrigin": "http://admin.threadline-63c55b066db3.localhost:50246",
+  "commerceOrigin": "http://syn-threadline-ui-0a05bda0.localhost:50247",
+  "checkoutOrigin": "https://checkout.localhost:50249",
+  "apiOrigin": "http://127.0.0.1:50250",
+  "site": {
+    "siteId": "989320ef-effb-4e85-8a2b-4178ab79d11d",
+    "locationId": "ec5f8f5b-6d0f-475c-b138-597cc36d0b46",
+    "subdomain": "syn-threadline-ui-0a05bda0",
+    "tag": "threadline-ui"
+  },
+  "recordedAt": "2026-10-24T18:55:49.841666+00:00",
+  "candidate": "/private/tmp/letbuyy-shared-completion-20261024-05",
+  "runnerPid": 36777,
+  "localReceiver": "http://127.0.0.1:50902/razorpay",
+  "privateStatePath": "/private/tmp/threadline-63c55b066db3-state.json",
+  "credentialsBound": true,
+  "secretReused": true,
+  "injectedPaymentAdapter": false,
+  "status": "PRODUCTION_CLIENTS_BUILT_NORMAL_UI_SMOKE_PENDING",
+  "normalOsTrustedCheckoutTLS": true,
+  "protectedUserAppsTouched": false
+}

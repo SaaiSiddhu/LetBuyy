@@ -1,0 +1,1287 @@
+{
+  "schemaVersion": 1,
+  "classification": "CURRENT_RUNTIME07_ORIGINAL_MATRIX_ACTUAL_RESULTS_SEPARATE_FROM_HISTORICAL936",
+  "theme": "Dewdrop",
+  "runId": "49ada80bc494",
+  "packageExpected": "letbuyy-aura@2.1.0",
+  "recordedAtUtc": "2026-10-25T01:31:11.865574+00:00",
+  "siteId": "02049de4-41c3-4b10-b5b2-a60a6b5e82bf",
+  "actualInstanceId": "e2a48dbe-a923-4ac3-a3b4-8ef55d6cb01a",
+  "actualReleaseId": "d396a39d-6cd9-4a1d-a48a-dc46cefc4c1e",
+  "originalRequirement": {
+    "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/installed-beauty-lifecycle-matrix.md",
+    "sha256": "e6f1ff8c303e5b8b3b7dd9e1ec10dcc360a37a3bec11656e69542dfbf3b15edc"
+  },
+  "historicalLedger": {
+    "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-execution.json",
+    "sha256": "4017f5ab1cef7c8764f54e527d41a1d0fe0f3151b15e2f335d7072cc35faaf2d"
+  },
+  "historicalTotals": {
+    "PASS": 26,
+    "FAIL": 1,
+    "BLOCKED": 3
+  },
+  "versionRule": "Original2.0.0/936 results retain their identity. Current2.1.0 executions have explicit versioned addendum; no retrospective credit.",
+  "currentTotals": {
+    "PARTIAL": 5,
+    "NOT_RUN": 25
+  },
+  "cases": [
+    {
+      "caseId": "B00",
+      "historicalStatus": "PASS",
+      "historicalRunId": "936e5f577646",
+      "currentStatus": "PARTIAL",
+      "requirements": {
+        "action": "Bind fresh origins/tenant/owner/buyers, final admitted catalog and install Dewdrop with version expectations; edit/save/publish through canonical editor.",
+        "expected": "Exact `letbuyy-aura@2.0.0`, package-version/instance/release IDs; current public release hash; correct store identity. Installation alone adds no products and does not silently publish."
+      },
+      "actual": "Initial A-marker save/reload/public evidence is retained. Existing Editor cycle additionally proves a visible Heading roundtrip/restoration and scoped badge root/child lifecycle with saved public cleanup. Exact later2.1.0 package-version, instance, draft and release/hash are now bound through clean read-only receipts.",
+      "browserEvidence": [
+        {
+          "source": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/dewdrop-editor-save-reload.ax.txt",
+          "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/completion-2026-10-24/runtime07/evidence/dewdrop-editor-save-reload.ax-5ee62b1f0952.txt",
+          "sha256": "5ee62b1f0952b25fd2235f6495e2d378934b5b73ef7c110104c51bf5dbf9eb91",
+          "bytes": 4943,
+          "evidenceClass": "CONTROLLER_BROWSER_AX"
+        },
+        {
+          "source": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/dewdrop-published-home.ax.txt",
+          "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/completion-2026-10-24/runtime07/evidence/dewdrop-published-home.ax-1397830859e5.txt",
+          "sha256": "1397830859e55cd44e8953a4c9381a7e9cea282c230203c8d84397417825324f",
+          "bytes": 9795,
+          "evidenceClass": "CONTROLLER_BROWSER_AX"
+        },
+        {
+          "source": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/dewdrop-editor-save-reload.png",
+          "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/completion-2026-10-24/runtime07/evidence/dewdrop-editor-save-reload-1b6895ffdea8.png",
+          "sha256": "1b6895ffdea8b018fc56b2b176fce72e23fa4f8a66f9bde9681fbc2536f46d6c",
+          "bytes": 68728,
+          "evidenceClass": "CONTROLLER_BROWSER_SCREENSHOT"
+        },
+        {
+          "source": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/dewdrop-published-home.png",
+          "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/completion-2026-10-24/runtime07/evidence/dewdrop-published-home-7c7c20308690.png",
+          "sha256": "7c7c203086906f56ef51279bf5a829fa6b2b5e45bcfa87966ae68017bb83a192",
+          "bytes": 49330,
+          "evidenceClass": "CONTROLLER_BROWSER_SCREENSHOT"
+        },
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/evidence/057-dewdrop-heading-full-reload.ax.txt",
+          "sha256": "ce537d85f6754e2526cdfdec647c41f030f53e4afad5ff8735e09caa077b61f7",
+          "bytes": 5674,
+          "evidenceClass": "EXISTING_CONTROLLER_BROWSER_ACCESSIBILITY"
+        },
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/evidence/057-dewdrop-heading-full-reload.png",
+          "sha256": "c7a2f1be2c262a8c0e25f9ed53153538262a8e8aeace30b3af980ddfa48a1360",
+          "bytes": 85663,
+          "evidenceClass": "EXISTING_CONTROLLER_BROWSER_SCREENSHOT"
+        },
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/evidence/058-dewdrop-root-child-reorder-hide-reload.ax.txt",
+          "sha256": "6e37064c9be6874e2098549a4eac70e97dda02e27e51c5814d435e96e56ea7d5",
+          "bytes": 5720,
+          "evidenceClass": "EXISTING_CONTROLLER_BROWSER_ACCESSIBILITY"
+        },
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/evidence/058-dewdrop-root-child-reorder-hide-reload.png",
+          "sha256": "93bbe727dd32c1e8b07fc5acf39911a48ab22ea91e857c83fe8d9b0aa46cab8f",
+          "bytes": 70801,
+          "evidenceClass": "EXISTING_CONTROLLER_BROWSER_SCREENSHOT"
+        },
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/evidence/059-dewdrop-public-hidden-tree-and-unique-field.ax.txt",
+          "sha256": "a1e1d397e5ce691f3b926f35ebb297b9568baaeae7f44c03aebe19c270940d80",
+          "bytes": 11118,
+          "evidenceClass": "EXISTING_CONTROLLER_BROWSER_ACCESSIBILITY"
+        },
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/evidence/059-dewdrop-public-hidden-tree-and-unique-field.png",
+          "sha256": "21e846f0f3adc9a1013a3784564de3cb2ec45f78549d5a30cc17c0d61555dc69",
+          "bytes": 57502,
+          "evidenceClass": "EXISTING_CONTROLLER_BROWSER_SCREENSHOT"
+        },
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/evidence/060-dewdrop-children-shown-public.ax.txt",
+          "sha256": "73372a9285c2f7087f1cab2f8c04b609ee9fa66e9a48aef025c146ab21fa25ca",
+          "bytes": 11166,
+          "evidenceClass": "EXISTING_CONTROLLER_BROWSER_ACCESSIBILITY"
+        },
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/evidence/060-dewdrop-children-shown-public.png",
+          "sha256": "4d6af79d83ba17b87413d344085a934ee002707c0261ef89497067af1a880d2d",
+          "bytes": 57505,
+          "evidenceClass": "EXISTING_CONTROLLER_BROWSER_SCREENSHOT"
+        },
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/evidence/061-dewdrop-owned-a-removed-b-retained-public.ax.txt",
+          "sha256": "a1e1d397e5ce691f3b926f35ebb297b9568baaeae7f44c03aebe19c270940d80",
+          "bytes": 11118,
+          "evidenceClass": "EXISTING_CONTROLLER_BROWSER_ACCESSIBILITY"
+        },
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/evidence/061-dewdrop-owned-a-removed-b-retained-public.png",
+          "sha256": "21e846f0f3adc9a1013a3784564de3cb2ec45f78549d5a30cc17c0d61555dc69",
+          "bytes": 57502,
+          "evidenceClass": "EXISTING_CONTROLLER_BROWSER_SCREENSHOT"
+        },
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/evidence/062-dewdrop-a2-readded-published.ax.txt",
+          "sha256": "de4a794b9e4a743d91ffaccad9126a26ba8a49202b800181216124639da21f92",
+          "bytes": 11167,
+          "evidenceClass": "EXISTING_CONTROLLER_BROWSER_ACCESSIBILITY"
+        },
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/evidence/062-dewdrop-a2-readded-published.png",
+          "sha256": "4d6af79d83ba17b87413d344085a934ee002707c0261ef89497067af1a880d2d",
+          "bytes": 57505,
+          "evidenceClass": "EXISTING_CONTROLLER_BROWSER_SCREENSHOT"
+        },
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/evidence/063-dewdrop-original-property-controls-restored-reload.ax.txt",
+          "sha256": "f317dff063f45e5917fef3a5cbb3e2f6efa5c733ac88db35dd3890b9cb77e854",
+          "bytes": 5815,
+          "evidenceClass": "EXISTING_CONTROLLER_BROWSER_ACCESSIBILITY"
+        },
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/evidence/063-dewdrop-original-property-controls-restored-reload.png",
+          "sha256": "016c42438cd056f4ef8c8bff18c70fdfd2834ccaf6a670bbd86102a5ce3820b2",
+          "bytes": 85443,
+          "evidenceClass": "EXISTING_CONTROLLER_BROWSER_SCREENSHOT"
+        },
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/evidence/064-dewdrop-clean-public-original-content.ax.txt",
+          "sha256": "0ce1edc080c78a82c17a8f10fec359473748d114439a605b63f21edd52be7db0",
+          "bytes": 11032,
+          "evidenceClass": "EXISTING_CONTROLLER_BROWSER_ACCESSIBILITY"
+        },
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/evidence/064-dewdrop-clean-public-original-content.png",
+          "sha256": "7c7c203086906f56ef51279bf5a829fa6b2b5e45bcfa87966ae68017bb83a192",
+          "bytes": 49330,
+          "evidenceClass": "EXISTING_CONTROLLER_BROWSER_SCREENSHOT"
+        }
+      ],
+      "apiEvidence": [],
+      "durableEvidence": [
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/DEWDROP_LOCAL_EDITOR_CYCLE_RESUME02.json",
+          "sha256": "c325021c1b680f0dfc3e223ba7e04abf87a1ffe84e1bdc8c61d9f9d641fabe6d",
+          "bytes": 9155,
+          "evidenceClass": "EXISTING_EDITOR_BROWSER_CYCLE_RECEIPT"
+        },
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/DEWDROP_EDITOR_BINDINGS_CLEAN_FINAL.json",
+          "sha256": "e89a5117b8e8aed40e92ce583867eca3bd6455677da0236c6e6fc32225e27ec1",
+          "bytes": 5492,
+          "evidenceClass": "EXISTING_READ_ONLY_CLEAN_DRAFT_RELEASE_BINDING"
+        },
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/DEWDROP_EDITOR_BINDINGS_TEMPORARY_READDED.json",
+          "sha256": "d8db09eaecc3d2bd4cd1c264480ac9b153f9559ee4569f694d1c17b3e1bcf1af",
+          "bytes": 10385,
+          "evidenceClass": "EXISTING_READ_ONLY_TEMPORARY_TREE_BINDING"
+        }
+      ],
+      "failureOrUnrunReason": "Whole B00 remains open: original install/no-silent-publish and Versions restore/reapply assertions are not closed by this local block undo/redo cycle. Private preview reports a loading error; successful recovery/responsive proof is absent. Heading receipt fieldKey title differs from inventoried heading and needs qualification. Later clean release is not a retroactive payment-release binding.",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null
+      },
+      "editorCycleResume02": {
+        "receipt": {
+          "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/DEWDROP_LOCAL_EDITOR_CYCLE_RESUME02.json",
+          "sha256": "c325021c1b680f0dfc3e223ba7e04abf87a1ffe84e1bdc8c61d9f9d641fabe6d",
+          "bytes": 9155,
+          "evidenceClass": "EXISTING_EDITOR_BROWSER_CYCLE_RECEIPT"
+        },
+        "controllerSubcheckIds": [
+          "DEWDROP-R07-ATOMIC-FIELD_ROUNDTRIP",
+          "DEWDROP-R07-ATOMIC-ROOT_CHILD_ADD_EDIT",
+          "DEWDROP-R07-ATOMIC-REORDER_HIDE_RELOAD",
+          "DEWDROP-R07-ATOMIC-PUBLISHED_HIDDEN_LIQUID",
+          "DEWDROP-R07-ATOMIC-CHILD_SHOW_PUBLIC",
+          "DEWDROP-R07-ATOMIC-REMOVE_CANCEL",
+          "DEWDROP-R07-ATOMIC-REMOVE_CHILD_SIBLING_PRESERVED",
+          "DEWDROP-R07-ATOMIC-CHILD_READDED_PUBLIC",
+          "DEWDROP-R07-ATOMIC-OWN_ROOT_CLEANUP",
+          "DEWDROP-R07-ATOMIC-UNDO_REDO",
+          "DEWDROP-R07-ATOMIC-ORIGINAL_FIELDS_FULLRELOAD",
+          "DEWDROP-R07-ATOMIC-CLEAN_PUBLIC"
+        ],
+        "wholeOriginalRowsClosed": [],
+        "newOwnerBrowserExecutions": 0,
+        "executedAt": {
+          "started": "2026-10-25T00:45:31.428Z",
+          "finished": "2026-10-25T00:51:53.991Z"
+        },
+        "package": "letbuyy-aura@2.1.0",
+        "scope": "Existing index Care introduction visible Heading and a reusable badge root with badge children under the existing trust-badges host; not all templates, fields, inline-parent contexts or guards.",
+        "bindingReceipts": [
+          {
+            "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/DEWDROP_EDITOR_BINDINGS_CLEAN_FINAL.json",
+            "sha256": "e89a5117b8e8aed40e92ce583867eca3bd6455677da0236c6e6fc32225e27ec1",
+            "bytes": 5492,
+            "evidenceClass": "EXISTING_READ_ONLY_CLEAN_DRAFT_RELEASE_BINDING"
+          },
+          {
+            "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/DEWDROP_EDITOR_BINDINGS_TEMPORARY_READDED.json",
+            "sha256": "d8db09eaecc3d2bd4cd1c264480ac9b153f9559ee4569f694d1c17b3e1bcf1af",
+            "bytes": 10385,
+            "evidenceClass": "EXISTING_READ_ONLY_TEMPORARY_TREE_BINDING"
+          }
+        ],
+        "cleanBinding": {
+          "instance": {
+            "id": "e2a48dbe-a923-4ac3-a3b4-8ef55d6cb01a",
+            "slug": "letbuyy-aura",
+            "siteId": "02049de4-41c3-4b10-b5b2-a60a6b5e82bf",
+            "packageId": "e7156379-b950-4317-a184-277982c34e49",
+            "updatedAt": "2026-10-25T00:52:08.512432+00:00",
+            "currentDraftId": "47fbf908-f992-46ef-9578-95e5de49163e",
+            "instanceStatus": "inactive",
+            "activeReleaseId": "d396a39d-6cd9-4a1d-a48a-dc46cefc4c1e",
+            "packageVersionId": "8a596351-b950-459e-a9f5-c20c675c8e10"
+          },
+          "draft": {
+            "id": "47fbf908-f992-46ef-9578-95e5de49163e",
+            "status": "active",
+            "version": 20,
+            "updatedAt": "2026-10-25T00:51:35.963324+00:00",
+            "workingManifestSha256": "f44e5c40ba7472f0d60a833db1df5407d8eeab934be9801fc81cbaf7ac15a71b",
+            "ownedTemporaryAndHostNodes": [
+              {
+                "path": "/sections/template/4",
+                "idField": "aura-service-information-index",
+                "mapKey": null,
+                "type": "trust-badges",
+                "order": 40,
+                "visibleRaw": true,
+                "disabledRaw": null,
+                "label": null,
+                "title": null
+              },
+              {
+                "path": "/templates/index/sections/aura-service-information-index",
+                "idField": null,
+                "mapKey": "aura-service-information-index",
+                "type": "trust-badges",
+                "order": null,
+                "visibleRaw": true,
+                "disabledRaw": null,
+                "label": null,
+                "title": null
+              },
+              {
+                "path": "/templates/product/sections/aura-service-information-product",
+                "idField": null,
+                "mapKey": "aura-service-information-product",
+                "type": "trust-badges",
+                "order": null,
+                "visibleRaw": null,
+                "disabledRaw": false,
+                "label": null,
+                "title": null
+              },
+              {
+                "path": "/liquidBundle/templates/index/sections/aura-service-information-index",
+                "idField": null,
+                "mapKey": "aura-service-information-index",
+                "type": "trust-badges",
+                "order": null,
+                "visibleRaw": null,
+                "disabledRaw": false,
+                "label": null,
+                "title": null
+              },
+              {
+                "path": "/liquidBundle/templates/product/sections/aura-service-information-product",
+                "idField": null,
+                "mapKey": "aura-service-information-product",
+                "type": "trust-badges",
+                "order": null,
+                "visibleRaw": null,
+                "disabledRaw": false,
+                "label": null,
+                "title": null
+              }
+            ]
+          },
+          "release": {
+            "id": "d396a39d-6cd9-4a1d-a48a-dc46cefc4c1e",
+            "createdAt": "2026-10-25T00:51:35.815259+00:00",
+            "snapshotSha256": "f44e5c40ba7472f0d60a833db1df5407d8eeab934be9801fc81cbaf7ac15a71b",
+            "sourceDraftVersion": 18,
+            "ownedTemporaryAndHostNodes": [
+              {
+                "path": "/sections/template/4",
+                "idField": "aura-service-information-index",
+                "mapKey": null,
+                "type": "trust-badges",
+                "order": 40,
+                "visibleRaw": true,
+                "disabledRaw": null,
+                "label": null,
+                "title": null
+              },
+              {
+                "path": "/templates/index/sections/aura-service-information-index",
+                "idField": null,
+                "mapKey": "aura-service-information-index",
+                "type": "trust-badges",
+                "order": null,
+                "visibleRaw": true,
+                "disabledRaw": null,
+                "label": null,
+                "title": null
+              },
+              {
+                "path": "/templates/product/sections/aura-service-information-product",
+                "idField": null,
+                "mapKey": "aura-service-information-product",
+                "type": "trust-badges",
+                "order": null,
+                "visibleRaw": null,
+                "disabledRaw": false,
+                "label": null,
+                "title": null
+              },
+              {
+                "path": "/liquidBundle/templates/index/sections/aura-service-information-index",
+                "idField": null,
+                "mapKey": "aura-service-information-index",
+                "type": "trust-badges",
+                "order": null,
+                "visibleRaw": null,
+                "disabledRaw": false,
+                "label": null,
+                "title": null
+              },
+              {
+                "path": "/liquidBundle/templates/product/sections/aura-service-information-product",
+                "idField": null,
+                "mapKey": "aura-service-information-product",
+                "type": "trust-badges",
+                "order": null,
+                "visibleRaw": null,
+                "disabledRaw": false,
+                "label": null,
+                "title": null
+              }
+            ]
+          },
+          "siteCurrentTheme": {
+            "slug": "letbuyy-bloom",
+            "releaseId": "1a53db11-eda2-45db-8ba7-077fac56cdfa"
+          }
+        },
+        "bindingScope": "Clean-final Dewdrop instance is inactive and site points to Bloom at that sample. This later editor release does not populate or retroactively prove order10003 theme columns. Draftversion20 and releaseSourceDraftVersion18 are retained distinctly.",
+        "passedSubchecks": {
+          "visibleHeadingSaveFullReloadPublishPublicRestore": true,
+          "badgeRootAndChildrenAddEdit": true,
+          "badgeChildrenReorderHideReloadPublicShow": true,
+          "removeCancelAndChildRemovalSiblingBadgePreserved": true,
+          "childReaddPublic": true,
+          "ownedRootCleanupUndoRedoCleanPublic": true,
+          "originalTextAndSelectValuesConserved": true,
+          "exactInstancePackageVersionDraftReleaseHashBound": true
+        },
+        "preview": {
+          "status": "FAIL_OBSERVED_RETRY_RECOVERY_NOT_EVIDENCED",
+          "actualMessage": "The preview could not finish loading. Your saved draft is kept. Retry to open a fresh preview.",
+          "evidenceLabel": "dewdrop-original-property-controls-restored-reload",
+          "screenshotObservation": "Saved editor fields are visible with a blank preview; AX reports the loading error. No successful private preview is inferred from public output."
+        },
+        "responsive": {
+          "status": "NOT_RUN_REMAINS_REQUIRED",
+          "sharedFinding": "ED-R07-PREVIEW-DEVICE-02 observed on shared editor in Threadline; no responsive pass inferred"
+        },
+        "receiptKeyQualification": {
+          "id": "DD-R07-EDITOR-RECEIPT-KEY-01",
+          "receiptFieldKey": "title",
+          "declaredInventoryField": "hero-banner.heading",
+          "visibleControl": "Care introduction / Heading",
+          "status": "FIELD_KEY_METADATA_DISCREPANCY_NOT_AN_ESTABLISHED_APP_DEFECT",
+          "limit": "Visible Heading roundtrip is evidenced; exact wire setting key is not independently bound by this receipt. Do not silently treat title as heading or credit another field.",
+          "next": "Clarify from existing canonical editor/source receipt under its owner; no live test during maintenance."
+        },
+        "harnessCorrections": {
+          "readinessNote": "An immediate DOM sample occurred before the public document settled; visible-text waits now precede assertions. No duplicate publish or mutation was used to resolve that sampling issue.; Cleanup helper compared React-generated select IDs across reload. IDs changed, values did not. Corrected assertion compares original values and visible named Photograph focal point/Center. No app mutation or app defect inferred.",
+          "checkpointCorrection": "Serialized helper had an earlier lexical binding; Dewdrop actual UI results retained in this object and screenshots. Persisting exact completed Dewdrop object explicitly. No app action repeated.",
+          "applicationDefectInferredFromTheseHelperCorrections": false
+        },
+        "notExecutedOrNotGeneralized": [
+          "Private preview recovery",
+          "Responsive/device acceptance",
+          "Versions restore/reapply and original full B00 cycle",
+          "Root-badge reorder or hide, as distinct from its children",
+          "Existing nonempty inline service-block conservation",
+          "spotlight.badge host and trust-badges.service parent context",
+          "Depth/app guard and interrupted/stale/re-auth recovery controls",
+          "M05/D02/O05/S01"
+        ],
+        "evidence": [
+          {
+            "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/evidence/057-dewdrop-heading-full-reload.ax.txt",
+            "sha256": "ce537d85f6754e2526cdfdec647c41f030f53e4afad5ff8735e09caa077b61f7",
+            "bytes": 5674,
+            "evidenceClass": "EXISTING_CONTROLLER_BROWSER_ACCESSIBILITY"
+          },
+          {
+            "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/evidence/057-dewdrop-heading-full-reload.png",
+            "sha256": "c7a2f1be2c262a8c0e25f9ed53153538262a8e8aeace30b3af980ddfa48a1360",
+            "bytes": 85663,
+            "evidenceClass": "EXISTING_CONTROLLER_BROWSER_SCREENSHOT"
+          },
+          {
+            "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/evidence/058-dewdrop-root-child-reorder-hide-reload.ax.txt",
+            "sha256": "6e37064c9be6874e2098549a4eac70e97dda02e27e51c5814d435e96e56ea7d5",
+            "bytes": 5720,
+            "evidenceClass": "EXISTING_CONTROLLER_BROWSER_ACCESSIBILITY"
+          },
+          {
+            "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/evidence/058-dewdrop-root-child-reorder-hide-reload.png",
+            "sha256": "93bbe727dd32c1e8b07fc5acf39911a48ab22ea91e857c83fe8d9b0aa46cab8f",
+            "bytes": 70801,
+            "evidenceClass": "EXISTING_CONTROLLER_BROWSER_SCREENSHOT"
+          },
+          {
+            "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/evidence/059-dewdrop-public-hidden-tree-and-unique-field.ax.txt",
+            "sha256": "a1e1d397e5ce691f3b926f35ebb297b9568baaeae7f44c03aebe19c270940d80",
+            "bytes": 11118,
+            "evidenceClass": "EXISTING_CONTROLLER_BROWSER_ACCESSIBILITY"
+          },
+          {
+            "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/evidence/059-dewdrop-public-hidden-tree-and-unique-field.png",
+            "sha256": "21e846f0f3adc9a1013a3784564de3cb2ec45f78549d5a30cc17c0d61555dc69",
+            "bytes": 57502,
+            "evidenceClass": "EXISTING_CONTROLLER_BROWSER_SCREENSHOT"
+          },
+          {
+            "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/evidence/060-dewdrop-children-shown-public.ax.txt",
+            "sha256": "73372a9285c2f7087f1cab2f8c04b609ee9fa66e9a48aef025c146ab21fa25ca",
+            "bytes": 11166,
+            "evidenceClass": "EXISTING_CONTROLLER_BROWSER_ACCESSIBILITY"
+          },
+          {
+            "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/evidence/060-dewdrop-children-shown-public.png",
+            "sha256": "4d6af79d83ba17b87413d344085a934ee002707c0261ef89497067af1a880d2d",
+            "bytes": 57505,
+            "evidenceClass": "EXISTING_CONTROLLER_BROWSER_SCREENSHOT"
+          },
+          {
+            "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/evidence/061-dewdrop-owned-a-removed-b-retained-public.ax.txt",
+            "sha256": "a1e1d397e5ce691f3b926f35ebb297b9568baaeae7f44c03aebe19c270940d80",
+            "bytes": 11118,
+            "evidenceClass": "EXISTING_CONTROLLER_BROWSER_ACCESSIBILITY"
+          },
+          {
+            "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/evidence/061-dewdrop-owned-a-removed-b-retained-public.png",
+            "sha256": "21e846f0f3adc9a1013a3784564de3cb2ec45f78549d5a30cc17c0d61555dc69",
+            "bytes": 57502,
+            "evidenceClass": "EXISTING_CONTROLLER_BROWSER_SCREENSHOT"
+          },
+          {
+            "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/evidence/062-dewdrop-a2-readded-published.ax.txt",
+            "sha256": "de4a794b9e4a743d91ffaccad9126a26ba8a49202b800181216124639da21f92",
+            "bytes": 11167,
+            "evidenceClass": "EXISTING_CONTROLLER_BROWSER_ACCESSIBILITY"
+          },
+          {
+            "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/evidence/062-dewdrop-a2-readded-published.png",
+            "sha256": "4d6af79d83ba17b87413d344085a934ee002707c0261ef89497067af1a880d2d",
+            "bytes": 57505,
+            "evidenceClass": "EXISTING_CONTROLLER_BROWSER_SCREENSHOT"
+          },
+          {
+            "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/evidence/063-dewdrop-original-property-controls-restored-reload.ax.txt",
+            "sha256": "f317dff063f45e5917fef3a5cbb3e2f6efa5c733ac88db35dd3890b9cb77e854",
+            "bytes": 5815,
+            "evidenceClass": "EXISTING_CONTROLLER_BROWSER_ACCESSIBILITY"
+          },
+          {
+            "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/evidence/063-dewdrop-original-property-controls-restored-reload.png",
+            "sha256": "016c42438cd056f4ef8c8bff18c70fdfd2834ccaf6a670bbd86102a5ce3820b2",
+            "bytes": 85443,
+            "evidenceClass": "EXISTING_CONTROLLER_BROWSER_SCREENSHOT"
+          },
+          {
+            "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/evidence/064-dewdrop-clean-public-original-content.ax.txt",
+            "sha256": "0ce1edc080c78a82c17a8f10fec359473748d114439a605b63f21edd52be7db0",
+            "bytes": 11032,
+            "evidenceClass": "EXISTING_CONTROLLER_BROWSER_ACCESSIBILITY"
+          },
+          {
+            "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/evidence/064-dewdrop-clean-public-original-content.png",
+            "sha256": "7c7c203086906f56ef51279bf5a829fa6b2b5e45bcfa87966ae68017bb83a192",
+            "bytes": 49330,
+            "evidenceClass": "EXISTING_CONTROLLER_BROWSER_SCREENSHOT"
+          }
+        ],
+        "ordersCreated": 0,
+        "stockOrProductFactsChanged": false,
+        "providerActions": 0
+      }
+    },
+    {
+      "caseId": "M01",
+      "historicalStatus": "PASS",
+      "historicalRunId": "936e5f577646",
+      "currentStatus": "NOT_RUN",
+      "requirements": {
+        "action": "Merchant common care fields → Save → leave → reload.",
+        "expected": "Routine stage/Product format/Net quantity/Ingredients/Directions/Warnings match planned v1 values. GET persisted metadata matches; no sibling private metadata loss."
+      },
+      "actual": null,
+      "browserEvidence": [],
+      "apiEvidence": [],
+      "durableEvidence": [],
+      "failureOrUnrunReason": "Awaiting admitted sole-controller Dewdrop execution; no Runtime07 Dewdrop browser receipt observed as of this record.",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null
+      }
+    },
+    {
+      "caseId": "M02",
+      "historicalStatus": "PASS",
+      "historicalRunId": "936e5f577646",
+      "currentStatus": "NOT_RUN",
+      "requirements": {
+        "action": "Create/edit the three tint variant rows and existing option memberships; save/reload with returned durable UUIDs.",
+        "expected": "Shade names and `पैक आकार` exact; 520/560/590 and 4/4/0; distinct Rosewater/Pink UUIDs despite identical RGB. Common shade rows retain RW01/PC02/TC03. No beauty variant override is displayed or claimed."
+      },
+      "actual": null,
+      "browserEvidence": [],
+      "apiEvidence": [],
+      "durableEvidence": [],
+      "failureOrUnrunReason": "Awaiting admitted sole-controller Dewdrop execution; no Runtime07 Dewdrop browser receipt observed as of this record.",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null
+      }
+    },
+    {
+      "caseId": "M03",
+      "historicalStatus": "PASS",
+      "historicalRunId": "936e5f577646",
+      "currentStatus": "NOT_RUN",
+      "requirements": {
+        "action": "Submit `variant.metadata.beauty` with a routine/format override as an authenticated negative control.",
+        "expected": "Canonical schema rejects it (validation 400); no product/version/options/inventory effect. Preserve the common beauty facts."
+      },
+      "actual": null,
+      "browserEvidence": [],
+      "apiEvidence": [],
+      "durableEvidence": [],
+      "failureOrUnrunReason": "Awaiting admitted sole-controller Dewdrop execution; no Runtime07 Dewdrop browser receipt observed as of this record.",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null
+      }
+    },
+    {
+      "caseId": "M04",
+      "historicalStatus": "PASS",
+      "historicalRunId": "936e5f577646",
+      "currentStatus": "NOT_RUN",
+      "requirements": {
+        "action": "Add a shade not in its named option, duplicate a shade value, then attempt stale product version.",
+        "expected": "Inline validation/400 for invalid membership/duplicates; 409 for stale version; draft kept for recovery, no partial product/variant write. Same saved request/key replay must not duplicate variants."
+      },
+      "actual": null,
+      "browserEvidence": [],
+      "apiEvidence": [],
+      "durableEvidence": [],
+      "failureOrUnrunReason": "Awaiting admitted sole-controller Dewdrop execution; no Runtime07 Dewdrop browser receipt observed as of this record.",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null
+      }
+    },
+    {
+      "caseId": "M05",
+      "historicalStatus": "FAIL",
+      "historicalRunId": "936e5f577646",
+      "currentStatus": "NOT_RUN",
+      "requirements": {
+        "action": "Create and explicitly save the three collection memberships; configure routine links through actual editor resources.",
+        "expected": "2/1/1 membership in this dataset and correct target IDs/handles; empty/missing membership never means all products."
+      },
+      "actual": null,
+      "browserEvidence": [],
+      "apiEvidence": [],
+      "durableEvidence": [],
+      "failureOrUnrunReason": "Resume02: normal merchant2/1/1 count and selected-resource Save/reload/publish retest is ready after root recovery/browser admission; owned-empty/foreign/unavailable remain separately witnessed.",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null
+      }
+    },
+    {
+      "caseId": "D01",
+      "historicalStatus": "PASS",
+      "historicalRunId": "936e5f577646",
+      "currentStatus": "NOT_RUN",
+      "requirements": {
+        "action": "Open installed `/products` with ordinary query and no care filter.",
+        "expected": "All four planned products remain browsable; Palm Wash is under More products/unknown facts with missing-image/ingredient guidance. No medical/certification claim appears."
+      },
+      "actual": null,
+      "browserEvidence": [],
+      "apiEvidence": [],
+      "durableEvidence": [],
+      "failureOrUnrunReason": "Awaiting admitted sole-controller Dewdrop execution; no Runtime07 Dewdrop browser receipt observed as of this record.",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null
+      }
+    },
+    {
+      "caseId": "D02",
+      "historicalStatus": "BLOCKED",
+      "historicalRunId": "936e5f577646",
+      "currentStatus": "NOT_RUN",
+      "requirements": {
+        "action": "Inspect actual same-response discovery metadata and submit routine, format and shade controls.",
+        "expected": "Each chooser exists only for its own supplied options. Exact `facet.value` is transport and `facet.label` display; absent/malformed capability does not create a chooser. Missing metadata basic browsing remains available; unsupported niche requests retain honest unavailable recovery."
+      },
+      "actual": null,
+      "browserEvidence": [],
+      "apiEvidence": [],
+      "durableEvidence": [],
+      "failureOrUnrunReason": "Resume02: actual missing/malformed capability and unsupported niche backend contexts await admitted scoped controls; existing component or zero-result proof is not substituted.",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null
+      }
+    },
+    {
+      "caseId": "D03",
+      "historicalStatus": "PASS",
+      "historicalRunId": "936e5f577646",
+      "currentStatus": "NOT_RUN",
+      "requirements": {
+        "action": "On both collection and search, choose colour → Lip tint → Pink Clay using actual supplied option values.",
+        "expected": "Tint is the returned product; actual matching witness includes the bound Pink Clay UUID where supplied. Never select by RGB/title or pretend a product title identifies the purchased variant. Record server total/options; do not invent counts."
+      },
+      "actual": null,
+      "browserEvidence": [],
+      "apiEvidence": [],
+      "durableEvidence": [],
+      "failureOrUnrunReason": "Awaiting admitted sole-controller Dewdrop execution; no Runtime07 Dewdrop browser receipt observed as of this record.",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null
+      }
+    },
+    {
+      "caseId": "D04",
+      "historicalStatus": "PASS",
+      "historicalRunId": "936e5f577646",
+      "currentStatus": "NOT_RUN",
+      "requirements": {
+        "action": "Search `Fixture`, use limit 1/country India/category Care, change all five sorts and paginate.",
+        "expected": "Actual FormData/URL parser preserves every unedited carrier key. Sort resets page 1; next/previous preserve limit/search/category/country and active filters. Search stays in `/search`, with the same real Dewdrop controls/results."
+      },
+      "actual": null,
+      "browserEvidence": [],
+      "apiEvidence": [],
+      "durableEvidence": [],
+      "failureOrUnrunReason": "Awaiting admitted sole-controller Dewdrop execution; no Runtime07 Dewdrop browser receipt observed as of this record.",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null
+      }
+    },
+    {
+      "caseId": "D05",
+      "historicalStatus": "PASS",
+      "historicalRunId": "936e5f577646",
+      "currentStatus": "NOT_RUN",
+      "requirements": {
+        "action": "Add repeated connector `usb-c`/`hdmi` as a valid unrelated-query preservation/zero-result control; sort and clear each chip separately.",
+        "expected": "Both repeated entries survive forms. Clearing one removes only that value, retains the other and all other filters, and resets page 1. This does not invent electronics facts for a beauty product."
+      },
+      "actual": null,
+      "browserEvidence": [],
+      "apiEvidence": [],
+      "durableEvidence": [],
+      "failureOrUnrunReason": "Awaiting admitted sole-controller Dewdrop execution; no Runtime07 Dewdrop browser receipt observed as of this record.",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null
+      }
+    },
+    {
+      "caseId": "D06",
+      "historicalStatus": "PASS",
+      "historicalRunId": "936e5f577646",
+      "currentStatus": "NOT_RUN",
+      "requirements": {
+        "action": "Request Retired named shade/Retired format, then clear one filter.",
+        "expected": "Honest No products found; selected stale values retained in hidden carrier/current-filter context; independent `clear_url` recovery; no automatic first option, fabricated count or catalog fallback."
+      },
+      "actual": null,
+      "browserEvidence": [],
+      "apiEvidence": [],
+      "durableEvidence": [],
+      "failureOrUnrunReason": "Awaiting admitted sole-controller Dewdrop execution; no Runtime07 Dewdrop browser receipt observed as of this record.",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null
+      }
+    },
+    {
+      "caseId": "D07",
+      "historicalStatus": "PASS",
+      "historicalRunId": "936e5f577646",
+      "currentStatus": "NOT_RUN",
+      "requirements": {
+        "action": "Submit a closing-tag/script query as the retained sanitizer negative policy control.",
+        "expected": "No executable injection or raw unsafe form value survives. Record the actual rejection/suppression stage and visible recovery. Do **not** call this a lossless HTML-query roundtrip or assert a fabricated HTTP400: current shape parser accepts bounded text; the observed existing sanitizer suppresses unsafe value attributes. Policy is not relaxed."
+      },
+      "actual": null,
+      "browserEvidence": [],
+      "apiEvidence": [],
+      "durableEvidence": [],
+      "failureOrUnrunReason": "Awaiting admitted sole-controller Dewdrop execution; no Runtime07 Dewdrop browser receipt observed as of this record.",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null
+      }
+    },
+    {
+      "caseId": "P01",
+      "historicalStatus": "PASS",
+      "historicalRunId": "936e5f577646",
+      "currentStatus": "PARTIAL",
+      "requirements": {
+        "action": "Open tint PDP, keyboard/select Rosewater, then Pink Clay. Expand Pink Clay ingredients.",
+        "expected": "Separate named buttons/pressed states and bound UUIDs; both same RGB. Pink Clay PC02, ₹560 and `Pink Clay v1: fixture oil, CI 77492.` are traceable to exact saved option identity; common text and 6 ml remain distinct."
+      },
+      "actual": "Three named shade buttons with Pink Clay PC02 pressed, Hindi pack selected, INR560,6ml, commoningredients and expanded PinkClayv1 ingredients. Screenshot visually inspected. Canonical captured snapshot independently confirms Rosewater and Pink Clay share #a36a65, have distinct exact named values/codes; captured variant is current Pink Clay UUID.",
+      "browserEvidence": [
+        {
+          "source": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/dewdrop-pink-clay-selected.ax.txt",
+          "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/completion-2026-10-24/runtime07/evidence/dewdrop-pink-clay-selected.ax-0c8c5eed5b80.txt",
+          "sha256": "0c8c5eed5b80bdf5c94b860525ca82fc72f36d3c5d9737efd3fe31d8b2a10543",
+          "bytes": 2283,
+          "evidenceClass": "CONTROLLER_BROWSER_AX"
+        },
+        {
+          "source": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/dewdrop-pink-clay-selected.png",
+          "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/completion-2026-10-24/runtime07/evidence/dewdrop-pink-clay-selected-367aec32a953.png",
+          "sha256": "367aec32a9535d0b3c733acd9f05074d39083bcfda9b37f23465beb2541d33a7",
+          "bytes": 46991,
+          "evidenceClass": "CONTROLLER_BROWSER_SCREENSHOT"
+        }
+      ],
+      "apiEvidence": [
+        {
+          "source": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/dewdrop-before-stock.json",
+          "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/completion-2026-10-24/runtime07/evidence/dewdrop-before-stock-37738939c95a.json",
+          "sha256": "37738939c95a03804faf73f2f07c3ec4eee7076097fe97f3846b4b1180616f6b",
+          "bytes": 984,
+          "evidenceClass": "READ_ONLY_PUBLIC_API_BASELINE"
+        }
+      ],
+      "durableEvidence": [
+        {
+          "source": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/DEWDROP_ORDER_10003_READONLY_CORRELATION.json",
+          "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/completion-2026-10-24/runtime07/evidence/DEWDROP_ORDER_10003_READONLY_CORRELATION-07a68425321f.json",
+          "sha256": "07a68425321fbcd62a20a9d139009f9e5c3574721ae31ba3ee09dd5b3b1f0c01",
+          "bytes": 17044,
+          "evidenceClass": "ALLOCATED_READ_ONLY_CANONICAL_DB_AND_REDACTED_HMAC_CORRELATION"
+        }
+      ],
+      "failureOrUnrunReason": "Rosewater, Hindi pack, Pink Clay and Terracotta keyboard inputs completed in controller trace. Rosewater pressed-state and returned selected-UUID output were not preserved in the received artifacts, so those readbacks still need confirmation; Pink Clay selection/purchase and equalRGB savedfacts are proven.",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null
+      },
+      "browserOperationTrace": "runtime07/P01_KEYBOARD_TRACE.json"
+    },
+    {
+      "caseId": "P02",
+      "historicalStatus": "PASS",
+      "historicalRunId": "936e5f577646",
+      "currentStatus": "PARTIAL",
+      "requirements": {
+        "action": "Select Terracotta; attempt Add and a direct canonical cart request with its UUID.",
+        "expected": "UI says This combination is currently unavailable/disabled purchase. Worker rejects unavailable quantity with 409 `INSUFFICIENT_INVENTORY`; no cart line, reservation or order effect. Do not fall back to Pink Clay."
+      },
+      "actual": "Terracotta TC03 pressed, INR590, visible unavailable status, Add disabled.",
+      "browserEvidence": [
+        {
+          "source": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/dewdrop-terracotta-oos-ui.ax.txt",
+          "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/completion-2026-10-24/runtime07/evidence/dewdrop-terracotta-oos-ui.ax-85b97fcec7c3.txt",
+          "sha256": "85b97fcec7c373a74b9a6f933849a3fa107e37b5b24b0fc544744cbe1b9eb601",
+          "bytes": 2337,
+          "evidenceClass": "CONTROLLER_BROWSER_AX"
+        },
+        {
+          "source": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/dewdrop-terracotta-oos-ui.png",
+          "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/completion-2026-10-24/runtime07/evidence/dewdrop-terracotta-oos-ui-1314719bd871.png",
+          "sha256": "1314719bd8714465601b2c1162f8e39d4f7120382f13ef02ab63749a338e1079",
+          "bytes": 76758,
+          "evidenceClass": "CONTROLLER_BROWSER_SCREENSHOT"
+        }
+      ],
+      "apiEvidence": [
+        {
+          "source": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/dewdrop-before-stock.json",
+          "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/completion-2026-10-24/runtime07/evidence/dewdrop-before-stock-37738939c95a.json",
+          "sha256": "37738939c95a03804faf73f2f07c3ec4eee7076097fe97f3846b4b1180616f6b",
+          "bytes": 984,
+          "evidenceClass": "READ_ONLY_PUBLIC_API_BASELINE"
+        }
+      ],
+      "durableEvidence": [],
+      "failureOrUnrunReason": "Actual canonical cart409 INSUFFICIENT_INVENTORY and durable zero-effect proof remain required.",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null
+      }
+    },
+    {
+      "caseId": "P03",
+      "historicalStatus": "PASS",
+      "historicalRunId": "936e5f577646",
+      "currentStatus": "NOT_RUN",
+      "requirements": {
+        "action": "Attempt omitted variant for tint, foreign/unknown variant, and foreign-site cart token.",
+        "expected": "Required variant → 409 `VARIANT_REQUIRED`; foreign variant → 400 `VARIANT_NOT_FOUND`; wrong-site token is refused without data. Record exact statuses from active contracts and unchanged durable effects."
+      },
+      "actual": null,
+      "browserEvidence": [],
+      "apiEvidence": [],
+      "durableEvidence": [],
+      "failureOrUnrunReason": "Awaiting admitted sole-controller Dewdrop execution; no Runtime07 Dewdrop browser receipt observed as of this record.",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null
+      }
+    },
+    {
+      "caseId": "C01",
+      "historicalStatus": "PASS",
+      "historicalRunId": "936e5f577646",
+      "currentStatus": "NOT_RUN",
+      "requirements": {
+        "action": "Add quantity 2 of Pink Clay, await server sync, open cart and reload the same owned store/context.",
+        "expected": "Persisted line uses exact Pink Clay UUID and options; server unit price ₹560, total ₹1,120, approved niche snapshot, version/fingerprint references. Reload retains quantity and server identity; local storage alone is not proof."
+      },
+      "actual": null,
+      "browserEvidence": [],
+      "apiEvidence": [],
+      "durableEvidence": [],
+      "failureOrUnrunReason": "Awaiting admitted sole-controller Dewdrop execution; no Runtime07 Dewdrop browser receipt observed as of this record.",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null
+      }
+    },
+    {
+      "caseId": "C02",
+      "historicalStatus": "PASS",
+      "historicalRunId": "936e5f577646",
+      "currentStatus": "NOT_RUN",
+      "requirements": {
+        "action": "Attempt client `price`, `niche_snapshot` or raw snapshot extra fields; separately spoof a `properties` shade label while retaining Pink UUID.",
+        "expected": "Unknown authority fields rejected by strict line schema (400). Allowed properties do not alter accepted exact options, code, ingredients, price or snapshot. Private supplier/cost fields never enter public/approved readback."
+      },
+      "actual": null,
+      "browserEvidence": [],
+      "apiEvidence": [],
+      "durableEvidence": [],
+      "failureOrUnrunReason": "Awaiting admitted sole-controller Dewdrop execution; no Runtime07 Dewdrop browser receipt observed as of this record.",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null
+      }
+    },
+    {
+      "caseId": "C03",
+      "historicalStatus": "PASS",
+      "historicalRunId": "936e5f577646",
+      "currentStatus": "NOT_RUN",
+      "requirements": {
+        "action": "Keep a second accepted cart for stale-source testing, without consuming the primary purchase; later change product facts/options through canonical edit and try old checkout.",
+        "expected": "Stale cart/order source is rejected/reviewed under `CART_FACTS_CHANGED`; no second order or unintended reservation. Existing completed order is unaffected."
+      },
+      "actual": null,
+      "browserEvidence": [],
+      "apiEvidence": [],
+      "durableEvidence": [],
+      "failureOrUnrunReason": "Awaiting admitted sole-controller Dewdrop execution; no Runtime07 Dewdrop browser receipt observed as of this record.",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null
+      }
+    },
+    {
+      "caseId": "A01",
+      "historicalStatus": "PASS",
+      "historicalRunId": "936e5f577646",
+      "currentStatus": "NOT_RUN",
+      "requirements": {
+        "action": "Register/sign in Buyer A via actual identity UI; verify account reload, then initiate checkout from its owned store cart.",
+        "expected": "Normal signed buyer/site session and consent return; no manually injected browser session. Distinct Buyer B/foreign site are retained as negative controls."
+      },
+      "actual": null,
+      "browserEvidence": [],
+      "apiEvidence": [],
+      "durableEvidence": [],
+      "failureOrUnrunReason": "Awaiting admitted sole-controller Dewdrop execution; no Runtime07 Dewdrop browser receipt observed as of this record.",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null
+      }
+    },
+    {
+      "caseId": "H01",
+      "historicalStatus": "PASS",
+      "historicalRunId": "936e5f577646",
+      "currentStatus": "NOT_RUN",
+      "requirements": {
+        "action": "Actual hosted COD UI: contact → delivery 560001 → select real flat ₹20 rate → COD intent → confirm.",
+        "expected": "Server recomputes from accepted cart; ₹1,120 + ₹20 = ₹1,140, INR, COD pending payment and `pending_cod` order; no fake paid/captured state. Capture each actual UI step, gateway status and resulting buyer link."
+      },
+      "actual": null,
+      "browserEvidence": [],
+      "apiEvidence": [],
+      "durableEvidence": [],
+      "failureOrUnrunReason": "Awaiting admitted sole-controller Dewdrop execution; no Runtime07 Dewdrop browser receipt observed as of this record.",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null
+      }
+    },
+    {
+      "caseId": "H02",
+      "historicalStatus": "PASS",
+      "historicalRunId": "936e5f577646",
+      "currentStatus": "NOT_RUN",
+      "requirements": {
+        "action": "Replay the identical confirm with its original idempotency command; attempt modified payload with the same key as a negative.",
+        "expected": "Same order ID/one order/inventory effect for exact replay; altered-command conflict, not a second order. Do not mutate a completed checkout to make it pass."
+      },
+      "actual": null,
+      "browserEvidence": [],
+      "apiEvidence": [],
+      "durableEvidence": [],
+      "failureOrUnrunReason": "Awaiting admitted sole-controller Dewdrop execution; no Runtime07 Dewdrop browser receipt observed as of this record.",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null
+      }
+    },
+    {
+      "caseId": "O01",
+      "historicalStatus": "PASS",
+      "historicalRunId": "936e5f577646",
+      "currentStatus": "PARTIAL",
+      "requirements": {
+        "action": "Buyer A reloads private order API and actual installed Liquid `/account/orders/{id}`.",
+        "expected": "Positive saved title/order number, quantity 2, ₹560/₹1,120 and receipt ₹1,140. Saved options: Shade name Pink Clay; `पैक आकार` एक इकाई. Selected shade Pink Clay, code PC02, saved common and Pink Clay v1 ingredients, per-item 6 ml. Raw `product_snapshot`/private supplier/cost absent."
+      },
+      "actual": "Additional Test order10003 full-reloaded buyer Liquid view shows saved Pink Clay/PC02/6ml/options/common and selected-shade ingredients, q1/560 and receipt580; cart0. Exact canonical order/variant/payment/snapshot digest now joined. Original q2 COD1140 is separate.",
+      "browserEvidence": [
+        {
+          "source": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/dewdrop-buyer-beauty-details.ax.txt",
+          "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/completion-2026-10-24/runtime07/evidence/dewdrop-buyer-beauty-details.ax-c0e9f27f8d68.txt",
+          "sha256": "c0e9f27f8d681777b08cefe53507be1b7e9c8a92756e71d15deb91146ea8f8a8",
+          "bytes": 1636,
+          "evidenceClass": "CONTROLLER_BROWSER_AX"
+        },
+        {
+          "source": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/dewdrop-buyer-beauty-details.png",
+          "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/completion-2026-10-24/runtime07/evidence/dewdrop-buyer-beauty-details-c4964c278348.png",
+          "sha256": "c4964c278348ef31dc36b566a8e4913005f5b1e54b868cf9c37ac2ff5d274a1c",
+          "bytes": 64625,
+          "evidenceClass": "CONTROLLER_BROWSER_SCREENSHOT"
+        },
+        {
+          "source": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/dewdrop-buyer-fullreload-details.ax.txt",
+          "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/completion-2026-10-24/runtime07/evidence/dewdrop-buyer-fullreload-details.ax-c0e9f27f8d68.txt",
+          "sha256": "c0e9f27f8d681777b08cefe53507be1b7e9c8a92756e71d15deb91146ea8f8a8",
+          "bytes": 1636,
+          "evidenceClass": "CONTROLLER_BROWSER_AX"
+        },
+        {
+          "source": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/dewdrop-buyer-fullreload-details.png",
+          "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/completion-2026-10-24/runtime07/evidence/dewdrop-buyer-fullreload-details-c4964c278348.png",
+          "sha256": "c4964c278348ef31dc36b566a8e4913005f5b1e54b868cf9c37ac2ff5d274a1c",
+          "bytes": 64625,
+          "evidenceClass": "CONTROLLER_BROWSER_SCREENSHOT"
+        }
+      ],
+      "apiEvidence": [],
+      "durableEvidence": [
+        {
+          "source": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/DEWDROP_ORDER_10003_READONLY_CORRELATION.json",
+          "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/completion-2026-10-24/runtime07/evidence/DEWDROP_ORDER_10003_READONLY_CORRELATION-07a68425321f.json",
+          "sha256": "07a68425321fbcd62a20a9d139009f9e5c3574721ae31ba3ee09dd5b3b1f0c01",
+          "bytes": 17044,
+          "evidenceClass": "ALLOCATED_READ_ONLY_CANONICAL_DB_AND_REDACTED_HMAC_CORRELATION"
+        }
+      ],
+      "failureOrUnrunReason": "Original q2 COD/privateAPI assertion, public/private field-exclusion proof and independent review remain required.",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null
+      }
+    },
+    {
+      "caseId": "O02",
+      "historicalStatus": "PASS",
+      "historicalRunId": "936e5f577646",
+      "currentStatus": "PARTIAL",
+      "requirements": {
+        "action": "Merchant reloads actual order page and canonical order GET.",
+        "expected": "Same saved facts/options/quantity/receipt through actual SDK/page; no current-product fetch used as historical authority. Native saved-details disclosure opens with keyboard."
+      },
+      "actual": "Additional Test order10003 normal merchant page is Confirmed/Paid/Razorpay with exact pay_TrsWOjFmQm62M0, q1 at560 plus20 shipping; expanded saved beauty details agree with the full-reloaded buyer view. Canonical read-only proof joins the intended product/variant/order and snapshot hash.",
+      "browserEvidence": [
+        {
+          "source": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/dewdrop-merchant-beauty-details.ax.txt",
+          "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/completion-2026-10-24/runtime07/evidence/dewdrop-merchant-beauty-details.ax-f265c0f0c35a.txt",
+          "sha256": "f265c0f0c35aa93fb7427afae8d954d56de5501b8690bdd21e30e4edcadfd4c2",
+          "bytes": 5407,
+          "evidenceClass": "CONTROLLER_BROWSER_AX"
+        },
+        {
+          "source": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/dewdrop-merchant-beauty-details.png",
+          "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/completion-2026-10-24/runtime07/evidence/dewdrop-merchant-beauty-details-32809c48875d.png",
+          "sha256": "32809c48875de4aeaa3aff4f730b7bf9cfae2905b9bd6d1d5b40f449447ba77c",
+          "bytes": 85587,
+          "evidenceClass": "CONTROLLER_BROWSER_SCREENSHOT"
+        }
+      ],
+      "apiEvidence": [],
+      "durableEvidence": [
+        {
+          "source": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/DEWDROP_ORDER_10003_READONLY_CORRELATION.json",
+          "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/completion-2026-10-24/runtime07/evidence/DEWDROP_ORDER_10003_READONLY_CORRELATION-07a68425321f.json",
+          "sha256": "07a68425321fbcd62a20a9d139009f9e5c3574721ae31ba3ee09dd5b3b1f0c01",
+          "bytes": 17044,
+          "evidenceClass": "ALLOCATED_READ_ONLY_CANONICAL_DB_AND_REDACTED_HMAC_CORRELATION"
+        }
+      ],
+      "failureOrUnrunReason": "Original q2 COD1140 merchant/privateGET assertions and explicit keyboard disclosure witness remain separate; later same-UUID edit/archive preservation and independent review not yet run.",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null
+      }
+    },
+    {
+      "caseId": "O03",
+      "historicalStatus": "PASS",
+      "historicalRunId": "936e5f577646",
+      "currentStatus": "NOT_RUN",
+      "requirements": {
+        "action": "After order commit, save later product name/price/beauty text/code/colour/option changes using current version and exact UUIDs. Reload all buyer/merchant/Liquid reads.",
+        "expected": "Current PDP shows changed values; old order still shows v1 PC02/Pink Clay/6 ml/₹560/₹1,120. Exact durable `order_items.product_snapshot` bytes/hash unchanged. No current-product history fallback."
+      },
+      "actual": null,
+      "browserEvidence": [],
+      "apiEvidence": [],
+      "durableEvidence": [],
+      "failureOrUnrunReason": "Awaiting admitted sole-controller Dewdrop execution; no Runtime07 Dewdrop browser receipt observed as of this record.",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null
+      }
+    },
+    {
+      "caseId": "O04",
+      "historicalStatus": "PASS",
+      "historicalRunId": "936e5f577646",
+      "currentStatus": "NOT_RUN",
+      "requirements": {
+        "action": "Archive/deactivate the current product through canonical PATCH, then reload old order.",
+        "expected": "Catalog is unavailable as appropriate; old order still renders saved title/facts/options/money. Do not hard-delete history, bypass FK protections or drop tables."
+      },
+      "actual": null,
+      "browserEvidence": [],
+      "apiEvidence": [],
+      "durableEvidence": [],
+      "failureOrUnrunReason": "Awaiting admitted sole-controller Dewdrop execution; no Runtime07 Dewdrop browser receipt observed as of this record.",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null
+      }
+    },
+    {
+      "caseId": "O05",
+      "historicalStatus": "BLOCKED",
+      "historicalRunId": "936e5f577646",
+      "currentStatus": "NOT_RUN",
+      "requirements": {
+        "action": "Positive Buyer A/merchant read first, then Buyer B, missing session, foreign signed site/store and unavailable buyer context.",
+        "expected": "Denied 401/403/404/unavailable branch as applicable; no v1 facts, saved text or raw snapshot leak. A sign-in/empty page cannot substitute for the preceding positive oracle."
+      },
+      "actual": null,
+      "browserEvidence": [],
+      "apiEvidence": [],
+      "durableEvidence": [],
+      "failureOrUnrunReason": "Resume02: positive own-order before denials and a real unavailable buyer-context branch/actualHTTP status still need admitted controller/fault scope.",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null
+      }
+    },
+    {
+      "caseId": "S01",
+      "historicalStatus": "BLOCKED",
+      "historicalRunId": "936e5f577646",
+      "currentStatus": "NOT_RUN",
+      "requirements": {
+        "action": "In an isolated security branch, merchant supplies hostile ingredient text and a hostile format/facet label; load PDP, discovery and any deliberately captured security order.",
+        "expected": "Literal text remains inert; no injected `img[src=x]`, handler/script execution, or external attack request. Safe exact identity values remain authoritative. Hostile value-attribute suppression follows D07; do not pretend unsafe choices were losslessly purchased."
+      },
+      "actual": null,
+      "browserEvidence": [],
+      "apiEvidence": [],
+      "durableEvidence": [],
+      "failureOrUnrunReason": "Resume02: stock-qualified isolated hostile format/facet plus supported positive-controlled network observation and benign restoration remain unexecuted.",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null
+      }
+    },
+    {
+      "caseId": "S02",
+      "historicalStatus": "PASS",
+      "historicalRunId": "936e5f577646",
+      "currentStatus": "NOT_RUN",
+      "requirements": {
+        "action": "Read a deliberately legacy order without approved niche snapshot, independently of current product metadata.",
+        "expected": "Brief Product details were not recorded with this order. No invented current facts, zero quantities or medical claims. Legacy setup is labeled separately from the browser purchase."
+      },
+      "actual": null,
+      "browserEvidence": [],
+      "apiEvidence": [],
+      "durableEvidence": [],
+      "failureOrUnrunReason": "Awaiting admitted sole-controller Dewdrop execution; no Runtime07 Dewdrop browser receipt observed as of this record.",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null
+      }
+    },
+    {
+      "caseId": "R01",
+      "historicalStatus": "PASS",
+      "historicalRunId": "936e5f577646",
+      "currentStatus": "NOT_RUN",
+      "requirements": {
+        "action": "Finish report and release only the newly allocated fixture/context/resources via its owner.",
+        "expected": "All cases have actual evidence or an explicit failure/not-run reason. No unrelated fixture cleanup; no tokens/passwords/checkout capabilities in public artifacts; original source checkpoint and M1 remain preserved."
+      },
+      "actual": null,
+      "browserEvidence": [],
+      "apiEvidence": [],
+      "durableEvidence": [],
+      "failureOrUnrunReason": "Awaiting admitted sole-controller Dewdrop execution; no Runtime07 Dewdrop browser receipt observed as of this record.",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null
+      }
+    }
+  ],
+  "all30Executed": false,
+  "all30Passed": false,
+  "fullThemeCertified": false,
+  "actualBindings": {
+    "siteId": "02049de4-41c3-4b10-b5b2-a60a6b5e82bf",
+    "productId": "5dd7adcb-50c2-4453-9602-a669139b4270",
+    "variants": [
+      {
+        "id": "34e07db6-953f-45b3-b4cb-01d13118894c",
+        "title": "Fixture shade SKU",
+        "price": 520,
+        "inventory_qty": 4,
+        "stock": 4,
+        "option1": "Rosewater",
+        "option2": "एक इकाई"
+      },
+      {
+        "id": "3f9775d7-4563-4c5d-ad1f-708f13b52c79",
+        "title": "Fixture shade SKU",
+        "price": 560,
+        "inventory_qty": 4,
+        "stock": 4,
+        "option1": "Pink Clay",
+        "option2": "एक इकाई"
+      },
+      {
+        "id": "f50dde42-7c1d-4727-8b9d-7f468225399f",
+        "title": "Fixture shade SKU",
+        "price": 590,
+        "inventory_qty": 0,
+        "stock": 0,
+        "option1": "Terracotta",
+        "option2": "एक इकाई"
+      }
+    ],
+    "baselineRecordedAt": "2026-10-24T20:30:10.947Z",
+    "evidence": {
+      "source": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/dewdrop-before-stock.json",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/completion-2026-10-24/runtime07/evidence/dewdrop-before-stock-37738939c95a.json",
+      "sha256": "37738939c95a03804faf73f2f07c3ec4eee7076097fe97f3846b4b1180616f6b",
+      "bytes": 984,
+      "evidenceClass": "READ_ONLY_PUBLIC_API_BASELINE"
+    }
+  },
+  "supportingAdditionalTestPurchase": "runtime07/DEWDROP_TEST_PURCHASE_10003.json",
+  "actualTestOrderJoin": {
+    "runId": "49ada80bc494",
+    "siteId": "02049de4-41c3-4b10-b5b2-a60a6b5e82bf",
+    "orderId": "5b7e729e-46dd-4bfd-b040-fcd44a534e9d",
+    "paymentId": "pay_TrsWOjFmQm62M0",
+    "providerOrderId": "order_TrsW9LtFDH9nrZ",
+    "variantId": "3f9775d7-4563-4c5d-ad1f-708f13b52c79",
+    "snapshotSha256": "0d5c1d2b5ba1582e79857644a4553df4bcc69eb558729ba7947801c4f56097fb"
+  },
+  "resume02": {
+    "packet": "runtime07/RESUME02_NEXT_ACCEPTANCE.json",
+    "newExecutions": 0,
+    "runtimeStatus": "RECOVERY_REQUIRED_ROOT_ONLY"
+  },
+  "actualPackageVersionId": "8a596351-b950-459e-a9f5-c20c675c8e10",
+  "actualReleaseObservationScope": "Clean-final Dewdrop instance is inactive and site points to Bloom at that sample. This later editor release does not populate or retroactively prove order10003 theme columns. Draftversion20 and releaseSourceDraftVersion18 are retained distinctly.",
+  "editorCycleReconciliation": {
+    "recordedAtUtc": "2026-10-25T01:31:11.865574+00:00",
+    "source": {
+      "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/DEWDROP_LOCAL_EDITOR_CYCLE_RESUME02.json",
+      "sha256": "c325021c1b680f0dfc3e223ba7e04abf87a1ffe84e1bdc8c61d9f9d641fabe6d",
+      "bytes": 9155,
+      "evidenceClass": "EXISTING_EDITOR_BROWSER_CYCLE_RECEIPT"
+    },
+    "atomicSubchecksReportedPass": 12,
+    "originalWholeRowsNewlyClosed": [],
+    "reexecutionByOwner": 0
+  },
+  "maintenance": {
+    "recordedAtUtc": "2026-10-25T01:31:11.865574+00:00",
+    "status": "OWNED_QA_MAINTENANCE_STOPPED_FOR_DATA_PRESERVATION",
+    "receipt": {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/PRESERVATION_STOP_EXECUTION_20261025_01.json",
+      "sha256": "996da731d7150632928bb0c7d5f9214906f62c4f2e063a6e9e9900067710cdaf",
+      "bytes": 1313,
+      "evidenceClass": "EXISTING_ROOT_PRESERVATION_MAINTENANCE_RECEIPT"
+    },
+    "projectPaused": false,
+    "stoppedOriginalParent": 54685,
+    "stoppedRuntime": 55109,
+    "browserFence": "Root reports fully saved Playfieldv17/cart0; no Dewdrop active-theme inference.",
+    "automaticContinuationAllowed": false,
+    "restriction": "Do not SIGCONT after expiry: due cleanup timers may execute immediately. API, checkout and parent-hosted REST are unavailable during maintenance. Requires qualified preserved-runtime recovery.",
+    "recoveryOwner": "Root only; qualified preserved recovery required",
+    "browserQueueOwner": "Editor",
+    "liveApiDbBrowserProviderTestsAllowed": false,
+    "ownerRecoverySignalsOrPrivateBackupReads": 0
+  }
+}

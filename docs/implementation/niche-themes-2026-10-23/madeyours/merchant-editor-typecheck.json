@@ -1,0 +1,9 @@
+{
+  "extends": "../../../../apps/merchant/web/tsconfig.json",
+  "compilerOptions": { "incremental": false },
+  "include": [
+    "../../../../apps/merchant/web/src/components/products/niche-facts/madeyours-facts-editor.tsx",
+    "../../../../apps/merchant/web/src/components/products/niche-facts/madeyours-facts-editor.test.tsx"
+  ],
+  "exclude": []
+}

@@ -1,0 +1,150 @@
+- generic: Habitat Runtime07 A — considered rooms
+- link:
+  - /url: ""
+- banner:
+  - navigation "Primary"
+  - link "Threadline":
+    - /url: /store/syn-threadline-ui-ae3f0477
+  - button "Search":
+    - generic: Search
+  - link "Log in":
+    - /url: /store/syn-threadline-ui-ae3f0477/customers/login
+    - generic: Log in
+  - link "Cart ( 0 )":
+    - /url: /store/syn-threadline-ui-ae3f0477/cart
+    - generic: Cart
+    - text: (
+    - generic: "0"
+    - text: )
+- navigation "Breadcrumb":
+  - link "Home /":
+    - /url: /store/syn-threadline-ui-ae3f0477
+  - link "Shop /":
+    - /url: /store/syn-threadline-ui-ae3f0477/products
+  - generic: Habitat lifecycle desk
+- heading "Habitat lifecycle desk" [level=1]
+- generic: ₹8,900
+- generic "Common product dimensions":
+  - paragraph:
+    - strong: Common product dimensions
+    - text: · check the selected finish below.
+  - paragraph:
+    - strong: 120 W × 60 D × 75 H cm
+    - text: Assembled dimensions
+  - link "Dimensions, material & access ↓":
+    - /url: "#habitat-dimensions-habitat-product-selection"
+- generic: Width
+- button "48 in" [active] [pressed]
+- button "Common size"
+- status
+- region "48 in — selected variant facts.":
+  - status: 48 in — selected variant facts.
+  - term: Assembled
+  - definition: 48 W in
+  - term: Package
+  - definition: 50 W × 25 D in
+  - term: Weight
+  - definition: Weight not supplied.
+  - term: Seat height
+  - definition: Seat height not supplied.
+  - term: Materials
+  - definition: Wood
+  - term: Assembly
+  - definition: Assembly information not supplied.
+  - term: Care
+  - definition: Wipe dry.
+  - paragraph: Only supplied measurements are listed. An absent width, depth, height or diameter is not supplied. Assembled and package measurements describe different things.
+  - link "Common reference, named finishes & access guidance ↓":
+    - /url: "#habitat-dimensions-habitat-product-selection"
+- generic: Quantity
+- spinbutton "Quantity": "1"
+- button "Add to cart"
+- generic "Add Habitat lifecycle desk to wishlist":
+  - button "Connect store account to use wishlist":
+  - status
+- generic "Description"
+- region "Furniture measurements and materials":
+  - text: Make space for it
+  - heading "Know every dimension." [level=2]
+  - paragraph: Measure the room it will live in, then the access path it will take to get there.
+  - paragraph: Product facts below are common reference information. A selected finish may override them; use its current facts above.
+  - generic "Common product footprint schematic":
+    - paragraph: "Width: 120 cm"
+    - generic: Footprint
+    - paragraph: "Depth: 60 cm"
+  - paragraph: Common product footprint only. Schematic, not to scale. Check the current finish measurements; no access or fit is guaranteed.
+  - table "Product facts (common) · selected finish facts are shown above":
+    - caption: Product facts (common) · selected finish facts are shown above
+    - rowgroup:
+      - row "Assembled dimensions 120 W × 60 D × 75 H cm":
+        - rowheader "Assembled dimensions"
+        - cell "120 W × 60 D × 75 H cm"
+      - row "Package W × D × H 130 W × 65 D × 20 H cm":
+        - rowheader "Package W × D × H"
+        - cell "130 W × 65 D × 20 H cm"
+  - paragraph: Package size is not assembled size. Compare supplied package dimensions with doors, stairs, turns and lifts.
+  - heading "Product material & assembly (common)" [level=3]
+  - paragraph: Wood
+  - paragraph: Assembly information not supplied.
+  - generic "Product care (common)"
+  - paragraph: Wipe dry.
+  - generic "Delivery & access"
+  - paragraph: Delivery options and charges are confirmed by checkout for your address. A delivery date is not available unless a service result supplies one.
+  - heading "Facts by named finish" [level=3]
+  - paragraph: Compare supplied facts for each actual option. Each list includes resolved product facts unless that finish overrides them. Choose every option above to see the current finish.
+  - heading "48 in" [level=4]
+  - term: Assembled
+  - definition: 48 W in
+  - term: Package
+  - definition: 50 W × 25 D in
+  - term: Weight
+  - definition: Weight not supplied.
+  - term: Seat height
+  - definition: Seat height not supplied.
+  - term: Materials
+  - definition: Wood
+  - term: Assembly
+  - definition: Assembly information not supplied.
+  - term: Care
+  - definition: Wipe dry.
+  - heading "Common size" [level=4]
+  - term: Assembled
+  - definition: 120 W × 60 D × 75 H cm
+  - term: Package
+  - definition: 130 W × 65 D × 20 H cm
+  - term: Weight
+  - definition: Weight not supplied.
+  - term: Seat height
+  - definition: Seat height not supplied.
+  - term: Materials
+  - definition: Wood
+  - term: Assembly
+  - definition: Assembly information not supplied.
+  - term: Care
+  - definition: Wipe dry.
+- heading "Write a review" [level=3]
+- radiogroup "Your rating":
+  - radio
+  - button "1 star": ★
+  - radio
+  - button "2 stars": ★
+  - radio
+  - button "3 stars": ★
+  - radio
+  - button "4 stars": ★
+  - radio
+  - button "5 stars": ★
+- textbox "Your name"
+- textbox "Review title (optional)"
+- textbox "Share your experience with this product"
+- paragraph
+- button "Submit review"
+- contentinfo:
+  - heading "Threadline" [level=3]
+  - heading "Contact" [level=4]
+  - link "Contact us":
+    - /url: /store/syn-threadline-ui-ae3f0477/contact
+  - paragraph: © Threadline. All rights reserved.
+  - link "Powered by LetBuyy":
+    - /url: https://letbuyy.com
+- alert

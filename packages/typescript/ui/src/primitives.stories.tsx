@@ -31,7 +31,7 @@ const chartData = [
 ];
 
 const storyWrapper = (children: React.ReactNode) => (
-    <Page>
+    <Page as="main">
         <PageHeader title="Component Preview" description="Token-driven primitives for merchant workflows." showDescription />
         {children}
     </Page>

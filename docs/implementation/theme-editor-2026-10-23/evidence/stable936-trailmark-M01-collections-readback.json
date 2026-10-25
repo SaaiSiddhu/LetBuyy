@@ -1,0 +1,58 @@
+{
+  "recordedAt": "2026-10-24T06:43:58.135Z",
+  "runId": "936e5f577646",
+  "guardVerified": true,
+  "readOnly": true,
+  "actual": [
+    {
+      "id": "4c8500dd-cec6-401b-ba8d-c4f1eb94b2ca",
+      "title": "Trailmark fixture baseline",
+      "siteId": "2f958a36-71bf-4e8f-89fd-d3363f4fe42c",
+      "version": null,
+      "productIds": [
+        "5dbce431-9870-4636-8b38-e65471737b52"
+      ],
+      "membershipVersion": 3
+    },
+    {
+      "id": "ab5750b8-3626-413e-b0b4-4d8e4482e217",
+      "title": "Trailmark fixture equipment",
+      "siteId": "2f958a36-71bf-4e8f-89fd-d3363f4fe42c",
+      "version": null,
+      "productIds": [
+        "5dbce431-9870-4636-8b38-e65471737b52",
+        "78726b89-2397-453a-916c-fbc1c9518139",
+        "93257d9f-f4ee-4bca-ad6d-72c1e29b37e1"
+      ],
+      "membershipVersion": 5
+    },
+    {
+      "id": "87a1d24f-2095-4c47-bada-379337526067",
+      "title": "Trailmark fixture intentional empty",
+      "siteId": "2f958a36-71bf-4e8f-89fd-d3363f4fe42c",
+      "version": null,
+      "productIds": [],
+      "membershipVersion": 1
+    },
+    {
+      "id": "d4232f27-9ed2-41e9-8b49-a77a617767de",
+      "title": "Trailmark fixture no exact length",
+      "siteId": "2f958a36-71bf-4e8f-89fd-d3363f4fe42c",
+      "version": null,
+      "productIds": [
+        "78726b89-2397-453a-916c-fbc1c9518139"
+      ],
+      "membershipVersion": 3
+    },
+    {
+      "id": "57ee45c9-a7a5-478e-ab8e-941a1a034bd1",
+      "title": "Trailmark fixture same-variant witnesses",
+      "siteId": "2f958a36-71bf-4e8f-89fd-d3363f4fe42c",
+      "version": null,
+      "productIds": [
+        "93257d9f-f4ee-4bca-ad6d-72c1e29b37e1"
+      ],
+      "membershipVersion": 3
+    }
+  ]
+}

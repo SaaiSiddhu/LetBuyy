@@ -1,0 +1,150 @@
+- main:
+  - link "Back to themes":
+    - /url: /syn-threadline-ui-ae3f0477/online-store/themes
+  - button "Toggle navigation panel" [pressed]:
+  - button "Sections":
+  - button "Theme settings":
+  - button "Theme styles":
+  - button "Versions":
+  - generic: Circuit
+  - text: Draft theme
+  - generic "Draft changes save automatically. Publishing updates the storefront.": Saved
+  - generic "Template":
+    - combobox "Template":
+      - option "Circuit home" [selected]
+      - option "Circuit product"
+      - option "Circuit collection"
+      - option "Page"
+      - option "LetBuyy Core cart"
+      - option "Blog"
+      - option "Article"
+      - option "Policy page"
+      - option "Circuit search"
+      - option "Contact"
+      - option "Password"
+      - option "404 Not Found"
+      - option "Login"
+      - option "Order detail"
+      - option "Order history"
+      - option "All collections"
+      - option "Account"
+      - option "Register"
+      - option "Account settings"
+      - option "Wishlist"
+      - option "Addresses"
+  - button "Undo" [disabled]:
+  - button "Redo" [disabled]:
+  - button "Save" [disabled]:
+    - text: Save
+  - button "Publish":
+    - text: Publish
+  - complementary "Theme editor navigation":
+    - heading "Circuit home" [level=2]
+    - text: v2
+    - tree "Theme sections":
+      - paragraph: Header
+      - treeitem "Announcement Bar Toggle Announcement Bar visibility" [level=1] [selected]:
+        - button "Announcement Bar":
+          - generic: Announcement Bar
+        - button "Toggle Announcement Bar visibility" [pressed]:
+      - treeitem "Header" [level=1]:
+        - button "Header":
+          - generic: Header
+      - paragraph: Template
+      - group "Template sections":
+        - treeitem "Task and category discovery" [level=1]:
+          - button "Task and category discovery":
+            - generic: Task and category discovery
+        - treeitem "Featured model" [level=1]:
+          - button "Featured model":
+            - generic: Featured model
+        - treeitem "Technical product cards" [level=1]:
+          - button "Technical product cards":
+            - generic: Technical product cards
+        - treeitem "Connection education" [level=1]:
+          - button "Connection education":
+            - generic: Connection education
+        - treeitem "Merchant service information" [level=1]:
+          - button "Merchant service information":
+            - generic: Merchant service information
+      - combobox:
+        - option "Marquee" [selected]
+        - option "404 Not Found"
+        - option "Spotlight"
+        - option "Search"
+        - option "Video Hero"
+        - option "Call to Action"
+        - option "Featured model"
+        - option "Blog Listing"
+        - option "Cart"
+        - option "Contact Form"
+        - option "Page Content"
+        - option "Technical product cards"
+        - option "Rich Content"
+        - option "Testimonials"
+        - option "Merchant service information"
+        - option "Connection education"
+        - option "Brand Marquee"
+        - option "Task and category discovery"
+        - option "FAQ Accordion"
+        - option "Password Gate"
+        - option "Services Grid"
+        - option "App Block Slot"
+        - option "Customer Login"
+        - option "Policy Content"
+        - option "Portfolio Grid"
+        - option "Product Detail"
+        - option "Skills Section"
+        - option "Article Content"
+        - option "Banner Carousel"
+        - option "Order History"
+        - option "Announcement Bar"
+        - option "Customer Account"
+        - option "Collection Banner"
+        - option "Electronics discovery heading"
+        - option "Customer Register"
+        - option "Account Settings"
+        - option "Wishlist"
+        - option "Independently sold accessories"
+        - option "Newsletter Signup"
+        - option "Addresses"
+        - option "Experience Timeline"
+        - option "Order Detail"
+        - option "Electronics results with facets"
+      - button "Add":
+        - text: Add
+      - paragraph: Footer
+      - treeitem "Footer" [level=1]:
+        - button "Footer":
+          - generic: Footer
+  - region "Live theme preview":
+    - strong: Live preview
+    - generic: syn-threadline-ui-ae3f0477.localhost - 1440px
+    - group "Preview device":
+      - button "Desktop" [pressed]:
+        - text: Desktop
+      - button "Tablet":
+        - text: Tablet
+      - button "Mobile":
+        - text: Mobile
+    - generic: syn-threadline-ui-ae3f0477.localhost
+    - button "Inspect preview" [pressed]:
+      - text: Inspect
+    - iframe
+    - alert:
+      - generic: The preview could not finish loading. Your saved draft is kept. Retry to open a fresh preview.
+      - button "Retry preview"
+  - complementary "Theme properties":
+    - paragraph: Selected section
+    - heading "Announcement Bar" [level=2]
+    - group "Smart defaults":
+      - generic "Smart defaults"
+    - generic: Message
+    - textbox "Message": Circuit Runtime07 A — precise technology
+    - generic: Link URL
+    - textbox "Link URL":
+      - /placeholder: https://…
+    - generic: Link label
+    - textbox "Link label"
+    - paragraph: Blocks
+- alert

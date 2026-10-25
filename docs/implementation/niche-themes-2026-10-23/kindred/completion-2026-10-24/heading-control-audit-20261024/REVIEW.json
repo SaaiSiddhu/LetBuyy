@@ -1,0 +1,207 @@
+{
+  "recordedAt": "2026-10-24T09:18:51.190447+00:00",
+  "classification": "FINITE_ADMITTED_ARTIFACT_SOURCE_RENDER_REVIEW_NOT_INSTALLED_ACCEPTANCE",
+  "findings": [
+    {
+      "id": "KCOMP-COPY-01",
+      "status": "OPEN_SOURCE_RENDER_FINDING",
+      "sectionType": "collection-filter",
+      "field": "title",
+      "caseId": "KSET-collection-filter-title",
+      "sourcePointer": "/document/liquidBundle/sections/collection-filter/schema/settings/0",
+      "observed": "CONDITIONAL_FALLBACK_ONLY",
+      "browserAcceptance": "NOT_RUN"
+    },
+    {
+      "id": "KCOMP-COPY-02",
+      "status": "OPEN_SOURCE_RENDER_FINDING",
+      "sectionType": "collection-product-list",
+      "field": "title",
+      "caseId": "KSET-collection-product-list-title",
+      "sourcePointer": "/document/liquidBundle/sections/collection-product-list/schema/settings/0",
+      "observed": "DECLARED_FIELD_UNUSED_IN_BODY",
+      "browserAcceptance": "NOT_RUN"
+    },
+    {
+      "id": "KCOMP-COPY-03",
+      "status": "OPEN_SOURCE_RENDER_FINDING",
+      "sectionType": "customer-order-detail",
+      "field": "heading",
+      "caseId": "KSET-customer-order-detail-heading",
+      "sourcePointer": "/document/liquidBundle/sections/customer-order-detail/schema/settings/0",
+      "observed": "HARDCODED_PREFIX_IGNORES_DECLARED_FIELD",
+      "browserAcceptance": "NOT_RUN"
+    }
+  ],
+  "sourceProbe": {
+    "tool": "exec_command",
+    "chunkId": "23b917",
+    "exitCode": 0,
+    "capturedStdout": "WITNESS_OUTPUT.json",
+    "reproducer": "WITNESS.mjs",
+    "reproducerSavedAfterCompletedProbe": true,
+    "reproducerSyntaxCheck": "node --check exit0",
+    "reproducerNotRerunForExtraCredit": true,
+    "scope": "Exact heading fragments only, synthetic data-only contexts, installed LiquidJS with inspected relevant production options",
+    "positiveControl": "product-grid heading changes",
+    "fallbackControl": "collection-filter changes only with blank collection.title",
+    "notClaimed": [
+      "Complete section/layout rendering",
+      "Normal mounted editor UI",
+      "Save/reload/publish",
+      "Real buyer/order identity or persisted number",
+      "Browser purchase or order history",
+      "Security/escaping suite acceptance"
+    ]
+  },
+  "lexicalFlagsReviewed": [
+    {
+      "caseId": "KSET-app-block-slot-slot",
+      "section": "app-block-slot",
+      "field": "slot",
+      "disposition": "PROTECTED_DORMANT_SEAM"
+    },
+    {
+      "caseId": "KSET-collection-product-list-title",
+      "section": "collection-product-list",
+      "field": "title",
+      "disposition": "OPEN_SOURCE_FINDING"
+    },
+    {
+      "caseId": "KSET-customer-order-detail-heading",
+      "section": "customer-order-detail",
+      "field": "heading",
+      "disposition": "OPEN_SOURCE_FINDING"
+    },
+    {
+      "caseId": "KSET-featured-products-requireSelection",
+      "section": "featured-products",
+      "field": "requireSelection",
+      "disposition": "UPSTREAM_RESOURCE_BINDING_CONSUMER_OBSERVED_NO_RUNTIME_PASS"
+    },
+    {
+      "caseId": "KSET-featured-products-product1",
+      "section": "featured-products",
+      "field": "product1",
+      "disposition": "UPSTREAM_RESOURCE_BINDING_CONSUMER_OBSERVED_NO_RUNTIME_PASS"
+    },
+    {
+      "caseId": "KSET-featured-products-product2",
+      "section": "featured-products",
+      "field": "product2",
+      "disposition": "UPSTREAM_RESOURCE_BINDING_CONSUMER_OBSERVED_NO_RUNTIME_PASS"
+    },
+    {
+      "caseId": "KSET-featured-products-product3",
+      "section": "featured-products",
+      "field": "product3",
+      "disposition": "UPSTREAM_RESOURCE_BINDING_CONSUMER_OBSERVED_NO_RUNTIME_PASS"
+    },
+    {
+      "caseId": "KSET-product-grid-collectionId",
+      "section": "product-grid",
+      "field": "collectionId",
+      "disposition": "UPSTREAM_RESOURCE_BINDING_CONSUMER_OBSERVED_NO_RUNTIME_PASS"
+    }
+  ],
+  "upstreamResourceConsumers": {
+    "path": "apps/commerce/web/src/lib/theme-engine/data-binding-engine.ts",
+    "productFields": [
+      {
+        "line": 51,
+        "fields": [
+          "product1",
+          "product2",
+          "product3"
+        ]
+      },
+      {
+        "line": 54,
+        "fields": [
+          "requireSelection"
+        ]
+      }
+    ],
+    "collectionField": {
+      "line": 180,
+      "field": "collectionId",
+      "scope": "non-listing, non-bounded preload routes; listing query and authorized preload remain authoritative"
+    },
+    "actualResourcePickerAndSaveTests": "NOT_RUN"
+  },
+  "inputReceipts": [
+    {
+      "path": "docs/implementation/niche-theme-programme/release-v2/proposals/81e91859ebc8c497a49da337d064e1885a76964839d14e39f4a0a3de2283f47f/letbuyy-summit-2.0.0.json",
+      "sha256": "54f9d916749d64f80b6bd5dd6ec85a7e50b5e17bef765e61fffe727d94c8d411",
+      "bytes": 623200
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/kindred/completion-2026-10-24/CAPABILITY_INVENTORY.json",
+      "sha256": "57eebc2670cd84b1e7d9458111f65d51a0afbae283c9bea7c978d7395d596774",
+      "bytes": 573477
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/kindred/completion-2026-10-24/COVERAGE.json",
+      "sha256": "2ef6c09d5ce19ea40a0121ae6f927c771d4d15e5d984647fc66ed5b802c719fc",
+      "bytes": 567387
+    },
+    {
+      "path": "packages/theme-engine/src/kindred-theme.ts",
+      "sha256": "3a47dc979dbdf5dce395fd44a858e007567820f4fac569fade603ff6da4fd551",
+      "bytes": 18062
+    },
+    {
+      "path": "packages/theme-engine/src/kindred-discovery.ts",
+      "sha256": "14dd29777737158a61287bf54e98571c6b3abf1e07ec542d2e7f678180ad473f",
+      "bytes": 6014
+    },
+    {
+      "path": "packages/theme-engine/src/theme-bundle.ts",
+      "sha256": "cdbad4b28277431a3ab06e56ed0ce16539e04837bb107f5f951a3df39a92ed76",
+      "bytes": 213170
+    },
+    {
+      "path": "packages/theme-engine/src/theme-renderer.ts",
+      "sha256": "794cbc6ff9ae71f995560f302e1b0d5f0d4ff4da59fa31191585851b1e822164",
+      "bytes": 107646
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/data-binding-engine.ts",
+      "sha256": "4b8334b7e07e64209d3585671ff98a4c7c359719424715119e3a2ea2d667e56d",
+      "bytes": 11971
+    },
+    {
+      "path": "packages/theme-engine/package.json",
+      "sha256": "8eec1e66946b79412200297e8755d67f6769fe49beec86c5d7eeb2ccf013b763",
+      "bytes": 1076
+    }
+  ],
+  "allocationBoundary": {
+    "activeSharedWriter": {
+      "owner": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+      "allocation": "docs/implementation/niche-theme-programme/completion-shared-allocation-20261024-01.json",
+      "directDeliveryReceipt": "shared-editor-allocation-direct-delivery.json",
+      "scope": "Editor block actions source/tests only"
+    },
+    "activeBrowserLease": null,
+    "KindredSourceLease": null,
+    "request": "Existing allocator assigns theme-copy and shared order-prefix successor repair; current six-file Editor block action lease does not include these paths",
+    "noVersionOrMigrationInvented": true
+  },
+  "preservation": {
+    "mainSourceWrites": 0,
+    "acceptedArtifactWrites": 0,
+    "priorEvidenceWrites": 0,
+    "browserApiDatabaseCalls": 0,
+    "builds": 0,
+    "serversStarted": 0,
+    "oneShotNodeWitness": "Completed exit0, no retained process",
+    "leasesAcquiredOrReturned": []
+  },
+  "historical19ResultsChanged": false,
+  "expandedBrowserStatusesChanged": false,
+  "KQA01": "OPEN P2 unchanged",
+  "certificationIssued": false,
+  "goalStatus": "active",
+  "goalTurnClassification": "PROGRESS: three declared heading requirements disproved at source/render level, five lexical flags resolved to actual upstream binding consumers"
+}

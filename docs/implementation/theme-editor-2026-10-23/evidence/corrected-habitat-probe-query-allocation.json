@@ -1,0 +1,14 @@
+{
+  "runId": "f6074d90e894",
+  "maxGets": 5,
+  "mutation": false,
+  "redirects": false,
+  "retry": false,
+  "cases": [
+    "HQ08",
+    "HQ08-past-end",
+    "HQ09",
+    "HQ09-depth-zero",
+    "HQ09-past-end"
+  ]
+}

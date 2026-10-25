@@ -1,0 +1,757 @@
+{
+  "body": {
+    "background": "rgb(255, 255, 255)",
+    "color": "rgba(0, 0, 0, 0.71)",
+    "font": "Newsreader, serif",
+    "fontSize": "14px"
+  },
+  "controls": [
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Cart",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Add to cart",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Slide 1 of 7",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Slide 2 of 7",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Slide 3 of 7",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Slide 4 of 7",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Slide 5 of 7",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Slide 6 of 7",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Slide 7 of 7",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "King/Cal King\nFull/Queen",
+      "tag": "SELECT",
+      "type": "select-one"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Natural",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Antique White",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Coal",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Moss",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Evergreen",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": true,
+      "expanded": null,
+      "label": "Decrease quantity",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Quantity",
+      "tag": "INPUT",
+      "type": "number"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Increase quantity",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Add to cart",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Buy it now",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "DETAILS",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "MATERIALS + CARE",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "SHIPPING + RETURNS",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Add",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Email address",
+      "tag": "INPUT",
+      "type": "email"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "SUBSCRIBE",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "SHOP",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "CUSTOMER CARE",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "INFORMATION",
+      "tag": "SUMMARY",
+      "type": ""
+    }
+  ],
+  "headings": [
+    {
+      "font": "Newsreader, serif",
+      "height": 15.3984375,
+      "line": "15.4px",
+      "size": "14px",
+      "tag": "H3",
+      "text": "Vintage Linen Bed Blanket",
+      "weight": "400",
+      "width": 287.6171875,
+      "x": 497.59375,
+      "y": 1038.6953125
+    },
+    {
+      "font": "Newsreader, serif",
+      "height": 88,
+      "line": "44px",
+      "size": "40px",
+      "tag": "H1",
+      "text": "Vintage Linen Bed Blanket",
+      "weight": "300",
+      "width": 417.3359375,
+      "x": 970.6640625,
+      "y": 197.7890625
+    },
+    {
+      "font": "Newsreader, serif",
+      "height": 26.3984375,
+      "line": "26.4px",
+      "size": "24px",
+      "tag": "H3",
+      "text": "You might also like...",
+      "weight": "400",
+      "width": 186.546875,
+      "x": 40,
+      "y": 1276.0390625
+    },
+    {
+      "font": "\"Red Hat Display\", sans-serif",
+      "height": 14.3984375,
+      "line": "14.4px",
+      "size": "12px",
+      "tag": "H2",
+      "text": "NEWSLETTER",
+      "weight": "500",
+      "width": 390,
+      "x": 40,
+      "y": 2478.5546875
+    }
+  ],
+  "links": [
+    {
+      "text": "Skip to content",
+      "url": "https://theme-dwell-demo.myshopify.com/products/vintage-linen-bed-cover?variant=44977238016189#MainContent"
+    },
+    {
+      "text": "SHOP THE BEDROOM EVENT - ON NOW!",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/sale"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dwell-demo.myshopify.com/"
+    },
+    {
+      "text": "Bedding",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/bedding-1"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/pillows-duvets"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/sheets"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/quilts-comforters"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/bedding-1"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/pillows-duvets"
+    },
+    {
+      "text": "Bath",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/bath-1"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/towels"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/bath-mats"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/robes"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/slippers"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/bath-1"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/towels"
+    },
+    {
+      "text": "Decor",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/decor"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/throws"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/bath-mats"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/candles"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/decor"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/throws"
+    },
+    {
+      "text": "Sale",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/sale"
+    },
+    {
+      "text": "Inspiration",
+      "url": "https://theme-dwell-demo.myshopify.com/blogs/news"
+    },
+    {
+      "text": "Skip to product information",
+      "url": "https://theme-dwell-demo.myshopify.com/products/vintage-linen-bed-cover?variant=44977238016189#ProductInformation-template--20640022200509__main"
+    },
+    {
+      "text": "Linen Duvet Cover",
+      "url": "https://theme-dwell-demo.myshopify.com/products/linen-duvet-cover?variant=44977166352573"
+    },
+    {
+      "text": "Vintage Linen Pillow Cover",
+      "url": "https://theme-dwell-demo.myshopify.com/products/vintage-linen-pillow-cover?variant=44976880648381"
+    },
+    {
+      "text": "Linen Top Sheet",
+      "url": "https://theme-dwell-demo.myshopify.com/products/linen-top-sheet?variant=44977017847997"
+    },
+    {
+      "text": "Vintage Linen Round Pillow Cover",
+      "url": "https://theme-dwell-demo.myshopify.com/products/vintage-linen-round-pillow-cover?variant=44976864559293"
+    },
+    {
+      "text": "Vintage Linen Bed Blanket",
+      "url": "https://theme-dwell-demo.myshopify.com/products/vintage-linen-bed-cover?variant=44977238016189"
+    },
+    {
+      "text": "Sale",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/sale"
+    },
+    {
+      "text": "Decor",
+      "url": "https://theme-dwell-demo.myshopify.com/collections/decor"
+    },
+    {
+      "text": "FAQ",
+      "url": "https://theme-dwell-demo.myshopify.com/pages/faq"
+    },
+    {
+      "text": "Shipping",
+      "url": "https://theme-dwell-demo.myshopify.com/pages/shipping"
+    },
+    {
+      "text": "Returns",
+      "url": "https://theme-dwell-demo.myshopify.com/pages/returns"
+    },
+    {
+      "text": "Contact",
+      "url": "https://theme-dwell-demo.myshopify.com/pages/contact"
+    },
+    {
+      "text": "About us",
+      "url": "https://theme-dwell-demo.myshopify.com/pages/about-us"
+    },
+    {
+      "text": "Blog",
+      "url": "https://theme-dwell-demo.myshopify.com/blogs/news"
+    },
+    {
+      "text": "Responsible Design",
+      "url": "https://theme-dwell-demo.myshopify.com/pages/responsible-design"
+    },
+    {
+      "text": "Care & Maintenance",
+      "url": "https://theme-dwell-demo.myshopify.com/pages/care-maintenance"
+    },
+    {
+      "text": "Dwell",
+      "url": "https://theme-dwell-demo.myshopify.com/"
+    }
+  ],
+  "sections": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--20640022200509__main",
+      "rect": {
+        "height": 1076.25,
+        "width": 1440,
+        "x": 0,
+        "y": 151.7890625
+      },
+      "tag": "DIV",
+      "text": "Vintage Linen Bed Blanket\nKing/Cal King / Natural\n$489.00\nAdd to cart\nSkip to product information\nVintage Linen Bed Blanket\n$489.00\nSize\nKing/Cal King\nFull/Queen\nColorNatural\nDecre"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--20640022200509__product_recommendations_xmXAhw",
+      "rect": {
+        "height": 617.7421875,
+        "width": 1440,
+        "x": 0,
+        "y": 1228.0390625
+      },
+      "tag": "DIV",
+      "text": "You might also like...\nLinen Duvet Cover\nChoose\nLinen Duvet Cover\n$410.00\nVintage Linen Pillow Cover\nChoose\nVintage Linen Pillow Cover\n$109.00\nLinen Top Sheet\nChoose\nLinen Top Shee"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--20640022200509__media_with_content_9rDKpN",
+      "rect": {
+        "height": 572.7734375,
+        "width": 1440,
+        "x": 0,
+        "y": 1845.78125
+      },
+      "tag": "DIV",
+      "text": "Vintage Linen Bed Blanket\n\nVintage Linen Bed Blanket\n\n$489.00"
+    }
+  ],
+  "title": "Vintage Linen Bed Blanket – Dwell",
+  "url": "https://theme-dwell-demo.myshopify.com/products/vintage-linen-bed-cover?variant=44977238016189",
+  "viewport": {
+    "dpr": 1,
+    "height": 1000,
+    "width": 1440
+  },
+  "formGroups": [
+    "ColorNatural"
+  ],
+  "grids": [
+    {
+      "className": "product-information__grid product-information--media-left",
+      "columns": "906.664px 453.336px",
+      "display": "grid",
+      "gap": "normal",
+      "height": 1046.25,
+      "tag": "DIV",
+      "width": 1360
+    },
+    {
+      "className": "\n          resource-list\n          \n          \n          resource-list--grid\n        ",
+      "columns": "331px 331px 331px 331px",
+      "display": "grid",
+      "gap": "36px 12px",
+      "height": 467.34375,
+      "tag": "DIV",
+      "width": 1360
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "16px",
+      "height": 467.34375,
+      "tag": "DIV",
+      "width": 331
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "16px",
+      "height": 467.34375,
+      "tag": "DIV",
+      "width": 331
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "16px",
+      "height": 467.34375,
+      "tag": "DIV",
+      "width": 331
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "16px",
+      "height": 467.34375,
+      "tag": "DIV",
+      "width": 331
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "16px",
+      "height": 492.7734375,
+      "tag": "DIV",
+      "width": 299.9921875
+    }
+  ],
+  "images": [
+    {
+      "alt": "Vintage Linen Bed Blanket",
+      "complete": true,
+      "naturalWidth": 120,
+      "rect": {
+        "height": 52,
+        "width": 52
+      }
+    },
+    {
+      "alt": "Vintage Linen Bed Blanket",
+      "complete": true,
+      "naturalWidth": 948,
+      "rect": {
+        "height": 1046.25,
+        "width": 837
+      }
+    },
+    {
+      "alt": "Vintage Linen Bed Blanket",
+      "complete": true,
+      "naturalWidth": 948,
+      "rect": {
+        "height": 1046.25,
+        "width": 837
+      }
+    },
+    {
+      "alt": "Vintage Linen Bed Blanket",
+      "complete": true,
+      "naturalWidth": 948,
+      "rect": {
+        "height": 1046.25,
+        "width": 837
+      }
+    },
+    {
+      "alt": "Vintage Linen Bed Blanket",
+      "complete": true,
+      "naturalWidth": 948,
+      "rect": {
+        "height": 1046.25,
+        "width": 837
+      }
+    },
+    {
+      "alt": "Vintage Linen Bed Blanket",
+      "complete": true,
+      "naturalWidth": 948,
+      "rect": {
+        "height": 1046.25,
+        "width": 837
+      }
+    },
+    {
+      "alt": "Vintage Linen Bed Blanket",
+      "complete": true,
+      "naturalWidth": 711,
+      "rect": {
+        "height": 1046.25,
+        "width": 837
+      }
+    },
+    {
+      "alt": "Vintage Linen Bed Blanket",
+      "complete": true,
+      "naturalWidth": 948,
+      "rect": {
+        "height": 1046.25,
+        "width": 837
+      }
+    },
+    {
+      "alt": "Vintage Linen Bed Blanket",
+      "complete": true,
+      "naturalWidth": 1440,
+      "rect": {
+        "height": 55,
+        "width": 44
+      }
+    },
+    {
+      "alt": "Vintage Linen Bed Blanket",
+      "complete": true,
+      "naturalWidth": 1440,
+      "rect": {
+        "height": 55,
+        "width": 44
+      }
+    },
+    {
+      "alt": "Vintage Linen Bed Blanket",
+      "complete": true,
+      "naturalWidth": 1440,
+      "rect": {
+        "height": 55,
+        "width": 44
+      }
+    },
+    {
+      "alt": "Vintage Linen Bed Blanket",
+      "complete": true,
+      "naturalWidth": 1440,
+      "rect": {
+        "height": 55,
+        "width": 44
+      }
+    }
+  ],
+  "bodyText": "Skip to content\n\nSHOP THE BEDROOM EVENT - ON NOW!\n\nSHOP THE BEDROOM EVENT - ON NOW!\nBedding\nBath\nDecor\nSale\nInspiration\nVintage Linen Bed Blanket\nKing/Cal King / Natural\n$489.00\nAdd to cart\nSkip to product information\nVintage Linen Bed Blanket\n$489.00\nSize\nKing/Cal King\nFull/Queen\nColorNatural\nDecrease quantity\nIncrease quantity\nAdd to cart\nBuy it now\n\nReliable shipping\n\nFlexible returns\n\nDETAILS\n\nThis is a demonstration store. You can purchase products like this from Parachute Home.\n\nThis timeless linen cover offers a vintage look and lived-in feel. Tuck it in for a clean, minimalist room, or leave messy for laid-back vibes.\n\nMATERIALS + CARE\nSHIPPING + RETURNS\nYou might also like...\nLinen Duvet Cover\nChoose\nLinen Duvet Cover\n$410.00\nVintage Linen Pillow Cover\nChoose\nVintage Linen Pillow Cover\n$109.00\nLinen Top Sheet\nChoose\nLinen Top Sheet\n$150.00\nVintage Linen Round Pillow Cover\nAdd\nVintage Linen Round Pillow Cover\n$119.00\nVintage Linen Bed Blanket\n\nVintage Linen Bed Blanket\n\n$489.00\nNEWSLETTER\nEmail\nSUBSCRIBE\nSHOP\nSale\nDecor\nCUSTOMER CARE\nFAQ\nShipping\nReturns\nContact\nINFORMATION\nAbout us\nBlog\nResponsible Design\nCare & Maintenance\n© 2026 Dwell, Powered by Shopify"
+}

@@ -1,0 +1,88 @@
+{
+  "recordedAt": "2026-10-24T06:02:13.023854+00:00",
+  "status": "ROOT_ADMITTED_STALE_MARKETPLACE_DS_TARGET_RETARGET_SOURCE_ONLY",
+  "ownerRelease": {
+    "path": "docs/implementation/theme-marketplace-2026-10-23/evidence/marketplace-dark-toggle-source-release.json",
+    "sha256": "fd8aa4700f659741a4c1df70c9c39d257085d01c438be3abe3808a210ea265aa"
+  },
+  "review": "ActualNavbar807renderscanonicalsharedThemeToggleButton insideactualLayout137LetbuyyThemeProvider. Exacttargetonlyretargetnowrequiresbothmountedcomponentpatterns. Allothervalidator/forced-light/ratchetbaselinebytesunchanged. Noapplicationchange.",
+  "sourceConservationVerified": [
+    {
+      "path": "scripts/validators/validate-design-system.mjs",
+      "sha256": "70538aa37712c65446386b04cbe442cc21f6171b9dc8fec74b3ed583fdf7f5be",
+      "afterSha256": "9a9850e11e9b425e40654fcf7dad46db11e5d6f01722926991b9fe3e675fe2c0",
+      "unchanged": false
+    },
+    {
+      "path": "scripts/validators/design-system-baseline.json",
+      "sha256": "fb6d2c1001fbd33b1254348358b99503e072e829f01a2db630911e0041cf18b7",
+      "afterSha256": "fb6d2c1001fbd33b1254348358b99503e072e829f01a2db630911e0041cf18b7",
+      "unchanged": true
+    },
+    {
+      "path": "tests/governance/foundation-wave5-design-governance.test.mjs",
+      "sha256": "2ac27be80a7dd7192c57fbe16c1526119092f4f3c1f7bb974a573cf70fbb6920",
+      "afterSha256": "df3dc68160dc68cb24958b0933962aa55b1ef2b060d3bd4622df75d6d3b46313",
+      "unchanged": false
+    },
+    {
+      "path": "apps/frozen/theme-store/src/app/layout.tsx",
+      "sha256": "07bda3d2285517ade9dbd4faa77efb9e17a44d77b09db0bad493108fca1f7587",
+      "afterSha256": "07bda3d2285517ade9dbd4faa77efb9e17a44d77b09db0bad493108fca1f7587",
+      "unchanged": true
+    },
+    {
+      "path": "apps/frozen/theme-store/src/components/layout/navbar.tsx",
+      "sha256": "9549aac2c1bac103fd107cd346fed408b8db3301cc904d2dc2c7886448ebf8b3",
+      "afterSha256": "9549aac2c1bac103fd107cd346fed408b8db3301cc904d2dc2c7886448ebf8b3",
+      "unchanged": true
+    },
+    {
+      "path": "packages/typescript/ui/src/theme-toggle-button.tsx",
+      "sha256": "d811614168983120ab209e5339f7a4c1f5cefe036fc71d3fd60469b1223ce37e",
+      "afterSha256": "d811614168983120ab209e5339f7a4c1f5cefe036fc71d3fd60469b1223ce37e",
+      "unchanged": true
+    },
+    {
+      "path": "packages/typescript/ui/src/theme-provider.tsx",
+      "sha256": "223ffac2a4150c4e4a472f77d861d018ef2e9659b1f441a1aa3cad1cd05e8c55",
+      "afterSha256": "223ffac2a4150c4e4a472f77d861d018ef2e9659b1f441a1aa3cad1cd05e8c55",
+      "unchanged": true
+    },
+    {
+      "path": "apps/commerce/web/src/app/preview/preview-content.tsx",
+      "sha256": "a7d1236632a30d534c6ced99a8f18392459cc100303d6d9a7bbff4db7ee73efa",
+      "afterSha256": "a7d1236632a30d534c6ced99a8f18392459cc100303d6d9a7bbff4db7ee73efa",
+      "unchanged": true
+    },
+    {
+      "path": "apps/commerce/web/src/app/preview/preview-typography.test.ts",
+      "sha256": "969ecea515e2410f9782e20e44446f033191cf5c1c0fc92afd78617859e3576d",
+      "afterSha256": "969ecea515e2410f9782e20e44446f033191cf5c1c0fc92afd78617859e3576d",
+      "unchanged": true
+    }
+  ],
+  "independentChecks": {
+    "targetGovernanceTests": 5,
+    "pass": 5,
+    "fail": 0,
+    "skip": 0,
+    "fullDesignSystemValidatorExit": 0,
+    "hardInvariants": "OK",
+    "metricsUnchanged": true,
+    "ownerCombined8IncludesUnchangedFederationTestsNotRerunByRoot": true
+  },
+  "evidence": [
+    {
+      "path": "docs/implementation/niche-theme-programme/marketplace-dark-toggle-root-tests.tap",
+      "sha256": "b68fd50098b885149645684dec74e7fa20060f804e8683e2c5b58d6cc4a10a72"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/marketplace-dark-toggle-root-validator.log",
+      "sha256": "2cb925c5237067e1a0c3451ed7f14c558bec4648e9f8a5abb3a189702249aff0"
+    }
+  ],
+  "runtime9015Or936Actions": false,
+  "applicationOrFrozenFontOrKindredChanged": false,
+  "newLiveDarkModeProofClaimed": false
+}

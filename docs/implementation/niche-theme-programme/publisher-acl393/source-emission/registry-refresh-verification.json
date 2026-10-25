@@ -1,0 +1,91 @@
+{
+  "status": "REGISTRY_REFRESH_VERIFIED_317_SEMANTIC_ENTRIES_EXACT_ONLY_2_HISTORICAL_PROVENANCE_ADDITIONS",
+  "before": {
+    "path": "docs/implementation/niche-theme-programme/publisher-acl393/source-emission/tenant-tables.registry.ts.before.snapshot",
+    "sha256": "01b52a18ea999d0be335d6f90657c7a3c1215c7a8797238edcf79387680f19a2"
+  },
+  "after": {
+    "path": "services/api-gateway/src/tenant/tenant-tables.registry.ts",
+    "sha256": "b1bda20c01d5a9738a9520276948f7bd268c95e64b99ef59002d394e4bc4e26d"
+  },
+  "generator": {
+    "path": "scripts/generators/generate-tenant-table-registry.mjs",
+    "sha256": "cbd69233685432f45755abf357bfb7b7da7b9b1276a789272533bfca13406a54"
+  },
+  "deriver": {
+    "path": "scripts/governance/tenant-registry-common.mjs",
+    "sha256": "83c8f7c5957ad52f284b0d2978778917b50871a8bf8fd0327e1d656ed71e65fc"
+  },
+  "entryCount": 317,
+  "all317SemanticEntriesIdentical": true,
+  "newTables": [],
+  "removedTables": [],
+  "scopeOrOwnerColumnsChanged": [],
+  "migration393ChangesAnyRegistryEntry": false,
+  "sourceDerivedParityAll322Migrations": true,
+  "all317NamesPresentInActualQualifiedNative04Schema": true,
+  "actualNative04TableEvidence": {
+    "path": "docs/implementation/niche-theme-programme/publisher-acl393/native-runs/04/provenance/001-entry-full-profile-before-assertions.json",
+    "sha256": "c2497924c6b08affc9bbe3a9c54c8bb17ee95dbcc7d85381555b38cd8078c306",
+    "bytes": 378897
+  },
+  "actualNative04MigrationReceipt": {
+    "path": "docs/implementation/niche-theme-programme/publisher-acl393/native-runs/04/migration-receipt.json",
+    "sha256": "3d12ea4913320fa0dc7f1bd60e24f6a5ffaf96aec7773b2b277ee9862b48ba5c"
+  },
+  "columnProofLimit": "All scopes/owner-columns verified against complete current migration-derived schema and exact preexisting317 semantic entries; table existence checked against actual qualified392 database snapshot. No new live column-catalog query or new native393 run claimed before coordinated batch admission.",
+  "origins": [
+    {
+      "table": "carts",
+      "file": "388_cart_order_fact_snapshots.sql",
+      "line": 78,
+      "statement": "ALTER TABLE public.carts ADD COLUMN fact_acceptance_version smallint",
+      "effect": "Provenance only; fact_acceptance_version is not a scope/owner column.",
+      "source": {
+        "path": "database/supabase/migrations/388_cart_order_fact_snapshots.sql",
+        "sha256": "9de7c35b68684cd5d3c752166e5c6ae0b33c64c6b1ea8ac353a82bcac936d2c3"
+      }
+    },
+    {
+      "table": "theme_editor_drafts",
+      "file": "384_theme_editor_template_keys.sql",
+      "line": 246,
+      "statement": "ALTER TABLE public.theme_editor_drafts DROP CONSTRAINT theme_editor_drafts_template_key_check;",
+      "effect": "Provenance only; template-key check replacement changes no scope/owner column.",
+      "source": {
+        "path": "database/supabase/migrations/384_theme_editor_template_keys.sql",
+        "sha256": "e7304c2306956dd3784175d4f735e3d8f9029ddc1631f97b9d396d1ee9f55cca"
+      }
+    }
+  ],
+  "changed": [
+    {
+      "table": "carts",
+      "scopeColumns": [
+        "store_id"
+      ],
+      "tenantColumn": "store_id",
+      "ownerColumns": [],
+      "sourceFiles": [
+        "000_baseline.sql",
+        "156_executable_cart_channel_handoff.sql",
+        "277_marketplace_cart_sales_origin.sql",
+        "388_cart_order_fact_snapshots.sql"
+      ]
+    },
+    {
+      "table": "theme_editor_drafts",
+      "scopeColumns": [
+        "store_id"
+      ],
+      "tenantColumn": "store_id",
+      "ownerColumns": [],
+      "sourceFiles": [
+        "000_baseline.sql",
+        "087_theme_template_drafts.sql",
+        "384_theme_editor_template_keys.sql"
+      ]
+    }
+  ],
+  "policiesOrTenantAccessWidened": false
+}

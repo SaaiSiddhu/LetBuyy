@@ -1,0 +1,410 @@
+{
+  "body": {
+    "background": "rgb(239, 236, 236)",
+    "color": "rgba(37, 37, 37, 0.75)",
+    "font": "\"Quattrocento Sans\", sans-serif",
+    "fontSize": "16px"
+  },
+  "controls": [
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Search",
+      "tag": "INPUT",
+      "type": "search"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Dinnerware",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Share",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Name",
+      "tag": "INPUT",
+      "type": "text"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Email",
+      "tag": "INPUT",
+      "type": "email"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "INPUT",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Email",
+      "tag": "INPUT",
+      "type": "email"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Subscribe",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Canada (CAD $)",
+      "tag": "BUTTON",
+      "type": "button"
+    }
+  ],
+  "headings": [
+    {
+      "font": "\"Quattrocento Sans\", sans-serif",
+      "height": 19.5,
+      "line": "19.5px",
+      "size": "13px",
+      "tag": "H2",
+      "text": "",
+      "weight": "400",
+      "width": 282,
+      "x": 948,
+      "y": 103.09375
+    },
+    {
+      "font": "Trirong, serif",
+      "height": 112,
+      "line": "56px",
+      "size": "44px",
+      "tag": "H1",
+      "text": "Sweet & Savory Comfort Food Recipes",
+      "weight": "300",
+      "width": 726,
+      "x": 357,
+      "y": 1118.890625
+    },
+    {
+      "font": "Trirong, serif",
+      "height": 56,
+      "line": "56px",
+      "size": "44px",
+      "tag": "H1",
+      "text": "The Dish: Chiffon Cake ",
+      "weight": "300",
+      "width": 726,
+      "x": 357,
+      "y": 2299.7421875
+    },
+    {
+      "font": "Trirong, serif",
+      "height": 56,
+      "line": "56px",
+      "size": "44px",
+      "tag": "H1",
+      "text": "The Dish: Pan-Fried Dumplings ",
+      "weight": "300",
+      "width": 726,
+      "x": 357,
+      "y": 3473.6640625
+    },
+    {
+      "font": "Trirong, serif",
+      "height": 56,
+      "line": "56px",
+      "size": "44px",
+      "tag": "H1",
+      "text": "The Dish: Cherry Cheesecake ",
+      "weight": "300",
+      "width": 726,
+      "x": 357,
+      "y": 4676.3828125
+    },
+    {
+      "font": "Trirong, serif",
+      "height": 112,
+      "line": "56px",
+      "size": "44px",
+      "tag": "H1",
+      "text": "The Dish: Grandma Kelly’s Perogies",
+      "weight": "300",
+      "width": 726,
+      "x": 357,
+      "y": 5821.5078125
+    },
+    {
+      "font": "Trirong, serif",
+      "height": 33.59375,
+      "line": "33.6px",
+      "size": "26.4px",
+      "tag": "H2",
+      "text": "Leave a comment",
+      "weight": "300",
+      "width": 726,
+      "x": 357,
+      "y": 6473.7578125
+    },
+    {
+      "font": "Trirong, serif",
+      "height": 56,
+      "line": "56px",
+      "size": "44px",
+      "tag": "H2",
+      "text": "Don't miss out",
+      "weight": "300",
+      "width": 1260,
+      "x": 90,
+      "y": 6920.65625
+    },
+    {
+      "font": "Trirong, serif",
+      "height": 25.1953125,
+      "line": "25.2px",
+      "size": "19.8px",
+      "tag": "H2",
+      "text": "Get to know Craft",
+      "weight": "300",
+      "width": 540,
+      "x": 170,
+      "y": 7180.453125
+    },
+    {
+      "font": "Trirong, serif",
+      "height": 25.1953125,
+      "line": "25.2px",
+      "size": "19.8px",
+      "tag": "H2",
+      "text": "Our mission",
+      "weight": "300",
+      "width": 540,
+      "x": 730,
+      "y": 7180.453125
+    },
+    {
+      "font": "\"Quattrocento Sans\", sans-serif",
+      "height": 19.5,
+      "line": "19.5px",
+      "size": "13px",
+      "tag": "H2",
+      "text": "Country/region",
+      "weight": "400",
+      "width": 155.8125,
+      "x": 180,
+      "y": 7398.5390625
+    }
+  ],
+  "links": [
+    {
+      "text": "Skip to content",
+      "url": "https://theme-craft-demo.myshopify.com/blogs/magazine/sweet-savory-comfort-food-recipes#MainContent"
+    },
+    {
+      "text": "Check out our latest bundled collections",
+      "url": "https://theme-craft-demo.myshopify.com/collections/bundles"
+    },
+    {
+      "text": "",
+      "url": "https://theme-craft-demo.myshopify.com/"
+    },
+    {
+      "text": "",
+      "url": "https://theme-craft-demo.myshopify.com/collections/speckled-white"
+    },
+    {
+      "text": "",
+      "url": "https://theme-craft-demo.myshopify.com/collections/dove-gray"
+    },
+    {
+      "text": "",
+      "url": "https://theme-craft-demo.myshopify.com/collections/blush-pink"
+    },
+    {
+      "text": "",
+      "url": "https://theme-craft-demo.myshopify.com/collections/beachgrass-green"
+    },
+    {
+      "text": "",
+      "url": "https://theme-craft-demo.myshopify.com/collections/midnight-blue"
+    },
+    {
+      "text": "Glassware",
+      "url": "https://theme-craft-demo.myshopify.com/collections/glassware"
+    },
+    {
+      "text": "Serveware",
+      "url": "https://theme-craft-demo.myshopify.com/collections/serveware"
+    },
+    {
+      "text": "Flatware",
+      "url": "https://theme-craft-demo.myshopify.com/collections/flatware"
+    },
+    {
+      "text": "Textiles",
+      "url": "https://theme-craft-demo.myshopify.com/collections/textiles"
+    },
+    {
+      "text": "Bundles",
+      "url": "https://theme-craft-demo.myshopify.com/collections/bundles"
+    },
+    {
+      "text": "Cart",
+      "url": "https://theme-craft-demo.myshopify.com/cart"
+    },
+    {
+      "text": "Back to blog",
+      "url": "https://theme-craft-demo.myshopify.com/blogs/magazine"
+    },
+    {
+      "text": "About",
+      "url": "https://theme-craft-demo.myshopify.com/pages/about-us"
+    },
+    {
+      "text": "Magazine",
+      "url": "https://theme-craft-demo.myshopify.com/blogs/magazine"
+    },
+    {
+      "text": "theme-craft-demo",
+      "url": "https://theme-craft-demo.myshopify.com/"
+    }
+  ],
+  "sections": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--18214084477182__main",
+      "rect": {
+        "height": 6612.765625,
+        "width": 1440,
+        "x": 0,
+        "y": 243.890625
+      },
+      "tag": "SECTION",
+      "text": "Sweet & Savory Comfort Food Recipes\nNOVEMBER 17, 2021\n\nComfort food doesn’t always look like mac ‘n cheese—it often looks like a memory in meal form, passed down from someone speci"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--18214084477182__newsletter",
+      "rect": {
+        "height": 287.796875,
+        "width": 1440,
+        "x": 0,
+        "y": 6856.65625
+      },
+      "tag": "SECTION",
+      "text": "Don't miss out\n\nSubscribe to our mailing list for insider news, product launches, and more.\n\nEmail"
+    }
+  ],
+  "title": "Sweet & Savory Comfort Food Recipes – theme-craft-demo",
+  "url": "https://theme-craft-demo.myshopify.com/blogs/magazine/sweet-savory-comfort-food-recipes",
+  "viewport": {
+    "dpr": 1,
+    "height": 1000,
+    "width": 1440
+  },
+  "formGroups": [],
+  "grids": [],
+  "images": [
+    {
+      "alt": "A top-down view of a white plate with remnants of a meal served with a fork and knife. ",
+      "complete": true,
+      "naturalWidth": 1100,
+      "rect": {
+        "height": 825,
+        "width": 1300
+      }
+    },
+    {
+      "alt": "Closeup view of a Chiffon Cake.",
+      "complete": true,
+      "naturalWidth": 1024,
+      "rect": {
+        "height": 726,
+        "width": 726
+      }
+    },
+    {
+      "alt": "Closeup view of Pan-Fried Dumplings ",
+      "complete": true,
+      "naturalWidth": 1024,
+      "rect": {
+        "height": 726,
+        "width": 726
+      }
+    },
+    {
+      "alt": "A colander of fresh cherries ",
+      "complete": true,
+      "naturalWidth": 1024,
+      "rect": {
+        "height": 726,
+        "width": 726
+      }
+    },
+    {
+      "alt": "Hands shaping perogies on a wooden surface.",
+      "complete": true,
+      "naturalWidth": 1024,
+      "rect": {
+        "height": 726,
+        "width": 726
+      }
+    }
+  ],
+  "bodyText": "Skip to content\n\nCheck out our latest bundled collections \n\nDinnerware\nGlassware\nServeware\nFlatware\nTextiles\nBundles\nCart\nSweet & Savory Comfort Food Recipes\nNOVEMBER 17, 2021\n\nComfort food doesn’t always look like mac ‘n cheese—it often looks like a memory in meal form, passed down from someone special.\n\nThis Mother’s Day, we’re honouring all the women who have lent strength, guidance, and delicious recipes to our lives—from mothers, grandmothers, aunts, and sisters, to our chosen family of godmothers and close friends. To celebrate them all, our team has gathered together four favourite family recipes from special women in our lives.\n\n \n\nThe Dish: Chiffon Cake \n\nKate-Lynn from Fable’s marketing team is partial to a delicate Chiffon Cake which has been in her family for generations on her mom’s side. When baking it with her mom and grandma as a kid, Kate-Lynn remembers her grandma flipping the batter bowl over her head at a certain stage to test that it was ready. “If the batter fell on my head, we hadn’t mixed everything well enough. It was always a thrill,” she says. “Fortunately the batter never fell on me, but not everyone was as lucky...” \n\nPro tip: This cake is best eaten in the summertime with strawberries fresh from the garden.\n\nChiffon Cake Recipe\n\n \n\nThe Dish: Pan-Fried Dumplings \n\nTech team member (and Fable co-founder) Tina was passed her famous dumpling method by her mother. It’s a recipe she helped prepare around the kitchen table as a kid. “Although,” Tina notes, “There is no formal recipe. It’s all done with your sense, feeling, and smell.” Tina likes adjusting the ingredients to spice things up, and has given options for both meat and vegan versions. Dumplings are a delicious year-round meal, but Tina notes how the quantity really amps up in her household around Lunar New Year.\n\nPro tip: Try serving your pan-fried dumplings with soy sauce, black vinegar, and chili oil with a pinch of sugar.\n\nPan-Fried Dumpling Recipe \n\n \n\nThe Dish: Cherry Cheesecake \n\nTanisha from Fable’s customer support team learned how to make Cherry Cheesecake from her mom, and the comfort food has been coming in handy during pandemic times as she cooks it a little more regularly to help get through. As a kid, Tanisha loved dipping her finger in the batter to make her mom laugh. “I can’t wait to show my future children how to make it!”\n\nPro tip: Fresh cherries are ideal, but if they aren’t readily available then canned or jarred cherries will work in a pinch.\n\nCherry Cheesecake Recipe \n\n \n\nThe Dish: Grandma Kelly’s Perogies\n\nFrom the product and operations team, Fable designer Christy was taught perogy-making by her Grandma Kelly, who was of Polish descent and learned the technique from her own mother. Growing up, the perogies would usually accompany special-occasion dinners like Christmas, Thanksgiving, and Easter, and always consisted of two varieties. “There would be the traditional potato, and then also blueberry and sauerkraut ones, which were my favorite!” says Christy. \n\nPro tip: Serve up your perogies with caramelized onions and lots of butter. \n\nGrandma Kelly's Perogy Recipe\n\n \n\nShare\nBack to blog\nLeave a comment\nName *\nEmail *\nComment *\n\nPlease note, comments need to be approved before they are published.\n\nDon't miss out\n\nSubscribe to our mailing list for insider news, product launches, and more.\n\nEmail\nGet to know Craft\nAbout\nMagazine\nOur mission\n\nWe create products that are as enjoyable as they are ethical.\n\nCountry/region\nCanada (CAD $)\nPayment methods\n© 2026, theme-craft-demo Powered by Shopify"
+}

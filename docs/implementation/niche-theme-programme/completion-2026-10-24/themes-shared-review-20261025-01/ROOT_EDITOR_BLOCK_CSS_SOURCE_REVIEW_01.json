@@ -1,0 +1,22 @@
+{
+  "recordedAt": "2026-10-25T01:24:01.805119+00:00",
+  "status": "ACCEPT_EXACT_PRIVATE_CSS_SOURCE_FOR_NEXT_CONTROLLED_INTEGRATION_NOT_BROWSER_VERIFIED",
+  "proposal": "/private/tmp/letbuyy-editor-block-targets-prep-20261025-01/SEALED_PROPOSAL.json",
+  "proposalSha256": "13a78a59153933223d1ba4fed46b1f3e13aa07b9dfc8d645e3009e03bd110fa3",
+  "sourcePath": "apps/merchant/web/src/app/[store]/online-store/themes/[themeId]/editor/editor.css",
+  "beforeSha256": "a18b469a13e822b7d55b9746ea588aa2eb9536461b754dbe6eddacf7d9b76856",
+  "afterSha256": "b937e271bb87fed6b783d9fc9e151233591df0829c4bff8d2823641cc66a6ef2",
+  "artifactsIndependentlyHashed": 7,
+  "exactPatchVerified": true,
+  "MainAndCandidateUnchanged": true,
+  "assessment": [
+    "Existing section-action normal, hover and disabled declarations are reused unchanged for actual BlockChildRow action classes.",
+    "Only CSS selectors/declarations change; no renderer, schema, identity, money, draft or action logic changes. Existing focus/color/spacing tokens and styles are reused.",
+    "PostCSS/stylelint zero-warning evidence retained from sealed owner checks; no redundant rerun claimed.",
+    "Actual 24px geometry, pointer edges, keyboard focus, narrow labels and lifecycle regression remain required after restored runtime integration.",
+    "Source acceptance does not close ED-R07-PREVIEW-DEVICE-02 or certify any complete theme."
+  ],
+  "allocatorAction": "Include this exact single-file overlay in the coherent next candidate only under existing Themes writer/integration allocation; no current Main/candidate write granted by this review.",
+  "browserFence": "Retained during runtime preservation maintenance",
+  "fullThemeCertificates": 0
+}

@@ -1,0 +1,30 @@
+{
+  "checkedAt": "2026-10-23T20:34:02.342796+00:00",
+  "method": "Read-only source trace plus actual public planProductMutation regression. No DB/API execution.",
+  "sources": [
+    {
+      "path": "packages/commerce-core/src/index.ts",
+      "sha256": "b36af7e65c00d8b9d16fe84ffc7da522b6107c4010208cc224363fa90bdee6b9",
+      "bytes": 47209
+    },
+    {
+      "path": "services/api-gateway/src/execution/product-mutation.adapter.ts",
+      "sha256": "39a23ad08cc835d22bf0feb951c5ec44515e6c466f01be8cdd81800577d1257d",
+      "bytes": 7663
+    },
+    {
+      "path": "database/supabase/migrations/385_product_variant_facts.sql",
+      "sha256": "d3761b5226c88fe4a609395500e8ace46d082b3bdb2c11176d86cb3bca4a486b",
+      "bytes": 35281
+    }
+  ],
+  "findings": [
+    "ProductEditVariantSchema stock optional; UpdateProductSchema product stock optional.",
+    "planProductMutation conditionally adds stock and does not default omitted existing-variant stock.",
+    "executeProductMutation serializes that exact canonical plan into existing tenant transaction.",
+    "SQL385 updates existing metadata/commercial/option fields without inventory writes unless item has stock; new rows retain canonical default0/new supplied stock.",
+    "SQL385 parent inventory write runs only when p_mutation has stock."
+  ],
+  "apiDomainSqlChanges": false,
+  "observedLiveInventoryReset": false
+}

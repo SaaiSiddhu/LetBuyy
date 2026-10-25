@@ -1,0 +1,34 @@
+{
+  "status": "PRESERVE_EXISTING_COMPLETED_SESSIONS_AND_ACCEPTED_FINANCIAL_PROOF",
+  "runtime": "49ada80bc494",
+  "observedFalseFlags": [
+    {
+      "orderNumber": "ORD-20261024-10001",
+      "sessionId": "dd0e6d32-fd89-400a-9088-073463ed2673",
+      "storedFlag": false
+    },
+    {
+      "orderNumber": "ORD-20261024-10002",
+      "sessionId": "6482a347-1cfa-4999-92c6-3faef9252b46",
+      "storedFlag": false
+    },
+    {
+      "orderNumber": "ORD-20261024-10003",
+      "sessionId": "1c63b862-cd1b-495f-8cc4-2b51045ba48a",
+      "storedFlag": false
+    },
+    {
+      "orderNumber": "ORD-20261024-10004",
+      "sessionId": "855e80e1-fdcf-4230-ad2e-529bcc095196",
+      "storedFlag": false
+    }
+  ],
+  "sourceEffect": "Existing completed-receipt branch is byte-unchanged and returns its stored receipt before this new proof block. This proposal does not backfill or silently repair any existing metadata.",
+  "prohibitedHere": [
+    "Manual session/order/ledger edit",
+    "Second capture or payment",
+    "Resending a notification to make the flag true",
+    "Adopting another fixture or mutating current candidate"
+  ],
+  "ifStoredCorrectionIsRequired": "Request a separately reviewed supported canonical reconciliation source/runtime/data allocation; none is granted, implemented or executed here. Actual accepted signed-callback/balanced-capture proof remains valid despite the false descriptive metadata."
+}

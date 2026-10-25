@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "releasedAt": "2026-10-24T01:03:32.447954+00:00",
+  "status": "SOURCE_QUALIFIED_RELEASED_AND_FROZEN_RUNTIME_RETEST_REQUIRED",
+  "authorizingCoordinatorChatId": "01a164a4-a342-76d3-ab33-65e021ed57db",
+  "authorization": "Root exclusive grant: only existing Checkout BFF safeMessages CHECKOUT_PRODUCT_CHANGED entry and adjacent aggregate route.test.ts; real RED then focused tests, Commerce noEmit, scoped lint baseline comparison.",
+  "branch": "letbuyy/theme-release-performance-resume",
+  "head": "85aac99043d8dc10469e12cbb810609a3b6f1b0d",
+  "files": [
+    {
+      "path": "apps/commerce/web/src/app/api/checkout/[cartId]/[step]/route.ts",
+      "beforeSha256": "ab8ddce7b62828fe7956223824205ab69d535761a5cc1c24c6c12dcb9c4cacbe",
+      "afterSha256": "94455bc02ad97b801de5e8cabd995473c022bb330d468fe412aeb8b6590a339b"
+    },
+    {
+      "path": "apps/commerce/web/src/app/api/checkout/route.test.ts",
+      "beforeSha256": "55500eb3860ac87982afd9dd89e0d0eff35cd74be04a7fa5d077812aad619532",
+      "afterSha256": "095cb48fff4222cb2eb43615e6cfe29cb528657718493f869283c4fa9708d00c"
+    }
+  ],
+  "productionChange": "One safeMessages entry for existing canonical CHECKOUT_PRODUCT_CHANGED. HTTP status/code and no-store retained; upstream message/details never echoed.",
+  "regressionCoverage": [
+    "Exact 409/code and curated actionable guidance instead of generic failure",
+    "Hostile synthetic SQL/PII/capability-like upstream message/details omitted",
+    "One original signed Gateway call; unchanged validated body, no automatic retry",
+    "Existing inventory conflict, success projections, capability/origin/shape validation remain covered",
+    "Unknown and malformed codes remain generic; known-code 5xx becomes sanitized 503 CHECKOUT_UNAVAILABLE"
+  ],
+  "verification": {
+    "red": {
+      "passed": 10,
+      "failed": 1,
+      "expectedFailure": "Existing route returns Checkout could not continue. for canonical CHECKOUT_PRODUCT_CHANGED",
+      "productionSha256": "ab8ddce7b62828fe7956223824205ab69d535761a5cc1c24c6c12dcb9c4cacbe"
+    },
+    "green": {
+      "passed": 11,
+      "failed": 0,
+      "skipped": 0,
+      "cancelled": 0,
+      "todo": 0
+    },
+    "commerceNoEmit": {
+      "exitCode": 0,
+      "incremental": false
+    },
+    "scopedLintBefore": {
+      "errors": 0,
+      "warnings": 0
+    },
+    "scopedLintAfter": {
+      "errors": 0,
+      "warnings": 0
+    },
+    "diffCheck": {
+      "exitCode": 0
+    }
+  },
+  "validation": {
+    "path": "docs/implementation/niche-themes-2026-10-23/pantry/checkout-product-changed-source-release/validation.json",
+    "sha256": "cf57071f9675c24561da9f385809a56153082a738dca250466dced06fac45ce2"
+  },
+  "patch": {
+    "path": "docs/implementation/niche-themes-2026-10-23/pantry/checkout-product-changed-source-release/source.patch",
+    "sha256": "3d8902c1be1f3210e32503ae039a66466c3f99bc3174e1a1bb742f2a702fd64c"
+  },
+  "noRuntimeActions": true,
+  "gatewaySqlSchemaUnchangedByPantry": true,
+  "candidateCopiedOrRuntimeStarted": false,
+  "lifecycleAcceptance": {
+    "runId": "f6074d90e894",
+    "resourceState": "CLOSED_AND_REMOVED",
+    "counts": {
+      "PASS": 11,
+      "FAIL": 0,
+      "BLOCKED": 2,
+      "NOT RUN": 0
+    },
+    "blocked": [
+      "P08 exact actual response receipt missing",
+      "P12 exact actual response/status missing; generic native rejection and no new order/inventory effects retained"
+    ],
+    "sourceChecksDoNotPromoteCases": true,
+    "finalTwoPinkBaselineRestored": false
+  },
+  "freshRetestRequired": [
+    "Root admits exact new source plus Editor failed-request observer in sole fresh owned fixture; normal new identities/auth/bindings only",
+    "P08 actual stock rejection HTTP status/code/requestId plus canonical no-effect/reconciled quantity and normal retry/reload",
+    "Normal Pantry primary COD order, exact replay invariants and both immutable histories before later edit",
+    "Distinct normally accepted active 250g cart before real P11 300g edit; P12 actual stale confirm status/code/native guidance and no new order/inventory effect, immutable histories and normal current-product reacceptance",
+    "Complete all13 matrix evidence; do not resurrect old f607 carts/orders"
+  ],
+  "lease": "RELEASED_TO_ROOT_SOURCE_FROZEN"
+}

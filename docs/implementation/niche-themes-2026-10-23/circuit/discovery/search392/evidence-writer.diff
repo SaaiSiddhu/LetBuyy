@@ -1,0 +1,168 @@
+--- docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/revisions/02-before-evidence-writer/storefront-electronics-search.postgres.test.ts	2026-10-23 22:02:49
++++ services/api-gateway/src/__tests__/owned-db/storefront-electronics-search.postgres.test.ts	2026-10-23 22:03:29
+@@ -5,7 +5,9 @@
+ // This proves internal service-role/application scope, not RLS or browser E2E.
+ import assert from 'node:assert/strict';
+ import test, { before, after } from 'node:test';
+-import { readFileSync } from 'node:fs';
++import { readFileSync, writeFileSync, mkdtempSync } from 'node:fs';
++import { tmpdir } from 'node:os';
++import { join } from 'node:path';
+ import { createHash, randomUUID } from 'node:crypto';
+ import { setImmediate as yieldToTransport } from 'node:timers/promises';
+ import { closePooledSqlClients } from '@letbuyy/infrastructure/pooled-sql-adapter';
+@@ -26,6 +28,19 @@
+ };
+ const up = read(docs + '392_electronics_search.up.draft.sql'), down = read(docs + '392_electronics_search.down.draft.sql');
+ const signature = 'public.browse_storefront_products_v1(uuid,jsonb,uuid[])';
++const proofDirectory = mkdtempSync(join(tmpdir(), `letbuyy-search392-${owned.runId}-`));
++let proofSequence = 0;
++let proofInputs: Record<string, string> = {};
++// Evidence only: never serialize the harness/environment, headers or credentials.
++// Every record belongs to this verified owned run and its actual source bytes.
++function proof(operation: string, value: unknown) {
++    const path = join(proofDirectory, String(++proofSequence).padStart(4, '0') + '-' + operation + '.json');
++    const bytes = JSON.stringify({ runId: owned.runId, sequence: proofSequence, operation, inputs: proofInputs, value }, null, 2) + '\n';
++    writeFileSync(path, bytes, { mode: 0o600, flag: 'wx' });
++    const receipt = { path, sha256: sha(bytes) };
++    console.info('SEARCH392_PROVENANCE', JSON.stringify(receipt));
++    return receipt;
++}
+ const q = (value: string) => "'" + value.replaceAll("'", "''") + "'";
+ const json = (value: unknown) => q(JSON.stringify(value)) + '::jsonb';
+ const a = newSyntheticTenant('search392-a'), b = newSyntheticTenant('search392-b');
+@@ -51,18 +66,23 @@
+ function browse(query: Record<string, unknown> = {}, tenant = a, only?: string[]) {
+     const parsed = StorefrontDiscoveryQuerySchema.parse(query);
+     const raw: unknown = JSON.parse(owned.psql(`SELECT public.browse_storefront_products_v1(${q(tenant.siteId)},${json(parsed)},${only ? `ARRAY[${only.map(q)}]::uuid[]` : 'NULL'});`));
++    proof('browse', { signature, tenantSiteId: tenant.siteId, query: parsed, productIds: only ?? null, raw });
+     return { raw, ...readStorefrontDiscoveryPayload(raw, parsed) };
+ }
+ const found = (query: Record<string, unknown>, tenant = a, only?: string[]) => browse(query, tenant, only).data.map(row => row.id);
+-function hashBody() { return owned.psql(`SELECT md5(prosrc) FROM pg_proc WHERE oid=${q(signature)}::regprocedure;`); }
++function hashBody() {
++    const actual = owned.psql(`SELECT md5(prosrc) FROM pg_proc WHERE oid=${q(signature)}::regprocedure;`);
++    proof('body', { signature, actual }); return actual;
++}
+ function catalog() {
+-    return owned.psql(`SELECT jsonb_agg(jsonb_build_object('row',to_jsonb(p),'comment',obj_description(p.oid,'pg_proc'),
++    const actual = owned.psql(`SELECT jsonb_agg(jsonb_build_object('row',to_jsonb(p),'comment',obj_description(p.oid,'pg_proc'),
+         'dependencies',(SELECT coalesce(jsonb_agg(to_jsonb(d) ORDER BY to_jsonb(d)::text),'[]') FROM pg_depend d WHERE d.classid='pg_proc'::regclass AND d.objid=p.oid),
+         'sharedDependencies',(SELECT coalesce(jsonb_agg(to_jsonb(d) ORDER BY to_jsonb(d)::text),'[]') FROM pg_shdepend d WHERE d.classid='pg_proc'::regclass AND d.objid=p.oid AND d.dbid=(SELECT oid FROM pg_database WHERE datname=current_database()))) ORDER BY p.proname)
+         FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace WHERE n.nspname='public' AND(p.proname LIKE 'storefront_discovery_%_v1' OR p.proname IN('browse_storefront_products_v1','browse_storefront_apparel_v1'));`);
++    proof('catalog', JSON.parse(actual)); return actual;
+ }
+ function businessRows() {
+-    return owned.psql(`SELECT jsonb_build_object(
++    const actual = owned.psql(`SELECT jsonb_build_object(
+         'products',(SELECT encode(sha256(convert_to(coalesce(jsonb_agg(to_jsonb(t) ORDER BY id),'[]')::text,'UTF8')),'hex') FROM products t),
+         'variants',(SELECT encode(sha256(convert_to(coalesce(jsonb_agg(to_jsonb(t) ORDER BY id),'[]')::text,'UTF8')),'hex') FROM product_variants t),
+         'options',(SELECT encode(sha256(convert_to(coalesce(jsonb_agg(to_jsonb(t) ORDER BY id),'[]')::text,'UTF8')),'hex') FROM product_options t),
+@@ -72,19 +92,26 @@
+         'orders',(SELECT count(*) FROM orders),'carts',(SELECT count(*) FROM carts),
+         'themes',(SELECT encode(sha256(convert_to(coalesce(jsonb_agg(to_jsonb(t) ORDER BY id),'[]')::text,'UTF8')),'hex') FROM themes t),
+         'versions',(SELECT encode(sha256(convert_to(coalesce(jsonb_agg(to_jsonb(t) ORDER BY id),'[]')::text,'UTF8')),'hex') FROM theme_package_versions t));`);
++    proof('business-rows', JSON.parse(actual)); return actual;
+ }
+ function roles() {
+     for (const role of ['anon', 'authenticated', 'app_tenant', 'authenticator']) {
+-        assert.equal(owned.psql(`SELECT has_function_privilege(${q(role)},${q(signature)},'EXECUTE');`), 'f', role);
+-        assert.match(owned.psqlExpectError(`SET ROLE ${role};SELECT public.browse_storefront_products_v1(${q(a.siteId)});`), /permission denied/);
++        const privilege = owned.psql(`SELECT has_function_privilege(${q(role)},${q(signature)},'EXECUTE');`);
++        proof('role-privilege', { role, signature, privilege }); assert.equal(privilege, 'f', role);
++        const error = owned.psqlExpectError(`SET ROLE ${role};SELECT public.browse_storefront_products_v1(${q(a.siteId)});`);
++        proof('role-denial', { role, signature, error }); assert.match(error, /permission denied/);
+     }
+     const query = json(StorefrontDiscoveryQuerySchema.parse({ search: 'Circuit lifecycle hub' }));
+     assert.equal(owned.psql(`BEGIN;SET LOCAL ROLE service_role;SELECT public.browse_storefront_products_v1(${q(a.siteId)},${query})->>'count';ROLLBACK;`).split('\n').find(line => line === '1'), '1');
+ }
+ function refuses(script: string) {
+     const before = catalog(), rows = businessRows();
+-    assert.match(owned.psqlScriptExpectError(script), /discovery function profile changed|DRAFT392 refuses/);
++    const entry = proof('refusal-before', { scriptSha256: sha(script), catalog: JSON.parse(before), businessRows: JSON.parse(rows) });
++    const error = owned.psqlScriptExpectError(script);
++    proof('refusal-error', { entry, scriptSha256: sha(script), error });
++    assert.match(error, /discovery function profile changed|DRAFT392 refuses/);
+     assert.equal(catalog(), before); assert.equal(businessRows(), rows);
++    proof('refusal-conserved', { entry, scriptSha256: sha(script) });
+ }
+ function executeDdl(ddl: string) { owned.psql(`DO $restore$ BEGIN EXECUTE $replacement$${ddl}$replacement$;END $restore$;`); }
+ function admissionMutants(script: string, currentDdl: string) {
+@@ -107,14 +134,19 @@
+     } finally { owned.psql(`UPDATE pg_proc SET proacl=${q(originalAcl)}::aclitem[] WHERE oid=${q(signature)}::regprocedure;`); }
+     assert.equal(catalog(), before);
+     type Edge = { roleid: string; member: string; grantor: string; admin_option: boolean; inherit_option: boolean; set_option: boolean };
+-    const edges = (group: string, member: string) => JSON.parse(owned.psql(`SELECT coalesce(jsonb_agg(jsonb_build_object('roleid',r.rolname,'member',u.rolname,'grantor',m.grantor,'admin_option',m.admin_option,'inherit_option',m.inherit_option,'set_option',m.set_option)),'[]') FROM pg_auth_members m JOIN pg_roles r ON r.oid=m.roleid JOIN pg_roles u ON u.oid=m.member WHERE r.rolname=${q(group)} AND u.rolname=${q(member)};`)) as Edge[];
++    const edges = (group: string, member: string) => {
++        const actual = JSON.parse(owned.psql(`SELECT coalesce(jsonb_agg(jsonb_build_object('roleid',r.rolname,'member',u.rolname,'grantor',m.grantor,'admin_option',m.admin_option,'inherit_option',m.inherit_option,'set_option',m.set_option)),'[]') FROM pg_auth_members m JOIN pg_roles r ON r.oid=m.roleid JOIN pg_roles u ON u.oid=m.member WHERE r.rolname=${q(group)} AND u.rolname=${q(member)};`)) as Edge[];
++        proof('role-edges', { group, member, actual }); return actual;
++    };
+     const reverse = edges('app_tenant', 'service_role'), existing = edges('service_role', 'app_tenant');
+     assert.equal(existing.length, 0, 'baseline cannot already grant the protected role in reverse');
+     for (const row of reverse) assert.equal(owned.psql(`SELECT ${row.grantor}=(SELECT oid FROM pg_roles WHERE rolname=current_user);`), 't');
+     try {
+         if (reverse.length) owned.psql('REVOKE app_tenant FROM service_role;');
+         owned.psql('GRANT service_role TO app_tenant WITH INHERIT TRUE;');
+-        assert.equal(owned.psql(`SELECT has_function_privilege('app_tenant',${q(signature)},'EXECUTE');`), 't');
++        const inheritedPrivilege = owned.psql(`SELECT has_function_privilege('app_tenant',${q(signature)},'EXECUTE');`);
++        proof('inherited-privilege-mutant', { role: 'app_tenant', signature, privilege: inheritedPrivilege });
++        assert.equal(inheritedPrivilege, 't');
+         refuses(script);
+     } finally {
+         owned.psql('REVOKE service_role FROM app_tenant;');
+@@ -133,16 +165,24 @@
+         predecessor391: { upPath: string; downPath: string; upSha256: string; downSha256: string; functionSignature: string; prosrcMd5: string } };
+     assert.equal(admission.status, 'ROOT_ACCEPTED_FOR_OWNED_NATIVE_QUALIFICATION');
+     assert.equal(sha(up), admission.upSha256); assert.equal(sha(down), admission.downSha256);
++    proofInputs = {
++        suiteSha256: sha(readFileSync(new URL(import.meta.url), 'utf8')), upSha256: sha(up), downSha256: sha(down),
++        admissionSha256: sha(read(docs + 'admission.json')), validatorCasesSha256: sha(read(docs + evidence.validatorCases.path)),
++        predecessor391UpSha256: sha(read(admission.predecessor391.upPath)), predecessor391DownSha256: sha(read(admission.predecessor391.downPath)),
++    };
+     assert.match(admission.predecessor391.upPath, /^database\/supabase\/migrations\/391_[^/]+\.sql$/);
+     assert.match(admission.predecessor391.downPath, /^database\/supabase\/rollback\/391_[^/]+\.sql$/);
+     assert.equal(sha(read(admission.predecessor391.upPath)), admission.predecessor391.upSha256);
+     assert.equal(sha(read(admission.predecessor391.downPath)), admission.predecessor391.downSha256);
+     assert.match(admission.predecessor391.prosrcMd5, /^[a-f0-9]{32}$/);
+-    assert.equal(owned.psql(`SELECT md5(prosrc) FROM pg_proc WHERE oid=to_regprocedure(${q(admission.predecessor391.functionSignature)});`), admission.predecessor391.prosrcMd5, 'actual emitted391 function must be present');
++    const actualPredecessor391Body = owned.psql(`SELECT md5(prosrc) FROM pg_proc WHERE oid=to_regprocedure(${q(admission.predecessor391.functionSignature)});`);
++    proof('predecessor391', { signature: admission.predecessor391.functionSignature, actualBody: actualPredecessor391Body });
++    assert.equal(actualPredecessor391Body, admission.predecessor391.prosrcMd5, 'actual emitted391 function must be present');
+     assert.equal(sha(read(evidence.baseline390.path)), evidence.baseline390.sha256);
+     for (const row of evidence.drafts) assert.equal(sha(read(docs + row.path)), row.sha256);
+     assert.equal(sha(read(docs + evidence.validatorCases.path)), evidence.validatorCases.sha256);
+     const entryBody = hashBody();
++    proof('entry', { entryBody, signature, predecessor391: admission.predecessor391 });
+     assert([evidence.baseline390.prosrcMd5, evidence.proposedProsrcMd5].includes(entryBody), 'unknown latest body refuses before DDL');
+     if (entryBody === evidence.proposedProsrcMd5) {
+         const rows = businessRows(); owned.script(down);
+@@ -214,7 +254,7 @@
+     tap = tapRest(owned.restUrl, async (call, forward) => outage && call.resource === 'rpc/browse_storefront_products_v1'
+         ? Response.json({ message: 'PRIVATE-SEARCH392-DB-FAULT', code: 'XX392' }, { status: 500 }) : forward());
+ });
+-after(async () => { await gateway?.settle(); tap?.restore(); await closePooledSqlClients(); await proxy?.stop(); });
++after(async () => { await gateway?.settle(); tap?.restore(); await closePooledSqlClients(); await proxy?.stop(); proof('suite-after', { completedEvidenceSequence: proofSequence }); });
+ 
+ test('model-only and positive-supplied connector kinds use actual validated common facts, including case/hyphen/Unicode', () => {
+     assert.deepEqual(found({ search: 'Synthetic H1' }), [ids.hub]);
+@@ -260,7 +300,11 @@
+     for (const page of [first, second, past]) assert.equal(page.count, 3, 'past-end page retains server total');
+ });
+ test('actual mounted public worker returns canonical model matches and rejects unsupported filters without error leakage', async () => {
+-    const request = async (path: string) => { await yieldToTransport(); const result = await gateway.request(path); await gateway.settle(); return result; };
++    const request = async (path: string) => {
++        await yieldToTransport(); const result = await gateway.request(path); await gateway.settle();
++        proof('public-http', { path, status: result.status, requestId: result.headers.get('x-request-id'), json: result.json, text: result.text });
++        return result;
++    };
+     for (const path of [`/v1/storefront/${a.subdomain}/products?search=Synthetic%20H1`, `/v1/storefront/store/${a.siteId}/products?search=Synthetic%20H1`]) {
+         const response = await request(path); assert.equal(response.status, 200, response.text);
+         assert.deepEqual(response.json?.data.map((row: { id: string }) => row.id), [ids.hub]);
+@@ -273,6 +317,7 @@
+ test('finite owned query executes within its bounded budget without claiming production load qualification', () => {
+     const query = StorefrontDiscoveryQuerySchema.parse({ search: 'Synthetic H1', limit: 10 });
+     const plan = JSON.parse(owned.psql(`EXPLAIN(ANALYZE,FORMAT JSON) SELECT public.browse_storefront_products_v1(${q(a.siteId)},${json(query)});`)) as Array<Record<string, unknown>>;
++    proof('finite-explain', { query, plan });
+     const elapsed = plan[0]['Execution Time']; assert.equal(typeof elapsed, 'number');
+     assert(Number.isFinite(elapsed) && Number(elapsed) >= 0 && Number(elapsed) < 5000, 'bounded native fixture execution');
+     console.info('SEARCH392_OWNED_PERF', JSON.stringify({ executionMs: elapsed, budgetMs: 5000, scope: 'finite owned fixture only; not production/load acceptance' }));

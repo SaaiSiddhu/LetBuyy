@@ -1,0 +1,60 @@
+{
+  "record_scope": "HISTORICAL_INTAKE_OR_INTERMEDIATE_CHECKPOINT",
+  "superseded_for_final_status_by": [
+    "FINAL_VALIDATION.json",
+    "FINAL_GIT_STATE.json"
+  ],
+  "branches": [
+    {
+      "sha": "045a77003a019588a3878b80b9de43e1ce2dc84a",
+      "ref": "refs/heads/develop"
+    },
+    {
+      "sha": "145e330a92ba406fdbd7fd1b6e1a3a6f8ec5b264",
+      "ref": "refs/heads/letbuyy/checkpoint-theme-cli-mode"
+    },
+    {
+      "sha": "5a62b6590aea3e74be1df4a88eeae63ccd12d528",
+      "ref": "refs/heads/letbuyy/merchant-performance"
+    },
+    {
+      "sha": "faeab17f7d5a404ffec95b7c56961bdae74ee379",
+      "ref": "refs/heads/letbuyy/recovery-2026-10-18"
+    },
+    {
+      "sha": "15359cf3ecf49e6a159170d3eebf2780e48352a9",
+      "ref": "refs/heads/letbuyy/sustained-l-marketplace-account-ui"
+    },
+    {
+      "sha": "85aac99043d8dc10469e12cbb810609a3b6f1b0d",
+      "ref": "refs/heads/letbuyy/theme-release-performance-resume"
+    },
+    {
+      "sha": "eba8b2951599d526260d556bdece09c5ed843605",
+      "ref": "refs/heads/letbuyy/week1-compact-bootstrap"
+    },
+    {
+      "sha": "d8707aaf11f86a2d65fd94c63718f85a942ddf98",
+      "ref": "refs/heads/letbuyy/week1-hyperdrive-protocol"
+    },
+    {
+      "sha": "9c4ae60548e1e9260aad0bd4011becbf4ebdca4b",
+      "ref": "refs/heads/letbuyy/week1-storefront-access"
+    },
+    {
+      "sha": "1e6cc4c3d8766dd258ddc02986fda470fdb83c7a",
+      "ref": "refs/heads/main"
+    },
+    {
+      "sha": "1e6cc4c3d8766dd258ddc02986fda470fdb83c7a",
+      "ref": "refs/heads/staging"
+    }
+  ],
+  "archive_tag": [
+    {
+      "sha": "faeab17f7d5a404ffec95b7c56961bdae74ee379",
+      "ref": "refs/tags/archive/recovery-2026-10-18"
+    }
+  ],
+  "no_branch_deletions_performed": true
+}

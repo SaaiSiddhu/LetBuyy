@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { useRouter } from 'next/navigation'
+import { useMerchantRouter as useRouter } from './MerchantNavigationProvider'
 import { Button, Input, MaterialIcon, Search } from '@letbuyy/ui'
 import { getMerchantCommandItems, normalizeSiteType, type MerchantCommandItem } from './merchantNavigation'
 

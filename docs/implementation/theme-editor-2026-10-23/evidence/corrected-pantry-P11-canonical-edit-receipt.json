@@ -1,0 +1,123 @@
+{
+  "recordedAt": "2026-10-23T21:04:05.766Z",
+  "runId": "f6074d90e894",
+  "guardVerified": true,
+  "readOnly": true,
+  "scope": "Actual persisted canonical p_mutation from acknowledged normal merchant UI Save; not raw HTTP body interception",
+  "actual": {
+    "mutation": {
+      "fields": {
+        "sku": "SYN-EDITOR-lentils-f6074d90e894",
+        "name": "Pantry lifecycle red lentils",
+        "tags": [],
+        "price": 240,
+        "images": [],
+        "status": "active",
+        "vendor": null,
+        "weight": null,
+        "barcode": null,
+        "hs_code": null,
+        "category": "Staples",
+        "hsn_code": null,
+        "metadata": {
+          "food": {
+            "storage": "Keep cool and dry.",
+            "allergens": {
+              "source": "Synthetic label revision B",
+              "status": "supplied",
+              "statement": "May contain sesame."
+            },
+            "ingredients": "Split red lentils; turmeric.",
+            "netQuantity": null,
+            "preparation": "Rinse before cooking."
+          },
+          "apparel": {
+            "fit": "",
+            "care": "",
+            "unit": "cm",
+            "fabric": "",
+            "measurements": []
+          }
+        },
+        "is_active": true,
+        "seo_title": null,
+        "charge_tax": false,
+        "url_handle": "syn-editor-lentils-f6074d90e894",
+        "description": "Synthetic owned theme acceptance fixture only.",
+        "is_physical": true,
+        "weight_unit": "kg",
+        "product_type": null,
+        "compare_price": null,
+        "cost_per_item": null,
+        "sell_when_oos": false,
+        "seo_description": null,
+        "track_inventory": true,
+        "importer_details": null,
+        "country_of_origin": "India"
+      },
+      "variants": [
+        {
+          "id": "f275956c-688c-4435-bb96-ae23fc75f72d",
+          "sku": null,
+          "price": 240,
+          "title": "300 g",
+          "options": {
+            "Pack": "300 g"
+          },
+          "metadata": {
+            "food": {
+              "netQuantity": {
+                "unit": "g",
+                "value": 300
+              }
+            }
+          },
+          "compare_price": null
+        },
+        {
+          "id": "ec9f2eae-bc7f-4de2-a32c-357ab75520c0",
+          "sku": null,
+          "price": 340,
+          "title": "500 g",
+          "options": {
+            "Pack": "500 g"
+          },
+          "compare_price": null
+        },
+        {
+          "id": "b54e1a3f-dba9-4243-a2a4-6a31d168e79c",
+          "sku": null,
+          "price": 210,
+          "title": "750 g label only",
+          "options": {
+            "Pack": "750 g label only"
+          },
+          "compare_price": null
+        }
+      ],
+      "product_options": [
+        {
+          "name": "Pack",
+          "values": [
+            "300 g",
+            "500 g",
+            "750 g label only"
+          ],
+          "position": 0
+        }
+      ]
+    },
+    "createdAt": "2026-10-23T21:02:50.916238+00:00",
+    "operation": "product.update.v1",
+    "idempotencyKey": "c87072dd-c29b-499e-9ebc-113095779c5f",
+    "expectedVersion": 32,
+    "returnedVersion": 37
+  },
+  "checks": {
+    "expectedVersion32": true,
+    "returnedVersion37": true,
+    "topLevelStockOmitted": true,
+    "fieldsStockOmitted": true,
+    "allExistingVariantStockOmitted": true
+  }
+}

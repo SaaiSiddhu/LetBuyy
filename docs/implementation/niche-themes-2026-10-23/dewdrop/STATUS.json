@@ -1,0 +1,144 @@
+{
+  "theme": "Dewdrop",
+  "phase": "M3_shared_integration",
+  "status": "module_renderer_and_in_process_readback_verified",
+  "currentAction": "Historical order readback integration verified; shared source lease released to coordinator for review and durable acceptance",
+  "version": "2.0.0",
+  "preset": "aura",
+  "namespace": "beauty",
+  "factory": "createDewdropTheme",
+  "source": [
+    "apps/merchant/web/src/components/products/niche-facts/dewdrop-facts-editor.tsx",
+    "apps/merchant/web/src/components/products/niche-facts/dewdrop-facts-editor.test.tsx",
+    "packages/theme-engine/src/dewdrop-theme.ts",
+    "packages/theme-engine/src/dewdrop-styles.ts",
+    "packages/theme-engine/src/dewdrop-discovery.ts",
+    "packages/theme-engine/test/dewdrop.test.ts",
+    "packages/commerce-core/src/dewdrop-facts.ts",
+    "packages/commerce-core/test/dewdrop-facts.test.ts",
+    "apps/commerce/web/src/lib/demo/dewdrop-demo.ts",
+    "apps/commerce/web/src/lib/demo/dewdrop-demo.test.ts"
+  ],
+  "tests": {
+    "passed": 34,
+    "failed": 0,
+    "skipped": 0,
+    "noEmitChecksPassed": 4,
+    "focusedMerchantLintPassed": true,
+    "verification": "verification.json"
+  },
+  "browser": {
+    "screenshots": 18,
+    "widths": [
+      1440,
+      834,
+      390,
+      320
+    ],
+    "bodyAndVisibleOverflow": 0,
+    "brokenImages": 0,
+    "smallPrimaryControls": 0,
+    "stress": [
+      "mobile text 2x",
+      "Hindi",
+      "named-shade Tab focus",
+      "ingredient details Enter",
+      "reduced motion"
+    ],
+    "evidence": "browser-audit.json"
+  },
+  "sharedIntegrated": [
+    "Explicit v2 catalog dispatch preserves default Aura v1",
+    "Validated beauty public ProductModel/fact projection",
+    "Actual app mapper produces shadeCount/netQuantityLabel",
+    "Global sandbox depth remains four",
+    "Actual preview-only service block DOM identity; public metadata absence",
+    "Coordinator NicheFactsEditor imports DewdropFactsEditor (observed source registration; durable lifecycle not verified)",
+    "Authorized historical order snapshot projection through buyer gateway/BFF, Liquid order drop and buyer/merchant mounted pages",
+    "Exact saved option tuples for all nine niches, including spaced and Unicode names; no inferred measurements",
+    "Root opt-in order presentation registered for nine v2 factories; Core/Threadline excluded"
+  ],
+  "sharedDependencies": [
+    "Canonical server discovery routine_stage/format/shade and preview forwarding",
+    "Merchant editor/lifecycle and versioned publication acceptance",
+    "Hydrated selected UUID/unavailable shade/cart/order flow acceptance"
+  ],
+  "browserResources": "Browser/context and owned loopback server closed; isolated slot1 explicitly released",
+  "nextStep": "Root and assigned owners run owned database/production-worker/purchase-flow and public browser acceptance; freeze/promote the nine v2 releases after final source review",
+  "fullLifecycleAccepted": false,
+  "merchantFactsEditor": {
+    "export": "DewdropFactsEditor",
+    "status": "component_verified_durable_lifecycle_pending",
+    "testsPassed": 8,
+    "sharedProps": "../niche-facts-editor-types",
+    "handoff": "facts-editor-handoff.md",
+    "browserVerified": false,
+    "networkOrStorage": false,
+    "sharedProductFormEdited": false
+  },
+  "collectionMembership": {
+    "export": "DEWDROP_DEMO_COLLECTION_PRODUCT_IDS",
+    "collections": 3,
+    "counts": [
+      2,
+      1,
+      1
+    ],
+    "testsPassed": 5,
+    "handoff": "collection-membership-handoff.md",
+    "commonDispatcherEdited": false,
+    "dispatcherRegistration": "pending marketplace-owned source update",
+    "actualEmptyCollection": false
+  },
+  "orderFactsSupport": {
+    "formatter": "summarizeProductFacts",
+    "namespaces": 9,
+    "wrapperExport": "NicheOrderFacts",
+    "ownedSource": [
+      "packages/commerce-core/src/product-facts-summary.ts",
+      "apps/commerce/web/src/components/storefront/niche-order-facts.tsx",
+      "apps/merchant/web/src/components/orders/niche-order-facts.tsx"
+    ],
+    "testsPassed": 16,
+    "noEmitChecksPassed": 2,
+    "focusedLintChecksPassed": 2,
+    "verification": "order-facts-verification.json",
+    "trace": "order-facts-trace.json",
+    "handoff": "order-facts-handoff.md",
+    "publicExportAddedBy": "coordinator-assigned index writer",
+    "snapshotWriterOwnedBy": "MadeYours",
+    "sharedOrderCodeEdited": false,
+    "realReadbackAccepted": false,
+    "browserOrDbUsed": false
+  },
+  "orderReadbackIntegration": {
+    "status": "in_process_verified_durable_pending",
+    "snapshotWriterOwnedBy": "MadeYours",
+    "snapshotReader": "@letbuyy/commerce-core readProductFactSnapshot",
+    "gatewaySource": "services/api-gateway/src/lib/buyer-order-item-view.ts",
+    "approvedField": "niche_snapshot",
+    "scalarLiquidField": "line_items[].niche_facts_text",
+    "selectedOptions": "Exact canonical selected_options; no current product lookup",
+    "helper": "packages/theme-engine/src/niche-order-presentation.ts",
+    "helperRegistrationOwnedBy": "coordinator",
+    "testsPassed": 132,
+    "testsFailed": 0,
+    "testsSkipped": 0,
+    "noEmitChecksPassed": 5,
+    "focusedLintChecksPassed": 2,
+    "lintWarnings": "One pre-existing unused Banner import in merchant order page; zero errors",
+    "verification": "order-readback-verification.json",
+    "handoff": "order-readback-handoff.md",
+    "sourceLease": "released to coordinator",
+    "sourceLeaseReleasedAt": "2026-10-23T08:15:27.540Z",
+    "realWorkerDatabaseAccepted": false,
+    "realPurchaseFlowAccepted": false,
+    "browserOrDbUsed": false,
+    "fullBuildUsed": false,
+    "retainedEarlierProofs": [
+      "verification.json",
+      "browser-audit.json",
+      "order-facts-verification.json"
+    ]
+  }
+}

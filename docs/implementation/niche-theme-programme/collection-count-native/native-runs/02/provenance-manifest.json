@@ -1,0 +1,266 @@
+{
+  "runId": "5d023114b98b",
+  "allReportedHashesVerified": true,
+  "contiguousSequences": 37,
+  "files": [
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-count-native-5d023114b98b-03W1k0/001-stage-start.json",
+      "preservedPath": "/private/tmp/circuit-http-alert-assertion-v2-20261024/native-runs/02/provenance/001-stage-start.json",
+      "sha256": "feff9601f99089aa4c5afd7e833246470e8c6d4fc93f69748a05803d8c67d7a4",
+      "sequence": 1,
+      "name": "stage-start"
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-count-native-5d023114b98b-03W1k0/002-stage-pass.json",
+      "preservedPath": "/private/tmp/circuit-http-alert-assertion-v2-20261024/native-runs/02/provenance/002-stage-pass.json",
+      "sha256": "46b84cb786c25dcc093b3606e2a835a296e230997b1a5fce288b7f426cd2397a",
+      "sequence": 2,
+      "name": "stage-pass"
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-count-native-5d023114b98b-03W1k0/003-authority-baseline.json",
+      "preservedPath": "/private/tmp/circuit-http-alert-assertion-v2-20261024/native-runs/02/provenance/003-authority-baseline.json",
+      "sha256": "be1f02d2074dcd8c80265a9a971a37a8e1843081b86adda74e1c78c98d5fe078",
+      "sequence": 3,
+      "name": "authority-baseline"
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-count-native-5d023114b98b-03W1k0/004-stage-start.json",
+      "preservedPath": "/private/tmp/circuit-http-alert-assertion-v2-20261024/native-runs/02/provenance/004-stage-start.json",
+      "sha256": "3d0806b0825144ae178ebec9eb907cf4effb2e96c4d4f678917efb31d01885a5",
+      "sequence": 4,
+      "name": "stage-start"
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-count-native-5d023114b98b-03W1k0/005-own-positive-first-counts.json",
+      "preservedPath": "/private/tmp/circuit-http-alert-assertion-v2-20261024/native-runs/02/provenance/005-own-positive-first-counts.json",
+      "sha256": "ac3d923b06f096b4314bf6f01c9f27e7a6332f2ee66ac5a928a32aff4b46bf2e",
+      "sequence": 5,
+      "name": "own-positive-first-counts"
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-count-native-5d023114b98b-03W1k0/006-stage-pass.json",
+      "preservedPath": "/private/tmp/circuit-http-alert-assertion-v2-20261024/native-runs/02/provenance/006-stage-pass.json",
+      "sha256": "1ea7f17264da58c6e8fefc0fa1f81f4dd20997bd7c7479d07d35d74062fe7bc7",
+      "sequence": 6,
+      "name": "stage-pass"
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-count-native-5d023114b98b-03W1k0/007-stage-start.json",
+      "preservedPath": "/private/tmp/circuit-http-alert-assertion-v2-20261024/native-runs/02/provenance/007-stage-start.json",
+      "sha256": "d32efb3ba38d28f6605fbe3087df9d2b3d58b4abdf5a705e08e3764ba396ae09",
+      "sequence": 7,
+      "name": "stage-start"
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-count-native-5d023114b98b-03W1k0/008-untruncated-count.json",
+      "preservedPath": "/private/tmp/circuit-http-alert-assertion-v2-20261024/native-runs/02/provenance/008-untruncated-count.json",
+      "sha256": "00a4eb20e84fe3751743f93fc0ee2b8065d1e239dd653b333c69e8122db95d13",
+      "sequence": 8,
+      "name": "untruncated-count"
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-count-native-5d023114b98b-03W1k0/009-stage-pass.json",
+      "preservedPath": "/private/tmp/circuit-http-alert-assertion-v2-20261024/native-runs/02/provenance/009-stage-pass.json",
+      "sha256": "0b26b009864c97fcedd57a04ec96e29bf8ac224b2456453a727a6f43d77dbf3c",
+      "sequence": 9,
+      "name": "stage-pass"
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-count-native-5d023114b98b-03W1k0/010-stage-start.json",
+      "preservedPath": "/private/tmp/circuit-http-alert-assertion-v2-20261024/native-runs/02/provenance/010-stage-start.json",
+      "sha256": "d5b7855af26453d8a320f101eecea012506aa84845157765ce6fc0c8dabff302",
+      "sequence": 10,
+      "name": "stage-start"
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-count-native-5d023114b98b-03W1k0/011-pagination.json",
+      "preservedPath": "/private/tmp/circuit-http-alert-assertion-v2-20261024/native-runs/02/provenance/011-pagination.json",
+      "sha256": "3a0139d9a4d4429265ddbf3099fd7a89d260dcb991d9b2ef89bf22a90b44f48c",
+      "sequence": 11,
+      "name": "pagination"
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-count-native-5d023114b98b-03W1k0/012-stage-pass.json",
+      "preservedPath": "/private/tmp/circuit-http-alert-assertion-v2-20261024/native-runs/02/provenance/012-stage-pass.json",
+      "sha256": "8f109345f309d3b44758322049e53042fef042aeed7a2f3c6db90c2826a47d9d",
+      "sequence": 12,
+      "name": "stage-pass"
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-count-native-5d023114b98b-03W1k0/013-stage-start.json",
+      "preservedPath": "/private/tmp/circuit-http-alert-assertion-v2-20261024/native-runs/02/provenance/013-stage-start.json",
+      "sha256": "c3393a312645db02af9d7a36c82acd328f19ea108fa0bddf3a1c959228a62823",
+      "sequence": 13,
+      "name": "stage-start"
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-count-native-5d023114b98b-03W1k0/014-ordinary-role-denial.json",
+      "preservedPath": "/private/tmp/circuit-http-alert-assertion-v2-20261024/native-runs/02/provenance/014-ordinary-role-denial.json",
+      "sha256": "01580efa356636754ff0fe354dcd367df74545686ec467067f410eb33cd268bb",
+      "sequence": 14,
+      "name": "ordinary-role-denial"
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-count-native-5d023114b98b-03W1k0/015-ordinary-role-denial.json",
+      "preservedPath": "/private/tmp/circuit-http-alert-assertion-v2-20261024/native-runs/02/provenance/015-ordinary-role-denial.json",
+      "sha256": "8bb35c89004b12ec26661e08c4624d7f9847237e8796f6be8d5ec6e378de79f9",
+      "sequence": 15,
+      "name": "ordinary-role-denial"
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-count-native-5d023114b98b-03W1k0/016-ordinary-role-denial.json",
+      "preservedPath": "/private/tmp/circuit-http-alert-assertion-v2-20261024/native-runs/02/provenance/016-ordinary-role-denial.json",
+      "sha256": "0f65bf68a56dbfb1bb6e582c032534713e56a3ce0f65a5c0e0e644b012040a4b",
+      "sequence": 16,
+      "name": "ordinary-role-denial"
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-count-native-5d023114b98b-03W1k0/017-ordinary-role-denial.json",
+      "preservedPath": "/private/tmp/circuit-http-alert-assertion-v2-20261024/native-runs/02/provenance/017-ordinary-role-denial.json",
+      "sha256": "5e0fdda0bc9a48657934fd02b3ea3c1516ca67b6f55250170282a5c24fc40a3d",
+      "sequence": 17,
+      "name": "ordinary-role-denial"
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-count-native-5d023114b98b-03W1k0/018-ordinary-role-denial.json",
+      "preservedPath": "/private/tmp/circuit-http-alert-assertion-v2-20261024/native-runs/02/provenance/018-ordinary-role-denial.json",
+      "sha256": "ada59838c7aaab149c4414d3806fa699f47792967680ae05efadd031b96e7dc4",
+      "sequence": 18,
+      "name": "ordinary-role-denial"
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-count-native-5d023114b98b-03W1k0/019-ordinary-role-denial.json",
+      "preservedPath": "/private/tmp/circuit-http-alert-assertion-v2-20261024/native-runs/02/provenance/019-ordinary-role-denial.json",
+      "sha256": "4e2d79dfec68db0f177e97dc89160a402a1bfc733ef1214843e1011f8d3aa85d",
+      "sequence": 19,
+      "name": "ordinary-role-denial"
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-count-native-5d023114b98b-03W1k0/020-stage-pass.json",
+      "preservedPath": "/private/tmp/circuit-http-alert-assertion-v2-20261024/native-runs/02/provenance/020-stage-pass.json",
+      "sha256": "d91e68fefd00c32c136fa6cf061ac72eff3d3192af66bcd9a110f00803c41a11",
+      "sequence": 20,
+      "name": "stage-pass"
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-count-native-5d023114b98b-03W1k0/021-stage-start.json",
+      "preservedPath": "/private/tmp/circuit-http-alert-assertion-v2-20261024/native-runs/02/provenance/021-stage-start.json",
+      "sha256": "b817480c03eb4ce4a7474232aa51d56008b39ae348e4aa163544138e8b4100bc",
+      "sequence": 21,
+      "name": "stage-start"
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-count-native-5d023114b98b-03W1k0/022-missing-pool.json",
+      "preservedPath": "/private/tmp/circuit-http-alert-assertion-v2-20261024/native-runs/02/provenance/022-missing-pool.json",
+      "sha256": "79e7ecaaa9c6ce242260556bc6d9a8293be4049b6b6d14ae6d50ce45cc06c56e",
+      "sequence": 22,
+      "name": "missing-pool"
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-count-native-5d023114b98b-03W1k0/023-stage-pass.json",
+      "preservedPath": "/private/tmp/circuit-http-alert-assertion-v2-20261024/native-runs/02/provenance/023-stage-pass.json",
+      "sha256": "f8a1754fc3f3977d6d95da48920d020299d7b6289e4efee08e7431e54d026608",
+      "sequence": 23,
+      "name": "stage-pass"
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-count-native-5d023114b98b-03W1k0/024-stage-start.json",
+      "preservedPath": "/private/tmp/circuit-http-alert-assertion-v2-20261024/native-runs/02/provenance/024-stage-start.json",
+      "sha256": "5c073bfc2ab2a84bada3bc421d56c9365898eae28123151e9b449f9596572607",
+      "sequence": 24,
+      "name": "stage-start"
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-count-native-5d023114b98b-03W1k0/025-after-error-same-backend-reuse.json",
+      "preservedPath": "/private/tmp/circuit-http-alert-assertion-v2-20261024/native-runs/02/provenance/025-after-error-same-backend-reuse.json",
+      "sha256": "38d0ab05de4ae66ff05ac5a2a5d5cdb90a309ffa4baa09cdc6bbf39781875912",
+      "sequence": 25,
+      "name": "after-error-same-backend-reuse"
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-count-native-5d023114b98b-03W1k0/026-stage-pass.json",
+      "preservedPath": "/private/tmp/circuit-http-alert-assertion-v2-20261024/native-runs/02/provenance/026-stage-pass.json",
+      "sha256": "97edc4c9cbfedb2d983d31373d44062ee4b99774a42f1aef8c69e6eae74b10db",
+      "sequence": 26,
+      "name": "stage-pass"
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-count-native-5d023114b98b-03W1k0/027-stage-start.json",
+      "preservedPath": "/private/tmp/circuit-http-alert-assertion-v2-20261024/native-runs/02/provenance/027-stage-start.json",
+      "sha256": "285a8c17c5ae237ebb3f1f17563e564c7b33c900ef714830ac165b1bd1625fca",
+      "sequence": 27,
+      "name": "stage-start"
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-count-native-5d023114b98b-03W1k0/028-mounted-http-before-attribution.json",
+      "preservedPath": "/private/tmp/circuit-http-alert-assertion-v2-20261024/native-runs/02/provenance/028-mounted-http-before-attribution.json",
+      "sha256": "b51caba56f0a22bcb0b9efe996ec2d44abb4bb7e77c15d3fc099dd12165366fc",
+      "sequence": 28,
+      "name": "mounted-http-before-attribution"
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-count-native-5d023114b98b-03W1k0/029-mounted-http-attributed.json",
+      "preservedPath": "/private/tmp/circuit-http-alert-assertion-v2-20261024/native-runs/02/provenance/029-mounted-http-attributed.json",
+      "sha256": "a2cf44ccceb045a7d45371c7c8e5be28da3baf3ce4ebc77f949268579bf58dcb",
+      "sequence": 29,
+      "name": "mounted-http-attributed"
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-count-native-5d023114b98b-03W1k0/030-mounted-http-before-attribution.json",
+      "preservedPath": "/private/tmp/circuit-http-alert-assertion-v2-20261024/native-runs/02/provenance/030-mounted-http-before-attribution.json",
+      "sha256": "5eb025e34feabed2d873afca18530eb8ce7b2cadfb9727248a9246ca73e9fb24",
+      "sequence": 30,
+      "name": "mounted-http-before-attribution"
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-count-native-5d023114b98b-03W1k0/031-mounted-http-attributed.json",
+      "preservedPath": "/private/tmp/circuit-http-alert-assertion-v2-20261024/native-runs/02/provenance/031-mounted-http-attributed.json",
+      "sha256": "7c594f9ee842a8a9a4d3aed52a473dab0f30c95b0b657dbdf53d5f9f181adfa4",
+      "sequence": 31,
+      "name": "mounted-http-attributed"
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-count-native-5d023114b98b-03W1k0/032-mounted-http-before-attribution.json",
+      "preservedPath": "/private/tmp/circuit-http-alert-assertion-v2-20261024/native-runs/02/provenance/032-mounted-http-before-attribution.json",
+      "sha256": "acac5c5757fb2e0fd4b35f45f6e3d8ff384ee55f67accafdb7a5b890fc377885",
+      "sequence": 32,
+      "name": "mounted-http-before-attribution"
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-count-native-5d023114b98b-03W1k0/033-mounted-http-attributed.json",
+      "preservedPath": "/private/tmp/circuit-http-alert-assertion-v2-20261024/native-runs/02/provenance/033-mounted-http-attributed.json",
+      "sha256": "fca6261c667cffe6073935799c486d9a6dc8a031718f78ffc6b9dd0192102fb3",
+      "sequence": 33,
+      "name": "mounted-http-attributed"
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-count-native-5d023114b98b-03W1k0/034-mounted-http-before-attribution.json",
+      "preservedPath": "/private/tmp/circuit-http-alert-assertion-v2-20261024/native-runs/02/provenance/034-mounted-http-before-attribution.json",
+      "sha256": "10ea73fc213cf8a4cebbe326924f6d57bf1a0f46b83310f5dc9b8c1b22a8c5ff",
+      "sequence": 34,
+      "name": "mounted-http-before-attribution"
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-count-native-5d023114b98b-03W1k0/035-mounted-http-attributed.json",
+      "preservedPath": "/private/tmp/circuit-http-alert-assertion-v2-20261024/native-runs/02/provenance/035-mounted-http-attributed.json",
+      "sha256": "60aeff74f48686c87a76174d9ba24e4d6ce98874742397ecb3dbef5d185b7a41",
+      "sequence": 35,
+      "name": "mounted-http-attributed"
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-count-native-5d023114b98b-03W1k0/036-final-scope.json",
+      "preservedPath": "/private/tmp/circuit-http-alert-assertion-v2-20261024/native-runs/02/provenance/036-final-scope.json",
+      "sha256": "4f014a9b7d2b4801c9c60b0e695f2b0cd0631284ac5dfa14be23e02a8f7d125c",
+      "sequence": 36,
+      "name": "final-scope"
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-count-native-5d023114b98b-03W1k0/037-stage-pass.json",
+      "preservedPath": "/private/tmp/circuit-http-alert-assertion-v2-20261024/native-runs/02/provenance/037-stage-pass.json",
+      "sha256": "5e4b7f510b73a6dd370f0dca565295cced5a76921a45c7be89259e58b264981a",
+      "sequence": 37,
+      "name": "stage-pass"
+    }
+  ]
+}

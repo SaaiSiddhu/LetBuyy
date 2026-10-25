@@ -1,0 +1,17 @@
+{
+  "runId": "786c7515c57a",
+  "operation": "native-normalization",
+  "value": {
+    "manufacturer": "SYNTHETIC LAB",
+    "value": "SYNTHETIC LAB",
+    "normalized": "synthetic lab",
+    "frontendKey": "synthetic lab",
+    "matchedId": "8e0858de-08e9-440e-8592-ca5c0d2a3b57",
+    "facet": {
+      "key": "electronics_manufacturer",
+      "value": "synthetic lab",
+      "label": "SYNTHETIC LAB",
+      "count": 1
+    }
+  }
+}

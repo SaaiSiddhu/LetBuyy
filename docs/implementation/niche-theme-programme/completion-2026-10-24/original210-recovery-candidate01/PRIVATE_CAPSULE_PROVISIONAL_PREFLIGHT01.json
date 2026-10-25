@@ -1,0 +1,27 @@
+{
+  "recordedAt": "2026-10-25T04:13:13.225Z",
+  "status": "PROVISIONAL_PRIVATE_CAPSULE_READER_REFUSED",
+  "capsule": {
+    "path": "/Volumes/Projects/LetBuyy/.letbuyy-private/runtime07/20261025-recovery-capsule-provisional01.json",
+    "sha256": "37d1307b5597c3a67e9395c1963f5dad6cac7267eba7ae290b404e6de52a20ae"
+  },
+  "sourceManifest": {
+    "path": "/private/tmp/letbuyy-original210-recovery-20261025-01/SOURCE_MANIFEST.provisional01.json",
+    "sha256": "e7a3b7fe18628da193cdaa7d10bea9a17d9148f3ca16e6ccff3c44a2d0547061",
+    "files": 6546
+  },
+  "fence": {
+    "path": "/Volumes/Projects/LetBuyy/.letbuyy-private/runtime07/20261025-recovery-final-fence-provisional01.json",
+    "sha256": "2dcb6d9edb50d97bf1a197bf1c46d596c3eb99576625b8be484768e349ea7a83"
+  },
+  "actualFullArchiveBytes": 25353695,
+  "roles": 20,
+  "memberships": 8,
+  "orders": 8,
+  "qaKeyGeneration": 0,
+  "privateDataPrinted": false,
+  "resourcesOrDatabaseOrBrowserOrNetworkActions": 0,
+  "final": false,
+  "pending": "Must bind separately reviewed launcher supplement, new final source manifest/capsule and additional actual execution permission before any fresh PG resource. Provisional capsule is never an execution grant.",
+  "safeFailure": "preserved fixture refused [CANONICAL_ROLES_REQUIRED]"
+}

@@ -1,0 +1,75 @@
+{
+  "recordedAt": "2026-10-24T07:23:06.085719+00:00",
+  "classification": "ACTUAL_MG_INSTALL_LINEAGE_CLOSED_INSTALLED_CASE_PASS",
+  "runId": "936e5f577646",
+  "case": "MG-INSTALL-01",
+  "status": "PASS",
+  "basis": "One new OFFLINE audit of Root sole-owner bounded read-only catalog observation, exact saved raw file hash, actualFK-chain IDs and full parsed manifest equality to admitted artifact. No repeat DB/container/network/browser/source actions.",
+  "rootReceipt": {
+    "path": "docs/implementation/niche-theme-programme/marginalia-installed-package-lineage-root-readonly-936.json",
+    "sha256": "b8080c6e1e83018278daa600cc37b72cd94f8ce9bf84a045523fa89ad20f1a22",
+    "bytes": 2644
+  },
+  "rawObservation": {
+    "path": "/private/tmp/root-marginalia-package-lineage-936.json",
+    "sha256": "e40a80bd2ea5ac4a0d1d8b514bf1fe2adbe22d3cbe07aa1adb8122447a29d5f3",
+    "readOnly": true,
+    "credentialsOrPrivateAuthState": false
+  },
+  "actualBindings": {
+    "siteId": "2f958a36-71bf-4e8f-89fd-d3363f4fe42c",
+    "instance": {
+      "id": "597507a7-47f0-44a6-9bcb-69990c5ebf4b",
+      "slug": "letbuyy-dawn",
+      "versionId": "f052c554-94ef-4977-9f02-a7daca8c6c57",
+      "activeReleaseId": "6a374853-bf7f-4b22-8427-1b69513fb146"
+    },
+    "package": {
+      "id": "9134e98c-0650-41b5-9c1d-e3686e1f7751",
+      "slug": "letbuyy-dawn",
+      "legacyThemeId": "7b669c70-0000-4000-8000-000000000007"
+    },
+    "catalog": {
+      "id": "7b669c70-0000-4000-8000-000000000007",
+      "slug": "letbuyy-dawn",
+      "version": "2.0.0"
+    },
+    "version": {
+      "id": "f052c554-94ef-4977-9f02-a7daca8c6c57",
+      "version": "2.0.0",
+      "checksum": null,
+      "schemaVersion": "2026-06-liquid-sections",
+      "rendererVersion": "0.1.0"
+    }
+  },
+  "artifact": {
+    "path": "docs/implementation/niche-theme-programme/release-v2/proposals/81e91859ebc8c497a49da337d064e1885a76964839d14e39f4a0a3de2283f47f/letbuyy-dawn-2.0.0.json",
+    "sha256": "a4e23c63a700f87294a291a1760b94a93d2ee594f9bfea55038c0ff7ab335f3c",
+    "bytes": 659796
+  },
+  "checks": {
+    "actualManifestStructurallyEqualsEntireAdmittedPersistenceManifest": true,
+    "bothLiquidAliasesEqualAdmittedDocument": true,
+    "actualCanonicalBundleShaEqualsAdmitted": true,
+    "rootAdmittedFilePayloadBundlePinsMatch": true,
+    "instanceVersionReleaseMatchFinalAcknowledgedB": true,
+    "packageCatalogJoinMatchesExpectedCatalogUUID007": true
+  },
+  "bundleAliases": [
+    "themeBundle",
+    "liquidBundle"
+  ],
+  "canonicalBundleSha256": "5cbe36168853833fda0cf0a81dd5373d5cae013259bdbd330d3ee547f4d3726b",
+  "canonicalHashBoundary": "Canonical bundleSHA equality is recorded by Root; this independent offline audit verifies complete parsed objects and expected hash pins, without conflating SQLserialization digests or rerunning package generation.",
+  "checksumCaveat": "Actual immutable version checksum is honestlyNULL. Actual foreign-key join + full stored-object equality to the admitted artifact and Root canonical SHA establish lineage; NULL is not a mismatch.",
+  "behaviorProof": [
+    "installed-lifecycle-readiness/45-B00-actual-partial-review.json",
+    "installed-lifecycle-readiness/47-nonorder-boundary-and-B00-addendum-review.json"
+  ],
+  "behavior": "Normal installed Marginalia2.0.0 A/B resource Save/reload/publication/recovery/retainedB/reapply and final acknowledgedB were independently verified in45/47. This receipt closes only their exact lineage gap. No extra recovery cycle.",
+  "limits": [
+    "Root query service_role establishes stored lineage, not buyer/merchant caller authentication; actual normal UI behavior remains evidenced by separate Editor receipts.",
+    "No new MG cart/order binding, OOS negative purchase proof, COD, historical facts or lateredit credit.",
+    "Full16 incomplete; original cutoff/expiry/no-restart unchanged; no MG live lease."
+  ]
+}

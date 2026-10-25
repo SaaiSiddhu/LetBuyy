@@ -1,0 +1,70 @@
+{
+  "generatedAt": "2026-10-23T07:50:26.844Z",
+  "scope": "Actual app productToLiquidDrop (canonical facts presentation) → LiquidRenderer → canonical page assembly. Fictional typed preview data; minimal body margin/input font reset and local copies of approved fonts for isolated rendering. Production font delivery is a separate app check. No hydrated app or HTTP persistence/lifecycle claim.",
+  "files": [
+    {
+      "file": "rendered/home.html",
+      "engine": "liquid",
+      "status": "rendered",
+      "warnings": [],
+      "bytes": 48642
+    },
+    {
+      "file": "rendered/collection.html",
+      "engine": "liquid",
+      "status": "rendered",
+      "warnings": [],
+      "bytes": 46921
+    },
+    {
+      "file": "rendered/product.html",
+      "engine": "liquid",
+      "status": "rendered",
+      "warnings": [],
+      "bytes": 58063
+    },
+    {
+      "file": "rendered/round-product.html",
+      "engine": "liquid",
+      "status": "rendered",
+      "warnings": [],
+      "bytes": 53787
+    },
+    {
+      "file": "rendered/missing-product.html",
+      "engine": "liquid",
+      "status": "rendered",
+      "warnings": [],
+      "bytes": 50084
+    },
+    {
+      "file": "rendered/invalid-product.html",
+      "engine": "liquid",
+      "status": "rendered",
+      "warnings": [],
+      "bytes": 55644
+    },
+    {
+      "file": "rendered/variant-overrides.html",
+      "engine": "liquid",
+      "status": "rendered",
+      "warnings": [],
+      "bytes": 57895
+    },
+    {
+      "file": "rendered/faq.html",
+      "engine": "liquid",
+      "status": "rendered",
+      "warnings": [],
+      "bytes": 49406
+    }
+  ],
+  "assertions": [
+    "common dimensions",
+    "two distinct canonical-identity variant package/weight views",
+    "collection scalar display",
+    "round footprint",
+    "missing/invalid omission",
+    "private sibling omission"
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "recordedAt": "2026-10-25T03:48:36.568608+00:00",
+  "expiresAt": "2026-10-25T04:48:36.568608+00:00",
+  "ends": "Firstsealed05handofforexpiry",
+  "status": "GRANTED_FRESH_DEPENDENCY_ONLY05_PREPARATION_AND_HARMLESS_COMPILER_CLI_SMOKE_NO_NATIVE",
+  "owner": "01a16d03-613e-71b0-a591-07d4d24347d4",
+  "authority": "Root03:41explicitdependency-only05request undercurrenthumanfullgoalcontinuation; no fourthNativeorrestorepermission",
+  "privateRoot": "/private/tmp/letbuyy-apparel-provenance-prep-20261025-05",
+  "durableOutput": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-provenance05",
+  "baseReadOnly": {
+    "root": "/private/tmp/letbuyy-apparel-provenance-prep-20261025-04",
+    "handoff": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-provenance04/HANDOFF.json",
+    "sha256": "ead3475f7a8e62556bf7bbc241b08bc58b801b2943f755bfb9054551ca0335a6"
+  },
+  "unchangedBusinessNativeSql": "All8accepted04overlays, actualnativecasea2cb454..., canonicalrunner/provisioner/guard/support, allSQLprereqsandapparelpairedSQL, typedCore/theme/gatewaybusinessinputs byteexact; no Source05harness/preview/notification/catalogueoverlayimport. No existingroot/main/vendorstoremodification.",
+  "exactMutableContext": [
+    {
+      "path": "node_modules/.bin",
+      "kind": "Onlynew05directory/launcherlinks/files fromcanonicalalreadyworkinginstalleddependencyassembly; removeonlyownnewcopiedselflinkifpresent. Neverold04."
+    },
+    {
+      "path": "node_modules/**",
+      "kind": "Onlynecessary05dependencylayoutsymlinktargetnormalization toward05/privateoracceptedpinnedvendor inputs, notinstalledpackagebytes/source."
+    },
+    {
+      "path": "qualification-inputs.ts",
+      "beforeSha256": "6081d310dd13ef54e9ec3a85f044441a43538f14fa13fa810d586812f253db23",
+      "kind": "Strengthenactualnativechildlauncher lstat/realpath/executable/Node/vendorclosureprecheck beforefirstpartyimports; no existingtest/assertion/admission envelopeweaken."
+    },
+    {
+      "path": "capture-native-source.mjs",
+      "kind": "Onlybootstrap/dependencymetadata discovery bindings neededfor05; actualappmoduleimport/execution remainsforbidden."
+    },
+    {
+      "path": "SOURCE_MANIFEST.json/native-source-closure.json/NATIVE_PREPARATION_PLAN.json andownedproofmetadata",
+      "kind": "Metadataonly05root/outputpath/newlauncher/runtimepins; unchangedfutureone600s/jobs1/prepared2/no-reap/full322/4UP/4tests/maxattempt1 withNOactualadmission."
+    }
+  ],
+  "newPureBootstrapFilesAllowed": [
+    "dependency-launcher-preflight.cjs",
+    "dependency-launcher-smoke.ts",
+    "dependency-launcher-preflight.test.mjs"
+  ],
+  "canonicalCli": "Useexistingnormal .bin/tsx executable/Node bootstrap fromalreadyworkingcanonicaldependencyassembly. Pinactualpath/symlinkchain/realpath/executablemode/bytes/Node/vendorSHA. Noalternate --import/transpiler/loader substitution inactualnativecommand.",
+  "permittedLocalExecution": [
+    "Read-onlylayout/source/vendor/toolmetadata validation andfocusedpuremissing/self-cycle/dangling/wrongtarget/changedhash/node negativeguards",
+    "Exactnew05/node_modules/.bin/tsx --version and exactharmlessTypeScriptsmoke throughsameCLI, noapp/Worker/test/runnerimports, noDB/Docker/network/build/provider. AllowonlyTSXdocumentedcompilerlocalIPC/controlprocess viaordinarymanagedexecution whenneeded; no shell/env/key dump. Guardandretainactualstdout/terminal0/provenance.",
+    "Focusedaffectedcontroltypes/syntaxonly. Reuseunchanged16/45/1/13/Nativecodeandbusinesssourceacceptance; no broadduplicatedtests/copies."
+  ],
+  "required": [
+    "Old04selflink/failure/3cohortledgerretained; actualCohort15caf...0TAPnotrelabeled",
+    "Business/native/SQLhashparity including8overlaysand2SQLs exact04; new05containsproperprivatefirstpartyresolution/noMainoroldcandidatebusinessfallback",
+    "Actualchildcommandlauncherandallancestorsvalidated beforeanyfutureDockerprovisioning; selflinkordangling/wrongexecutabletargetrefusesinfreshmetadata-onlynegativecontrol",
+    "ActualnormalCLIversion+harmlessTS terminal0andNode/vendor/entrypointproof; nodomain/runtime/Nativetestexecutioncredit",
+    "Source-only05futureonecohortcommand/evidenceprotocol concreteforRootreview/newhumanNativepermission; no actualGRANTEDadmissionfile orretryunderapproval04"
+  ],
+  "forbidden": [
+    "No old04 orMain/candidate/globalvendor/otherprivate-rootedit",
+    "No business/nativecase/SQL/renderer/guard orcanonicalrunnercodechange",
+    "No actualfourthNative/ownedDB/Dockerdaemon/resources/restore/sourcehelperWorkerappimport",
+    "No old07SIGCONT/signals/ports/adoption/privatebackup/state/key/credentials/provider/browser/build/network",
+    "No alternate-loader workaround ortestweakening/reseed/newdomainfixture"
+  ],
+  "expectedNativeFuture": "Separatelyapprovedonlyafter05source/bootstrapreview; approval04isfullyconsumed."
+}

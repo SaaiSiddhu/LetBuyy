@@ -1,0 +1,11 @@
+{
+  "key": "customers/order",
+  "bundleSHA256": "8a7eecbd4231b8c052cf8c0cfd33f7aa9671d7ec0005ae15ba36e47f66c490be",
+  "status": "rendered",
+  "warnings": [],
+  "htmlSHA256": "f76b6a81b0b863f6687bc1c0a5249d62ff57aa0d88e94f85a846cf56bb566f39",
+  "headerSHA256": "6d98e1f659482b7886336732ae5dcb5969fee5198182771b02bdc7e297638812",
+  "footerSHA256": "cb53e6e9f17e552f2fe3981614681e9ec40e16b5483e89cad6fd0eda21371e10",
+  "styleSHA256": "fe75592d6067e745af76a0c36b8cfc80179eb47c82d82ecd8348f8f56599cc39",
+  "syntheticOnly": true
+}

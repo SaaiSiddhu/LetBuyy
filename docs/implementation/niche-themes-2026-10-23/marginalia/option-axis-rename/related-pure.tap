@@ -1,0 +1,208 @@
+TAP version 13
+# Subtest: first value of a new trailing axis preserves both bound Width rows one-to-one
+ok 1 - first value of a new trailing axis preserves both bound Width rows one-to-one
+  ---
+  duration_ms: 3.150584
+  type: 'test'
+  ...
+# Subtest: adding an empty axis preserves sparse and reordered rows without completing a Cartesian matrix
+ok 2 - adding an empty axis preserves sparse and reordered rows without completing a Cartesian matrix
+  ---
+  duration_ms: 0.444416
+  type: 'test'
+  ...
+# Subtest: a third axis extends only existing sparse combinations and retains mixed bound/new drafts
+ok 3 - a third axis extends only existing sparse combinations and retains mixed bound/new drafts
+  ---
+  duration_ms: 0.317792
+  type: 'test'
+  ...
+# Subtest: first explicit axis can extend a single default bound row without inventing identity
+ok 4 - first explicit axis can extend a single default bound row without inventing identity
+  ---
+  duration_ms: 0.185
+  type: 'test'
+  ...
+# Subtest: later values retain old objects while new combinations receive no UUID, facts, SKU or stock
+ok 5 - later values retain old objects while new combinations receive no UUID, facts, SKU or stock
+  ---
+  duration_ms: 0.488625
+  type: 'test'
+  ...
+# Subtest: raw invalid fact drafts survive the axis edit and still block canonical save instead of being reset
+ok 6 - raw invalid fact drafts survive the axis edit and still block canonical save instead of being reset
+  ---
+  duration_ms: 5.38875
+  type: 'test'
+  ...
+# Subtest: ambiguous axes, duplicate IDs/tuples, occupied new slots and stale indices refuse atomically
+ok 7 - ambiguous axes, duplicate IDs/tuples, occupied new slots and stale indices refuse atomically
+  ---
+  duration_ms: 0.712458
+  type: 'test'
+  ...
+# Subtest: canonical axis, value, row-count and combined-label limits are enforced before producing an edit
+ok 8 - canonical axis, value, row-count and combined-label limits are enforced before producing an edit
+  ---
+  duration_ms: 0.6485
+  type: 'test'
+  ...
+# Subtest: new-product Cartesian creation and explicit existing-axis append/rename remain supported; generic deletion stays guarded
+ok 9 - new-product Cartesian creation and explicit existing-axis append/rename remain supported; generic deletion stays guarded
+  ---
+  duration_ms: 0.627375
+  type: 'test'
+  ...
+# Subtest: axis name helper preserves sparse reordered row objects, raw facts, stock intent and all values
+ok 10 - axis name helper preserves sparse reordered row objects, raw facts, stock intent and all values
+  ---
+  duration_ms: 2.94875
+  type: 'test'
+  ...
+# Subtest: axis name helper keeps Unicode and three physical option slots, and unchanged names are no-ops
+ok 11 - axis name helper keeps Unicode and three physical option slots, and unchanged names are no-ops
+  ---
+  duration_ms: 0.684709
+  type: 'test'
+  ...
+# Subtest: axis name helper refuses blank, oversized, duplicate, stale or ambiguous input atomically
+ok 12 - axis name helper refuses blank, oversized, duplicate, stale or ambiguous input atomically
+  ---
+  duration_ms: 1.677541
+  type: 'test'
+  ...
+# Subtest: axis name helper supports an empty trailing option and CREATE rows without generating identities
+ok 13 - axis name helper supports an empty trailing option and CREATE rows without generating identities
+  ---
+  duration_ms: 0.205416
+  type: 'test'
+  ...
+# Subtest: axis name serialization maps the new option key without stock writes or UUID/fact/price changes
+ok 14 - axis name serialization maps the new option key without stock writes or UUID/fact/price changes
+  ---
+  duration_ms: 2.707167
+  type: 'test'
+  ...
+# Subtest: axis name leaves fact bindings explicit; canonical writer rejects stale shades until deliberate rebinding
+ok 15 - axis name leaves fact bindings explicit; canonical writer rejects stale shades until deliberate rebinding
+  ---
+  duration_ms: 6.25725
+  type: 'test'
+  ...
+# Subtest: axis name and existing value rename compose without moving row identities or raw facts
+ok 16 - axis name and existing value rename compose without moving row identities or raw facts
+  ---
+  duration_ms: 0.613375
+  type: 'test'
+  ...
+# Subtest: axis name refuses the reserved object setter key instead of silently losing variant options
+ok 17 - axis name refuses the reserved object setter key instead of silently losing variant options
+  ---
+  duration_ms: 0.270583
+  type: 'test'
+  ...
+# Subtest: explicit rename preserves sparse row identities, raw facts, other axes and commercial fields
+ok 18 - explicit rename preserves sparse row identities, raw facts, other axes and commercial fields
+  ---
+  duration_ms: 2.5135
+  type: 'test'
+  ...
+# Subtest: renaming a second axis updates every affected row without borrowing UUIDs or facts
+ok 19 - renaming a second axis updates every affected row without borrowing UUIDs or facts
+  ---
+  duration_ms: 0.362417
+  type: 'test'
+  ...
+# Subtest: unchanged normalized value is a true no-op and new rows remain unbound
+ok 20 - unchanged normalized value is a true no-op and new rows remain unbound
+  ---
+  duration_ms: 0.16425
+  type: 'test'
+  ...
+# Subtest: blank, oversized, duplicate and stale selections refuse atomically
+ok 21 - blank, oversized, duplicate and stale selections refuse atomically
+  ---
+  duration_ms: 0.563916
+  type: 'test'
+  ...
+# Subtest: ambiguous axes, missing source rows, duplicate IDs and colliding tuples never merge rows
+ok 22 - ambiguous axes, missing source rows, duplicate IDs and colliding tuples never merge rows
+  ---
+  duration_ms: 0.505709
+  type: 'test'
+  ...
+# Subtest: canonical combined-label limit refuses an unsaveable rename without changing either row
+ok 23 - canonical combined-label limit refuses an unsaveable rename without changing either row
+  ---
+  duration_ms: 0.396083
+  type: 'test'
+  ...
+# Subtest: metadata-only EDIT loaded at four omits stock and preserves server-consumed two
+ok 24 - metadata-only EDIT loaded at four omits stock and preserves server-consumed two
+  ---
+  duration_ms: 2.023375
+  type: 'test'
+  ...
+# Subtest: reordered sparse EDIT emits only a changed existing quantity and new rows including zero
+ok 25 - reordered sparse EDIT emits only a changed existing quantity and new rows including zero
+  ---
+  duration_ms: 1.579583
+  type: 'test'
+  ...
+# Subtest: tracking-only EDIT preserves quantities, CREATE still supplies all quantities
+ok 26 - tracking-only EDIT preserves quantities, CREATE still supplies all quantities
+  ---
+  duration_ms: 0.535417
+  type: 'test'
+  ...
+# Subtest: untouched retained quantities rebase by UUID after purchase without hidden inventory intent
+ok 27 - untouched retained quantities rebase by UUID after purchase without hidden inventory intent
+  ---
+  duration_ms: 1.77325
+  type: 'test'
+  ...
+# Subtest: explicit retained zero survives when baseline is current; changed server inventory requires review
+ok 28 - explicit retained zero survives when baseline is current; changed server inventory requires review
+  ---
+  duration_ms: 1.044625
+  type: 'test'
+  ...
+# Subtest: legacy drafts retain their fields and require review instead of inferring stock intent
+ok 29 - legacy drafts retain their fields and require review instead of inferring stock intent
+  ---
+  duration_ms: 0.792458
+  type: 'test'
+  ...
+# Subtest: unreadable inventory evidence is refused and missing UUIDs cannot inherit another row baseline
+ok 30 - unreadable inventory evidence is refused and missing UUIDs cannot inherit another row baseline
+  ---
+  duration_ms: 0.4325
+  type: 'test'
+  ...
+# Subtest: acknowledgement clears only sent stock intent and retains newer zero or reverted quantities by UUID
+ok 31 - acknowledgement clears only sent stock intent and retains newer zero or reverted quantities by UUID
+  ---
+  duration_ms: 0.219792
+  type: 'test'
+  ...
+# Subtest: an omitted pending command rebases old untouched quantities to acknowledgement, preserving newer facts
+ok 32 - an omitted pending command rebases old untouched quantities to acknowledgement, preserving newer facts
+  ---
+  duration_ms: 0.314333
+  type: 'test'
+  ...
+# Subtest: the canonical edit schema and planner retain omitted stock, explicit zero and idless new stock
+ok 33 - the canonical edit schema and planner retain omitted stock, explicit zero and idless new stock
+  ---
+  duration_ms: 5.46975
+  type: 'test'
+  ...
+1..33
+# tests 33
+# suites 0
+# pass 33
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 939.160834

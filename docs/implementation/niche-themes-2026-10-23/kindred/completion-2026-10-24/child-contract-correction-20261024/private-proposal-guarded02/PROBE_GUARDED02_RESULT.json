@@ -1,0 +1,400 @@
+{
+  "recordedAt": "2026-10-24T11:33:46.998Z",
+  "classification": "PRIVATE_EXISTING_RENDERER_AND_EXPLICIT_KINDRED_SUCCESSOR_OUTLET_PROPOSAL_NOT_INSTALLED_OR_RELEASED",
+  "checks": [
+    {
+      "name": "All non-source bundle values and declarations remain exact",
+      "passed": true
+    },
+    {
+      "name": "Only ten existing inline-parent section sources change",
+      "passed": true
+    },
+    {
+      "name": "Explicit opt-in helper is immutable",
+      "passed": true
+    },
+    {
+      "name": "Explicit opt-in helper is idempotent",
+      "passed": true
+    },
+    {
+      "name": "Foreign package refused",
+      "passed": true
+    },
+    {
+      "name": "Default no-child template article preserves rendered HTML",
+      "passed": true,
+      "baselineStatus": "rendered",
+      "proposalStatus": "rendered"
+    },
+    {
+      "name": "Default no-child template blog preserves rendered HTML",
+      "passed": true,
+      "baselineStatus": "rendered",
+      "proposalStatus": "rendered"
+    },
+    {
+      "name": "Default no-child template cart preserves rendered HTML",
+      "passed": true,
+      "baselineStatus": "rendered",
+      "proposalStatus": "rendered"
+    },
+    {
+      "name": "Default no-child template collection preserves rendered HTML",
+      "passed": true,
+      "baselineStatus": "rendered",
+      "proposalStatus": "rendered"
+    },
+    {
+      "name": "Default no-child template contact preserves rendered HTML",
+      "passed": true,
+      "baselineStatus": "rendered",
+      "proposalStatus": "rendered"
+    },
+    {
+      "name": "Default no-child template customers/account preserves rendered HTML",
+      "passed": true,
+      "baselineStatus": "rendered",
+      "proposalStatus": "rendered"
+    },
+    {
+      "name": "Default no-child template customers/addresses preserves rendered HTML",
+      "passed": true,
+      "baselineStatus": "rendered",
+      "proposalStatus": "rendered"
+    },
+    {
+      "name": "Default no-child template customers/login preserves rendered HTML",
+      "passed": true,
+      "baselineStatus": "rendered",
+      "proposalStatus": "rendered"
+    },
+    {
+      "name": "Default no-child template customers/order preserves rendered HTML",
+      "passed": true,
+      "baselineStatus": "rendered",
+      "proposalStatus": "rendered"
+    },
+    {
+      "name": "Default no-child template customers/orders preserves rendered HTML",
+      "passed": true,
+      "baselineStatus": "rendered",
+      "proposalStatus": "rendered"
+    },
+    {
+      "name": "Default no-child template customers/register preserves rendered HTML",
+      "passed": true,
+      "baselineStatus": "rendered",
+      "proposalStatus": "rendered"
+    },
+    {
+      "name": "Default no-child template customers/settings preserves rendered HTML",
+      "passed": true,
+      "baselineStatus": "rendered",
+      "proposalStatus": "rendered"
+    },
+    {
+      "name": "Default no-child template customers/wishlist preserves rendered HTML",
+      "passed": true,
+      "baselineStatus": "rendered",
+      "proposalStatus": "rendered"
+    },
+    {
+      "name": "Default no-child template footer preserves rendered HTML",
+      "passed": true,
+      "baselineStatus": "rendered",
+      "proposalStatus": "rendered"
+    },
+    {
+      "name": "Default no-child template header preserves rendered HTML",
+      "passed": true,
+      "baselineStatus": "rendered",
+      "proposalStatus": "rendered"
+    },
+    {
+      "name": "Default no-child template index preserves rendered HTML",
+      "passed": true,
+      "baselineStatus": "rendered",
+      "proposalStatus": "rendered"
+    },
+    {
+      "name": "Default no-child template list-collections preserves rendered HTML",
+      "passed": true,
+      "baselineStatus": "rendered",
+      "proposalStatus": "rendered"
+    },
+    {
+      "name": "Default no-child template not_found preserves rendered HTML",
+      "passed": true,
+      "baselineStatus": "rendered",
+      "proposalStatus": "rendered"
+    },
+    {
+      "name": "Default no-child template page preserves rendered HTML",
+      "passed": true,
+      "baselineStatus": "rendered",
+      "proposalStatus": "rendered"
+    },
+    {
+      "name": "Default no-child template password preserves rendered HTML",
+      "passed": true,
+      "baselineStatus": "rendered",
+      "proposalStatus": "rendered"
+    },
+    {
+      "name": "Default no-child template policy preserves rendered HTML",
+      "passed": true,
+      "baselineStatus": "rendered",
+      "proposalStatus": "rendered"
+    },
+    {
+      "name": "Default no-child template product preserves rendered HTML",
+      "passed": true,
+      "baselineStatus": "rendered",
+      "proposalStatus": "rendered"
+    },
+    {
+      "name": "Default no-child template search preserves rendered HTML",
+      "passed": true,
+      "baselineStatus": "rendered",
+      "proposalStatus": "rendered"
+    },
+    {
+      "name": "Nested badge becomes visible under banner-carousel/slide",
+      "passed": true
+    },
+    {
+      "name": "Nested badge becomes visible under brand-marquee/brand",
+      "passed": true
+    },
+    {
+      "name": "Nested badge becomes visible under experience-timeline/experience",
+      "passed": true
+    },
+    {
+      "name": "Nested badge becomes visible under faq-accordion/faq-item",
+      "passed": true
+    },
+    {
+      "name": "Nested badge becomes visible under footer/link",
+      "passed": true
+    },
+    {
+      "name": "Nested badge becomes visible under header/link",
+      "passed": true
+    },
+    {
+      "name": "Nested badge becomes visible under portfolio-grid/project",
+      "passed": true
+    },
+    {
+      "name": "Nested badge becomes visible under services-grid/service",
+      "passed": true
+    },
+    {
+      "name": "Nested badge becomes visible under skills-section/skill",
+      "passed": true
+    },
+    {
+      "name": "Nested badge becomes visible under spotlight/badge",
+      "passed": true
+    },
+    {
+      "name": "Nested badge becomes visible under testimonials/testimonial",
+      "passed": true
+    },
+    {
+      "name": "Nested sibling order follows canonical block_order",
+      "passed": true
+    },
+    {
+      "name": "Reordered siblings change visible order without identity rewrite",
+      "passed": true
+    },
+    {
+      "name": "Hidden child is absent while sibling remains",
+      "passed": true
+    },
+    {
+      "name": "Hidden parent suppresses its descendants",
+      "passed": true
+    },
+    {
+      "name": "Canonical depth-three grandchild is visible",
+      "passed": true
+    },
+    {
+      "name": "Over-depth canonical document refused",
+      "passed": true
+    },
+    {
+      "name": "Child text remains escaped through sanitized child HTML outlet",
+      "passed": true
+    },
+    {
+      "name": "Explicit empty child allowlist remains denied",
+      "passed": true
+    },
+    {
+      "name": "First-party opt-in outlet emits first-party HTML and excludes app seam HTML",
+      "passed": true
+    },
+    {
+      "name": "spotlight: first-party child renders while supplied app/unknown children stay dormant",
+      "passed": true
+    },
+    {
+      "name": "brand-marquee: first-party child renders while supplied app/unknown children stay dormant",
+      "passed": true
+    },
+    {
+      "name": "Inline child projection contains only installed first-party reusable types",
+      "passed": true
+    },
+    {
+      "name": "Explicit existing first-party allowlist retains allowed child",
+      "passed": true
+    },
+    {
+      "name": "Explicit allowlist excludes a different child",
+      "passed": true
+    },
+    {
+      "name": "Canonical 100-child sibling boundary is retained",
+      "passed": true
+    },
+    {
+      "name": "Over-budget child siblings remain refused",
+      "passed": true
+    },
+    {
+      "name": "No network call attempted",
+      "passed": true
+    },
+    {
+      "name": "Accepted artifact bytes unchanged",
+      "passed": true
+    },
+    {
+      "name": "Main renderer source unchanged",
+      "passed": true
+    }
+  ],
+  "totals": {
+    "pass": 58,
+    "fail": 0
+  },
+  "matrix": [
+    {
+      "sectionType": "banner-carousel",
+      "parentType": "slide",
+      "originalVisible": false,
+      "proposedVisible": true,
+      "renderStatus": "rendered",
+      "warnings": []
+    },
+    {
+      "sectionType": "brand-marquee",
+      "parentType": "brand",
+      "originalVisible": false,
+      "proposedVisible": true,
+      "renderStatus": "rendered",
+      "warnings": []
+    },
+    {
+      "sectionType": "experience-timeline",
+      "parentType": "experience",
+      "originalVisible": false,
+      "proposedVisible": true,
+      "renderStatus": "rendered",
+      "warnings": []
+    },
+    {
+      "sectionType": "faq-accordion",
+      "parentType": "faq-item",
+      "originalVisible": false,
+      "proposedVisible": true,
+      "renderStatus": "rendered",
+      "warnings": []
+    },
+    {
+      "sectionType": "footer",
+      "parentType": "link",
+      "originalVisible": false,
+      "proposedVisible": true,
+      "renderStatus": "rendered",
+      "warnings": []
+    },
+    {
+      "sectionType": "header",
+      "parentType": "link",
+      "originalVisible": false,
+      "proposedVisible": true,
+      "renderStatus": "rendered",
+      "warnings": []
+    },
+    {
+      "sectionType": "portfolio-grid",
+      "parentType": "project",
+      "originalVisible": false,
+      "proposedVisible": true,
+      "renderStatus": "rendered",
+      "warnings": []
+    },
+    {
+      "sectionType": "services-grid",
+      "parentType": "service",
+      "originalVisible": false,
+      "proposedVisible": true,
+      "renderStatus": "rendered",
+      "warnings": []
+    },
+    {
+      "sectionType": "skills-section",
+      "parentType": "skill",
+      "originalVisible": false,
+      "proposedVisible": true,
+      "renderStatus": "rendered",
+      "warnings": []
+    },
+    {
+      "sectionType": "spotlight",
+      "parentType": "badge",
+      "originalVisible": false,
+      "proposedVisible": true,
+      "renderStatus": "rendered",
+      "warnings": []
+    },
+    {
+      "sectionType": "testimonials",
+      "parentType": "testimonial",
+      "originalVisible": false,
+      "proposedVisible": true,
+      "renderStatus": "rendered",
+      "warnings": []
+    }
+  ],
+  "changedSections": [
+    "banner-carousel",
+    "brand-marquee",
+    "experience-timeline",
+    "faq-accordion",
+    "footer",
+    "header",
+    "portfolio-grid",
+    "services-grid",
+    "skills-section",
+    "testimonials"
+  ],
+  "versionAssigned": false,
+  "artifactEmitted": false,
+  "mainApplied": false,
+  "networkCalls": 0,
+  "limits": [
+    "Source/library render with synthetic data only; no buyer/browser/DB/provider proof",
+    "Current default/captured factories remain unchanged; source outlets require explicit successor/version admission",
+    "Shared renderer source closure and retained security/other-theme regressions require allocator and independent admission",
+    "APP activation is excluded; existing app branch/schema permissions were not changed"
+  ]
+}

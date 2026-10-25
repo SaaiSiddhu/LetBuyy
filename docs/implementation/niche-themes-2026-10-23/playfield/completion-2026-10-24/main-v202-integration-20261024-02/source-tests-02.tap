@@ -1,0 +1,392 @@
+TAP version 13
+# Subtest: fresh 2.0.2 identity, manifest and canonical document roundtrip are consistent and immutable
+ok 1 - fresh 2.0.2 identity, manifest and canonical document roundtrip are consistent and immutable
+  ---
+  duration_ms: 35.925958
+  type: 'test'
+  ...
+# Subtest: default body, header, footer and styles remain exact to the accepted 2.0.1 rendering
+ok 2 - default body, header, footer and styles remain exact to the accepted 2.0.1 rendering
+  ---
+  duration_ms: 636.927833
+  type: 'test'
+  ...
+# Subtest: fresh Core inert copy does not become newly visible through activated fields
+ok 3 - fresh Core inert copy does not become newly visible through activated fields
+  ---
+  duration_ms: 48.200583
+  type: 'test'
+  ...
+# Subtest: the configured Bloom Core distribution seed is supported without changing its input
+ok 4 - the configured Bloom Core distribution seed is supported without changing its input
+  ---
+  duration_ms: 22.827625
+  type: 'test'
+  ...
+# Subtest: nonblank subtitle renders exactly once after the existing heading
+ok 5 - nonblank subtitle renders exactly once after the existing heading
+  ---
+  duration_ms: 31.149125
+  type: 'test'
+  ...
+# Subtest: omitted, empty and whitespace subtitles keep the empty-default output
+ok 6 - omitted, empty and whitespace subtitles keep the empty-default output
+  ---
+  duration_ms: 92.160334
+  type: 'test'
+  ...
+# Subtest: hostile subtitle text remains inert and Tamil/Hindi values survive the canonical sanitizer
+ok 7 - hostile subtitle text remains inert and Tamil/Hindi values survive the canonical sanitizer
+  ---
+  duration_ms: 32.323
+  type: 'test'
+  ...
+# Subtest: empty related data creates neither a phantom heading nor a subtitle
+ok 8 - empty related data creates neither a phantom heading nor a subtitle
+  ---
+  duration_ms: 30.513458
+  type: 'test'
+  ...
+# Subtest: prebound resource order, product limit, links and collection binding remain authoritative
+ok 9 - prebound resource order, product limit, links and collection binding remain authoritative
+  ---
+  duration_ms: 29.905209
+  type: 'test'
+  ...
+# Subtest: 2.0.0 merchant settings, exact strings, layout, nested blocks, order and unknown JSON values survive
+ok 10 - 2.0.0 merchant settings, exact strings, layout, nested blocks, order and unknown JSON values survive
+  ---
+  duration_ms: 49.089083
+  type: 'test'
+  ...
+# Subtest: 2.0.1 merchant settings, exact strings, layout, nested blocks, order and unknown JSON values survive
+ok 11 - 2.0.1 merchant settings, exact strings, layout, nested blocks, order and unknown JSON values survive
+  ---
+  duration_ms: 45.917708
+  type: 'test'
+  ...
+# Subtest: existing 2.0.1 PDP facts, variants and purchase markup remain byte-identical
+ok 12 - existing 2.0.1 PDP facts, variants and purchase markup remain byte-identical
+  ---
+  duration_ms: 50.144708
+  type: 'test'
+  ...
+# Subtest: saved 2.0.0 gains the exact 2.0.1 fact body without resetting its product instance data
+not ok 13 - saved 2.0.0 gains the exact 2.0.1 fact body without resetting its product instance data
+  ---
+  duration_ms: 16.823167
+  type: 'test'
+  location: '/Volumes/Projects/LetBuyy/packages/theme-engine/test/playfield-subtitle-successor.test.ts:1:11581'
+  failureType: 'testCodeFailure'
+  error: |-
+    Values have same structure but are not reference-equal:
+    
+    ... Skipped lines
+    '<div class="pf-theme"><section class="lb-product-detail" data-section-id="{{ section.id }}" data-product-id="{{ product.id }}" data-lb-variant-facts data-lb-facts-namespace="toys" data-lb-toy-presentation="1" data-lb-toy-facts-enabled="{{ section.settings.showToyFacts }}" data-toys-facts="{{ product.toys_resolved_json }}">\n' +
+      '  <nav class="lb-product-detail__breadcrumb" aria-label="Breadcrumb">\n' +
+      '    <a href="{{ routes.root_url }}">Home</a>\n' +
+      '    <a href="{{ routes.all_products_collection_url }}">Shop</a>\n' +
+      '    <span aria-current="page">{{ product.title }}</span>\n' +
+      '  </nav>\n' +
+      '  <div class="lb-product-detail__layout">\n' +
+      '  {% if section.settings.showGallery and product.images.size > 0 %}\n' +
+      '  <lb-product-gallery class="lb-product-detail__gallery" data-lb-island="product-gallery">\n' +
+      '    <div class="lb-product-detail__gallery-main">\n' +
+      '      {% for image in product.images %}<img class="lb-product-detail__gallery-image" src="{{ image | image_url }}" alt="{{ product.title }}" data-lb-gallery-image data-index="{{ forloop.index0 }}"{% unless forloop.first %} hidden{% endunless %} loading="{% if forloop.first %}eager{% else %}lazy{% endif %}" decoding="async">{% endfor %}\n' +
+      '    </div>\n' +
+      '    {% if product.images.size > 1 %}\n' +
+      '    <div class="lb-product-detail__gallery-thumbs" role="tablist" aria-label="Product images">\n' +
+      '      {% for image in product.images %}<button type="button" class="lb-product-detail__gallery-thumb" data-lb-gallery-thumb data-index="{{ forloop.index0 }}" role="tab" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}" tabindex="{% if forloop.first %}0{% else %}-1{% endif %}" aria-label="Image {{ forloop.index }} of {{ product.images.size }}"><img src="{{ image | image_url }}" alt="" aria-hidden="true" loading="lazy" decoding="async"></button>{% endfor %}\n' +
+      '    </div>\n' +
+      '    {% endif %}\n' +
+      '  </lb-product-gallery>\n' +
+      '  {% endif %}\n' +
+      '  {% if section.settings.showGallery and product.images.size == 0 %}<div class="pf-no-image">Product image not supplied</div>{% endif %}<div class="lb-product-detail__info">\n' +
+      '  <h1>{{ product.title }}</h1>\n' +
+      '  {% if product.review_count > 0 %}<p class="lb-product-detail__rating" aria-label="Rated {{ product.rating }} out of 5">★ {{ product.rating }} <span class="lb-product-detail__rating-count">({{ product.review_count }})</span></p>{% endif %}\n' +
+      '  <div class="lb-product-detail__price">\n' +
+      '    <span class="lb-product-detail__price-current">{{ product.price | times: 100 | money_with_currency: product.currency }}</span>\n' +
+      '    {% if product.compare_at_price and product.compare_at_price > product.price %}\n' +
+      '    <s class="lb-product-detail__price-compare">{{ product.compare_at_price | times: 100 | money_with_currency: product.currency }}</s>\n' +
+      '    <span class="lb-product-detail__price-save">Save {{ product.compare_at_price | minus: product.price | times: 100.0 | divided_by: product.compare_at_price | round }}%</span>\n' +
+      '    {% endif %}\n' +
+      '  </div>\n' +
+      '  {% assign pf201_ready = true %}{% if product.options.size > 0 %}{% assign pf201_ready = false %}{% endif %}{% if section.settings.showToyFacts %}<div class="pf-product-quick"><p data-lb-toy-field="age">{% if pf201_ready %}{% if product.toys.ageStatement != blank %}{{ product.toys.ageStatement }}{% elsif product.toys.ageBands.size > 0 %}{% for age in product.toys.ageBands %}{{ age }}{% unless forloop.last %}, {% endunless %}{% endfor %} years{% else %}Age information not supplied.{% endif %}{% else %}Choose an edition for age information.{% endif %}</p><a class="pf-link" href="#playfield-product-facts-{{ section.id }}">Contents, dimensions &amp; materials</a><p class="pf-note" data-lb-toy-status role="status" aria-live="polite">{% if pf201_ready %}Product facts supplied by the merchant.{% else %}Choose all options to see facts for the selected edition.{% endif %}</p></div><aside class="pf-warning" data-lb-toy-warnings aria-label="Merchant supplied warnings"{% if pf201_ready and product.toys.warnings.size > 0 %}{% else %} hidden{% endif %}>{% if pf201_ready and product.toys.warnings.size > 0 %}<h2>Read before choosing</h2>{% for warning in product.toys.warnings %}<p>{{ warning.text }}</p><p class="pf-note">Source: {{ warning.sourceLabel }}{% if warning.editionLabel != blank %} · {{ warning.editionLabel }}{% endif %}</p>{% endfor %}{% endif %}</aside>{% endif %}\n' +
+      '  {% if product.options.size > 0 %}<lb-variant-picker data-lb-island="variant-picker" data-product-id="{{ product.id }}" data-variants="{{ product.variants | json }}" class="lb-product-detail__variants">{% for option in product.options %}<div class="lb-product-detail__variant-group"><span class="lb-variant-option__name">{{ option.name }}</span><div class="lb-product-detail__variant-values">{% for value in option.values %}<button type="button" data-lb-variant-option data-variant-name="{{ option.name }}" data-variant-value="{{ value }}" aria-pressed="false">{{ value }}</button>{% endfor %}</div></div>{% endfor %}<p class="lb-product-detail__variant-status" data-lb-variant-status role="status"></p></lb-variant-picker>{% endif %}\n' +
+      '  <div class="lb-product-detail__purchase">\n' +
+      '    <lb-add-to-cart data-lb-island="add-to-cart" data-product-id="{{ product.id }}" data-product-name="{{ product.title }}" data-product-price="{{ product.price }}" data-product-currency="{{ product.currency }}" data-product-url="{{ product.url }}">\n' +
+      '      <label class="lb-sr-only" for="lb-quantity-{{ section.id }}">Quantity</label>\n' +
+      '      <input type="number" name="quantity" id="lb-quantity-{{ section.id }}" class="lb-product-detail__quantity" value="1" min="1" inputmode="numeric">\n' +
+      '      <button type="button" class="lb-product-detail__cta lb-product-detail__cta--primary" data-lb-add-to-cart{% if product.available == false %} disabled{% endif %}>{% if product.available == false %}Sold out{% else %}Add to cart{% endif %}</button>\n' +
+      '      {% if section.settings.showBuyNow %}<button type="button" class="lb-product-detail__cta lb-product-detail__cta--secondary" data-lb-buy-now{% if product.available == false %} disabled{% endif %}>Buy now</button>{% endif %}\n' +
+      '      <span data-lb-add-to-cart-status aria-live="polite"></span>\n' +
+      '    </lb-add-to-cart>\n' +
+      '    <lb-wishlist-toggle data-lb-island="wishlist-toggle" data-product-id="{{ product.id }}" data-store-id="{{ shop.id }}" data-in-wishlist="{% if product.in_wishlist %}true{% endif %}"{% if buyer_wishlist.authenticated %} data-authenticated="true" data-account-type="buyer" data-buyer-id="{{ buyer_wishlist.buyerId }}" data-buyer-linked="{% if buyer_wishlist.linked %}true{% endif %}" data-buyer-unavailable="{% if buyer_wishlist.unavailable or buyer_wishlist.storeAccountUnavailable %}true{% endif %}"{% elsif customer %} data-authenticated="true" data-account-type="store_customer"{% endif %} data-base-path="/store/{{ shop.subdomain }}" aria-label="Add {{ product.title }} to wishlist"></lb-wishlist-toggle>\n' +
+      '  </div>\n' +
+      '  {% if section.settings.showDescription and product.description %}\n' +
+      '  <details class="lb-product-detail__accordion"><summary>Description</summary><div class="lb-product-detail__accordion-body">{{ product.description }}</div></details>\n' +
+      '  {% endif %}\n' +
+      "  {% if shop.policies contains 'shipping' %}\n" +
+      '  <details class="lb-product-detail__accordion"><summary>Shipping</summary><div class="lb-product-detail__accordion-body"><a href="{{ routes.root_url }}/shipping">Read our shipping policy</a></div></details>\n' +
+      '  {% endif %}\n' +
+      "  {% if shop.policies contains 'refund' or shop.policies contains 'returns' %}\n" +
+      '  <details class="lb-product-detail__accordion"><summary>Returns</summary><div class="lb-product-detail__accordion-body"><a href="{{ routes.root_url }}/returns">Read our returns policy</a></div></details>\n' +
+      '  {% endif %}\n' +
+    ...}
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: |-
+    <div class="pf-theme"><section class="lb-product-detail" data-section-id="{{ section.id }}" data-product-id="{{ product.id }}" data-lb-variant-facts data-lb-facts-namespace="toys" data-lb-toy-presentation="1" data-lb-toy-facts-enabled="{{ section.settings.showToyFacts }}" data-toys-facts="{{ product.toys_resolved_json }}">
+      <nav class="lb-product-detail__breadcrumb" aria-label="Breadcrumb">
+        <a href="{{ routes.root_url }}">Home</a>
+        <a href="{{ routes.all_products_collection_url }}">Shop</a>
+        <span aria-current="page">{{ product.title }}</span>
+      </nav>
+      <div class="lb-product-detail__layout">
+      {% if section.settings.showGallery and product.images.size > 0 %}
+      <lb-product-gallery class="lb-product-detail__gallery" data-lb-island="product-gallery">
+        <div class="lb-product-detail__gallery-main">
+          {% for image in product.images %}<img class="lb-product-detail__gallery-image" src="{{ image | image_url }}" alt="{{ product.title }}" data-lb-gallery-image data-index="{{ forloop.index0 }}"{% unless forloop.first %} hidden{% endunless %} loading="{% if forloop.first %}eager{% else %}lazy{% endif %}" decoding="async">{% endfor %}
+        </div>
+        {% if product.images.size > 1 %}
+        <div class="lb-product-detail__gallery-thumbs" role="tablist" aria-label="Product images">
+          {% for image in product.images %}<button type="button" class="lb-product-detail__gallery-thumb" data-lb-gallery-thumb data-index="{{ forloop.index0 }}" role="tab" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}" tabindex="{% if forloop.first %}0{% else %}-1{% endif %}" aria-label="Image {{ forloop.index }} of {{ product.images.size }}"><img src="{{ image | image_url }}" alt="" aria-hidden="true" loading="lazy" decoding="async"></button>{% endfor %}
+        </div>
+        {% endif %}
+      </lb-product-gallery>
+      {% endif %}
+      {% if section.settings.showGallery and product.images.size == 0 %}<div class="pf-no-image">Product image not supplied</div>{% endif %}<div class="lb-product-detail__info">
+      <h1>{{ product.title }}</h1>
+      {% if product.review_count > 0 %}<p class="lb-product-detail__rating" aria-label="Rated {{ product.rating }} out of 5">★ {{ product.rating }} <span class="lb-product-detail__rating-count">({{ product.review_count }})</span></p>{% endif %}
+      <div class="lb-product-detail__price">
+        <span class="lb-product-detail__price-current">{{ product.price | times: 100 | money_with_currency: product.currency }}</span>
+        {% if product.compare_at_price and product.compare_at_price > product.price %}
+        <s class="lb-product-detail__price-compare">{{ product.compare_at_price | times: 100 | money_with_currency: product.currency }}</s>
+        <span class="lb-product-detail__price-save">Save {{ product.compare_at_price | minus: product.price | times: 100.0 | divided_by: product.compare_at_price | round }}%</span>
+        {% endif %}
+      </div>
+      {% assign pf201_ready = true %}{% if product.options.size > 0 %}{% assign pf201_ready = false %}{% endif %}{% if section.settings.showToyFacts %}<div class="pf-product-quick"><p data-lb-toy-field="age">{% if pf201_ready %}{% if product.toys.ageStatement != blank %}{{ product.toys.ageStatement }}{% elsif product.toys.ageBands.size > 0 %}{% for age in product.toys.ageBands %}{{ age }}{% unless forloop.last %}, {% endunless %}{% endfor %} years{% else %}Age information not supplied.{% endif %}{% else %}Choose an edition for age information.{% endif %}</p><a class="pf-link" href="#playfield-product-facts-{{ section.id }}">Contents, dimensions &amp; materials</a><p class="pf-note" data-lb-toy-status role="status" aria-live="polite">{% if pf201_ready %}Product facts supplied by the merchant.{% else %}Choose all options to see facts for the selected edition.{% endif %}</p></div><aside class="pf-warning" data-lb-toy-warnings aria-label="Merchant supplied warnings"{% if pf201_ready and product.toys.warnings.size > 0 %}{% else %} hidden{% endif %}>{% if pf201_ready and product.toys.warnings.size > 0 %}<h2>Read before choosing</h2>{% for warning in product.toys.warnings %}<p>{{ warning.text }}</p><p class="pf-note">Source: {{ warning.sourceLabel }}{% if warning.editionLabel != blank %} · {{ warning.editionLabel }}{% endif %}</p>{% endfor %}{% endif %}</aside>{% endif %}
+      {% if product.options.size > 0 %}<lb-variant-picker data-lb-island="variant-picker" data-product-id="{{ product.id }}" data-variants="{{ product.variants | json }}" class="lb-product-detail__variants">{% for option in product.options %}<div class="lb-product-detail__variant-group"><span class="lb-variant-option__name">{{ option.name }}</span><div class="lb-product-detail__variant-values">{% for value in option.values %}<button type="button" data-lb-variant-option data-variant-name="{{ option.name }}" data-variant-value="{{ value }}" aria-pressed="false">{{ value }}</button>{% endfor %}</div></div>{% endfor %}<p class="lb-product-detail__variant-status" data-lb-variant-status role="status"></p></lb-variant-picker>{% endif %}
+      <div class="lb-product-detail__purchase">
+        <lb-add-to-cart data-lb-island="add-to-cart" data-product-id="{{ product.id }}" data-product-name="{{ product.title }}" data-product-price="{{ product.price }}" data-product-currency="{{ product.currency }}" data-product-url="{{ product.url }}">
+          <label class="lb-sr-only" for="lb-quantity-{{ section.id }}">Quantity</label>
+          <input type="number" name="quantity" id="lb-quantity-{{ section.id }}" class="lb-product-detail__quantity" value="1" min="1" inputmode="numeric">
+          <button type="button" class="lb-product-detail__cta lb-product-detail__cta--primary" data-lb-add-to-cart{% if product.available == false %} disabled{% endif %}>{% if product.available == false %}Sold out{% else %}Add to cart{% endif %}</button>
+          {% if section.settings.showBuyNow %}<button type="button" class="lb-product-detail__cta lb-product-detail__cta--secondary" data-lb-buy-now{% if product.available == false %} disabled{% endif %}>Buy now</button>{% endif %}
+          <span data-lb-add-to-cart-status aria-live="polite"></span>
+        </lb-add-to-cart>
+        <lb-wishlist-toggle data-lb-island="wishlist-toggle" data-product-id="{{ product.id }}" data-store-id="{{ shop.id }}" data-in-wishlist="{% if product.in_wishlist %}true{% endif %}"{% if buyer_wishlist.authenticated %} data-authenticated="true" data-account-type="buyer" data-buyer-id="{{ buyer_wishlist.buyerId }}" data-buyer-linked="{% if buyer_wishlist.linked %}true{% endif %}" data-buyer-unavailable="{% if buyer_wishlist.unavailable or buyer_wishlist.storeAccountUnavailable %}true{% endif %}"{% elsif customer %} data-authenticated="true" data-account-type="store_customer"{% endif %} data-base-path="/store/{{ shop.subdomain }}" aria-label="Add {{ product.title }} to wishlist"></lb-wishlist-toggle>
+      </div>
+      {% if section.settings.showDescription and product.description %}
+      <details class="lb-product-detail__accordion"><summary>Description</summary><div class="lb-product-detail__accordion-body">{{ product.description }}</div></details>
+      {% endif %}
+      {% if shop.policies contains 'shipping' %}
+      <details class="lb-product-detail__accordion"><summary>Shipping</summary><div class="lb-product-detail__accordion-body"><a href="{{ routes.root_url }}/shipping">Read our shipping policy</a></div></details>
+      {% endif %}
+      {% if shop.policies contains 'refund' or shop.policies contains 'returns' %}
+      <details class="lb-product-detail__accordion"><summary>Returns</summary><div class="lb-product-detail__accordion-body"><a href="{{ routes.root_url }}/returns">Read our returns policy</a></div></details>
+      {% endif %}
+      </div>
+      </div>
+      {% if section.settings.showToyFacts %}<section class="pf-facts" id="playfield-product-facts-{{ section.id }}" aria-label="Product contents and facts"><p class="pf-eyebrow">THE DETAILS, BEFORE YOU BUY</p><div class="pf-facts-layout"><div><h2>What’s in the box?</h2><div data-lb-toy-contents>{% if pf201_ready and product.toys.contents.size > 0 %}<ul class="pf-contents">{% assign pf201_total = 0 %}{% for content in product.toys.contents %}{% assign pf201_total = pf201_total | plus: content.quantity %}<li><strong>{{ content.quantity }}</strong><span>{{ content.label }}</span></li>{% endfor %}</ul><p data-lb-toy-contents-completeness>{% if product.toys.contentsComplete %}{{ pf201_total }} items in total, according to the merchant.{% else %}This is a partial contents list supplied by the merchant.{% endif %}</p>{% elsif pf201_ready %}<p>Contents have not been supplied.</p>{% else %}<p>Choose an edition for its included contents.</p>{% endif %}</div></div><div><h2>Know the object.</h2><dl data-lb-toy-details>{% if pf201_ready %}<div><dt>Dimensions</dt><dd data-lb-toy-field="dimensions">{% if product.toys.dimensions %}{% if product.toys.dimensions.label != blank %}<strong>{{ product.toys.dimensions.label }}</strong><br>{% endif %}{% if product.toys.dimensions.length %}Length {{ product.toys.dimensions.length }} {{ product.toys.dimensions.unit }}{% endif %}{% if product.toys.dimensions.width %}{% if product.toys.dimensions.length %} · {% endif %}Width {{ product.toys.dimensions.width }} {{ product.toys.dimensions.unit }}{% endif %}{% if product.toys.dimensions.height %}{% if product.toys.dimensions.length or product.toys.dimensions.width %} · {% endif %}Height {{ product.toys.dimensions.height }} {{ product.toys.dimensions.unit }}{% endif %}{% else %}Dimensions have not been supplied.{% endif %}</dd></div>{% for measured in product.toys.additionalDimensions %}<div><dt>{{ measured.label }}</dt><dd data-lb-toy-field="additional-dimensions">{% if measured.length %}Length {{ measured.length }} {{ measured.unit }}{% endif %}{% if measured.width %}{% if measured.length %} · {% endif %}Width {{ measured.width }} {{ measured.unit }}{% endif %}{% if measured.height %}{% if measured.length or measured.width %} · {% endif %}Height {{ measured.height }} {{ measured.unit }}{% endif %}</dd></div>{% endfor %}<div><dt>Materials</dt><dd data-lb-toy-field="materials">{% if product.toys.materials != blank %}{{ product.toys.materials }}{% else %}Not supplied.{% endif %}</dd></div><div><dt>Finish</dt><dd data-lb-toy-field="finish">{% if product.toys.finish != blank %}{{ product.toys.finish }}{% else %}Not supplied.{% endif %}</dd></div><div><dt>Care</dt><dd data-lb-toy-field="care">{% if product.toys.care != blank %}{{ product.toys.care }}{% else %}Not supplied.{% endif %}</dd></div>{% else %}<div><dt>Edition facts</dt><dd>Choose an edition for its measurements and materials.</dd></div>{% endif %}</dl><p class="pf-note">Product information is supplied by the merchant. Age recommendations are guidance for the adult choosing the product.</p></div></div></section>{% endif %}
+      {% if section.settings.showReviews and product.reviews.size > 0 %}<div class="lb-product-reviews" data-section-id="{{ section.id }}-reviews">
+        <h2 class="lb-product-reviews__title">Customer reviews ({{ product.review_count }})</h2>
+        {% for review in product.reviews %}<article class="lb-product-review">
+          <header class="lb-product-review__head"><strong class="lb-product-review__author">{{ review.author }}</strong><span class="lb-product-review__stars" aria-label="Rated {{ review.rating }} out of 5">★ {{ review.rating }}</span>{% if review.is_verified %}<span class="lb-product-review__verified">Verified purchase</span>{% endif %}</header>
+          {% if review.title %}<h3 class="lb-product-review__heading">{{ review.title }}</h3>{% endif %}
+          {% if review.body %}<p class="lb-product-review__body">{{ review.body }}</p>{% endif %}
+          {% if review.helpful_count > 0 %}<footer class="lb-product-review__helpful">{{ review.helpful_count }} found this helpful</footer>{% endif %}
+        </article>{% endfor %}
+      </div>{% endif %}
+      {% if section.settings.showReviews %}<lb-review-form data-lb-island="review-form" data-product-id="{{ product.id }}" data-store-id="{{ shop.id }}"></lb-review-form>{% endif %}
+    </section>
+    </div>
+    {% schema %}
+    {"name":"Product Detail","tag":"section","settings":[{"type":"toggle","label":"Show gallery","default":true,"id":"showGallery"},{"type":"toggle","label":"Show description","default":true,"id":"showDescription"},{"type":"toggle","label":"Show reviews","default":true,"id":"showReviews"},{"id":"showBuyNow","type":"toggle","label":"Show buy now","default":false},{"id":"showToyFacts","type":"toggle","label":"Show contents and measured product facts","default":true}],"blocks":[],"presets":[{"name":"Product Detail","settings":{},"blocks":[]}],"enabled_on":{"templates":["*"]},"disabled_on":{"templates":[]}}
+    {% endschema %}
+  actual: |-
+    <div class="pf-theme"><section class="lb-product-detail" data-section-id="{{ section.id }}" data-product-id="{{ product.id }}" data-lb-variant-facts data-lb-facts-namespace="toys" data-lb-toy-presentation="1" data-lb-toy-facts-enabled="{{ section.settings.showToyFacts }}" data-toys-facts="{{ product.toys_resolved_json }}">
+      <nav class="lb-product-detail__breadcrumb" aria-label="Breadcrumb">
+        <a href="{{ routes.root_url }}">Home</a>
+        <a href="{{ routes.all_products_collection_url }}">Shop</a>
+        <span aria-current="page">{{ product.title }}</span>
+      </nav>
+      <div class="lb-product-detail__layout">
+      {% if section.settings.showGallery and product.images.size > 0 %}
+      <lb-product-gallery class="lb-product-detail__gallery" data-lb-island="product-gallery">
+        <div class="lb-product-detail__gallery-main">
+          {% for image in product.images %}<img class="lb-product-detail__gallery-image" src="{{ image | image_url }}" alt="{{ product.title }}" data-lb-gallery-image data-index="{{ forloop.index0 }}"{% unless forloop.first %} hidden{% endunless %} loading="{% if forloop.first %}eager{% else %}lazy{% endif %}" decoding="async">{% endfor %}
+        </div>
+        {% if product.images.size > 1 %}
+        <div class="lb-product-detail__gallery-thumbs" role="tablist" aria-label="Product images">
+          {% for image in product.images %}<button type="button" class="lb-product-detail__gallery-thumb" data-lb-gallery-thumb data-index="{{ forloop.index0 }}" role="tab" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}" tabindex="{% if forloop.first %}0{% else %}-1{% endif %}" aria-label="Image {{ forloop.index }} of {{ product.images.size }}"><img src="{{ image | image_url }}" alt="" aria-hidden="true" loading="lazy" decoding="async"></button>{% endfor %}
+        </div>
+        {% endif %}
+      </lb-product-gallery>
+      {% endif %}
+      {% if section.settings.showGallery and product.images.size == 0 %}<div class="pf-no-image">Product image not supplied</div>{% endif %}<div class="lb-product-detail__info">
+      <h1>{{ product.title }}</h1>
+      {% if product.review_count > 0 %}<p class="lb-product-detail__rating" aria-label="Rated {{ product.rating }} out of 5">★ {{ product.rating }} <span class="lb-product-detail__rating-count">({{ product.review_count }})</span></p>{% endif %}
+      <div class="lb-product-detail__price">
+        <span class="lb-product-detail__price-current">{{ product.price | times: 100 | money_with_currency: product.currency }}</span>
+        {% if product.compare_at_price and product.compare_at_price > product.price %}
+        <s class="lb-product-detail__price-compare">{{ product.compare_at_price | times: 100 | money_with_currency: product.currency }}</s>
+        <span class="lb-product-detail__price-save">Save {{ product.compare_at_price | minus: product.price | times: 100.0 | divided_by: product.compare_at_price | round }}%</span>
+        {% endif %}
+      </div>
+      {% assign pf201_ready = true %}{% if product.options.size > 0 %}{% assign pf201_ready = false %}{% endif %}{% if section.settings.showToyFacts %}<div class="pf-product-quick"><p data-lb-toy-field="age">{% if pf201_ready %}{% if product.toys.ageStatement != blank %}{{ product.toys.ageStatement }}{% elsif product.toys.ageBands.size > 0 %}{% for age in product.toys.ageBands %}{{ age }}{% unless forloop.last %}, {% endunless %}{% endfor %} years{% else %}Age information not supplied.{% endif %}{% else %}Choose an edition for age information.{% endif %}</p><a class="pf-link" href="#playfield-product-facts-{{ section.id }}">Contents, dimensions &amp; materials</a><p class="pf-note" data-lb-toy-status role="status" aria-live="polite">{% if pf201_ready %}Product facts supplied by the merchant.{% else %}Choose all options to see facts for the selected edition.{% endif %}</p></div><aside class="pf-warning" data-lb-toy-warnings aria-label="Merchant supplied warnings"{% if pf201_ready and product.toys.warnings.size > 0 %}{% else %} hidden{% endif %}>{% if pf201_ready and product.toys.warnings.size > 0 %}<h2>Read before choosing</h2>{% for warning in product.toys.warnings %}<p>{{ warning.text }}</p><p class="pf-note">Source: {{ warning.sourceLabel }}{% if warning.editionLabel != blank %} · {{ warning.editionLabel }}{% endif %}</p>{% endfor %}{% endif %}</aside>{% endif %}
+      {% if product.options.size > 0 %}<lb-variant-picker data-lb-island="variant-picker" data-product-id="{{ product.id }}" data-variants="{{ product.variants | json }}" class="lb-product-detail__variants">{% for option in product.options %}<div class="lb-product-detail__variant-group"><span class="lb-variant-option__name">{{ option.name }}</span><div class="lb-product-detail__variant-values">{% for value in option.values %}<button type="button" data-lb-variant-option data-variant-name="{{ option.name }}" data-variant-value="{{ value }}" aria-pressed="false">{{ value }}</button>{% endfor %}</div></div>{% endfor %}<p class="lb-product-detail__variant-status" data-lb-variant-status role="status"></p></lb-variant-picker>{% endif %}
+      <div class="lb-product-detail__purchase">
+        <lb-add-to-cart data-lb-island="add-to-cart" data-product-id="{{ product.id }}" data-product-name="{{ product.title }}" data-product-price="{{ product.price }}" data-product-currency="{{ product.currency }}" data-product-url="{{ product.url }}">
+          <label class="lb-sr-only" for="lb-quantity-{{ section.id }}">Quantity</label>
+          <input type="number" name="quantity" id="lb-quantity-{{ section.id }}" class="lb-product-detail__quantity" value="1" min="1" inputmode="numeric">
+          <button type="button" class="lb-product-detail__cta lb-product-detail__cta--primary" data-lb-add-to-cart{% if product.available == false %} disabled{% endif %}>{% if product.available == false %}Sold out{% else %}Add to cart{% endif %}</button>
+          {% if section.settings.showBuyNow %}<button type="button" class="lb-product-detail__cta lb-product-detail__cta--secondary" data-lb-buy-now{% if product.available == false %} disabled{% endif %}>Buy now</button>{% endif %}
+          <span data-lb-add-to-cart-status aria-live="polite"></span>
+        </lb-add-to-cart>
+        <lb-wishlist-toggle data-lb-island="wishlist-toggle" data-product-id="{{ product.id }}" data-store-id="{{ shop.id }}" data-in-wishlist="{% if product.in_wishlist %}true{% endif %}"{% if buyer_wishlist.authenticated %} data-authenticated="true" data-account-type="buyer" data-buyer-id="{{ buyer_wishlist.buyerId }}" data-buyer-linked="{% if buyer_wishlist.linked %}true{% endif %}" data-buyer-unavailable="{% if buyer_wishlist.unavailable or buyer_wishlist.storeAccountUnavailable %}true{% endif %}"{% elsif customer %} data-authenticated="true" data-account-type="store_customer"{% endif %} data-base-path="/store/{{ shop.subdomain }}" aria-label="Add {{ product.title }} to wishlist"></lb-wishlist-toggle>
+      </div>
+      {% if section.settings.showDescription and product.description %}
+      <details class="lb-product-detail__accordion"><summary>Description</summary><div class="lb-product-detail__accordion-body">{{ product.description }}</div></details>
+      {% endif %}
+      {% if shop.policies contains 'shipping' %}
+      <details class="lb-product-detail__accordion"><summary>Shipping</summary><div class="lb-product-detail__accordion-body"><a href="{{ routes.root_url }}/shipping">Read our shipping policy</a></div></details>
+      {% endif %}
+      {% if shop.policies contains 'refund' or shop.policies contains 'returns' %}
+      <details class="lb-product-detail__accordion"><summary>Returns</summary><div class="lb-product-detail__accordion-body"><a href="{{ routes.root_url }}/returns">Read our returns policy</a></div></details>
+      {% endif %}
+      </div>
+      </div>
+      {% if section.settings.showToyFacts %}<section class="pf-facts" id="playfield-product-facts-{{ section.id }}" aria-label="Product contents and facts"><p class="pf-eyebrow">THE DETAILS, BEFORE YOU BUY</p><div class="pf-facts-layout"><div><h2>What’s in the box?</h2><div data-lb-toy-contents>{% if pf201_ready and product.toys.contents.size > 0 %}<ul class="pf-contents">{% assign pf201_total = 0 %}{% for content in product.toys.contents %}{% assign pf201_total = pf201_total | plus: content.quantity %}<li><strong>{{ content.quantity }}</strong><span>{{ content.label }}</span></li>{% endfor %}</ul><p data-lb-toy-contents-completeness>{% if product.toys.contentsComplete %}{{ pf201_total }} items in total, according to the merchant.{% else %}This is a partial contents list supplied by the merchant.{% endif %}</p>{% elsif pf201_ready %}<p>Contents have not been supplied.</p>{% else %}<p>Choose an edition for its included contents.</p>{% endif %}</div></div><div><h2>Know the object.</h2><dl data-lb-toy-details>{% if pf201_ready %}<div><dt>Dimensions</dt><dd data-lb-toy-field="dimensions">{% if product.toys.dimensions %}{% if product.toys.dimensions.label != blank %}<strong>{{ product.toys.dimensions.label }}</strong><br>{% endif %}{% if product.toys.dimensions.length %}Length {{ product.toys.dimensions.length }} {{ product.toys.dimensions.unit }}{% endif %}{% if product.toys.dimensions.width %}{% if product.toys.dimensions.length %} · {% endif %}Width {{ product.toys.dimensions.width }} {{ product.toys.dimensions.unit }}{% endif %}{% if product.toys.dimensions.height %}{% if product.toys.dimensions.length or product.toys.dimensions.width %} · {% endif %}Height {{ product.toys.dimensions.height }} {{ product.toys.dimensions.unit }}{% endif %}{% else %}Dimensions have not been supplied.{% endif %}</dd></div>{% for measured in product.toys.additionalDimensions %}<div><dt>{{ measured.label }}</dt><dd data-lb-toy-field="additional-dimensions">{% if measured.length %}Length {{ measured.length }} {{ measured.unit }}{% endif %}{% if measured.width %}{% if measured.length %} · {% endif %}Width {{ measured.width }} {{ measured.unit }}{% endif %}{% if measured.height %}{% if measured.length or measured.width %} · {% endif %}Height {{ measured.height }} {{ measured.unit }}{% endif %}</dd></div>{% endfor %}<div><dt>Materials</dt><dd data-lb-toy-field="materials">{% if product.toys.materials != blank %}{{ product.toys.materials }}{% else %}Not supplied.{% endif %}</dd></div><div><dt>Finish</dt><dd data-lb-toy-field="finish">{% if product.toys.finish != blank %}{{ product.toys.finish }}{% else %}Not supplied.{% endif %}</dd></div><div><dt>Care</dt><dd data-lb-toy-field="care">{% if product.toys.care != blank %}{{ product.toys.care }}{% else %}Not supplied.{% endif %}</dd></div>{% else %}<div><dt>Edition facts</dt><dd>Choose an edition for its measurements and materials.</dd></div>{% endif %}</dl><p class="pf-note">Product information is supplied by the merchant. Age recommendations are guidance for the adult choosing the product.</p></div></div></section>{% endif %}
+      {% if section.settings.showReviews and product.reviews.size > 0 %}<div class="lb-product-reviews" data-section-id="{{ section.id }}-reviews">
+        <h2 class="lb-product-reviews__title">Customer reviews ({{ product.review_count }})</h2>
+        {% for review in product.reviews %}<article class="lb-product-review">
+          <header class="lb-product-review__head"><strong class="lb-product-review__author">{{ review.author }}</strong><span class="lb-product-review__stars" aria-label="Rated {{ review.rating }} out of 5">★ {{ review.rating }}</span>{% if review.is_verified %}<span class="lb-product-review__verified">Verified purchase</span>{% endif %}</header>
+          {% if review.title %}<h3 class="lb-product-review__heading">{{ review.title }}</h3>{% endif %}
+          {% if review.body %}<p class="lb-product-review__body">{{ review.body }}</p>{% endif %}
+          {% if review.helpful_count > 0 %}<footer class="lb-product-review__helpful">{{ review.helpful_count }} found this helpful</footer>{% endif %}
+        </article>{% endfor %}
+      </div>{% endif %}
+      {% if section.settings.showReviews %}<lb-review-form data-lb-island="review-form" data-product-id="{{ product.id }}" data-store-id="{{ shop.id }}"></lb-review-form>{% endif %}
+    </section>
+    </div>
+    {% schema %}
+    {"name":"Product Detail","tag":"section","settings":[{"type":"toggle","label":"Show gallery","default":true,"id":"showGallery"},{"type":"toggle","label":"Show description","default":true,"id":"showDescription"},{"type":"toggle","label":"Show reviews","default":true,"id":"showReviews"},{"type":"toggle","label":"Show buy now","default":false,"id":"showBuyNow"},{"type":"toggle","label":"Show contents and measured product facts","default":true,"id":"showToyFacts"}],"blocks":[],"presets":[{"name":"Product Detail","settings":{},"blocks":[]}],"enabled_on":{"templates":["*"]},"disabled_on":{"templates":[]}}
+    {% endschema %}
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/Volumes/Projects/LetBuyy/packages/theme-engine/test/playfield-subtitle-successor.test.ts:192:12)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: order heading clear/custom/hostile values retain the authoritative number and immutable saved facts
+ok 14 - order heading clear/custom/hostile values retain the authoritative number and immutable saved facts
+  ---
+  duration_ms: 63.466375
+  type: 'test'
+  ...
+# Subtest: valid 2.0.2 input is idempotent, cloned and retains later merchant edits/checksum
+ok 15 - valid 2.0.2 input is idempotent, cloned and retains later merchant edits/checksum
+  ---
+  duration_ms: 15.488333
+  type: 'test'
+  ...
+# Subtest: inconsistent or forged 2.0.2 version, facts, subtitle and order contracts fail closed
+not ok 16 - inconsistent or forged 2.0.2 version, facts, subtitle and order contracts fail closed
+  ---
+  duration_ms: 54.1895
+  type: 'test'
+  location: '/Volumes/Projects/LetBuyy/packages/theme-engine/test/playfield-subtitle-successor.test.ts:1:13511'
+  failureType: 'testCodeFailure'
+  error: |-
+    The input did not match the regular expression /Playfield 2.0.2/. Input:
+    
+    '[\n' +
+      '  {\n' +
+      '    "expected": "string",\n' +
+      '    "code": "invalid_type",\n' +
+      '    "path": [\n' +
+      '      "sections",\n' +
+      '      "featured-products",\n' +
+      '      "schema",\n' +
+      '      "settings",\n' +
+      '      5,\n' +
+      '      "label"\n' +
+      '    ],\n' +
+      '    "message": "Invalid input: expected string, received undefined"\n' +
+      '  }\n' +
+      ']'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual:
+  error: |-
+    [
+      {
+        "expected": "string",
+        "code": "invalid_type",
+        "path": [
+          "sections",
+          "featured-products",
+          "schema",
+          "settings",
+          5,
+          "label"
+        ],
+        "message": "Invalid input: expected string, received undefined"
+      }
+    ]
+  stack: |-
+    createPlayfieldThemeV202 (/Volumes/Projects/LetBuyy/packages/theme-engine/src/playfield-theme-v202.ts:50:49)
+    <anonymous> (/Volumes/Projects/LetBuyy/packages/theme-engine/test/playfield-subtitle-successor.test.ts:225:130)
+    getActual (node:assert:609:5)
+    Function.throws (node:assert:757:24)
+    TestContext.<anonymous> (/Volumes/Projects/LetBuyy/packages/theme-engine/test/playfield-subtitle-successor.test.ts:225:117)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+  operator: 'throws'
+  stack: |-
+    TestContext.<anonymous> (/Volumes/Projects/LetBuyy/packages/theme-engine/test/playfield-subtitle-successor.test.ts:225:117)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: unsupported package/version and unknown old product source are rejected without reset or mutation
+ok 17 - unsupported package/version and unknown old product source are rejected without reset or mutation
+  ---
+  duration_ms: 49.22
+  type: 'test'
+  ...
+# Subtest: 2.0.2 composes existing order helpers before version advance and has one facts/style/heading outlet
+ok 18 - 2.0.2 composes existing order helpers before version advance and has one facts/style/heading outlet
+  ---
+  duration_ms: 10.301917
+  type: 'test'
+  ...
+# Subtest: all twenty frozen default/2.0.0 catalogue outputs remain byte-identical; dispatch is not changed
+ok 19 - all twenty frozen default/2.0.0 catalogue outputs remain byte-identical; dispatch is not changed
+  ---
+  duration_ms: 97.018625
+  type: 'test'
+  ...
+1..19
+# tests 19
+# suites 0
+# pass 17
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1645.608291

@@ -1,0 +1,42 @@
+{
+  "checked_at_utc": "2026-10-22T04:55:00.317862+00:00",
+  "checks": [
+    {
+      "service": "identity",
+      "status": 200,
+      "method": "HTTP GET, redirects followed",
+      "url": "http://localhost:9002/lookup"
+    },
+    {
+      "service": "merchant",
+      "status": 200,
+      "method": "HTTP GET, redirects followed",
+      "url": "http://localhost:9001/"
+    },
+    {
+      "service": "gateway",
+      "status": 200,
+      "method": "HTTP GET, redirects followed",
+      "url": "http://localhost:9010/health"
+    },
+    {
+      "service": "commerce",
+      "status": 401,
+      "method": "HTTP GET, redirects followed",
+      "url": "http://localhost:9000/store/ux-audit-1022"
+    },
+    {
+      "service": "marketing",
+      "status": 200,
+      "method": "HTTP GET, redirects followed",
+      "url": "http://localhost:9006/"
+    },
+    {
+      "service": "console",
+      "status": 200,
+      "method": "HTTP GET, redirects followed",
+      "url": "http://localhost:9007/"
+    }
+  ],
+  "note": "Endpoint readiness only, not full service or provider acceptance"
+}

@@ -1,0 +1,10 @@
+{
+  "stage": "Initial static seal validation",
+  "exitCode": 1,
+  "sourceOrProductTestFailed": false,
+  "cause": "A raw keyword regex examined JSON/Liquid package content as SQL code.",
+  "firstMatchingWord": "truncate",
+  "sqlTokenCheckAfterMaskingDollarPayload": true,
+  "correction": "Mask only the two known dollar-quoted payload literals before the SQL statement policy check; retain all actual DO/SQL text.",
+  "dbNativeOrRuntimeAction": false
+}

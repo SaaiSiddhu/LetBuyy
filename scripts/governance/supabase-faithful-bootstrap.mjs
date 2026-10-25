@@ -91,12 +91,15 @@ BEGIN
   IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'anon') THEN CREATE ROLE anon NOLOGIN; END IF;
   IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'authenticated') THEN CREATE ROLE authenticated NOLOGIN; END IF;
   IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'service_role') THEN CREATE ROLE service_role NOLOGIN BYPASSRLS; END IF;
+  IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'authenticator') THEN CREATE ROLE authenticator LOGIN NOINHERIT NOBYPASSRLS; END IF;
 END $$;
 
 -- (3) Roles are CLUSTER-global, so state the attributes rather than trusting whatever exists.
 ALTER ROLE service_role NOLOGIN BYPASSRLS;
 ALTER ROLE authenticated NOLOGIN NOBYPASSRLS;
 ALTER ROLE anon NOLOGIN NOBYPASSRLS;
+ALTER ROLE authenticator LOGIN NOINHERIT NOBYPASSRLS;
+GRANT anon, authenticated, service_role TO authenticator;
 
 GRANT USAGE ON SCHEMA auth TO anon, authenticated, service_role;
 GRANT ALL ON auth.users TO service_role;

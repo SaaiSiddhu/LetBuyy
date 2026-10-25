@@ -1,0 +1,21 @@
+{
+  "recordedAt": "2026-10-24T18:05:27.382459+00:00",
+  "files": [
+    {
+      "path": "services/api-gateway/src/routes/checkout.ts",
+      "sha256": "7451f294972a43fbbecf8a470bfd9e89ea77466a36e6e61f725aa143235b5d3e"
+    },
+    {
+      "path": "services/api-gateway/src/routes/storefront/cart-routes.ts",
+      "sha256": "9f344bf91f6f999d3e898b25aa941fcb001f07bdf360532c930d79326014dd74"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/hosted-checkout-buyer-ownership.postgres.test.ts",
+      "sha256": "b0ed45ce28a0bb5d1b452fa1113058a9710ec5880f0eca1b2c9861479131a63d"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/hosted-checkout-webhook-first-qualification.manual.ts",
+      "sha256": "2f09a51690608ef28130e7d8559fe4af0f96f9bd6a9db474a29cfbc0d22bca14"
+    }
+  ]
+}

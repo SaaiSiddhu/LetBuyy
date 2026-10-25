@@ -1,0 +1,4 @@
+{
+  "initialSetup": "Read-only snapshot preparation initially assumed prior73 receipt sourcePins key; KeyError occurred before preservation manifest writing or any source edits. Corrected to actual sourceFiles structure; all snapshots verified byte-identical.",
+  "productionChangedBeforeNewRegressionTest": false
+}

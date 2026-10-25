@@ -1,0 +1,65 @@
+--- packages/theme-engine/src/niche-order-presentation.ts@before
++++ packages/theme-engine/src/niche-order-presentation.ts@repaired
+@@ -7,7 +7,7 @@
+ 
+ /** Explicit first-party v2 builder opt-in; no Core/Threadline or persisted release mutation. */
+ export function withNicheOrderPresentation(base: LiquidThemePackageBundle): LiquidThemePackageBundle {
+-    if (base.package.version !== '2.0.0' || !approved.has(base.package.slug)) return base;
++    if ((base.package.version !== '2.0.0' && !(base.package.slug === 'letbuyy-bloom' && base.package.version === '2.0.1')) || !approved.has(base.package.slug)) return base;
+     if (base.sections['customer-order-detail']?.source.includes(marker)) return base;
+     const bundle = structuredClone(base);
+     const section = bundle.sections['customer-order-detail'];
+--- packages/theme-engine/test/niche-order-presentation.test.ts@before
++++ packages/theme-engine/test/niche-order-presentation.test.ts@repaired
+@@ -5,6 +5,7 @@
+ import { createFirstPartyCatalogBundle } from '../src/first-party-theme-catalog';
+ import { createLetbuyyCoreLiquidThemeBundleFixture } from '../src/theme-bundle-core';
+ import { createPlayfieldTheme } from '../src/playfield-theme';
++import { createPlayfieldThemeV201 } from '../src/playfield-theme-v201';
+ import { createCircuitTheme } from '../src/circuit-theme';
+ import { createPantryTheme } from '../src/pantry-theme';
+ import { createHabitatTheme } from '../src/habitat-theme';
+@@ -58,3 +59,43 @@
+     const b=createDewdropTheme(createLetbuyyCoreLiquidThemeBundleFixture());b.sections['customer-order-detail'].source='<section>Different markup</section>';
+     assert.throws(()=>withNicheOrderPresentation(b),/canonical order line loop/);
+ });
++
++test('Playfield 2.0.1 retains exact historical order markup and CSS with only PDP and version differences',()=>{
++    const old=createFirstPartyCatalogBundle('letbuyy-bloom',{designVersion:'2.0.0'});
++    const next=createFirstPartyCatalogBundle('letbuyy-bloom',{designVersion:'2.0.0',playfieldVersion:'2.0.1'});
++    const marker='<!-- lb:niche-order-presentation:v1 -->';
++    assert.ok(old.sections['customer-order-detail'].source.includes(marker));
++    assert.ok(next.sections['customer-order-detail'].source.includes(marker),'2.0.1 must retain saved order facts');
++    assert.ok(next.layout.theme.source.includes('data-niche-order-presentation="1"'),'2.0.1 must retain order facts CSS');
++    assert.deepEqual(next.layout,old.layout);assert.deepEqual(next.templates,old.templates);assert.deepEqual(next.config,old.config);
++    assert.deepEqual(next.blocks,old.blocks);assert.deepEqual(next.locales,old.locales);assert.deepEqual(next.renderer,old.renderer);
++    assert.deepEqual({...next.package,version:old.package.version,version_number:old.package.version_number},old.package);
++    for(const key of Object.keys(old.sections))if(key!=='product-detail')assert.deepEqual(next.sections[key],old.sections[key],key);
++    assert.notEqual(next.sections['product-detail'].source,old.sections['product-detail'].source);
++    assert.deepEqual({...next.sections['product-detail'],source:old.sections['product-detail'].source},old.sections['product-detail']);
++});
++
++test('Playfield 2.0.1 decoration is pure, idempotent and renders saved facts as inert text with existing order money',async()=>{
++    const base=createPlayfieldThemeV201(createLetbuyyCoreLiquidThemeBundleFixture()),before=JSON.stringify(base);
++    const decorated=withNicheOrderPresentation(base);
++    assert.equal(JSON.stringify(base),before);assert.notEqual(decorated,base);
++    assert.equal(withNicheOrderPresentation(decorated),decorated);
++    const attack='Paper edition\n36 sheets\n<script>attack()</script><img src=x onerror="attack()">';
++    const result=await render(decorated,attack);assert.equal(result.status,'rendered');assert.deepEqual(result.warnings,[]);
++    const doc=new JSDOM(result.liquid!.contentForLayout).window.document;
++    assert.equal(doc.querySelector('.lb-order-facts__text')?.textContent,attack);
++    assert.equal(doc.querySelector('script,img,[onerror]'),null);assert.match(doc.body.textContent!,/520\.00/);
++    assert.match(result.liquid!.headStyleText!,/white-space:pre-wrap/);
++});
++
++test('only exact Playfield 2.0.1 joins the existing opt-in; unknown versions and every other 2.0.1 identity remain byte-exact',()=>{
++    const base=createPlayfieldTheme(createLetbuyyCoreLiquidThemeBundleFixture());
++    for(const version of ['1.0.0','2.0.2','2.1.0','3.0.0','02.0.1','2.0.1\n','2.0.1+build','']){
++        const value=structuredClone(base);value.package.version=version;const before=JSON.stringify(value);
++        assert.equal(withNicheOrderPresentation(value),value,version);assert.equal(JSON.stringify(value),before);
++    }
++    for(const slug of ['letbuyy-core','letbuyy-sense',...slugs.filter(id=>id!=='bloom').map(id=>`letbuyy-${id}`),'third-party','letbuyy-bloom-extra']){
++        const value=structuredClone(base);value.package.slug=slug;value.package.version='2.0.1';const before=JSON.stringify(value);
++        assert.equal(withNicheOrderPresentation(value),value,slug);assert.equal(JSON.stringify(value),before);
++    }
++});

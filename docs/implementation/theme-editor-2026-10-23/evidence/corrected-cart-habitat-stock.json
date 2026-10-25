@@ -1,0 +1,65 @@
+{
+  "recordedAt": "2026-10-23T19:19:16.286Z",
+  "runId": "f6074d90e894",
+  "phase": "habitat-stock",
+  "guardVerified": true,
+  "readOnly": true,
+  "scope": "Whitelisted owned active cart line/facts/fingerprints/image only; no session/token/handoff/catalog_source/customer",
+  "actual": {
+    "orders": 0,
+    "siteId": "f83e5e3d-1474-4378-b99b-55f8f4475b9f",
+    "activeCarts": [
+      {
+        "id": "59e347bf-98cc-4477-95e4-6aedb233f6f6",
+        "items": [
+          {
+            "id": "54301d6f-f54e-4209-95a0-4fbc32bcf8e6:07d32ed4-62ca-43dc-a605-b11f97c0a791",
+            "image": null,
+            "title": "Habitat lifecycle desk",
+            "currency": "INR",
+            "imageUrl": null,
+            "quantity": 4,
+            "lineTotal": 35600,
+            "productId": "54301d6f-f54e-4209-95a0-4fbc32bcf8e6",
+            "unitPrice": 8900,
+            "variantId": "07d32ed4-62ca-43dc-a605-b11f97c0a791",
+            "properties": {
+              "Width": "48 in"
+            },
+            "nicheSnapshot": {
+              "facts": {
+                "furniture": {
+                  "care": "Wipe dry.",
+                  "finish": "Natural",
+                  "package": {
+                    "unit": "in",
+                    "depth": 25,
+                    "width": 50
+                  },
+                  "assembled": {
+                    "unit": "in",
+                    "width": 48
+                  },
+                  "materials": [
+                    "Wood"
+                  ]
+                }
+              },
+              "version": 1,
+              "selected_options": [
+                {
+                  "name": "Width",
+                  "value": "48 in"
+                }
+              ]
+            },
+            "productVersion": 8,
+            "snapshotFingerprint": "ff28713f9f0ac74ffa4b6eac3033b59acb28e8d7b0f8e033d4533198ab9dee88",
+            "configurationFingerprint": null
+          }
+        ],
+        "status": "active"
+      }
+    ]
+  }
+}

@@ -1,0 +1,64 @@
+Browser tab: 61, Title: "Threadline", URL: "http://syn-threadline-ui-6815276b.localhost:58091/".
+1 AXWebArea Threadline, URL: syn-threadline-ui-6815276b.localhost:58091/
+	2 container
+		3 container Description: Primary, ID: lb-nav-panel-header-default
+		4 link Description: Threadline, Value: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b
+		5 button (collapsed) Description: Search, Secondary Actions: Expand
+		6 link Description: Log in, Value: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/customers/login
+		7 link Description: Cart ( 0 ), Value: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/cart
+		8 text BOOKS & PAPER
+		9 heading Marginalia936 A — a supplied reading shelf, Value: 1
+			10 text Marginalia936 A — a supplied reading shelf
+		11 text Books to spend time with. Paper for what comes next.
+		12 text What would you like to read?
+		13 container
+			14 search text field (settable) What would you like to read?, ID: mg-search-marginalia-opening
+			15 button Search
+		16 text Browse the subject index, or search the catalog.
+		17 container Marginalia936 A subject index
+			18 heading Marginalia936 A subject index, Value: 2
+				19 text Marginalia936 A subject index
+			20 link Description: Care, Value: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/collections/d2005c42-10c1-4bf4-af35-5fcf33be5af9
+			21 link Description: Circuit lifecycle intentional empty, Value: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/collections/b7d740f6-24e3-4bf3-8e82-4f7a14ee2784
+			22 link Description: Cleanse, Value: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/collections/2deb16a5-cac9-4df9-b8a6-635d25fbaae2
+			23 link Description: Colour, Value: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/collections/310a7230-7390-4b87-ba67-08c38f35b838
+			24 link Description: Easy, Value: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/collections/32db8972-ce49-4b69-8c08-6f65d4de20b5
+			25 link Description: Habitat dimensional controls, Value: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/collections/6e25118a-9f39-4ad9-8374-d0b5bf3e4e25
+			26 link Description: Lifecycle accessories, Value: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/collections/01f56eb8-89fa-4fc5-be47-02f3ec591f2f
+			27 link Description: Lifecycle activities, Value: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/collections/652b787f-848f-47a2-a00f-12a3d93adfa3
+			28 link Description: Explore all products, Value: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/products
+		29 container
+			30 link Description: Image not supplied, Value: syn-threadline-ui-6815276b.localhost:58091/product/f2382fe0-6a3e-4241-9aef-9a54c765433f
+			31 text ON THE READING TABLE
+			32 heading Marginalia lifecycle book, Value: 2
+				33 text Marginalia lifecycle book
+			34 text Multiple editions — check language and format INR 420.00
+			35 link Description: View details, Value: syn-threadline-ui-6815276b.localhost:58091/product/f2382fe0-6a3e-4241-9aef-9a54c765433f
+		36 heading A little further along the shelf, Value: 2
+			37 text A little further along the shelf
+		38 container
+			39 link Description: Marginalia lifecycle lined notebook, Value: syn-threadline-ui-6815276b.localhost:58091/product/43fba2a8-bc4d-4939-917e-8430991fbd09
+			40 heading Marginalia lifecycle lined notebook, Value: 3
+				41 link Description: Marginalia lifecycle lined notebook, Value: syn-threadline-ui-6815276b.localhost:58091/product/43fba2a8-bc4d-4939-917e-8430991fbd09
+			42 text 100 gsm · 148 × 210 mm 96 pages / 48 sheets · lined INR 320.00
+			43 link Description: View details, Value: syn-threadline-ui-6815276b.localhost:58091/product/43fba2a8-bc4d-4939-917e-8430991fbd09
+		44 container
+			45 link Description: Image not supplied, Value: syn-threadline-ui-6815276b.localhost:58091/product/f2382fe0-6a3e-4241-9aef-9a54c765433f
+			46 heading Marginalia lifecycle book, Value: 3
+				47 link Description: Marginalia lifecycle book, Value: syn-threadline-ui-6815276b.localhost:58091/product/f2382fe0-6a3e-4241-9aef-9a54c765433f
+			48 text Multiple editions — check language and format INR 420.00
+			49 link Description: View editions, Value: syn-threadline-ui-6815276b.localhost:58091/product/f2382fe0-6a3e-4241-9aef-9a54c765433f
+		50 text ROOM FOR YOUR OWN WORDS
+		51 heading Good paper. Fresh possibilities., Value: 2
+			52 text Good paper. Fresh possibilities.
+		53 text Marginalia936 A paper editorial saved.
+		54 link Description: Read the supplied notebook facts →, Value: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/product/43fba2a8-bc4d-4939-917e-8430991fbd09
+		55 heading Threadline, Value: 3
+			56 text Threadline
+		57 heading CONTACT, Value: 4
+			58 text CONTACT
+		59 link Description: Contact us, Value: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/contact
+		60 text © Threadline. All rights reserved.
+		61 link Description: Powered by LetBuyy, Value: letbuyy.com/
+
+The focused UI element is 1 AXWebArea Threadline, URL: syn-threadline-ui-6815276b.localhost:58091/

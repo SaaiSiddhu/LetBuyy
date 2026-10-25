@@ -1,0 +1,66 @@
+{
+  "classification": "APPENDED_PUBLICATION_CONTEXT_PROVENANCE_CORRECTION_RAW_REPORT_UNCHANGED",
+  "recordedAt": "2026-10-23T18:28:32.261443+00:00",
+  "runId": "f6074d90e894",
+  "report": {
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/installed-lifecycle/corrected-f6074d90e894/public-get-transport-correction-02/public-readback-three-report.json",
+    "sha256": "e456c1891314e6c43d65326989c4fa15b862ae38ecae7a3d71f6762d58104ee1"
+  },
+  "queryInterval": {
+    "startedAt": "2026-10-23T18:15:36.446Z",
+    "finishedAt": "2026-10-23T18:15:36.646Z"
+  },
+  "historicalAllocationPrecondition": {
+    "theme": "Dewdrop",
+    "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-dewdrop-publication-A-proof.json",
+    "sha256": "85109191680a2f4ad43f7f1b4363e5a32d4cd949f157c5f6d1e0cf91624974a1",
+    "packageVersion": "2.0.0",
+    "releaseId": "c68c4117-a6f1-430a-b321-ac76c5e7b145",
+    "sourceDraftVersion": 4,
+    "releaseSha256": "57bdde21eb6270428d8d3f84255d1a2c79b25881a666ebd31352025e80aaaf91",
+    "orders": 0,
+    "installed": 1,
+    "editorObservations": {
+      "captureFailures": 0,
+      "records": []
+    }
+  },
+  "correction": "The pinned first Dewdrop A receipt is historical allocation provenance, not an atomic current-release witness for the later GETs. Editor recorded publication B before these GETs and restored A afterward. Withdraw any reading that c68c4117 A/draft4 was the current release during the successful GETs.",
+  "latestEditorPublicationObservedBeforeGets": {
+    "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-dewdrop-publication-B-proof.json",
+    "sha256": "a9e82e1c9a4fb29bbca83993ae3ffeb63c021d09c8fe92a8bfeb69c9d600ab7b",
+    "recordedAt": "2026-10-23T18:13:50.743560+00:00",
+    "theme": "Dewdrop",
+    "packageVersion": "2.0.0",
+    "releaseId": "b8cab43c-b81c-476f-a63e-50a2f1a59399",
+    "sourceDraftVersion": 7,
+    "releaseSha256": "f81297f28b702a26f4183b21501f6cd6564d520e40a81175d8e768ed07bee2c3",
+    "orders": 0,
+    "installed": 1,
+    "editorObservations": {
+      "captureFailures": 0,
+      "records": []
+    }
+  },
+  "nextEditorPublicationObservedAfterGets": {
+    "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-dewdrop-publication-restored-A-proof.json",
+    "sha256": "1925a38a487613525d41e28aeabaeaf9a94513780db37f234ab97f31beb21fbd",
+    "recordedAt": "2026-10-23T18:17:34.486357+00:00",
+    "theme": "Dewdrop",
+    "packageVersion": "2.0.0",
+    "releaseId": "41f399d3-7df2-42ff-a916-85fea3c7a8c6",
+    "sourceDraftVersion": null,
+    "releaseSha256": "57bdde21eb6270428d8d3f84255d1a2c79b25881a666ebd31352025e80aaaf91",
+    "orders": 0,
+    "installed": 1,
+    "editorObservations": {
+      "captureFailures": 0,
+      "records": []
+    }
+  },
+  "exactReleaseAtRequestTimeAtomicallyVerified": false,
+  "queryResultUnaffected": "Name, model and usb-c backend product searches returned200/total1/exact hub with correct facts and canonical query echo. Product API bodies do not establish theme release identity.",
+  "rawReportAndBodiesRewritten": false,
+  "newRuntimeCalls": 0,
+  "circuitUiOrWholeCaseAcceptanceClaimed": false
+}

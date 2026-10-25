@@ -1,0 +1,514 @@
+{
+  "body": {
+    "background": "rgba(0, 0, 0, 0)",
+    "color": "rgba(18, 18, 18, 0.75)",
+    "font": "Archivo, sans-serif",
+    "fontSize": "15px"
+  },
+  "controls": [
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": true,
+      "expanded": null,
+      "label": "Slide left",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Slide right",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Decrease quantity for Braulio Amado— 2021",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "INPUT",
+      "type": "number"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Increase quantity for Braulio Amado— 2021",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Add to cart",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Buy it now",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Share",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Email",
+      "tag": "INPUT",
+      "type": "email"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Subscribe",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    }
+  ],
+  "headings": [
+    {
+      "font": "Newsreader, serif",
+      "height": 32,
+      "line": "32px",
+      "size": "26px",
+      "tag": "H2",
+      "text": "",
+      "weight": "400",
+      "width": 329,
+      "x": 406,
+      "y": 395
+    },
+    {
+      "font": "Newsreader, serif",
+      "height": 96,
+      "line": "48px",
+      "size": "39px",
+      "tag": "H2",
+      "text": "Braulio Amado— 2021",
+      "weight": "400",
+      "width": 320,
+      "x": 35,
+      "y": 107.59375
+    },
+    {
+      "font": "Newsreader, serif",
+      "height": 48,
+      "line": "48px",
+      "size": "39px",
+      "tag": "H2",
+      "text": "Our studio space",
+      "weight": "400",
+      "width": 320,
+      "x": 35,
+      "y": 2248.4921875
+    },
+    {
+      "font": "Newsreader, serif",
+      "height": 25.59375,
+      "line": "25.6px",
+      "size": "20.8px",
+      "tag": "H2",
+      "text": "📄 Menu",
+      "weight": "400",
+      "width": 310,
+      "x": 40,
+      "y": 2464.4921875
+    },
+    {
+      "font": "Newsreader, serif",
+      "height": 25.59375,
+      "line": "25.6px",
+      "size": "20.8px",
+      "tag": "H2",
+      "text": "🌀 Shop",
+      "weight": "400",
+      "width": 310,
+      "x": 40,
+      "y": 2821.2578125
+    },
+    {
+      "font": "Newsreader, serif",
+      "height": 25.59375,
+      "line": "25.6px",
+      "size": "20.8px",
+      "tag": "H2",
+      "text": "📍 Visit us",
+      "weight": "400",
+      "width": 310,
+      "x": 40,
+      "y": 3132.828125
+    },
+    {
+      "font": "Newsreader, serif",
+      "height": 25.59375,
+      "line": "25.6px",
+      "size": "20.8px",
+      "tag": "H2",
+      "text": "Join our email list",
+      "weight": "400",
+      "width": 310,
+      "x": 40,
+      "y": 3399.921875
+    }
+  ],
+  "links": [
+    {
+      "text": "Skip to content",
+      "url": "https://theme-publisher-demo.myshopify.com/products/braulio-amado-2021#MainContent"
+    },
+    {
+      "text": "",
+      "url": "https://theme-publisher-demo.myshopify.com/collections/all"
+    },
+    {
+      "text": "",
+      "url": "https://theme-publisher-demo.myshopify.com/"
+    },
+    {
+      "text": "Cart",
+      "url": "https://theme-publisher-demo.myshopify.com/cart"
+    },
+    {
+      "text": "Skip to product information",
+      "url": "https://theme-publisher-demo.myshopify.com/products/braulio-amado-2021#ProductInfo-template--23705064177973__main"
+    },
+    {
+      "text": "FREE SHIPPING ON ALL ORDERS OVER $150 IN NORTH AMERICA",
+      "url": "https://theme-publisher-demo.myshopify.com/pages/shipping-and-returns"
+    },
+    {
+      "text": "See upcoming events",
+      "url": "https://theme-publisher-demo.myshopify.com/blogs/news"
+    },
+    {
+      "text": "Home",
+      "url": "https://theme-publisher-demo.myshopify.com/"
+    },
+    {
+      "text": "About",
+      "url": "https://theme-publisher-demo.myshopify.com/pages/about"
+    },
+    {
+      "text": "Events",
+      "url": "https://theme-publisher-demo.myshopify.com/blogs/news"
+    },
+    {
+      "text": "Policies",
+      "url": "https://theme-publisher-demo.myshopify.com/pages/shipping-and-returns"
+    },
+    {
+      "text": "Contact",
+      "url": "https://theme-publisher-demo.myshopify.com/pages/contact"
+    },
+    {
+      "text": "Search",
+      "url": "https://theme-publisher-demo.myshopify.com/search"
+    },
+    {
+      "text": "Books",
+      "url": "https://theme-publisher-demo.myshopify.com/collections/books"
+    },
+    {
+      "text": "Apparel",
+      "url": "https://theme-publisher-demo.myshopify.com/collections/apparel"
+    },
+    {
+      "text": "Merch",
+      "url": "https://theme-publisher-demo.myshopify.com/collections/merch"
+    },
+    {
+      "text": "Accessories",
+      "url": "https://theme-publisher-demo.myshopify.com/collections/accessories"
+    },
+    {
+      "text": "Shop all",
+      "url": "https://theme-publisher-demo.myshopify.com/collections/all"
+    },
+    {
+      "text": "theme-publisher-demo",
+      "url": "https://theme-publisher-demo.myshopify.com/"
+    }
+  ],
+  "sections": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--23705064177973__1656521365f9cae2f6",
+      "rect": {
+        "height": 160.3984375,
+        "width": 390,
+        "x": 0,
+        "y": 92.59375
+      },
+      "tag": "SECTION",
+      "text": "Braulio Amado— 2021\n\nSTOLEN BOOKS"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--23705064177973__main",
+      "rect": {
+        "height": 1433.5,
+        "width": 390,
+        "x": 0,
+        "y": 252.9921875
+      },
+      "tag": "SECTION",
+      "text": "Skip to product information\nOpen media 1 in modal\nOpen media 2 in modal\nOpen media 3 in modal\nOpen media 4 in modal\nOpen media 5 in modal\n1\n/\nof\n5\nRegular price\n$63.00 USD\nQuantity"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--23705064177973__product-recommendations",
+      "rect": {
+        "height": 60,
+        "width": 390,
+        "x": 0,
+        "y": 1686.4921875
+      },
+      "tag": "SECTION",
+      "text": ""
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--23705064177973__1655342028821ca352",
+      "rect": {
+        "height": 72,
+        "width": 390,
+        "x": 0,
+        "y": 1746.4921875
+      },
+      "tag": "SECTION",
+      "text": "📦 FREE SHIPPING ON ALL ORDERS OVER $150 IN NORTH AMERICA 📦"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--23705064177973__1655342032085a51b7",
+      "rect": {
+        "height": 619,
+        "width": 390,
+        "x": 0,
+        "y": 1818.4921875
+      },
+      "tag": "SECTION",
+      "text": "Our studio space\nGALLERY SHOWS, OPENINGS, INTIMATE FUNCTIONS & MORE\nSee upcoming events"
+    }
+  ],
+  "title": "Braulio Amado— 2021 – theme-publisher-demo",
+  "url": "https://theme-publisher-demo.myshopify.com/products/braulio-amado-2021",
+  "viewport": {
+    "dpr": 1,
+    "height": 844,
+    "width": 390
+  },
+  "formGroups": [],
+  "grids": [
+    {
+      "className": "product product--medium product--left product--thumbnail product--mobile-hide grid grid--1-col grid--2-col-tablet",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 1388.5,
+      "tag": "DIV",
+      "width": 360
+    },
+    {
+      "className": "product__media-list contains-media grid grid--peek list-unstyled slider slider--mobile",
+      "columns": "none",
+      "display": "flex",
+      "gap": "2px",
+      "height": 368,
+      "tag": "UL",
+      "width": 390
+    },
+    {
+      "className": "product__media-item grid__item slider__slide is-active",
+      "columns": "none",
+      "display": "flex",
+      "gap": "normal",
+      "height": 368,
+      "tag": "LI",
+      "width": 358
+    },
+    {
+      "className": "product__media-item grid__item slider__slide",
+      "columns": "none",
+      "display": "flex",
+      "gap": "normal",
+      "height": 368,
+      "tag": "LI",
+      "width": 358
+    },
+    {
+      "className": "product__media-item grid__item slider__slide",
+      "columns": "none",
+      "display": "flex",
+      "gap": "normal",
+      "height": 368,
+      "tag": "LI",
+      "width": 358
+    },
+    {
+      "className": "product__media-item grid__item slider__slide",
+      "columns": "none",
+      "display": "flex",
+      "gap": "normal",
+      "height": 368,
+      "tag": "LI",
+      "width": 358
+    },
+    {
+      "className": "product__media-item grid__item slider__slide",
+      "columns": "none",
+      "display": "flex",
+      "gap": "normal",
+      "height": 368,
+      "tag": "LI",
+      "width": 358
+    }
+  ],
+  "images": [
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 326,
+      "rect": {
+        "height": 358,
+        "width": 358
+      }
+    },
+    {
+      "alt": "",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 358,
+        "width": 358
+      }
+    },
+    {
+      "alt": "",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 358,
+        "width": 358
+      }
+    },
+    {
+      "alt": "",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 358,
+        "width": 358
+      }
+    },
+    {
+      "alt": "",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 358,
+        "width": 358
+      }
+    },
+    {
+      "alt": "Braulio Amado— 2021",
+      "complete": true,
+      "naturalWidth": 52,
+      "rect": {
+        "height": 0,
+        "width": 0
+      }
+    },
+    {
+      "alt": "Braulio Amado— 2021",
+      "complete": true,
+      "naturalWidth": 52,
+      "rect": {
+        "height": 0,
+        "width": 0
+      }
+    },
+    {
+      "alt": "Braulio Amado— 2021",
+      "complete": true,
+      "naturalWidth": 52,
+      "rect": {
+        "height": 0,
+        "width": 0
+      }
+    },
+    {
+      "alt": "Braulio Amado— 2021",
+      "complete": true,
+      "naturalWidth": 52,
+      "rect": {
+        "height": 0,
+        "width": 0
+      }
+    },
+    {
+      "alt": "Braulio Amado— 2021",
+      "complete": true,
+      "naturalWidth": 52,
+      "rect": {
+        "height": 0,
+        "width": 0
+      }
+    },
+    {
+      "alt": "A person holds a folded paper with an illustration over his head while sitting on the ground. ",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 390,
+        "width": 195
+      }
+    },
+    {
+      "alt": "Bright white and light wood studio space.",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 390,
+        "width": 195
+      }
+    }
+  ],
+  "bodyText": "Skip to content\nCart\nBraulio Amado— 2021\n\nSTOLEN BOOKS\n\nSkip to product information\nOpen media 1 in modal\nOpen media 2 in modal\nOpen media 3 in modal\nOpen media 4 in modal\nOpen media 5 in modal\n1\n/\nof\n5\nRegular price\n$63.00 USD\nQuantity\nDecrease quantity for Braulio Amado— 2021\nIncrease quantity for Braulio Amado— 2021\nAdd to cart\nBuy it now\nThis is a demonstration store. You can purchase products like this from Actual Source.\n\nFrom Bráulio\n“Stolen Books asked me in 2016 if I wanted to publish something through them. I told them I did so many posters that year that it would be enough to fill a book. We published “2016” and then for 2017 I decided to compile all the other work I was doing since I had just quit my job and started my own studio, so these books are now a compilation of not only posters but also record covers, editorial work, videos, sketches, stuff I do for myself, failed experiments, etc.”\n\n21 × 28 cm\n232 pages\nISBN 978-989-53333-4-9\nStolen Books // 2022\nFree shipping over $15\n100% recyclable packaging\nShare\n\n📦 FREE SHIPPING ON ALL ORDERS OVER $150 IN NORTH AMERICA 📦\n\nOur studio space\nGALLERY SHOWS, OPENINGS, INTIMATE FUNCTIONS & MORE\nSee upcoming events\n📄 Menu\nHome\nAbout\nEvents\nPolicies\nContact\nSearch\n🌀 Shop\nBooks\nApparel\nMerch\nAccessories\nShop all\n📍 Visit us\n\n33 New Montgomery Street, #750\nSan Francisco, California\nUnited States 94105\nOpen by appointment only\n\nJoin our email list\nEmail\nTwitter\nFacebook\nInstagram\nTikTok\nYouTube\nPayment methods\n© 2026, theme-publisher-demo Powered by Shopify"
+}

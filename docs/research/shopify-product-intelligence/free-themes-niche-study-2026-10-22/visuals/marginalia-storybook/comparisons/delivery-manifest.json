@@ -1,0 +1,522 @@
+[
+  {
+    "file": "source/01-home-top.html",
+    "sha256": "d15f305a87066dbb7ba78873351e29bfac81a349664c6d294e9730e217f7b41f",
+    "bytes": 8350
+  },
+  {
+    "file": "source/02-home-bottom.html",
+    "sha256": "7b30e8eada03d794209f8d40d3f4fb284bbf315ceab339e97b0327bfa5883799",
+    "bytes": 8363
+  },
+  {
+    "file": "source/03-collection.html",
+    "sha256": "514a85bea1f7d3c6505d3c455fa506b25f2c8287b3aabba8d72747fa4b060bcf",
+    "bytes": 11126
+  },
+  {
+    "file": "source/04-product-main.html",
+    "sha256": "e4fbb2299eba9b1e0957f112f01989b03a223101a6a96f2b86ee430cb42231fd",
+    "bytes": 8013
+  },
+  {
+    "file": "source/05-product-facts.html",
+    "sha256": "d421566702deac53e09d28a081a51561388c6a960739c280f67b41d3ca3a056e",
+    "bytes": 6372
+  },
+  {
+    "file": "source/06-product-continuation.html",
+    "sha256": "03e0d75d25cf8d22279f3ca1e66428ccda3898b7ab9763597f5f2ccc5fca84bc",
+    "bytes": 8333
+  },
+  {
+    "file": "source/07-cart.html",
+    "sha256": "9aede98dce03f1747fc30f389803a2d7df6e20f2d8590d19ec71a82364d986e9",
+    "bytes": 8546
+  },
+  {
+    "file": "source/08-checkout-address.html",
+    "sha256": "129bac31f12bffb8455d36b39a64b500a2723e997ad1b13df0a532fed839ef6e",
+    "bytes": 5529
+  },
+  {
+    "file": "source/09-checkout-review.html",
+    "sha256": "84c0d0cb841d21db8733c0bd0ba5c0775edbef814d2e3f41161074f08d946e49",
+    "bytes": 5688
+  },
+  {
+    "file": "source/10-sign-in.html",
+    "sha256": "24a99106b6fe10309d85838c2ab20c904b7114f8868b8ab79573a0ce0f40f2ad",
+    "bytes": 3596
+  },
+  {
+    "file": "source/11-sign-up.html",
+    "sha256": "dcb17bbfb76d5e7ffd5cdfabadbab3d3864967af29d7d30fcaf77e59ab092b50",
+    "bytes": 3849
+  },
+  {
+    "file": "source/12-profile.html",
+    "sha256": "4a5add81363b45c14cd51ac41a716af50702d187111fe072371060194cd5dce8",
+    "bytes": 10292
+  },
+  {
+    "file": "source/13-orders.html",
+    "sha256": "2405aa4d710c6eed88b00affd23378aeaa0b2a3c9d4b26740cb36377233c179d",
+    "bytes": 8912
+  },
+  {
+    "file": "source/14-order-detail.html",
+    "sha256": "71141ea477e18c453ed6d883e28ff7225bbf7b707a39b722ee04a5054ba23864",
+    "bytes": 10535
+  },
+  {
+    "file": "source/15-addresses.html",
+    "sha256": "9f9f82ff85507e0f90b1d9c9399e541b3f9b8388e193d84ef420cdaf4e1a88ca",
+    "bytes": 9831
+  },
+  {
+    "file": "source/asset-manifest.json",
+    "sha256": "034ab35563308b0e49404bf6d260436ab1977cfe423ef6694ae3399b9be13ca6",
+    "bytes": 2419
+  },
+  {
+    "file": "source/build.py",
+    "sha256": "d8cc2ea69cfa3f525893ebdf242ca54209a6e2c413210e9bc49efb206e474b19",
+    "bytes": 36254
+  },
+  {
+    "file": "source/capture.cjs",
+    "sha256": "df6598796fb445071655365f183b9b381b7c6b0d63910f55d8359c6a00c90616",
+    "bytes": 9676
+  },
+  {
+    "file": "source/contrast-input.json",
+    "sha256": "1edc1bdf29b9f56681442423fa492f4d3d7afd82e6a7a0390dc5dcac2e0a953b",
+    "bytes": 1462
+  },
+  {
+    "file": "source/fixtures.json",
+    "sha256": "b1b57a968ca43a2b030b3cc487bb51de151b87538c80d1cff2b6955c39b07194",
+    "bytes": 2435
+  },
+  {
+    "file": "source/font-downloads.json",
+    "sha256": "5be71d22189e8f85dfa8b755dd6ca86bf430d17ad36ef7c047bf5aa13e422f12",
+    "bytes": 687
+  },
+  {
+    "file": "source/icons.json",
+    "sha256": "ef7a6c35e970c3258cca5c7c5363a0c18367709bb5f0a94045c63ea79fd45481",
+    "bytes": 11533
+  },
+  {
+    "file": "source/interactions.js",
+    "sha256": "55046ab19d413cd4e2304bc050fcd667213ac61b121368bb569ec30dd36eba7a",
+    "bytes": 1366
+  },
+  {
+    "file": "source/long-title.cjs",
+    "sha256": "9968160a3fbaf075ba5870b0a77ed281ea19e5c293283a644e39dbb8c3714044",
+    "bytes": 3432
+  },
+  {
+    "file": "source/package.py",
+    "sha256": "d8e4470e0a53354b82752b5292e3387407564ab0a0022259cc9fb14583dc5bd4",
+    "bytes": 9779
+  },
+  {
+    "file": "source/states.html",
+    "sha256": "252f46fb2c16a033cc9fe16d9a1029274e4a4496cc00303018546293dce52e05",
+    "bytes": 3064
+  },
+  {
+    "file": "source/styles.css",
+    "sha256": "a4c1e07278c066cccbbbfbb706ad709701205f4361b3d57a49adcf5643afd202",
+    "bytes": 50180
+  },
+  {
+    "file": "source/validate.py",
+    "sha256": "84864a14ac2547a9fb28cd928d2ec3c7e348d8e4c8421a13f8c4d87a7064b5cf",
+    "bytes": 5072
+  },
+  {
+    "file": "assets/GEIST-OFL-LICENSE.txt",
+    "sha256": "930853ee1daa68554d9e35c8a9175affb74f699fad9a5da6ee5ebe76379d9137",
+    "bytes": 4368
+  },
+  {
+    "file": "assets/LibreBaskerville-OFL.txt",
+    "sha256": "3624eddd4c8f8a908130a417ae7cd089c9da69899c4e0ca1a5217d0a6fae16fd",
+    "bytes": 4542
+  },
+  {
+    "file": "assets/Lucide-LICENSE.txt",
+    "sha256": "3c57143f22dac950efebf84002e360bba5458c7b90fe583b0667aaaef1a7256e",
+    "bytes": 2004
+  },
+  {
+    "file": "assets/SourceSans3-OFL.txt",
+    "sha256": "09746787287a289323b0ec3cff4d1a4a801331b82b7207c1e186f5d26619a392",
+    "bytes": 4579
+  },
+  {
+    "file": "assets/field-notes-cover.png",
+    "sha256": "04790e121b1feac6f17f940bad7601f25a9995fa5271e92324cfcea7a3bb04aa",
+    "bytes": 3184744
+  },
+  {
+    "file": "assets/font-provider.css",
+    "sha256": "d0b7f7f418e400c1228dfe241b3d644ba092b4564ba8f7e352a09061c2a04a6c",
+    "bytes": 1210
+  },
+  {
+    "file": "assets/fonts.css",
+    "sha256": "ddf977c836283a209dec36e9109a94797ca4e0ecb77490013775db3d65196ee5",
+    "bytes": 957
+  },
+  {
+    "file": "assets/geist-sans-latin.woff2",
+    "sha256": "1b5ebfb3a01a97343ac96873e6d59a8cb285c66012b6a1ac509cb2765e995ba8",
+    "bytes": 28356
+  },
+  {
+    "file": "assets/letbuyy-logo.svg",
+    "sha256": "503005328241f667159cf9be50b5952745c4b88df0dd6127ed1bec9f88bc986b",
+    "bytes": 11674
+  },
+  {
+    "file": "assets/libre-bold.ttf",
+    "sha256": "8b008ffdae31b314657cb8e28d822da09893035d06bad9b1ab53ea762549cbd1",
+    "bytes": 106752
+  },
+  {
+    "file": "assets/libre-regular.ttf",
+    "sha256": "f5bc4341f15de5e877d8d95b6b14b33e9a3da1f8fef4ed0700ed407f096cffb6",
+    "bytes": 106728
+  },
+  {
+    "file": "assets/notebook.png",
+    "sha256": "566ec87064ff92d9cb484f0c4c3e851d23019c6a805d12790cb4a96ea022862b",
+    "bytes": 2308770
+  },
+  {
+    "file": "assets/small-thought-cover.png",
+    "sha256": "dbf7aa058817f6bcc8a1b2f2ad6a8d2acf9ff31b296478b7c1d6de3651cf94ff",
+    "bytes": 2802914
+  },
+  {
+    "file": "assets/source-bold.ttf",
+    "sha256": "83a72786970a93a8c48eaead886c995676d512c0ee7164138f8ea76ea847d75c",
+    "bytes": 234640
+  },
+  {
+    "file": "assets/source-regular.ttf",
+    "sha256": "20ab9752bd19a373dba627393b6c142e6cf8fc2f219119a8e0cb1442ef679ec5",
+    "bytes": 234708
+  },
+  {
+    "file": "assets/source-semibold.ttf",
+    "sha256": "950e66c48e5e60c9407421d0fa601047176f17e0d22a598bbd084dde45a98be2",
+    "bytes": 234680
+  },
+  {
+    "file": "images/01-home-top-desktop.png",
+    "sha256": "16ccf1762ee82cf2197ef008314bf37b86e4363a98b608f67712adc625c8060a",
+    "bytes": 291720
+  },
+  {
+    "file": "images/01-home-top-mobile.png",
+    "sha256": "ae38fa47bc058d71da13ad9e67f537c8c42418621aa75b73b52d2038b5b59797",
+    "bytes": 132620
+  },
+  {
+    "file": "images/01-home-top-tablet.png",
+    "sha256": "9edb6755f2c0ecfdcd86a29a0f3139de34d2692dbff778075e7815b625bfd733",
+    "bytes": 172028
+  },
+  {
+    "file": "images/02-home-bottom-desktop.png",
+    "sha256": "45350931cbd352aad3ada9c023e49ff3fecb4e3890af46b52e0dadf7eaff38d2",
+    "bytes": 804659
+  },
+  {
+    "file": "images/02-home-bottom-mobile.png",
+    "sha256": "5a44ef0be5455ddeeede4ecf57641a65c6fc22ce1db6bae0658408073a8d9a8a",
+    "bytes": 363829
+  },
+  {
+    "file": "images/02-home-bottom-tablet.png",
+    "sha256": "f7007823b96bcf742012be6a9068d1ed52d6a5c938f9d029d08d902128e92764",
+    "bytes": 580921
+  },
+  {
+    "file": "images/03-collection-desktop.png",
+    "sha256": "3650529fd0c81e7458be7191c644b7a5f1f740e6c43a884b562832a35cc95290",
+    "bytes": 292248
+  },
+  {
+    "file": "images/03-collection-mobile.png",
+    "sha256": "f7f7a85f76de11d17c1dfa0fcb4d330d5d3b6892e4c3f21a8638bc1e19ffd6e0",
+    "bytes": 188535
+  },
+  {
+    "file": "images/03-collection-tablet.png",
+    "sha256": "277ce3c6027fe6cb0a5b11cccc331313b9cc5ceb5ddf6437ce1c5aafbe9497d4",
+    "bytes": 244931
+  },
+  {
+    "file": "images/04-product-main-desktop.png",
+    "sha256": "394b666f1e75c9d10fb4444d6c72a4ee7fb1c6aae76ac71fa50ff525fe645e91",
+    "bytes": 446774
+  },
+  {
+    "file": "images/04-product-main-mobile.png",
+    "sha256": "d171411654f00de8b127ca21aebe18882efd83f1abaa3777e6d86ba0f2a3b573",
+    "bytes": 229382
+  },
+  {
+    "file": "images/04-product-main-tablet.png",
+    "sha256": "2a9b4420a049fab6fd8e365febaa053bf4ebdbb37fa9c1ad00fa031c7d1e7cde",
+    "bytes": 247464
+  },
+  {
+    "file": "images/05-product-facts-desktop.png",
+    "sha256": "f11648036a7efe0788599db297937ae3d22add51dac59fffe74c3c6a59afa6e0",
+    "bytes": 323893
+  },
+  {
+    "file": "images/05-product-facts-mobile.png",
+    "sha256": "f1cac7f26bd45417a2cbc35f65c4afcc325d8e839d0ab67f8462cce68d04ef68",
+    "bytes": 192210
+  },
+  {
+    "file": "images/05-product-facts-tablet.png",
+    "sha256": "e8de9aab6a74c24f869c71d693f18502edb99ae12d7bae72470f066650e270ad",
+    "bytes": 259111
+  },
+  {
+    "file": "images/06-product-continuation-desktop.png",
+    "sha256": "e750218fbbd822002c94a8fab7fe797729745ebbeadd3dc975380140f96fc055",
+    "bytes": 710959
+  },
+  {
+    "file": "images/06-product-continuation-mobile.png",
+    "sha256": "3bb21658ed7674af4f58933bc2c6f71167bcccd1ae16471b205fcf43a02e6144",
+    "bytes": 377141
+  },
+  {
+    "file": "images/06-product-continuation-tablet.png",
+    "sha256": "167a5e09c1a669c70999eec44213b4684a8600c84e87e1e760aeb539c2fe5ae5",
+    "bytes": 432284
+  },
+  {
+    "file": "images/07-cart-desktop.png",
+    "sha256": "be46b965e1d29e4a985c5fa07130f00ca5b434869d13f49499efe7f54a58a4a7",
+    "bytes": 203453
+  },
+  {
+    "file": "images/07-cart-mobile.png",
+    "sha256": "24eb59761c7fc4d2fd7e20885ed10770a0da0d2414238944cae1f5f628f90758",
+    "bytes": 156847
+  },
+  {
+    "file": "images/07-cart-tablet.png",
+    "sha256": "be2c28143fea81bb0f5443bb6380d47f3b25999d2ed8e52beb6203e424d79f85",
+    "bytes": 168882
+  },
+  {
+    "file": "images/08-checkout-address-desktop.png",
+    "sha256": "fb34040c749e117cd0193dbd87b6afbe139e6211f96ae896ef4592ccb1d308bb",
+    "bytes": 174424
+  },
+  {
+    "file": "images/08-checkout-address-mobile.png",
+    "sha256": "c26c849ec3132b89bf8a3cb26083e67539dcebdf8de1dccbf9e70e1a550ac1ef",
+    "bytes": 146185
+  },
+  {
+    "file": "images/08-checkout-address-tablet.png",
+    "sha256": "d019c98e962fe0a74a9d5c2e19516c819902aba27838471bfa30a5757c79e169",
+    "bytes": 166591
+  },
+  {
+    "file": "images/09-checkout-review-desktop.png",
+    "sha256": "646937159a75983bfe1123883930e91f6c93cf9db3ba850bfb2a0a9021931ceb",
+    "bytes": 172304
+  },
+  {
+    "file": "images/09-checkout-review-mobile.png",
+    "sha256": "74ebca52c3e9dad35acd66c9e732c50f6e754848053b8b28e216ad2ee1deb172",
+    "bytes": 142955
+  },
+  {
+    "file": "images/09-checkout-review-tablet.png",
+    "sha256": "69001e8dd70769c9797ec878b00e32960fc87592db63073e281538dee82c77f0",
+    "bytes": 163682
+  },
+  {
+    "file": "images/10-sign-in-desktop.png",
+    "sha256": "21eda8b898cc70b2670a766a5db40e540af6afd35e5744fe8ba958516d7fcd9a",
+    "bytes": 87733
+  },
+  {
+    "file": "images/10-sign-in-mobile.png",
+    "sha256": "58fc67ceb2bed71abd6693a7e4f75de1f540f591dd9624b045ca2808418072ea",
+    "bytes": 49340
+  },
+  {
+    "file": "images/10-sign-in-tablet.png",
+    "sha256": "b76b47406d6da1d2098e32932748f96c0e7c775527de7a7b999c32b236132226",
+    "bytes": 55066
+  },
+  {
+    "file": "images/11-sign-up-desktop.png",
+    "sha256": "f3eaf2c267d051c59db528defa950f2d1a3ed725c7b76e80b6afa1bbd2afae05",
+    "bytes": 125482
+  },
+  {
+    "file": "images/11-sign-up-mobile.png",
+    "sha256": "e657561ff61766bf07cfb02e53e303ce486c4faeb3a0496b1f3443b283e97f93",
+    "bytes": 81515
+  },
+  {
+    "file": "images/11-sign-up-tablet.png",
+    "sha256": "caa0ac9d9de800fa62ce901bd243afc42df68b5f1ddd8a9777326aa63f1a2faf",
+    "bytes": 91095
+  },
+  {
+    "file": "images/12-profile-desktop.png",
+    "sha256": "59bf634fddce100c87265d8455a1ba3e4ac3a657a2a41953699854650a890b34",
+    "bytes": 153134
+  },
+  {
+    "file": "images/12-profile-mobile.png",
+    "sha256": "f1fa87c8a83ff0d5a37d88548ede0531ba08a8aeb6e0aa5db108a2581c1edaab",
+    "bytes": 126343
+  },
+  {
+    "file": "images/12-profile-tablet.png",
+    "sha256": "91b54680b9d07e8743a278133d5c8896ffa1e208ee55fe2b1d161f8efc6d8b9f",
+    "bytes": 138860
+  },
+  {
+    "file": "images/13-orders-desktop.png",
+    "sha256": "02d8d4f2d5cc668fa339ea36d03efa692283780001009bace870b87f357eb647",
+    "bytes": 150858
+  },
+  {
+    "file": "images/13-orders-mobile.png",
+    "sha256": "7bb155468fbcb41a98c0db40a63bb1faa7375245294d9412b40e98f6025172e1",
+    "bytes": 122397
+  },
+  {
+    "file": "images/13-orders-tablet.png",
+    "sha256": "c8d7e54faecce4ce9a36ee2bef9771a8582a718d3c0d2225fd406bbd72d572ce",
+    "bytes": 137462
+  },
+  {
+    "file": "images/14-order-detail-desktop.png",
+    "sha256": "ebfd40ccc744ad49cdfb29c607ac8e03da22060c8d2c8d4f6052d962923509af",
+    "bytes": 208044
+  },
+  {
+    "file": "images/14-order-detail-mobile.png",
+    "sha256": "36c7e6164c7c613932ced915b59c75dc16c40c02a738ce6bb1695532ea2b22d1",
+    "bytes": 169695
+  },
+  {
+    "file": "images/14-order-detail-tablet.png",
+    "sha256": "421e5d26fd9a6f19c03ffbc20455165c2bef580ec313ba3d00e4309fd03fb371",
+    "bytes": 194829
+  },
+  {
+    "file": "images/15-addresses-desktop.png",
+    "sha256": "cccb172927ca8fc6c81665327eae23582ef277032acd8a8920bf0c98c1fbee60",
+    "bytes": 160486
+  },
+  {
+    "file": "images/15-addresses-mobile.png",
+    "sha256": "01e8b67bec6eaefb94e144a8f1defde33319d922dc2590d4b73883419e628861",
+    "bytes": 132701
+  },
+  {
+    "file": "images/15-addresses-tablet.png",
+    "sha256": "0a8a064816c08d5dd594d9307d9dda658633d0b3c90b3741fcd1a4cbd0235919",
+    "bytes": 148361
+  },
+  {
+    "file": "boards/01-home-top.png",
+    "sha256": "2f7e60a548c2f3c1b6d42cf789c21ca2cfe0e532c57dade6b611d462b12d07ac",
+    "bytes": 628053
+  },
+  {
+    "file": "boards/02-home-bottom.png",
+    "sha256": "1d8c7acb339c194659d458c36269e1579d61be48b9fb7298bf23362c8980a145",
+    "bytes": 1791969
+  },
+  {
+    "file": "boards/03-collection.png",
+    "sha256": "7225b371ccc4202770a62513b8f851224d0cd77945dcf06e5a28c2c549dab8d9",
+    "bytes": 761160
+  },
+  {
+    "file": "boards/04-product-main.png",
+    "sha256": "0c13dd30f3bc0598b0cbc383279c74f9da4ebd5e24a121ee64b0ca7c9c47e55a",
+    "bytes": 953198
+  },
+  {
+    "file": "boards/05-product-facts.png",
+    "sha256": "bc13e470dd8cf238b10974f020a580c9ce5d3bf4375da2a3f3fad781f736d16a",
+    "bytes": 822518
+  },
+  {
+    "file": "boards/06-product-continuation.png",
+    "sha256": "5c28d863039c48cfcb5dc8b8d499bd7c3203d4895884a49cce1116a6d2169bba",
+    "bytes": 1575985
+  },
+  {
+    "file": "boards/07-cart.png",
+    "sha256": "ab34b81b27e606751b96805b84f740a8ae79d9385d06f5eab928a4aab4ae3edf",
+    "bytes": 555331
+  },
+  {
+    "file": "boards/08-checkout-address.png",
+    "sha256": "468462818c8a6a5304c2dea24beaad515e3e363be87912ae49c7fcab66ebda71",
+    "bytes": 527272
+  },
+  {
+    "file": "boards/09-checkout-review.png",
+    "sha256": "ad22d3c86590137c69f6c6ebc638717b05be42c9684c81846b41321f8b7e446d",
+    "bytes": 521010
+  },
+  {
+    "file": "boards/10-sign-in.png",
+    "sha256": "b1fe41c9eafb490791680386192885d09ee612b1c71c6ae0c569055068ad0842",
+    "bytes": 193593
+  },
+  {
+    "file": "boards/11-sign-up.png",
+    "sha256": "0f306fd635c4a505ff18a5e9b977297dc079b1f39093190f070a60c905da9b33",
+    "bytes": 320525
+  },
+  {
+    "file": "boards/12-profile.png",
+    "sha256": "c2dae2c9edb33ee54ea8f23fddeae6427358d22eb446768fe07d8444be2a2dba",
+    "bytes": 455349
+  },
+  {
+    "file": "boards/13-orders.png",
+    "sha256": "b2e64ace5f0143d7346ce82e829a463fa24e3c5342c60be00da9f52e333b48bc",
+    "bytes": 437766
+  },
+  {
+    "file": "boards/14-order-detail.png",
+    "sha256": "ddc2e06f4c2620b7c06bdab00fce9d7af8ca844fc8edcf760e735a8f8c18f7e9",
+    "bytes": 615472
+  },
+  {
+    "file": "boards/15-addresses.png",
+    "sha256": "2cb7173b0e966c6a0845153728370b7b0cba6b0af6377205e8c1d81e8e0a2a5d",
+    "bytes": 481387
+  }
+]

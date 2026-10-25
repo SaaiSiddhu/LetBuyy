@@ -1,0 +1,17 @@
+{
+  "node": {
+    "realPath": "/opt/homebrew/Cellar/node@22/22.23.3_2/bin/node",
+    "version": "v22.23.3",
+    "sha256": "37c7004c9b9edfc14c5a31190d3c26e5a3fe669309b9e40f3f8dcb39ed31cca4"
+  },
+  "dockerCli": {
+    "realPath": "/Applications/Docker.app/Contents/Resources/bin/docker",
+    "sha256": "6c33f6c851de8ea6729a44f952b41774973a6d20768ea514dfa700497c884392",
+    "daemonContacted": false
+  },
+  "tsxCli": {
+    "path": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/cli.mjs",
+    "sha256": "293360f3bf5826200d31375aea1267ccdad675d2a9cd1ad832e00b9f16509a7a"
+  },
+  "loaderSupport": "Local Node typeof module.registerHooks verified function only. Actual worker/export preflight NOT_RUN."
+}

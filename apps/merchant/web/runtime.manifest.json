@@ -33,6 +33,7 @@
       "@letbuyy/api-client",
       "@letbuyy/auth-core",
       "@letbuyy/cms-core",
+      "@letbuyy/commerce-core",
       "@letbuyy/shared-types",
       "@letbuyy/tenant-core",
       "@letbuyy/theme-engine",

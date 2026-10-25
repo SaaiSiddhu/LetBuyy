@@ -1,3 +1,4 @@
+import assert from 'node:assert/strict';
 // Synthetic tenants for the gateway database suites.
 //
 // The suites used to lean on a merchant that already existed in the developer's restored stack (a fixed store id, a fixed
@@ -81,4 +82,15 @@ export function seedSyntheticOrder(psql: Psql, tenant: SyntheticTenant): { produ
         ) ->> 'id';
     `);
     return { productId, orderId };
+}
+
+
+/** Establish canonical stock for focused cart fixtures; product.stock alone is
+ * historical cache and never authorizes current cart availability. */
+export function seedSyntheticProductInventory(psql:(sql:string)=>string,storeId:string):void {
+    assert.match(storeId,/^[a-f0-9-]{36}$/i);
+    psql(`INSERT INTO inventory_levels(id,store_id,product_id,location_id,available,reserved,committed_quantity,available_quantity,reserved_quantity,on_hand_quantity)
+      SELECT gen_random_uuid(),p.store_id,p.id,l.id,p.stock,0,0,p.stock,0,p.stock
+      FROM products p JOIN inventory_locations l ON l.store_id=p.store_id AND l.is_default=true AND l.deleted_at IS NULL
+      WHERE p.store_id='${storeId}' AND NOT EXISTS(SELECT 1 FROM inventory_levels i WHERE i.store_id=p.store_id AND i.product_id=p.id AND i.variant_id IS NULL AND i.deleted_at IS NULL);`);
 }

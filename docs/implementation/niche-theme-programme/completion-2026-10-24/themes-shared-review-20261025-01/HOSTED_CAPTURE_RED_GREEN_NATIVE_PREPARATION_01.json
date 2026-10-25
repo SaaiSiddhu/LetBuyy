@@ -1,0 +1,79 @@
+{
+  "recordedAt": "2026-10-24T23:58:07.529565+00:00",
+  "reviewer": "Themes /01a164a4-a342-76d3-ab33-65e021ed57db",
+  "authority": "RESUME_AUTHORITY_20261025_02.json",
+  "nativeDatabaseBrowserProviderMainBuildActions": 0,
+  "fullThemeCertificate": false,
+  "status": "RESERVED_TWO_CAUSAL_RED_GREEN_COHORTS_NOT_EXECUTABLE_UNTIL_SOURCE_AND_STANDALONE_PREFLIGHT_ACCEPTANCE",
+  "owner": "01a164ba-e017-7b90-9053-efc5357459a6",
+  "rootAuthorization": "CTO explicit two owned red/green native cohorts in current verified human-resume turn",
+  "sourceReview": "HOSTED_CAPTURE_PROOF_PRIVATE_REVIEW_01.json",
+  "sourceMaterializations": [
+    "/private/tmp/letbuyy-hosted-capture-native-red-20261025-01",
+    "/private/tmp/letbuyy-hosted-capture-native-green-20261025-01"
+  ],
+  "mutableBusinessSourcePaths": [],
+  "exactOverlays": [
+    {
+      "path": "services/api-gateway/src/routes/checkout.ts",
+      "beforeSha256": "7451f294972a43fbbecf8a470bfd9e89ea77466a36e6e61f725aa143235b5d3e",
+      "afterSha256": "bed680202cc7ff86ee1a43ddfbeb327ae6732ade104b7d3b57b703bade50fa08",
+      "privatePath": "/private/tmp/letbuyy-hosted-capture-proof-prep-20261025-01/services/api-gateway/src/routes/checkout.ts"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/hosted-checkout-buyer-ownership.postgres.test.ts",
+      "beforeSha256": "b0ed45ce28a0bb5d1b452fa1113058a9710ec5880f0eca1b2c9861479131a63d",
+      "afterSha256": "49f705c56b157e42d7c89a03e1eb92654d612bd26f8036e09db5372aec873ced",
+      "privatePath": "/private/tmp/letbuyy-hosted-capture-proof-prep-20261025-01/services/api-gateway/src/__tests__/owned-db/hosted-checkout-buyer-ownership.postgres.test.ts"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/hosted-checkout-capture-proof-qualification.manual.ts",
+      "beforeSha256": null,
+      "afterSha256": "d5660a3d777799c6e74c06f659265196930f01639b0cb1e25a4ce566b84d1fcc",
+      "privatePath": "/private/tmp/letbuyy-hosted-capture-proof-prep-20261025-01/services/api-gateway/src/__tests__/owned-db/hosted-checkout-capture-proof-qualification.manual.ts"
+    }
+  ],
+  "cohorts": [
+    {
+      "name": "RED",
+      "checkoutSha256": "7451f294972a43fbbecf8a470bfd9e89ea77466a36e6e61f725aa143235b5d3e",
+      "expected": "Only a retained concrete webhook-first metadata-false assertion after valid canonical capture proves causal reproduction. Earlier setup/scope failure is not accepted causal RED."
+    },
+    {
+      "name": "GREEN",
+      "checkoutSha256": "bed680202cc7ff86ee1a43ddfbeb327ae6732ade104b7d3b57b703bade50fa08",
+      "expected": "Identical newly sealed test/wrapper sources, all required children pass, no skips; exact canonical ledger/order/stock/event/capture-key conservation and complete cleanup."
+    }
+  ],
+  "currentTestSha256": "49f705c56b157e42d7c89a03e1eb92654d612bd26f8036e09db5372aec873ced",
+  "currentWrapperSha256": "d5660a3d777799c6e74c06f659265196930f01639b0cb1e25a4ce566b84d1fcc",
+  "allowedNow": [
+    "Prepare two exact source copies only, sealed candidate source inputs+three overlays with red route intentionally baseline. No env/keys/build outputs or existing data.",
+    "Return complete recursive runtime/TypeScript/Node-export/runner/SQL/bootstrap/manifest/lock closure for both and exact diff proving only checkout differs.",
+    "Prepare terminal standalone read-only preflight and precise canonical runner commands for review. No Docker/native execution until Themes accepts closure and explicitly activates preflight/execution steps.",
+    "Report causal-witness gap above before changing immutable3pathproposal; no silent change to granted test hashes."
+  ],
+  "futureEnvelope": {
+    "runner": "scripts/governance/run-executable-suites.mjs",
+    "suite": "services/api-gateway/src/__tests__/owned-db/hosted-checkout-capture-proof-qualification.manual.ts",
+    "kind": "gateway-db",
+    "jobs": 1,
+    "noReap": true,
+    "preparedTransactions": 2,
+    "timeoutSecondsPerCohort": 600,
+    "migrationCeiling": null,
+    "expected322Max393ToBeActuallyVerified": true,
+    "exactFourUPs": "Existing SHARED_RUNTIME_ADMISSION.json upProposals in order",
+    "maxCohorts": 2,
+    "concurrentNativeOwners": 1,
+    "cleanup": "Only actual generated run labels/resources; preserve every existing runtime/container/volume and all failed evidence. No retries by default."
+  },
+  "notGranted": [
+    "Actual native until closed-source review + separate terminal0 preflight result and activation",
+    "Main/candidate integration",
+    "Existing runtime07 DB/container reuse, reset or deletion",
+    "Credentials/provider/browser/externalmail/public ingress changes",
+    "Native work for other proposals or notificationextension"
+  ],
+  "expiryForPreparation": "2026-10-25T01:28:07.529565+00:00"
+}

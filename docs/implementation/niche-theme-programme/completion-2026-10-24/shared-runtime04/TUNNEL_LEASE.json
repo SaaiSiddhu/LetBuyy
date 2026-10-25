@@ -1,0 +1,10 @@
+{
+  "recordedAt": "2026-10-24T18:14:44.848857+00:00",
+  "runId": "9ae1c195f9ef",
+  "newWatchdogPid": 77336,
+  "oldWatchdogsStopped": [
+    56782
+  ],
+  "unchangedExpiry": "2026-10-24T22:20:00+00:00",
+  "connectorStopped": false
+}

@@ -1,0 +1,19 @@
+{
+  "recordedAt": "2026-10-24T04:22:39.961082+00:00",
+  "classification": "SOURCE_ONLY_PROPOSAL_TIGHTENING_NO_CODE_OR_SQL",
+  "parentProposal": {
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/installed-lifecycle/stable936-collection-count-read-boundary-proposal.json",
+    "sha256": "a2c060bb4d3eb47844e7b91a2613c686c320a86b901fb3b01b954909931be64f"
+  },
+  "issue": "A busy flag prevents another capability helper entering, but alone cannot prevent an ordinary raw transaction alias from scheduling SQL while a role window is active. Do not claim that ordinary queries are guaranteed app_tenant merely because the count helper sets busy. Existing withTenantTx exposes its raw client to its callback; introducing a new privileged read must account for that alias/interleaving risk. No live exploit or test is claimed.",
+  "preferredSmallBoundary": "Expose the count read as a closed operation receiving only Env, canonical OwnedStoreScope and validated pagination intent. That operation owns its withTenantTx internally and never returns/passes its transaction client, raw executor, callback or parent-ID batch to a caller. Its parent/owner/count/restore statements are fixed and awaited in one private callback; no caller can schedule ordinary SQL on that transaction during the window. The privileged part returns only scalar counts; the ordinary RLS parent metadata and page total are safe inputs to the existing adapter, which retains canonical shared projection assembly/validation. Root must approve the exact separation and names after the frozen393 source closure ends.",
+  "alternativeIfAdapterMustOwnRawTransaction": "A guarded ordinary SQL facade and a private internal executor would have to reject all ordinary calls while a privileged window is active, including borrowed aliases and nested/reentrant operations. That is a larger shared transaction change and would require separately reviewed publisher compatibility/security gates; it is not part of a silent count-helper patch. Prefer the closed operation or choose paired RLS closure if the small boundary cannot satisfy the requirement.",
+  "qualificationAddition": "Prove ordinary raw-client alias/interleaving cannot occur at the exported closed operation boundary, no client/callback/role/SQL/ID batch is accepted or leaked, and context restoration is verified before any data leaves. Test actual production route and controlled faults; no false assurance from helper-only busy tests.",
+  "actions": {
+    "codeEdits": 0,
+    "sqlEditsOrExecutions": 0,
+    "tests": 0,
+    "runtimeOrNetworkOrDataActions": 0
+  },
+  "disposition": "Clarifies/tightens the pending proposal only. No infrastructure question to the user, no code grant assumed, no permission failure overridden."
+}

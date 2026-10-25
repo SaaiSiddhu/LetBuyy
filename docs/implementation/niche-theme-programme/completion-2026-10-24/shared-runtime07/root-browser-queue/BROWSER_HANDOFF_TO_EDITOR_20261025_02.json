@@ -1,0 +1,29 @@
+{
+  "recordedAt": "2026-10-25T00:18:49.407536+00:00",
+  "status": "ROOT_STOPPED_BROWSER_EDITOR_SOLE_CONTROLLER",
+  "authority": "../../HUMAN_RESUME_20261025_02.json",
+  "runId": "49ada80bc494",
+  "merchantTab": "173052882",
+  "buyerTab": "173052885",
+  "merchantPage": "KindredCODorder10007expanded",
+  "buyerPage": "SameCODorderexpandedafterfullreload",
+  "currentPublishedTheme": "Kindred2.1.0",
+  "cartCount": 0,
+  "paymentInProgress": false,
+  "KindredTemporaryBlocks": 0,
+  "currentRootAtomicEvidence": [
+    "KINDRED_EDITOR_CHILD_LIFECYCLE_02.json",
+    "KINDRED_COD_ORDER_10007_UI_RECEIPT.json"
+  ],
+  "publicCallback": "OFFLINE_EXPIRED_PENDING_USER_RENEWAL",
+  "MarginaliaRefinement": "HELD_PENDING_SPECIFIC_FACT_CLEARING_APPROVAL",
+  "remainingProviderThemes": [
+    "Marginalia",
+    "Kindred",
+    "MadeYours",
+    "Playfield"
+  ],
+  "sourceRuntime": "Unchangedcandidate06 actualNode55109 oldDBvolumealive, no relaunch",
+  "scope": "Finite all10localUIstructural/customizationqueue, preserveoriginaldrafts/data; no duplicateKindred15ops orsixpaidorders; no directAPI/DBmutation substitute",
+  "stopFor": "Anynewhumanpause, rootruntimeupgradewindow, competingbrowsercontroller, unowneddata, uncertaincommit; otherwisecontinueroutineUIacceptance"
+}

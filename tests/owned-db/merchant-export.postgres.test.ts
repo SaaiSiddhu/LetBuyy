@@ -3,7 +3,7 @@ import test, { before, after } from 'node:test';
 import { createRequire, builtinModules } from 'node:module';
 import { Miniflare } from 'miniflare';
 import { nativeGatewayWasmPlugin, nativeGatewayModules, NATIVE_GATEWAY_MODULE_ROOT } from '../helpers/native-gateway-wasm';
-import { requireOwnedDatabase } from '../../services/api-gateway/src/__tests__/owned-db/owned-db-support';
+import { requireOwnedDatabase, startOwnedPooledSqlProxy, type OwnedPooledSqlProxy } from '../../services/api-gateway/src/__tests__/owned-db/owned-db-support';
 import { gatewayEnv, newIdentityKeys, nextClientAddress, signedIdentityHeaders } from '../../services/api-gateway/src/__tests__/owned-db/gateway-harness';
 
 const owned = requireOwnedDatabase();
@@ -11,9 +11,11 @@ const owner = crypto.randomUUID(), stranger = crypto.randomUUID(), store = crypt
 const email = `syn-export-${owner}@example.invalid`, strangerEmail = `syn-export-${stranger}@example.invalid`;
 const importer = crypto.randomUUID(), importStore = crypto.randomUUID(), importEmail = `syn-csv-${importer}@example.invalid`;
 let mf: Miniflare;
+let sqlProxy: OwnedPooledSqlProxy;
 interface StoredJob { id: string; status: 'queued' | 'running' | 'completed' | 'failed'; rowCount: number; expiresAt: string; [key: string]: unknown }
 
 before(async () => {
+    sqlProxy=await startOwnedPooledSqlProxy(owned);
     owned.psql(`INSERT INTO users_custom(id,email,email_verified) VALUES('${owner}','${email}',true),('${stranger}','${strangerEmail}',true),('${importer}','${importEmail}',true);
       INSERT INTO sites(id,name,store_name,site_type,subdomain,custom_user_id) VALUES
       ('${store}','Synthetic export','Synthetic export','store','syn-export-${store.slice(0,8)}','${owner}'),
@@ -36,7 +38,7 @@ before(async () => {
     });
     const origin = new URL(owned.restUrl).origin;
     mf = new Miniflare({ modules: nativeGatewayModules(bundle.outputFiles[0].text), modulesRoot: NATIVE_GATEWAY_MODULE_ROOT, compatibilityDate: '2026-05-25', compatibilityFlags: ['nodejs_compat'], cf: false,
-        bindings: gatewayEnv(owned, await newIdentityKeys()) as never, r2Buckets: ['R2_BUCKET'], r2Persist: false,
+        bindings: gatewayEnv(owned, await newIdentityKeys(),sqlProxy.env()) as never, r2Buckets: ['R2_BUCKET'], r2Persist: false,
         durableObjects: { RUNTIME_COORDINATOR: { className: 'LetbuyyRuntimeDurableObject', useSQLite: true } }, durableObjectsPersist: false,
         outboundService: async (request: Request) => {
             assert.equal(new URL(request.url).origin, origin, 'only this owned PostgREST is reachable');
@@ -46,7 +48,7 @@ before(async () => {
     });
     await mf.ready;
 });
-after(async () => { await mf?.dispose(); });
+after(async () => { await mf?.dispose();await sqlProxy?.stop(); });
 
 async function request(path: string, actor = owner, actorEmail = email, init: RequestInit = {}) {
     const headers = new Headers(init.headers);

@@ -5,6 +5,7 @@ import { useReadRequest } from '@/lib/api/use-read-request'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import {
+    Section,
     Badge,
     Banner,
     Button,
@@ -237,19 +238,17 @@ export default function PlanSettingsPage() {
 
     if (loading) {
         return (
-            <SettingsPane title="Plan" description="Your subscription and billing cycle." store={store}>
-                <div className="settings-home-card">
-                    <div className="settings-home-section-label">Plan details</div>
+            <SettingsPane navigationKey="plan" title="Plan" description="Your subscription and billing cycle." store={store}>
+                <Section variant="grouped" title="Plan details" >
                     <div className="settings-plan-row">
                         <Skeleton variant="text" lines={1} />
                     </div>
-                </div>
-                <div className="settings-home-card">
-                    <div className="settings-home-section-label">Subscriptions</div>
+                </Section>
+                <Section variant="grouped" title="Subscriptions" >
                     <div className="settings-plan-subs-desc">
                         <Skeleton variant="text" lines={1} />
                     </div>
-                </div>
+                </Section>
             </SettingsPane>
         )
     }
@@ -261,7 +260,7 @@ export default function PlanSettingsPage() {
 
     return (
         <>
-            <SettingsPane title="Plan" description="Your subscription and billing cycle." store={store}>
+            <SettingsPane navigationKey="plan" title="Plan" description="Your subscription and billing cycle." store={store}>
                 {loadError && (
                     <Banner
                         variant="critical"
@@ -272,8 +271,7 @@ export default function PlanSettingsPage() {
                     </Banner>
                 )}
 
-                <div className="settings-home-card">
-                    <div className="settings-home-section-label">Plan details</div>
+                <Section variant="grouped" title="Plan details" >
                     <div className="settings-plan-row">
                         <div className="settings-plan-info">
                             <div className="settings-plan-headline">
@@ -303,10 +301,9 @@ export default function PlanSettingsPage() {
                             privacy policy
                         </a>
                     </div>
-                </div>
+                </Section>
 
-                <div className="settings-home-card">
-                    <div className="settings-home-section-label">Subscriptions</div>
+                <Section variant="grouped" title="Subscriptions" >
                     <div className="settings-plan-subs-desc">
                         Additional items you&apos;re billed for on a recurring basis.
                     </div>
@@ -319,7 +316,7 @@ export default function PlanSettingsPage() {
                         <span>View billing history</span>
                         <ChevronRight className="settings-plan-subs-chevron" aria-hidden="true" />
                     </Button>
-                </div>
+                </Section>
             </SettingsPane>
 
             <ConfirmDialog

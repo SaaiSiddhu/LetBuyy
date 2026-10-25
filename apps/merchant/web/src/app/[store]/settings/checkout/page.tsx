@@ -255,6 +255,7 @@ export default function CheckoutSettingsPage() {
     if (loading) {
         return (
             <SettingsPane
+                navigationKey="checkout"
                 title="Checkout"
                 description="Control how customers identify themselves and complete checkout."
                 store={store}
@@ -276,6 +277,7 @@ export default function CheckoutSettingsPage() {
 
     return (
         <SettingsPane
+                navigationKey="checkout"
             title="Checkout"
             description="Control how customers identify themselves and complete checkout."
             store={store}

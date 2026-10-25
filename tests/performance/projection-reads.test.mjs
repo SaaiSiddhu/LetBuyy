@@ -70,23 +70,13 @@ test('analytics routes read rollups before legacy OLTP fallbacks', () => {
   }
 });
 
-test('storefront product search resolves through search_documents before product hydration', () => {
-  assert.match(storefrontRoute, /function storefrontSearchIndexReadsEnabled/);
-  assert.match(storefrontRoute, /from\('search_documents'\)/);
-  assert.match(storefrontRoute, /textSearch\('search_vector', term, \{ config: 'simple', type: 'websearch' \}\)/);
-  assert.match(storefrontRoute, /STOREFRONT_SEARCH_PROJECTION/);
-
-  const queryBlock = blockAfter(storefrontRoute, 'async function queryPublicProducts(c', 3600);
-  assert.match(queryBlock, /querySearchDocumentProductIds\(c, storeId, options\)/);
-  assert.match(queryBlock, /search: undefined/);
-  assert.ok(
-    queryBlock.indexOf('querySearchDocumentProductIds(c, storeId, options)') < queryBlock.indexOf('queryPublicProductsFromPooledSql'),
-    'projection search must run before pooled SQL fallback',
-  );
-  assert.ok(
-    queryBlock.indexOf('querySearchDocumentProductIds(c, storeId, options)') < queryBlock.indexOf("query.ilike('name'"),
-    'projection search must run before legacy products.name ilike fallback',
-  );
+test('storefront catalog discovery uses one scoped database query before variant hydration', () => {
+  const queryBlock = blockAfter(storefrontRoute, 'async function queryPublicProducts(c', 1100);
+  assert.match(queryBlock, /options[.]discovery [??][??] StorefrontDiscoveryQuerySchema/);
+  assert.match(queryBlock, /[.]rpc[(]STOREFRONT_DISCOVERY_RPC, storefrontDiscoveryRpcArgs[(]storeId, query, options[.]ids[)][)]/);
+  assert.match(queryBlock, /if [(]result[.]error[)] return [{] data: [[]], count: 0, error: result[.]error [}]/);
+  assert.ok(queryBlock.indexOf('.rpc(') < queryBlock.indexOf('hydratePublicProductVariants'));
+  assert.doesNotMatch(queryBlock, /querySearchDocumentProductIds|queryPublicProductsFromPooledSql|[.]ilike[(]/);
 });
 
 test('projection read flags default on with rollback switches', () => {

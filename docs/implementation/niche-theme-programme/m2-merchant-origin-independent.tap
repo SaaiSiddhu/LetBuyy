@@ -1,0 +1,100 @@
+TAP version 13
+# Subtest: actual NextRequest preserves the supplied run URL; normalized server URL is a separate reproduction
+ok 1 - actual NextRequest preserves the supplied run URL; normalized server URL is a separate reproduction
+  ---
+  duration_ms: 1.814792
+  type: 'test'
+  ...
+# Subtest: configured admin origin admits normalized URL only with exact Host, protocol and port
+ok 2 - configured admin origin admits normalized URL only with exact Host, protocol and port
+  ---
+  duration_ms: 1.785125
+  type: 'test'
+  ...
+# Subtest: configured origin rejects unknown alias even when supplied URL, Host and Origin agree
+ok 3 - configured origin rejects unknown alias even when supplied URL, Host and Origin agree
+  ---
+  duration_ms: 0.503834
+  type: 'test'
+  ...
+# Subtest: foreign, null, missing, wrong-port and wrong-protocol browser origins fail closed
+ok 4 - foreign, null, missing, wrong-port and wrong-protocol browser origins fail closed
+  ---
+  duration_ms: 0.316875
+  type: 'test'
+  ...
+# Subtest: Forwarded and X-Forwarded-* cannot supply authority or rescue an invalid Host
+ok 5 - Forwarded and X-Forwarded-* cannot supply authority or rescue an invalid Host
+  ---
+  duration_ms: 0.2545
+  type: 'test'
+  ...
+# Subtest: invalid configured admin URL never falls back to an otherwise matching request
+ok 6 - invalid configured admin URL never falls back to an otherwise matching request
+  ---
+  duration_ms: 0.41525
+  type: 'test'
+  ...
+# Subtest: normal production same-origin request remains valid, including configured trailing slash
+ok 7 - normal production same-origin request remains valid, including configured trailing slash
+  ---
+  duration_ms: 0.2285
+  type: 'test'
+  ...
+# Subtest: canonical request origin works without config only when Host matches
+ok 8 - canonical request origin works without config only when Host matches
+  ---
+  duration_ms: 0.139125
+  type: 'test'
+  ...
+# Subtest: legacy literal loopback IPs and localhost retain exact browser origin with installed NextRequest
+ok 9 - legacy literal loopback IPs and localhost retain exact browser origin with installed NextRequest
+  ---
+  duration_ms: 0.452417
+  type: 'test'
+  ...
+# Subtest: configured exact loopback origins also preserve legacy behavior
+ok 10 - configured exact loopback origins also preserve legacy behavior
+  ---
+  duration_ms: 0.292791
+  type: 'test'
+  ...
+# Subtest: Host cannot smuggle credentials, paths, fragments, query, multiple hosts or a different port
+ok 11 - Host cannot smuggle credentials, paths, fragments, query, multiple hosts or a different port
+  ---
+  duration_ms: 0.221125
+  type: 'test'
+  ...
+# Subtest: idempotency key is still mandatory with the corrected origin
+ok 12 - idempotency key is still mandatory with the corrected origin
+  ---
+  duration_ms: 0.227458
+  type: 'test'
+  ...
+# Subtest: raw guard values retain trim and control-character key rejection before any consumer mutation
+ok 13 - raw guard values retain trim and control-character key rejection before any consumer mutation
+  ---
+  duration_ms: 0.2085
+  type: 'test'
+  ...
+# Subtest: existing key opt-out never opts out of required same-origin checks
+ok 14 - existing key opt-out never opts out of required same-origin checks
+  ---
+  duration_ms: 0.067459
+  type: 'test'
+  ...
+# Subtest: staff wrapper preserves custom denial messages and the same strict origin/key contract
+ok 15 - staff wrapper preserves custom denial messages and the same strict origin/key contract
+  ---
+  duration_ms: 1.046542
+  type: 'test'
+  ...
+1..15
+# tests 15
+# suites 0
+# pass 15
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 223.030292

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "theme": "MadeYours",
+  "preset": "nova",
+  "classification": "CERTIFICATE_NOT_ISSUED_PREPARATION_ONLY",
+  "originalCases": { "total": 23, "run": 0, "pass": 0, "fail": 0, "notRun": 23 },
+  "additiveCoverage": { "caseGroups": 301, "operationObligations": 3478, "status": "NOT_RUN", "accountingChange": "APP-SEAM-01 replaces forbidden activation operations with required dormant safety acceptance; first-party scope unchanged." },
+  "LOCAL_E2E_VERIFIED": "NOT_RUN",
+  "RAZORPAY_TEST_VERIFIED": "NOT_RUN",
+  "REVIEW_ACCEPTED": "PENDING",
+  "FULL_THEME_CERTIFIED": false,
+  "PRODUCTION_DEPLOYED": "NOT_REQUESTED",
+  "currentSourceCandidate": null,
+  "currentRuntimeLease": null,
+  "openSourceContractFailures": ["MY-SRC-F01: customer-order-detail.heading", "MY-SRC-F02: faviconUrl"],
+  "configuredCartEdit": "REQUIRED_OPEN_UNIMPLEMENTED; agent remove/re-add amendment does not remove approved promise",
+  "requiredDependencies": [
+    "Actual helper resumption and exact allocator/controller grant",
+    "Checkout revision5 source admission and proposed22 owned native checks",
+    "One admitted current compiled source/runtime/schema candidate with normal browser trusted HTTPS",
+    "Secure verified Test Mode provider account/keys/webhook secret and accepted public HTTPS webhook ingress",
+    "All original and additive required acceptance plus independent review and preservation/cleanup"
+  ],
+  "evidence": ["CAPABILITY_INVENTORY.json", "COVERAGE.json", "SOURCE_RECONCILIATION.json", "RUNBOOK.md", "RAZORPAY_READINESS.md", "FINDINGS.md", "SOURCE_RENDER_FINDINGS.json"],
+  "noRuntimeCreditFrom": ["Source enumeration", "Model/source tests", "Historical static screenshots", "Another theme's purchase", "COD or fake provider capture"]
+}

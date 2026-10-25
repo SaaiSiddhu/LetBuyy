@@ -1,6 +1,9 @@
 // @letbuyy/ui — Shared React Components
 // These components are designed to work with Tailwind CSS
 
+export { FormProtectionProvider, useFormProtection } from './navigation/form-protection';
+export type { FormProtection, RegisterFormProtection } from './navigation/form-protection';
+
 export { Button } from './button';
 export type { ButtonProps } from './button';
 

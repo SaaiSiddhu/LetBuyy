@@ -1,0 +1,276 @@
+{
+  "date": "2026-10-22",
+  "method": "Rendered DOM/open shadow DOM, computed styles and AX context; CSS pixels",
+  "measurement_exhibits": [
+    {
+      "file": "evidence/01-products-index.json",
+      "capture_file_time_utc": "2026-10-22T05:30:59.236341+00:00",
+      "viewport": {
+        "dpr": 2,
+        "h": 1034,
+        "w": 862
+      },
+      "zoom": "Browser zoom not independently verified; CSS pixel/DPR values retained",
+      "state": "Method-limited light-DOM probe"
+    },
+    {
+      "file": "evidence/02-products-index-1440.json",
+      "capture_file_time_utc": "2026-10-22T05:31:59.754194+00:00",
+      "viewport": {
+        "dpr": 1,
+        "h": 1000,
+        "w": 1440
+      },
+      "zoom": "Browser zoom not independently verified; CSS pixel/DPR values retained",
+      "state": "State named by exhibit; see coverage report"
+    },
+    {
+      "file": "evidence/03-product-create-clean.json",
+      "capture_file_time_utc": "2026-10-22T05:32:28.976071+00:00",
+      "viewport": {
+        "dpr": 1,
+        "h": 1000,
+        "w": 1440
+      },
+      "zoom": "Browser zoom not independently verified; CSS pixel/DPR values retained",
+      "state": "State named by exhibit; see coverage report"
+    },
+    {
+      "file": "evidence/04-product-dirty.json",
+      "capture_file_time_utc": "2026-10-22T05:32:40.309840+00:00",
+      "viewport": {
+        "dpr": 1,
+        "h": 1000,
+        "w": 1440
+      },
+      "zoom": "Browser zoom not independently verified; CSS pixel/DPR values retained",
+      "state": "State named by exhibit; see coverage report"
+    },
+    {
+      "file": "evidence/05-product-dirty-mobile.json",
+      "capture_file_time_utc": "2026-10-22T05:33:21.662632+00:00",
+      "viewport": {
+        "dpr": 1,
+        "h": 844,
+        "w": 390
+      },
+      "zoom": "Browser zoom not independently verified; CSS pixel/DPR values retained",
+      "state": "State named by exhibit; see coverage report"
+    },
+    {
+      "file": "evidence/06-orders-index.json",
+      "capture_file_time_utc": "2026-10-22T05:34:37.989113+00:00",
+      "viewport": {
+        "dpr": 1,
+        "h": 1000,
+        "w": 1440
+      },
+      "zoom": "Browser zoom not independently verified; CSS pixel/DPR values retained",
+      "state": "State named by exhibit; see coverage report"
+    },
+    {
+      "file": "evidence/07-customers-index.json",
+      "capture_file_time_utc": "2026-10-22T05:35:08.403853+00:00",
+      "viewport": {
+        "dpr": 1,
+        "h": 1000,
+        "w": 1440
+      },
+      "zoom": "Browser zoom not independently verified; CSS pixel/DPR values retained",
+      "state": "State named by exhibit; see coverage report"
+    },
+    {
+      "file": "evidence/08-customer-create.json",
+      "capture_file_time_utc": "2026-10-22T05:35:39.538963+00:00",
+      "viewport": {
+        "dpr": 1,
+        "h": 1000,
+        "w": 1440
+      },
+      "zoom": "Browser zoom not independently verified; CSS pixel/DPR values retained",
+      "state": "State named by exhibit; see coverage report"
+    },
+    {
+      "file": "evidence/09-discounts-index.json",
+      "capture_file_time_utc": "2026-10-22T05:35:50.871295+00:00",
+      "viewport": {
+        "dpr": 1,
+        "h": 1000,
+        "w": 1440
+      },
+      "zoom": "Browser zoom not independently verified; CSS pixel/DPR values retained",
+      "state": "State named by exhibit; see coverage report"
+    },
+    {
+      "file": "evidence/10-discount-type-dialog.json",
+      "capture_file_time_utc": "2026-10-22T05:36:00.858060+00:00",
+      "viewport": {
+        "dpr": 1,
+        "h": 1000,
+        "w": 1440
+      },
+      "zoom": "Browser zoom not independently verified; CSS pixel/DPR values retained",
+      "state": "State named by exhibit; see coverage report"
+    },
+    {
+      "file": "evidence/11-analytics-overview.json",
+      "capture_file_time_utc": "2026-10-22T05:36:22.954228+00:00",
+      "viewport": {
+        "dpr": 1,
+        "h": 1000,
+        "w": 1440
+      },
+      "zoom": "Browser zoom not independently verified; CSS pixel/DPR values retained",
+      "state": "State named by exhibit; see coverage report"
+    },
+    {
+      "file": "evidence/12-settings-general-header.json",
+      "capture_file_time_utc": "2026-10-22T05:37:05.414620+00:00",
+      "viewport": {
+        "dpr": 1,
+        "h": 1000,
+        "w": 1440
+      },
+      "zoom": "Browser zoom not independently verified; CSS pixel/DPR values retained",
+      "state": "State named by exhibit; see coverage report"
+    },
+    {
+      "file": "evidence/13-settings-unsaved-bar.json",
+      "capture_file_time_utc": "2026-10-22T05:37:16.672799+00:00",
+      "viewport": null,
+      "zoom": "Browser zoom not independently verified; CSS pixel/DPR values retained",
+      "state": "State named by exhibit; see coverage report"
+    },
+    {
+      "file": "evidence/14-domains-overview.json",
+      "capture_file_time_utc": "2026-10-22T05:38:05.727438+00:00",
+      "viewport": {
+        "dpr": 1,
+        "h": 1000,
+        "w": 1440
+      },
+      "zoom": "Browser zoom not independently verified; CSS pixel/DPR values retained",
+      "state": "State named by exhibit; see coverage report"
+    },
+    {
+      "file": "evidence/15-domain-dialog-geometry.json",
+      "capture_file_time_utc": "2026-10-22T05:38:18.675867+00:00",
+      "viewport": {
+        "dpr": 1,
+        "h": 1000,
+        "w": 1440
+      },
+      "zoom": "Browser zoom not independently verified; CSS pixel/DPR values retained",
+      "state": "State named by exhibit; see coverage report"
+    },
+    {
+      "file": "evidence/16-domain-validation.json",
+      "capture_file_time_utc": "2026-10-22T05:38:32.597834+00:00",
+      "viewport": null,
+      "zoom": "Browser zoom not independently verified; CSS pixel/DPR values retained",
+      "state": "State named by exhibit; see coverage report"
+    },
+    {
+      "file": "evidence/17-domain-detail.json",
+      "capture_file_time_utc": "2026-10-22T05:39:00.967505+00:00",
+      "viewport": {
+        "dpr": 1,
+        "h": 1000,
+        "w": 1440
+      },
+      "zoom": "Browser zoom not independently verified; CSS pixel/DPR values retained",
+      "state": "State named by exhibit; see coverage report"
+    },
+    {
+      "file": "evidence/18-payments-header.json",
+      "capture_file_time_utc": "2026-10-22T05:39:24.734371+00:00",
+      "viewport": {
+        "dpr": 1,
+        "h": 1000,
+        "w": 1440
+      },
+      "zoom": "Browser zoom not independently verified; CSS pixel/DPR values retained",
+      "state": "State named by exhibit; see coverage report"
+    },
+    {
+      "file": "evidence/19-shipping-header.json",
+      "capture_file_time_utc": "2026-10-22T05:39:44.953042+00:00",
+      "viewport": {
+        "dpr": 1,
+        "h": 1000,
+        "w": 1440
+      },
+      "zoom": "Browser zoom not independently verified; CSS pixel/DPR values retained",
+      "state": "State named by exhibit; see coverage report"
+    },
+    {
+      "file": "evidence/20-shipping-header-768.json",
+      "capture_file_time_utc": "2026-10-22T05:39:45.045028+00:00",
+      "viewport": {
+        "dpr": 1,
+        "h": 1000,
+        "w": 768
+      },
+      "zoom": "Browser zoom not independently verified; CSS pixel/DPR values retained",
+      "state": "State named by exhibit; see coverage report"
+    },
+    {
+      "file": "evidence/21-shipping-header-390.json",
+      "capture_file_time_utc": "2026-10-22T05:39:45.304929+00:00",
+      "viewport": {
+        "dpr": 1,
+        "h": 844,
+        "w": 390
+      },
+      "zoom": "Browser zoom not independently verified; CSS pixel/DPR values retained",
+      "state": "State named by exhibit; see coverage report"
+    },
+    {
+      "file": "evidence/22-settings-apps.json",
+      "capture_file_time_utc": "2026-10-22T05:40:43.038500+00:00",
+      "viewport": {
+        "dpr": 1,
+        "h": 1000,
+        "w": 1440
+      },
+      "zoom": "Browser zoom not independently verified; CSS pixel/DPR values retained",
+      "state": "State named by exhibit; see coverage report"
+    },
+    {
+      "file": "evidence/23-users-header.json",
+      "capture_file_time_utc": "2026-10-22T05:41:53.195464+00:00",
+      "viewport": {
+        "dpr": 1,
+        "h": 1000,
+        "w": 1440
+      },
+      "zoom": "Browser zoom not independently verified; CSS pixel/DPR values retained",
+      "state": "State named by exhibit; see coverage report"
+    },
+    {
+      "file": "evidence/25-theme-host-header.json",
+      "capture_file_time_utc": "2026-10-22T05:42:55.721392+00:00",
+      "viewport": {
+        "dpr": 1,
+        "h": 1000,
+        "w": 1440
+      },
+      "zoom": "Browser zoom not independently verified; CSS pixel/DPR values retained",
+      "state": "State named by exhibit; see coverage report"
+    },
+    {
+      "file": "evidence/product-dirty-bar-after-scroll.json",
+      "capture_file_time_utc": "2026-10-22T05:33:08.459327+00:00",
+      "viewport": null,
+      "zoom": "Browser zoom not independently verified; CSS pixel/DPR values retained",
+      "state": "State named by exhibit; see coverage report"
+    },
+    {
+      "file": "evidence/product-dirty-bar-geometry.json",
+      "capture_file_time_utc": "2026-10-22T05:32:58.544318+00:00",
+      "viewport": null,
+      "zoom": "Browser zoom not independently verified; CSS pixel/DPR values retained",
+      "state": "State named by exhibit; see coverage report"
+    }
+  ]
+}

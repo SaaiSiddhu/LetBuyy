@@ -1,3 +1,4 @@
+import {loadCartFactSources} from '../../lib/cart-product-facts';
 import {holdOwnedStorefrontSqlSnapshot} from './owned-storefront-snapshot';
 import {DEFAULT_STOREFRONT_DOMAIN} from '@letbuyy/shared-types';
 // Mounted Gateway -> real owned PostgreSQL/PostgREST. Public catalogue scope;
@@ -9,15 +10,15 @@ import {createStorefrontGateToken,createStorefrontPreviewToken} from '@letbuyy/a
 import {hashStoreAccessPassword} from '../../lib/store-access-password';
 import {closePooledSqlClients} from '@letbuyy/infrastructure/pooled-sql-adapter';
 import {requireOwnedDatabase,startOwnedPooledSqlProxy,type OwnedPooledSqlProxy} from './owned-db-support';
-import {newSyntheticTenant,seedSyntheticTenant} from './synthetic-tenant';
+import {newSyntheticTenant,seedSyntheticTenant,seedSyntheticProductInventory} from './synthetic-tenant';
 const owned=requireOwnedDatabase();let gateways:Record<'sql'|'rest',Gateway>,proxy:OwnedPooledSqlProxy,tap:RestTap;
 const q=(s:string)=>"'"+s.replaceAll("'","''")+"'";
 const key='synthetic-visitor-shared-key-fixture';
 let faultResource='',faultCode='',faultMethod='GET';
 before(async()=>{
  proxy=await startOwnedPooledSqlProxy(owned);const keys=await newIdentityKeys();const env={NEXT_PUBLIC_STORE_ROOT_DOMAIN:DEFAULT_STOREFRONT_DOMAIN,FEATURE_GRAPHQL:'true',STORE_ACCESS_SIGNING_KEY:key,PREVIEW_SIGNING_KEY:key};
- gateways={rest:new Gateway(gatewayEnv(owned,keys,env)),sql:new Gateway(gatewayEnv(owned,keys,{...env,...proxy.env()}))};
- tap=tapRest(owned.restUrl,async(call,forward)=>call.method===faultMethod&&call.resource===faultResource?restJson(faultCode?404:503,{code:faultCode||'SYNTHETIC_DEPENDENCY',message:'Synthetic private host resolution failure'}):forward());
+ gateways={rest:new Gateway(gatewayEnv(owned,keys,{...env,...proxy.env(),STOREFRONT_POOLED_SQL:'off'})),sql:new Gateway(gatewayEnv(owned,keys,{...env,...proxy.env()}))};
+ tap=tapRest(owned.restUrl,async(call,forward)=>{if(call.method===faultMethod&&call.resource===faultResource)return restJson(faultCode?404:503,{code:faultCode||'SYNTHETIC_DEPENDENCY',message:'Synthetic private host resolution failure'});const response=await forward();if(!response.ok)console.info('OWNED_CART_DEPENDENCY_FAILURE '+JSON.stringify({resource:call.resource,status:response.status,body:await response.clone().text()}));return response;});
 });
 after(async()=>{await Promise.all(Object.values(gateways??{}).map(g=>g.settle()));tap?.restore();await closePooledSqlClients();await proxy?.stop();});
 for(const lane of ['sql','rest'] as const){
@@ -104,6 +105,7 @@ test('normal owner preview issuance binds the current host; revoke stops data an
 for(const lane of ['sql','rest'] as const)test(`${lane}: both GraphQL aliases honor catalogue gates and forwarded proof`,async()=>{
  const gateway=gateways[lane],t=newSyntheticTenant(lane+'-graphql-access');seedSyntheticTenant(owned.psql,t);const marker='Synthetic GraphQL visitor product',id=crypto.randomUUID();
  const hash=await hashStoreAccessPassword('Synthetic-GraphQL-password-42!');owned.psql(`UPDATE sites SET access_mode='password',access_password_hash=${q(hash)} WHERE id=${q(t.siteId)};INSERT INTO products(id,site_id,store_id,name,slug,price,stock,is_active,status)VALUES(${q(id)},${q(t.siteId)},${q(t.siteId)},${q(marker)},'graphql-access-product',100,5,true,'active');`);
+ seedSyntheticProductInventory(owned.psql,t.siteId);
  const revision=owned.psql(`SELECT encode(sha256(convert_to(${q(hash)},'UTF8')),'hex');`);
  const token=await createStorefrontGateToken({sid:t.siteId,host:t.subdomain+'.'+DEFAULT_STOREFRONT_DOMAIN,exp:Math.floor(Date.now()/1000)+600,revision},key);
  for(const path of ['/v1/storefront/graphql','/v1/graphql/storefront']){
@@ -120,6 +122,7 @@ for(const lane of ['sql','rest'] as const)test(`${lane}: primary and secondary d
  const primary='primary-'+t.siteId+'.example.invalid',alias='alias-'+t.siteId+'.example.invalid',foreignHost='foreign-'+foreign.siteId+'.example.invalid';
  const hash=await hashStoreAccessPassword('Synthetic-domain-password-42!');
  owned.psql(`UPDATE sites SET access_mode='password',access_password_hash=${q(hash)},custom_domain=${q(primary)},custom_domain_status='active' WHERE id=${q(t.siteId)};INSERT INTO site_domains(site_id,domain,status,role,redirect_to)VALUES(${q(t.siteId)},${q(alias)},'active','redirect',${q(primary)}),(${q(foreign.siteId)},${q(foreignHost)},'active','redirect',NULL);`);
+ seedSyntheticProductInventory(owned.psql,t.siteId);
  const revision=owned.psql(`SELECT encode(sha256(convert_to(${q(hash)},'UTF8')),'hex');`);
  const make=(host:string)=>createStorefrontGateToken({sid:t.siteId,host,exp:Math.floor(Date.now()/1000)+600,revision},key);
  const primaryToken=await make(primary),aliasToken=await make(alias),foreignToken=await make(foreignHost);
@@ -136,6 +139,7 @@ for(const lane of ['sql','rest'] as const)test(`${lane}: primary and secondary d
 for(const lane of ['sql','rest'] as const)test(`${lane}: malformed foreign and expired proofs refuse; live preview dependencies fail unavailable and recover`,async()=>{
  const gateway=gateways[lane],t=newSyntheticTenant(lane+'-proof-refuse');seedSyntheticTenant(owned.psql,t);const host=t.subdomain+'.'+DEFAULT_STOREFRONT_DOMAIN,hash=await hashStoreAccessPassword('Synthetic-proof-password-42!');
  owned.psql(`UPDATE sites SET access_mode='password',access_password_hash=${q(hash)} WHERE id=${q(t.siteId)};`);
+ seedSyntheticProductInventory(owned.psql,t.siteId);
  const revision=owned.psql(`SELECT encode(sha256(convert_to(${q(hash)},'UTF8')),'hex');`),exp=Math.floor(Date.now()/1000)+600;
  const read=(proof:string)=>gateway.request('/v1/storefront/'+t.subdomain+'/products',{headers:{'X-LetBuyy-Storefront-Gate':proof}});
  const good=await createStorefrontGateToken({sid:t.siteId,host,exp,revision},key);
@@ -153,6 +157,8 @@ for(const mode of ['password','preview_only','offline'] as const)test(`commerce:
  const productId=crypto.randomUUID(),marker='Synthetic cart access product';
  owned.psql(`INSERT INTO products(id,site_id,store_id,name,slug,price,stock,is_active,status)VALUES(${q(productId)},${q(t.siteId)},${q(t.siteId)},${q(marker)},'synthetic-cart-access',100,5,true,'active');`);
  const path='/v1/storefront/'+t.subdomain;
+ seedSyntheticProductInventory(owned.psql,t.siteId);
+ assert.equal((await loadCartFactSources(gateway.env,t.siteId,crypto.randomUUID(),[productId])).has(productId),true,'positive canonical cart source before policy denials');
  const send=(suffix:string,method='GET',body?:unknown)=>gateway.request(path+suffix,{method,headers:{'Content-Type':'application/json'},...(body===undefined?{}:{body:JSON.stringify(body)})});
  const initial=await send('/cart','POST',{lines:[{product_id:productId,quantity:1}]});assert.equal(initial.status,201,initial.text);
  const token=initial.json!.data.cart_token;assert.equal(typeof token,'string');
@@ -168,6 +174,7 @@ for(const mode of ['password','preview_only','offline'] as const)test(`commerce:
 for(const lane of ['sql','rest'] as const)test(`${lane}: fresh cart proof survives normal unlock but stops after rotation, unpublish and metadata outage`,async()=>{
  const gateway=gateways[lane],t=newSyntheticTenant(lane+'-cart-proof');seedSyntheticTenant(owned.psql,t);const productId=crypto.randomUUID();
  const hash=await hashStoreAccessPassword(crypto.randomUUID());owned.psql(`INSERT INTO products(id,site_id,store_id,name,slug,price,stock,is_active,status)VALUES(${q(productId)},${q(t.siteId)},${q(t.siteId)},'Synthetic gated cart','synthetic-gated-cart',100,5,true,'active');UPDATE sites SET access_mode='password',access_password_hash=${q(hash)} WHERE id=${q(t.siteId)};`);
+ seedSyntheticProductInventory(owned.psql,t.siteId);
  const revision=owned.psql(`SELECT encode(sha256(convert_to(${q(hash)},'UTF8')),'hex');`),host=t.subdomain+'.'+DEFAULT_STOREFRONT_DOMAIN;
  const token=await createStorefrontGateToken({sid:t.siteId,host,revision,exp:Math.floor(Date.now()/1000)+600},key);
  const path='/v1/storefront/'+t.subdomain;
@@ -200,6 +207,7 @@ for(const lane of ['sql','rest'] as const)test(`${lane}: a valid read-preview li
 for(const mode of ['password','preview_only','offline','unpublished'] as const)test(`hosted: issued public handoff stops new access after ${mode}`,async()=>{
  const gateway=gateways.rest,t=newSyntheticTenant('hosted-'+mode.replace('_','-'));seedSyntheticTenant(owned.psql,t);const id=crypto.randomUUID(),marker='Synthetic hosted private line';
  owned.psql(`INSERT INTO products(id,site_id,store_id,name,slug,price,stock,is_active,status)VALUES(${q(id)},${q(t.siteId)},${q(t.siteId)},${q(marker)},'synthetic-hosted-private',100,5,true,'active');`);
+ seedSyntheticProductInventory(owned.psql,t.siteId);
  const cart=await gateway.request('/v1/storefront/'+t.subdomain+'/cart',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({lines:[{product_id:id,quantity:1}]})});assert.equal(cart.status,201,cart.text);
  const token=cart.json!.data.cart_token,cartId=cart.json!.data.id;
  const issued=await gateway.request('/v1/storefront/'+t.subdomain+'/cart/'+token+'/checkout-url');assert.equal(issued.status,200,issued.text);
@@ -218,10 +226,12 @@ for(const mode of ['password','preview_only','offline','unpublished'] as const)t
 for(const lane of ['sql','rest'] as const)test(`${lane}: password handoff carries only server-issued admission and stops after rotation, expiry, mismatch and dependency failure`,async()=>{
  const gateway=gateways[lane],t=newSyntheticTenant(lane+'-hosted-proof');seedSyntheticTenant(owned.psql,t);const id=crypto.randomUUID();
  owned.psql(`INSERT INTO products(id,site_id,store_id,name,slug,price,stock,is_active,status)VALUES(${q(id)},${q(t.siteId)},${q(t.siteId)},'Synthetic password checkout','synthetic-password-checkout',100,5,true,'active');`);
+ seedSyntheticProductInventory(owned.psql,t.siteId);
  const cart=await gateway.request('/v1/storefront/'+t.subdomain+'/cart',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({lines:[{product_id:id,quantity:1}]})});assert.equal(cart.status,201,cart.text);
  const cartId=cart.json!.data.id,cartPath='/v1/storefront/'+t.subdomain+'/cart/'+cart.json!.data.cart_token+'/checkout-url';
  const publicLink=await gateway.request(cartPath);assert.equal(publicLink.status,200);const oldQuery=new URL(publicLink.json!.data.checkout_url).searchParams.toString();
  const hash=await hashStoreAccessPassword(crypto.randomUUID());owned.psql(`UPDATE sites SET access_mode='password',access_password_hash=${q(hash)} WHERE id=${q(t.siteId)};`);
+ seedSyntheticProductInventory(owned.psql,t.siteId);
  const revision=owned.psql(`SELECT encode(sha256(convert_to(${q(hash)},'UTF8')),'hex');`),gate=await createStorefrontGateToken({sid:t.siteId,host:t.subdomain+'.'+DEFAULT_STOREFRONT_DOMAIN,revision,exp:Math.floor(Date.now()/1000)+600},key);
  const issue=()=>gateway.request(cartPath,{headers:{'X-LetBuyy-Storefront-Gate':gate}});
  const issued=await issue();assert.equal(issued.status,200,issued.text);const query=new URL(issued.json!.data.checkout_url).searchParams.toString();

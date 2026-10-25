@@ -1,0 +1,8 @@
+{
+  "classification": "ADMITTED_SOURCE_BYTE_EQUALITY",
+  "ownedGuardAndBindingPrefixIdentical": true,
+  "ownedGuardAndBindingSha256": "77d9dfb051678a2eb55f9a2e68faf7de0e44150748139814661cde568b33f8c1",
+  "defaultNativeGenerationBodyIdentical": true,
+  "defaultNativeBodySha256": "ba74460b6ccf58b1592a9d7038e161ba5413df933d2e35aa976c164c32e73586",
+  "runtimeResourcesChanged": false
+}

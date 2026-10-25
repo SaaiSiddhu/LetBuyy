@@ -1,0 +1,54 @@
+{
+  "classification": "SEALED_SOURCE_INPUT_PREPARATION_NOT_EXECUTED",
+  "files": [
+    {
+      "path": "CONTROL_RECONCILIATION.json",
+      "sha256": "b26b3a84b39453f1a30fcbf01af16cb72b4a685fa26a933099a44fef19ca0584",
+      "bytes": 207059
+    },
+    {
+      "path": "COVERAGE.before-201-addition.json",
+      "sha256": "f2ea9c77d6d92372c85e98354c5e81e45d0f738a8defa537bb19c106c60277a3",
+      "bytes": 636138
+    },
+    {
+      "path": "HANDOFF.json",
+      "sha256": "5308197b5af60ca0d984e763f835e39f0e810c07df8a9c7cf4dde702e40d1448",
+      "bytes": 2412
+    },
+    {
+      "path": "STATUS.before-active-goal-reconciliation.json",
+      "sha256": "526bf973f26ba4d560eed6200bad650cc408f084697e0cb3fe39ec038876c87f",
+      "bytes": 3248
+    },
+    {
+      "path": "harness-input.PROPOSAL.json",
+      "sha256": "c1a9025f89fa0eef3170395ce0a42a455130e4dc8e80f902173a3fab421b36af",
+      "bytes": 18526
+    },
+    {
+      "path": "preparation.log",
+      "sha256": "8ef75f0f91c52905a1a45d942216c8a501a770b1d68af37bd9ca7b375c2296ba",
+      "bytes": 542
+    },
+    {
+      "path": "prepare.mjs",
+      "sha256": "529500321e0b82cd548c3eec7a39ded277dc8263946100ef01b492cda40136f0",
+      "bytes": 10797
+    },
+    {
+      "path": "source-pins-after.json",
+      "sha256": "4bd56aa1a9d7e039385b692b3c475bb4b5524006ec08c33ab363e480c43e20fb",
+      "bytes": 24428
+    },
+    {
+      "path": "source-pins-before.json",
+      "sha256": "4bd56aa1a9d7e039385b692b3c475bb4b5524006ec08c33ab363e480c43e20fb",
+      "bytes": 24428
+    }
+  ],
+  "fileCount": 9,
+  "sourcePinsExactAtSeal": true,
+  "harnessRunGrant": false,
+  "runtimeNativeBrowserDbProviderGrant": false
+}

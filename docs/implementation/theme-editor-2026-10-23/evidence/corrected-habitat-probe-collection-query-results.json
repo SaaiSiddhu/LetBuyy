@@ -1,0 +1,158 @@
+{
+  "recordedAt": "2026-10-23T19:22:03.968Z",
+  "runId": "f6074d90e894",
+  "publicationContext": {
+    "theme": "Habitat",
+    "release": "fb321f14-1493-4fa6-973e-23818abf81f7",
+    "sha256": "9a9b7f850699462088fc2f928169ab6faf700f09e923c6485aeff4b303cfc50b"
+  },
+  "readOnly": true,
+  "actualGetCount": 2,
+  "results": [
+    {
+      "id": "HQ08-collection",
+      "url": "http://127.0.0.1:62083/v1/storefront/syn-threadline-ui-33be9d94/products?page=1&limit=20&sort=display_order&search=Habitat+dimensions-only+stand&category=Habitat+dimensional+controls&country_of_origin=India&collection_id=bd1a8fea-6b45-4bdc-8517-170f184a5209",
+      "status": 200,
+      "requestId": "4be3b143-f1eb-41fa-8b62-5a51b9dfa8af",
+      "sha256": "44b1493056c5d09fc6f7da0632fea3c363f03f730cd9f445697cd91c56ea98a9",
+      "meta": {
+        "page": 1,
+        "per_page": 20,
+        "total": 1,
+        "total_pages": 1,
+        "has_next": false,
+        "has_prev": false
+      },
+      "discovery": {
+        "query": {
+          "page": 1,
+          "limit": 20,
+          "search": "Habitat dimensions-only stand",
+          "category": "Habitat dimensional controls",
+          "country_of_origin": "India",
+          "sort": "display_order",
+          "collection_id": "bd1a8fea-6b45-4bdc-8517-170f184a5209"
+        },
+        "facets": [
+          {
+            "key": "category",
+            "value": "Habitat dimensional controls",
+            "label": "Habitat dimensional controls",
+            "count": 1
+          },
+          {
+            "key": "country_of_origin",
+            "value": "india",
+            "label": "India",
+            "count": 1
+          }
+        ],
+        "matches": [
+          {
+            "product_id": "646e8bcb-3267-4f70-b31b-e44fb5f542a6",
+            "price": 1200,
+            "variant_ids": []
+          }
+        ],
+        "measurement_capabilities": {
+          "equipment_length": {
+            "available": false,
+            "allowed_units": []
+          },
+          "max_width_cm": {
+            "available": true
+          },
+          "max_depth_cm": {
+            "available": true
+          }
+        }
+      },
+      "productIds": [
+        "646e8bcb-3267-4f70-b31b-e44fb5f542a6"
+      ],
+      "checks": {
+        "status": true,
+        "total": true,
+        "ids": true,
+        "width": true,
+        "depth": true,
+        "equipmentAbsent": true,
+        "noMaterialFinishChoices": true
+      },
+      "pass": true
+    },
+    {
+      "id": "HQ09-collection",
+      "url": "http://127.0.0.1:62083/v1/storefront/syn-threadline-ui-33be9d94/products?page=1&limit=20&sort=display_order&search=Habitat+width-only+shelf&category=Habitat+dimensional+controls&country_of_origin=India&collection_id=bd1a8fea-6b45-4bdc-8517-170f184a5209",
+      "status": 200,
+      "requestId": "56ce28ca-8886-4ed9-8143-94a95d488088",
+      "sha256": "c9decb0d1f7db3f14f37ebb9628a9eb4b4b2985877ed0028a69a261c4d4bb40e",
+      "meta": {
+        "page": 1,
+        "per_page": 20,
+        "total": 1,
+        "total_pages": 1,
+        "has_next": false,
+        "has_prev": false
+      },
+      "discovery": {
+        "query": {
+          "page": 1,
+          "limit": 20,
+          "search": "Habitat width-only shelf",
+          "category": "Habitat dimensional controls",
+          "country_of_origin": "India",
+          "sort": "display_order",
+          "collection_id": "bd1a8fea-6b45-4bdc-8517-170f184a5209"
+        },
+        "facets": [
+          {
+            "key": "category",
+            "value": "Habitat dimensional controls",
+            "label": "Habitat dimensional controls",
+            "count": 1
+          },
+          {
+            "key": "country_of_origin",
+            "value": "india",
+            "label": "India",
+            "count": 1
+          }
+        ],
+        "matches": [
+          {
+            "product_id": "57d0c360-01a6-49dc-88f7-f3796e313b2e",
+            "price": 1400,
+            "variant_ids": []
+          }
+        ],
+        "measurement_capabilities": {
+          "equipment_length": {
+            "available": false,
+            "allowed_units": []
+          },
+          "max_width_cm": {
+            "available": true
+          },
+          "max_depth_cm": {
+            "available": false
+          }
+        }
+      },
+      "productIds": [
+        "57d0c360-01a6-49dc-88f7-f3796e313b2e"
+      ],
+      "checks": {
+        "status": true,
+        "total": true,
+        "ids": true,
+        "width": true,
+        "depth": true,
+        "equipmentAbsent": true,
+        "noMaterialFinishChoices": true
+      },
+      "pass": true
+    }
+  ],
+  "wholeCaseCredit": false
+}

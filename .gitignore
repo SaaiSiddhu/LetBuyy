@@ -219,3 +219,10 @@ graphify-out/launch-command-center.json
 
 # S1/W4 render-parity harness — temp per-run React section copies with mocked Next.js imports.
 apps/commerce/web/src/__liquid_parity_harness__/
+
+# Generated Storybook production output is never source.
+**/storybook-static/
+# Private persistent local marketplace database, credentials and runtime logs.
+/.local/theme-marketplace/
+# Generated dependency symlinks in preserved proposal fixtures.
+**/node_modules

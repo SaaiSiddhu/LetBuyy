@@ -1,0 +1,9 @@
+# Marketplace dark-mode gate retarget
+
+Main already mounts the canonical `LetbuyyThemeProvider` around Navbar in `apps/frozen/theme-store/src/app/layout.tsx:137-140`. Navbar imports `ThemeToggleButton` from `@letbuyy/ui` and renders its labeled control at `navbar.tsx:807`. The shared component owns `useTheme`/`setTheme`, accessible aria-label/title, hydration-safe initial icon and44px touch target. This matches UX-R13 and the single-controller rule.
+
+The validator target at `scripts/validators/validate-design-system.mjs:105-107` instead required the retired custom `function ThemeToggle(` plus `setTheme(`. Only that target is retargeted: it reads Navbar and layout and requires rendered canonical toggle AND provider. No app/shared component was changed or new provider/control introduced.
+
+The actual production validator runs against an owned source-only scratch tree containing the real current Marketplace source. Before the fix it rejects that positive control (RED0pass/1fail). Afterward, all8 relevant existing governance/federation tests pass,0skip. Negative cases retain the imports while removing the rendered toggle or mounted provider, and also reject bespoke/raw fallback buttons, missing Navbar, missing layout or both missing. Actual full Main gate moves1hardfailure→0 with exactly identical drift metrics and an unchanged baseline. The baseline update flag is never used; all other dark targets/forced-light checks are byte-identical.
+
+Exact two source hashes, paired diff against before snapshots, log hashes and source conservation: `marketplace-dark-toggle-source-release.json`. Existing frozen preview font-map/source test, Marketplace app/layout/header, shared provider/toggle and DS baseline are unchanged. No browser, app build, runtime/restart, new database fixture, sign-in/Add, private-source update, SQL or Kindred change. Persistent9015 remains untouched. This is source-gate acceptance, not new live dark-mode acceptance.

@@ -1,5 +1,8 @@
 'use client'
 
+import { MousePointer2 } from 'lucide-react'
+
+
 /**
  * PreviewInspectorOverlay — Phase S live preview inspector
  *
@@ -13,7 +16,7 @@
  * annotation that disappears when the pointer leaves the preview.
  */
 
-import { MaterialIcon } from '@letbuyy/ui'
+
 
 interface HoveredSection {
     sectionId: string
@@ -46,7 +49,7 @@ export default function PreviewInspectorOverlay({ hoveredSection }: PreviewInspe
             // never interferes with clicks on the iframe below.
         >
             <span className="te-inspector-hover-chip">
-                <MaterialIcon name="touch_app" size={12} aria-hidden="true" />
+                <MousePointer2 size={12} aria-hidden="true" />
                 <span className="te-inspector-hover-chip__label">
                     {formatSectionLabel(hoveredSection.sectionType)}
                 </span>

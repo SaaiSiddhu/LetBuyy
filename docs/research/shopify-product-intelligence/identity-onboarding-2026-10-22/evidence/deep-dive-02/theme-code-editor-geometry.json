@@ -1,0 +1,392 @@
+[
+  {
+    "bg": "rgb(243, 243, 243)",
+    "color": "rgb(59, 59, 59)",
+    "fontFamily": "-apple-system, \"system-ui\", sans-serif",
+    "fontSize": "13px",
+    "label": null,
+    "lineHeight": "18.2px",
+    "rect": {
+      "height": 1034,
+      "width": 1185,
+      "x": 0,
+      "y": 0
+    },
+    "role": "application"
+  },
+  {
+    "bg": "rgba(0, 0, 0, 0)",
+    "color": "rgb(30, 30, 30)",
+    "fontFamily": "-apple-system, \"system-ui\", sans-serif",
+    "fontSize": "12px",
+    "label": null,
+    "lineHeight": "22px",
+    "rect": {
+      "height": 24,
+      "width": 458.296875,
+      "x": 363.3515625,
+      "y": 5
+    },
+    "role": "toolbar"
+  },
+  {
+    "bg": "rgba(0, 0, 0, 0)",
+    "color": "rgb(30, 30, 30)",
+    "fontFamily": "-apple-system, \"system-ui\", sans-serif",
+    "fontSize": "12px",
+    "label": null,
+    "lineHeight": "22px",
+    "rect": {
+      "height": 22,
+      "width": 65.921875,
+      "x": 556.5390625,
+      "y": 6
+    },
+    "role": "toolbar"
+  },
+  {
+    "bg": "rgba(0, 0, 0, 0)",
+    "color": "rgb(30, 30, 30)",
+    "fontFamily": "-apple-system, \"system-ui\", sans-serif",
+    "fontSize": "13px",
+    "label": "Title actions",
+    "lineHeight": "22px",
+    "rect": {
+      "height": 34,
+      "width": 0,
+      "x": 1181,
+      "y": 0
+    },
+    "role": "toolbar"
+  },
+  {
+    "bg": "rgba(0, 0, 0, 0)",
+    "color": "rgb(59, 59, 59)",
+    "fontFamily": "-apple-system, \"system-ui\", sans-serif",
+    "fontSize": "13px",
+    "label": "Active View Switcher",
+    "lineHeight": "18.2px",
+    "rect": {
+      "height": 144,
+      "width": 48,
+      "x": 0,
+      "y": 35
+    },
+    "role": "tablist"
+  },
+  {
+    "bg": "rgba(0, 0, 0, 0)",
+    "color": "rgb(59, 59, 59)",
+    "fontFamily": "-apple-system, \"system-ui\", sans-serif",
+    "fontSize": "13px",
+    "label": "Manage",
+    "lineHeight": "18.2px",
+    "rect": {
+      "height": 48,
+      "width": 48,
+      "x": 0,
+      "y": 964
+    },
+    "role": "toolbar"
+  },
+  {
+    "bg": "rgba(0, 0, 0, 0)",
+    "color": "rgb(59, 59, 59)",
+    "fontFamily": "-apple-system, \"system-ui\", sans-serif",
+    "fontSize": "13px",
+    "label": "Explorer actions",
+    "lineHeight": "18.2px",
+    "rect": {
+      "height": 35,
+      "width": 202.390625,
+      "x": 132.859375,
+      "y": 35
+    },
+    "role": "toolbar"
+  },
+  {
+    "bg": "rgba(0, 0, 0, 0)",
+    "color": "rgb(59, 59, 59)",
+    "fontFamily": "-apple-system, \"system-ui\", sans-serif",
+    "fontSize": "13px",
+    "label": null,
+    "lineHeight": "18.2px",
+    "rect": {
+      "height": 35,
+      "width": 0,
+      "x": 335.25,
+      "y": 35
+    },
+    "role": "toolbar"
+  },
+  {
+    "bg": "rgba(0, 0, 0, 0)",
+    "color": "rgb(59, 59, 59)",
+    "fontFamily": "-apple-system, \"system-ui\", sans-serif",
+    "fontSize": "11px",
+    "label": "Horizon actions",
+    "lineHeight": "22px",
+    "rect": {
+      "height": 0,
+      "width": 0,
+      "x": 0,
+      "y": 0
+    },
+    "role": "toolbar"
+  },
+  {
+    "bg": "rgba(0, 0, 0, 0)",
+    "color": "rgb(59, 59, 59)",
+    "fontFamily": "-apple-system, \"system-ui\", sans-serif",
+    "fontSize": "13px",
+    "label": "Files Explorer",
+    "lineHeight": "18.2px",
+    "rect": {
+      "height": 618,
+      "width": 296.25,
+      "x": 48,
+      "y": 92
+    },
+    "role": "tree"
+  },
+  {
+    "bg": "rgba(0, 0, 0, 0)",
+    "color": "rgb(59, 59, 59)",
+    "fontFamily": "-apple-system, \"system-ui\", sans-serif",
+    "fontSize": "11px",
+    "label": "Outline actions",
+    "lineHeight": "22px",
+    "rect": {
+      "height": 0,
+      "width": 0,
+      "x": 0,
+      "y": 0
+    },
+    "role": "toolbar"
+  },
+  {
+    "bg": "rgba(0, 0, 0, 0)",
+    "color": "rgb(59, 59, 59)",
+    "fontFamily": "-apple-system, \"system-ui\", sans-serif",
+    "fontSize": "11px",
+    "label": "Timeline actions",
+    "lineHeight": "22px",
+    "rect": {
+      "height": 0,
+      "width": 0,
+      "x": 0,
+      "y": 0
+    },
+    "role": "toolbar"
+  },
+  {
+    "bg": "rgba(0, 0, 0, 0)",
+    "color": "rgb(59, 59, 59)",
+    "fontFamily": "-apple-system, \"system-ui\", sans-serif",
+    "fontSize": "13px",
+    "label": "Timeline",
+    "lineHeight": "18.2px",
+    "rect": {
+      "height": 214,
+      "width": 296.25,
+      "x": 48,
+      "y": 754
+    },
+    "role": "tree"
+  },
+  {
+    "bg": "rgba(0, 0, 0, 0)",
+    "color": "rgb(59, 59, 59)",
+    "fontFamily": "-apple-system, \"system-ui\", sans-serif",
+    "fontSize": "11px",
+    "label": "References actions",
+    "lineHeight": "22px",
+    "rect": {
+      "height": 0,
+      "width": 0,
+      "x": 0,
+      "y": 0
+    },
+    "role": "toolbar"
+  },
+  {
+    "bg": "rgba(0, 0, 0, 0)",
+    "color": "rgb(59, 59, 59)",
+    "fontFamily": "-apple-system, \"system-ui\", sans-serif",
+    "fontSize": "11px",
+    "label": "Dependencies actions",
+    "lineHeight": "22px",
+    "rect": {
+      "height": 0,
+      "width": 0,
+      "x": 0,
+      "y": 0
+    },
+    "role": "toolbar"
+  },
+  {
+    "bg": "rgba(0, 0, 0, 0)",
+    "color": "rgb(59, 59, 59)",
+    "fontFamily": "-apple-system, \"system-ui\", sans-serif",
+    "fontSize": "13px",
+    "label": null,
+    "lineHeight": "18.2px",
+    "rect": {
+      "height": 977,
+      "width": 840.75,
+      "x": 344.25,
+      "y": 35
+    },
+    "role": "main"
+  },
+  {
+    "bg": "rgba(0, 0, 0, 0)",
+    "color": "rgb(59, 59, 59)",
+    "fontFamily": "-apple-system, \"system-ui\", sans-serif",
+    "fontSize": "13px",
+    "label": "Empty editor group actions",
+    "lineHeight": "18.2px",
+    "rect": {
+      "height": 0,
+      "width": 0,
+      "x": 0,
+      "y": 0
+    },
+    "role": "toolbar"
+  },
+  {
+    "bg": "rgba(0, 0, 0, 0)",
+    "color": "rgb(59, 59, 59)",
+    "fontFamily": "-apple-system, \"system-ui\", sans-serif",
+    "fontSize": "13px",
+    "label": null,
+    "lineHeight": "18.2px",
+    "rect": {
+      "height": 0,
+      "width": 0,
+      "x": 0,
+      "y": 0
+    },
+    "role": "tablist"
+  },
+  {
+    "bg": "rgba(0, 0, 0, 0)",
+    "color": "rgb(59, 59, 59)",
+    "fontFamily": "-apple-system, \"system-ui\", sans-serif",
+    "fontSize": "13px",
+    "label": "Editor actions",
+    "lineHeight": "18.2px",
+    "rect": {
+      "height": 0,
+      "width": 0,
+      "x": 0,
+      "y": 0
+    },
+    "role": "toolbar"
+  },
+  {
+    "bg": "rgba(0, 0, 0, 0)",
+    "color": "rgb(59, 59, 59)",
+    "fontFamily": "-apple-system, \"system-ui\", sans-serif",
+    "fontSize": "13px",
+    "label": "Active View Switcher",
+    "lineHeight": "27px",
+    "rect": {
+      "height": 0,
+      "width": 0,
+      "x": 0,
+      "y": 0
+    },
+    "role": "tablist"
+  },
+  {
+    "bg": "rgba(0, 0, 0, 0)",
+    "color": "rgb(59, 59, 59)",
+    "fontFamily": "-apple-system, \"system-ui\", sans-serif",
+    "fontSize": "13px",
+    "label": null,
+    "lineHeight": "18.2px",
+    "rect": {
+      "height": 0,
+      "width": 0,
+      "x": 0,
+      "y": 0
+    },
+    "role": "toolbar"
+  },
+  {
+    "bg": "rgba(0, 0, 0, 0)",
+    "color": "rgb(59, 59, 59)",
+    "fontFamily": "-apple-system, \"system-ui\", sans-serif",
+    "fontSize": "13px",
+    "label": null,
+    "lineHeight": "18.2px",
+    "rect": {
+      "height": 0,
+      "width": 0,
+      "x": 0,
+      "y": 0
+    },
+    "role": "toolbar"
+  },
+  {
+    "bg": "rgba(0, 0, 0, 0)",
+    "color": "rgb(59, 59, 59)",
+    "fontFamily": "-apple-system, \"system-ui\", sans-serif",
+    "fontSize": "13px",
+    "label": "Active View Switcher",
+    "lineHeight": "27px",
+    "rect": {
+      "height": 0,
+      "width": 0,
+      "x": 0,
+      "y": 0
+    },
+    "role": "tablist"
+  },
+  {
+    "bg": "rgba(0, 0, 0, 0)",
+    "color": "rgb(59, 59, 59)",
+    "fontFamily": "-apple-system, \"system-ui\", sans-serif",
+    "fontSize": "13px",
+    "label": null,
+    "lineHeight": "18.2px",
+    "rect": {
+      "height": 0,
+      "width": 0,
+      "x": 0,
+      "y": 0
+    },
+    "role": "toolbar"
+  },
+  {
+    "bg": "rgba(0, 0, 0, 0)",
+    "color": "rgb(59, 59, 59)",
+    "fontFamily": "-apple-system, \"system-ui\", sans-serif",
+    "fontSize": "13px",
+    "label": null,
+    "lineHeight": "18.2px",
+    "rect": {
+      "height": 0,
+      "width": 0,
+      "x": 0,
+      "y": 0
+    },
+    "role": "toolbar"
+  },
+  {
+    "bg": "rgb(248, 248, 248)",
+    "color": "rgb(59, 59, 59)",
+    "fontFamily": "-apple-system, \"system-ui\", sans-serif",
+    "fontSize": "12px",
+    "label": null,
+    "lineHeight": "18.2px",
+    "rect": {
+      "height": 22,
+      "width": 1185,
+      "x": 0,
+      "y": 1012
+    },
+    "role": "status"
+  }
+]

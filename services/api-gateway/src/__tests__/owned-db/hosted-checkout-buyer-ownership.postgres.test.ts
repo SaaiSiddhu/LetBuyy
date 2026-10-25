@@ -5,12 +5,13 @@
 // the hosted confirmation creates the canonical order and ownership link atomically.
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import test, { afterEach, before } from 'node:test';
+import test, { after, afterEach, before } from 'node:test';
+import { closePooledSqlClients } from '@letbuyy/infrastructure/pooled-sql-adapter';
 import { LETBUYY_BUYER_SESSION_HEADER, LETBUYY_STOREFRONT_SESSION_HEADER } from '@letbuyy/auth-core';
 import { normalizeIdempotencyKey, type PaymentCreateIntentInput, type PaymentIntentResult } from '@letbuyy/payments';
 import { hmacSha256Hex } from '../../lib/crypto';
-import { Gateway, gatewayEnv, mintSession, newIdentityKeys, seedBuyerAccount, type IdentityKeys } from './gateway-harness';
-import { requireOwnedDatabase } from './owned-db-support';
+import { Gateway, gatewayEnv, mintSession, newIdentityKeys, seedBuyerAccount, INTERNAL_SECRET, type IdentityKeys } from './gateway-harness';
+import { requireOwnedDatabase, startOwnedPooledSqlProxy, type OwnedPooledSqlProxy } from './owned-db-support';
 import { newSyntheticTenant, seedSyntheticTenant } from './synthetic-tenant';
 
 const owned = requireOwnedDatabase();
@@ -26,6 +27,7 @@ const onlineRateId = crypto.randomUUID();
 const onlineOnlyZoneRateId = crypto.randomUUID();
 let keys: IdentityKeys;
 let gateway: Gateway;
+let pooledProxy: OwnedPooledSqlProxy;
 let productId: string;
 
 before(async () => {
@@ -34,8 +36,8 @@ before(async () => {
     seedSyntheticTenant(psql, otherSite);
     productId = crypto.randomUUID();
     psql(`
-      INSERT INTO products (id,store_id,name,price,sku,is_active,created_at,updated_at)
-      VALUES ('${productId}','${site.siteId}','Synthetic hosted product',199.00,'SYN-HOSTED-${productId}',true,now(),now());
+      INSERT INTO products (id,store_id,name,price,sku,is_active,stock,created_at,updated_at)
+      VALUES ('${productId}','${site.siteId}','Synthetic hosted product',199.00,'SYN-HOSTED-${productId}',true,25,now(),now());
       INSERT INTO shipping_zones (id,store_id,site_id,name,countries,states,zip_codes,cod_enabled)
       VALUES
         ('${shippingZoneId}','${site.siteId}','${site.siteId}','COD and online zone',ARRAY['IN'],ARRAY['Karnataka','29'],ARRAY['560001'],true),
@@ -48,9 +50,11 @@ before(async () => {
       INSERT INTO inventory_levels (id,store_id,product_id,variant_id,location_id,available,reserved,committed_quantity,available_quantity,reserved_quantity,on_hand_quantity,created_at,updated_at)
       VALUES (gen_random_uuid(),'${site.siteId}','${productId}',NULL,'${site.locationId}',25,0,0,25,0,25,now(),now());
     `);
-    gateway = new Gateway(gatewayEnv(owned, keys, { CHECKOUT_SIGNING_SECRET: SIGNING_SECRET, CHECKOUT_ORIGIN: 'https://checkout.letbuyy.com' }));
+    pooledProxy = await startOwnedPooledSqlProxy(owned);
+    gateway = new Gateway(gatewayEnv(owned, keys, { ...pooledProxy.env(), CHECKOUT_SIGNING_SECRET: SIGNING_SECRET, CHECKOUT_ORIGIN: 'https://checkout.letbuyy.com' }));
 });
 afterEach(async () => { await gateway.settle(); psql(`UPDATE sites SET access_mode='public',published=true WHERE id='${site.siteId}';`); });
+after(async () => { await closePooledSqlClients(); await pooledProxy?.stop(); });
 
 function seedCart() {
     const id = crypto.randomUUID();
@@ -259,6 +263,123 @@ test('hosted Razorpay binds a canonical buyer order, waits for capture, and retr
     assert.equal(replay.json?.data?.order?.id, orderId);
     assert.equal(psql(`SELECT count(*) FROM ledger_transactions WHERE site_id='${site.siteId}' AND source_type='payment_capture' AND source_id='razorpay:${providerPaymentId}';`), '1');
     await razorpayGateway.settle();
+});
+
+test('normal Razorpay setup confirms its converted cart once for guest and authenticated buyers', async t => {
+    for (const authenticated of [false, true]) for (const webhookFirst of [false, true]) await t.test(
+        `${authenticated ? 'bound buyer' : 'guest buyer'} / ${webhookFirst ? 'webhook first' : 'browser first'}`, async () => {
+        const buyer = authenticated ? seedBuyerAccount(psql, 'normal-razorpay-owner') : null;
+        // Use the same fact-capturing cart writer as the real storefront. The
+        // older raw-SQL carts above omit these facts and take a different path.
+        const added = await gateway.request(`/v1/storefront/${site.subdomain}/cart`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json', ...(buyer ? await storefrontHeaders(buyer.id) : {}) },
+            body: JSON.stringify({ lines: [{ product_id: productId, quantity: 1 }] }),
+        });
+        assert.equal(added.status, 201, added.text);
+        assert.equal(typeof added.json?.data.lines[0].snapshot_fingerprint, 'string');
+        const cart = { id: added.json!.data.id as string, token: added.json!.data.cart_token as string };
+        const handoff = await startHostedCheckout(cart, buyer ? await storefrontHeaders(buyer.id) : {});
+        assert.equal(handoff.status, 200, handoff.text);
+        const url = handoff.json!.data.checkout_url as string;
+        assert.equal((await hostedCheckoutPost(cart, url, 'contact', {
+            idempotency_key: `normal-contact-${cart.id}`, email: 'normal-payment@example.invalid', name: 'Synthetic Buyer',
+        })).status, 200);
+        assert.equal((await hostedCheckoutPost(cart, url, 'delivery', {
+            idempotency_key: `normal-delivery-${cart.id}`, shipping_method: 'standard', cod_requested: false,
+            shipping_address: { line1: 'Fixture Road', city: 'Bengaluru', state: 'Karnataka', state_code: '29', zip: '560001', country: 'IN' },
+            shipping_quote: { shipping_rate_id: onlineRateId, expected_shipping_amount: 12 },
+        })).status, 200);
+        const providerOrderId = `order_${crypto.randomUUID().replace(/-/g, '')}`;
+        const providerPaymentId = `pay_${crypto.randomUUID().replace(/-/g, '')}`;
+        let amountMinor = 0, createCalls = 0, captured = false;
+        const adapter = {
+            async createIntent(input: PaymentCreateIntentInput): Promise<PaymentIntentResult> {
+                createCalls++; amountMinor = input.amount.amountMinor;
+                return { provider: 'razorpay', status: 'requires_action', amount: input.amount,
+                    idempotencyKey: normalizeIdempotencyKey(String(input.idempotencyKey)), references: { providerOrderId } };
+            },
+            async fetchOrdersByReceipt() { return { items: [], count: 0 }; },
+            async fetchPayment(paymentId: string) {
+                return { id: paymentId, order_id: providerOrderId, amount: amountMinor, currency: 'INR',
+                    status: captured ? 'captured' : 'authorized', captured };
+            },
+        };
+        const paymentGateway = new Gateway(gatewayEnv(owned, keys, {
+            ...pooledProxy.env(), CHECKOUT_SIGNING_SECRET: SIGNING_SECRET, CHECKOUT_ORIGIN: 'https://checkout.letbuyy.com',
+            LETBUYY_RAZORPAY_MODE: 'sandbox', RAZORPAY_KEY_ID: 'rzp_test_synthetic', RAZORPAY_KEY_SECRET,
+            HOSTED_RAZORPAY_TEST_ADAPTER: adapter,
+        }));
+        try {
+            const intent = await hostedCheckoutPost(cart, url, 'payment-intent', {
+                idempotency_key: `normal-intent-${cart.id}`, provider: 'razorpay', mode: 'sandbox', tokenize: false, metadata: {},
+            }, paymentGateway);
+            assert.equal(intent.status, 201, intent.text);
+            const orderId = psql(`SELECT id FROM orders WHERE payment_id='${providerOrderId}' AND site_id='${site.siteId}';`);
+            assert.ok(orderId);
+            assert.equal(psql(`SELECT status FROM carts WHERE id='${cart.id}';`), 'converted');
+            const body = { idempotency_key: `normal-confirm-${cart.id}`, razorpay_order_id: providerOrderId,
+                razorpay_payment_id: providerPaymentId, razorpay_signature: await hmacSha256Hex(RAZORPAY_KEY_SECRET, `${providerOrderId}|${providerPaymentId}`) };
+            const invalid = await hostedCheckoutPost(cart, url, 'confirm', { ...body, idempotency_key: `invalid-proof-${cart.id}`, razorpay_signature: '0'.repeat(64) }, paymentGateway);
+            assert.equal(invalid.status, 400, invalid.text);
+            assert.equal(invalid.json?.error.code, 'CHECKOUT_PROVIDER_SIGNATURE_INVALID');
+            if (webhookFirst) {
+                captured = true;
+                const transition = {
+                    orderId, provider: 'razorpay', paymentId: providerPaymentId, providerOrderId,
+                    providerEventId: `native-webhook-first:${providerPaymentId}`,
+                    idempotencyKey: `native-webhook-first:${providerPaymentId}`,
+                };
+                for (let attempt = 0; attempt < 2; attempt++) {
+                    const paid = await paymentGateway.request('/v1/storefront/internal/payments/confirm', {
+                        method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Internal-API-Secret': INTERNAL_SECRET },
+                        body: JSON.stringify(transition),
+                    });
+                    assert.equal(paid.status, 200, paid.text);
+                }
+                assert.equal(psql(`SELECT payment_id FROM orders WHERE id='${orderId}';`), providerPaymentId);
+                const originalSession = psql(`SELECT row_to_json(s)::text FROM checkout_sessions s WHERE cart_id='${cart.id}' AND payment_method='razorpay';`);
+                const recoveryPath = `/v1/storefront/${site.subdomain}/cart/${cart.token}/checkout-status`;
+                const recovered = await paymentGateway.request(recoveryPath);
+                assert.equal(recovered.status, 200, recovered.text);
+                assert.equal(recovered.json?.data.checkout_state, 'completed');
+                assert.equal(recovered.json?.data.order.id, orderId);
+                assert.doesNotMatch(recovered.text, /normal-payment@|Synthetic Buyer|Fixture Road|provider_payment_id|payment_intent/);
+                assert.equal(psql(`SELECT row_to_json(s)::text FROM checkout_sessions s WHERE cart_id='${cart.id}' AND payment_method='razorpay';`), originalSession, 'receipt recovery must be a read');
+                assert.equal((await paymentGateway.request(`/v1/storefront/${otherSite.subdomain}/cart/${cart.token}/checkout-status`)).status, 404);
+                assert.equal((await paymentGateway.request(`/v1/storefront/${site.subdomain}/cart/ct_${crypto.randomUUID().replace(/-/g, '')}/checkout-status`)).status, 404);
+                const otherPaymentId = `pay_${crypto.randomUUID().replace(/-/g, '')}`;
+                const foreignProof = await hostedCheckoutPost(cart, url, 'confirm', {
+                    ...body, idempotency_key: `different-capture-${cart.id}`, razorpay_payment_id: otherPaymentId,
+                    razorpay_signature: await hmacSha256Hex(RAZORPAY_KEY_SECRET, `${providerOrderId}|${otherPaymentId}`),
+                }, paymentGateway);
+                assert.equal(foreignProof.status, 409, foreignProof.text);
+                assert.equal(foreignProof.json?.error.code, 'CHECKOUT_PROVIDER_AMOUNT_MISMATCH');
+            } else {
+                const pending = await hostedCheckoutPost(cart, url, 'confirm', body, paymentGateway);
+                assert.equal(pending.status, 409, pending.text);
+                assert.equal(pending.json?.error.code, 'CHECKOUT_PROVIDER_PAYMENT_PENDING');
+                const pendingReceipt = await paymentGateway.request(`/v1/storefront/${site.subdomain}/cart/${cart.token}/checkout-status`);
+                assert.equal(pendingReceipt.status, 200, pendingReceipt.text);
+                assert.notEqual(pendingReceipt.json?.data.checkout_state, 'completed');
+                assert.equal(pendingReceipt.json?.data.order, undefined);
+                captured = true;
+            }
+            const confirmed = await hostedCheckoutPost(cart, url, 'confirm', body, paymentGateway);
+            assert.equal(confirmed.status, 200, confirmed.text);
+            assert.equal(confirmed.json?.data.order.id, orderId);
+            const replay = await hostedCheckoutPost(cart, url, 'confirm', body, paymentGateway);
+            assert.equal(replay.status, 200, replay.text);
+            assert.equal(replay.json?.data.order.id, orderId);
+            assert.equal(createCalls, 1);
+            assert.equal(psql(`SELECT count(*) FROM ledger_transactions WHERE site_id='${site.siteId}' AND source_type='payment_capture' AND source_id='razorpay:${providerPaymentId}';`), '1');
+            assert.equal(psql(`SELECT count(*) FROM payment_transactions WHERE order_id='${orderId}' AND provider_payment_id='${providerPaymentId}' AND status='captured';`), '1');
+            assert.equal(psql(`SELECT count(*) FROM ledger_entries e JOIN ledger_transactions t ON t.id=e.transaction_id WHERE t.site_id='${site.siteId}' AND t.source_type='payment_capture' AND t.source_id='razorpay:${providerPaymentId}';`), '2');
+            assert.equal(psql(`SELECT COALESCE(sum(CASE WHEN e.side='debit' THEN e.amount_minor ELSE -e.amount_minor END),0) FROM ledger_entries e JOIN ledger_transactions t ON t.id=e.transaction_id WHERE t.site_id='${site.siteId}' AND t.source_type='payment_capture' AND t.source_id='razorpay:${providerPaymentId}';`), '0');
+            assert.equal(psql(`SELECT status FROM carts WHERE id='${cart.id}';`), 'converted');
+            assert.equal(psql(`SELECT checkout_state FROM checkout_sessions WHERE cart_id='${cart.id}' AND payment_method='razorpay';`), 'completed');
+            assert.deepEqual(ownership(orderId), buyer ? [{ buyer_account_id: buyer.id, site_id: site.siteId, link_basis: 'authenticated_checkout' }] : []);
+        } finally { await paymentGateway.settle(); }
+    });
 });
 
 test('hosted checkout records a late capture once, refuses fulfillment, and preserves the refund obligation', async () => {

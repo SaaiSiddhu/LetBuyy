@@ -1,9 +1,10 @@
+import {CollectionListQuerySchema} from '@letbuyy/commerce-core'
 import { NextRequest, NextResponse } from 'next/server'
 import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 export async function GET(
-    _request: NextRequest,
+    request: NextRequest,
     { params }: { params: Promise<{ store: string }> }
 ) {
     try {
@@ -12,11 +13,12 @@ export async function GET(
 
         if (resolved.error) return resolved.error
 
-        const collections = await createMerchantApiClient().products.collections.list({
-            store_id: resolved.storeId,
-        })
-
-        return NextResponse.json({ data: collections })
+        const parsed = CollectionListQuerySchema.safeParse({store_id:resolved.storeId,
+            page:request.nextUrl.searchParams.get('page') ?? undefined,
+            limit:request.nextUrl.searchParams.get('limit') ?? undefined})
+        if(!parsed.success) return NextResponse.json({error:{code:'VALIDATION',message:'Invalid collection page.'}},{status:400})
+        const collections = await createMerchantApiClient().products.collections.list(parsed.data)
+        return NextResponse.json(collections, {headers:{'Cache-Control':'no-store'}})
     } catch (err) {
         return merchantApiErrorResponse(err, 'Unable to load collections')
     }

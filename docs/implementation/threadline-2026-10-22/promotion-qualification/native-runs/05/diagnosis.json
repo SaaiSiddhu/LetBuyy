@@ -1,0 +1,23 @@
+{
+  "status": "RED_LATER_ROLLBACK_ORACLE",
+  "actualTests": 5,
+  "passed": 3,
+  "failed": 2,
+  "skipped": 0,
+  "publicHttp": "All3 first-attempt length/width/depth200 exactmetadata, nofetcherrors, noSDKfallbackinvoked",
+  "eventLoopTrial": "Resolved preserved ECONNRESET withoutHTTPretry/tolerance or production changes",
+  "laterMismatch": {
+    "field": "themes.install_count",
+    "oldPreInstallExpected": 0,
+    "actualAfterNineLegitimateInstalls": 1,
+    "correctInvariant": "389DOWN restores prior catalog pointers/content and preserves current operational install counters; exact values must be conserved, not ignored"
+  },
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  }
+}

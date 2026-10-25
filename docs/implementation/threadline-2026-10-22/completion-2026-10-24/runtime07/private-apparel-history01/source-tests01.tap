@@ -1,0 +1,253 @@
+TAP version 13
+# Subtest: all nine facts namespaces validate on the existing metadata owner and project independently
+ok 1 - all nine facts namespaces validate on the existing metadata owner and project independently
+  ---
+  duration_ms: 5.614042
+  type: 'test'
+  ...
+# Subtest: invalid namespace fails merchant writes and cannot contaminate valid public facts
+ok 2 - invalid namespace fails merchant writes and cannot contaminate valid public facts
+  ---
+  duration_ms: 0.325708
+  type: 'test'
+  ...
+# Subtest: anonymous facts projection neither invokes accessors nor inherits sibling metadata
+ok 3 - anonymous facts projection neither invokes accessors nor inherits sibling metadata
+  ---
+  duration_ms: 0.054459
+  type: 'test'
+  ...
+# Subtest: all nine facts namespaces validate on the existing metadata owner and project independently
+ok 4 - all nine facts namespaces validate on the existing metadata owner and project independently
+  ---
+  duration_ms: 5.970167
+  type: 'test'
+  ...
+# Subtest: invalid namespace fails merchant writes and cannot contaminate valid public facts
+ok 5 - invalid namespace fails merchant writes and cannot contaminate valid public facts
+  ---
+  duration_ms: 0.420667
+  type: 'test'
+  ...
+# Subtest: anonymous facts projection neither invokes accessors nor inherits sibling metadata
+ok 6 - anonymous facts projection neither invokes accessors nor inherits sibling metadata
+  ---
+  duration_ms: 0.079875
+  type: 'test'
+  ...
+# Subtest: derived card scalars come from valid raw namespaces and never merchant display hints
+ok 7 - derived card scalars come from valid raw namespaces and never merchant display hints
+  ---
+  duration_ms: 0.719083
+  type: 'test'
+  ...
+# Subtest: variant food does not inherit a product pack or infer quantity from title or shipping weight
+ok 8 - variant food does not inherit a product pack or infer quantity from title or shipping weight
+  ---
+  duration_ms: 3.249834
+  type: 'test'
+  ...
+# Subtest: inline metadata is strict and resolves edition inheritance without mixing measurement groups
+ok 9 - inline metadata is strict and resolves edition inheritance without mixing measurement groups
+  ---
+  duration_ms: 0.610958
+  type: 'test'
+  ...
+# Subtest: personalization remains exact inert JSON; summaries are scalars at collection depth
+ok 10 - personalization remains exact inert JSON; summaries are scalars at collection depth
+  ---
+  duration_ms: 0.461292
+  type: 'test'
+  ...
+# Subtest: missing facts stay absent; private/accessor/inherited metadata never becomes an order fact
+ok 11 - missing facts stay absent; private/accessor/inherited metadata never becomes an order fact
+  ---
+  duration_ms: 7.425166
+  type: 'test'
+  ...
+# Subtest: canonical UUID/version and selected variant parent are mandatory server context
+ok 12 - canonical UUID/version and selected variant parent are mandatory server context
+  ---
+  duration_ms: 0.808791
+  type: 'test'
+  ...
+# Subtest: malformed declared facts and unknown variant namespaces fail rather than losing fulfillment details
+ok 13 - malformed declared facts and unknown variant namespaces fail rather than losing fulfillment details
+  ---
+  duration_ms: 1.752041
+  type: 'test'
+  ...
+# Subtest: food freezes the selected sellable pack quantity and never inherits an unselected parent pack
+ok 14 - food freezes the selected sellable pack quantity and never inherits an unselected parent pack
+  ---
+  duration_ms: 1.793833
+  type: 'test'
+  ...
+# Subtest: furniture and sports preserve whole measurement/unit groups without mixing parent dimensions
+ok 15 - furniture and sports preserve whole measurement/unit groups without mixing parent dimensions
+  ---
+  duration_ms: 1.940584
+  type: 'test'
+  ...
+# Subtest: book kinds cannot be mixed and toy edition clears retain the canonical clear/completeness semantics
+ok 16 - book kinds cannot be mixed and toy edition clears retain the canonical clear/completeness semantics
+  ---
+  duration_ms: 2.767
+  type: 'test'
+  ...
+# Subtest: required, stale, missing and forged personalization never produce an accepted snapshot or client-authoritative hash
+ok 17 - required, stale, missing and forged personalization never produce an accepted snapshot or client-authoritative hash
+  ---
+  duration_ms: 2.264125
+  type: 'test'
+  ...
+# Subtest: NFC requires explicit reviewed text; unsupported Unicode/control characters are rejected
+ok 18 - NFC requires explicit reviewed text; unsupported Unicode/control characters are rejected
+  ---
+  duration_ms: 6.07625
+  type: 'test'
+  ...
+# Subtest: SHA256 identity is deterministic, UUID-canonical, quantity-independent and distinguishes same-SKU configurations
+ok 19 - SHA256 identity is deterministic, UUID-canonical, quantity-independent and distinguishes same-SKU configurations
+  ---
+  duration_ms: 8.756584
+  type: 'test'
+  ...
+# Subtest: a product-version or frozen-facts change invalidates the snapshot binding without inventing a new config
+ok 20 - a product-version or frozen-facts change invalidates the snapshot binding without inventing a new config
+  ---
+  duration_ms: 1.722834
+  type: 'test'
+  ...
+# Subtest: accepted order data is cloned/frozen and cannot leak through anonymous product fact presentation
+ok 21 - accepted order data is cloned/frozen and cannot leak through anonymous product fact presentation
+  ---
+  duration_ms: 0.947084
+  type: 'test'
+  ...
+# Subtest: historical order readback validates frozen facts/labels and never falls back to current catalog facts
+ok 22 - historical order readback validates frozen facts/labels and never falls back to current catalog facts
+  ---
+  duration_ms: 0.834042
+  type: 'test'
+  ...
+# Subtest: revision transition permits no-effect resaves and requires advances for capability meaning changes
+ok 23 - revision transition permits no-effect resaves and requires advances for capability meaning changes
+  ---
+  duration_ms: 0.538625
+  type: 'test'
+  ...
+# Subtest: echoed server review digest rejects same-revision meaning changes, simulated races and removal/re-addition
+ok 24 - echoed server review digest rejects same-revision meaning changes, simulated races and removal/re-addition
+  ---
+  duration_ms: 1.587917
+  type: 'test'
+  ...
+# Subtest: saved canonical option names and values retain spaces and Hindi without label inference
+ok 25 - saved canonical option names and values retain spaces and Hindi without label inference
+  ---
+  duration_ms: 0.669083
+  type: 'test'
+  ...
+# Subtest: review echo requires explicit variant context and cannot move across variants or use the old product-only digest
+ok 26 - review echo requires explicit variant context and cannot move across variants or use the old product-only digest
+  ---
+  duration_ms: 0.843125
+  type: 'test'
+  ...
+# Subtest: all nine canonical fact namespaces produce recorded presentation without mutating frozen inputs
+ok 27 - all nine canonical fact namespaces produce recorded presentation without mutating frozen inputs
+  ---
+  duration_ms: 2.489084
+  type: 'test'
+  ...
+# Subtest: dimensions, food and equipment retain actual units and distinguish package size from assembled size
+ok 28 - dimensions, food and equipment retain actual units and distinguish package size from assembled size
+  ---
+  duration_ms: 0.639125
+  type: 'test'
+  ...
+# Subtest: electronic power capacity, output, input and pass-through stay separate rather than inventing compatibility
+ok 29 - electronic power capacity, output, input and pass-through stay separate rather than inventing compatibility
+  ---
+  duration_ms: 0.460542
+  type: 'test'
+  ...
+# Subtest: identical RGB shades use exact saved option values and never select the first or matching-colour row
+ok 30 - identical RGB shades use exact saved option values and never select the first or matching-colour row
+  ---
+  duration_ms: 0.22725
+  type: 'test'
+  ...
+# Subtest: accepted personalized text and recorded labels survive changed capabilities without reacceptance or current lookup
+ok 31 - accepted personalized text and recorded labels survive changed capabilities without reacceptance or current lookup
+  ---
+  duration_ms: 0.183708
+  type: 'test'
+  ...
+# Subtest: missing food measurements/allergens and stationery pages remain unknown despite suggestive option labels
+ok 32 - missing food measurements/allergens and stationery pages remain unknown despite suggestive option labels
+  ---
+  duration_ms: 0.352834
+  type: 'test'
+  ...
+# Subtest: private, inherited, getter and invalid namespaces cannot become order presentation
+ok 33 - private, inherited, getter and invalid namespaces cannot become order presentation
+  ---
+  duration_ms: 0.282208
+  type: 'test'
+  ...
+# Subtest: absent or malformed historical facts have an explicit unavailable result without invented zero values
+ok 34 - absent or malformed historical facts have an explicit unavailable result without invented zero values
+  ---
+  duration_ms: 0.239916
+  type: 'test'
+  ...
+# Subtest: plain-text formatter retains supplied hostile strings for normal host escaping and never dereferences references
+ok 35 - plain-text formatter retains supplied hostile strings for normal host escaping and never dereferences references
+  ---
+  duration_ms: 0.724834
+  type: 'test'
+  ...
+# Subtest: only represented namespaces or valid accepted personalization are emitted
+ok 36 - only represented namespaces or valid accepted personalization are emitted
+  ---
+  duration_ms: 0.749042
+  type: 'test'
+  ...
+# Subtest: exact saved option tuples are visible for every niche without inferring missing domain facts
+ok 37 - exact saved option tuples are visible for every niche without inferring missing domain facts
+  ---
+  duration_ms: 0.999542
+  type: 'test'
+  ...
+# file:///Volumes/Projects/LetBuyy/docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/private-apparel.test.mjs:7
+# import { orderItemFactsText } from './order-fact-readback.private.ts';
+#          ^^^^^^^^^^^^^^^^^^
+# SyntaxError: The requested module './order-fact-readback.private.ts' does not provide an export named 'orderItemFactsText'
+#     at ModuleJob._instantiate (node:internal/modules/esm/module_job:226:21)
+#     at async ModuleJob.run (node:internal/modules/esm/module_job:335:5)
+#     at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)
+#     at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)
+# Node.js v22.23.3
+# Subtest: private-apparel.test.mjs
+not ok 5 - private-apparel.test.mjs
+  ---
+  duration_ms: 334.287125
+  type: 'test'
+  location: '/Volumes/Projects/LetBuyy/docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/private-apparel.test.mjs:1:1'
+  failureType: 'testCodeFailure'
+  exitCode: 1
+  signal: ~
+  error: 'test failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..38
+# tests 38
+# suites 0
+# pass 37
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 535.211292

@@ -1,0 +1,172 @@
+{
+  "classification": "SOURCE_STATE_SERIALIZATION_ONLY_NOT_ACTUAL_UI_OPERATIONS",
+  "type": "services-grid",
+  "group": "template",
+  "originalId": "section-b47bd460-a228-42c8-ac12-579dd763eeb9",
+  "finalId": "section-62a0f9ee-dabe-4244-bb5f-e974a92778c2",
+  "sectionFieldsExercised": [
+    "title"
+  ],
+  "effectiveBlockFieldsExercised": [
+    "service.title",
+    "service.description",
+    "service.link"
+  ],
+  "phases": [
+    {
+      "phase": "edited",
+      "observed": {
+        "settings": {
+          "title": "Circuit source title"
+        },
+        "disabled": false,
+        "block_order": [
+          "block-1ffc33e7-ba48-465e-a23f-3e467b4c5418",
+          "block-d3ed7e10-7e9e-4e2f-a852-4c6f4a761878"
+        ],
+        "blocks": {
+          "block-1ffc33e7-ba48-465e-a23f-3e467b4c5418": {
+            "type": "service",
+            "settings": {
+              "title": "Circuit source title",
+              "description": "Circuit source description",
+              "link": "https://example.invalid/circuit/link.webp"
+            },
+            "disabled": false,
+            "blocks": {},
+            "block_order": []
+          },
+          "block-d3ed7e10-7e9e-4e2f-a852-4c6f4a761878": {
+            "type": "service",
+            "settings": {
+              "title": "Circuit source title",
+              "description": "Circuit source description",
+              "link": "https://example.invalid/circuit/link.webp"
+            },
+            "disabled": false,
+            "blocks": {},
+            "block_order": []
+          }
+        }
+      }
+    },
+    {
+      "phase": "hidden-reordered",
+      "observed": {
+        "settings": {
+          "title": "Circuit source title"
+        },
+        "disabled": true,
+        "block_order": [
+          "block-d3ed7e10-7e9e-4e2f-a852-4c6f4a761878",
+          "block-1ffc33e7-ba48-465e-a23f-3e467b4c5418"
+        ],
+        "blocks": {
+          "block-d3ed7e10-7e9e-4e2f-a852-4c6f4a761878": {
+            "type": "service",
+            "settings": {
+              "title": "Circuit source title",
+              "description": "Circuit source description",
+              "link": "https://example.invalid/circuit/link.webp"
+            },
+            "disabled": true,
+            "blocks": {},
+            "block_order": []
+          },
+          "block-1ffc33e7-ba48-465e-a23f-3e467b4c5418": {
+            "type": "service",
+            "settings": {
+              "title": "Circuit source title",
+              "description": "Circuit source description",
+              "link": "https://example.invalid/circuit/link.webp"
+            },
+            "disabled": true,
+            "blocks": {},
+            "block_order": []
+          }
+        }
+      }
+    },
+    {
+      "phase": "shown",
+      "observed": {
+        "settings": {
+          "title": "Circuit source title"
+        },
+        "disabled": false,
+        "block_order": [
+          "block-d3ed7e10-7e9e-4e2f-a852-4c6f4a761878",
+          "block-1ffc33e7-ba48-465e-a23f-3e467b4c5418"
+        ],
+        "blocks": {
+          "block-d3ed7e10-7e9e-4e2f-a852-4c6f4a761878": {
+            "type": "service",
+            "settings": {
+              "title": "Circuit source title",
+              "description": "Circuit source description",
+              "link": "https://example.invalid/circuit/link.webp"
+            },
+            "disabled": false,
+            "blocks": {},
+            "block_order": []
+          },
+          "block-1ffc33e7-ba48-465e-a23f-3e467b4c5418": {
+            "type": "service",
+            "settings": {
+              "title": "Circuit source title",
+              "description": "Circuit source description",
+              "link": "https://example.invalid/circuit/link.webp"
+            },
+            "disabled": false,
+            "blocks": {},
+            "block_order": []
+          }
+        }
+      }
+    },
+    {
+      "phase": "removed",
+      "originalSectionAbsent": true,
+      "protectedGroupIdentityRetained": false
+    },
+    {
+      "phase": "readded",
+      "observed": {
+        "settings": {
+          "title": "Circuit source title"
+        },
+        "disabled": false,
+        "block_order": [
+          "block-9590169e-f2d7-4311-8ece-e7ee91daaa56",
+          "block-7636990a-417f-4cf0-8ac6-7f6bff3ef752"
+        ],
+        "blocks": {
+          "block-9590169e-f2d7-4311-8ece-e7ee91daaa56": {
+            "type": "service",
+            "settings": {
+              "title": "Circuit source title",
+              "description": "Circuit source description",
+              "link": "https://example.invalid/circuit/link.webp"
+            },
+            "disabled": false,
+            "blocks": {},
+            "block_order": []
+          },
+          "block-7636990a-417f-4cf0-8ac6-7f6bff3ef752": {
+            "type": "service",
+            "settings": {
+              "title": "Circuit source title",
+              "description": "Circuit source description",
+              "link": "https://example.invalid/circuit/link.webp"
+            },
+            "disabled": false,
+            "blocks": {},
+            "block_order": []
+          }
+        }
+      }
+    }
+  ],
+  "resourceAuthorityProved": false,
+  "actualUiCallbacksExecuted": false
+}

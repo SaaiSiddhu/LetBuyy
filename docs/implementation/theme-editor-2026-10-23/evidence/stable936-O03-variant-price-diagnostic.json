@@ -1,0 +1,73 @@
+{
+  "recordedAt": "2026-10-24T04:19:34.550Z",
+  "runId": "936e5f577646",
+  "guardVerified": true,
+  "readOnly": true,
+  "classification": "ACTUAL_PRICE_CONTRAST_DIAGNOSTIC_NOT_FIX",
+  "actual": {
+    "variants": [
+      {
+        "id": "3f4e08a8-bf2e-4899-bbeb-06c7283af499",
+        "price": 560,
+        "option1": "New Clay name",
+        "option2": "एक इकाई",
+        "inventoryQty": 2,
+        "priceOverride": null
+      },
+      {
+        "id": "b864a0c6-2fb9-472e-a70a-8bbb96db7e9b",
+        "price": 590,
+        "option1": "Terracotta",
+        "option2": "एक इकाई",
+        "inventoryQty": 0,
+        "priceOverride": null
+      },
+      {
+        "id": "ce1348f3-7ddd-4e06-9a62-6fc77bc15dab",
+        "price": 899,
+        "option1": "Rosewater",
+        "option2": "एक इकाई",
+        "inventoryQty": 4,
+        "priceOverride": null
+      }
+    ],
+    "basePrice": 999,
+    "productId": "f04c5a94-8f0c-48ae-a450-e2374caa5c7e",
+    "productVersion": 23,
+    "actualEditVariantCommand": [
+      {
+        "id": "ce1348f3-7ddd-4e06-9a62-6fc77bc15dab",
+        "sku": "SYN-BEAUTY-ROSE-936e5f577646",
+        "price": 899,
+        "title": "Fixture shade SKU",
+        "options": {
+          "Renamed shade option": "Rosewater",
+          "पैक आकार": "एक इकाई"
+        },
+        "compare_price": null
+      },
+      {
+        "id": "3f4e08a8-bf2e-4899-bbeb-06c7283af499",
+        "sku": "SYN-BEAUTY-PINK-936e5f577646",
+        "price": 560,
+        "title": "New Clay name / एक इकाई",
+        "options": {
+          "Renamed shade option": "New Clay name",
+          "पैक आकार": "एक इकाई"
+        },
+        "compare_price": null
+      },
+      {
+        "id": "b864a0c6-2fb9-472e-a70a-8bbb96db7e9b",
+        "sku": "SYN-BEAUTY-TERRA-936e5f577646",
+        "price": 590,
+        "title": "Fixture shade SKU",
+        "options": {
+          "Renamed shade option": "Terracotta",
+          "पैक आकार": "एक इकाई"
+        },
+        "compare_price": null
+      }
+    ]
+  }
+}

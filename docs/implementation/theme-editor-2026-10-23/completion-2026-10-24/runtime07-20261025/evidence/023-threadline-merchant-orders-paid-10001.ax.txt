@@ -1,0 +1,156 @@
+Browser tab: 173052882, Title: "LetBuyy Admin", URL: "http://admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/orders".
+1 AXWebArea LetBuyy Admin, URL: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/orders
+	2 container
+		3 link Description: LetBuyy dashboard, Value: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/dashboard
+		4 button Search
+		5 button Setup assistant
+		6 button Notifications
+		7 button (collapsed) Description: Switch store, current store Threadline, Secondary Actions: Expand
+			8 text TH
+			9 text Threadline
+	10 container admin-nav-drawer
+		11 container
+			12 container Primary navigation
+				13 content list
+					14 link Description: Home, Value: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/dashboard
+					15 link Description: Orders, Value: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/orders
+					16 container
+						17 link Description: Products, Value: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/products
+						18 button (collapsed) Description: Toggle Products section, Secondary Actions: Expand
+					19 container
+						20 link Description: Inventory, Value: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/products/inventory
+						21 button (collapsed) Description: Toggle Inventory section, Secondary Actions: Expand
+					22 container
+						23 link Description: Purchasing, Value: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/products/purchase-orders
+						24 button (collapsed) Description: Toggle Purchasing section, Secondary Actions: Expand
+					25 container
+						26 link Description: Customers, Value: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/customers
+						27 button (collapsed) Description: Toggle Customers section, Secondary Actions: Expand
+					28 container
+						29 link Description: Money, Value: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/settings/billing
+						30 button (collapsed) Description: Toggle Money section, Secondary Actions: Expand
+					31 container
+						32 link Description: Marketing, Value: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/coupons
+						33 button (collapsed) Description: Toggle Marketing section, Secondary Actions: Expand
+					34 container
+						35 link Description: Content, Value: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/pages
+						36 button (collapsed) Description: Toggle Content section, Secondary Actions: Expand
+					37 link Description: Analytics, Value: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/analytics
+			38 text Sales channels
+			39 container Sales channels
+				40 content list
+					41 container
+						42 link Description: Online Store, Value: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store
+						43 button (expanded) Description: Toggle Online Store section, Secondary Actions: Collapse
+						44 content list
+							45 link Description: Themes, Value: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes
+							46 link Description: Store pages, Value: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/pages
+							47 link Description: Preferences, Value: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/preferences
+			48 text Apps
+			49 container Apps
+				50 content list
+					51 link Description: Add, Value: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/apps
+		52 container Settings navigation
+			53 content list
+				54 link Description: Settings, Value: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/settings
+	55 container admin-page-scroll
+		56 container
+			57 heading Orders, Value: 1
+				58 text Orders
+			59 link Description: Products, Value: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/products
+		60 container
+			61 heading Order queue, Value: 2
+				62 text Order queue
+			63 text 2 orders in the current view. Search orders
+			64 text field (settable) Search orders
+			65 text Payment
+			66 pop up button (collapsed, settable) Payment, Value: All payments, Secondary Actions: Expand
+				67 menu
+					68 (selected) All payments
+					69 Pending
+					70 Paid
+					71 Failed
+					72 Refunded
+			73 button Refresh
+			74 checkbox All, Value: 1
+			75 checkbox Pending, Value: 0
+			76 checkbox Confirmed, Value: 0
+			77 checkbox Processing, Value: 0
+			78 checkbox Shipped, Value: 0
+			79 checkbox Delivered, Value: 0
+			80 checkbox Cancelled, Value: 0
+			81 checkbox Refunded, Value: 0
+			82 table
+				83 row
+					84 cell
+						85 container
+							86 checkbox (settable, integer) Description: Select all rows, Value: 0
+							87 text Select all rows
+					88 cell
+						89 button Order
+					90 cell
+						91 button Customer
+					92 cell
+						93 button Items
+					94 cell
+						95 button Payment
+					96 cell
+						97 button Status
+					98 cell
+						99 button Total
+					100 cell
+						101 button Date
+					102 cell
+						103 text Actions
+				104 row
+					105 cell
+						106 container
+							107 checkbox (settable, integer) Description: Select row 1, Value: 0
+							108 text Select row 1
+					109 cell
+						110 button ORD-20261024-10001
+					111 cell
+						112 text Threadline Buyer A
+						113 text [synthetic email]
+					114 cell
+						115 text 1
+					116 cell
+						117 text RAZORPAY / Paid
+					118 cell
+						119 text Confirmed
+					120 cell
+						121 text ₹2,510.00
+					122 cell
+						123 text 25 Oct 2026
+					124 cell
+						125 container
+							126 button Process
+							127 button Cancel
+							128 button Refund
+				129 row
+					130 cell
+						131 container
+							132 checkbox (settable, integer) Description: Select row 2, Value: 0
+							133 text Select row 2
+					134 cell
+						135 button ORD-20261024-10000
+					136 cell
+						137 text Synthetic Final Buyer
+						138 text [synthetic email]
+					139 cell
+						140 text 1
+					141 cell
+						142 text RAZORPAY / Paid
+					143 cell
+						144 text Confirmed
+					145 cell
+						146 text ₹1,220.00
+					147 cell
+						148 text 25 Oct 2026
+					149 cell
+						150 container
+							151 button Process
+							152 button Cancel
+							153 button Refund
+
+The focused UI element is 15 link Description: Orders, URL: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/orders

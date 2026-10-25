@@ -1,0 +1,231 @@
+TAP version 13
+# Subtest: default public survives an empty template0 target and actual restore function reaches full parity
+not ok 1 - default public survives an empty template0 target and actual restore function reaches full parity
+  ---
+  duration_ms: 1.242084
+  type: 'test'
+  location: '/private/tmp/letbuyy-original210-restore-bootstrap-prep-20261025-01/tests/governance/owned-preserved-restore-bootstrap.test.mjs:30:1'
+  failureType: 'testCodeFailure'
+  error: 'preserved fixture refused [RESTORE_FAILED]'
+  code: 'ERR_TEST_FAILURE'
+  stack: |-
+    check (file:///private/tmp/letbuyy-original210-restore-bootstrap-prep-20261025-01/tests/governance/owned-preserved-restore-bootstrap.test.mjs:16:44)
+    Object.createPreservedSuiteDatabase (evalmachine.<anonymous>:14:190)
+    async TestContext.<anonymous> (file:///private/tmp/letbuyy-original210-restore-bootstrap-prep-20261025-01/tests/governance/owned-preserved-restore-bootstrap.test.mjs:30:147)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+# Subtest: nonempty target still refuses before archive restore
+ok 2 - nonempty target still refuses before archive restore
+  ---
+  duration_ms: 0.364166
+  type: 'test'
+  ...
+# Subtest: restore still refuses foreign-image before new database SQL or archive restore
+ok 3 - restore still refuses foreign-image before new database SQL or archive restore
+  ---
+  duration_ms: 0.327833
+  type: 'test'
+  ...
+# Subtest: restore still refuses foreign-owner before new database SQL or archive restore
+ok 4 - restore still refuses foreign-owner before new database SQL or archive restore
+  ---
+  duration_ms: 0.247292
+  type: 'test'
+  ...
+# Subtest: restore still refuses source-volume before new database SQL or archive restore
+ok 5 - restore still refuses source-volume before new database SQL or archive restore
+  ---
+  duration_ms: 0.240208
+  type: 'test'
+  ...
+# Subtest: restore still refuses source-container before new database SQL or archive restore
+ok 6 - restore still refuses source-container before new database SQL or archive restore
+  ---
+  duration_ms: 0.209208
+  type: 'test'
+  ...
+# Subtest: failed archive restore keeps protection and does not claim parity
+ok 7 - failed archive restore keeps protection and does not claim parity
+  ---
+  duration_ms: 0.287333
+  type: 'test'
+  ...
+# Subtest: parity failure remains a hard refusal after restore
+not ok 8 - parity failure remains a hard refusal after restore
+  ---
+  duration_ms: 0.735792
+  type: 'test'
+  location: '/private/tmp/letbuyy-original210-restore-bootstrap-prep-20261025-01/tests/governance/owned-preserved-restore-bootstrap.test.mjs:34:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The input did not match the regular expression /RESTORE_PARITY_FAILED/. Input:
+    
+    'Error: preserved fixture refused [RESTORE_FAILED]'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual:
+  error: 'preserved fixture refused [RESTORE_FAILED]'
+  stack: |-
+    check (file:///private/tmp/letbuyy-original210-restore-bootstrap-prep-20261025-01/tests/governance/owned-preserved-restore-bootstrap.test.mjs:16:44)
+    Object.createPreservedSuiteDatabase (evalmachine.<anonymous>:14:190)
+    async waitForActual (node:assert:644:5)
+    async Function.rejects (node:assert:767:25)
+    async TestContext.<anonymous> (file:///private/tmp/letbuyy-original210-restore-bootstrap-prep-20261025-01/tests/governance/owned-preserved-restore-bootstrap.test.mjs:34:109)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  operator: 'rejects'
+  stack: |-
+    async TestContext.<anonymous> (file:///private/tmp/letbuyy-original210-restore-bootstrap-prep-20261025-01/tests/governance/owned-preserved-restore-bootstrap.test.mjs:34:109)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: primary restore failure and failed checkpoint retain both safe causes in flat nonpass report
+not ok 9 - primary restore failure and failed checkpoint retain both safe causes in flat nonpass report
+  ---
+  duration_ms: 1.166292
+  type: 'test'
+  location: '/private/tmp/letbuyy-original210-restore-bootstrap-prep-20261025-01/tests/governance/owned-preserved-restore-bootstrap.test.mjs:49:1'
+  failureType: 'testCodeFailure'
+  error: '"undefined" is not valid JSON'
+  code: 'ERR_TEST_FAILURE'
+  name: 'SyntaxError'
+  stack: |-
+    JSON.parse (<anonymous>)
+    Object.report (file:///private/tmp/letbuyy-original210-restore-bootstrap-prep-20261025-01/tests/governance/owned-preserved-restore-bootstrap.test.mjs:47:89)
+    TestContext.<anonymous> (file:///private/tmp/letbuyy-original210-restore-bootstrap-prep-20261025-01/tests/governance/owned-preserved-restore-bootstrap.test.mjs:49:218)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: cluster preparation failure remains visible even with no suite result and unsafe retained resources
+not ok 10 - cluster preparation failure remains visible even with no suite result and unsafe retained resources
+  ---
+  duration_ms: 0.485791
+  type: 'test'
+  location: '/private/tmp/letbuyy-original210-restore-bootstrap-prep-20261025-01/tests/governance/owned-preserved-restore-bootstrap.test.mjs:50:1'
+  failureType: 'testCodeFailure'
+  error: '"undefined" is not valid JSON'
+  code: 'ERR_TEST_FAILURE'
+  name: 'SyntaxError'
+  stack: |-
+    JSON.parse (<anonymous>)
+    Object.report (file:///private/tmp/letbuyy-original210-restore-bootstrap-prep-20261025-01/tests/governance/owned-preserved-restore-bootstrap.test.mjs:47:89)
+    TestContext.<anonymous> (file:///private/tmp/letbuyy-original210-restore-bootstrap-prep-20261025-01/tests/governance/owned-preserved-restore-bootstrap.test.mjs:50:202)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: failed report write still emits safe nonpass accounting and never enables cleanup
+not ok 11 - failed report write still emits safe nonpass accounting and never enables cleanup
+  ---
+  duration_ms: 0.645875
+  type: 'test'
+  location: '/private/tmp/letbuyy-original210-restore-bootstrap-prep-20261025-01/tests/governance/owned-preserved-restore-bootstrap.test.mjs:51:1'
+  failureType: 'testCodeFailure'
+  error: "Cannot read properties of undefined (reading 'code')"
+  code: 'ERR_TEST_FAILURE'
+  name: 'TypeError'
+  stack: |-
+    TestContext.<anonymous> (file:///private/tmp/letbuyy-original210-restore-bootstrap-prep-20261025-01/tests/governance/owned-preserved-restore-bootstrap.test.mjs:51:322)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: failed suite log write cannot erase primary restore and checkpoint causes
+not ok 12 - failed suite log write cannot erase primary restore and checkpoint causes
+  ---
+  duration_ms: 0.289958
+  type: 'test'
+  location: '/private/tmp/letbuyy-original210-restore-bootstrap-prep-20261025-01/tests/governance/owned-preserved-restore-bootstrap.test.mjs:52:1'
+  failureType: 'testCodeFailure'
+  error: '"undefined" is not valid JSON'
+  code: 'ERR_TEST_FAILURE'
+  name: 'SyntaxError'
+  stack: |-
+    JSON.parse (<anonymous>)
+    Object.report (file:///private/tmp/letbuyy-original210-restore-bootstrap-prep-20261025-01/tests/governance/owned-preserved-restore-bootstrap.test.mjs:47:89)
+    TestContext.<anonymous> (file:///private/tmp/letbuyy-original210-restore-bootstrap-prep-20261025-01/tests/governance/owned-preserved-restore-bootstrap.test.mjs:52:220)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: proxy cleanup failure still attempts checkpoint and retains every safe cause
+not ok 13 - proxy cleanup failure still attempts checkpoint and retains every safe cause
+  ---
+  duration_ms: 0.348292
+  type: 'test'
+  location: '/private/tmp/letbuyy-original210-restore-bootstrap-prep-20261025-01/tests/governance/owned-preserved-restore-bootstrap.test.mjs:53:1'
+  failureType: 'testCodeFailure'
+  error: '"undefined" is not valid JSON'
+  code: 'ERR_TEST_FAILURE'
+  name: 'SyntaxError'
+  stack: |-
+    JSON.parse (<anonymous>)
+    Object.report (file:///private/tmp/letbuyy-original210-restore-bootstrap-prep-20261025-01/tests/governance/owned-preserved-restore-bootstrap.test.mjs:47:89)
+    TestContext.<anonymous> (file:///private/tmp/letbuyy-original210-restore-bootstrap-prep-20261025-01/tests/governance/owned-preserved-restore-bootstrap.test.mjs:53:218)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: successful preserved checkpoint permits only new resource cleanup and ordinary flat success
+not ok 14 - successful preserved checkpoint permits only new resource cleanup and ordinary flat success
+  ---
+  duration_ms: 0.420209
+  type: 'test'
+  location: '/private/tmp/letbuyy-original210-restore-bootstrap-prep-20261025-01/tests/governance/owned-preserved-restore-bootstrap.test.mjs:54:1'
+  failureType: 'testCodeFailure'
+  error: "Cannot read properties of undefined (reading 'checkpoint')"
+  code: 'ERR_TEST_FAILURE'
+  name: 'TypeError'
+  stack: |-
+    TestContext.<anonymous> (file:///private/tmp/letbuyy-original210-restore-bootstrap-prep-20261025-01/tests/governance/owned-preserved-restore-bootstrap.test.mjs:54:259)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: ordinary disposable success retains its existing result and cleanup contract
+ok 15 - ordinary disposable success retains its existing result and cleanup contract
+  ---
+  duration_ms: 0.363083
+  type: 'test'
+  ...
+# Subtest: unrecognized protected error text cannot smuggle raw values into retained failure accounting
+not ok 16 - unrecognized protected error text cannot smuggle raw values into retained failure accounting
+  ---
+  duration_ms: 0.325625
+  type: 'test'
+  location: '/private/tmp/letbuyy-original210-restore-bootstrap-prep-20261025-01/tests/governance/owned-preserved-restore-bootstrap.test.mjs:57:1'
+  failureType: 'testCodeFailure'
+  error: '"undefined" is not valid JSON'
+  code: 'ERR_TEST_FAILURE'
+  name: 'SyntaxError'
+  stack: |-
+    JSON.parse (<anonymous>)
+    Object.report (file:///private/tmp/letbuyy-original210-restore-bootstrap-prep-20261025-01/tests/governance/owned-preserved-restore-bootstrap.test.mjs:47:89)
+    TestContext.<anonymous> (file:///private/tmp/letbuyy-original210-restore-bootstrap-prep-20261025-01/tests/governance/owned-preserved-restore-bootstrap.test.mjs:57:225)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: non-JSON retained failure display uses the same redacted rows
+not ok 17 - non-JSON retained failure display uses the same redacted rows
+  ---
+  duration_ms: 0.37525
+  type: 'test'
+  location: '/private/tmp/letbuyy-original210-restore-bootstrap-prep-20261025-01/tests/governance/owned-preserved-restore-bootstrap.test.mjs:59:1'
+  failureType: 'testCodeFailure'
+  error: '"undefined" is not valid JSON'
+  code: 'ERR_TEST_FAILURE'
+  name: 'SyntaxError'
+  stack: |-
+    JSON.parse (<anonymous>)
+    Object.report (file:///private/tmp/letbuyy-original210-restore-bootstrap-prep-20261025-01/tests/governance/owned-preserved-restore-bootstrap.test.mjs:47:89)
+    TestContext.<anonymous> (file:///private/tmp/letbuyy-original210-restore-bootstrap-prep-20261025-01/tests/governance/owned-preserved-restore-bootstrap.test.mjs:59:198)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+1..17
+# tests 17
+# suites 0
+# pass 7
+# fail 10
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 71.271958

@@ -1,0 +1,264 @@
+- navigation:
+  - link "Shopify Theme Store":
+    - /url: /
+    - generic: Shopify Theme Store
+  - button "Browse themes":
+    - text: Browse themes
+  - button "Search":
+  - generic "[store name]":
+- main:
+  - heading "Free themes" [level=1]
+  - paragraph: Made with core features you can easily customize—no coding needed. Get started fast with templates for your industry.
+  - heading "Themes in the \"Free themes\" collection" [level=2]
+  - link "Details about the Fabric theme":
+    - /url: https://themes.shopify.com/themes/fabric/presets/fabric
+    - img "Fabric"
+    - paragraph: Fabric
+    - generic: Free
+    - generic "30% positive":
+      - generic: 30%
+  - link "Details about the Dwell theme":
+    - /url: https://themes.shopify.com/themes/dwell/presets/dwell
+    - img "Dwell"
+    - paragraph: Dwell
+    - generic: Free
+    - generic "28% positive":
+      - generic: 28%
+  - link "Details about the Savor theme":
+    - /url: https://themes.shopify.com/themes/savor/presets/savor
+    - img "Savor"
+    - paragraph: Savor
+    - generic: Free
+    - generic "24% positive":
+      - generic: 24%
+  - link "Details about the Ride theme":
+    - /url: https://themes.shopify.com/themes/ride/presets/ride
+    - img "Ride"
+    - paragraph: Ride
+    - generic: Free
+    - generic "39% positive":
+      - generic: 39%
+  - link "Details about the Atelier theme":
+    - /url: https://themes.shopify.com/themes/atelier/presets/atelier
+    - img "Atelier"
+    - paragraph: Atelier
+    - generic: Free
+    - generic "29% positive":
+      - generic: 29%
+  - link "Details about the Origin theme":
+    - /url: https://themes.shopify.com/themes/origin/presets/origin
+    - img "Origin"
+    - paragraph: Origin
+    - generic: Free
+    - generic "45% positive":
+      - generic: 45%
+  - link "Details about the Dawn theme":
+    - /url: https://themes.shopify.com/themes/dawn/presets/dawn
+    - img "Dawn"
+    - paragraph: Dawn
+    - generic: Free
+    - generic "36% positive":
+      - generic: 36%
+  - link "Details about the Colorblock theme":
+    - /url: https://themes.shopify.com/themes/colorblock/presets/colorblock
+    - img "Colorblock"
+    - paragraph: Colorblock
+    - generic: Free
+    - generic "43% positive":
+      - generic: 43%
+  - link "Details about the Sense theme":
+    - /url: https://themes.shopify.com/themes/sense/presets/sense
+    - img "Sense"
+    - paragraph: Sense
+    - generic: Free
+    - generic "36% positive":
+      - generic: 36%
+  - link "Details about the Pitch theme":
+    - /url: https://themes.shopify.com/themes/pitch/presets/pitch
+    - img "Pitch"
+    - paragraph: Pitch
+    - generic: Free
+    - generic "33% positive":
+      - generic: 33%
+  - link "Details about the Taste theme":
+    - /url: https://themes.shopify.com/themes/taste/presets/taste
+    - img "Taste"
+    - paragraph: Taste
+    - generic: Free
+    - generic "50% positive":
+      - generic: 50%
+  - link "Details about the Refresh theme":
+    - /url: https://themes.shopify.com/themes/refresh/presets/refresh
+    - img "Refresh"
+    - paragraph: Refresh
+    - generic: Free
+    - generic "38% positive":
+      - generic: 38%
+  - link "Details about the Tinker theme":
+    - /url: https://themes.shopify.com/themes/tinker/presets/tinker
+    - img "Tinker"
+    - paragraph: Tinker
+    - generic: Free
+    - generic "36% positive":
+      - generic: 36%
+  - link "Details about the Ritual theme":
+    - /url: https://themes.shopify.com/themes/ritual/presets/ritual
+    - img "Ritual"
+    - paragraph: Ritual
+    - generic: Free
+    - generic "32% positive":
+      - generic: 32%
+  - link "Details about the Crave theme":
+    - /url: https://themes.shopify.com/themes/crave/presets/crave
+    - img "Crave"
+    - paragraph: Crave
+    - generic: Free
+    - generic "33% positive":
+      - generic: 33%
+  - link "Details about the Heritage theme":
+    - /url: https://themes.shopify.com/themes/heritage/presets/heritage
+    - img "Heritage"
+    - paragraph: Heritage
+    - generic: Free
+    - generic "50% positive":
+      - generic: 50%
+  - link "Details about the Horizon theme":
+    - /url: https://themes.shopify.com/themes/horizon/presets/horizon
+    - img "Horizon"
+    - paragraph: Horizon
+    - generic: Free
+    - generic "36% positive":
+      - generic: 36%
+  - link "Details about the Studio theme":
+    - /url: https://themes.shopify.com/themes/studio/presets/studio
+    - img "Studio"
+    - paragraph: Studio
+    - generic: Free
+    - generic "44% positive":
+      - generic: 44%
+  - link "Details about the Spotlight theme":
+    - /url: https://themes.shopify.com/themes/spotlight/presets/spotlight
+    - img "Spotlight"
+    - paragraph: Spotlight
+    - generic: Free
+    - generic "38% positive":
+      - generic: 38%
+  - link "Details about the Trade theme":
+    - /url: https://themes.shopify.com/themes/trade/presets/trade
+    - img "Trade"
+    - paragraph: Trade
+    - generic: Free
+    - generic "32% positive":
+      - generic: 32%
+  - link "Details about the Publisher theme":
+    - /url: https://themes.shopify.com/themes/publisher/presets/publisher
+    - img "Publisher"
+    - paragraph: Publisher
+    - generic: Free
+    - generic "50% positive":
+      - generic: 50%
+  - link "Details about the Vessel theme":
+    - /url: https://themes.shopify.com/themes/vessel/presets/vessel
+    - img "Vessel"
+    - paragraph: Vessel
+    - generic: Free
+    - generic "29% positive":
+      - generic: 29%
+  - link "Details about the Craft theme":
+    - /url: https://themes.shopify.com/themes/craft/presets/craft
+    - img "Craft"
+    - paragraph: Craft
+    - generic: Free
+    - generic "56% positive":
+      - generic: 56%
+- contentinfo:
+  - heading "Top industries" [level=6]
+  - link "Clothing":
+    - /url: https://themes.shopify.com/themes
+  - link "Beauty":
+    - /url: https://themes.shopify.com/themes
+  - link "Jewelry and accessories":
+    - /url: https://themes.shopify.com/themes
+  - link "Home":
+    - /url: https://themes.shopify.com/themes
+  - heading "Categories" [level=6]
+  - link "All themes":
+    - /url: https://themes.shopify.com/themes
+  - link "Free themes":
+    - /url: https://themes.shopify.com/themes
+  - heading "Support" [level=6]
+  - link "Shopify Help Center":
+    - /url: https://help.shopify.com/en/
+  - link "API Documentation":
+    - /url: https://shopify.dev/api
+  - link "Shopify Community":
+    - /url: https://community.shopify.com/c/shopify-community-en/ct-p/en
+  - link "Blogs":
+    - /url: https://www.shopify.com/blog
+  - heading "Shopify" [level=6]
+  - link "About":
+    - /url: https://www.shopify.com/about
+  - link "Partners":
+    - /url: https://www.shopify.com/partners
+  - link "Legal":
+    - /url: https://www.shopify.com/legal
+  - link "Service status":
+    - /url: https://shopifystatus.com
+  - separator
+  - link "Terms of Service":
+    - /url: https://www.shopify.com/legal/terms
+  - link "Privacy Policy":
+    - /url: https://www.shopify.com/legal/privacy
+  - link "Your Privacy Choices California Consumer Privacy Act (CCPA) Opt-Out Icon":
+    - /url: https://privacy.shopify.com/en
+    - text: Your Privacy Choices
+    - img "California Consumer Privacy Act (CCPA) Opt-Out Icon"
+  - link "Sitemap":
+    - /url: https://themes.shopify.com/sitemap
+  - combobox "Change your language":
+    - option "Català"
+    - option "Čeština"
+    - option "Dansk"
+    - option "Deutsch"
+    - option "Eesti"
+    - option "English" [selected]
+    - option "Español"
+    - option "Euskara"
+    - option "Français"
+    - option "Galego"
+    - option "Hrvatski"
+    - option "Indonesia"
+    - option "Italiano"
+    - option "Latviešu"
+    - option "Lietuvių"
+    - option "Magyar"
+    - option "Melayu"
+    - option "Nederlands"
+    - option "Norsk (bokmål)"
+    - option "Polski"
+    - option "Português (Brasil)"
+    - option "Português (Portugal)"
+    - option "Română"
+    - option "Slovenčina"
+    - option "Slovenščina"
+    - option "Suomi"
+    - option "Svenska"
+    - option "Tiếng Việt"
+    - option "Türkçe"
+    - option "Ελληνικά"
+    - option "Български"
+    - option "Русский"
+    - option "Српски"
+    - option "Українська"
+    - option "मराठी"
+    - option "हिन्दी"
+    - option "বাংলা"
+    - option "ગુજરાતી"
+    - option "தமிழ்"
+    - option "తెలుగు"
+    - option "ภาษาไทย"
+    - option "Ქართული"
+    - option "日本語"
+    - option "简体中文"
+    - option "繁體中文"
+    - option "한국어"

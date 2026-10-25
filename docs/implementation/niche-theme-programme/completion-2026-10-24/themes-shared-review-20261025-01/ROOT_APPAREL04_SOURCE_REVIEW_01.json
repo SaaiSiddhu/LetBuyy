@@ -1,0 +1,26 @@
+{
+  "recordedAt": "2026-10-25T00:46:32.289012+00:00",
+  "status": "ACCEPT_APPAREL04_SOURCE_FOR_ONE_QUEUED_NATIVE_COHORT",
+  "handoffSha256": "ead3475f7a8e62556bf7bbc241b08bc58b801b2943f755bfb9054551ca0335a6",
+  "counts": {
+    "recursiveSources": 1120,
+    "vendorToolInputs": 5411,
+    "sealedArtifacts": 29,
+    "unchangedBaseSource": 6536,
+    "overlays": 8
+  },
+  "mismatches": [],
+  "assertionsReviewed": [
+    "assert.deepEqual(item.snapshot.niche, line.niche_snapshot",
+    "assert.equal(item.variant, line.variant_id)",
+    "assert.equal(item.quantity, line.quantity)",
+    "assert.equal(Number(item.price), line.unit_price)",
+    "assertSqlConserved(beforeDown, afterDown, true)"
+  ],
+  "scope": "Fullsavednicheexactacceptedcart; exactproduct/variant/quantity/unitprice; SQL-onlyfullpublicrow/security/profileconservation; native4tests and600s/jobs1/no-reap/prepared2 envelope; no nativeexecution orMainintegration claimed",
+  "nativeActivation": "AfterexistingcaptureRED/GREENpaironly, delegatedsharedallocatorwritesexactgrantifinputsunchanged",
+  "retainedFailures": "Fiveunchangedbaseline type diagnostics; no introduced orownedleaf diagnostics; old10001apparelfactsremain{}immutable",
+  "newSourceOrNativeTestsRun": false,
+  "artifactManifestResolvedAgainst": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-provenance04",
+  "rootVerifierCorrection": "Initialwrongbaseattemptretainedseparately; allrecursive sources/vendor/unchangedbase/overlays were alreadyexact. Actualdurable29artifacts nowcheckedatcorrectbase."
+}

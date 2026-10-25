@@ -191,10 +191,12 @@ describe('experience-compositions: structural distinctness (index template)', ()
     assert.ok(tbIndex < cgIndex, 'refresh: trustBadges must appear before categoryGrid');
   });
 
-  test('sense index has no trustBadges and has testimonials', () => {
+  test('Threadline leads with apparel and supplied information, without manufactured social proof', () => {
     const { index } = EXPERIENCE_COMPOSITIONS.sense;
-    assert.ok(!index.some((s) => s.type === 'trustBadges'), 'sense: must not have trustBadges');
-    assert.ok(index.some((s) => s.type === 'testimonials'), 'sense: must have testimonials');
+    assert.deepEqual(index.map(s => s.type), ['heroBanner','categoryGrid','productGrid','featuredProducts','aboutSection','trustBadges']);
+    assert.ok(!index.some(s => s.type === 'testimonials' || s.type === 'newsletter'));
+    const services = index.find(s => s.type === 'trustBadges')!;
+    assert.deepEqual(services.settings, { fitText: '', serviceText: '', supportText: '' });
   });
 
   test('craft index is the largest composition (9 sections)', () => {

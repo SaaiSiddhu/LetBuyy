@@ -1,0 +1,55 @@
+{
+  "recordedAt": "2026-10-25T01:41:50.077351+00:00",
+  "classification": "PRIVATE_SOURCE_REPAIR_WITH_IN_PROCESS_HANDLER_PROOF_NOT_NATIVE_OR_BROWSER_CERTIFICATION",
+  "sourcePaths": [
+    {
+      "path": "services/api-gateway/src/routes/storefront/public-routes.ts",
+      "beforeSha256": "21a7e4e2ffc46c1d50305a8b08360ddbac86edd06058b921a6ff06729a37163c",
+      "afterSha256": "991e354f8d4abbdcb21f7137d4e9618a16c7a94f4130bd7b54eb7f28b523dab3",
+      "bytes": 75917
+    },
+    {
+      "path": "services/api-gateway/src/routes/storefront/theme-preview-session-revision.test.ts",
+      "beforeSha256": null,
+      "afterSha256": "e5afa6da3256a52f295e7b861208779cf8a12175500ce37dc9e73139ae2b2e16",
+      "bytes": 9849
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/theme-editor-preview-content.postgres.test.ts",
+      "beforeSha256": "2d2fdf9b7b2e0aa0ced34508ea7eb9d28b3d4f6235a6fecd1a4984562d9e6f26",
+      "afterSha256": "3bf9dac7214721ca069f0b9fa073623c0ec06c68519847bbfeef08a1004613e2",
+      "bytes": 10171
+    }
+  ],
+  "focusedBefore": {
+    "tests": 8,
+    "pass": 4,
+    "fail": 4,
+    "skipped": 0
+  },
+  "focusedAfter": {
+    "tests": 8,
+    "pass": 8,
+    "fail": 0,
+    "skipped": 0
+  },
+  "causalWitness": "Equal-revision positive controls and existing isolation guards pass on original handler; original4/current5 returns200 where404required. Same tests after exact private guard patch pass8/8.",
+  "testMechanism": "Exact source registration fragment transpiled by TypeScript into isolated VM and registered on real Hono router. Controlled scoped database/query/renderer/resource seams. It does not import full Worker entry or execute PostgreSQL.",
+  "typeEvidence": {
+    "focusedNewTestSemanticFiles": 183,
+    "diagnostics": 0,
+    "unexpectedBusinessImports": 0,
+    "twoExistingFiles": "Syntax transpilation only, no semantic typecheck claimed"
+  },
+  "nativeCase": "Existing real Worker/PostgreSQL preview-content suite extended to mutate only fresh owned bound draft, deny old token across manifest/page/article/product/collection, mint fresh token normally and recover, then expire it. CASE SOURCE ONLY NOT_RUN.",
+  "bootstrapFailuresRetained": [
+    "focused-before.tap: unsupported TypeScript constructor property; corrected test syntax before causal RED",
+    "focused-types.missing-node-link.json: missing conventional Node declaration link; corrected only private vendor link to installed@types/node20.19.33"
+  ],
+  "actualDatabaseDockerProviderNetworkBrowserBuildOrMainActions": 0,
+  "limits": [
+    "Does not prove reason for captured v23 about:blank failure.",
+    "Full Worker semantic integration, native PostgreSQL case, recovered responsive UI acceptance remain required.",
+    "No fourth native cohort authorized or started."
+  ]
+}

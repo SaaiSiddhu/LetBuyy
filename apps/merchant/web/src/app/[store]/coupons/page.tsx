@@ -322,7 +322,8 @@ export default function CouponsPage() {
     if (loading) {
         return (
             <Page>
-                <PageHeader
+                <PageHeader identity="marketing"
+                    recipe="index"
                     title="Coupons"
                     description="Create and manage discount codes for checkout promotions."
                     breadcrumbs={[{ label: 'Marketing' }, { label: 'Coupons' }]}
@@ -338,7 +339,8 @@ export default function CouponsPage() {
 
     return (
         <Page>
-            <PageHeader
+            <PageHeader identity="marketing"
+                recipe="index"
                 title="Coupons"
                 description="Create and manage discount codes for checkout promotions."
                 breadcrumbs={[{ label: 'Marketing' }, { label: 'Coupons' }]}

@@ -1,0 +1,186 @@
+{
+  "id": "section-footer",
+  "status": "PASS_SOURCE_DATA_CONTRACT",
+  "observed": {
+    "type": "footer",
+    "group": "footer",
+    "firstId": "footer-default",
+    "finalId": "footer-default",
+    "phases": [
+      {
+        "phase": "edited",
+        "data": {
+          "type": "footer",
+          "settings": {
+            "storeName": "Source fixture storeName",
+            "tagline": "Source fixture tagline",
+            "contactEmail": "Source fixture contactEmail",
+            "contactPhone": "Source fixture contactPhone",
+            "instagramUrl": "https://example.invalid/theme-source/instagramUrl.webp",
+            "facebookUrl": "https://example.invalid/theme-source/facebookUrl.webp",
+            "twitterUrl": "https://example.invalid/theme-source/twitterUrl.webp"
+          },
+          "blocks": {
+            "block-15241819-3d84-469b-8336-546e0e841cc6": {
+              "type": "link",
+              "settings": {
+                "label": "Source fixture label",
+                "href": "https://example.invalid/theme-source/href.webp"
+              },
+              "disabled": false,
+              "blocks": {},
+              "block_order": []
+            },
+            "block-6864cbee-89d8-41fd-9d8b-3d56c0807372": {
+              "type": "link",
+              "settings": {
+                "label": "Source fixture label",
+                "href": "https://example.invalid/theme-source/href.webp"
+              },
+              "disabled": false,
+              "blocks": {},
+              "block_order": []
+            }
+          },
+          "block_order": [
+            "block-15241819-3d84-469b-8336-546e0e841cc6",
+            "block-6864cbee-89d8-41fd-9d8b-3d56c0807372"
+          ],
+          "disabled": false
+        }
+      },
+      {
+        "phase": "hidden-reordered",
+        "data": {
+          "type": "footer",
+          "settings": {
+            "storeName": "Source fixture storeName",
+            "tagline": "Source fixture tagline",
+            "contactEmail": "Source fixture contactEmail",
+            "contactPhone": "Source fixture contactPhone",
+            "instagramUrl": "https://example.invalid/theme-source/instagramUrl.webp",
+            "facebookUrl": "https://example.invalid/theme-source/facebookUrl.webp",
+            "twitterUrl": "https://example.invalid/theme-source/twitterUrl.webp"
+          },
+          "blocks": {
+            "block-6864cbee-89d8-41fd-9d8b-3d56c0807372": {
+              "type": "link",
+              "settings": {
+                "label": "Source fixture label",
+                "href": "https://example.invalid/theme-source/href.webp"
+              },
+              "disabled": true,
+              "blocks": {},
+              "block_order": []
+            },
+            "block-15241819-3d84-469b-8336-546e0e841cc6": {
+              "type": "link",
+              "settings": {
+                "label": "Source fixture label",
+                "href": "https://example.invalid/theme-source/href.webp"
+              },
+              "disabled": true,
+              "blocks": {},
+              "block_order": []
+            }
+          },
+          "block_order": [
+            "block-6864cbee-89d8-41fd-9d8b-3d56c0807372",
+            "block-15241819-3d84-469b-8336-546e0e841cc6"
+          ],
+          "disabled": true
+        }
+      },
+      {
+        "phase": "shown",
+        "data": {
+          "type": "footer",
+          "settings": {
+            "storeName": "Source fixture storeName",
+            "tagline": "Source fixture tagline",
+            "contactEmail": "Source fixture contactEmail",
+            "contactPhone": "Source fixture contactPhone",
+            "instagramUrl": "https://example.invalid/theme-source/instagramUrl.webp",
+            "facebookUrl": "https://example.invalid/theme-source/facebookUrl.webp",
+            "twitterUrl": "https://example.invalid/theme-source/twitterUrl.webp"
+          },
+          "blocks": {
+            "block-6864cbee-89d8-41fd-9d8b-3d56c0807372": {
+              "type": "link",
+              "settings": {
+                "label": "Source fixture label",
+                "href": "https://example.invalid/theme-source/href.webp"
+              },
+              "disabled": false,
+              "blocks": {},
+              "block_order": []
+            },
+            "block-15241819-3d84-469b-8336-546e0e841cc6": {
+              "type": "link",
+              "settings": {
+                "label": "Source fixture label",
+                "href": "https://example.invalid/theme-source/href.webp"
+              },
+              "disabled": false,
+              "blocks": {},
+              "block_order": []
+            }
+          },
+          "block_order": [
+            "block-6864cbee-89d8-41fd-9d8b-3d56c0807372",
+            "block-15241819-3d84-469b-8336-546e0e841cc6"
+          ],
+          "disabled": false
+        }
+      },
+      {
+        "phase": "removed",
+        "pinnedGroupSectionRetained": true
+      },
+      {
+        "phase": "readded",
+        "data": {
+          "type": "footer",
+          "settings": {
+            "storeName": "Source fixture storeName",
+            "tagline": "Source fixture tagline",
+            "contactEmail": "Source fixture contactEmail",
+            "contactPhone": "Source fixture contactPhone",
+            "instagramUrl": "https://example.invalid/theme-source/instagramUrl.webp",
+            "facebookUrl": "https://example.invalid/theme-source/facebookUrl.webp",
+            "twitterUrl": "https://example.invalid/theme-source/twitterUrl.webp"
+          },
+          "blocks": {
+            "block-a5ae2ade-b663-4f43-8cc7-9cf6ff0258c7": {
+              "type": "link",
+              "settings": {
+                "label": "Source fixture label",
+                "href": "https://example.invalid/theme-source/href.webp"
+              },
+              "disabled": false,
+              "blocks": {},
+              "block_order": []
+            },
+            "block-6980a33f-3bb2-43bb-8ffa-8187b539de91": {
+              "type": "link",
+              "settings": {
+                "label": "Source fixture label",
+                "href": "https://example.invalid/theme-source/href.webp"
+              },
+              "disabled": false,
+              "blocks": {},
+              "block_order": []
+            }
+          },
+          "block_order": [
+            "block-a5ae2ade-b663-4f43-8cc7-9cf6ff0258c7",
+            "block-6980a33f-3bb2-43bb-8ffa-8187b539de91"
+          ],
+          "disabled": false
+        }
+      }
+    ],
+    "actualUICallbacksExecuted": false,
+    "resourceAuthorityProved": false
+  }
+}

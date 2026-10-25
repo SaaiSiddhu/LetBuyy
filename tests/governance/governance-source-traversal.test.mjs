@@ -49,6 +49,16 @@ test('artifact inventory reports cache roots without descending into their child
     assert.ok(!result.dirs.some(path=>path.includes('/dev')||path.includes('/server')||path.includes('/foreign')));
 });
 
+test('Storybook build output is an artifact; similarly named source remains governed', () => {
+    writeFileSync(join(fixture, '.gitignore'), '**/storybook-static/\n');
+    write('packages/typescript/ui/src/premium.stories.tsx');
+    write('packages/typescript/ui/storybook-static/assets/generated.js');
+    write('packages/typescript/ui/storybook-static-source/real.ts');
+    const result = inspect(['packages']);
+    assert.deepEqual(result.files, ['packages/typescript/ui/src/premium.stories.tsx', 'packages/typescript/ui/storybook-static-source/real.ts']);
+    assert.deepEqual(result.artifacts, [], 'preview exports are not runtime caches scheduled for destructive cleanup');
+});
+
 test('broken, cyclic and external links are not source roots or traversed dependencies', () => {
     const result=inspect(['apps/merchant/web/external','apps/merchant/web/cycle','apps/merchant/web/broken']);
     assert.deepEqual(result.files,[]);

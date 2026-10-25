@@ -1,0 +1,65 @@
+{
+  "runId": "936e5f577646",
+  "stage": "Actual Buyer A own primary BFF with corrected current productv27",
+  "orderId": "84a52d92-6cb4-46bb-b941-8d7f37e8cb74",
+  "total": 1140,
+  "items": [
+    {
+      "name": "Fixture Soft Colour",
+      "quantity": 2,
+      "unitPrice": 560,
+      "total": 1120,
+      "nicheSnapshot": {
+        "version": 1,
+        "facts": {
+          "beauty": {
+            "schemaVersion": 1,
+            "routineStage": "colour",
+            "format": "Lip tint",
+            "netQuantity": {
+              "value": 6,
+              "unit": "ml"
+            },
+            "ingredients": "Common tint v1: fixture oil and wax; see named shade ingredients.",
+            "directions": "Fixture directions v1: use as supplied.",
+            "warnings": "Fixture warning v1: external use only.",
+            "shadeOptionName": "Shade name",
+            "shades": [
+              {
+                "value": "Rosewater",
+                "code": "RW01",
+                "color": "#a36a65",
+                "ingredients": "Rosewater v1: fixture oil, CI 77491."
+              },
+              {
+                "value": "Pink Clay",
+                "code": "PC02",
+                "color": "#a36a65",
+                "ingredients": "Pink Clay v1: fixture oil, CI 77492."
+              },
+              {
+                "value": "Terracotta",
+                "code": "TC03",
+                "color": "#89534a",
+                "ingredients": null
+              }
+            ]
+          }
+        },
+        "selected_options": [
+          {
+            "name": "Shade name",
+            "value": "Pink Clay"
+          },
+          {
+            "name": "पैक आकार",
+            "value": "एक इकाई"
+          }
+        ]
+      },
+      "rawSnapshotPresent": false
+    }
+  ],
+  "noCurrentV2Text": true,
+  "bodySha256": "359a0e8a71abaf319ebd1e12f52385491df5ae256b37c83c4172f50c3b119878"
+}

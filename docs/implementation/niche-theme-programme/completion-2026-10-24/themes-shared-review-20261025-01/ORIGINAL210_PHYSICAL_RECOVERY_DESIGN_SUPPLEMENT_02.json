@@ -1,0 +1,46 @@
+{
+  "recordedAt": "2026-10-25T06:01:22.883326+00:00",
+  "status": "ROOT_READONLY_REPORTS_PINNED_STATIC_GAPS_ADDRESSED_SOURCE_ONLY_ALLOCATION_UNCHANGED",
+  "initialReview": {
+    "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/ORIGINAL210_PHYSICAL_RECOVERY_DESIGN_REVIEW_01.json",
+    "sha256": "5947a572c44503c1e24462d60c079f614b4add38daf3839414aa37d7c0afc1fb"
+  },
+  "allocation": {
+    "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/ORIGINAL210_PHYSICAL_RECOVERY_SOURCE_ALLOCATION_01.json",
+    "sha256": "bb457679f73c0552f254c8b1695770ef5b1c9d65eebfc72c63b563f66a4eb2bc"
+  },
+  "additionalEvidence": [
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/PHYSICAL_RECOVERY_SOURCE_DESIGN_PROPOSAL_20261025_01.json",
+      "sha256": "9b62b47c9a130ae8136b45fe4c78e3eda78901801d118d15fc0bc5dd3693f0df"
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/PHYSICAL_RECOVERY_READONLY_CLUSTER_INVENTORY_20261025_01.json",
+      "sha256": "729b9c25055fdbc9e0c659dbb491f1373927561ffa5ef949a4a2beedc3bcac0a"
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/PHYSICAL_RECOVERY_READONLY_FILESYSTEM_20261025_01.json",
+      "sha256": "1148143a9cbea291428e5fc80c50eaf1c98e7d5011378dabcca2254b9fe62506"
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/PHYSICAL_RECOVERY_READONLY_EXTERNAL_LIBRARIES_20261025_01.json",
+      "sha256": "e432732001d440fd47c4feecf82ac03ab980e755e6fd751bceec12512440e9ca"
+    }
+  ],
+  "closedStaticQuestions": [
+    "All4connectableDBs inventory reports no unlogged/subscriptions/foreignservers/publications; sealedDBs remainunmodified. WholePGDATA _initfork0 is supportingfilesystemevidence covering sealedDB unlogged storage, not directinspection of their SQLcatalogs.",
+    "NoPGDATA symlinks/recovery signals; config/autoconf/HBA/ident exacthashes available for mandatorysourceadmission/prebootverification beyond pg_verifybackup.",
+    "No usermappings/cron/pgagent; only sameimage corepg_trgm/pgcrypto C libraries in accessibleDBs; inactivearchivecommand disabled.",
+    "Sourceproposal explicitlyrequires fullverifiedphysicalEXITartifact plusfencedwitness beforecleanup, avoiding relyingsolely on a logicaldump that failedcustodyrestore."
+  ],
+  "remainingExecutionConditions": [
+    "Refresh all source fences/inventories at admittedexecutiontime and compare sourcebefore/afterbackup; physicalcatalog/systemidentifier/DB OID witness notyetmeasured.",
+    "Actualbinarybackup/extraction/PG16manifest+WALverification/startup/guard/data/security/ordinaryownership and exitphysicalcheckpoint still NOT ATTEMPTED.",
+    "wal_keep_size0 and finite backup/wholeparent deadlines may causefailure; failuremustretain without sourceconfigurationchange orretry.",
+    "Clone-only authenticatorpassword+newfixturemarker allowed only exactrevieweddelta; nochanges to anycustody/journal/otherrole/globaldata.",
+    "No newresourcegrant: exactfourpathsource/faketests first; next sealedcoherentmanifest/capsule/command and freshhumanexecutionapproval required."
+  ],
+  "evidenceConfidence": "Independent source/document analysis and receipt bytehash/field inspection by Themes; actual Docker/filesystem/PG observations performed by Root, not repeated by Themes.",
+  "originalAndFailedResourceActionsByThemes": 0,
+  "fullThemeCertificates": 0
+}

@@ -1,0 +1,295 @@
+{
+  "body": {
+    "background": "rgb(249, 248, 246)",
+    "color": "rgb(0, 0, 0)",
+    "font": "\"Red Hat Display\", sans-serif",
+    "fontSize": "14px"
+  },
+  "controls": [
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Cart",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Email address",
+      "tag": "INPUT",
+      "type": "email"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "SUBSCRIBE",
+      "tag": "BUTTON",
+      "type": "submit"
+    }
+  ],
+  "headings": [
+    {
+      "font": "\"Red Hat Display\", sans-serif",
+      "height": 15.3984375,
+      "line": "15.4px",
+      "size": "14px",
+      "tag": "H1",
+      "text": "DESIGNED TO INSPIRE YOU",
+      "weight": "600",
+      "width": 182.546875,
+      "x": 628.7265625,
+      "y": 166.390625
+    },
+    {
+      "font": "Trirong, serif",
+      "height": 36.796875,
+      "line": "36.8px",
+      "size": "32px",
+      "tag": "H2",
+      "text": "For slow moments",
+      "weight": "200",
+      "width": 262.0859375,
+      "x": 760,
+      "y": 447.3828125
+    },
+    {
+      "font": "Trirong, serif",
+      "height": 36.796875,
+      "line": "36.8px",
+      "size": "32px",
+      "tag": "H2",
+      "text": "Crafting connection",
+      "weight": "200",
+      "width": 282.8515625,
+      "x": 40,
+      "y": 1047.3828125
+    }
+  ],
+  "links": [
+    {
+      "text": "Skip to content",
+      "url": "https://theme-vessel-demo.myshopify.com/pages/about-our-brand#MainContent"
+    },
+    {
+      "text": "",
+      "url": "https://theme-vessel-demo.myshopify.com/"
+    },
+    {
+      "text": "NEW IN",
+      "url": "https://theme-vessel-demo.myshopify.com/collections/all"
+    },
+    {
+      "text": "COFFEE & TEA",
+      "url": "https://theme-vessel-demo.myshopify.com/collections/coffee-tea"
+    },
+    {
+      "text": "DRINKWARE",
+      "url": "https://theme-vessel-demo.myshopify.com/collections/mugs-cups"
+    },
+    {
+      "text": "KITCHENWARE",
+      "url": "https://theme-vessel-demo.myshopify.com/collections/kitchenware"
+    },
+    {
+      "text": "ACCENTS",
+      "url": "https://theme-vessel-demo.myshopify.com/collections/accents"
+    },
+    {
+      "text": "Shop Coffee & Tea",
+      "url": "https://theme-vessel-demo.myshopify.com/collections/coffee-tea"
+    },
+    {
+      "text": "Shop Kitchenware",
+      "url": "https://theme-vessel-demo.myshopify.com/collections/kitchenware"
+    },
+    {
+      "text": "Accents 33",
+      "url": "https://theme-vessel-demo.myshopify.com/collections/accents"
+    },
+    {
+      "text": "Bestsellers 12",
+      "url": "https://theme-vessel-demo.myshopify.com/collections/bestsellers"
+    },
+    {
+      "text": "Coffee & Tea 67",
+      "url": "https://theme-vessel-demo.myshopify.com/collections/coffee-tea"
+    },
+    {
+      "text": "Drinkware 52",
+      "url": "https://theme-vessel-demo.myshopify.com/collections/mugs-cups"
+    },
+    {
+      "text": "Kitchenware 43",
+      "url": "https://theme-vessel-demo.myshopify.com/collections/kitchenware"
+    },
+    {
+      "text": "SHOP ALL",
+      "url": "https://theme-vessel-demo.myshopify.com/collections/all"
+    },
+    {
+      "text": "BESTSELLERS",
+      "url": "https://theme-vessel-demo.myshopify.com/collections/bestsellers"
+    },
+    {
+      "text": "LAST CHANCE",
+      "url": "https://theme-vessel-demo.myshopify.com/collections/last-chance"
+    },
+    {
+      "text": "ABOUT OUR BRAND",
+      "url": "https://theme-vessel-demo.myshopify.com/pages/about-our-brand"
+    },
+    {
+      "text": "JOURNAL",
+      "url": "https://theme-vessel-demo.myshopify.com/blogs/news"
+    },
+    {
+      "text": "CONTACT US",
+      "url": "https://theme-vessel-demo.myshopify.com/pages/contact"
+    },
+    {
+      "text": "Vessel",
+      "url": "https://theme-vessel-demo.myshopify.com/"
+    }
+  ],
+  "sections": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--21019562639417__section_pB3mtt",
+      "rect": {
+        "height": 340.9921875,
+        "width": 1440,
+        "x": 0,
+        "y": 66.390625
+      },
+      "tag": "DIV",
+      "text": "DESIGNED TO INSPIRE YOU\n\nCrafted for the perfect balance between usability and aesthetics. Made to make daily life richer."
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--21019562639417__media_with_content_6pMpp3",
+      "rect": {
+        "height": 600,
+        "width": 1440,
+        "x": 0,
+        "y": 407.3828125
+      },
+      "tag": "DIV",
+      "text": "For slow moments\n\nWe find our daily routines often go overlooked and feel rushed. What if every cup of coffee or tea was an opportunity to slow down, create connections, and enjoy "
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--21019562639417__media_with_content_fWtz86",
+      "rect": {
+        "height": 600,
+        "width": 1440,
+        "x": 0,
+        "y": 1007.3828125
+      },
+      "tag": "DIV",
+      "text": "Crafting connection\n\nWe believe that setting the table isn't just a chore to be endured. It's setting an intention to share a meal with those we care about. We carefully craft our "
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--21019562639417__collection_links_wrKJtT",
+      "rect": {
+        "height": 234.3984375,
+        "width": 1440,
+        "x": 0,
+        "y": 1607.3828125
+      },
+      "tag": "DIV",
+      "text": "Accents 33\nBestsellers 12\nCoffee & Tea 67\nDrinkware 52\nKitchenware 43"
+    }
+  ],
+  "title": "About Our Brand – Vessel",
+  "url": "https://theme-vessel-demo.myshopify.com/pages/about-our-brand",
+  "viewport": {
+    "dpr": 1,
+    "height": 1000,
+    "width": 1440
+  },
+  "formGroups": [],
+  "grids": [],
+  "images": [
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 900,
+      "rect": {
+        "height": 600,
+        "width": 720
+      }
+    },
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 900,
+      "rect": {
+        "height": 600,
+        "width": 720
+      }
+    },
+    {
+      "alt": "Accents",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 0,
+        "width": 0
+      }
+    },
+    {
+      "alt": "Bestsellers",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 0,
+        "width": 0
+      }
+    },
+    {
+      "alt": "Coffee & Tea",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 0,
+        "width": 0
+      }
+    },
+    {
+      "alt": "Drinkware",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 0,
+        "width": 0
+      }
+    },
+    {
+      "alt": "Kitchenware",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 0,
+        "width": 0
+      }
+    }
+  ],
+  "bodyText": "Skip to content\nNEW IN\nCOFFEE & TEA\nDRINKWARE\nKITCHENWARE\nACCENTS\nTotal items in cart: 0\nDESIGNED TO INSPIRE YOU\n\nCrafted for the perfect balance between usability and aesthetics. Made to make daily life richer.\n\nFor slow moments\n\nWe find our daily routines often go overlooked and feel rushed. What if every cup of coffee or tea was an opportunity to slow down, create connections, and enjoy being in the present? This is the inspiration behind our bestselling collection.\n\nShop Coffee & Tea\nCrafting connection\n\nWe believe that setting the table isn't just a chore to be endured. It's setting an intention to share a meal with those we care about. We carefully craft our kitchenware to create a moment, a mood, a memory.\n\nShop Kitchenware\nAccents 33\nBestsellers 12\nCoffee & Tea 67\nDrinkware 52\nKitchenware 43\nSHOP ALL\nBESTSELLERS\nLAST CHANCE\nABOUT OUR BRAND\nJOURNAL\nCONTACT US\n\nGET YOUR SEAT AT THE TABLE\n\nEmail\nSUBSCRIBE\n© 2026 Vessel, Powered by Shopify"
+}

@@ -1,0 +1,156 @@
+{
+  "theme": "Kindred",
+  "version": "2.0.0",
+  "scope": "Actual explicit v2 catalog factory and dispatcher \u2192 actual app section binder \u2192 public ProductModel mapper \u2192 LiquidRenderer \u2192 canonical app assembly + unchanged storefront CSS. Static presentation evidence, without Next routing, hydration, API query, identity, DB or purchase/lifecycle claims.",
+  "status": "measured_checks_pass; visual_followup_recorded",
+  "captures": 36,
+  "stressAndPresentationStates": 7,
+  "viewports": [
+    [
+      1440,
+      1000
+    ],
+    [
+      834,
+      1112
+    ],
+    [
+      390,
+      844
+    ],
+    [
+      320,
+      844
+    ]
+  ],
+  "documentOverflowFailures": 0,
+  "visibleElementOverflowFailures": 0,
+  "visibleTextOverflowFailures": 0,
+  "paintedHiddenFailures": 0,
+  "brokenVisibleImages": 0,
+  "smallMeasuredControls": 0,
+  "contrastFailures": 0,
+  "minimumMeasuredContrast": 5.930711522837282,
+  "keyboard": {
+    "closedNavTabs": [
+      {
+        "label": "",
+        "inClosedPanel": false
+      },
+      {
+        "label": "Menu",
+        "inClosedPanel": false
+      },
+      {
+        "label": "Kindred",
+        "inClosedPanel": false
+      },
+      {
+        "label": "Search",
+        "inClosedPanel": false
+      },
+      {
+        "label": "Log in",
+        "inClosedPanel": false
+      },
+      {
+        "label": "Cart (0)",
+        "inClosedPanel": false
+      },
+      {
+        "label": "",
+        "inClosedPanel": false
+      },
+      {
+        "label": "Search products \u2192",
+        "inClosedPanel": false
+      },
+      {
+        "label": "Browse every gift \u2192",
+        "inClosedPanel": false
+      },
+      {
+        "label": "All collections \u2192",
+        "inClosedPanel": false
+      },
+      {
+        "label": "1Birthday \u2192Another year, a little joy.",
+        "inClosedPanel": false
+      },
+      {
+        "label": "2Thank you \u2192For the things they do.",
+        "inClosedPanel": false
+      },
+      {
+        "label": "3Housewarming \u2192Make a place feel theirs.",
+        "inClosedPanel": false
+      },
+      {
+        "label": "4Just because \u2192No occasion needed.",
+        "inClosedPanel": false
+      },
+      {
+        "label": "3 included itemsINR 1,790.00Little Pause set",
+        "inClosedPanel": false
+      },
+      {
+        "label": "See what\u2019s inside \u2192",
+        "inClosedPanel": false
+      },
+      {
+        "label": "3 included itemsINR 1,290.00Desk Companion set",
+        "inClosedPanel": false
+      },
+      {
+        "label": "See what\u2019s inside \u2192",
+        "inClosedPanel": false
+      }
+    ],
+    "closedNavSkipped": true,
+    "closedPanel": {
+      "visibility": "hidden",
+      "left": 390,
+      "right": 780
+    },
+    "variantFocus": {
+      "active": true,
+      "outline": "solid",
+      "outlineWidth": "2px"
+    },
+    "nativeDisclosure": true,
+    "scope": "Actual native controls/island markup only. No custom-element hydration or purchase claim."
+  },
+  "fonts": "Approved locally served Lato400/700 and Playfair Display loaded; Hindi relies on system fallback, no language/font certification.",
+  "reviewedVisually": [
+    "home desktop/mobile",
+    "product mobile after hidden-image fix",
+    "collection filters tablet (presentation-only capability)",
+    "missing product320",
+    "long Hindi title390"
+  ],
+  "repairs": [
+    "Closed mobile navigation visibility preserves tab order",
+    "Standalone link/disclosure targets and unshrunk menu button",
+    "Light footer semantic text colors",
+    "Native hidden gallery image semantics and contained4:3stage"
+  ],
+  "visualFollowup": [
+    "At320px the normal header brand wraps within its allotted width. No bounds failure, but a later allocated narrow-header typography check should keep the short brand on one line."
+  ],
+  "notCertified": [
+    "Next routing/custom-element hydration",
+    "canonical gift facet query/capability",
+    "merchant save/conflict/version lifecycle",
+    "atomic image-only edit DB persistence/rollback",
+    "checkout/payment/order/account",
+    "production/performance"
+  ],
+  "lease": {
+    "slot": 1,
+    "port": 43275,
+    "browser": "closed",
+    "serverPid": 61195,
+    "server": "stopped",
+    "release": "explicitly sent to coordinator"
+  }
+}

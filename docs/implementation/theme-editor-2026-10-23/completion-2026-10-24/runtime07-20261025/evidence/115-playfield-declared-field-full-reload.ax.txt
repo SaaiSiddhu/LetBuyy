@@ -1,0 +1,148 @@
+Browser tab: 173052882, Title: "LetBuyy Admin", URL: "http://admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes/letbuyy-bloom/editor".
+1 AXWebArea LetBuyy Admin, URL: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes/letbuyy-bloom/editor
+	2 container
+		3 link Description: Back to themes, Value: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes
+		4 checkbox Description: Toggle navigation panel, Value: 1
+		5 button Sections
+		6 button Theme settings
+		7 button Theme styles
+		8 button Versions
+		9 text Playfield Draft theme
+		10 text Saved
+		11 container Template
+			12 pop up button (collapsed, settable) Description: Template, Value: Playfield activity home, Secondary Actions: Expand
+				13 menu
+					14 (selected) Playfield activity home
+					15 LetBuyy Core product
+					16 Playfield activity collection
+					17 Page
+					18 LetBuyy Core cart
+					19 Blog
+					20 Article
+					21 Policy page
+					22 LetBuyy Core search
+					23 Contact
+					24 Password
+					25 404 Not Found
+					26 Login
+					27 Order detail
+					28 Order history
+					29 All collections
+					30 Account
+					31 Register
+					32 Account settings
+					33 Wishlist
+					34 Addresses
+		35 button (disabled) Undo
+		36 button (disabled) Redo
+		37 button (disabled) Save
+		38 button Publish
+		39 container Theme editor navigation
+			40 heading Playfield activity home, Value: 2
+				41 text Playfield activity home
+			42 text v2
+			43 outline Theme sections
+				44 container
+					45 text HEADER
+					46 button Announcement Bar
+					47 button Header
+				48 container
+					49 text TEMPLATE
+					50 container Template sections
+						51 row (selectable) Age and interest opening
+							52 button Age and interest opening
+						53 row (selectable) Activity bento
+							54 button Activity bento
+						55 row (selectable) Age entry points
+							56 button Age entry points
+						57 row (selectable) Contents rich activity grid
+							58 button Contents rich activity grid
+						59 row (selectable) Activity editorial
+							60 button Activity editorial
+						61 row (selected) Choosing information Toggle Choosing information visibility Move Choosing information up Move Choosing information down Remove Choosing information
+							62 button Choosing information
+							63 checkbox Description: Toggle Choosing information visibility, Value: 1
+							64 button Move Choosing information up
+							65 button (disabled) Move Choosing information down
+							66 button Remove Choosing information
+					67 pop up button (collapsed, settable) Value: Marquee, Secondary Actions: Expand
+						68 menu
+							69 (selected) Marquee
+							70 404 Not Found
+							71 Activity bento
+							72 Search
+							73 Video Hero
+							74 Call to Action
+							75 Age and interest opening
+							76 Blog Listing
+							77 Cart
+							78 Contact Form
+							79 Page Content
+							80 Contents rich activity grid
+							81 Rich Content
+							82 Testimonials
+							83 Choosing information
+							84 Activity editorial
+							85 Brand Marquee
+							86 Age entry points
+							87 FAQ Accordion
+							88 Password Gate
+							89 Services Grid
+							90 App Block Slot
+							91 Customer Login
+							92 Policy Content
+							93 Portfolio Grid
+							94 Product Detail
+							95 Skills Section
+							96 Article Content
+							97 Banner Carousel
+							98 Order History
+							99 Announcement Bar
+							100 Customer Account
+							101 Collection Banner
+							102 Age and interest discovery
+							103 Customer Register
+							104 Account Settings
+							105 Wishlist
+							106 Related activity cards
+							107 Newsletter Signup
+							108 Addresses
+							109 Experience Timeline
+							110 Order Detail
+							111 Activity results
+					112 button Add
+				113 container
+					114 text FOOTER
+					115 button Footer
+		116 container Live theme preview
+			117 text Live preview
+			118 text syn-threadline-ui-ae3f0477 . localhost  -  1440 px
+			119 container Preview device
+				120 checkbox Desktop, Value: 1
+				121 checkbox Tablet, Value: 0
+				122 checkbox Mobile, Value: 0
+			123 container
+				124 text syn-threadline-ui-ae3f0477 . localhost
+				125 checkbox Description: Inspect preview, Value: 1
+				126 container syn-threadline-ui-ae3f0477 storefront preview
+					127 AXWebArea about:blank
+		128 container Theme properties
+			129 text Selected section
+			130 heading Choosing information, Value: 2
+				131 text Choosing information
+			132 container Smart defaults
+				133 button (collapsed) Smart defaults, Secondary Actions: Expand
+					134 text Smart defaults
+			135 container
+				136 text Merchant help information
+				137 text field (settable) Merchant help information
+				138 text Contents information
+				139 text field (settable) Contents information, Value: Playfield temporary declared-field roundtrip
+				140 text Materials information
+				141 text field (settable) Materials information
+				142 text BLOCKS
+				143 button Add Badge
+					144 text Add 
+					145 text Badge
+
+The focused UI element is 62 button Choosing information

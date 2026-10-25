@@ -1,0 +1,52 @@
+{
+  "createdAt": "2026-10-23T09:04:15.560488+00:00",
+  "classification": "INDEPENDENT_NATIVE_CLIENT_CONTRACT_ONLY_NOT_WORKER_SQL_OR_BROWSER_ACCEPTANCE",
+  "command": [
+    "node",
+    "--import",
+    "tsx",
+    "--test",
+    "src/lib/theme-engine/liquid-buy-now.test.ts",
+    "src/lib/theme-engine/liquid-cart-island.test.ts",
+    "src/lib/theme-engine/product-liquid-drop.test.ts",
+    "src/lib/theme-engine/variant-options-carrier.test.ts",
+    "src/lib/theme-engine/variant-facts-controller.test.ts",
+    "src/lib/theme-engine/madeyours-personalization.test.ts",
+    "src/lib/theme-engine/madeyours-cart-island.test.ts"
+  ],
+  "cwd": "/Volumes/Projects/LetBuyy/apps/commerce/web",
+  "exitCode": 0,
+  "before": {
+    "apps/commerce/web/src/lib/api/browser-client.ts": "9e6ba10cc6467e7769eca6eb40998af66a25dcaa247c8ef9261e3bc23ac70bc3",
+    "apps/commerce/web/src/lib/order-fact-readback.ts": "90c4e486175c53945f7df7310b1ddb770b0edd6d815a3cf812a90ca3aded4f5d",
+    "apps/commerce/web/src/lib/theme-engine/liquid-buy-now.test.ts": "d8cd29e45e603e73cdb0c635ee88a480022b0e086952f2e824390c67aef1aa02",
+    "apps/commerce/web/src/lib/theme-engine/liquid-cart-island.test.ts": "cc7144356922dc1d3c51c5d52d7f681d3deadd19cbde3f36c9b7af9fadafacec",
+    "apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx": "734a6a314e570a3c0ffedbd487db46ec5920c2b05b5c0de6703e3dabe8cfe7b5",
+    "apps/commerce/web/src/lib/theme-engine/madeyours-cart-island.test.ts": "2c9ec874f89831c8d084a387217f49368ebb04ead38fb4e983b3f164cb414390",
+    "apps/commerce/web/src/lib/theme-engine/madeyours-personalization.test.ts": "7f469b17a348bd923bb2c7721a583f6e1ef21c1901b29b0d0c4b8980c4ae268a",
+    "apps/commerce/web/src/lib/theme-engine/madeyours-personalization.ts": "cc2f0f484eb4a63e8e7c81a143611b6ddad01936eb0b3300780beb8a4eaf4f48",
+    "apps/commerce/web/src/lib/theme-engine/personalization-review-client.ts": "1cb105f39245660177dd110403c6afba91efee1f2d4c5e63802b9dfe364a428b",
+    "apps/commerce/web/src/lib/theme-engine/product-liquid-drop.test.ts": "37da992b9a31e46ab37bc45b0177783546b823417f9a234b28bb86381ca938de",
+    "apps/commerce/web/src/lib/theme-engine/variant-facts-controller.test.ts": "3490b2af15498ede89d2720a69751eaa229e2a35f57f901b155e7a43d84d68b5",
+    "apps/commerce/web/src/lib/theme-engine/variant-options-carrier.test.ts": "214a81fc2fa4cff5ea9903995d7a89a11026eeecfdb6499fbf2d07d472ce5db6",
+    "packages/checkout-core/src/index.ts": "a67fc493111683a2d839995a3a1d40e4fef419a35f5414839793dd3555f747da",
+    "packages/commerce-core/src/index.ts": "b36af7e65c00d8b9d16fe84ffc7da522b6107c4010208cc224363fa90bdee6b9",
+    "packages/commerce-core/src/product-fact-snapshot.ts": "0cbc6299ed4464bf7b46141ca786c98c7a01c2bea0ac93bb975caa790a1f3582",
+    "packages/typescript/api-client/src/index.ts": "bca9564794dc06352982fbcaa04d91bb095402d0b3f63cdeb8cfa7feab0bad47"
+  },
+  "changedDuringRun": [],
+  "ownerReceiptChangesAtStart": [
+    {
+      "path": "packages/typescript/api-client/src/index.ts",
+      "ownerSha256": "9dbef7e1c8f812a00b5c324c1677ad7593291ea032d5c9d3a2aa0d63840126ae",
+      "currentSha256": "bca9564794dc06352982fbcaa04d91bb095402d0b3f63cdeb8cfa7feab0bad47"
+    }
+  ],
+  "tap": "m2-personalization-client-independent.tap",
+  "tests": {
+    "passed": 57,
+    "failed": 0,
+    "skipped": 0,
+    "cancelled": 0
+  }
+}

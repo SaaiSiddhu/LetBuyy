@@ -1,0 +1,543 @@
+{
+  "body": {
+    "background": "rgb(255, 255, 255)",
+    "color": "rgba(0, 0, 255, 0.75)",
+    "font": "Jost, sans-serif",
+    "fontSize": "20.8px"
+  },
+  "controls": [
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Search",
+      "tag": "INPUT",
+      "type": "search"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Shop",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Email",
+      "tag": "INPUT",
+      "type": "email"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Subscribe",
+      "tag": "BUTTON",
+      "type": "submit"
+    }
+  ],
+  "headings": [
+    {
+      "font": "Jost, sans-serif",
+      "height": 23.390625,
+      "line": "23.4px",
+      "size": "16.9px",
+      "tag": "H2",
+      "text": "",
+      "weight": "400",
+      "width": 367.203125,
+      "x": 886.1015625,
+      "y": 71.90625
+    },
+    {
+      "font": "Jost, sans-serif",
+      "height": 87.875,
+      "line": "87.88px",
+      "size": "67.6px",
+      "tag": "H1",
+      "text": "About",
+      "weight": "400",
+      "width": 943.796875,
+      "x": 248.1015625,
+      "y": 303.6953125
+    },
+    {
+      "font": "Jost, sans-serif",
+      "height": 30.4140625,
+      "line": "30.42px",
+      "size": "23.4px",
+      "tag": "H3",
+      "text": "Country of Origin is a modern knitwear brand founded by Ben Taylor and Alice Liptrot.",
+      "weight": "400",
+      "width": 943.796875,
+      "x": 248.1015625,
+      "y": 443.5703125
+    },
+    {
+      "font": "Jost, sans-serif",
+      "height": 105.28125,
+      "line": "35.1px",
+      "size": "23.4px",
+      "tag": "H3",
+      "text": "Everything is crafted with care at our purpose-built factory in Wigston, Leicestershire.",
+      "weight": "400",
+      "width": 340.2890625,
+      "x": 154.5,
+      "y": 1375.78125
+    },
+    {
+      "font": "Jost, sans-serif",
+      "height": 175.46875,
+      "line": "35.1px",
+      "size": "23.4px",
+      "tag": "H3",
+      "text": "With an emphasis on strong color palettes and high-quality yarns, we supply a curated collection of knitwear for modern living.",
+      "weight": "400",
+      "width": 340.2890625,
+      "x": 549.7890625,
+      "y": 1375.78125
+    },
+    {
+      "font": "Jost, sans-serif",
+      "height": 70.1875,
+      "line": "35.1px",
+      "size": "23.4px",
+      "tag": "H3",
+      "text": "Our company began in a small railway arch in South London.",
+      "weight": "400",
+      "width": 340.2890625,
+      "x": 549.7890625,
+      "y": 1615.75
+    },
+    {
+      "font": "Jost, sans-serif",
+      "height": 140.375,
+      "line": "35.1px",
+      "size": "23.4px",
+      "tag": "H3",
+      "text": "Our ambition was to oversee the manufacturing process as closely as possible to ensure we produced highly crafted knitwear and fair working ",
+      "weight": "400",
+      "width": 538,
+      "x": 154.5,
+      "y": 1878.71875
+    },
+    {
+      "font": "Jost, sans-serif",
+      "height": 70.1875,
+      "line": "35.1px",
+      "size": "23.4px",
+      "tag": "H3",
+      "text": "With just 2 knitting machines and a small team, our orders quickly outgrew our capacity to fulfill them.",
+      "weight": "400",
+      "width": 897,
+      "x": 271.5,
+      "y": 2347.5546875
+    },
+    {
+      "font": "Jost, sans-serif",
+      "height": 87.875,
+      "line": "87.88px",
+      "size": "67.6px",
+      "tag": "H2",
+      "text": "Then by chance...",
+      "weight": "400",
+      "width": 1014,
+      "x": 213,
+      "y": 2550.2421875
+    },
+    {
+      "font": "Jost, sans-serif",
+      "height": 140.375,
+      "line": "35.1px",
+      "size": "23.4px",
+      "tag": "H3",
+      "text": "A meeting with industry veterans Saïd and Keith set a new partnership in motion that saw the opening of our new factory in Wigston, pursuing",
+      "weight": "400",
+      "width": 538,
+      "x": 154.5,
+      "y": 2698.1171875
+    },
+    {
+      "font": "Jost, sans-serif",
+      "height": 140.375,
+      "line": "35.1px",
+      "size": "23.4px",
+      "tag": "H3",
+      "text": "Between them, Saïd and Keith have more than 70 years of experience in the industry. We firmly believe: If this duo doesn't know something ab",
+      "weight": "400",
+      "width": 538,
+      "x": 747.5,
+      "y": 2698.1171875
+    },
+    {
+      "font": "Jost, sans-serif",
+      "height": 40.5625,
+      "line": "40.56px",
+      "size": "31.2px",
+      "tag": "H2",
+      "text": "Stay in the know",
+      "weight": "400",
+      "width": 1206,
+      "x": 117,
+      "y": 4910.5703125
+    }
+  ],
+  "links": [
+    {
+      "text": "Skip to content",
+      "url": "https://theme-colorblock-demo.myshopify.com/pages/about-us#MainContent"
+    },
+    {
+      "text": "",
+      "url": "https://theme-colorblock-demo.myshopify.com/"
+    },
+    {
+      "text": "Magazine",
+      "url": "https://theme-colorblock-demo.myshopify.com/blogs/news"
+    },
+    {
+      "text": "About",
+      "url": "https://theme-colorblock-demo.myshopify.com/pages/about-us"
+    },
+    {
+      "text": "Cart",
+      "url": "https://theme-colorblock-demo.myshopify.com/cart"
+    }
+  ],
+  "sections": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715895545878__main",
+      "rect": {
+        "height": 277.6875,
+        "width": 1440,
+        "x": 0,
+        "y": 251.6953125
+      },
+      "tag": "SECTION",
+      "text": "About\nCountry of Origin is a modern knitwear brand founded by Ben Taylor and Alice Liptrot."
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715895545878__16445973004551e4d1",
+      "rect": {
+        "height": 810.3984375,
+        "width": 1440,
+        "x": 0,
+        "y": 529.3828125
+      },
+      "tag": "SECTION",
+      "text": ""
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715895545878__1643646571571a96e6",
+      "rect": {
+        "height": 243.96875,
+        "width": 1440,
+        "x": 0,
+        "y": 1339.78125
+      },
+      "tag": "SECTION",
+      "text": "Everything is crafted with care at our purpose-built factory in Wigston, Leicestershire.\nWith an emphasis on strong color palettes and high-quality yarns, we supply a curated colle"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715895545878__164364602378aeb85e",
+      "rect": {
+        "height": 258.96875,
+        "width": 1440,
+        "x": 0,
+        "y": 1583.75
+      },
+      "tag": "SECTION",
+      "text": "Our company began in a small railway arch in South London."
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715895545878__1644349302c6f01d25",
+      "rect": {
+        "height": 468.8359375,
+        "width": 1440,
+        "x": 0,
+        "y": 1842.71875
+      },
+      "tag": "SECTION",
+      "text": "Our ambition was to oversee the manufacturing process as closely as possible to ensure we produced highly crafted knitwear and fair working practices for the people making it."
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715895545878__16436460967431e647",
+      "rect": {
+        "height": 162.6875,
+        "width": 1440,
+        "x": 0,
+        "y": 2311.5546875
+      },
+      "tag": "SECTION",
+      "text": "With just 2 knitting machines and a small team, our orders quickly outgrew our capacity to fulfill them."
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715895545878__16438372934c0be224",
+      "rect": {
+        "height": 187.875,
+        "width": 1440,
+        "x": 0,
+        "y": 2474.2421875
+      },
+      "tag": "SECTION",
+      "text": "Then by chance..."
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715895545878__164364638233f8a572",
+      "rect": {
+        "height": 208.875,
+        "width": 1440,
+        "x": 0,
+        "y": 2662.1171875
+      },
+      "tag": "SECTION",
+      "text": "A meeting with industry veterans Saïd and Keith set a new partnership in motion that saw the opening of our new factory in Wigston, pursuing the same values but on a much larger sc"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715895545878__1643646385e695ed9a",
+      "rect": {
+        "height": 751.25,
+        "width": 1440,
+        "x": 0,
+        "y": 2870.9921875
+      },
+      "tag": "SECTION",
+      "text": ""
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715895545878__1643656316b9aea445",
+      "rect": {
+        "height": 1244.328125,
+        "width": 1440,
+        "x": 0,
+        "y": 3622.2421875
+      },
+      "tag": "SECTION",
+      "text": ""
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715895545878__164365688511d3a7a0",
+      "rect": {
+        "height": 238.65625,
+        "width": 1440,
+        "x": 0,
+        "y": 4866.5703125
+      },
+      "tag": "SECTION",
+      "text": "Stay in the know\nEmail\n\nFollow us on social media"
+    }
+  ],
+  "title": "About – theme-colorblock-demo",
+  "url": "https://theme-colorblock-demo.myshopify.com/pages/about-us",
+  "viewport": {
+    "dpr": 1,
+    "height": 1000,
+    "width": 1440
+  },
+  "formGroups": [],
+  "grids": [
+    {
+      "className": "slideshow banner banner--adapt_image grid grid--1-col slider slider--everywhere",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 810.3984375,
+      "tag": "DIV",
+      "width": 1440
+    },
+    {
+      "className": "slideshow__slide grid__item grid--1-col slider__slide",
+      "columns": "none",
+      "display": "flex",
+      "gap": "normal",
+      "height": 810.3984375,
+      "tag": "DIV",
+      "width": 1440
+    },
+    {
+      "className": "multicolumn-list contains-content-container grid grid--1-col-tablet-down grid--3-col-desktop",
+      "columns": "none",
+      "display": "flex",
+      "gap": "16px",
+      "height": 207.96875,
+      "tag": "UL",
+      "width": 1170
+    },
+    {
+      "className": "multicolumn-list contains-content-container grid grid--1-col-tablet-down grid--3-col-desktop",
+      "columns": "none",
+      "display": "flex",
+      "gap": "16px",
+      "height": 226.96875,
+      "tag": "UL",
+      "width": 1170
+    },
+    {
+      "className": "multicolumn-list contains-content-container grid grid--1-col-tablet-down grid--2-col-desktop",
+      "columns": "none",
+      "display": "flex",
+      "gap": "16px",
+      "height": 432.8359375,
+      "tag": "UL",
+      "width": 1170
+    },
+    {
+      "className": "multicolumn-list contains-content-container grid grid--1-col-tablet-down grid--3-col-desktop",
+      "columns": "none",
+      "display": "flex",
+      "gap": "16px",
+      "height": 102.6875,
+      "tag": "UL",
+      "width": 1170
+    },
+    {
+      "className": "multicolumn-list contains-content-container grid grid--1-col-tablet-down grid--2-col-desktop",
+      "columns": "none",
+      "display": "flex",
+      "gap": "16px",
+      "height": 172.875,
+      "tag": "UL",
+      "width": 1170
+    }
+  ],
+  "images": [
+    {
+      "alt": "Alice and Ben sit on a couch, holding up colorful knitwear. ",
+      "complete": true,
+      "naturalWidth": 1440,
+      "rect": {
+        "height": 810.3984375,
+        "width": 1440
+      }
+    },
+    {
+      "alt": "Alice and Ben in their studio.",
+      "complete": true,
+      "naturalWidth": 550,
+      "rect": {
+        "height": 226.96875,
+        "width": 340.140625
+      }
+    },
+    {
+      "alt": "A close up view of threads on a commercial sewing machine.",
+      "complete": true,
+      "naturalWidth": 710,
+      "rect": {
+        "height": 432.8359375,
+        "width": 288.5
+      }
+    },
+    {
+      "alt": "A bright yellow knit sweater, showing a country of origin hang tag. ",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 731.25,
+        "width": 1170
+      }
+    },
+    {
+      "alt": "A patchwork style knit sweater.",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 615.765625,
+        "width": 379.328125
+      }
+    },
+    {
+      "alt": "A bright red and blue knit sweater.",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 532.5625,
+        "width": 379.328125
+      }
+    },
+    {
+      "alt": "An artistic wool wall hanging shown among plants and shelves.",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 1164.328125,
+        "width": 774.671875
+      }
+    }
+  ],
+  "bodyText": "Skip to content\n\nFree shipping on orders $150+\n\nShop\nMagazine\nAbout\nCart\nAbout\nCountry of Origin is a modern knitwear brand founded by Ben Taylor and Alice Liptrot.\nEverything is crafted with care at our purpose-built factory in Wigston, Leicestershire.\nWith an emphasis on strong color palettes and high-quality yarns, we supply a curated collection of knitwear for modern living.\nOur company began in a small railway arch in South London.\nOur ambition was to oversee the manufacturing process as closely as possible to ensure we produced highly crafted knitwear and fair working practices for the people making it.\nWith just 2 knitting machines and a small team, our orders quickly outgrew our capacity to fulfill them.\nThen by chance...\nA meeting with industry veterans Saïd and Keith set a new partnership in motion that saw the opening of our new factory in Wigston, pursuing the same values but on a much larger scale.\nBetween them, Saïd and Keith have more than 70 years of experience in the industry. We firmly believe: If this duo doesn't know something about knitwear, it mustn't be worth knowing.\nStay in the know\nEmail\n\nFollow us on social media\n\nTwitter\nFacebook\nInstagram\nTikTok\nYouTube\nThis is a demonstration store. You can purchase products like this from Country of Origin. © 2026 Powered by Shopify"
+}

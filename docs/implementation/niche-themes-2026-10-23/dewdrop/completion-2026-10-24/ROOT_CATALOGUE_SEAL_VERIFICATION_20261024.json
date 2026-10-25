@@ -1,0 +1,42 @@
+{
+  "recordedAtUtc": "2026-10-24T12:14:57.840237+00:00",
+  "classification": "ROOT_SOURCE_INTEGRATION_FINAL_SEAL_VERIFIED_NOT_RUNTIME_ACCEPTANCE",
+  "sourceResult": {
+    "path": "docs/implementation/niche-theme-programme/heading-successor-integrations/05-dewdrop-catalog/source-result.json",
+    "sha256": "538cd70eff22ee8c6db5f27b0fd544a07fe22d3fb84a8a1bf0281157fb2c3e65"
+  },
+  "rootStatus": "SEALED_RELEASED_DEWDROP_EXPLICIT201_CATALOG_INTEGRATED_SOURCE_ONLY",
+  "sourceFilesCurrentChecks": [
+    {
+      "path": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "expectedSHA256": "ec2166ba230387d152fbd0629d12c19de6281b451c651166918adcd47c48eaf3",
+      "currentSHA256": "ec2166ba230387d152fbd0629d12c19de6281b451c651166918adcd47c48eaf3",
+      "matchesSeal": true
+    },
+    {
+      "path": "packages/theme-engine/test/threadline-catalog-successor.test.ts",
+      "expectedSHA256": "0b34a027b73504506857bdf4a9a68f3e843b81338964ecfd508925b4c58033c1",
+      "currentSHA256": "0b34a027b73504506857bdf4a9a68f3e843b81338964ecfd508925b4c58033c1",
+      "matchesSeal": true
+    }
+  ],
+  "logsMatchSeal": true,
+  "checks": {
+    "composedSource": {
+      "tests": 72,
+      "PASS": 72,
+      "FAIL": 0,
+      "skipped": 0,
+      "overlap": "Prior55+Dewdrop16+one newdistributioncontrol; not72newinstalledcases"
+    },
+    "strictScopedTypecheck": {
+      "exitCode": 0,
+      "diagnostics": 0
+    },
+    "frozenDefaults": "All20pinned legacy/v200 output hashes conserved"
+  },
+  "browserRowsPromoted": 0,
+  "nativeAdmission": null,
+  "browserLease": null,
+  "all30Complete": false
+}

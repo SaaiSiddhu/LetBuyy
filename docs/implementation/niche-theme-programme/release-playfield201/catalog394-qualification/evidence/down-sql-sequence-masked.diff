@@ -1,0 +1,70 @@
+--- 393_playfield_catalog_201.down.draft.sql
++++ 394_playfield_catalog_201.down.draft.sql
+@@ -1,28 +1,28 @@
+--- PROPOSED393 ONLY. NOT in migration scan. Manifest 6bd27e70ca6f0a2169a15c3fe850d07bebb948a276002a483f730ac1f690885c.
++-- PRIVATE PROPOSED394 ONLY. NOT in migration scan. Manifest 6bd27e70ca6f0a2169a15c3fe850d07bebb948a276002a483f730ac1f690885c.
+ BEGIN;
+-DO $promotion393$
++DO $promotion394$
+ DECLARE payload jsonb:=$playfield201payload$<BYTE_EXACT_PAYLOAD 70655442ecc019572bad94ec133579f333c19969d13d7590df7249cdc187b9dc>$playfield201payload$::jsonb; old_item jsonb;new_item jsonb;captured jsonb;body jsonb;saved jsonb;prior jsonb;expected_config jsonb;
+  t public.themes;p public.theme_packages;v public.theme_package_versions;s public.theme_schema_manifests;r public.theme_renderer_manifests;
+ BEGIN
+  old_item:=payload->'previous';new_item:=payload->'next';
+  SELECT * INTO STRICT t FROM public.themes WHERE id='7b669c70-0000-4000-8000-000000000008'::uuid AND slug='letbuyy-bloom' AND owned_by_site_id IS NULL AND NOT is_site_private FOR UPDATE;
+- IF t.is_active IS NOT TRUE THEN RAISE EXCEPTION '393 catalog unavailable'; END IF;
+- IF (SELECT count(*) FROM public.theme_packages WHERE slug=t.slug OR legacy_theme_id=t.id)<>1 THEN RAISE EXCEPTION '393 ambiguous canonical package'; END IF;
++ IF t.is_active IS NOT TRUE THEN RAISE EXCEPTION '394 catalog unavailable'; END IF;
++ IF (SELECT count(*) FROM public.theme_packages WHERE slug=t.slug OR legacy_theme_id=t.id)<>1 THEN RAISE EXCEPTION '394 ambiguous canonical package'; END IF;
+  SELECT * INTO STRICT p FROM public.theme_packages WHERE slug=t.slug OR legacy_theme_id=t.id FOR UPDATE;
+- IF p.slug<>t.slug OR (p.legacy_theme_id IS NOT NULL AND p.legacy_theme_id<>t.id) OR p.deleted_at IS NOT NULL OR p.status<>'active' THEN RAISE EXCEPTION '393 package unavailable'; END IF;
+- IF (to_jsonb(p)-ARRAY['id','legacy_theme_id','created_by','created_at','updated_at','deleted_at']) IS DISTINCT FROM old_item#>'{persistence,themePackage}' THEN RAISE EXCEPTION '393 package metadata conflict'; END IF;
+- saved:=t.config#>'{playfield201Promotion393,previous}';
++ IF p.slug<>t.slug OR (p.legacy_theme_id IS NOT NULL AND p.legacy_theme_id<>t.id) OR p.deleted_at IS NOT NULL OR p.status<>'active' THEN RAISE EXCEPTION '394 package unavailable'; END IF;
++ IF (to_jsonb(p)-ARRAY['id','legacy_theme_id','created_by','created_at','updated_at','deleted_at']) IS DISTINCT FROM old_item#>'{persistence,themePackage}' THEN RAISE EXCEPTION '394 package metadata conflict'; END IF;
++ saved:=t.config#>'{playfield201Promotion394,previous}';
+ 
+  IF saved IS NULL THEN
+-  IF t.config ? 'playfield201Promotion393' OR jsonb_build_object('name',t.name,'category',t.category,'version',t.version,'default_template',t.default_template,'section_schemas',t.section_schemas,'block_schemas',t.block_schemas,'settings_schema',t.settings_schema,'renderer_manifest',t.renderer_manifest,'schema_version',t.schema_version,'renderer_version',t.renderer_version) IS DISTINCT FROM jsonb_build_object('name',old_item->'name','category',old_item->'category','version',old_item->'version','default_template',old_item->'document','section_schemas',old_item#>'{persistence,schemaManifest,section_schemas}','block_schemas',old_item#>'{persistence,schemaManifest,block_schemas}','settings_schema',old_item#>'{persistence,schemaManifest,settings_schema}','renderer_manifest',old_item#>'{document,liquidBundle,renderer}','schema_version',old_item#>'{persistence,themePackageVersion,schema_version}','renderer_version',old_item#>'{persistence,themePackageVersion,renderer_version}')
+-   OR t.config#>>'{nicheV2Promotion389,artifactSha256}' IS DISTINCT FROM old_item->>'payloadSha256' THEN RAISE EXCEPTION '393 unexpected unpromoted catalog'; END IF;
++  IF t.config ? 'playfield201Promotion394' OR jsonb_build_object('name',t.name,'category',t.category,'version',t.version,'default_template',t.default_template,'section_schemas',t.section_schemas,'block_schemas',t.block_schemas,'settings_schema',t.settings_schema,'renderer_manifest',t.renderer_manifest,'schema_version',t.schema_version,'renderer_version',t.renderer_version) IS DISTINCT FROM jsonb_build_object('name',old_item->'name','category',old_item->'category','version',old_item->'version','default_template',old_item->'document','section_schemas',old_item#>'{persistence,schemaManifest,section_schemas}','block_schemas',old_item#>'{persistence,schemaManifest,block_schemas}','settings_schema',old_item#>'{persistence,schemaManifest,settings_schema}','renderer_manifest',old_item#>'{document,liquidBundle,renderer}','schema_version',old_item#>'{persistence,themePackageVersion,schema_version}','renderer_version',old_item#>'{persistence,themePackageVersion,renderer_version}')
++   OR t.config#>>'{nicheV2Promotion389,artifactSha256}' IS DISTINCT FROM old_item->>'payloadSha256' THEN RAISE EXCEPTION '394 unexpected unpromoted catalog'; END IF;
+  ELSE 
+- IF saved IS NULL OR t.config#>>'{playfield201Promotion393,artifactSha256}' IS DISTINCT FROM new_item->>'payloadSha256'
+-  OR t.config#>>'{playfield201Promotion393,previousArtifactSha256}' IS DISTINCT FROM old_item->>'payloadSha256'
+-  OR t.config#>>'{playfield201Promotion393,previousSha256}' IS DISTINCT FROM encode(sha256(convert_to(saved::text,'UTF8')),'hex')
+-  OR (saved-'config') IS DISTINCT FROM jsonb_build_object('name',old_item->'name','category',old_item->'category','version',old_item->'version','default_template',old_item->'document','section_schemas',old_item#>'{persistence,schemaManifest,section_schemas}','block_schemas',old_item#>'{persistence,schemaManifest,block_schemas}','settings_schema',old_item#>'{persistence,schemaManifest,settings_schema}','renderer_manifest',old_item#>'{document,liquidBundle,renderer}','schema_version',old_item#>'{persistence,themePackageVersion,schema_version}','renderer_version',old_item#>'{persistence,themePackageVersion,renderer_version}') THEN RAISE EXCEPTION '393 stale or corrupted rollback checkpoint'; END IF;
+- expected_config:=coalesce(saved->'config','{}'::jsonb)||jsonb_build_object('designVersion','2.0.1','playfield201Promotion393',t.config->'playfield201Promotion393');
+- IF jsonb_build_object('name',t.name,'category',t.category,'version',t.version,'default_template',t.default_template,'section_schemas',t.section_schemas,'block_schemas',t.block_schemas,'settings_schema',t.settings_schema,'renderer_manifest',t.renderer_manifest,'schema_version',t.schema_version,'renderer_version',t.renderer_version) IS DISTINCT FROM jsonb_build_object('name',new_item->'name','category',new_item->'category','version',new_item->'version','default_template',new_item->'document','section_schemas',new_item#>'{persistence,schemaManifest,section_schemas}','block_schemas',new_item#>'{persistence,schemaManifest,block_schemas}','settings_schema',new_item#>'{persistence,schemaManifest,settings_schema}','renderer_manifest',new_item#>'{document,liquidBundle,renderer}','schema_version',new_item#>'{persistence,themePackageVersion,schema_version}','renderer_version',new_item#>'{persistence,themePackageVersion,renderer_version}') OR t.config IS DISTINCT FROM expected_config THEN RAISE EXCEPTION '393 catalog changed after promotion'; END IF;
++ IF saved IS NULL OR t.config#>>'{playfield201Promotion394,artifactSha256}' IS DISTINCT FROM new_item->>'payloadSha256'
++  OR t.config#>>'{playfield201Promotion394,previousArtifactSha256}' IS DISTINCT FROM old_item->>'payloadSha256'
++  OR t.config#>>'{playfield201Promotion394,previousSha256}' IS DISTINCT FROM encode(sha256(convert_to(saved::text,'UTF8')),'hex')
++  OR (saved-'config') IS DISTINCT FROM jsonb_build_object('name',old_item->'name','category',old_item->'category','version',old_item->'version','default_template',old_item->'document','section_schemas',old_item#>'{persistence,schemaManifest,section_schemas}','block_schemas',old_item#>'{persistence,schemaManifest,block_schemas}','settings_schema',old_item#>'{persistence,schemaManifest,settings_schema}','renderer_manifest',old_item#>'{document,liquidBundle,renderer}','schema_version',old_item#>'{persistence,themePackageVersion,schema_version}','renderer_version',old_item#>'{persistence,themePackageVersion,renderer_version}') THEN RAISE EXCEPTION '394 stale or corrupted rollback checkpoint'; END IF;
++ expected_config:=coalesce(saved->'config','{}'::jsonb)||jsonb_build_object('designVersion','2.0.1','playfield201Promotion394',t.config->'playfield201Promotion394');
++ IF jsonb_build_object('name',t.name,'category',t.category,'version',t.version,'default_template',t.default_template,'section_schemas',t.section_schemas,'block_schemas',t.block_schemas,'settings_schema',t.settings_schema,'renderer_manifest',t.renderer_manifest,'schema_version',t.schema_version,'renderer_version',t.renderer_version) IS DISTINCT FROM jsonb_build_object('name',new_item->'name','category',new_item->'category','version',new_item->'version','default_template',new_item->'document','section_schemas',new_item#>'{persistence,schemaManifest,section_schemas}','block_schemas',new_item#>'{persistence,schemaManifest,block_schemas}','settings_schema',new_item#>'{persistence,schemaManifest,settings_schema}','renderer_manifest',new_item#>'{document,liquidBundle,renderer}','schema_version',new_item#>'{persistence,themePackageVersion,schema_version}','renderer_version',new_item#>'{persistence,themePackageVersion,renderer_version}') OR t.config IS DISTINCT FROM expected_config THEN RAISE EXCEPTION '394 catalog changed after promotion'; END IF;
+  END IF;
+ 
+  FOR captured IN SELECT value FROM jsonb_array_elements(jsonb_build_array(old_item,new_item)) LOOP
+@@ -31,19 +31,19 @@
+   SELECT * INTO v FROM public.theme_package_versions WHERE theme_package_id=p.id AND version=captured->>'version' FOR UPDATE;
+   IF NOT FOUND AND captured->>'version'='2.0.1' AND saved IS NULL THEN CONTINUE; END IF;
+   IF v.id IS NULL OR v.deleted_at IS NOT NULL OR (to_jsonb(v)-ARRAY['id','theme_package_id','published_at','created_by','created_at','updated_at','deleted_at'])
+-    IS DISTINCT FROM (body||jsonb_build_object('checksum',body->'checksum')) THEN RAISE EXCEPTION '393 immutable version conflict'; END IF;
++    IS DISTINCT FROM (body||jsonb_build_object('checksum',body->'checksum')) THEN RAISE EXCEPTION '394 immutable version conflict'; END IF;
+   body:=captured#>'{persistence,schemaManifest}';
+   
+   SELECT * INTO s FROM public.theme_schema_manifests WHERE theme_package_version_id=v.id FOR UPDATE;
+-  IF s.id IS NULL OR (to_jsonb(s)-ARRAY['id','theme_package_version_id','created_at','updated_at']) IS DISTINCT FROM body THEN RAISE EXCEPTION '393 immutable schema conflict'; END IF;
++  IF s.id IS NULL OR (to_jsonb(s)-ARRAY['id','theme_package_version_id','created_at','updated_at']) IS DISTINCT FROM body THEN RAISE EXCEPTION '394 immutable schema conflict'; END IF;
+   body:=captured#>'{persistence,rendererManifest}';
+   
+   SELECT * INTO r FROM public.theme_renderer_manifests WHERE theme_package_version_id=v.id FOR UPDATE;
+-  IF r.id IS NULL OR (to_jsonb(r)-ARRAY['id','theme_package_version_id','created_at','updated_at']) IS DISTINCT FROM body THEN RAISE EXCEPTION '393 immutable renderer conflict'; END IF;
++  IF r.id IS NULL OR (to_jsonb(r)-ARRAY['id','theme_package_version_id','created_at','updated_at']) IS DISTINCT FROM body THEN RAISE EXCEPTION '394 immutable renderer conflict'; END IF;
+  END LOOP;
+  IF saved IS NULL THEN RETURN; END IF;
+  SELECT * INTO t FROM jsonb_populate_record(t,saved);
+  UPDATE public.themes SET name=t.name,category=t.category,version=t.version,default_template=t.default_template,section_schemas=t.section_schemas,block_schemas=t.block_schemas,settings_schema=t.settings_schema,renderer_manifest=t.renderer_manifest,schema_version=t.schema_version,renderer_version=t.renderer_version,config=t.config,updated_at=now() WHERE id='7b669c70-0000-4000-8000-000000000008'::uuid;
+ END;
+-$promotion393$;
++$promotion394$;
+ COMMIT;

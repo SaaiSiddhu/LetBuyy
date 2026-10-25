@@ -1,0 +1,68 @@
+{
+  "date": "2026-10-22",
+  "status": "passed",
+  "checks": {
+    "responsiveExports": {
+      "screenPNGs": 45,
+      "comparisonBoards": 15,
+      "scenes": 15,
+      "devices": {
+        "desktop": 15,
+        "tablet": 15,
+        "mobile": 15
+      },
+      "actualPixelDimensionsChecked": true,
+      "overflowOrBrokenImages": 0,
+      "identityFontException": "Six canonical identity views intentionally use sans headings"
+    },
+    "localHTMLReferences": {
+      "checked": 599
+    },
+    "jsonParsing": {
+      "files": 8
+    },
+    "downloadArchive": {
+      "screenPNGs": 45,
+      "CRCVerified": true,
+      "allImageBytesMatchCurrentExports": true,
+      "bytes": 20646352
+    },
+    "privacy": {
+      "textMarkerMatches": [],
+      "scope": "Marker scan only; all customer/order/address values in mockups are explicit fictional fixtures. No authenticated admin screenshots in this pack."
+    },
+    "repository": {
+      "trackedProductionDiffExitCode": 0,
+      "governance": {
+        "pass": 114,
+        "fail": 0,
+        "blocked": 0,
+        "notApplicable": 1
+      },
+      "productionBehaviorProof": false
+    },
+    "visualReview": {
+      "boardsReviewed": [
+        "01-home-top",
+        "02-home-bottom",
+        "03-collection",
+        "04-product-main",
+        "05-product-fit",
+        "06-product-outfit",
+        "07-cart",
+        "08-checkout-address",
+        "09-checkout-review",
+        "10-sign-in",
+        "11-sign-up",
+        "12-profile",
+        "13-orders",
+        "14-order-detail",
+        "15-addresses"
+      ],
+      "mobileCheckoutSummaryBeforePaymentCTA": true,
+      "galleryDeviceAndChapterNavigationChecked": true
+    },
+    "scope": "Threadline visual targets only. Not installed, integrated, published, deployed, or transaction-tested."
+  },
+  "errors": []
+}

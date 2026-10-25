@@ -1,0 +1,25 @@
+{
+  "status": "ROOT_TINY_PARSER_REPAIR_SOURCE_ONLY_PRIOR_FAILED_EPOCH_PRESERVED",
+  "files": [
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/theme-publisher-acl.postgres.test.ts",
+      "sha256": "24d1b0cc9e8b0ce76aa6a14adc9466420f52b1069a9ae0b3b885dbab1312a58a",
+      "snapshot": "docs/implementation/niche-theme-programme/publisher-acl393/own-row-parser-repair/theme-publisher-acl.postgres.test.ts.before.snapshot"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/source-contracts.test.mjs",
+      "sha256": "a32f6fbf2d8c1f2b3d02780533fd95205f718ffc7c90914a26e75d2a80169af3",
+      "snapshot": "docs/implementation/niche-theme-programme/publisher-acl393/own-row-parser-repair/source-contracts.test.mjs.before.snapshot"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/capture-source-inputs.mjs",
+      "sha256": "56c766913e0093a951674b15183522a8851bab40445e744e0e15fdb1bfbbb769",
+      "snapshot": "docs/implementation/niche-theme-programme/publisher-acl393/own-row-parser-repair/capture-source-inputs.mjs.before.snapshot"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/admission.template.json",
+      "sha256": "586a1a39da38a68753219bb2a890a09e1f50152f41b6f2606d170012f4d5dc75",
+      "snapshot": "docs/implementation/niche-theme-programme/publisher-acl393/own-row-parser-repair/admission.template.json.before.snapshot"
+    }
+  ]
+}

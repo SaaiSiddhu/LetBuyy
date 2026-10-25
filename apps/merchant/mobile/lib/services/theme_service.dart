@@ -1107,6 +1107,20 @@ class ThemeService extends ChangeNotifier {
     }
   }
 
+  /// Catalog assets are hosted by Commerce; native image loaders have no
+  /// document origin with which to resolve a root-relative first-party asset.
+  static String? resolveCatalogThumbnail(String? value) {
+    if (value == null || value.trim().isEmpty) return null;
+    final candidate = Uri.tryParse(value.trim());
+    if (candidate == null || candidate.userInfo.isNotEmpty) return null;
+    if (candidate.hasScheme) {
+      return ['http', 'https'].contains(candidate.scheme) && candidate.host.isNotEmpty
+          ? candidate.toString() : null;
+    }
+    if (!value.startsWith('/') || value.startsWith('//')) return null;
+    return Uri.parse(AppConfig.storefrontBaseUrl).resolveUri(candidate).toString();
+  }
+
   static String buildStorefrontPreviewUrl({
     required String subdomain,
     String? previewToken,

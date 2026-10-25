@@ -1,0 +1,34 @@
+{
+  "recordedAt": "2026-10-25T05:08:42.657731+00:00",
+  "sourcePaths": [
+    {
+      "path": "scripts/governance/owned-database-provision.mjs",
+      "beforeSha256": "59a1ca8dd37d76c99b8b8724dbaa3d53b11a34d0eb875d437274b386ce0de1d7",
+      "afterSha256": "a46b1ce3e9b61cc571853c807fe1174215a0104a80a86f6b82bf003403cc288d",
+      "bytes": 50322
+    },
+    {
+      "path": "scripts/governance/run-executable-suites.mjs",
+      "beforeSha256": "9bee1039e32cef1d36cf43b879307f48a38511873c770a8ba45da443e6539c2f",
+      "afterSha256": "0242821384d46628aed679321a97ee76bfc12952f7404fa7b9d21b5184568a9b",
+      "bytes": 44028
+    },
+    {
+      "path": "tests/governance/owned-preserved-restore-bootstrap.test.mjs",
+      "beforeSha256": null,
+      "afterSha256": "a4966ad209acdde8d193bb7f57cbe6467361d2a1f5d3c34d3d8efda878666240",
+      "bytes": 14830
+    }
+  ],
+  "provisionerOnlyOneUnnecessaryDefaultSchemaDropRemoved": true,
+  "runnerOnlyDiagnosticFunctionAndGatewaySuiteAndMainChanged": true,
+  "allOtherRunnerBytesIncludingGuardReaperLaunchTimeoutCapsuleCodeExact": true,
+  "patchCheckExit": 0,
+  "syntaxChecks": "Both helper MJS and new focused test node--check passed",
+  "minimalOverlayFiles": [
+    "scripts/governance/owned-database-provision.mjs",
+    "scripts/governance/run-executable-suites.mjs",
+    "tests/governance/owned-preserved-restore-bootstrap.test.mjs"
+  ],
+  "frozenCandidateMainOrResourcesChanged": 0
+}

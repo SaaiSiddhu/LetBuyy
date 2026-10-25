@@ -1,0 +1,44 @@
+{
+  "id": "PF-META-001",
+  "owner": "Themes shared metadata allocator",
+  "status": "ACTUAL_RUNTIME07_API_DESCRIPTION_MISMATCH_CONFIRMED_CORRECTION_LEASE_REQUIRED",
+  "sourceCause": "firstPartyThemeListings uses experience.description; Bloom legacy preset is pet-specific. Accepted210 promotion updates themes.name/category/version but omits themes.description.",
+  "currentBundleDescriptionAlreadyCorrect": "An activity-first toy storefront for adults choosing by age, interest, contents and measured product facts.",
+  "requestedCorrection": "Use existing canonical versioned/catalogue metadata owner to reconcile only the current Playfield listing description to its already accepted package description. Keep legacy Bloom/default and frozen200/201/210 captures, package checksums, saved instances, UUIDs and all history unchanged. Bind actual supported metadata command/CAS and exact lease before Main or DB writes; do not invent an endpoint, DTO or migration number.",
+  "sourceLocations": [
+    "packages/theme-engine/src/theme-presets.ts:312",
+    "packages/theme-engine/src/first-party-theme-catalog.ts:60",
+    "docs/implementation/niche-theme-programme/completion-2026-10-24/child-customization-integration01/customization210.up.proposal.sql"
+  ],
+  "acceptance": [
+    "Actual current catalog API/UI description is toys/activity-specific",
+    "Immutable capture/payload/source snapshots remain byte-identical",
+    "Old default/200/201 and unrelated catalogue rows unchanged",
+    "Normal version-conflict/replay/private/public permissions preserved"
+  ],
+  "runtimeWritesHere": 0,
+  "currentRuntimeMetadataReadback": "HTTP200_UNAUTHENTICATED_PUBLIC_GET; no browser/auth/cart/DB mutation",
+  "observedCurrentRow": {
+    "id": "7b669c70-0000-4000-8000-000000000008",
+    "slug": "letbuyy-bloom",
+    "name": "Playfield",
+    "version": "2.1.0",
+    "category": "toys",
+    "description": "Warm and playful for pet food, accessories, and veterinary products. Sunny tangerine and leaf green — the colours of a happy pet store.",
+    "is_active": true
+  },
+  "readbackEvidence": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/runtime07-reconciliation-20261025-01/PUBLIC_CATALOGUE_READ02.json",
+  "desiredOneFieldDelta": {
+    "field": "themes.description",
+    "before": "Warm and playful for pet food, accessories, and veterinary products. Sunny tangerine and leaf green — the colours of a happy pet store.",
+    "after": "An activity-first toy storefront for adults choosing by age, interest, contents and measured product facts."
+  },
+  "doNotChange": [
+    "immutable package/version manifests or checksums",
+    "frozen200/201/210 captures",
+    "existing instances/drafts/releases",
+    "legacyBloom pet preset or unknown-industry fallback",
+    "UUIDs/options/stock/carts/orders/ledger",
+    "other themes"
+  ]
+}

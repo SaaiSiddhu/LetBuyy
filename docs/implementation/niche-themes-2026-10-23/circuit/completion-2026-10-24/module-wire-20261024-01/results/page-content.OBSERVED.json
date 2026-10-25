@@ -1,0 +1,54 @@
+{
+  "classification": "SOURCE_STATE_SERIALIZATION_ONLY_NOT_ACTUAL_UI_OPERATIONS",
+  "type": "page-content",
+  "group": "template",
+  "originalId": "section-3d4887cf-2def-4a4a-9720-11d9b148c0ad",
+  "finalId": "section-7ef29f22-c3bb-4634-aee3-fa10e0ea988b",
+  "sectionFieldsExercised": [],
+  "effectiveBlockFieldsExercised": [],
+  "phases": [
+    {
+      "phase": "edited",
+      "observed": {
+        "settings": {},
+        "disabled": false,
+        "block_order": [],
+        "blocks": {}
+      }
+    },
+    {
+      "phase": "hidden-reordered",
+      "observed": {
+        "settings": {},
+        "disabled": true,
+        "block_order": [],
+        "blocks": {}
+      }
+    },
+    {
+      "phase": "shown",
+      "observed": {
+        "settings": {},
+        "disabled": false,
+        "block_order": [],
+        "blocks": {}
+      }
+    },
+    {
+      "phase": "removed",
+      "originalSectionAbsent": true,
+      "protectedGroupIdentityRetained": false
+    },
+    {
+      "phase": "readded",
+      "observed": {
+        "settings": {},
+        "disabled": false,
+        "block_order": [],
+        "blocks": {}
+      }
+    }
+  ],
+  "resourceAuthorityProved": false,
+  "actualUiCallbacksExecuted": false
+}

@@ -1,0 +1,78 @@
+{
+  "recordedAt": "2026-10-24T05:44:19.163Z",
+  "runId": "936e5f577646",
+  "guardVerified": true,
+  "readOnly": true,
+  "phase": "saved",
+  "actual": {
+    "id": "6e25118a-9f39-4ad9-8374-d0b5bf3e4e25",
+    "title": "Habitat dimensional controls",
+    "siteId": "2f958a36-71bf-4e8f-89fd-d3363f4fe42c",
+    "productIds": [
+      "29c731cc-8b16-4e08-8f50-11e219310844",
+      "d0269c4f-8175-4499-b13c-fb59f4d18eac"
+    ]
+  },
+  "publicResponse": {
+    "status": 200,
+    "requestId": "dacc5345-cbe5-4332-896e-4923828ceb17",
+    "meta": {
+      "page": 1,
+      "per_page": 20,
+      "total": 2,
+      "total_pages": 1,
+      "has_next": false,
+      "has_prev": false
+    },
+    "discovery": {
+      "query": {
+        "page": 1,
+        "limit": 20,
+        "sort": "display_order",
+        "collection_id": "6e25118a-9f39-4ad9-8374-d0b5bf3e4e25"
+      },
+      "facets": [
+        {
+          "key": "category",
+          "value": "Habitat dimensional controls",
+          "label": "Habitat dimensional controls",
+          "count": 2
+        },
+        {
+          "key": "country_of_origin",
+          "value": "india",
+          "label": "India",
+          "count": 2
+        }
+      ],
+      "matches": [
+        {
+          "product_id": "29c731cc-8b16-4e08-8f50-11e219310844",
+          "price": 1400,
+          "variant_ids": []
+        },
+        {
+          "product_id": "d0269c4f-8175-4499-b13c-fb59f4d18eac",
+          "price": 1200,
+          "variant_ids": []
+        }
+      ],
+      "measurement_capabilities": {
+        "equipment_length": {
+          "available": false,
+          "allowed_units": []
+        },
+        "max_width_cm": {
+          "available": true
+        },
+        "max_depth_cm": {
+          "available": true
+        }
+      }
+    },
+    "productIds": [
+      "29c731cc-8b16-4e08-8f50-11e219310844",
+      "d0269c4f-8175-4499-b13c-fb59f4d18eac"
+    ]
+  }
+}

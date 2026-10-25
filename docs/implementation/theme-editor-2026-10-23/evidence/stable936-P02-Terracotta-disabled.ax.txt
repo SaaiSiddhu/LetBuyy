@@ -1,0 +1,68 @@
+Browser tab: 49, Title: "Fixture Soft Colour | Threadline", URL: "http://syn-threadline-ui-6815276b.localhost:50494/product/f04c5a94-8f0c-48ae-a450-e2374caa5c7e?[query-redacted]".
+1 AXWebArea Fixture Soft Colour | Threadline, URL: syn-threadline-ui-6815276b.localhost:50494/product/f04c5a94-8f0c-48ae-a450-e2374caa5c7e?[query-redacted]
+	2 container
+		3 text Dewdrop 936 B — saved recovery draft.
+		4 link syn-threadline-ui-6815276b.localhost:50494/product/f04c5a94-8f0c-48ae-a450-e2374caa5c7e?[query-redacted]
+		5 container Description: Primary, ID: lb-nav-panel-header-default
+		6 link Description: Threadline, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b
+		7 button (collapsed) Description: Search, Secondary Actions: Expand
+		8 link Description: Log in, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/customers/login
+		9 link Description: Cart ( 0 ), Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/cart
+		10 container Breadcrumb
+			11 link Description: Home /, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b
+			12 link Description: Shop /, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/products
+			13 text Fixture Soft Colour
+		14 image Fixture Soft Colour
+		15 heading Fixture Soft Colour, Value: 1
+			16 text Fixture Soft Colour
+		17 text 6 ml
+		66 text ₹590
+		19 container
+			20 container Shade name
+				21 text Shade name
+				22 checkbox Rosewater RW01, Value: 0
+				23 checkbox Pink Clay PC02, Value: 0
+				24 checkbox Terracotta TC03 ✓ Selected, Value: 1
+					67 text Terracotta
+					68 text TC03
+					69 text ✓ Selected
+			25 container पैक आकार
+				26 text पैक आकार
+				27 checkbox एक इकाई ✓ Selected, Value: 1
+					65 text एक इकाई
+					70 text ✓ Selected
+			71 text This combination is currently unavailable
+		29 container Description: Ingredients and directions, ID: dd-facts-aura-care-product
+			30 heading Ingredients & directions, Value: 2
+				31 text Ingredients & directions
+			32 text Lip tint
+			33 heading Ingredients, Value: 3
+				34 text Ingredients
+			35 text Common tint v1: fixture oil and wax; see named shade ingredients.
+			36 heading How to use, Value: 3
+				37 text How to use
+			38 text Fixture directions v1: use as supplied.
+			39 button (collapsed) Ingredients for Rosewater · RW01, Secondary Actions: Expand
+				40 text Ingredients for Rosewater · RW01
+			41 button (collapsed) Ingredients for Pink Clay · PC02, Secondary Actions: Expand
+				42 text Ingredients for Pink Clay · PC02
+			43 button (collapsed) Product warnings, Secondary Actions: Expand
+				44 text Product warnings
+		45 container
+			46 text Quantity
+			47 stepper (settable, integer) Quantity, Value: 1, ID: lb-quantity-aura-care-product
+			48 button (disabled) Add to cart
+		49 container Add Fixture Soft Colour to wishlist
+			50 checkbox Description: Add to wishlist, Value: 0
+		51 button (collapsed) Description, Secondary Actions: Expand
+			52 text Description
+		53 heading Threadline, Value: 3
+			54 text Threadline
+		55 text Dewdrop 936 B footer saved
+		56 heading CONTACT, Value: 4
+			57 text CONTACT
+		58 link Description: Contact us, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/contact
+		59 text © Threadline. All rights reserved.
+		60 link Description: Powered by LetBuyy, Value: letbuyy.com/
+
+The focused UI element is 24 checkbox Terracotta TC03 ✓ Selected, Value: 1

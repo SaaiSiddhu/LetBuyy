@@ -1,0 +1,57 @@
+{
+  "recordedAt": "2026-10-24T11:56:18.798765+00:00",
+  "forAllocator": "01a164a4-a342-76d3-ab33-65e021ed57db",
+  "grantId": "playfield-versioned-leaf-resume02",
+  "status": "NEW_MAIN_202_LEAF_AND_TEST_READY_FOR_INDEPENDENT_REVIEW_WRITER_RELEASED",
+  "files": [
+    {
+      "path": "packages/theme-engine/src/playfield-theme-v202.ts",
+      "sha256": "25aaec88541f8c46521596c1c01c3903018750e7057d1038a8ba13a773256bb1",
+      "bytes": 6420
+    },
+    {
+      "path": "packages/theme-engine/test/playfield-subtitle-successor.test.ts",
+      "sha256": "c73c1365de4f57b97959aa1a27093974f824f63271d486bfb20b7aff82172b0e",
+      "bytes": 19278
+    }
+  ],
+  "result": {
+    "path": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/main-v202-integration-20261024-02/SOURCE_RESULT.json",
+    "sha256": "0506d6c0d7f7d35ff28a2127af41a9968870279836bcdf902979130a2b0b13b8",
+    "bytes": 6470
+  },
+  "report": {
+    "path": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/main-v202-integration-20261024-02/REPORT.md",
+    "sha256": "9413c054cb421c001976fbd860588a868a83cad936d1a88137b3ffa45301b69f",
+    "bytes": 4844
+  },
+  "dispatchProposal": {
+    "path": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/main-v202-integration-20261024-02/catalog-dispatch-PROPOSAL.json",
+    "sha256": "937c5d2f5090f33ef0ef4c024a813bd8302e827f0748fba6d3d17382e193bea2",
+    "bytes": 894
+  },
+  "dispatchApplied": false,
+  "sourceGate": {
+    "tests": 20,
+    "PASS": 20,
+    "FAIL": 0,
+    "skipped": 0,
+    "strictNoEmitDiagnostics": 0,
+    "frozenCatalogueFingerprints": 20,
+    "closureInputs": 109,
+    "runtimeEdges": 115,
+    "unresolved": 0,
+    "stableBeforeAfter": true
+  },
+  "oldPrivate13": "Retained, not counted as proof for changed Main bytes. Current20 and strict gate are separate.",
+  "scope": "Only the two new Main paths granted; all shared integration/artifact/persistence/native/runtime/browser/provider work remains outside this released lease.",
+  "nextAction": "Root independently reviews and applies its own exact opt-in dispatcher diff if accepted; bind fresh source/native/catalogue/common-smoke and browser fixture before installed acceptance.",
+  "currentInstalled14": {
+    "PASS": 0,
+    "FAIL": 0,
+    "NOT_RUN": 14
+  },
+  "fullThemeCertified": false,
+  "writerReleased": true,
+  "noOutgoingChatMessage": true
+}

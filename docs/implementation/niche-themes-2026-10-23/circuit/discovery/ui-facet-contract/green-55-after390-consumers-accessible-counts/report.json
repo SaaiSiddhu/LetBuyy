@@ -1,0 +1,2676 @@
+{
+  "inputs": {
+    "packages/theme-engine/src/playfield-theme.ts": "00493cb361c8fc796941524d9673ee4c1bfa3a12785017e2397e408b924edb63",
+    "packages/theme-engine/src/playfield-discovery.ts": "876769a92360a5cc8cd89ab69a436c12c1eda6df32eb4466bdda10111ef297a8",
+    "packages/theme-engine/src/circuit-theme.ts": "44f78cdaa4d9241723b7bc9ae0f0952d946e72b11775c05160c9949f87a69d2a",
+    "packages/theme-engine/src/circuit-discovery.ts": "160c6a61a567f87bbcab20bf337336ede6e748c1326110ab977f61ec9c14523b",
+    "packages/theme-engine/src/pantry-theme.ts": "9c440d32f146b8155ba78f522da52979fd09a0f3d32c4b25e5c3e289ef390925",
+    "packages/theme-engine/src/pantry-discovery.ts": "d9c09fe8097123623d26cde25ec9951233792adadbdf8d0eb6628659234759d0",
+    "packages/theme-engine/src/habitat-theme.ts": "0144fdf830ab3c5ddf42ebfcb86258b99e74ed8a8d724469012479705352e8c3",
+    "packages/theme-engine/src/habitat-discovery.ts": "342843da57a6eef8488d906218d4225338f9f3c0afe2bbcc49073f3f34a1f873",
+    "packages/theme-engine/src/kindred-theme.ts": "3a47dc979dbdf5dce395fd44a858e007567820f4fac569fade603ff6da4fd551",
+    "packages/theme-engine/src/kindred-discovery.ts": "14dd29777737158a61287bf54e98571c6b3abf1e07ec542d2e7f678180ad473f",
+    "packages/theme-engine/src/madeyours-theme.ts": "c56bdba5b9e9376c4a296cadc2d4f31a33598a033692d2f6c21daa71b3e98193",
+    "packages/theme-engine/src/madeyours-discovery.ts": "d1fc0993efd1d876e67c60f997e6cea53efd65a4fd7aba69bafe377f02803eda",
+    "packages/theme-engine/src/dewdrop-theme.ts": "ec0cf0890c607056c1da13087b1c51ee6931d120c46370802360b740f0693190",
+    "packages/theme-engine/src/dewdrop-discovery.ts": "a9d866eeb5dedc2b123bdf2a287b9a0be23789b39c93c1e1872471c975de1fe1",
+    "packages/theme-engine/src/trailmark-theme.ts": "ec412bcee2940769612323c2155ac807cef8d73bd1a06caa754cbb1fd11e90b5",
+    "packages/theme-engine/src/trailmark-discovery.ts": "f69edf5815a19e513416ebb970e661793a88994a12f70e1e0e6d214f021741cb",
+    "packages/theme-engine/src/marginalia-theme.ts": "a109aa33018aa786dffaea7a067415b13fe73ddc17beca7ef18a83f58301b7e9",
+    "packages/theme-engine/src/marginalia-discovery.ts": "a1c2c75b3497fc3f0edc1280686b75c7434e1a400c0944154c462561b62cc8d3",
+    "packages/theme-engine/src/first-party-theme-catalog.ts": "cc11490138ae5c2f13ab022a60b4cc2fe7d8fc5eb766dbf087eeb227d6050d6e",
+    "packages/theme-engine/src/theme-bundle.ts": "cdbad4b28277431a3ab06e56ed0ce16539e04837bb107f5f951a3df39a92ed76",
+    "packages/theme-engine/src/theme-bundle-core.ts": "0e1650a4d71ef358792c0f877f4ae678794fb6d2cfdebbb30d79563e4a2f452f",
+    "packages/theme-engine/src/theme-renderer.ts": "794cbc6ff9ae71f995560f302e1b0d5f0d4ff4da59fa31191585851b1e822164",
+    "docs/implementation/niche-themes-2026-10-23/circuit/discovery/ui-facet-contract.test.ts": "4ef41f2120f80a7c73f0623dad9e535a9a8ede991ef4c78d4f29f78f0583b3f7",
+    "database/supabase/migrations/386_storefront_discovery.sql": "33c2849f93fc594902e5017f00ab3141780bd06f856ce67f4a21aa77e87da81d",
+    "services/api-gateway/src/lib/storefront-discovery.ts": "fa47b2c867e916ab082e5c420eed18751e4c313f98dd1ae2b19ec26de00afa37",
+    "apps/commerce/web/src/lib/theme-engine/storefront-discovery.ts": "b59b34fbe89cf44f13f9dba56107f993af2632d4d2ed28fe3f9694e87743cbfc",
+    "packages/commerce-core/src/storefront-discovery.ts": "c8de3871a998df011de12791db90c868139903b5c84afb211d9e9de3a1997ff1"
+  },
+  "fixtureContract": "Actual backend response reader and frontend page validator admit synthetic finite metadata. Facet values are lowercase and labels retain source values, as386 emits. Author substring and physical threshold/unit facets are omitted as in386. No local filter algorithm or SQL acceptance is claimed.",
+  "classification": "IN_PROCESS_UI_QUERY_CONTRACT_NOT_BROWSER_SQL_OR_INSTALLED_ACCEPTANCE",
+  "createdAt": "2026-10-23T09:43:36.594Z",
+  "sourceChangedDuringRun": [],
+  "networkCalls": 0,
+  "rows": [
+    {
+      "slug": "letbuyy-bloom",
+      "route": "collection",
+      "html": "playfield-collection.html",
+      "query": {
+        "page": 2,
+        "limit": 1,
+        "search": "Model guide",
+        "category": "Accessories",
+        "country_of_origin": "India",
+        "sort": "price-desc",
+        "age_band": "6-8",
+        "interest": "art",
+        "connector": [
+          "usb-c",
+          "hdmi"
+        ]
+      },
+      "facets": [
+        {
+          "key": "age_band",
+          "value": "6-8",
+          "label": "6-8",
+          "count": 4
+        },
+        {
+          "key": "age_band",
+          "value": "9-12",
+          "label": "9-12",
+          "count": 4
+        },
+        {
+          "key": "interest",
+          "value": "art",
+          "label": "art",
+          "count": 4
+        },
+        {
+          "key": "interest",
+          "value": "building",
+          "label": "building",
+          "count": 4
+        }
+      ],
+      "sourceHashes": {
+        "packages/theme-engine/src/playfield-theme.ts": "00493cb361c8fc796941524d9673ee4c1bfa3a12785017e2397e408b924edb63",
+        "packages/theme-engine/src/playfield-discovery.ts": "876769a92360a5cc8cd89ab69a436c12c1eda6df32eb4466bdda10111ef297a8",
+        "apps/commerce/web/src/lib/theme-engine/storefront-discovery.ts": "b59b34fbe89cf44f13f9dba56107f993af2632d4d2ed28fe3f9694e87743cbfc",
+        "packages/commerce-core/src/storefront-discovery.ts": "c8de3871a998df011de12791db90c868139903b5c84afb211d9e9de3a1997ff1"
+      },
+      "forms": [
+        {
+          "selector": "form.pf-filters",
+          "entries": [
+            [
+              "search",
+              "Model guide"
+            ],
+            [
+              "age_band",
+              "6-8"
+            ],
+            [
+              "interest",
+              "art"
+            ],
+            [
+              "sort",
+              "price-desc"
+            ],
+            [
+              "limit",
+              "1"
+            ],
+            [
+              "category",
+              "Accessories"
+            ],
+            [
+              "country_of_origin",
+              "India"
+            ],
+            [
+              "connector",
+              "usb-c"
+            ],
+            [
+              "connector",
+              "hdmi"
+            ]
+          ]
+        }
+      ],
+      "findings": []
+    },
+    {
+      "slug": "letbuyy-bloom",
+      "route": "search",
+      "html": "playfield-search.html",
+      "query": {
+        "page": 2,
+        "limit": 1,
+        "search": "Model guide",
+        "category": "Accessories",
+        "country_of_origin": "India",
+        "sort": "price-desc",
+        "age_band": "6-8",
+        "interest": "art",
+        "connector": [
+          "usb-c",
+          "hdmi"
+        ]
+      },
+      "facets": [
+        {
+          "key": "age_band",
+          "value": "6-8",
+          "label": "6-8",
+          "count": 4
+        },
+        {
+          "key": "age_band",
+          "value": "9-12",
+          "label": "9-12",
+          "count": 4
+        },
+        {
+          "key": "interest",
+          "value": "art",
+          "label": "art",
+          "count": 4
+        },
+        {
+          "key": "interest",
+          "value": "building",
+          "label": "building",
+          "count": 4
+        }
+      ],
+      "sourceHashes": {
+        "packages/theme-engine/src/playfield-theme.ts": "00493cb361c8fc796941524d9673ee4c1bfa3a12785017e2397e408b924edb63",
+        "packages/theme-engine/src/playfield-discovery.ts": "876769a92360a5cc8cd89ab69a436c12c1eda6df32eb4466bdda10111ef297a8",
+        "apps/commerce/web/src/lib/theme-engine/storefront-discovery.ts": "b59b34fbe89cf44f13f9dba56107f993af2632d4d2ed28fe3f9694e87743cbfc",
+        "packages/commerce-core/src/storefront-discovery.ts": "c8de3871a998df011de12791db90c868139903b5c84afb211d9e9de3a1997ff1"
+      },
+      "forms": [
+        {
+          "selector": "form",
+          "entries": [
+            [
+              "search",
+              "Model guide"
+            ],
+            [
+              "limit",
+              "1"
+            ],
+            [
+              "category",
+              "Accessories"
+            ],
+            [
+              "country_of_origin",
+              "India"
+            ],
+            [
+              "sort",
+              "price-desc"
+            ],
+            [
+              "age_band",
+              "6-8"
+            ],
+            [
+              "interest",
+              "art"
+            ],
+            [
+              "connector",
+              "usb-c"
+            ],
+            [
+              "connector",
+              "hdmi"
+            ]
+          ]
+        },
+        {
+          "selector": "form.pf-filters",
+          "entries": [
+            [
+              "search",
+              "Model guide"
+            ],
+            [
+              "age_band",
+              "6-8"
+            ],
+            [
+              "interest",
+              "art"
+            ],
+            [
+              "sort",
+              "price-desc"
+            ],
+            [
+              "limit",
+              "1"
+            ],
+            [
+              "category",
+              "Accessories"
+            ],
+            [
+              "country_of_origin",
+              "India"
+            ],
+            [
+              "connector",
+              "usb-c"
+            ],
+            [
+              "connector",
+              "hdmi"
+            ]
+          ]
+        }
+      ],
+      "findings": []
+    },
+    {
+      "slug": "letbuyy-forge",
+      "route": "collection",
+      "html": "circuit-collection.html",
+      "query": {
+        "page": 2,
+        "limit": 1,
+        "search": "Model guide",
+        "category": "Accessories",
+        "country_of_origin": "India",
+        "sort": "price-desc",
+        "electronics_kind": "hub",
+        "connector": [
+          "usb-c",
+          "hdmi"
+        ],
+        "power_input_w": 100,
+        "pass_through_output_w": 85,
+        "data_rate_mbps": 5000,
+        "length_mm": 100
+      },
+      "facets": [
+        {
+          "key": "electronics_kind",
+          "value": "hub",
+          "label": "hub",
+          "count": 4
+        },
+        {
+          "key": "electronics_kind",
+          "value": "charger",
+          "label": "charger",
+          "count": 4
+        },
+        {
+          "key": "connector",
+          "value": "usb-c",
+          "label": "usb-c",
+          "count": 4
+        },
+        {
+          "key": "connector",
+          "value": "hdmi",
+          "label": "hdmi",
+          "count": 4
+        },
+        {
+          "key": "power_input_w",
+          "value": "100",
+          "label": "100",
+          "count": 4
+        },
+        {
+          "key": "pass_through_output_w",
+          "value": "85",
+          "label": "85",
+          "count": 4
+        },
+        {
+          "key": "data_rate_mbps",
+          "value": "5000",
+          "label": "5000",
+          "count": 4
+        },
+        {
+          "key": "length_mm",
+          "value": "100",
+          "label": "100",
+          "count": 4
+        }
+      ],
+      "sourceHashes": {
+        "packages/theme-engine/src/circuit-theme.ts": "44f78cdaa4d9241723b7bc9ae0f0952d946e72b11775c05160c9949f87a69d2a",
+        "packages/theme-engine/src/circuit-discovery.ts": "160c6a61a567f87bbcab20bf337336ede6e748c1326110ab977f61ec9c14523b",
+        "apps/commerce/web/src/lib/theme-engine/storefront-discovery.ts": "b59b34fbe89cf44f13f9dba56107f993af2632d4d2ed28fe3f9694e87743cbfc",
+        "packages/commerce-core/src/storefront-discovery.ts": "c8de3871a998df011de12791db90c868139903b5c84afb211d9e9de3a1997ff1"
+      },
+      "forms": [
+        {
+          "selector": "form.ct-search",
+          "entries": [
+            [
+              "limit",
+              "1"
+            ],
+            [
+              "category",
+              "Accessories"
+            ],
+            [
+              "country_of_origin",
+              "India"
+            ],
+            [
+              "sort",
+              "price-desc"
+            ],
+            [
+              "electronics_kind",
+              "hub"
+            ],
+            [
+              "connector",
+              "usb-c"
+            ],
+            [
+              "connector",
+              "hdmi"
+            ],
+            [
+              "power_input_w",
+              "100"
+            ],
+            [
+              "pass_through_output_w",
+              "85"
+            ],
+            [
+              "data_rate_mbps",
+              "5000"
+            ],
+            [
+              "length_mm",
+              "100"
+            ],
+            [
+              "search",
+              "Model guide"
+            ]
+          ]
+        },
+        {
+          "selector": "form.ct-facets",
+          "entries": [
+            [
+              "limit",
+              "1"
+            ],
+            [
+              "search",
+              "Model guide"
+            ],
+            [
+              "category",
+              "Accessories"
+            ],
+            [
+              "country_of_origin",
+              "India"
+            ],
+            [
+              "sort",
+              "price-desc"
+            ],
+            [
+              "electronics_kind",
+              "hub"
+            ],
+            [
+              "connector",
+              "usb-c"
+            ],
+            [
+              "connector",
+              "hdmi"
+            ],
+            [
+              "power_input_w",
+              "100"
+            ],
+            [
+              "pass_through_output_w",
+              "85"
+            ],
+            [
+              "data_rate_mbps",
+              "5000"
+            ],
+            [
+              "length_mm",
+              "100"
+            ]
+          ]
+        },
+        {
+          "selector": "form.ct-sort",
+          "entries": [
+            [
+              "limit",
+              "1"
+            ],
+            [
+              "search",
+              "Model guide"
+            ],
+            [
+              "category",
+              "Accessories"
+            ],
+            [
+              "country_of_origin",
+              "India"
+            ],
+            [
+              "electronics_kind",
+              "hub"
+            ],
+            [
+              "connector",
+              "usb-c"
+            ],
+            [
+              "connector",
+              "hdmi"
+            ],
+            [
+              "power_input_w",
+              "100"
+            ],
+            [
+              "pass_through_output_w",
+              "85"
+            ],
+            [
+              "data_rate_mbps",
+              "5000"
+            ],
+            [
+              "length_mm",
+              "100"
+            ],
+            [
+              "sort",
+              "price-desc"
+            ]
+          ]
+        },
+        {
+          "selector": "form.ct-facets",
+          "entries": [
+            [
+              "limit",
+              "1"
+            ],
+            [
+              "search",
+              "Model guide"
+            ],
+            [
+              "category",
+              "Accessories"
+            ],
+            [
+              "country_of_origin",
+              "India"
+            ],
+            [
+              "sort",
+              "price-desc"
+            ],
+            [
+              "electronics_kind",
+              "hub"
+            ],
+            [
+              "connector",
+              "usb-c"
+            ],
+            [
+              "connector",
+              "hdmi"
+            ],
+            [
+              "power_input_w",
+              "100"
+            ],
+            [
+              "pass_through_output_w",
+              "85"
+            ],
+            [
+              "data_rate_mbps",
+              "5000"
+            ],
+            [
+              "length_mm",
+              "100"
+            ]
+          ]
+        }
+      ],
+      "findings": []
+    },
+    {
+      "slug": "letbuyy-forge",
+      "route": "search",
+      "html": "circuit-search.html",
+      "query": {
+        "page": 2,
+        "limit": 1,
+        "search": "Model guide",
+        "category": "Accessories",
+        "country_of_origin": "India",
+        "sort": "price-desc",
+        "electronics_kind": "hub",
+        "connector": [
+          "usb-c",
+          "hdmi"
+        ],
+        "power_input_w": 100,
+        "pass_through_output_w": 85,
+        "data_rate_mbps": 5000,
+        "length_mm": 100
+      },
+      "facets": [
+        {
+          "key": "electronics_kind",
+          "value": "hub",
+          "label": "hub",
+          "count": 4
+        },
+        {
+          "key": "electronics_kind",
+          "value": "charger",
+          "label": "charger",
+          "count": 4
+        },
+        {
+          "key": "connector",
+          "value": "usb-c",
+          "label": "usb-c",
+          "count": 4
+        },
+        {
+          "key": "connector",
+          "value": "hdmi",
+          "label": "hdmi",
+          "count": 4
+        },
+        {
+          "key": "power_input_w",
+          "value": "100",
+          "label": "100",
+          "count": 4
+        },
+        {
+          "key": "pass_through_output_w",
+          "value": "85",
+          "label": "85",
+          "count": 4
+        },
+        {
+          "key": "data_rate_mbps",
+          "value": "5000",
+          "label": "5000",
+          "count": 4
+        },
+        {
+          "key": "length_mm",
+          "value": "100",
+          "label": "100",
+          "count": 4
+        }
+      ],
+      "sourceHashes": {
+        "packages/theme-engine/src/circuit-theme.ts": "44f78cdaa4d9241723b7bc9ae0f0952d946e72b11775c05160c9949f87a69d2a",
+        "packages/theme-engine/src/circuit-discovery.ts": "160c6a61a567f87bbcab20bf337336ede6e748c1326110ab977f61ec9c14523b",
+        "apps/commerce/web/src/lib/theme-engine/storefront-discovery.ts": "b59b34fbe89cf44f13f9dba56107f993af2632d4d2ed28fe3f9694e87743cbfc",
+        "packages/commerce-core/src/storefront-discovery.ts": "c8de3871a998df011de12791db90c868139903b5c84afb211d9e9de3a1997ff1"
+      },
+      "forms": [
+        {
+          "selector": "form.ct-search",
+          "entries": [
+            [
+              "limit",
+              "1"
+            ],
+            [
+              "category",
+              "Accessories"
+            ],
+            [
+              "country_of_origin",
+              "India"
+            ],
+            [
+              "sort",
+              "price-desc"
+            ],
+            [
+              "electronics_kind",
+              "hub"
+            ],
+            [
+              "connector",
+              "usb-c"
+            ],
+            [
+              "connector",
+              "hdmi"
+            ],
+            [
+              "power_input_w",
+              "100"
+            ],
+            [
+              "pass_through_output_w",
+              "85"
+            ],
+            [
+              "data_rate_mbps",
+              "5000"
+            ],
+            [
+              "length_mm",
+              "100"
+            ],
+            [
+              "search",
+              "Model guide"
+            ]
+          ]
+        },
+        {
+          "selector": "form.ct-facets",
+          "entries": [
+            [
+              "limit",
+              "1"
+            ],
+            [
+              "search",
+              "Model guide"
+            ],
+            [
+              "category",
+              "Accessories"
+            ],
+            [
+              "country_of_origin",
+              "India"
+            ],
+            [
+              "sort",
+              "price-desc"
+            ],
+            [
+              "electronics_kind",
+              "hub"
+            ],
+            [
+              "connector",
+              "usb-c"
+            ],
+            [
+              "connector",
+              "hdmi"
+            ],
+            [
+              "power_input_w",
+              "100"
+            ],
+            [
+              "pass_through_output_w",
+              "85"
+            ],
+            [
+              "data_rate_mbps",
+              "5000"
+            ],
+            [
+              "length_mm",
+              "100"
+            ]
+          ]
+        },
+        {
+          "selector": "form.ct-sort",
+          "entries": [
+            [
+              "limit",
+              "1"
+            ],
+            [
+              "search",
+              "Model guide"
+            ],
+            [
+              "category",
+              "Accessories"
+            ],
+            [
+              "country_of_origin",
+              "India"
+            ],
+            [
+              "electronics_kind",
+              "hub"
+            ],
+            [
+              "connector",
+              "usb-c"
+            ],
+            [
+              "connector",
+              "hdmi"
+            ],
+            [
+              "power_input_w",
+              "100"
+            ],
+            [
+              "pass_through_output_w",
+              "85"
+            ],
+            [
+              "data_rate_mbps",
+              "5000"
+            ],
+            [
+              "length_mm",
+              "100"
+            ],
+            [
+              "sort",
+              "price-desc"
+            ]
+          ]
+        },
+        {
+          "selector": "form.ct-facets",
+          "entries": [
+            [
+              "limit",
+              "1"
+            ],
+            [
+              "search",
+              "Model guide"
+            ],
+            [
+              "category",
+              "Accessories"
+            ],
+            [
+              "country_of_origin",
+              "India"
+            ],
+            [
+              "sort",
+              "price-desc"
+            ],
+            [
+              "electronics_kind",
+              "hub"
+            ],
+            [
+              "connector",
+              "usb-c"
+            ],
+            [
+              "connector",
+              "hdmi"
+            ],
+            [
+              "power_input_w",
+              "100"
+            ],
+            [
+              "pass_through_output_w",
+              "85"
+            ],
+            [
+              "data_rate_mbps",
+              "5000"
+            ],
+            [
+              "length_mm",
+              "100"
+            ]
+          ]
+        }
+      ],
+      "findings": []
+    },
+    {
+      "slug": "letbuyy-refresh",
+      "route": "collection",
+      "html": "pantry-collection.html",
+      "query": {
+        "page": 2,
+        "limit": 1,
+        "search": "Model guide",
+        "category": "Accessories",
+        "country_of_origin": "India",
+        "sort": "price-desc",
+        "connector": [
+          "usb-c",
+          "hdmi"
+        ],
+        "pack_size": "g:250"
+      },
+      "facets": [
+        {
+          "key": "pack_size",
+          "value": "g:250",
+          "label": "g:250",
+          "count": 4
+        },
+        {
+          "key": "pack_size",
+          "value": "g:500",
+          "label": "g:500",
+          "count": 4
+        }
+      ],
+      "sourceHashes": {
+        "packages/theme-engine/src/pantry-theme.ts": "9c440d32f146b8155ba78f522da52979fd09a0f3d32c4b25e5c3e289ef390925",
+        "packages/theme-engine/src/pantry-discovery.ts": "d9c09fe8097123623d26cde25ec9951233792adadbdf8d0eb6628659234759d0",
+        "apps/commerce/web/src/lib/theme-engine/storefront-discovery.ts": "b59b34fbe89cf44f13f9dba56107f993af2632d4d2ed28fe3f9694e87743cbfc",
+        "packages/commerce-core/src/storefront-discovery.ts": "c8de3871a998df011de12791db90c868139903b5c84afb211d9e9de3a1997ff1"
+      },
+      "forms": [
+        {
+          "selector": "form.pn-filters",
+          "entries": [
+            [
+              "limit",
+              "1"
+            ],
+            [
+              "category",
+              "Accessories"
+            ],
+            [
+              "country_of_origin",
+              "India"
+            ],
+            [
+              "connector",
+              "usb-c"
+            ],
+            [
+              "connector",
+              "hdmi"
+            ],
+            [
+              "search",
+              "Model guide"
+            ],
+            [
+              "pack_size",
+              "g:250"
+            ],
+            [
+              "min_price",
+              ""
+            ],
+            [
+              "max_price",
+              ""
+            ],
+            [
+              "sort",
+              "price-desc"
+            ]
+          ]
+        }
+      ],
+      "findings": []
+    },
+    {
+      "slug": "letbuyy-refresh",
+      "route": "search",
+      "html": "pantry-search.html",
+      "query": {
+        "page": 2,
+        "limit": 1,
+        "search": "Model guide",
+        "category": "Accessories",
+        "country_of_origin": "India",
+        "sort": "price-desc",
+        "connector": [
+          "usb-c",
+          "hdmi"
+        ],
+        "pack_size": "g:250"
+      },
+      "facets": [
+        {
+          "key": "pack_size",
+          "value": "g:250",
+          "label": "g:250",
+          "count": 4
+        },
+        {
+          "key": "pack_size",
+          "value": "g:500",
+          "label": "g:500",
+          "count": 4
+        }
+      ],
+      "sourceHashes": {
+        "packages/theme-engine/src/pantry-theme.ts": "9c440d32f146b8155ba78f522da52979fd09a0f3d32c4b25e5c3e289ef390925",
+        "packages/theme-engine/src/pantry-discovery.ts": "d9c09fe8097123623d26cde25ec9951233792adadbdf8d0eb6628659234759d0",
+        "apps/commerce/web/src/lib/theme-engine/storefront-discovery.ts": "b59b34fbe89cf44f13f9dba56107f993af2632d4d2ed28fe3f9694e87743cbfc",
+        "packages/commerce-core/src/storefront-discovery.ts": "c8de3871a998df011de12791db90c868139903b5c84afb211d9e9de3a1997ff1"
+      },
+      "forms": [
+        {
+          "selector": "form.pn-filters",
+          "entries": [
+            [
+              "limit",
+              "1"
+            ],
+            [
+              "category",
+              "Accessories"
+            ],
+            [
+              "country_of_origin",
+              "India"
+            ],
+            [
+              "connector",
+              "usb-c"
+            ],
+            [
+              "connector",
+              "hdmi"
+            ],
+            [
+              "search",
+              "Model guide"
+            ],
+            [
+              "pack_size",
+              "g:250"
+            ],
+            [
+              "min_price",
+              ""
+            ],
+            [
+              "max_price",
+              ""
+            ],
+            [
+              "sort",
+              "price-desc"
+            ]
+          ]
+        }
+      ],
+      "findings": []
+    },
+    {
+      "slug": "letbuyy-craft",
+      "route": "collection",
+      "html": "habitat-collection.html",
+      "query": {
+        "page": 2,
+        "limit": 1,
+        "search": "Model guide",
+        "category": "Accessories",
+        "country_of_origin": "India",
+        "sort": "price-desc",
+        "connector": [
+          "usb-c",
+          "hdmi"
+        ],
+        "material": "wood",
+        "finish": "natural",
+        "max_width_cm": 61,
+        "max_depth_cm": 76.3
+      },
+      "facets": [
+        {
+          "key": "material",
+          "value": "wood",
+          "label": "Wood",
+          "count": 4
+        },
+        {
+          "key": "material",
+          "value": "metal",
+          "label": "Metal",
+          "count": 4
+        },
+        {
+          "key": "finish",
+          "value": "natural",
+          "label": "Natural",
+          "count": 4
+        },
+        {
+          "key": "finish",
+          "value": "black",
+          "label": "Black",
+          "count": 4
+        }
+      ],
+      "sourceHashes": {
+        "packages/theme-engine/src/habitat-theme.ts": "0144fdf830ab3c5ddf42ebfcb86258b99e74ed8a8d724469012479705352e8c3",
+        "packages/theme-engine/src/habitat-discovery.ts": "342843da57a6eef8488d906218d4225338f9f3c0afe2bbcc49073f3f34a1f873",
+        "apps/commerce/web/src/lib/theme-engine/storefront-discovery.ts": "b59b34fbe89cf44f13f9dba56107f993af2632d4d2ed28fe3f9694e87743cbfc",
+        "packages/commerce-core/src/storefront-discovery.ts": "c8de3871a998df011de12791db90c868139903b5c84afb211d9e9de3a1997ff1"
+      },
+      "forms": [
+        {
+          "selector": "form.hab-filters",
+          "entries": [
+            [
+              "search",
+              "Model guide"
+            ],
+            [
+              "material",
+              "wood"
+            ],
+            [
+              "finish",
+              "natural"
+            ],
+            [
+              "sort",
+              "price-desc"
+            ],
+            [
+              "limit",
+              "1"
+            ],
+            [
+              "category",
+              "Accessories"
+            ],
+            [
+              "country_of_origin",
+              "India"
+            ],
+            [
+              "connector",
+              "usb-c"
+            ],
+            [
+              "connector",
+              "hdmi"
+            ],
+            [
+              "max_width_cm",
+              "61"
+            ],
+            [
+              "max_depth_cm",
+              "76.3"
+            ]
+          ]
+        }
+      ],
+      "findings": [],
+      "capabilityGaps": [
+        {
+          "key": "max_width_cm",
+          "visibleControls": 0,
+          "classification": "ACTUAL_386_NO_THRESHOLD_OR_UNIT_FACET; retention/clear required, visible chooser not required"
+        },
+        {
+          "key": "max_depth_cm",
+          "visibleControls": 0,
+          "classification": "ACTUAL_386_NO_THRESHOLD_OR_UNIT_FACET; retention/clear required, visible chooser not required"
+        }
+      ],
+      "auxiliaryHtml": [
+        "habitat-collection-synthetic-physical-capability.html"
+      ],
+      "syntheticPhysicalCapability": {
+        "classification": "SYNTHETIC_ACCEPTED390_RESPONSE_NOT_SQL_PROOF",
+        "measurement_capabilities": {
+          "equipment_length": {
+            "available": false,
+            "allowed_units": []
+          },
+          "max_width_cm": {
+            "available": true
+          },
+          "max_depth_cm": {
+            "available": true
+          }
+        },
+        "facets": [
+          {
+            "key": "material",
+            "value": "wood",
+            "label": "Wood",
+            "count": 4
+          },
+          {
+            "key": "material",
+            "value": "metal",
+            "label": "Metal",
+            "count": 4
+          },
+          {
+            "key": "finish",
+            "value": "natural",
+            "label": "Natural",
+            "count": 4
+          },
+          {
+            "key": "finish",
+            "value": "black",
+            "label": "Black",
+            "count": 4
+          }
+        ]
+      }
+    },
+    {
+      "slug": "letbuyy-craft",
+      "route": "search",
+      "html": "habitat-search.html",
+      "query": {
+        "page": 2,
+        "limit": 1,
+        "search": "Model guide",
+        "category": "Accessories",
+        "country_of_origin": "India",
+        "sort": "price-desc",
+        "connector": [
+          "usb-c",
+          "hdmi"
+        ],
+        "material": "wood",
+        "finish": "natural",
+        "max_width_cm": 61,
+        "max_depth_cm": 76.3
+      },
+      "facets": [
+        {
+          "key": "material",
+          "value": "wood",
+          "label": "Wood",
+          "count": 4
+        },
+        {
+          "key": "material",
+          "value": "metal",
+          "label": "Metal",
+          "count": 4
+        },
+        {
+          "key": "finish",
+          "value": "natural",
+          "label": "Natural",
+          "count": 4
+        },
+        {
+          "key": "finish",
+          "value": "black",
+          "label": "Black",
+          "count": 4
+        }
+      ],
+      "sourceHashes": {
+        "packages/theme-engine/src/habitat-theme.ts": "0144fdf830ab3c5ddf42ebfcb86258b99e74ed8a8d724469012479705352e8c3",
+        "packages/theme-engine/src/habitat-discovery.ts": "342843da57a6eef8488d906218d4225338f9f3c0afe2bbcc49073f3f34a1f873",
+        "apps/commerce/web/src/lib/theme-engine/storefront-discovery.ts": "b59b34fbe89cf44f13f9dba56107f993af2632d4d2ed28fe3f9694e87743cbfc",
+        "packages/commerce-core/src/storefront-discovery.ts": "c8de3871a998df011de12791db90c868139903b5c84afb211d9e9de3a1997ff1"
+      },
+      "forms": [
+        {
+          "selector": "form",
+          "entries": [
+            [
+              "search",
+              "Model guide"
+            ]
+          ]
+        },
+        {
+          "selector": "form.hab-filters",
+          "entries": [
+            [
+              "search",
+              "Model guide"
+            ],
+            [
+              "material",
+              "wood"
+            ],
+            [
+              "finish",
+              "natural"
+            ],
+            [
+              "sort",
+              "price-desc"
+            ],
+            [
+              "limit",
+              "1"
+            ],
+            [
+              "category",
+              "Accessories"
+            ],
+            [
+              "country_of_origin",
+              "India"
+            ],
+            [
+              "connector",
+              "usb-c"
+            ],
+            [
+              "connector",
+              "hdmi"
+            ],
+            [
+              "max_width_cm",
+              "61"
+            ],
+            [
+              "max_depth_cm",
+              "76.3"
+            ]
+          ]
+        }
+      ],
+      "findings": [],
+      "capabilityGaps": [
+        {
+          "key": "max_width_cm",
+          "visibleControls": 0,
+          "classification": "ACTUAL_386_NO_THRESHOLD_OR_UNIT_FACET; retention/clear required, visible chooser not required"
+        },
+        {
+          "key": "max_depth_cm",
+          "visibleControls": 0,
+          "classification": "ACTUAL_386_NO_THRESHOLD_OR_UNIT_FACET; retention/clear required, visible chooser not required"
+        }
+      ],
+      "auxiliaryHtml": [
+        "habitat-search-synthetic-physical-capability.html"
+      ],
+      "syntheticPhysicalCapability": {
+        "classification": "SYNTHETIC_ACCEPTED390_RESPONSE_NOT_SQL_PROOF",
+        "measurement_capabilities": {
+          "equipment_length": {
+            "available": false,
+            "allowed_units": []
+          },
+          "max_width_cm": {
+            "available": true
+          },
+          "max_depth_cm": {
+            "available": true
+          }
+        },
+        "facets": [
+          {
+            "key": "material",
+            "value": "wood",
+            "label": "Wood",
+            "count": 4
+          },
+          {
+            "key": "material",
+            "value": "metal",
+            "label": "Metal",
+            "count": 4
+          },
+          {
+            "key": "finish",
+            "value": "natural",
+            "label": "Natural",
+            "count": 4
+          },
+          {
+            "key": "finish",
+            "value": "black",
+            "label": "Black",
+            "count": 4
+          }
+        ]
+      }
+    },
+    {
+      "slug": "letbuyy-summit",
+      "route": "collection",
+      "html": "kindred-collection.html",
+      "query": {
+        "page": 2,
+        "limit": 1,
+        "search": "Model guide",
+        "category": "Accessories",
+        "country_of_origin": "India",
+        "sort": "price-desc",
+        "min_price": 100,
+        "max_price": 1500,
+        "connector": [
+          "usb-c",
+          "hdmi"
+        ],
+        "occasion": "birthday",
+        "recipient": "friend"
+      },
+      "facets": [
+        {
+          "key": "occasion",
+          "value": "birthday",
+          "label": "birthday",
+          "count": 4
+        },
+        {
+          "key": "occasion",
+          "value": "40th-birthday",
+          "label": "40th-birthday",
+          "count": 4
+        },
+        {
+          "key": "recipient",
+          "value": "friend",
+          "label": "friend",
+          "count": 4
+        },
+        {
+          "key": "recipient",
+          "value": "colleague",
+          "label": "colleague",
+          "count": 4
+        }
+      ],
+      "sourceHashes": {
+        "packages/theme-engine/src/kindred-theme.ts": "3a47dc979dbdf5dce395fd44a858e007567820f4fac569fade603ff6da4fd551",
+        "packages/theme-engine/src/kindred-discovery.ts": "14dd29777737158a61287bf54e98571c6b3abf1e07ec542d2e7f678180ad473f",
+        "apps/commerce/web/src/lib/theme-engine/storefront-discovery.ts": "b59b34fbe89cf44f13f9dba56107f993af2632d4d2ed28fe3f9694e87743cbfc",
+        "packages/commerce-core/src/storefront-discovery.ts": "c8de3871a998df011de12791db90c868139903b5c84afb211d9e9de3a1997ff1"
+      },
+      "forms": [
+        {
+          "selector": "form.kr-filter-form",
+          "entries": [
+            [
+              "occasion",
+              "birthday"
+            ],
+            [
+              "recipient",
+              "friend"
+            ],
+            [
+              "min_price",
+              "100"
+            ],
+            [
+              "max_price",
+              "1500"
+            ],
+            [
+              "sort",
+              "price-desc"
+            ],
+            [
+              "limit",
+              "1"
+            ],
+            [
+              "search",
+              "Model guide"
+            ],
+            [
+              "category",
+              "Accessories"
+            ],
+            [
+              "country_of_origin",
+              "India"
+            ],
+            [
+              "connector",
+              "usb-c"
+            ],
+            [
+              "connector",
+              "hdmi"
+            ]
+          ]
+        }
+      ],
+      "findings": []
+    },
+    {
+      "slug": "letbuyy-summit",
+      "route": "search",
+      "html": "kindred-search.html",
+      "query": {
+        "page": 2,
+        "limit": 1,
+        "search": "Model guide",
+        "category": "Accessories",
+        "country_of_origin": "India",
+        "sort": "price-desc",
+        "min_price": 100,
+        "max_price": 1500,
+        "connector": [
+          "usb-c",
+          "hdmi"
+        ],
+        "occasion": "birthday",
+        "recipient": "friend"
+      },
+      "facets": [
+        {
+          "key": "occasion",
+          "value": "birthday",
+          "label": "birthday",
+          "count": 4
+        },
+        {
+          "key": "occasion",
+          "value": "40th-birthday",
+          "label": "40th-birthday",
+          "count": 4
+        },
+        {
+          "key": "recipient",
+          "value": "friend",
+          "label": "friend",
+          "count": 4
+        },
+        {
+          "key": "recipient",
+          "value": "colleague",
+          "label": "colleague",
+          "count": 4
+        }
+      ],
+      "sourceHashes": {
+        "packages/theme-engine/src/kindred-theme.ts": "3a47dc979dbdf5dce395fd44a858e007567820f4fac569fade603ff6da4fd551",
+        "packages/theme-engine/src/kindred-discovery.ts": "14dd29777737158a61287bf54e98571c6b3abf1e07ec542d2e7f678180ad473f",
+        "apps/commerce/web/src/lib/theme-engine/storefront-discovery.ts": "b59b34fbe89cf44f13f9dba56107f993af2632d4d2ed28fe3f9694e87743cbfc",
+        "packages/commerce-core/src/storefront-discovery.ts": "c8de3871a998df011de12791db90c868139903b5c84afb211d9e9de3a1997ff1"
+      },
+      "forms": [
+        {
+          "selector": "form.kr-search-form.lb-search-box__form",
+          "entries": [
+            [
+              "search",
+              "Model guide"
+            ],
+            [
+              "limit",
+              "1"
+            ],
+            [
+              "category",
+              "Accessories"
+            ],
+            [
+              "country_of_origin",
+              "India"
+            ],
+            [
+              "sort",
+              "price-desc"
+            ],
+            [
+              "min_price",
+              "100"
+            ],
+            [
+              "max_price",
+              "1500"
+            ],
+            [
+              "connector",
+              "usb-c"
+            ],
+            [
+              "connector",
+              "hdmi"
+            ],
+            [
+              "occasion",
+              "birthday"
+            ],
+            [
+              "recipient",
+              "friend"
+            ]
+          ]
+        },
+        {
+          "selector": "form.kr-filter-form",
+          "entries": [
+            [
+              "occasion",
+              "birthday"
+            ],
+            [
+              "recipient",
+              "friend"
+            ],
+            [
+              "min_price",
+              "100"
+            ],
+            [
+              "max_price",
+              "1500"
+            ],
+            [
+              "sort",
+              "price-desc"
+            ],
+            [
+              "limit",
+              "1"
+            ],
+            [
+              "search",
+              "Model guide"
+            ],
+            [
+              "category",
+              "Accessories"
+            ],
+            [
+              "country_of_origin",
+              "India"
+            ],
+            [
+              "connector",
+              "usb-c"
+            ],
+            [
+              "connector",
+              "hdmi"
+            ]
+          ]
+        }
+      ],
+      "findings": []
+    },
+    {
+      "slug": "letbuyy-nova",
+      "route": "collection",
+      "html": "madeyours-collection.html",
+      "query": {
+        "page": 2,
+        "limit": 1,
+        "search": "Model guide",
+        "category": "Accessories",
+        "country_of_origin": "India",
+        "sort": "price-desc",
+        "connector": [
+          "usb-c",
+          "hdmi"
+        ],
+        "personalization_method": "engrave"
+      },
+      "facets": [
+        {
+          "key": "personalization_method",
+          "value": "engrave",
+          "label": "engrave",
+          "count": 4
+        },
+        {
+          "key": "personalization_method",
+          "value": "embroidery",
+          "label": "embroidery",
+          "count": 4
+        }
+      ],
+      "sourceHashes": {
+        "packages/theme-engine/src/madeyours-theme.ts": "c56bdba5b9e9376c4a296cadc2d4f31a33598a033692d2f6c21daa71b3e98193",
+        "packages/theme-engine/src/madeyours-discovery.ts": "d1fc0993efd1d876e67c60f997e6cea53efd65a4fd7aba69bafe377f02803eda",
+        "apps/commerce/web/src/lib/theme-engine/storefront-discovery.ts": "b59b34fbe89cf44f13f9dba56107f993af2632d4d2ed28fe3f9694e87743cbfc",
+        "packages/commerce-core/src/storefront-discovery.ts": "c8de3871a998df011de12791db90c868139903b5c84afb211d9e9de3a1997ff1"
+      },
+      "forms": [
+        {
+          "selector": "form.my-filters",
+          "entries": [
+            [
+              "limit",
+              "1"
+            ],
+            [
+              "search",
+              "Model guide"
+            ],
+            [
+              "category",
+              "Accessories"
+            ],
+            [
+              "country_of_origin",
+              "India"
+            ],
+            [
+              "connector",
+              "usb-c"
+            ],
+            [
+              "connector",
+              "hdmi"
+            ],
+            [
+              "page",
+              "1"
+            ],
+            [
+              "min_price",
+              ""
+            ],
+            [
+              "max_price",
+              ""
+            ],
+            [
+              "personalization_method",
+              "engrave"
+            ],
+            [
+              "sort",
+              "price-desc"
+            ]
+          ]
+        }
+      ],
+      "findings": []
+    },
+    {
+      "slug": "letbuyy-nova",
+      "route": "search",
+      "html": "madeyours-search.html",
+      "query": {
+        "page": 2,
+        "limit": 1,
+        "search": "Model guide",
+        "category": "Accessories",
+        "country_of_origin": "India",
+        "sort": "price-desc",
+        "connector": [
+          "usb-c",
+          "hdmi"
+        ],
+        "personalization_method": "engrave"
+      },
+      "facets": [
+        {
+          "key": "personalization_method",
+          "value": "engrave",
+          "label": "engrave",
+          "count": 4
+        },
+        {
+          "key": "personalization_method",
+          "value": "embroidery",
+          "label": "embroidery",
+          "count": 4
+        }
+      ],
+      "sourceHashes": {
+        "packages/theme-engine/src/madeyours-theme.ts": "c56bdba5b9e9376c4a296cadc2d4f31a33598a033692d2f6c21daa71b3e98193",
+        "packages/theme-engine/src/madeyours-discovery.ts": "d1fc0993efd1d876e67c60f997e6cea53efd65a4fd7aba69bafe377f02803eda",
+        "apps/commerce/web/src/lib/theme-engine/storefront-discovery.ts": "b59b34fbe89cf44f13f9dba56107f993af2632d4d2ed28fe3f9694e87743cbfc",
+        "packages/commerce-core/src/storefront-discovery.ts": "c8de3871a998df011de12791db90c868139903b5c84afb211d9e9de3a1997ff1"
+      },
+      "forms": [
+        {
+          "selector": "form",
+          "entries": [
+            [
+              "limit",
+              "1"
+            ],
+            [
+              "category",
+              "Accessories"
+            ],
+            [
+              "country_of_origin",
+              "India"
+            ],
+            [
+              "sort",
+              "price-desc"
+            ],
+            [
+              "connector",
+              "usb-c"
+            ],
+            [
+              "connector",
+              "hdmi"
+            ],
+            [
+              "personalization_method",
+              "engrave"
+            ],
+            [
+              "page",
+              "1"
+            ],
+            [
+              "search",
+              "Model guide"
+            ]
+          ]
+        },
+        {
+          "selector": "form.my-filters",
+          "entries": [
+            [
+              "limit",
+              "1"
+            ],
+            [
+              "search",
+              "Model guide"
+            ],
+            [
+              "category",
+              "Accessories"
+            ],
+            [
+              "country_of_origin",
+              "India"
+            ],
+            [
+              "connector",
+              "usb-c"
+            ],
+            [
+              "connector",
+              "hdmi"
+            ],
+            [
+              "page",
+              "1"
+            ],
+            [
+              "min_price",
+              ""
+            ],
+            [
+              "max_price",
+              ""
+            ],
+            [
+              "personalization_method",
+              "engrave"
+            ],
+            [
+              "sort",
+              "price-desc"
+            ]
+          ]
+        }
+      ],
+      "findings": []
+    },
+    {
+      "slug": "letbuyy-aura",
+      "route": "collection",
+      "html": "dewdrop-collection.html",
+      "query": {
+        "page": 2,
+        "limit": 1,
+        "search": "Model guide",
+        "category": "Accessories",
+        "country_of_origin": "India",
+        "sort": "price-desc",
+        "connector": [
+          "usb-c",
+          "hdmi"
+        ],
+        "routine_stage": "colour",
+        "format": "tint",
+        "shade": "rosewater"
+      },
+      "facets": [
+        {
+          "key": "routine_stage",
+          "value": "colour",
+          "label": "colour",
+          "count": 4
+        },
+        {
+          "key": "routine_stage",
+          "value": "care",
+          "label": "care",
+          "count": 4
+        },
+        {
+          "key": "format",
+          "value": "tint",
+          "label": "Tint",
+          "count": 4
+        },
+        {
+          "key": "format",
+          "value": "cream",
+          "label": "Cream",
+          "count": 4
+        },
+        {
+          "key": "shade",
+          "value": "rosewater",
+          "label": "Rosewater",
+          "count": 4
+        },
+        {
+          "key": "shade",
+          "value": "clay",
+          "label": "Clay",
+          "count": 4
+        }
+      ],
+      "sourceHashes": {
+        "packages/theme-engine/src/dewdrop-theme.ts": "ec0cf0890c607056c1da13087b1c51ee6931d120c46370802360b740f0693190",
+        "packages/theme-engine/src/dewdrop-discovery.ts": "a9d866eeb5dedc2b123bdf2a287b9a0be23789b39c93c1e1872471c975de1fe1",
+        "apps/commerce/web/src/lib/theme-engine/storefront-discovery.ts": "b59b34fbe89cf44f13f9dba56107f993af2632d4d2ed28fe3f9694e87743cbfc",
+        "packages/commerce-core/src/storefront-discovery.ts": "c8de3871a998df011de12791db90c868139903b5c84afb211d9e9de3a1997ff1"
+      },
+      "forms": [
+        {
+          "selector": "form.dd-filters",
+          "entries": [
+            [
+              "search",
+              "Model guide"
+            ],
+            [
+              "routine_stage",
+              "colour"
+            ],
+            [
+              "format",
+              "tint"
+            ],
+            [
+              "shade",
+              "rosewater"
+            ],
+            [
+              "sort",
+              "price-desc"
+            ],
+            [
+              "limit",
+              "1"
+            ],
+            [
+              "category",
+              "Accessories"
+            ],
+            [
+              "country_of_origin",
+              "India"
+            ],
+            [
+              "connector",
+              "usb-c"
+            ],
+            [
+              "connector",
+              "hdmi"
+            ]
+          ]
+        }
+      ],
+      "findings": []
+    },
+    {
+      "slug": "letbuyy-aura",
+      "route": "search",
+      "html": "dewdrop-search.html",
+      "query": {
+        "page": 2,
+        "limit": 1,
+        "search": "Model guide",
+        "category": "Accessories",
+        "country_of_origin": "India",
+        "sort": "price-desc",
+        "connector": [
+          "usb-c",
+          "hdmi"
+        ],
+        "routine_stage": "colour",
+        "format": "tint",
+        "shade": "rosewater"
+      },
+      "facets": [
+        {
+          "key": "routine_stage",
+          "value": "colour",
+          "label": "colour",
+          "count": 4
+        },
+        {
+          "key": "routine_stage",
+          "value": "care",
+          "label": "care",
+          "count": 4
+        },
+        {
+          "key": "format",
+          "value": "tint",
+          "label": "Tint",
+          "count": 4
+        },
+        {
+          "key": "format",
+          "value": "cream",
+          "label": "Cream",
+          "count": 4
+        },
+        {
+          "key": "shade",
+          "value": "rosewater",
+          "label": "Rosewater",
+          "count": 4
+        },
+        {
+          "key": "shade",
+          "value": "clay",
+          "label": "Clay",
+          "count": 4
+        }
+      ],
+      "sourceHashes": {
+        "packages/theme-engine/src/dewdrop-theme.ts": "ec0cf0890c607056c1da13087b1c51ee6931d120c46370802360b740f0693190",
+        "packages/theme-engine/src/dewdrop-discovery.ts": "a9d866eeb5dedc2b123bdf2a287b9a0be23789b39c93c1e1872471c975de1fe1",
+        "apps/commerce/web/src/lib/theme-engine/storefront-discovery.ts": "b59b34fbe89cf44f13f9dba56107f993af2632d4d2ed28fe3f9694e87743cbfc",
+        "packages/commerce-core/src/storefront-discovery.ts": "c8de3871a998df011de12791db90c868139903b5c84afb211d9e9de3a1997ff1"
+      },
+      "forms": [
+        {
+          "selector": "form.dd-filters",
+          "entries": [
+            [
+              "search",
+              "Model guide"
+            ],
+            [
+              "routine_stage",
+              "colour"
+            ],
+            [
+              "format",
+              "tint"
+            ],
+            [
+              "shade",
+              "rosewater"
+            ],
+            [
+              "sort",
+              "price-desc"
+            ],
+            [
+              "limit",
+              "1"
+            ],
+            [
+              "category",
+              "Accessories"
+            ],
+            [
+              "country_of_origin",
+              "India"
+            ],
+            [
+              "connector",
+              "usb-c"
+            ],
+            [
+              "connector",
+              "hdmi"
+            ]
+          ]
+        }
+      ],
+      "findings": []
+    },
+    {
+      "slug": "letbuyy-ride",
+      "route": "collection",
+      "html": "trailmark-collection.html",
+      "query": {
+        "page": 2,
+        "limit": 1,
+        "search": "Model guide",
+        "category": "Accessories",
+        "country_of_origin": "India",
+        "sort": "price-desc",
+        "connector": [
+          "usb-c",
+          "hdmi"
+        ],
+        "activity": "badminton",
+        "equipment_type": "racket",
+        "length_value": 67.5,
+        "length_unit": "cm"
+      },
+      "facets": [
+        {
+          "key": "activity",
+          "value": "badminton",
+          "label": "badminton",
+          "count": 4
+        },
+        {
+          "key": "activity",
+          "value": "tennis",
+          "label": "tennis",
+          "count": 4
+        },
+        {
+          "key": "equipment_type",
+          "value": "racket",
+          "label": "racket",
+          "count": 4
+        },
+        {
+          "key": "equipment_type",
+          "value": "shuttles",
+          "label": "shuttles",
+          "count": 4
+        }
+      ],
+      "sourceHashes": {
+        "packages/theme-engine/src/trailmark-theme.ts": "ec412bcee2940769612323c2155ac807cef8d73bd1a06caa754cbb1fd11e90b5",
+        "packages/theme-engine/src/trailmark-discovery.ts": "f69edf5815a19e513416ebb970e661793a88994a12f70e1e0e6d214f021741cb",
+        "apps/commerce/web/src/lib/theme-engine/storefront-discovery.ts": "b59b34fbe89cf44f13f9dba56107f993af2632d4d2ed28fe3f9694e87743cbfc",
+        "packages/commerce-core/src/storefront-discovery.ts": "c8de3871a998df011de12791db90c868139903b5c84afb211d9e9de3a1997ff1"
+      },
+      "forms": [
+        {
+          "selector": "form.tm-discovery-form",
+          "entries": [
+            [
+              "search",
+              "Model guide"
+            ],
+            [
+              "activity",
+              "badminton"
+            ],
+            [
+              "equipment_type",
+              "racket"
+            ],
+            [
+              "sort",
+              "price-desc"
+            ],
+            [
+              "limit",
+              "1"
+            ],
+            [
+              "category",
+              "Accessories"
+            ],
+            [
+              "country_of_origin",
+              "India"
+            ],
+            [
+              "connector",
+              "usb-c"
+            ],
+            [
+              "connector",
+              "hdmi"
+            ],
+            [
+              "length_value",
+              "67.5"
+            ],
+            [
+              "length_unit",
+              "cm"
+            ]
+          ]
+        }
+      ],
+      "findings": [],
+      "capabilityGaps": [
+        {
+          "key": "length_value",
+          "visibleControls": 0,
+          "classification": "ACTUAL_386_NO_THRESHOLD_OR_UNIT_FACET; retention/clear required, visible chooser not required"
+        },
+        {
+          "key": "length_unit",
+          "visibleControls": 0,
+          "classification": "ACTUAL_386_NO_THRESHOLD_OR_UNIT_FACET; retention/clear required, visible chooser not required"
+        }
+      ],
+      "auxiliaryHtml": [
+        "trailmark-collection-synthetic-physical-capability.html"
+      ],
+      "syntheticPhysicalCapability": {
+        "classification": "SYNTHETIC_ACCEPTED390_RESPONSE_NOT_SQL_PROOF",
+        "measurement_capabilities": {
+          "equipment_length": {
+            "available": true,
+            "allowed_units": [
+              "mm",
+              "cm",
+              "m",
+              "in"
+            ]
+          },
+          "max_width_cm": {
+            "available": false
+          },
+          "max_depth_cm": {
+            "available": false
+          }
+        },
+        "facets": [
+          {
+            "key": "activity",
+            "value": "badminton",
+            "label": "badminton",
+            "count": 4
+          },
+          {
+            "key": "activity",
+            "value": "tennis",
+            "label": "tennis",
+            "count": 4
+          },
+          {
+            "key": "equipment_type",
+            "value": "racket",
+            "label": "racket",
+            "count": 4
+          },
+          {
+            "key": "equipment_type",
+            "value": "shuttles",
+            "label": "shuttles",
+            "count": 4
+          }
+        ]
+      }
+    },
+    {
+      "slug": "letbuyy-ride",
+      "route": "search",
+      "html": "trailmark-search.html",
+      "query": {
+        "page": 2,
+        "limit": 1,
+        "search": "Model guide",
+        "category": "Accessories",
+        "country_of_origin": "India",
+        "sort": "price-desc",
+        "connector": [
+          "usb-c",
+          "hdmi"
+        ],
+        "activity": "badminton",
+        "equipment_type": "racket",
+        "length_value": 67.5,
+        "length_unit": "cm"
+      },
+      "facets": [
+        {
+          "key": "activity",
+          "value": "badminton",
+          "label": "badminton",
+          "count": 4
+        },
+        {
+          "key": "activity",
+          "value": "tennis",
+          "label": "tennis",
+          "count": 4
+        },
+        {
+          "key": "equipment_type",
+          "value": "racket",
+          "label": "racket",
+          "count": 4
+        },
+        {
+          "key": "equipment_type",
+          "value": "shuttles",
+          "label": "shuttles",
+          "count": 4
+        }
+      ],
+      "sourceHashes": {
+        "packages/theme-engine/src/trailmark-theme.ts": "ec412bcee2940769612323c2155ac807cef8d73bd1a06caa754cbb1fd11e90b5",
+        "packages/theme-engine/src/trailmark-discovery.ts": "f69edf5815a19e513416ebb970e661793a88994a12f70e1e0e6d214f021741cb",
+        "apps/commerce/web/src/lib/theme-engine/storefront-discovery.ts": "b59b34fbe89cf44f13f9dba56107f993af2632d4d2ed28fe3f9694e87743cbfc",
+        "packages/commerce-core/src/storefront-discovery.ts": "c8de3871a998df011de12791db90c868139903b5c84afb211d9e9de3a1997ff1"
+      },
+      "forms": [
+        {
+          "selector": "form.tm-discovery-form",
+          "entries": [
+            [
+              "search",
+              "Model guide"
+            ],
+            [
+              "activity",
+              "badminton"
+            ],
+            [
+              "equipment_type",
+              "racket"
+            ],
+            [
+              "sort",
+              "price-desc"
+            ],
+            [
+              "limit",
+              "1"
+            ],
+            [
+              "category",
+              "Accessories"
+            ],
+            [
+              "country_of_origin",
+              "India"
+            ],
+            [
+              "connector",
+              "usb-c"
+            ],
+            [
+              "connector",
+              "hdmi"
+            ],
+            [
+              "length_value",
+              "67.5"
+            ],
+            [
+              "length_unit",
+              "cm"
+            ]
+          ]
+        }
+      ],
+      "findings": [],
+      "capabilityGaps": [
+        {
+          "key": "length_value",
+          "visibleControls": 0,
+          "classification": "ACTUAL_386_NO_THRESHOLD_OR_UNIT_FACET; retention/clear required, visible chooser not required"
+        },
+        {
+          "key": "length_unit",
+          "visibleControls": 0,
+          "classification": "ACTUAL_386_NO_THRESHOLD_OR_UNIT_FACET; retention/clear required, visible chooser not required"
+        }
+      ],
+      "auxiliaryHtml": [
+        "trailmark-search-synthetic-physical-capability.html"
+      ],
+      "syntheticPhysicalCapability": {
+        "classification": "SYNTHETIC_ACCEPTED390_RESPONSE_NOT_SQL_PROOF",
+        "measurement_capabilities": {
+          "equipment_length": {
+            "available": true,
+            "allowed_units": [
+              "mm",
+              "cm",
+              "m",
+              "in"
+            ]
+          },
+          "max_width_cm": {
+            "available": false
+          },
+          "max_depth_cm": {
+            "available": false
+          }
+        },
+        "facets": [
+          {
+            "key": "activity",
+            "value": "badminton",
+            "label": "badminton",
+            "count": 4
+          },
+          {
+            "key": "activity",
+            "value": "tennis",
+            "label": "tennis",
+            "count": 4
+          },
+          {
+            "key": "equipment_type",
+            "value": "racket",
+            "label": "racket",
+            "count": 4
+          },
+          {
+            "key": "equipment_type",
+            "value": "shuttles",
+            "label": "shuttles",
+            "count": 4
+          }
+        ]
+      }
+    },
+    {
+      "slug": "letbuyy-dawn",
+      "route": "collection",
+      "html": "marginalia-collection.html",
+      "query": {
+        "page": 2,
+        "limit": 1,
+        "search": "Model guide",
+        "category": "Accessories",
+        "country_of_origin": "India",
+        "sort": "price-desc",
+        "connector": [
+          "usb-c",
+          "hdmi"
+        ],
+        "books_kind": "book",
+        "books_author": "Asha",
+        "books_subject": "fiction",
+        "books_language": "english",
+        "books_format": "paperback"
+      },
+      "facets": [
+        {
+          "key": "books_kind",
+          "value": "book",
+          "label": "book",
+          "count": 4
+        },
+        {
+          "key": "books_kind",
+          "value": "stationery",
+          "label": "stationery",
+          "count": 4
+        },
+        {
+          "key": "books_subject",
+          "value": "fiction",
+          "label": "Fiction",
+          "count": 4
+        },
+        {
+          "key": "books_subject",
+          "value": "design",
+          "label": "Design",
+          "count": 4
+        },
+        {
+          "key": "books_language",
+          "value": "english",
+          "label": "English",
+          "count": 4
+        },
+        {
+          "key": "books_language",
+          "value": "hindi",
+          "label": "Hindi",
+          "count": 4
+        },
+        {
+          "key": "books_format",
+          "value": "paperback",
+          "label": "paperback",
+          "count": 4
+        },
+        {
+          "key": "books_format",
+          "value": "hardback",
+          "label": "hardback",
+          "count": 4
+        }
+      ],
+      "sourceHashes": {
+        "packages/theme-engine/src/marginalia-theme.ts": "a109aa33018aa786dffaea7a067415b13fe73ddc17beca7ef18a83f58301b7e9",
+        "packages/theme-engine/src/marginalia-discovery.ts": "a1c2c75b3497fc3f0edc1280686b75c7434e1a400c0944154c462561b62cc8d3",
+        "apps/commerce/web/src/lib/theme-engine/storefront-discovery.ts": "b59b34fbe89cf44f13f9dba56107f993af2632d4d2ed28fe3f9694e87743cbfc",
+        "packages/commerce-core/src/storefront-discovery.ts": "c8de3871a998df011de12791db90c868139903b5c84afb211d9e9de3a1997ff1"
+      },
+      "forms": [
+        {
+          "selector": "form.mg-filters",
+          "entries": [
+            [
+              "limit",
+              "1"
+            ],
+            [
+              "category",
+              "Accessories"
+            ],
+            [
+              "country_of_origin",
+              "India"
+            ],
+            [
+              "connector",
+              "usb-c"
+            ],
+            [
+              "connector",
+              "hdmi"
+            ],
+            [
+              "page",
+              "1"
+            ],
+            [
+              "search",
+              "Model guide"
+            ],
+            [
+              "books_author",
+              "Asha"
+            ],
+            [
+              "books_subject",
+              "fiction"
+            ],
+            [
+              "books_language",
+              "english"
+            ],
+            [
+              "books_format",
+              "paperback"
+            ],
+            [
+              "books_kind",
+              "book"
+            ],
+            [
+              "sort",
+              "price-desc"
+            ]
+          ]
+        }
+      ],
+      "findings": [],
+      "auxiliaryHtml": [
+        "marginalia-collection-stationery.html"
+      ]
+    },
+    {
+      "slug": "letbuyy-dawn",
+      "route": "search",
+      "html": "marginalia-search.html",
+      "query": {
+        "page": 2,
+        "limit": 1,
+        "search": "Model guide",
+        "category": "Accessories",
+        "country_of_origin": "India",
+        "sort": "price-desc",
+        "connector": [
+          "usb-c",
+          "hdmi"
+        ],
+        "books_kind": "book",
+        "books_author": "Asha",
+        "books_subject": "fiction",
+        "books_language": "english",
+        "books_format": "paperback"
+      },
+      "facets": [
+        {
+          "key": "books_kind",
+          "value": "book",
+          "label": "book",
+          "count": 4
+        },
+        {
+          "key": "books_kind",
+          "value": "stationery",
+          "label": "stationery",
+          "count": 4
+        },
+        {
+          "key": "books_subject",
+          "value": "fiction",
+          "label": "Fiction",
+          "count": 4
+        },
+        {
+          "key": "books_subject",
+          "value": "design",
+          "label": "Design",
+          "count": 4
+        },
+        {
+          "key": "books_language",
+          "value": "english",
+          "label": "English",
+          "count": 4
+        },
+        {
+          "key": "books_language",
+          "value": "hindi",
+          "label": "Hindi",
+          "count": 4
+        },
+        {
+          "key": "books_format",
+          "value": "paperback",
+          "label": "paperback",
+          "count": 4
+        },
+        {
+          "key": "books_format",
+          "value": "hardback",
+          "label": "hardback",
+          "count": 4
+        }
+      ],
+      "sourceHashes": {
+        "packages/theme-engine/src/marginalia-theme.ts": "a109aa33018aa786dffaea7a067415b13fe73ddc17beca7ef18a83f58301b7e9",
+        "packages/theme-engine/src/marginalia-discovery.ts": "a1c2c75b3497fc3f0edc1280686b75c7434e1a400c0944154c462561b62cc8d3",
+        "apps/commerce/web/src/lib/theme-engine/storefront-discovery.ts": "b59b34fbe89cf44f13f9dba56107f993af2632d4d2ed28fe3f9694e87743cbfc",
+        "packages/commerce-core/src/storefront-discovery.ts": "c8de3871a998df011de12791db90c868139903b5c84afb211d9e9de3a1997ff1"
+      },
+      "forms": [
+        {
+          "selector": "form.mg-filters",
+          "entries": [
+            [
+              "limit",
+              "1"
+            ],
+            [
+              "category",
+              "Accessories"
+            ],
+            [
+              "country_of_origin",
+              "India"
+            ],
+            [
+              "connector",
+              "usb-c"
+            ],
+            [
+              "connector",
+              "hdmi"
+            ],
+            [
+              "page",
+              "1"
+            ],
+            [
+              "search",
+              "Model guide"
+            ],
+            [
+              "books_author",
+              "Asha"
+            ],
+            [
+              "books_subject",
+              "fiction"
+            ],
+            [
+              "books_language",
+              "english"
+            ],
+            [
+              "books_format",
+              "paperback"
+            ],
+            [
+              "books_kind",
+              "book"
+            ],
+            [
+              "sort",
+              "price-desc"
+            ]
+          ]
+        }
+      ],
+      "findings": [],
+      "auxiliaryHtml": [
+        "marginalia-search-stationery.html"
+      ]
+    }
+  ]
+}

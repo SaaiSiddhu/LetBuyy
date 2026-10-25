@@ -1,0 +1,2114 @@
+{
+  "schemaVersion": 1,
+  "theme": "Kindred",
+  "designVersion": "1.2",
+  "date": "2026-10-23",
+  "result": "pass",
+  "scope": "Local design-artifact integrity; not production, backend, usability or accessibility certification",
+  "images": 45,
+  "boards": 15,
+  "exports": 45,
+  "audits": 45,
+  "checksPassed": 265,
+  "checksFailed": 0,
+  "errors": [],
+  "checks": [
+    {
+      "name": "15 unique scenes",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "45 individual PNGs and15 additional boards",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "45 unique scene-device exports/audits",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "images/01-home-top-desktop.png signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "images/01-home-top-mobile.png signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "images/01-home-top-tablet.png signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "images/02-home-bottom-desktop.png signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "images/02-home-bottom-mobile.png signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "images/02-home-bottom-tablet.png signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "images/03-collection-desktop.png signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "images/03-collection-mobile.png signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "images/03-collection-tablet.png signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "images/04-product-selection-desktop.png signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "images/04-product-selection-mobile.png signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "images/04-product-selection-tablet.png signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "images/05-product-contents-desktop.png signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "images/05-product-contents-mobile.png signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "images/05-product-contents-tablet.png signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "images/06-product-continuation-desktop.png signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "images/06-product-continuation-mobile.png signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "images/06-product-continuation-tablet.png signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "images/07-cart-desktop.png signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "images/07-cart-mobile.png signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "images/07-cart-tablet.png signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "images/08-checkout-address-desktop.png signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "images/08-checkout-address-mobile.png signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "images/08-checkout-address-tablet.png signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "images/09-checkout-review-desktop.png signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "images/09-checkout-review-mobile.png signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "images/09-checkout-review-tablet.png signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "images/10-sign-in-desktop.png signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "images/10-sign-in-mobile.png signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "images/10-sign-in-tablet.png signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "images/11-create-account-desktop.png signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "images/11-create-account-mobile.png signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "images/11-create-account-tablet.png signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "images/12-profile-desktop.png signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "images/12-profile-mobile.png signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "images/12-profile-tablet.png signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "images/13-orders-desktop.png signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "images/13-orders-mobile.png signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "images/13-orders-tablet.png signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "images/14-order-detail-desktop.png signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "images/14-order-detail-mobile.png signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "images/14-order-detail-tablet.png signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "images/15-addresses-desktop.png signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "images/15-addresses-mobile.png signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "images/15-addresses-tablet.png signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "boards/01-home-top-devices.png signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "boards/02-home-bottom-devices.png signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "boards/03-collection-devices.png signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "boards/04-product-selection-devices.png signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "boards/05-product-contents-devices.png signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "boards/06-product-continuation-devices.png signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "boards/07-cart-devices.png signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "boards/08-checkout-address-devices.png signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "boards/09-checkout-review-devices.png signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "boards/10-sign-in-devices.png signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "boards/11-create-account-devices.png signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "boards/12-profile-devices.png signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "boards/13-orders-devices.png signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "boards/14-order-detail-devices.png signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "boards/15-addresses-devices.png signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "individual exports are byte-distinct",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "01-home-top desktop exact actual viewport and PNG",
+      "passed": true,
+      "detail": {
+        "png": [
+          1440,
+          1253
+        ],
+        "innerViewport": [
+          1440,
+          1000
+        ]
+      }
+    },
+    {
+      "name": "01-home-top desktop ready/no overflow",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "01-home-top desktop body font loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "01-home-top desktop Playfair heading loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "01-home-top tablet exact actual viewport and PNG",
+      "passed": true,
+      "detail": {
+        "png": [
+          834,
+          1352
+        ],
+        "innerViewport": [
+          834,
+          1112
+        ]
+      }
+    },
+    {
+      "name": "01-home-top tablet ready/no overflow",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "01-home-top tablet body font loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "01-home-top tablet Playfair heading loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "01-home-top mobile exact actual viewport and PNG",
+      "passed": true,
+      "detail": {
+        "png": [
+          390,
+          1618
+        ],
+        "innerViewport": [
+          390,
+          844
+        ]
+      }
+    },
+    {
+      "name": "01-home-top mobile ready/no overflow",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "01-home-top mobile body font loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "01-home-top mobile Playfair heading loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "02-home-bottom desktop exact actual viewport and PNG",
+      "passed": true,
+      "detail": {
+        "png": [
+          1440,
+          2197
+        ],
+        "innerViewport": [
+          1440,
+          1000
+        ]
+      }
+    },
+    {
+      "name": "02-home-bottom desktop ready/no overflow",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "02-home-bottom desktop body font loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "02-home-bottom desktop Playfair heading loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "02-home-bottom tablet exact actual viewport and PNG",
+      "passed": true,
+      "detail": {
+        "png": [
+          834,
+          2083
+        ],
+        "innerViewport": [
+          834,
+          1112
+        ]
+      }
+    },
+    {
+      "name": "02-home-bottom tablet ready/no overflow",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "02-home-bottom tablet body font loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "02-home-bottom tablet Playfair heading loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "02-home-bottom mobile exact actual viewport and PNG",
+      "passed": true,
+      "detail": {
+        "png": [
+          390,
+          3246
+        ],
+        "innerViewport": [
+          390,
+          844
+        ]
+      }
+    },
+    {
+      "name": "02-home-bottom mobile ready/no overflow",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "02-home-bottom mobile body font loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "02-home-bottom mobile Playfair heading loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "03-collection desktop exact actual viewport and PNG",
+      "passed": true,
+      "detail": {
+        "png": [
+          1440,
+          1658
+        ],
+        "innerViewport": [
+          1440,
+          1000
+        ]
+      }
+    },
+    {
+      "name": "03-collection desktop ready/no overflow",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "03-collection desktop body font loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "03-collection desktop Playfair heading loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "03-collection tablet exact actual viewport and PNG",
+      "passed": true,
+      "detail": {
+        "png": [
+          834,
+          2482
+        ],
+        "innerViewport": [
+          834,
+          1112
+        ]
+      }
+    },
+    {
+      "name": "03-collection tablet ready/no overflow",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "03-collection tablet body font loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "03-collection tablet Playfair heading loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "03-collection mobile exact actual viewport and PNG",
+      "passed": true,
+      "detail": {
+        "png": [
+          390,
+          2755
+        ],
+        "innerViewport": [
+          390,
+          844
+        ]
+      }
+    },
+    {
+      "name": "03-collection mobile ready/no overflow",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "03-collection mobile body font loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "03-collection mobile Playfair heading loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "04-product-selection desktop exact actual viewport and PNG",
+      "passed": true,
+      "detail": {
+        "png": [
+          1440,
+          1592
+        ],
+        "innerViewport": [
+          1440,
+          1000
+        ]
+      }
+    },
+    {
+      "name": "04-product-selection desktop ready/no overflow",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "04-product-selection desktop body font loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "04-product-selection desktop Playfair heading loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "04-product-selection tablet exact actual viewport and PNG",
+      "passed": true,
+      "detail": {
+        "png": [
+          834,
+          1792
+        ],
+        "innerViewport": [
+          834,
+          1112
+        ]
+      }
+    },
+    {
+      "name": "04-product-selection tablet ready/no overflow",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "04-product-selection tablet body font loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "04-product-selection tablet Playfair heading loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "04-product-selection mobile exact actual viewport and PNG",
+      "passed": true,
+      "detail": {
+        "png": [
+          390,
+          2361
+        ],
+        "innerViewport": [
+          390,
+          844
+        ]
+      }
+    },
+    {
+      "name": "04-product-selection mobile ready/no overflow",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "04-product-selection mobile body font loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "04-product-selection mobile Playfair heading loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "05-product-contents desktop exact actual viewport and PNG",
+      "passed": true,
+      "detail": {
+        "png": [
+          1440,
+          1626
+        ],
+        "innerViewport": [
+          1440,
+          1000
+        ]
+      }
+    },
+    {
+      "name": "05-product-contents desktop ready/no overflow",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "05-product-contents desktop body font loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "05-product-contents desktop Playfair heading loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "05-product-contents tablet exact actual viewport and PNG",
+      "passed": true,
+      "detail": {
+        "png": [
+          834,
+          1795
+        ],
+        "innerViewport": [
+          834,
+          1112
+        ]
+      }
+    },
+    {
+      "name": "05-product-contents tablet ready/no overflow",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "05-product-contents tablet body font loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "05-product-contents tablet Playfair heading loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "05-product-contents mobile exact actual viewport and PNG",
+      "passed": true,
+      "detail": {
+        "png": [
+          390,
+          2410
+        ],
+        "innerViewport": [
+          390,
+          844
+        ]
+      }
+    },
+    {
+      "name": "05-product-contents mobile ready/no overflow",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "05-product-contents mobile body font loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "05-product-contents mobile Playfair heading loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "06-product-continuation desktop exact actual viewport and PNG",
+      "passed": true,
+      "detail": {
+        "png": [
+          1440,
+          1636
+        ],
+        "innerViewport": [
+          1440,
+          1000
+        ]
+      }
+    },
+    {
+      "name": "06-product-continuation desktop ready/no overflow",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "06-product-continuation desktop body font loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "06-product-continuation desktop Playfair heading loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "06-product-continuation tablet exact actual viewport and PNG",
+      "passed": true,
+      "detail": {
+        "png": [
+          834,
+          1748
+        ],
+        "innerViewport": [
+          834,
+          1112
+        ]
+      }
+    },
+    {
+      "name": "06-product-continuation tablet ready/no overflow",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "06-product-continuation tablet body font loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "06-product-continuation tablet Playfair heading loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "06-product-continuation mobile exact actual viewport and PNG",
+      "passed": true,
+      "detail": {
+        "png": [
+          390,
+          2529
+        ],
+        "innerViewport": [
+          390,
+          844
+        ]
+      }
+    },
+    {
+      "name": "06-product-continuation mobile ready/no overflow",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "06-product-continuation mobile body font loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "06-product-continuation mobile Playfair heading loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "07-cart desktop exact actual viewport and PNG",
+      "passed": true,
+      "detail": {
+        "png": [
+          1440,
+          1309
+        ],
+        "innerViewport": [
+          1440,
+          1000
+        ]
+      }
+    },
+    {
+      "name": "07-cart desktop ready/no overflow",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "07-cart desktop body font loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "07-cart desktop Playfair heading loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "07-cart tablet exact actual viewport and PNG",
+      "passed": true,
+      "detail": {
+        "png": [
+          834,
+          1483
+        ],
+        "innerViewport": [
+          834,
+          1112
+        ]
+      }
+    },
+    {
+      "name": "07-cart tablet ready/no overflow",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "07-cart tablet body font loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "07-cart tablet Playfair heading loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "07-cart mobile exact actual viewport and PNG",
+      "passed": true,
+      "detail": {
+        "png": [
+          390,
+          2181
+        ],
+        "innerViewport": [
+          390,
+          844
+        ]
+      }
+    },
+    {
+      "name": "07-cart mobile ready/no overflow",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "07-cart mobile body font loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "07-cart mobile Playfair heading loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "08-checkout-address desktop exact actual viewport and PNG",
+      "passed": true,
+      "detail": {
+        "png": [
+          1440,
+          1316
+        ],
+        "innerViewport": [
+          1440,
+          1000
+        ]
+      }
+    },
+    {
+      "name": "08-checkout-address desktop ready/no overflow",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "08-checkout-address desktop body font loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "08-checkout-address desktop Playfair heading loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "08-checkout-address tablet exact actual viewport and PNG",
+      "passed": true,
+      "detail": {
+        "png": [
+          834,
+          1337
+        ],
+        "innerViewport": [
+          834,
+          1112
+        ]
+      }
+    },
+    {
+      "name": "08-checkout-address tablet ready/no overflow",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "08-checkout-address tablet body font loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "08-checkout-address tablet Playfair heading loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "08-checkout-address mobile exact actual viewport and PNG",
+      "passed": true,
+      "detail": {
+        "png": [
+          390,
+          1940
+        ],
+        "innerViewport": [
+          390,
+          844
+        ]
+      }
+    },
+    {
+      "name": "08-checkout-address mobile ready/no overflow",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "08-checkout-address mobile body font loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "08-checkout-address mobile Playfair heading loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "09-checkout-review desktop exact actual viewport and PNG",
+      "passed": true,
+      "detail": {
+        "png": [
+          1440,
+          1218
+        ],
+        "innerViewport": [
+          1440,
+          1000
+        ]
+      }
+    },
+    {
+      "name": "09-checkout-review desktop ready/no overflow",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "09-checkout-review desktop body font loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "09-checkout-review desktop Playfair heading loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "09-checkout-review tablet exact actual viewport and PNG",
+      "passed": true,
+      "detail": {
+        "png": [
+          834,
+          1330
+        ],
+        "innerViewport": [
+          834,
+          1112
+        ]
+      }
+    },
+    {
+      "name": "09-checkout-review tablet ready/no overflow",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "09-checkout-review tablet body font loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "09-checkout-review tablet Playfair heading loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "09-checkout-review mobile exact actual viewport and PNG",
+      "passed": true,
+      "detail": {
+        "png": [
+          390,
+          1905
+        ],
+        "innerViewport": [
+          390,
+          844
+        ]
+      }
+    },
+    {
+      "name": "09-checkout-review mobile ready/no overflow",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "09-checkout-review mobile body font loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "09-checkout-review mobile Playfair heading loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "10-sign-in desktop exact actual viewport and PNG",
+      "passed": true,
+      "detail": {
+        "png": [
+          1440,
+          1327
+        ],
+        "innerViewport": [
+          1440,
+          1000
+        ]
+      }
+    },
+    {
+      "name": "10-sign-in desktop ready/no overflow",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "10-sign-in desktop body font loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "10-sign-in tablet exact actual viewport and PNG",
+      "passed": true,
+      "detail": {
+        "png": [
+          834,
+          1327
+        ],
+        "innerViewport": [
+          834,
+          1112
+        ]
+      }
+    },
+    {
+      "name": "10-sign-in tablet ready/no overflow",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "10-sign-in tablet body font loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "10-sign-in mobile exact actual viewport and PNG",
+      "passed": true,
+      "detail": {
+        "png": [
+          390,
+          1275
+        ],
+        "innerViewport": [
+          390,
+          844
+        ]
+      }
+    },
+    {
+      "name": "10-sign-in mobile ready/no overflow",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "10-sign-in mobile body font loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "11-create-account desktop exact actual viewport and PNG",
+      "passed": true,
+      "detail": {
+        "png": [
+          1440,
+          1353
+        ],
+        "innerViewport": [
+          1440,
+          1000
+        ]
+      }
+    },
+    {
+      "name": "11-create-account desktop ready/no overflow",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "11-create-account desktop body font loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "11-create-account tablet exact actual viewport and PNG",
+      "passed": true,
+      "detail": {
+        "png": [
+          834,
+          1353
+        ],
+        "innerViewport": [
+          834,
+          1112
+        ]
+      }
+    },
+    {
+      "name": "11-create-account tablet ready/no overflow",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "11-create-account tablet body font loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "11-create-account mobile exact actual viewport and PNG",
+      "passed": true,
+      "detail": {
+        "png": [
+          390,
+          1299
+        ],
+        "innerViewport": [
+          390,
+          844
+        ]
+      }
+    },
+    {
+      "name": "11-create-account mobile ready/no overflow",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "11-create-account mobile body font loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "12-profile desktop exact actual viewport and PNG",
+      "passed": true,
+      "detail": {
+        "png": [
+          1440,
+          1357
+        ],
+        "innerViewport": [
+          1440,
+          1000
+        ]
+      }
+    },
+    {
+      "name": "12-profile desktop ready/no overflow",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "12-profile desktop body font loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "12-profile desktop Playfair heading loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "12-profile tablet exact actual viewport and PNG",
+      "passed": true,
+      "detail": {
+        "png": [
+          834,
+          1909
+        ],
+        "innerViewport": [
+          834,
+          1112
+        ]
+      }
+    },
+    {
+      "name": "12-profile tablet ready/no overflow",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "12-profile tablet body font loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "12-profile tablet Playfair heading loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "12-profile mobile exact actual viewport and PNG",
+      "passed": true,
+      "detail": {
+        "png": [
+          390,
+          2181
+        ],
+        "innerViewport": [
+          390,
+          844
+        ]
+      }
+    },
+    {
+      "name": "12-profile mobile ready/no overflow",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "12-profile mobile body font loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "12-profile mobile Playfair heading loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "13-orders desktop exact actual viewport and PNG",
+      "passed": true,
+      "detail": {
+        "png": [
+          1440,
+          1456
+        ],
+        "innerViewport": [
+          1440,
+          1000
+        ]
+      }
+    },
+    {
+      "name": "13-orders desktop ready/no overflow",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "13-orders desktop body font loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "13-orders desktop Playfair heading loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "13-orders tablet exact actual viewport and PNG",
+      "passed": true,
+      "detail": {
+        "png": [
+          834,
+          1634
+        ],
+        "innerViewport": [
+          834,
+          1112
+        ]
+      }
+    },
+    {
+      "name": "13-orders tablet ready/no overflow",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "13-orders tablet body font loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "13-orders tablet Playfair heading loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "13-orders mobile exact actual viewport and PNG",
+      "passed": true,
+      "detail": {
+        "png": [
+          390,
+          2000
+        ],
+        "innerViewport": [
+          390,
+          844
+        ]
+      }
+    },
+    {
+      "name": "13-orders mobile ready/no overflow",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "13-orders mobile body font loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "13-orders mobile Playfair heading loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "14-order-detail desktop exact actual viewport and PNG",
+      "passed": true,
+      "detail": {
+        "png": [
+          1440,
+          1667
+        ],
+        "innerViewport": [
+          1440,
+          1000
+        ]
+      }
+    },
+    {
+      "name": "14-order-detail desktop ready/no overflow",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "14-order-detail desktop body font loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "14-order-detail desktop Playfair heading loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "14-order-detail tablet exact actual viewport and PNG",
+      "passed": true,
+      "detail": {
+        "png": [
+          834,
+          2400
+        ],
+        "innerViewport": [
+          834,
+          1112
+        ]
+      }
+    },
+    {
+      "name": "14-order-detail tablet ready/no overflow",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "14-order-detail tablet body font loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "14-order-detail tablet Playfair heading loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "14-order-detail mobile exact actual viewport and PNG",
+      "passed": true,
+      "detail": {
+        "png": [
+          390,
+          2603
+        ],
+        "innerViewport": [
+          390,
+          844
+        ]
+      }
+    },
+    {
+      "name": "14-order-detail mobile ready/no overflow",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "14-order-detail mobile body font loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "14-order-detail mobile Playfair heading loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "15-addresses desktop exact actual viewport and PNG",
+      "passed": true,
+      "detail": {
+        "png": [
+          1440,
+          1557
+        ],
+        "innerViewport": [
+          1440,
+          1000
+        ]
+      }
+    },
+    {
+      "name": "15-addresses desktop ready/no overflow",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "15-addresses desktop body font loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "15-addresses desktop Playfair heading loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "15-addresses tablet exact actual viewport and PNG",
+      "passed": true,
+      "detail": {
+        "png": [
+          834,
+          2129
+        ],
+        "innerViewport": [
+          834,
+          1112
+        ]
+      }
+    },
+    {
+      "name": "15-addresses tablet ready/no overflow",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "15-addresses tablet body font loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "15-addresses tablet Playfair heading loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "15-addresses mobile exact actual viewport and PNG",
+      "passed": true,
+      "detail": {
+        "png": [
+          390,
+          2341
+        ],
+        "innerViewport": [
+          390,
+          844
+        ]
+      }
+    },
+    {
+      "name": "15-addresses mobile ready/no overflow",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "15-addresses mobile body font loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "15-addresses mobile Playfair heading loaded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "ZIP45 exact current PNG byte matches",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "all local HTML assets/links/forms resolve",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "all JSON parses",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "320px all15 and5 enlarged-text checks no horizontal overflow",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "remove-budget retains occasion and recipient",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "no gift-message control and reduced-motion active",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture arithmetic",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "canonical registration heading",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "explicit post-creation continuation",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "no mandatory email verification next screen",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "registration minimum8 guidance",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "only6 identity screenshots recaptured;39 preserved",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "current canonical identity ink/Geist in all6 recaptures",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "signed-in continuation visible in all6 recaptures",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "profile email is display text; name editing retained",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "profile correction actual capture provenance exists",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "only3 profile screenshots recaptured;42 preserved",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "profile rendered read-only email and editable name on3devices",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "text contrast body",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "text contrast support",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "text contrast primary",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "text contrast link-selected",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "text contrast error",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "text contrast success",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "text contrast identity-primary",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "text contrast identity-body",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "text contrast identity-support",
+      "passed": true,
+      "detail": null
+    }
+  ],
+  "sha256": {
+    "images/01-home-top-desktop.png": "32c6f188c5990a7f0d723b713327e7d3407b7d3a1eb8a3c0673a3ed549ae3d9b",
+    "images/01-home-top-mobile.png": "49f4390c1d5f040db38bfd118d07d3239a002b10617ea49030406119c917a6d0",
+    "images/01-home-top-tablet.png": "2ceada29abc745be34b8dd9313b62daea6780d3d6bfa0adc30477f0ec010130c",
+    "images/02-home-bottom-desktop.png": "0a5ded7c1812b136182e2636f53a4b0c9aaa09b49eb7081ed04444ae374aaf4d",
+    "images/02-home-bottom-mobile.png": "ce0c3a5f56b9ed294a353b99952a693b75c4bd4c5365588fd9aaa2aea9420d0b",
+    "images/02-home-bottom-tablet.png": "c49be6db66131204c0ae26035988316c85c57a7a45160e199b743e7d9e681fa5",
+    "images/03-collection-desktop.png": "033229ffd080d6db430406642cffb42018ee9df40e547b1a2e6bd04c52cc8b72",
+    "images/03-collection-mobile.png": "04e0fc2e4c1a4651810dd23e076806c52eff3169b789e74a5f8eef7801ab731f",
+    "images/03-collection-tablet.png": "aa806c65275d3afd356b827d6497f6c9ab9de7f76c1dec304ac41fd03b4618f1",
+    "images/04-product-selection-desktop.png": "b1643b1e0a71e6b8e28fbec2f0d25a0e270e56bc44392eb47f698b385333731a",
+    "images/04-product-selection-mobile.png": "a0a0cc65c5e329967f3150ff44e571efed4bb744bf276a82e43264db3b8584fb",
+    "images/04-product-selection-tablet.png": "c4a4ebc7bd6778cf993b2007ce4de86f5006e2b067afe013cddd7349f043be08",
+    "images/05-product-contents-desktop.png": "d8d3518f27b44d7aaae3eb962ec45a65827be31e22abe56348076f34165770d4",
+    "images/05-product-contents-mobile.png": "ad3b9b553f7e34aeda528b9aa347c1ea10a03b7618a4b37146004f73f970871e",
+    "images/05-product-contents-tablet.png": "44f602422356ab85e3f912d3741631cd0f4d101086c625804155b0c5d33d3d2c",
+    "images/06-product-continuation-desktop.png": "5b4c214648c57536f7676d09b32b407431a648ee5f064557c1209b7ba532a4e9",
+    "images/06-product-continuation-mobile.png": "673b5577e50b97ecea5917ab30960a232e8a6f1e576172fb63de17e7c00c5c83",
+    "images/06-product-continuation-tablet.png": "e68255f7a1d994d889cfb44fdd54612ed10cd156049472487246959eb82f4a69",
+    "images/07-cart-desktop.png": "1d534c3e718e77e4ad541918d59b49b69209e2f2388c8449b4cdf00073d38289",
+    "images/07-cart-mobile.png": "16b40368d8be42beb8a01ae9d0404921d9855d469a28977ca3a4e8d59edc56f2",
+    "images/07-cart-tablet.png": "a590af8604d8cd79698cc852e93779836c482e34204babb83706fb2f5f886c81",
+    "images/08-checkout-address-desktop.png": "56f16afed5f08972ac7114be117421b9e5d2f615efad5cfef74ecf8170da2714",
+    "images/08-checkout-address-mobile.png": "b9893cffa71923600430d2bc18dc6b5044f7249dc01aff70aacd0cc5b5dd8633",
+    "images/08-checkout-address-tablet.png": "4ab1fc117282c8d71ef37bd9c8dae1d1e75a18f2ec6dbccb3a310d754b728854",
+    "images/09-checkout-review-desktop.png": "5689c0ba72d0bd339a71e2dfa6d0c5d225916d4ddc36ababd403747a17800e8c",
+    "images/09-checkout-review-mobile.png": "578e09305f25dbfd3e3b5c15dba6103ce6fbb52ef0446e1a3fdbef3a24f5f10c",
+    "images/09-checkout-review-tablet.png": "35d0f9a5de80ecbbb00a70b75bd745bc57b16545cc75f8189d998da0f6882c67",
+    "images/10-sign-in-desktop.png": "6074c7c5bbf461e7f81389b5457c09f55d7bbcad741e900aa04d74f0347457a8",
+    "images/10-sign-in-mobile.png": "26c2fbb8a114723e76f96339662de4f4f39449e7bce202c7c0bd086b57700270",
+    "images/10-sign-in-tablet.png": "f3067a7c6d6fbc9ded4049f95febd04fda722712b962ee5f891da26ace311c0d",
+    "images/11-create-account-desktop.png": "355974791fa5884c7e457d00d8ac60a545cee4537a5f47952d9722efea2458ee",
+    "images/11-create-account-mobile.png": "a89d075e46f336d57cf3f39feba867a18fdecff9b236b7f78d9cc0d937f6491a",
+    "images/11-create-account-tablet.png": "83aebed592540c11c4a43c168901a641b5b37ace152ebc8589d85042704c4cc2",
+    "images/12-profile-desktop.png": "d2dd3b5755da1e7ddbe04931f0d2d6c9cd31bda389d21e8eba325005fc73998c",
+    "images/12-profile-mobile.png": "56c096a8173034ba217524d605683ba74e3aafbd2b0beee03ee99603411a06bc",
+    "images/12-profile-tablet.png": "0108c599d2c85395dec1a6e8a1034713b24574c516cb009eaff839045ee05e55",
+    "images/13-orders-desktop.png": "8390e7a5126275266c1b320c1fbaa2212028ad6ae4cc5aee25ec2dcfab1286b9",
+    "images/13-orders-mobile.png": "3e6463df1256d416b93b3a8521d59d5eb1905bd996acbd4339c5f0e04f16edf0",
+    "images/13-orders-tablet.png": "b7dad8378ba22e99382d56abb79e82b447b58cbd3df43e2a7d7a0ddeba88ee95",
+    "images/14-order-detail-desktop.png": "4b01abd5ff4665586eae39b0e445a9c3e4cc9f3c95ea534d659cb5f699d69155",
+    "images/14-order-detail-mobile.png": "2f8f68444d57a2c23508f3e1ef8c2d8750f05d91b2c491ba597af1d41bfac59c",
+    "images/14-order-detail-tablet.png": "5891b82b1a4866d913affd8f4543ac27dcc2486afce8cfb9f5ffcb65790b9e8e",
+    "images/15-addresses-desktop.png": "225bb08797ad9fa776cb62acca85013003b5c72ed8fc86ea2603eb3c06ca4a84",
+    "images/15-addresses-mobile.png": "6a079cb76aa840ac89145c90d61438f9d8f29222e9fb2c789786ecaf8322e6e0",
+    "images/15-addresses-tablet.png": "a31c64a373d965770d94a5a1dcb2fb50554e735fada9093a86692018afe2ece4",
+    "boards/01-home-top-devices.png": "a5ab8270e7ed3590995b01f4f3f6abd80813adddf637f8e6b937268b4b6be3c1",
+    "boards/02-home-bottom-devices.png": "c5bc516f8b097266679b49bcf4e3a9ed999ef1f972c2b8bc050f1ee878880bbe",
+    "boards/03-collection-devices.png": "263433cb3989e37ee6fa76c443e9e8f0345636b03191c05e584dca6bd01ff712",
+    "boards/04-product-selection-devices.png": "12889c88e9e2f774d8b7d3646f798f88fad61e1ab25f0723720ebe507ab7376c",
+    "boards/05-product-contents-devices.png": "688818d992929f2daa788570a2dc1cc84da67aa440c1a1fe58ce29bdbfc75222",
+    "boards/06-product-continuation-devices.png": "266131c429655e1acc0b4a4d0091cde8b39dd3013b58192e4d907fe99a7c3c9d",
+    "boards/07-cart-devices.png": "1b50485b4b00365ddbb07142dc86eee771592743b9b925780fa0c68b11a757ac",
+    "boards/08-checkout-address-devices.png": "aaaf1ed1a67532ffbb8385232d37ff0e8d8521451a50826e1c1907fbad8cab17",
+    "boards/09-checkout-review-devices.png": "5d49cd57e76a8592a82c45c00c3a3b069a6ee8fa8ccc0f9c63ad10002b6710bc",
+    "boards/10-sign-in-devices.png": "2e1127a70af33a9d5f3297c46c1bd4c7e17e8c7a77780a18636f20104a4101fa",
+    "boards/11-create-account-devices.png": "ee4b2ae5a4db8020d6452d6c8a7ded26c8349f76a4570f4254c207fc34998626",
+    "boards/12-profile-devices.png": "1db31775af2205521d9c2af4513fcc89f331e2e257b0717d07a84d48ab32e5f3",
+    "boards/13-orders-devices.png": "1f36f17aab87e4e9842fb948e3fd033b8c9661c6cea03a605833696d245a2ab9",
+    "boards/14-order-detail-devices.png": "a19e7db2874bd288773a0de91026eef638e19b73f8f446067c17c508b9382e32",
+    "boards/15-addresses-devices.png": "2d468870b89923577ee8e28dc696e2ebc32e6c9823101d41a1a006c5c289b012"
+  },
+  "dimensions": {
+    "images/01-home-top-desktop.png": [
+      1440,
+      1253
+    ],
+    "images/01-home-top-mobile.png": [
+      390,
+      1618
+    ],
+    "images/01-home-top-tablet.png": [
+      834,
+      1352
+    ],
+    "images/02-home-bottom-desktop.png": [
+      1440,
+      2197
+    ],
+    "images/02-home-bottom-mobile.png": [
+      390,
+      3246
+    ],
+    "images/02-home-bottom-tablet.png": [
+      834,
+      2083
+    ],
+    "images/03-collection-desktop.png": [
+      1440,
+      1658
+    ],
+    "images/03-collection-mobile.png": [
+      390,
+      2755
+    ],
+    "images/03-collection-tablet.png": [
+      834,
+      2482
+    ],
+    "images/04-product-selection-desktop.png": [
+      1440,
+      1592
+    ],
+    "images/04-product-selection-mobile.png": [
+      390,
+      2361
+    ],
+    "images/04-product-selection-tablet.png": [
+      834,
+      1792
+    ],
+    "images/05-product-contents-desktop.png": [
+      1440,
+      1626
+    ],
+    "images/05-product-contents-mobile.png": [
+      390,
+      2410
+    ],
+    "images/05-product-contents-tablet.png": [
+      834,
+      1795
+    ],
+    "images/06-product-continuation-desktop.png": [
+      1440,
+      1636
+    ],
+    "images/06-product-continuation-mobile.png": [
+      390,
+      2529
+    ],
+    "images/06-product-continuation-tablet.png": [
+      834,
+      1748
+    ],
+    "images/07-cart-desktop.png": [
+      1440,
+      1309
+    ],
+    "images/07-cart-mobile.png": [
+      390,
+      2181
+    ],
+    "images/07-cart-tablet.png": [
+      834,
+      1483
+    ],
+    "images/08-checkout-address-desktop.png": [
+      1440,
+      1316
+    ],
+    "images/08-checkout-address-mobile.png": [
+      390,
+      1940
+    ],
+    "images/08-checkout-address-tablet.png": [
+      834,
+      1337
+    ],
+    "images/09-checkout-review-desktop.png": [
+      1440,
+      1218
+    ],
+    "images/09-checkout-review-mobile.png": [
+      390,
+      1905
+    ],
+    "images/09-checkout-review-tablet.png": [
+      834,
+      1330
+    ],
+    "images/10-sign-in-desktop.png": [
+      1440,
+      1327
+    ],
+    "images/10-sign-in-mobile.png": [
+      390,
+      1275
+    ],
+    "images/10-sign-in-tablet.png": [
+      834,
+      1327
+    ],
+    "images/11-create-account-desktop.png": [
+      1440,
+      1353
+    ],
+    "images/11-create-account-mobile.png": [
+      390,
+      1299
+    ],
+    "images/11-create-account-tablet.png": [
+      834,
+      1353
+    ],
+    "images/12-profile-desktop.png": [
+      1440,
+      1357
+    ],
+    "images/12-profile-mobile.png": [
+      390,
+      2181
+    ],
+    "images/12-profile-tablet.png": [
+      834,
+      1909
+    ],
+    "images/13-orders-desktop.png": [
+      1440,
+      1456
+    ],
+    "images/13-orders-mobile.png": [
+      390,
+      2000
+    ],
+    "images/13-orders-tablet.png": [
+      834,
+      1634
+    ],
+    "images/14-order-detail-desktop.png": [
+      1440,
+      1667
+    ],
+    "images/14-order-detail-mobile.png": [
+      390,
+      2603
+    ],
+    "images/14-order-detail-tablet.png": [
+      834,
+      2400
+    ],
+    "images/15-addresses-desktop.png": [
+      1440,
+      1557
+    ],
+    "images/15-addresses-mobile.png": [
+      390,
+      2341
+    ],
+    "images/15-addresses-tablet.png": [
+      834,
+      2129
+    ],
+    "boards/01-home-top-devices.png": [
+      1428,
+      959
+    ],
+    "boards/02-home-bottom-devices.png": [
+      1428,
+      1773
+    ],
+    "boards/03-collection-devices.png": [
+      1428,
+      1528
+    ],
+    "boards/04-product-selection-devices.png": [
+      1428,
+      1330
+    ],
+    "boards/05-product-contents-devices.png": [
+      1428,
+      1355
+    ],
+    "boards/06-product-continuation-devices.png": [
+      1428,
+      1414
+    ],
+    "boards/07-cart-devices.png": [
+      1428,
+      1240
+    ],
+    "boards/08-checkout-address-devices.png": [
+      1428,
+      1120
+    ],
+    "boards/09-checkout-review-devices.png": [
+      1428,
+      1102
+    ],
+    "boards/10-sign-in-devices.png": [
+      1428,
+      814
+    ],
+    "boards/11-create-account-devices.png": [
+      1428,
+      826
+    ],
+    "boards/12-profile-devices.png": [
+      1428,
+      1240
+    ],
+    "boards/13-orders-devices.png": [
+      1428,
+      1150
+    ],
+    "boards/14-order-detail-devices.png": [
+      1428,
+      1452
+    ],
+    "boards/15-addresses-devices.png": [
+      1428,
+      1320
+    ]
+  },
+  "contrastPairs": [
+    {
+      "role": "body",
+      "foreground": "#342c2c",
+      "background": "#fffaf4",
+      "ratio": 13.12
+    },
+    {
+      "role": "support",
+      "foreground": "#6c5b59",
+      "background": "#fffaf4",
+      "ratio": 6.17
+    },
+    {
+      "role": "primary",
+      "foreground": "#ffffff",
+      "background": "#662e42",
+      "ratio": 10.32
+    },
+    {
+      "role": "link-selected",
+      "foreground": "#662e42",
+      "background": "#f2e7df",
+      "ratio": 8.49
+    },
+    {
+      "role": "error",
+      "foreground": "#a32323",
+      "background": "#fff1ed",
+      "ratio": 6.75
+    },
+    {
+      "role": "success",
+      "foreground": "#33513d",
+      "background": "#e5e9de",
+      "ratio": 7.15
+    },
+    {
+      "role": "identity-primary",
+      "foreground": "#ffffff",
+      "background": "#2c2642",
+      "ratio": 14.35
+    },
+    {
+      "role": "identity-body",
+      "foreground": "#111827",
+      "background": "#ffffff",
+      "ratio": 17.74
+    },
+    {
+      "role": "identity-support",
+      "foreground": "#6b7280",
+      "background": "#f6f7f9",
+      "ratio": 4.51
+    }
+  ],
+  "visualReview": "Representative full-size home/collection/PDP/checkout/identity/address screens and all15 device-board overviews inspected. Coordinator review remains independent.",
+  "limits": [
+    "Presentation-only state; no backend mutations.",
+    "200% text sizing is a selected local CSS enlargement, not native browser page zoom.",
+    "Screen reader, full keyboard, dark mode, production performance and provider completion are not certified.",
+    "No source governance/build cleanup gate run in shared dirty checkout per coordinator capture instruction."
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "classification": "FINITE_ROOT_FOUR_GET_ALLOCATION_RELEASED_AFTER_FIRST_TRANSPORT_FAILURE",
+  "recordedAt": "2026-10-23T18:03:37.614923+00:00",
+  "runId": "f6074d90e894",
+  "publishedContext": {
+    "theme": "Dewdrop",
+    "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-dewdrop-publication-A-proof.json",
+    "sha256": "85109191680a2f4ad43f7f1b4363e5a32d4cd949f157c5f6d1e0cf91624974a1",
+    "packageVersion": "2.0.0",
+    "releaseId": "c68c4117-a6f1-430a-b321-ac76c5e7b145",
+    "sourceDraftVersion": 4,
+    "releaseSha256": "57bdde21eb6270428d8d3f84255d1a2c79b25881a666ebd31352025e80aaaf91",
+    "orders": 0,
+    "installed": 1,
+    "editorObservations": {
+      "captureFailures": 0,
+      "records": []
+    }
+  },
+  "fetchInvocations": 1,
+  "httpResponsesReceived": 0,
+  "notAttempted": [
+    "model",
+    "connector-usb-c",
+    "connector-usb-a"
+  ],
+  "namePositive": "NO_HTTP_RESULT_TRANSPORT_FAILURE",
+  "searchOutcome": "NOT_ESTABLISHED",
+  "sourceConserved": true,
+  "noAuthenticationSupplied": true,
+  "noMutations": true,
+  "retries": 0,
+  "allocationReleased": true,
+  "causeKnown": false,
+  "caseAcceptanceClaimed": false,
+  "reportSha256": "4e84d6b0694749f6c158e120f4c29481f3cf19cb9e4ef16aee1e97c2d1ea10df"
+}

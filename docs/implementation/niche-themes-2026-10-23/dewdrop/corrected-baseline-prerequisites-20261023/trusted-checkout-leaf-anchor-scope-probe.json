@@ -1,0 +1,32 @@
+{
+  "recordedAt": "2026-10-23T18:10:37.188887+00:00",
+  "classification": "OFFLINE_EXPLICIT_LEAF_ANCHOR_SCOPE_PROBE_NO_TRUST_CHANGE_NO_BROWSER",
+  "purpose": "Determine whether trusting only the nonCA exact-SAN leaf could stay within approved hostname scope; do not apply unless descendant certificates are denied",
+  "results": {
+    "non_ca_leaf_issued_descendant_unrelated.localhost": {
+      "exitCode": 1,
+      "stderr": "",
+      "stdout": "---\nNo extended validation result found\nCertificate Transparency (CT) status: \u001b[31mnot verified\u001b[0m\nUnable to find at least 2 signed certificate timestamps (SCTs) from approved logs\n"
+    },
+    "non_ca_leaf_issued_descendant_checkout.localhost": {
+      "exitCode": 1,
+      "stderr": "",
+      "stdout": "---\nNo extended validation result found\nCertificate Transparency (CT) status: \u001b[31mnot verified\u001b[0m\nUnable to find at least 2 signed certificate timestamps (SCTs) from approved logs\n"
+    },
+    "exact_leaf_as_explicit_anchor_correct_host": {
+      "exitCode": 0,
+      "stderr": "",
+      "stdout": "---\nNo extended validation result found\nCertificate Transparency (CT) status: \u001b[31mnot verified\u001b[0m\nUnable to find at least 2 signed certificate timestamps (SCTs) from approved logs\n"
+    },
+    "exact_leaf_as_explicit_anchor_wrong_host": {
+      "exitCode": 1,
+      "stderr": "",
+      "stdout": "---\nNo extended validation result found\nCertificate Transparency (CT) status: \u001b[31mnot verified\u001b[0m\nUnable to find at least 2 signed certificate timestamps (SCTs) from approved logs\n"
+    }
+  },
+  "caPrivateKeyRead": false,
+  "preissuedLeafKeyUsedOnlyByOpenSSLToSignDisposableInvalidDescendants": true,
+  "keychainOrBrowserChanged": false,
+  "networkRequests": 0,
+  "allDisposableProbeKeysRemovedAfterCheck": true
+}

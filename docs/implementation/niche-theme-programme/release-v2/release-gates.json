@@ -1,0 +1,95 @@
+{
+  "id": "actual_editor_document_wire_roundtrip",
+  "state": "HOLD_UNDER_EDITOR_REVIEW",
+  "recordedAt": "2026-10-23T08:23:30.685349+00:00",
+  "heldProposalSha256": "1686be9e72bd721b6bcb553951f6fd0cf26bcf7e91af49d714041bee03307615",
+  "proposalAccepted": false,
+  "migration389SqlEmissionAllowed": false,
+  "owner": "Theme Editor — End-to-End; coordinator routes confirmed factory fixes",
+  "existingProbe": {
+    "path": "docs/implementation/theme-editor-2026-10-23/evidence/v2-editor-source-probe.mjs",
+    "observedSha256": "eacf88faee4dd63fd22b1af6f61af8904399d01496690749bc703e63c4298330"
+  },
+  "existingReport": {
+    "path": "docs/implementation/theme-editor-2026-10-23/evidence/v2-editor-source-roundtrip.json",
+    "observedSha256": "e42771d96095b0cb29193b5dfb76005574c7be2fb2bb04c79614208f4f148d9a",
+    "createdAt": "2026-10-23T08:22:20.215Z",
+    "classification": "SOURCE_CONTRACT_ONLY_NOT_INSTALLED_OR_BROWSER_ACCEPTANCE",
+    "observedSummary": [
+      {
+        "slug": "letbuyy-forge",
+        "templates": 21,
+        "flaggedTemplates": 21,
+        "baselineIssueCount": 3
+      },
+      {
+        "slug": "letbuyy-sense",
+        "templates": 21,
+        "flaggedTemplates": 0,
+        "baselineIssueCount": 0
+      },
+      {
+        "slug": "letbuyy-aura",
+        "templates": 21,
+        "flaggedTemplates": 21,
+        "baselineIssueCount": 1
+      },
+      {
+        "slug": "letbuyy-craft",
+        "templates": 21,
+        "flaggedTemplates": 0,
+        "baselineIssueCount": 0
+      },
+      {
+        "slug": "letbuyy-refresh",
+        "templates": 21,
+        "flaggedTemplates": 21,
+        "baselineIssueCount": 1
+      },
+      {
+        "slug": "letbuyy-ride",
+        "templates": 21,
+        "flaggedTemplates": 21,
+        "baselineIssueCount": 1
+      },
+      {
+        "slug": "letbuyy-dawn",
+        "templates": 21,
+        "flaggedTemplates": 21,
+        "baselineIssueCount": 1
+      },
+      {
+        "slug": "letbuyy-bloom",
+        "templates": 21,
+        "flaggedTemplates": 21,
+        "baselineIssueCount": 2
+      },
+      {
+        "slug": "letbuyy-nova",
+        "templates": 21,
+        "flaggedTemplates": 21,
+        "baselineIssueCount": 1
+      },
+      {
+        "slug": "letbuyy-summit",
+        "templates": 21,
+        "flaggedTemplates": 21,
+        "baselineIssueCount": 1
+      }
+    ]
+  },
+  "findingStatus": "Preliminary source/default/schema observations. Editor is distinguishing genuine factory defects from undefined adapter properties removed by actual JSON wire encoding; these are not yet eight confirmed factory defects.",
+  "requiredAcceptance": [
+    "Reuse the existing actual editor normalization/buildDraftConfig and canonical registry/document/portable-to-Liquid paths; do not create another schema or adapter.",
+    "Assess every one of the 21 supported non-group template keys for all nine explicit v2 themes, with Threadline retained as a protected control.",
+    "Classify raw baseline observations against actual JSON wire encoding before naming a factory defect. Confirmed schema/default/typed-value defects must be fixed by the allocated owner and pass the same probe.",
+    "Validate normalized defaults and fields, stable header/footer/block identities and the actual document roundtrip on the final source checkpoint. Source-only success does not certify installed/API/browser lifecycle.",
+    "Tie the passing probe/report inputs and bundle outputs to the final accepted nine-factory freeze. Root requests a NEW content-addressed proposal after required fixes; preserve this existing proposal."
+  ],
+  "immutableProposalFilesVerified": true,
+  "existingProposalFilesOverwritten": false,
+  "sqlCreated": false,
+  "newProbeOrSchemaCreated": false,
+  "probeRunByThisChat": false,
+  "nextStep": "Keep the current proposal immutable and unaccepted. Wait for Editor/coordinator classification and allocated fixes, then generate a new content-addressed proposal only when requested."
+}

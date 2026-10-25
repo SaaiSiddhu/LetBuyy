@@ -21,6 +21,7 @@ class HeroStoreCard extends StatefulWidget {
   final StoreModel store;
   final VoidCallback onPublishToggle;
   final MerchantBillingState? billing;
+  final String? storefrontUrl;
   final VoidCallback? onPlanTap;
   final bool isPublishing;
   final VoidCallback? onAnalyticsTap;
@@ -31,6 +32,7 @@ class HeroStoreCard extends StatefulWidget {
     required this.store,
     required this.onPublishToggle,
     this.billing,
+    this.storefrontUrl,
     this.onPlanTap,
     this.isPublishing = false,
     this.onAnalyticsTap,
@@ -70,8 +72,10 @@ class _HeroStoreCardState extends State<HeroStoreCard>
     super.dispose();
   }
 
+  String get _publicUrl => widget.storefrontUrl ?? widget.store.publicUrl;
+
   void _copyStoreUrl() {
-    Clipboard.setData(ClipboardData(text: widget.store.publicUrl));
+    Clipboard.setData(ClipboardData(text: _publicUrl));
     HapticFeedback.lightImpact();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -91,12 +95,16 @@ class _HeroStoreCardState extends State<HeroStoreCard>
     );
   }
 
-  void _shareStore() {
+  Future<void> _shareStore() async {
     HapticFeedback.mediumImpact();
-    Share.share(
-      '🏪 Check out ${widget.store.name} on LetBuyy!\n\n${widget.store.publicUrl}',
+    try {
+      await Share.share(
+      '🏪 Check out ${widget.store.name} on LetBuyy!\n\n$_publicUrl',
       subject: '${widget.store.name} - LetBuyy Store',
-    );
+      );
+    } catch (_) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not open share options. Try again.')));
+    }
   }
 
   void _showQRCode() {
@@ -107,7 +115,7 @@ class _HeroStoreCardState extends State<HeroStoreCard>
       isScrollControlled: true,
       builder: (context) => _QRCodeBottomSheet(
         storeName: widget.store.name,
-        storeUrl: widget.store.publicUrl,
+        storeUrl: _publicUrl,
         subdomain: widget.store.subdomain,
         logoUrl: widget.store.logoUrl,
       ),
@@ -171,9 +179,7 @@ class _HeroStoreCardState extends State<HeroStoreCard>
                                   icon: Icons.open_in_new_rounded,
                                   label: 'Visit',
                                   hint: 'Open the public storefront',
-                                  onTap: () => launchUrl(
-                                    Uri.parse(widget.store.publicUrl),
-                                  ),
+                                  onTap: () => launchUrl(Uri.parse(_publicUrl)),
                                 ),
                               ),
                               const SizedBox(width: 8),
@@ -330,7 +336,7 @@ class _HeroStoreCardState extends State<HeroStoreCard>
           button: true,
           enabled: true,
           label: 'Copy store URL',
-          hint: '${widget.store.publicUrl} to clipboard',
+          hint: '$_publicUrl to clipboard',
           onTap: _copyStoreUrl,
           child: ConstrainedBox(
             constraints: const BoxConstraints(minHeight: 48),
@@ -841,6 +847,8 @@ class _QRCodeBottomSheetState extends State<_QRCodeBottomSheet> {
     HapticFeedback.mediumImpact();
 
     try {
+      await WidgetsBinding.instance.endOfFrame;
+      if (!mounted) return;
       // Capture the QR card as image
       final boundary =
           _qrKey.currentContext?.findRenderObject() as RenderRepaintBoundary?;
@@ -863,9 +871,9 @@ class _QRCodeBottomSheetState extends State<_QRCodeBottomSheet> {
         subject: '${widget.storeName} - QR Code',
       );
     } catch (e) {
-      debugPrint('Error sharing QR: $e');
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not share the QR image. Try again.')));
     } finally {
-      setState(() => _isSharing = false);
+      if (mounted) setState(() => _isSharing = false);
     }
   }
 

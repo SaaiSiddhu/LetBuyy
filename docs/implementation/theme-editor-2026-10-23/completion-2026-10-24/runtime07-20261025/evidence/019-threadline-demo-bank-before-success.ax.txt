@@ -1,0 +1,13 @@
+Browser tab: 173052888, Title: "Razorpay Bank", URL: "https://api.razorpay.com/v1/gateway/mocksharp/payment?[redacted query]
+0 AXWebArea Razorpay Bank, URL: api.razorpay.com/v1/gateway/mocksharp/payment?[redacted query]
+	1 heading 1
+		2 image
+	3 heading Welcome to Razorpay Software Private Ltd Bank, Value: 3
+		4 text Welcome to Razorpay Software Private Ltd Bank
+	5 text This is just a demo bank page.
+	6 text You can choose whether to make this payment successful or not:
+	7 container
+		8 button Success
+		9 button Failure
+
+The focused UI element is 0 AXWebArea Razorpay Bank, URL: api.razorpay.com/v1/gateway/mocksharp/payment?[redacted query]

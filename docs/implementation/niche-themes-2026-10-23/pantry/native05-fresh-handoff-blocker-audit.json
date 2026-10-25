@@ -1,0 +1,93 @@
+{
+  "recordedAt": "2026-10-24T12:14:25.550647+00:00",
+  "classification": "ACTUAL_NATIVE05_FAILED_BLOCKS_FRESH_ALLOCATION_NO_PANTRY_CASE_CREDIT",
+  "nativeRunId": "45eec3e980e6",
+  "nativeQualification": "FAIL",
+  "owner": "Themes",
+  "result": {
+    "path": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/native-runs/05/result.json",
+    "sha256": "4edc59fb2667e3792750e18bbb8b6fd0559511f8ab49894cef2053f821628051"
+  },
+  "log": {
+    "path": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/native-runs/05/logs/playfield201-catalog394-qualification.manual.ts.log",
+    "sha256": "df45d520bfaf9a9eaaf9acd48ca414db49a1a7b7cc85227cd311688504c5cb56"
+  },
+  "sourceClosure": {
+    "path": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/native-runs/05/at-execution-source-input-closure.json",
+    "sha256": "0a91734bcb6e1c5c0c42e6ff905e20e6144e5a3f4204e17b3afc71fc5999e3da"
+  },
+  "exactSourcePins": [
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/playfield201-catalog394-qualification.manual.ts",
+      "sha256": "84becdfe37203f28a31471c336cce40f2b559e0d6dcb61ea7bede7d50904767c",
+      "currentMatchesAtAudit": true
+    },
+    {
+      "path": "services/api-gateway/src/lib/tenant-transaction.ts",
+      "sha256": "536eb0b6020a94d8784930543707d91ca9c8e544f0a5b24c7be25384370789c2",
+      "currentMatchesAtAudit": true
+    }
+  ],
+  "actualReproduction": {
+    "phase": 4,
+    "request": "GET /v1/themes/letbuyy-bloom/update-preview?store_id=<owned-old-site>&target_package_version_id=<new-choice>",
+    "suiteLocation": "services/api-gateway/src/__tests__/owned-db/playfield201-catalog394-qualification.manual.ts:359",
+    "expectedHttp": 200,
+    "actualHttp": 500,
+    "actualCode": "INTERNAL_ERROR",
+    "actualMessage": "An internal error occurred",
+    "checkpoint": "Normal update-preview request after temporary-shadow refusal assertion; no confirmed update followed.",
+    "rootCause": "UNPROVEN; do not reuse earlier native04 permission-error diagnosis as observed cause of this500."
+  },
+  "phaseResults": {
+    "PASS": [
+      1,
+      2,
+      3
+    ],
+    "FAIL": [
+      4
+    ],
+    "NOT_RUN": [
+      5,
+      6,
+      7,
+      8
+    ]
+  },
+  "runnerAccounting": {
+    "tests": 5,
+    "pass": 3,
+    "fail": 2,
+    "interpretation": "Failure count includes phase4 and enclosing suite; not two independent failed phases."
+  },
+  "cleanupReported": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "reapedReported": [],
+  "routedToExistingOwnerAndController": {
+    "Themes": true,
+    "Editor": true
+  },
+  "freshPantryHandoffReceived": false,
+  "trustedCheckoutFreshBrowserProofReceived": false,
+  "actualPantryEvidence": {
+    "P00-P08": "PASS_HISTORICAL936",
+    "P09": "FAIL_AFTER_TWO_PRIOR_ATTEMPTS_NOT_REVERIFIED",
+    "P10": "NOT RUN",
+    "P11": "NOT RUN",
+    "P12": "NOT RUN_REQUIRED_NO_ACTUAL_STALE_CART_RESULT"
+  },
+  "sourceNativeResultsCannotClosePantryCases": true,
+  "operationsByPantry": {
+    "sharedSourceWrites": 0,
+    "testsRerun": 0,
+    "fixtureBrowserDbProviderActions": 0,
+    "old936Reuse": 0
+  }
+}

@@ -123,6 +123,7 @@ const PRODUCT_IMPORT_MAX_ROWS = 500;
 
 function createProductExecutionAdapter(c: ExportContext): ProductExecutionAdapter {
     return new ProductExecutionAdapter(getSupabaseAdmin(c), {
+        mutationEnv: c.env,
         variantDiffEnabled: isProductVariantDiffEnabled(c.env),
     });
 }
@@ -458,7 +459,7 @@ async function createJob(
     return writeJob(c, job);
 }
 
-async function streamCsvToR2(
+export async function streamCsvToR2(
     bucket: R2Bucket,
     key: string,
     filename: string,

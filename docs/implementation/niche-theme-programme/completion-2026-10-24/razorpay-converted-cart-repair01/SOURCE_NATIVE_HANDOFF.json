@@ -1,0 +1,49 @@
+{
+  "recordedAt": "2026-10-24T15:02:42.166447+00:00",
+  "status": "SOURCE_AND_NATIVE_PASS_BROWSER_REBUILD_PENDING",
+  "problem": "Real Test payment captured122000INR minor; order stayed pending because canonical fact-snapshot order creation converted cart before confirmation guard. Older rawSQL cart tests omitted fact snapshots and did not exercise converted path.",
+  "change": "Only already-bound validINR Razorpay order can claim/resume confirmation on convertedcart; signature/currentorder/amount/provider replay and capture checks still required. No cart reopen/new order allowance.",
+  "sourcePins": [
+    {
+      "path": "services/api-gateway/src/lib/hosted-checkout-session.ts",
+      "sha256": "47cc88926ecb513f194d8523613c99bc5b449e97df61d187f96c26034bfe2a4e"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/hosted-checkout-confirmation.test.ts",
+      "sha256": "64d3faaea6859ed22036c42129378033cfa8b55ff454795e26dd9b03b85472e1"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/hosted-checkout-buyer-ownership.postgres.test.ts",
+      "sha256": "23de63ba38d0f3341ac8e0be4e0622122fbed81626f55b06d9423a153082a38d"
+    }
+  ],
+  "sourceTests": {
+    "red": "red-source.tap 1PASS1FAIL",
+    "green": "green-source.tap2PASS",
+    "gatewayTypecheckExitCode": 0
+  },
+  "nativeRunId": "06fe9e80f1ae",
+  "nativeCounts": {
+    "tests": 18,
+    "assertionsPassed": 18,
+    "assertionsFailed": 0,
+    "skipped": 0
+  },
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "sourceInputsStillExact": 1070,
+  "priorFailedAttemptsPreserved": [
+    "native01",
+    "native02",
+    "native03"
+  ],
+  "installedRuntime02IncludesFix": false,
+  "independentPeerReview": "PENDING",
+  "fullThemeCertified": false
+}

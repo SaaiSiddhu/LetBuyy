@@ -1,0 +1,61 @@
+{
+  "recordedAt": "2026-10-23T14:01:49.618338+00:00",
+  "classification": "REAL_OWNED_DATABASE_QUALIFICATION_FAILURE_NOT_PANTRY_EXECUTION",
+  "runId": "eccf5f1df418",
+  "sourceSuiteSha256": "0a17994cf8b1b3b634b991ab70b8c47dbea48bb925bc64ffbd0747a5a10057bc",
+  "releaseAdmission": {
+    "status": "ROOT_ACCEPTED_CORRECTED_PROPOSAL",
+    "manifestSha256": "81e91859ebc8c497a49da337d064e1885a76964839d14e39f4a0a3de2283f47f",
+    "manifestFileSha256": "c0e8d5b7338a70a797a2acc24976700a146f8df4f9a3716d55fab4c03e8cf515",
+    "generatorSha256": "ccbd78a2b0b47e8a6cfb33390965a32ddc611711cc4c369772199db5adb389b3",
+    "promotionUpSha256": "3d9a5e0344db7537558554b723ffc134707bf7b98fe4941bc6bf268bd7330e61",
+    "promotionDownSha256": "aecbd647393ac9dcec1466d8b7f80e21cd89a1522b6956bd0c9c479529e45927",
+    "rootReceiptPath": "docs/implementation/niche-theme-programme/release-v2-final-admission.json",
+    "rootReceiptSha256": "6e026f1adc4be82414e174a92e125d846aad4fab9119d48841350db14f22b1b6"
+  },
+  "files": [
+    {
+      "path": "docs/implementation/threadline-2026-10-22/promotion-qualification/native-runs/02/result.json",
+      "sha256": "151d29be732337d5141600683e96f24d1cefc0a7c925fe02619cc9df670f22cf"
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/promotion-qualification/native-runs/02/suite.tap",
+      "sha256": "b3785c11b450549fc8b123c44dc3bfde01ce0e82aa177754e4460cbafa0fbeee"
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/promotion-qualification/native-runs/02/source-before.json",
+      "sha256": "433f355b72ad0923c7efabb7e02fabae9d1291f8d3d39d40a9f367b59e42a8e8"
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/promotion-qualification/native-runs/02/admission.json",
+      "sha256": "5cedad1d50cbed67fdb1f60b0f94c45c6838eaca797c9800bf2f6768822b9688"
+    }
+  ],
+  "results": {
+    "tests": 5,
+    "passed": 3,
+    "failed": 2,
+    "cancelled": 0,
+    "skipped": 0,
+    "positiveChildCases": [
+      "389 applies/replays exact disk artifacts and captures real provenance before installation",
+      "All nine install/load/unchanged wire-save/reload/retry/publish use exact immutable versions",
+      "Immutable version/schema/renderer, ambiguity, revoked status and stale rollback refuse atomically"
+    ],
+    "failedChildCase": "390 measurement semantics/profile survive389 DOWN; ordered DOWN/UP restores both exact winners",
+    "failure": "Anonymous storefront request returned503 STOREFRONT_ACCESS_UNAVAILABLE / Store access is unavailable, expected200. Full rollback/public-read qualification remains red.",
+    "aggregateCounting": "Three child cases pass; final child and its parent are reported as two failures."
+  },
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "pantryCasesExecuted": 0,
+  "owner": "Storefronnt Enhancement / Threadline existing chat",
+  "ownerChatId": "01a161c9-36d1-7802-af70-d346f524bff3",
+  "candidateHash": null
+}

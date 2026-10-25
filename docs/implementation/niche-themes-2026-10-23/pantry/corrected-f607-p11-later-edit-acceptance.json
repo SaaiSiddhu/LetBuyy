@@ -1,0 +1,66 @@
+{
+  "recordedAt": "2026-10-24T00:31:43.513825+00:00",
+  "classification": "READ_ONLY_ACTUAL_NORMAL_UI_AND_GUARDED_SAVED_RECEIPT_AUDIT",
+  "runId": "f6074d90e894",
+  "candidateRoot": "/private/tmp/theme-editor-recovery-20261024-01",
+  "sourceProofSha256": "702b3a632462cff507993e80b58171fb8d0c246c2913de643bfbe4cf3438522f",
+  "sourceChangesByPantry": [],
+  "caseId": "P11",
+  "status": "PASS",
+  "orderNumber": "ORD-20261023-10001",
+  "checks": {
+    "sameProductAndVariantUuidNowLabel300gPrice240ExplicitNet300g": true,
+    "actualCurrentPdpUnit80Per100gAndNewAllergenStatementSource": true,
+    "actualPersistedCanonicalMutationOmitsUnchangedProductAndVariantStock": true,
+    "postOrderStock2AndAllPerProductInventoryExactlyConserved": true,
+    "oldOrderObjectRowHashAndItemSnapshotHashExactlyUnchanged": true,
+    "bothNormalOldHistoriesStill250gOldIngredientsUnknownAllergenPrice180Line360": true,
+    "allOrderAndInventoryProtectedHashesUnchanged": true
+  },
+  "canonicalCommandExpectedReturnedVersions": [
+    32,
+    37
+  ],
+  "immutableOldOrderRowSha256": "610c088d1e107fcbfb04b2b52934a1767fdcc6d46d4b89966ab79ceeb704d4d2",
+  "immutableOldItemSnapshotSha256": "f0dd5ee6d484b36660222bd8716e3c3a5ae3ed7863d8d406e76e477ed2d9c97a",
+  "changedProtectedGroupsAcrossBroaderEditWindow": [
+    "carts",
+    "checkout_sessions",
+    "outbox_events"
+  ],
+  "evidence": [
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-lifecycle-before-edit.json",
+      "sha256": "bc563a5d8f9e92ba8e0975f1a54b941068746506a7ff12b214d3f5fffdd13b75"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-lifecycle-after-edit.json",
+      "sha256": "ec977e720b5cffb4cd897011d8129ba78889b5e001dde562a33cce6dd336aef5"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-P11-canonical-edit-receipt.json",
+      "sha256": "0f518ccbb7ee901c52d2db138f6fe73cd1b33c3516467be7065642d485eb1f02"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-P11-current-300g-PDP.ax.txt",
+      "sha256": "d6932a6a72076d0c7e5c7658220b5f14eeecbfdef7795a43bd818d97b740b92f"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-P11-later-edit-reloaded.ax.txt",
+      "sha256": "a9a2e7aa38f0ac966abc508292a745e476917e479cf7cd68742fc89512524acc"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-P11-buyer-old-order-after-edit.ax.txt",
+      "sha256": "eb39e800044429b4bac11c986c3e177948844e09c831c03bc6bcc331bcb35617"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-P11-merchant-old-order-after-edit.ax.txt",
+      "sha256": "5b89cf57182a78f0183efe4894c2cddc18ef90d0d4e0afe26c0b22a215087bb4"
+    }
+  ],
+  "limits": [
+    "Mutation receipt is actual persisted canonical p_mutation from normal Save, not raw browser HTTP-body interception.",
+    "Global carts/checkout_sessions/outbox changed across the broader edit/control window; no all22-table invariance claim for this phase. Product inventory/order groups compared exactly.",
+    "Old snapshot hashes are retained guarded canonical serialization witnesses, not recomputed from live DB by Pantry."
+  ]
+}

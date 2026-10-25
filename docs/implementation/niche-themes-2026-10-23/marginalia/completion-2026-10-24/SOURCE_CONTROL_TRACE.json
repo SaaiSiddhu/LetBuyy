@@ -1,0 +1,180 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-24T08:51:56.061834+00:00",
+  "classification": "BOUNDED_STATIC_DECLARED_CONTROL_TRACE_NOT_INSTALLED_ACCEPTANCE",
+  "basis": "Current canonical sources; no application module/test/build/browser/runtime/database/provider execution. Existing source pins remain in SOURCE_MANIFEST.json; only newly inspected boundaries are pinned below.",
+  "additionalSources": [
+    {
+      "path": "packages/theme-engine/src/theme-renderer.ts",
+      "sha256": "794cbc6ff9ae71f995560f302e1b0d5f0d4ff4da59fa31191585851b1e822164",
+      "bytes": 107646,
+      "sourceModifiedHere": false
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/data-binding-engine.ts",
+      "sha256": "4b8334b7e07e64209d3585671ff98a4c7c359719424715119e3a2ea2d667e56d",
+      "bytes": 11971,
+      "sourceModifiedHere": false
+    },
+    {
+      "path": "apps/commerce/web/src/app/store/[subdomain]/layout.tsx",
+      "sha256": "6c1da1775b1b763e93f709ec8f11f45683cd19f3ef71cca0e9abf0e363b6076a",
+      "bytes": 15061,
+      "sourceModifiedHere": false
+    }
+  ],
+  "witnessChecks": [
+    {
+      "path": "packages/theme-engine/src/theme-bundle.ts",
+      "allWitnessFragmentsPresent": true,
+      "checkType": "STATIC_TEXT_WITNESS_NOT_RENDER_EXECUTION"
+    },
+    {
+      "path": "packages/theme-engine/src/niche-order-presentation.ts",
+      "allWitnessFragmentsPresent": true,
+      "checkType": "STATIC_TEXT_WITNESS_NOT_RENDER_EXECUTION"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-renderer.ts",
+      "allWitnessFragmentsPresent": true,
+      "checkType": "STATIC_TEXT_WITNESS_NOT_RENDER_EXECUTION"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/data-binding-engine.ts",
+      "allWitnessFragmentsPresent": true,
+      "checkType": "STATIC_TEXT_WITNESS_NOT_RENDER_EXECUTION"
+    },
+    {
+      "path": "apps/commerce/web/src/app/store/[subdomain]/layout.tsx",
+      "allWitnessFragmentsPresent": true,
+      "checkType": "STATIC_TEXT_WITNESS_NOT_RENDER_EXECUTION"
+    },
+    {
+      "path": "packages/theme-engine/src/marginalia-styles.ts",
+      "allWitnessFragmentsPresent": true,
+      "checkType": "STATIC_TEXT_WITNESS_NOT_RENDER_EXECUTION"
+    }
+  ],
+  "findings": [
+    {
+      "id": "MG-C-GAP-08",
+      "status": "OPEN",
+      "evidenceClass": "SOURCE_OBSERVED",
+      "summary": "customer-order-detail.heading is declared but the normal order heading is literal.",
+      "references": [
+        {
+          "path": "packages/theme-engine/src/theme-bundle.ts",
+          "line": 3085
+        },
+        {
+          "path": "packages/theme-engine/src/theme-bundle.ts",
+          "line": 3090
+        },
+        {
+          "path": "packages/theme-engine/src/niche-order-presentation.ts",
+          "line": 10
+        }
+      ],
+      "affectedCases": [
+        "MG-C-FIELD-CUSTOMER-ORDER-DETAIL-HEADING"
+      ],
+      "owner": "Existing shared theme/order-presentation owner",
+      "proposal": "Escaped declared heading with canonical absent/default versus deliberate blank handling, versioned compatible package; preserve order/facts/ownership.",
+      "runtimeFailClaimed": false
+    },
+    {
+      "id": "MG-C-GAP-09",
+      "status": "OPEN",
+      "evidenceClass": "SOURCE_OBSERVED_SECURITY_BOUNDARY",
+      "summary": "faviconUrl advertises rendered icon but Liquid layout intentionally omits link; Next fallback reads store logo instead.",
+      "references": [
+        {
+          "path": "packages/theme-engine/src/theme-bundle.ts",
+          "line": 2508
+        },
+        {
+          "path": "packages/theme-engine/src/theme-bundle.ts",
+          "line": 2547
+        },
+        {
+          "path": "apps/commerce/web/src/app/store/[subdomain]/layout.tsx",
+          "line": 54
+        }
+      ],
+      "affectedCases": [
+        "MG-C-THEME-SETTING-SEO-FAVICONURL"
+      ],
+      "owner": "Existing shared head/metadata/security owner",
+      "proposal": "Use the existing canonical safe metadata boundary; no sanitizer relaxation by this theme.",
+      "runtimeFailClaimed": false
+    },
+    {
+      "id": "MG-C-GAP-10",
+      "status": "OPEN",
+      "evidenceClass": "SOURCE_OBSERVED_PATH_GAP_COMPUTED_CASCADE_UNVERIFIED",
+      "summary": "Marginalia control selectors use fixed3px; Liquid token map omits borderRadius; separate host --radius lineage is not connected to those selectors.",
+      "references": [
+        {
+          "path": "packages/theme-engine/src/theme-bundle.ts",
+          "line": 2481
+        },
+        {
+          "path": "packages/theme-engine/src/theme-renderer.ts",
+          "line": 537
+        },
+        {
+          "path": "packages/theme-engine/src/marginalia-styles.ts",
+          "line": 4
+        },
+        {
+          "path": "apps/commerce/web/src/app/store/[subdomain]/layout.tsx",
+          "line": 172
+        }
+      ],
+      "affectedCases": [
+        "MG-C-THEME-SETTING-APPEARANCE-BORDERRADIUS"
+      ],
+      "owner": "Shared token owner with Marginalia leaf owner after current lease",
+      "proposal": "One validated canonical radius token across portable/public/preview paths, then leaf consumption preserving default3px.",
+      "runtimeFailClaimed": false
+    }
+  ],
+  "indirectPaths": [
+    {
+      "control": "product1/product2/product3/requireSelection/collectionId",
+      "path": "apps/commerce/web/src/lib/theme-engine/data-binding-engine.ts",
+      "line": 45,
+      "conclusion": "INDIRECT_SOURCE_PATH_FOUND_NOT_ACCEPTANCE"
+    },
+    {
+      "control": "six colours and two font families",
+      "path": "packages/theme-engine/src/theme-renderer.ts",
+      "line": 537,
+      "conclusion": "INDIRECT_SOURCE_PATH_FOUND_NOT_FONT_OR_BROWSER_PARITY"
+    }
+  ],
+  "applicabilityReview": {
+    "reference": "docs/implementation/niche-theme-programme/completion-2026-10-24/PHASE0_INDEPENDENT_REVIEW.json",
+    "decision": "APP-SEAM-01",
+    "activation": "CONSTITUTIONALLY_EXCLUDED",
+    "authority": [
+      "AGENTS.md NEVER-R3",
+      "AGENTS.md AGENT-R13",
+      "LETBUYY_CONSTITUTION.md R-12"
+    ],
+    "newHumanDecisionRequired": false,
+    "safeGuardAcceptance": "NOT_RUN",
+    "allFirstPartyControlsRequired": true
+  },
+  "handoff": "SOURCE_CONTROL_REQUESTS.md",
+  "preservation": {
+    "sharedSourceChanged": false,
+    "frozenArtifactChanged": false,
+    "originalCasesChanged": false,
+    "browserActions": false,
+    "databaseActions": false,
+    "providerActions": false
+  },
+  "caseStatusChanges": 0,
+  "fullThemeCertified": false
+}

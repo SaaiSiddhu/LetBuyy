@@ -1,0 +1,129 @@
+- generic: Kindred Runtime07 A — thoughtful gifts, clearly described
+- link:
+  - /url: ""
+- banner:
+  - navigation "Primary"
+  - link "Threadline":
+    - /url: /store/syn-threadline-ui-ae3f0477
+  - button "Search":
+    - generic: Search
+  - link "Log in":
+    - /url: /store/syn-threadline-ui-ae3f0477/customers/login
+    - generic: Log in
+  - link "Cart ( 0 )":
+    - /url: /store/syn-threadline-ui-ae3f0477/cart
+    - generic: Cart
+    - text: (
+    - generic: "0"
+    - text: )
+- paragraph: THE GIFT IS IN THE THOUGHT
+- heading "A good gift starts with them." [level=1]
+- paragraph: Something for their moment, their kind of day.
+- heading "Who’s on your mind?" [level=2]
+- text: Search this store
+- searchbox "Search this store"
+- button "Search products →"
+- link "Browse every gift →":
+  - /url: /store/syn-threadline-ui-ae3f0477/products
+- heading "Mark their moment." [level=2]
+- link "All collections →":
+  - /url: /store/syn-threadline-ui-ae3f0477/collections
+- link "1 Care → Synthetic theme acceptance setup only.":
+  - /url: /store/syn-threadline-ui-ae3f0477/collections/019bb5fc-e33b-48f0-8f42-4fc2b34e2817
+  - paragraph: "1"
+  - heading "Care →" [level=3]
+  - paragraph: Synthetic theme acceptance setup only.
+- link "2 Cleanse → Synthetic theme acceptance setup only.":
+  - /url: /store/syn-threadline-ui-ae3f0477/collections/f196d855-c5cf-4928-bee1-c8995e6abbd5
+  - paragraph: "2"
+  - heading "Cleanse →" [level=3]
+  - paragraph: Synthetic theme acceptance setup only.
+- link "3 Colour → Synthetic theme acceptance setup only.":
+  - /url: /store/syn-threadline-ui-ae3f0477/collections/8bcd4abc-51df-4014-9b9f-352c20ecb06b
+  - paragraph: "3"
+  - heading "Colour →" [level=3]
+  - paragraph: Synthetic theme acceptance setup only.
+- link "4 Easy →":
+  - /url: /store/syn-threadline-ui-ae3f0477/collections/b355524f-3f5b-4f57-a2e5-9e65b692eb76
+  - paragraph: "4"
+  - heading "Easy →" [level=3]
+- paragraph: READY-MADE, NEVER RANDOM
+- heading "Small boxes. Thoughtful combinations." [level=2]
+- paragraph: Look inside before you choose.
+- article:
+  - link "Product image not supplied Contents not supplied INR 1,800.00 Trailmark lifecycle racket":
+    - /url: /product/22446d70-4e10-41f0-97f0-55662eeea763
+    - generic: Product image not supplied
+    - generic: Contents not supplied
+    - strong: INR 1,800.00
+    - heading "Trailmark lifecycle racket" [level=3]
+  - paragraph: "Length: 26.5 in, Common size"
+  - link "See what’s inside →":
+    - /url: /product/22446d70-4e10-41f0-97f0-55662eeea763
+- article:
+  - link "Fixture Cloud Rinse Contents not supplied INR 640.00 Fixture Cloud Rinse":
+    - /url: /product/42f2f82a-2822-46ed-96a5-c3825205f96d
+    - img "Fixture Cloud Rinse"
+    - generic: Contents not supplied
+    - strong: INR 640.00
+    - heading "Fixture Cloud Rinse" [level=3]
+  - link "See what’s inside →":
+    - /url: /product/42f2f82a-2822-46ed-96a5-c3825205f96d
+- article:
+  - link "Fixture Daily Veil Contents not supplied INR 880.00 Fixture Daily Veil":
+    - /url: /product/46822e8b-1fd2-4aa1-b0cf-0ebc9f278d3c
+    - img "Fixture Daily Veil"
+    - generic: Contents not supplied
+    - strong: INR 880.00
+    - heading "Fixture Daily Veil" [level=3]
+  - link "See what’s inside →":
+    - /url: /product/46822e8b-1fd2-4aa1-b0cf-0ebc9f278d3c
+- article:
+  - link "The Everyday Cotton Dress Contents not supplied INR 3,990.00 The Everyday Cotton Dress":
+    - /url: /product/5880f0b4-1341-4548-a95b-f5beb3cb4341
+    - img "The Everyday Cotton Dress"
+    - generic: Contents not supplied
+    - strong: INR 3,990.00
+    - heading "The Everyday Cotton Dress" [level=3]
+  - paragraph: "Color: Rust"
+  - paragraph: "Size: S, M, L, XL"
+  - link "See what’s inside →":
+    - /url: /product/5880f0b4-1341-4548-a95b-f5beb3cb4341
+- article:
+  - link "Fixture Soft Colour Contents not supplied INR 520.00 Fixture Soft Colour":
+    - /url: /product/5dd7adcb-50c2-4453-9602-a669139b4270
+    - img "Fixture Soft Colour"
+    - generic: Contents not supplied
+    - strong: INR 520.00
+    - heading "Fixture Soft Colour" [level=3]
+  - paragraph: "Shade name: Rosewater, Pink Clay, Terracotta"
+  - paragraph: "पैक आकार: एक इकाई"
+  - link "See what’s inside →":
+    - /url: /product/5dd7adcb-50c2-4453-9602-a669139b4270
+- article:
+  - link "Product image not supplied Contents not supplied INR 220.00 Pantry lifecycle rice":
+    - /url: /product/643b76eb-5e75-4ff1-8472-14df4192d815
+    - generic: Product image not supplied
+    - generic: Contents not supplied
+    - strong: INR 220.00
+    - heading "Pantry lifecycle rice" [level=3]
+  - link "See what’s inside →":
+    - /url: /product/643b76eb-5e75-4ff1-8472-14df4192d815
+- navigation "Product pages":
+  - generic: Page 1
+- heading "A little gift help." [level=2]
+- article:
+  - heading "Think of their everyday." [level=3]
+  - paragraph: Look for something they will enjoy using. Check the exact included contents before choosing.
+- article:
+  - heading "Check the practical things." [level=3]
+  - paragraph: Shipping options and charges are shown at checkout. Read the merchant’s current policy before ordering.
+- contentinfo:
+  - heading "Threadline" [level=3]
+  - heading "Contact" [level=4]
+  - link "Contact us":
+    - /url: /store/syn-threadline-ui-ae3f0477/contact
+  - paragraph: © Threadline. All rights reserved.
+  - link "Powered by LetBuyy":
+    - /url: https://letbuyy.com
+- alert

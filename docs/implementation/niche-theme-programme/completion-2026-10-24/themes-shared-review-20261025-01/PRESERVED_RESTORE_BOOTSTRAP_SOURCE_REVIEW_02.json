@@ -1,0 +1,48 @@
+{
+  "recordedAt": "2026-10-25T05:19:21.530109+00:00",
+  "status": "ACCEPT_PRECISE_PUBLIC_SCHEMA_AND_COMPLETED_FAILURE_DIAGNOSTICS_COMBINED_SOURCE_NO_RESTORE_CREDIT",
+  "baseHandoff": {
+    "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/original210-restore-bootstrap01/HANDOFF.json",
+    "sha256": "feb89e905ca6782f8eae8652a0df8a152d9de9f4a39d58c3555c464d6645659f"
+  },
+  "diagnosticsSupplement": {
+    "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/original210-restore-bootstrap01/HANDOFF_DIAGNOSTICS02.json",
+    "sha256": "dbb30040e6d7afe0ec2db07dedb6a6abd1628687b0d12a51fba4b2f6f90e01ff"
+  },
+  "finalSourcePins": [
+    {
+      "path": "scripts/governance/owned-database-provision.mjs",
+      "sha256": "a46b1ce3e9b61cc571853c807fe1174215a0104a80a86f6b82bf003403cc288d",
+      "copyFrom": "/private/tmp/letbuyy-original210-restore-bootstrap-prep-20261025-01/scripts/governance/owned-database-provision.mjs"
+    },
+    {
+      "path": "scripts/governance/run-executable-suites.mjs",
+      "sha256": "42c65e181e5f561112af2f132289a6e6d265fea98c007e6000ce8f467f95b557",
+      "copyFrom": "/private/tmp/letbuyy-original210-restore-bootstrap-prep-20261025-01/scripts/governance/run-executable-suites.mjs"
+    },
+    {
+      "path": "tests/governance/owned-preserved-restore-bootstrap.test.mjs",
+      "sha256": "8a92db2eb39c3ff5da9c256d2eeec75089bb77a45fe22a2f03208ec49c3afb5c",
+      "copyFrom": "/private/tmp/letbuyy-original210-restore-bootstrap-prep-20261025-01/tests/governance/owned-preserved-restore-bootstrap.test.mjs"
+    }
+  ],
+  "physicalEvidence": "Final2after/beforearchive pins, frozenprovisioner, V1HANDOFF/11artifacts andsupplement5artifacts exact. No whole6546 rerun.",
+  "sourceReview": "Provisioner removesonlyunnecessarydefaultpublicDROP, withsameemptytarget/role/image/ownership/fullparity checks. Runnerpreserved-onlydiagnostics whitelistfixedcodes, retainprimary/secondary/checkpoint/remainingresources throughunsafe71, reportwritefailurefailclosed. ActualTAPclassifiedbeforefalliblelogwrite; completedcounts/parsedfailurepreserved, logfailureseparate, child0/TAPfailurecorrectlyclassified. Ordinarypositiveflowandguard/reaper/timeout/CLI/capsule contracts unchanged.",
+  "causalEvidence": "Rootactualarchivef2ddda41 proof noCREATEpublic/911publicobjects andreadonlynewtarget0schemas+missingpublicheader supportone-linebootstrapfix; no archive/privatecontents readbyThemes. Actualnewrestoreparitystillunproven.",
+  "pureResults": {
+    "V1same20oracle": {
+      "pass": 17,
+      "fail": 3
+    },
+    "final": {
+      "pass": 20,
+      "fail": 0
+    },
+    "skipCancelTodo": 0,
+    "coverage": "Default-publicpositive, nonempty/foreignownership/image/source-resource/parityrefusals, primary+checkpoint/proxy/log/report-write errors/redaction, ordinarysuccess, completedfailedTAP+logfail/child0failedTAP/passedTAPlogfail accounting. ActualfunctionVM/fake-transports only."
+  },
+  "reviewerCounterexample": "Earlier compositefailure repro closed bysuppl02; expectedprimaryandTAPaccountingnowretained. No duplicateNative/DB test.",
+  "limitations": "MJSsyntax/patchchecks andpurecontrols are sourcequalification only. Neednewcoherentcandidate/capsule/command andnewhumanpermission for ANYfreshretry; no retryinsidefailedprotectedcopy. Original/failurewitness/archive/source/command retained.",
+  "actualProcessDockerDbPrivateKeyActionsByThemes": 0,
+  "fullThemeCertificates": 0
+}

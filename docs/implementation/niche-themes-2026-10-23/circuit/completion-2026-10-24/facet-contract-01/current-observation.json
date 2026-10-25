@@ -1,0 +1,96 @@
+{
+  "recordedAt": "2026-10-24T11:33:25.734Z",
+  "classification": "CURRENT_SOURCE_GAP_OBSERVATION",
+  "status": "CIR_C02_TWO_QUERY_KEYS_ABSENT",
+  "observations": [
+    {
+      "id": "Existing electronics query positive control",
+      "expected": true,
+      "actual": true,
+      "matchedExpectation": true
+    },
+    {
+      "id": "Proposed electronics_manufacturer is currently rejected",
+      "expected": false,
+      "actual": false,
+      "matchedExpectation": true
+    },
+    {
+      "id": "Proposed compatibility_evidence is currently rejected",
+      "expected": false,
+      "actual": false,
+      "matchedExpectation": true
+    },
+    {
+      "id": "Specific device with dated source is accepted",
+      "expected": true,
+      "actual": true,
+      "matchedExpectation": true
+    },
+    {
+      "id": "General fact sheet alone supplies no device reference",
+      "expected": 0,
+      "actual": 0,
+      "matchedExpectation": true
+    },
+    {
+      "id": "Connector shape alone supplies no device reference",
+      "expected": 0,
+      "actual": 0,
+      "matchedExpectation": true
+    },
+    {
+      "id": "Malformed device date invalidates public namespace",
+      "expected": null,
+      "actual": null,
+      "matchedExpectation": true
+    },
+    {
+      "id": "Absent electronics namespace is unconfirmed",
+      "expected": null,
+      "actual": null,
+      "matchedExpectation": true
+    }
+  ],
+  "sourcePins": [
+    {
+      "path": "packages/commerce-core/src/storefront-discovery.ts",
+      "sha256": "c8de3871a998df011de12791db90c868139903b5c84afb211d9e9de3a1997ff1",
+      "bytes": 10232
+    },
+    {
+      "path": "packages/commerce-core/src/circuit-facts.ts",
+      "sha256": "b95d4f2bc7c27bb8ebd5041d6dfb7fa42a6a9066d29e5a218e5b6f8daea0bbe6",
+      "bytes": 4984
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/storefront-discovery.ts",
+      "sha256": "b59b34fbe89cf44f13f9dba56107f993af2632d4d2ed28fe3f9694e87743cbfc",
+      "bytes": 12213
+    },
+    {
+      "path": "packages/theme-engine/src/circuit-discovery.ts",
+      "sha256": "160c6a61a567f87bbcab20bf337336ede6e748c1326110ab977f61ec9c14523b",
+      "bytes": 4571
+    },
+    {
+      "path": "database/supabase/migrations/386_storefront_discovery.sql",
+      "sha256": "33c2849f93fc594902e5017f00ab3141780bd06f856ce67f4a21aa77e87da81d",
+      "bytes": 169316
+    },
+    {
+      "path": "database/supabase/migrations/392_storefront_electronics_search.sql",
+      "sha256": "f17f659b8d037c34f02b9cc1cda912ede406bda7950f99310ebae5ca77c61171",
+      "bytes": 27178
+    },
+    {
+      "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/circuit-storybook/capabilities.json",
+      "sha256": "5f951bd2e32b09a908fbc4eab3ed31c0f5166c9f46892c66a7705ace768d173f",
+      "bytes": 5101
+    }
+  ],
+  "proposedFiltersImplemented": false,
+  "nativeCasesExecuted": 0,
+  "installedCasesAdded": 0,
+  "paymentOrCertificationProof": false
+}

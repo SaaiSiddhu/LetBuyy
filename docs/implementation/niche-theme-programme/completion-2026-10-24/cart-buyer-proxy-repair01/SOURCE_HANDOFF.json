@@ -1,0 +1,36 @@
+{
+  "recordedAt": "2026-10-24T18:53:48.926423+00:00",
+  "status": "86_PROXY_AND_HANDOFF_REGRESSION_PASS_BROWSER_REBUILD_PENDING",
+  "proxyFocusedCases": 12,
+  "regressionPass": 86,
+  "regressionFail": 0,
+  "regressionSkip": 0,
+  "commerceTypecheckExitCode": 0,
+  "cause": "Public rewrite skipped host-only buyer cookie to canonical authenticated configured-cart writer",
+  "repair": "Same-origin cart GET/PATCH adapter; host-resolved site/subdomain binding before forwarding existing signed buyer token; fallback rewrite preserves all remaining public routes",
+  "sourcePins": [
+    {
+      "path": "apps/commerce/web/src/app/api/storefront/[subdomain]/cart/[cartToken]/route.ts",
+      "sha256": "3d2e1bcbf2239a86de225ba7ff213347cf61e4473864f748f9fc14a2af74889c"
+    },
+    {
+      "path": "apps/commerce/web/src/app/api/storefront/cart-proxy.test.ts",
+      "sha256": "a2dbbe58582737814e3c3002449692313fb74bb65febac79d6eef97762a53660"
+    },
+    {
+      "path": "apps/commerce/web/next.config.ts",
+      "sha256": "03ce25315ff387a90e005273139ac423b14da44a994247fe2fa18d679ccf3c00"
+    },
+    {
+      "path": "apps/commerce/web/package.json",
+      "sha256": "977af9450dac62e347e4d066e902e2b36a1770d9de7770a6972e6bdfcafaa829"
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "sha256": "c9ff37ec9c3ba0e11afc90a0bb1e29e793af80e68d56562410885aaa77fd48d0"
+    }
+  ],
+  "gatewaySqlLedgerUntouched": true,
+  "independentReview": "PENDING",
+  "fullThemeCertified": false
+}

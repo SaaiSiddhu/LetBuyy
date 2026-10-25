@@ -28,11 +28,12 @@ const GOOGLE_FONTS_CSS2 = 'https://fonts.googleapis.com/css2';
 
 /** Every font family referenced by an Experience, with its Google Fonts spec + fallback. */
 export const EXPERIENCE_FONT_REGISTRY: Readonly<Record<string, ExperienceFontSpec>> = Object.freeze({
-    Inter: { family: 'Inter', googleFamily: 'Inter:wght@400;500;600;700', fallback: 'system-ui, -apple-system, sans-serif' },
+    Inter: { family: 'Inter', googleFamily: 'Inter:wght@400;500;600;700;800', fallback: 'system-ui, -apple-system, sans-serif' },
     'Playfair Display': { family: 'Playfair Display', googleFamily: 'Playfair+Display:wght@400;500;600;700', fallback: 'Georgia, "Times New Roman", serif' },
     'Cormorant Garamond': { family: 'Cormorant Garamond', googleFamily: 'Cormorant+Garamond:wght@400;500;600;700', fallback: 'Georgia, "Times New Roman", serif' },
     'Libre Baskerville': { family: 'Libre Baskerville', googleFamily: 'Libre+Baskerville:wght@400;700', fallback: 'Georgia, "Times New Roman", serif' },
     'Source Sans Pro': { family: 'Source Sans Pro', googleFamily: 'Source+Sans+Pro:wght@400;600;700', fallback: 'system-ui, -apple-system, sans-serif' },
+    'Source Sans 3': { family: 'Source Sans 3', googleFamily: 'Source+Sans+3:wght@400;600;700', fallback: 'system-ui, -apple-system, sans-serif' },
     Lato: { family: 'Lato', googleFamily: 'Lato:wght@400;700', fallback: 'system-ui, -apple-system, sans-serif' },
 });
 

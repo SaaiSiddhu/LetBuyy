@@ -1,0 +1,171 @@
+Browser tab: 12, Title: "LetBuyy Admin", URL: "http://admin.threadline-9cd50e893016.localhost:57225/syn-threadline-ui-d11a8917/online-store/themes/letbuyy-aura/editor".
+1 AXWebArea LetBuyy Admin, URL: admin.threadline-9cd50e893016.localhost:57225/syn-threadline-ui-d11a8917/online-store/themes/letbuyy-aura/editor
+	2 container
+		3 link Description: Back to themes, Value: admin.threadline-9cd50e893016.localhost:57225/syn-threadline-ui-d11a8917/online-store/themes
+		4 checkbox Description: Toggle navigation panel, Value: 1
+		5 button Sections
+		6 button Theme settings
+		7 button Theme styles
+		8 button Versions
+		9 text Dewdrop Active
+		10 text Saved
+		11 container Template
+			12 pop up button (collapsed, settable) Description: Template, Value: Dewdrop home, Secondary Actions: Expand
+				13 menu
+					14 (selected) Dewdrop home
+					15 Dewdrop product
+					16 Dewdrop collection
+					17 Page
+					18 LetBuyy Core cart
+					19 Blog
+					20 Article
+					21 Policy page
+					22 Dewdrop search
+					23 Contact
+					24 Password
+					25 404 Not Found
+					26 Login
+					27 Order detail
+					28 Order history
+					29 All collections
+					30 Account
+					31 Register
+					32 Account settings
+					33 Wishlist
+					34 Addresses
+		35 button (disabled) Undo
+		36 button (disabled) Redo
+		37 button (disabled) Save
+		38 button Publish
+		39 container Theme editor navigation
+			40 heading Dewdrop home, Value: 2
+				41 text Dewdrop home
+			42 text v13
+			43 outline Theme sections
+				44 container
+					45 text HEADER
+					46 button Announcement Bar
+					47 button Header
+				48 container
+					49 text TEMPLATE
+					50 container Template sections
+						51 row (selected) Care introduction Toggle Care introduction visibility Move Care introduction up Move Care introduction down Remove Care introduction
+							52 button Care introduction
+							53 checkbox Description: Toggle Care introduction visibility, Value: 1
+							54 button (disabled) Move Care introduction up
+							55 button Move Care introduction down
+							56 button Remove Care introduction
+						57 row (selectable) Routine pathways
+							58 button Routine pathways
+						59 row (selectable) Care routine shelves
+							60 button Care routine shelves
+						61 row (selectable) Care editorial
+							62 button Care editorial
+						63 row (selectable) Merchant service information
+							64 button Merchant service information
+					65 pop up button (collapsed, settable) Value: Marquee, Secondary Actions: Expand
+						66 menu
+							67 (selected) Marquee
+							68 404 Not Found
+							69 Spotlight
+							70 Search
+							71 Video Hero
+							72 Call to Action
+							73 Care introduction
+							74 Blog Listing
+							75 Cart
+							76 Contact Form
+							77 Page Content
+							78 Care routine shelves
+							79 Rich Content
+							80 Testimonials
+							81 Merchant service information
+							82 Care editorial
+							83 Brand Marquee
+							84 Routine pathways
+							85 FAQ Accordion
+							86 Password Gate
+							87 Services Grid
+							88 App Block Slot
+							89 Customer Login
+							90 Policy Content
+							91 Portfolio Grid
+							92 Product Detail
+							93 Skills Section
+							94 Article Content
+							95 Banner Carousel
+							96 Order History
+							97 Announcement Bar
+							98 Customer Account
+							99 Collection Banner
+							100 Care discovery
+							101 Customer Register
+							102 Account Settings
+							103 Wishlist
+							104 Independently chosen products
+							105 Newsletter Signup
+							106 Addresses
+							107 Experience Timeline
+							108 Order Detail
+							109 Care product results
+					110 button Add
+				111 container
+					112 text FOOTER
+					113 button Footer
+		114 container Live theme preview
+			115 text Live preview
+			116 text syn-threadline-ui-d11a8917 . localhost  -  1440 px
+			117 container Preview device
+				118 checkbox Desktop, Value: 1
+				119 checkbox Tablet, Value: 0
+				120 checkbox Mobile, Value: 0
+			121 container
+				122 text syn-threadline-ui-d11a8917 . localhost
+				123 checkbox Description: Inspect preview, Value: 1
+				124 container syn-threadline-ui-d11a8917 storefront preview
+					125 AXWebArea localhost, URL: chrome-error://chromewebdata/
+						126 container sub-frame-error
+							127 image
+							128 text This content is blocked. Contact the site owner to fix the issue.
+		129 container Theme properties
+			130 text Selected section
+			131 heading Care introduction, Value: 2
+				132 text Care introduction
+			133 container
+				134 container Smart defaults
+					135 button (collapsed) Smart defaults, Secondary Actions: Expand
+						136 text Smart defaults
+				137 text Original care photograph
+				138 text field (settable) Original care photograph image URL
+				139 container
+					140 text Upload image
+					141 button Upload image file
+				142 button Browse media library for Original care photograph
+				143 container
+					144 text Button destination
+					145 text field (settable) Button destination, Value: /products
+				146 container
+					147 text Button label
+					148 text field (settable) Button label, Value: Explore your routine
+				149 container
+					150 text Eyebrow
+					151 text field (settable) Eyebrow, Value: CARE, ON YOUR TERMS
+				152 container
+					153 text Heading
+					154 text field (settable) Heading, Value: Dewdrop saved heading B 9cd50e893016
+				155 container
+					156 text Photograph description
+					157 text field (settable) Photograph description
+				158 text Photograph focal point
+				159 pop up button (collapsed, settable) Photograph focal point, Value: Center, Secondary Actions: Expand
+					160 menu
+						161 (disabled) Saved value unavailable
+						162 Left
+						163 (selected) Center
+						164 Right
+				165 container
+					166 text Description
+					167 text field (settable) Description, Value: Find your next everyday essential by use. Read the ingredients, directions and named shades before choosing.
+				168 text BLOCKS
+
+The focused UI element is 52 button Care introduction

@@ -1,0 +1,543 @@
+{
+  "body": {
+    "background": "rgb(31, 31, 33)",
+    "color": "rgba(255, 255, 255, 0.75)",
+    "font": "Figtree, sans-serif",
+    "fontSize": "16px"
+  },
+  "controls": [
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "SHOP",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "EXPLORE",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Search",
+      "tag": "INPUT",
+      "type": "search"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Load image 1 in gallery view",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Load image 2 in gallery view",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Load image 3 in gallery view",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Decrease quantity for FCS II PERFORMER NEO GLASS TRI FINS",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "INPUT",
+      "type": "number"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Increase quantity for FCS II PERFORMER NEO GLASS TRI FINS",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Add to cart",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Buy it now",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": "true",
+      "label": "DETAILS",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "FIN SYSTEM",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "SIZING",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "SHIPPING",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Email",
+      "tag": "INPUT",
+      "type": "email"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Subscribe",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    }
+  ],
+  "headings": [
+    {
+      "font": "Figtree, sans-serif",
+      "height": 19.5,
+      "line": "19.5px",
+      "size": "13px",
+      "tag": "H2",
+      "text": "",
+      "weight": "500",
+      "width": 282,
+      "x": 1068,
+      "y": 5.8046875
+    },
+    {
+      "font": "Oswald, sans-serif",
+      "height": 204,
+      "line": "68px",
+      "size": "56px",
+      "tag": "H1",
+      "text": "FCS II PERFORMER NEO GLASS TRI FINS",
+      "weight": "500",
+      "width": 429,
+      "x": 961,
+      "y": 195.1015625
+    },
+    {
+      "font": "Oswald, sans-serif",
+      "height": 1,
+      "line": "40.8px",
+      "size": "33.6px",
+      "tag": "H2",
+      "text": "Collapsible content",
+      "weight": "500",
+      "width": 1,
+      "x": 49,
+      "y": 1281.9375
+    },
+    {
+      "font": "Oswald, sans-serif",
+      "height": 28,
+      "line": "25.5px",
+      "size": "21px",
+      "tag": "H3",
+      "text": "DETAILS",
+      "weight": "500",
+      "width": 70.5234375,
+      "x": 107,
+      "y": 1297.9375
+    },
+    {
+      "font": "Oswald, sans-serif",
+      "height": 28,
+      "line": "25.5px",
+      "size": "21px",
+      "tag": "H3",
+      "text": "FIN SYSTEM",
+      "weight": "500",
+      "width": 102.484375,
+      "x": 107,
+      "y": 1726.109375
+    },
+    {
+      "font": "Oswald, sans-serif",
+      "height": 28,
+      "line": "25.5px",
+      "size": "21px",
+      "tag": "H3",
+      "text": "SIZING",
+      "weight": "500",
+      "width": 59.078125,
+      "x": 107,
+      "y": 1799.109375
+    },
+    {
+      "font": "Oswald, sans-serif",
+      "height": 28,
+      "line": "25.5px",
+      "size": "21px",
+      "tag": "H3",
+      "text": "SHIPPING",
+      "weight": "500",
+      "width": 86.2734375,
+      "x": 107,
+      "y": 1872.109375
+    },
+    {
+      "font": "Oswald, sans-serif",
+      "height": 68,
+      "line": "68px",
+      "size": "56px",
+      "tag": "H2",
+      "text": "RIDE WITH US",
+      "weight": "500",
+      "width": 1260,
+      "x": 90,
+      "y": 2105.9375
+    },
+    {
+      "font": "Oswald, sans-serif",
+      "height": 30.6015625,
+      "line": "30.6px",
+      "size": "25.2px",
+      "tag": "H2",
+      "text": "ABOUT RIDE",
+      "weight": "500",
+      "width": 420,
+      "x": 50,
+      "y": 2373.734375
+    }
+  ],
+  "links": [
+    {
+      "text": "Skip to content",
+      "url": "https://theme-ride-demo.myshopify.com/products/fcs-ii-performer-neo-glass-tri-fins#MainContent"
+    },
+    {
+      "text": "NEW FINS HAVE LANDED 🏄 SHOP NOW",
+      "url": "https://theme-ride-demo.myshopify.com/collections/fins"
+    },
+    {
+      "text": "",
+      "url": "https://theme-ride-demo.myshopify.com/"
+    },
+    {
+      "text": "",
+      "url": "https://theme-ride-demo.myshopify.com/collections/frontpage"
+    },
+    {
+      "text": "",
+      "url": "https://theme-ride-demo.myshopify.com/collections/performance-boards"
+    },
+    {
+      "text": "",
+      "url": "https://theme-ride-demo.myshopify.com/collections/fins"
+    },
+    {
+      "text": "",
+      "url": "https://theme-ride-demo.myshopify.com/pages/meet-the-team"
+    },
+    {
+      "text": "",
+      "url": "https://theme-ride-demo.myshopify.com/pages/contact"
+    },
+    {
+      "text": "",
+      "url": "https://theme-ride-demo.myshopify.com/blogs/stories"
+    },
+    {
+      "text": "Cart",
+      "url": "https://theme-ride-demo.myshopify.com/cart"
+    },
+    {
+      "text": "Skip to product information",
+      "url": "https://theme-ride-demo.myshopify.com/products/fcs-ii-performer-neo-glass-tri-fins#ProductInfo-template--17836803817640__main"
+    },
+    {
+      "text": "STORIES",
+      "url": "https://theme-ride-demo.myshopify.com/blogs/stories"
+    },
+    {
+      "text": "RIDE TEAM",
+      "url": "https://theme-ride-demo.myshopify.com/pages/meet-the-team"
+    },
+    {
+      "text": "CONTACT",
+      "url": "https://theme-ride-demo.myshopify.com/pages/contact"
+    },
+    {
+      "text": "theme-ride-demo",
+      "url": "https://theme-ride-demo.myshopify.com/"
+    }
+  ],
+  "sections": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--17836803817640__main",
+      "rect": {
+        "height": 1083.8359375,
+        "width": 1440,
+        "x": 0,
+        "y": 147.1015625
+      },
+      "tag": "SECTION",
+      "text": "Skip to product information\nOpen media 1 in modal\n\nRIDE\n\nFCS II PERFORMER NEO GLASS TRI FINS\nRegular price\n$85.00 USD\nSize\nX-SMALL\n SMALL\n MEDIUM\nQuantity\nDecrease quantity for FCS"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--17836803817640__164662931665cb5aa3",
+      "rect": {
+        "height": 731,
+        "width": 1440,
+        "x": 0,
+        "y": 1282.9375
+      },
+      "tag": "SECTION",
+      "text": "Collapsible content\nDETAILS\n\nOVERVIEW\n\nDesigned for a balance of speed, flow & response with added control. Oversized, all-round template with a fuller tip. Ideal for surfers who l"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--17836803817640__product-recommendations",
+      "rect": {
+        "height": 0,
+        "width": 1440,
+        "x": 0,
+        "y": 2065.9375
+      },
+      "tag": "SECTION",
+      "text": ""
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--17836803817640__16466297870d929177",
+      "rect": {
+        "height": 267.796875,
+        "width": 1440,
+        "x": 0,
+        "y": 2065.9375
+      },
+      "tag": "SECTION",
+      "text": "RIDE WITH US\n\nBe the first to know about new collections and exclusive offers.\n\nEmail"
+    }
+  ],
+  "title": "FCS II PERFORMER NEO GLASS TRI FINS – theme-ride-demo",
+  "url": "https://theme-ride-demo.myshopify.com/products/fcs-ii-performer-neo-glass-tri-fins",
+  "viewport": {
+    "dpr": 1,
+    "height": 1000,
+    "width": 1440
+  },
+  "formGroups": [
+    "Size\nX-SMALL\n SMALL\n MEDIUM"
+  ],
+  "grids": [
+    {
+      "className": "product product--large product--thumbnail grid grid--1-col grid--2-col-tablet",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 1031.8359375,
+      "tag": "DIV",
+      "width": 1340
+    },
+    {
+      "className": "product__media-list contains-media grid grid--peek list-unstyled slider slider--mobile",
+      "columns": "none",
+      "display": "flex",
+      "gap": "40px",
+      "height": 875,
+      "tag": "UL",
+      "width": 871
+    },
+    {
+      "className": "thumbnail-list list-unstyled slider slider--mobile",
+      "columns": "136.828px 136.836px 136.828px 136.836px 136.836px 136.836px",
+      "display": "grid",
+      "gap": "10px",
+      "height": 136.8359375,
+      "tag": "UL",
+      "width": 871
+    },
+    {
+      "className": "grid grid--1-col grid--2-col-tablet collapsible-content__grid collapsible-content__grid--reverse",
+      "columns": "none",
+      "display": "flex",
+      "gap": "40px",
+      "height": 695,
+      "tag": "DIV",
+      "width": 1340
+    }
+  ],
+  "images": [
+    {
+      "alt": "",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 871,
+        "width": 871
+      }
+    },
+    {
+      "alt": "",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 0,
+        "width": 0
+      }
+    },
+    {
+      "alt": "",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 0,
+        "width": 0
+      }
+    },
+    {
+      "alt": "FCS II PERFORMER NEO GLASS TRI FINS",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 136.8359375,
+        "width": 136.828125
+      }
+    },
+    {
+      "alt": "FCS II PERFORMER NEO GLASS TRI FINS",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 136.8359375,
+        "width": 136.8359375
+      }
+    },
+    {
+      "alt": "FCS II PERFORMER NEO GLASS TRI FINS",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 136.8359375,
+        "width": 136.828125
+      }
+    },
+    {
+      "alt": "A closeup view of fins attached to the bottom of a surf board.",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 695,
+        "width": 650
+      }
+    }
+  ],
+  "bodyText": "Skip to content\n\nNEW FINS HAVE LANDED 🏄 SHOP NOW \n\nSHOP\nEXPLORE\nCart\nSkip to product information\nOpen media 1 in modal\n\nRIDE\n\nFCS II PERFORMER NEO GLASS TRI FINS\nRegular price\n$85.00 USD\nSize\nX-SMALL\n SMALL\n MEDIUM\nQuantity\nDecrease quantity for FCS II PERFORMER NEO GLASS TRI FINS\nIncrease quantity for FCS II PERFORMER NEO GLASS TRI FINS\n\nThis is a demonstration store. You can purchase products like this from Softech.\n\nDesigned for a balance of speed, flow & response. Ideal for surfers who want a reliable all 'round fin delivering a combination of speed and maneuverability with flow between turns.\n\n\nAdd to cart\nBuy it now\nCollapsible content\nDETAILS\n\nOVERVIEW\n\nDesigned for a balance of speed, flow & response with added control. Oversized, all-round template with a fuller tip. Ideal for surfers who like to attack the wave and perform aggressive turns.\n\n\nIDEAL CONDITIONS\n\nA wide range of conditions, particularly good in critical overhead waves.\n\n\nBOARD TYPES\n\nDesigned to fit the FCS II Fin System. Recommended for performance softboards with moderate-to-low rocker.\n\nFIN SYSTEM\nSIZING\nSHIPPING\nRIDE WITH US\n\nBe the first to know about new collections and exclusive offers.\n\nEmail\nABOUT RIDE\nSTORIES\nRIDE TEAM\nCONTACT\n\nWe find freedom in the waves, and our journey to find those waves is half the fun.\n\nFacebook\nInstagram\nYouTube\nPayment methods\n© 2026, theme-ride-demo Powered by Shopify"
+}

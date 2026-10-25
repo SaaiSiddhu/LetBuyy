@@ -1,0 +1,230 @@
+// Opt-in manual CUA acceptance fixture. No browser driver, auth bypass, hosted
+// endpoint or ambient app environment. The ordinary database suite never waits.
+import assert from 'node:assert/strict';
+import { randomUUID, createHash } from 'node:crypto';
+import { createServer, request as forwardHttp, type Server } from 'node:http';
+import { createServer as createHttpsServer } from 'node:https';
+import { writeFileSync, createWriteStream, readFileSync, existsSync, openSync, closeSync, writeSync, ftruncateSync } from 'node:fs';
+import { exportJWK } from 'jose';
+import { validateSubdomainFormat } from '@letbuyy/tenant-core';
+import { Gateway, gatewayEnv, newIdentityKeys, INTERNAL_SECRET } from './gateway-harness';
+import { createOwnedCheckoutTlsCertificate, startOwnedClientRuntime, stopOwnedClientRuntime, type OwnedClientProcess, type OwnedDatabase } from './owned-db-support';
+import { newSyntheticTenant, seedSyntheticTenant } from './synthetic-tenant';
+import { hashMerchantPassword } from '../../lib/merchant-password';
+import { ThemeEditorFixtureObservation, EDITOR_CONFIRM_REPLAY_PATH } from './theme-editor-fixture-observation';
+
+function fixtureRunId(runId: string) {
+  if (runId.length !== 12 || !/^[a-f0-9]{12}$/.test(runId)) throw new Error('Threadline fixture requires its verified run id');
+  return runId;
+}
+
+/** Pure configuration only. The existing supervisor still proves runtime ownership. */
+export function threadlineFixtureOrigins(input: { runId: string; subdomain: string; identityPort: number; merchantPort: number; commercePort: number }) {
+  const runId = fixtureRunId(input.runId);
+  if (!input.subdomain.startsWith('syn-') || !validateSubdomainFormat(input.subdomain).valid) throw new Error('Threadline fixture requires a synthetic storefront handle');
+  const ports = [input.identityPort, input.merchantPort, input.commercePort];
+  if (ports.some(port => !Number.isInteger(port) || port < 1024 || port > 65535) || new Set(ports).size !== 3) throw new Error('Threadline fixture requires distinct local app ports');
+  const platformCookieDomain = `threadline-${runId}.localhost`;
+  const identityOrigin = `http://accounts.${platformCookieDomain}:${input.identityPort}`;
+  const merchantOrigin = `http://admin.${platformCookieDomain}:${input.merchantPort}`;
+  return Object.freeze({
+    platformCookieDomain,
+    identityOrigin,
+    merchantOrigin,
+    commerceOrigin: `http://${input.subdomain}.localhost:${input.commercePort}`,
+    storeRootDomain: 'localhost' as const,
+    sharedEnvironment: Object.freeze({ NEXT_PUBLIC_ACCOUNTS_URL: identityOrigin, NEXT_PUBLIC_ADMIN_URL: merchantOrigin }),
+    identityEnvironment: Object.freeze({ LETBUYY_IDENTITY_ISSUER: identityOrigin, COOKIE_DOMAIN: platformCookieDomain }),
+  });
+}
+
+export function threadlineFixturePaths(runId: string) {
+  const prefix = `/private/tmp/threadline-${fixtureRunId(runId)}`;
+  return Object.freeze({ statePath: `${prefix}-state.json`, capturedMailPath: `${prefix}-captured-mail.json` });
+}
+
+export function threadlineFixtureLogPath(runId: string, kind: string) {
+  if (!['identity-next','merchant-next','commerce-next','identity-next-production','merchant-next-production','commerce-next-production'].includes(kind)) throw new Error('Threadline fixture requires a supported client log kind');
+  return `/private/tmp/threadline-${fixtureRunId(runId)}-${kind}.log`;
+}
+
+export function threadlineFixtureProfile(flags: { editorHold?: string; threadlineQa?: string }) {
+  const editor = flags.editorHold === '1', qa = flags.threadlineQa === '1';
+  if (editor && qa) throw new Error('Editor and Threadline QA fixture profiles cannot run together');
+  return editor ? 'editor' : qa ? 'threadline-qa' : 'threadline';
+}
+
+async function freePort() {
+  const server = createServer(); await new Promise<void>(done => server.listen(0, '127.0.0.1', done));
+  const port = (server.address() as { port: number }).port;
+  await new Promise<void>(done => server.close(() => done())); return port;
+}
+async function close(server: Server) {
+  if (!server.listening) return;
+  await new Promise<void>(done => { server.close(() => done()); server.closeAllConnections(); });
+}
+async function ready(url: string, client: OwnedClientProcess) {
+  const deadline = performance.now() + 1_200_000;
+  while (performance.now() < deadline) {
+    assert.equal(client.exitCode, null, 'owned app must stay running');
+    try { if ((await fetch(url, { signal: AbortSignal.timeout(3000) })).status < 500) return; } catch { /* cold build */ }
+    await new Promise(done => setTimeout(done, 300));
+  }
+  throw new Error('owned Threadline app readiness timed out');
+}
+
+export async function holdThreadlineBrowserFixture(owned: OwnedDatabase, pooledEnv: Record<string, unknown>) {
+  const profile = threadlineFixtureProfile({ editorHold: process.env.LETBUYY_THEME_EDITOR_BROWSER_HOLD, threadlineQa: process.env.LETBUYY_THREADLINE_QA });
+  const qaMode = profile === 'threadline-qa';
+  const fixturePaths = threadlineFixturePaths(owned.runId);
+  const statePath = process.env.LETBUYY_THREADLINE_STATE_PATH || fixturePaths.statePath;
+  if (!/^\/private\/tmp\/threadline-[a-z0-9-]+(?:-state)?\.json$/.test(statePath)) throw new Error('Threadline state must use its private temporary-file namespace');
+  if (existsSync(statePath)) throw new Error('Threadline fixture refuses to replace an existing private state file');
+  const mailpitOrigin = process.env.LETBUYY_THREADLINE_MAILPIT_ORIGIN;
+  if (mailpitOrigin && !/^http:\/\/(?:localhost|127\.0\.0\.1):[0-9]{1,5}$/.test(mailpitOrigin)) {
+    throw new Error('Threadline Mailpit capture must use a loopback HTTP origin');
+  }
+  // The outbound provider seam captures only this fixture's synthetic email
+  // key. Browser requests and all database/API behavior remain real.
+  const originalFetch = globalThis.fetch;
+  let capturedMailFd: number | undefined;
+  globalThis.fetch = async (input, init) => {
+    const request = input instanceof Request ? input : new Request(input, init);
+    if (new URL(request.url).hostname === 'api.resend.com' && request.headers.get('Authorization') === 'Bearer synthetic-threadline-email-capture') {
+      const mail = await request.json() as { to: string | string[]; subject: string; html?: string; text?: string };
+      // Reserve this run's file exclusively on its first capture. Subsequent
+      // messages update only that owned descriptor, never reopen a shared path.
+      capturedMailFd ??= openSync(fixturePaths.capturedMailPath, 'wx', 0o600);
+      const bytes = Buffer.from(JSON.stringify(mail));
+      let written = 0;
+      while (written < bytes.length) {
+        const count = writeSync(capturedMailFd, bytes, written, bytes.length - written, written);
+        if (count === 0) throw new Error('Threadline mail capture did not complete');
+        written += count;
+      }
+      ftruncateSync(capturedMailFd, bytes.length);
+      if (mailpitOrigin) {
+        const captured = await originalFetch(`${mailpitOrigin}/api/v1/send`, {
+          method: 'POST', redirect: 'manual', signal: AbortSignal.timeout(5000),
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ From: { Email: 'noreply@letbuyy.local', Name: 'Threadline isolated test' }, To: [mail.to].flat().map(Email => ({ Email })), Subject: mail.subject, HTML: mail.html, Text: mail.text, Tags: ['Threadline isolated test', 'LetBuyy local only'] }),
+        });
+        if (!captured.ok) return new Response('{"message":"Local test inbox unavailable"}', { status: 502 });
+      }
+      return new Response(JSON.stringify({ id: `synthetic-${randomUUID()}` }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+    }
+    return originalFetch(input, init);
+  };
+  const site = newSyntheticTenant('threadline-ui'); seedSyntheticTenant(owned.psql, site, { gst: true, taxRates: true });
+  const owner = randomUUID(), password = `Synthetic-${randomUUID()}!`, email = `syn-threadline-${owner}@example.invalid`;
+  const quote = (value: unknown) => JSON.stringify(value).replaceAll("'", "''");
+  owned.psql(`INSERT INTO users_custom(id,email,email_verified,full_name,password_hash) VALUES('${owner}','${email}',true,'Synthetic Threadline Owner','${await hashMerchantPassword(password)}'); UPDATE sites SET custom_user_id='${owner}',name='Threadline',store_name='Threadline',theme_id='letbuyy-core',published=false,status='draft' WHERE id='${site.siteId}';`);
+  const names = ['The Everyday Linen Shirt', 'Tailored Straight Trouser', 'The Everyday Cotton Dress'];
+  const photos = ['linen-shirt','trousers','cotton-dress'], colors = ['Oat','Ink','Rust'], prices = [2490,3290,3990];
+  const products: string[] = [], collections: string[] = [];
+  for (let i=0;i<3;i++) {
+    const product = randomUUID(), collection = randomUUID(); products.push(product); collections.push(collection);
+    const media = `/theme-assets/threadline/v2/${photos[i]}.webp`;
+    const apparel = { fit: 'Relaxed fit. Synthetic garment fixture.', fabric: '100% linen. Fictional fixture composition.', care: 'Gentle cold wash; line dry in shade.', unit: 'cm', measurements: ['S','M','L'].map((size,n) => ({ size, chest: 98+4*n, shoulder: 39+n, length: 68+n })) };
+    owned.psql(`INSERT INTO products(id,site_id,store_id,name,slug,description,price,stock,sku,is_active,status,images,metadata) VALUES('${product}','${site.siteId}','${site.siteId}','${names[i]}','${photos[i]}','Synthetic apparel product for isolated acceptance only.',${prices[i]},12,'SYN-${product}',true,'active',ARRAY(SELECT jsonb_array_elements_text('${quote([media,...(i===0?['/theme-assets/threadline/v2/linen-detail.webp']:[])])}'::jsonb)),'${quote({ apparel })}'); INSERT INTO product_options(product_id,name,position,values) VALUES('${product}','Color',0,'${quote([colors[i]])}'),('${product}','Size',1,'["S","M","L","XL"]'); INSERT INTO collections(id,store_id,title,image_url,is_active) VALUES('${collection}','${site.siteId}','${['Relaxed','Straight','Easy'][i]}','${media}',true); INSERT INTO collection_products(collection_id,product_id,position) VALUES('${collection}','${product}',0);`);
+    for (const size of ['S','M','L','XL']) {
+      const variant = randomUUID(), stock = size==='XL'?0:4;
+      owned.psql(`INSERT INTO product_variants(id,product_id,title,sku,price,inventory_qty,option1,option2) VALUES('${variant}','${product}','${colors[i]} / ${size}','SYN-${variant}',${prices[i]},${stock},'${colors[i]}','${size}'); SELECT set_inventory_level_available('${product}','${variant}','${site.locationId}',${stock},'${owner}');`);
+    }
+  }
+  const [identityPort,merchantPort,commercePort] = await Promise.all([freePort(),freePort(),freePort()]);
+  const origins = threadlineFixtureOrigins({ runId: owned.runId, subdomain: site.subdomain, identityPort, merchantPort, commercePort });
+  const { identityOrigin, merchantOrigin, commerceOrigin } = origins;
+  const tlsMode=process.env.LETBUYY_MANUAL_CHECKOUT_TLS_MODE;
+  if(tlsMode!==undefined&&(tlsMode!=='manual-os-trusted'||profile!=='editor'))throw new Error('invalid manual Editor TLS mode');
+  const certificate=createOwnedCheckoutTlsCertificate(owned,tlsMode==='manual-os-trusted'?'manual-os-trusted':'native-ephemeral');
+  const checkoutTls=createHttpsServer({key:certificate.key,cert:certificate.cert},(req,res)=>{
+    const host=`checkout.localhost:${(checkoutTls.address() as {port:number}).port}`;
+    if(req.headers.host!==host){res.writeHead(421);res.end();return;}
+    const upstream=forwardHttp({hostname:'127.0.0.1',port:commercePort,path:req.url,method:req.method,headers:{...req.headers,host,'x-forwarded-host':host,'x-forwarded-proto':'https'}},reply=>{res.writeHead(reply.statusCode||502,reply.headers);reply.pipe(res);});
+    upstream.on('error',()=>{if(!res.headersSent)res.writeHead(502);res.end();});req.pipe(upstream);
+  });
+  await new Promise<void>(done=>checkoutTls.listen(0,'127.0.0.1',done));
+  const checkoutOrigin=`https://checkout.localhost:${(checkoutTls.address() as {port:number}).port}`;
+  const keys=await newIdentityKeys(), signingSecret=randomUUID()+randomUUID(), finishNonce=randomUUID();
+  const gateway=new Gateway(gatewayEnv(owned,keys,{...pooledEnv,ENVIRONMENT:'local',RESEND_API_KEY:'synthetic-threadline-email-capture',LETBUYY_IDENTITY_ISSUER:origins.identityEnvironment.LETBUYY_IDENTITY_ISSUER,NEXT_PUBLIC_STORE_ROOT_DOMAIN:'localhost',CHECKOUT_ORIGIN:checkoutOrigin,CHECKOUT_SIGNING_SECRET:signingSecret}));
+  const qaInput = { owned, gateway, site, owner, email, products, collections, keys, identityOrigin };
+  const editorObservation = profile === 'editor' ? new ThemeEditorFixtureObservation({ profile, siteId: site.siteId, nonce: finishNonce, owned, gateway }) : undefined;
+  let finish!:()=>void; const finished=new Promise<void>(done=>{finish=done;});
+  const bridge=createServer(async(req,res)=>{
+    try {
+      const controlUrl = new URL(req.url || '/', 'http://fixture.invalid');
+      if (editorObservation && (controlUrl.pathname === EDITOR_CONFIRM_REPLAY_PATH || (controlUrl.pathname === '/__threadline_proof' && controlUrl.search))) {
+        let body = '', bytes = 0;
+        for await (const chunk of req) {
+          bytes += Buffer.byteLength(chunk);
+          if (bytes > 128) { res.writeHead(413); res.end('{}'); req.resume(); return; }
+          body += chunk.toString();
+        }
+        const result = await editorObservation.control({ method: req.method || '', path: req.url || '/',
+          nonce: typeof req.headers['x-fixture-control'] === 'string' ? req.headers['x-fixture-control'] : undefined, body });
+        res.writeHead(result?.status || 404, { 'Content-Type': 'application/json' }); res.end(JSON.stringify(result?.body || {})); return;
+      }
+      if(req.url==='/__threadline_finish'&&req.method==='POST'&&req.headers['x-fixture-control']===finishNonce){res.writeHead(204);res.end();finish();return;}
+      if(req.url==='/__threadline_refresh_catalog'&&req.method==='POST'&&req.headers['x-fixture-control']===finishNonce){owned.script(readFileSync(new URL('../../../../../database/supabase/migrations/382_threadline_catalog_v2.sql',import.meta.url),'utf8'));res.writeHead(204);res.end();return;}
+      if(req.url==='/__threadline_proof'&&req.headers['x-fixture-control']===finishNonce&&(!editorObservation||req.method==='GET')){
+        const release=JSON.parse(owned.psql(`SELECT coalesce((SELECT jsonb_build_object('id',r.id,'sourceDraftVersion',r.source_draft_version,'snapshot',r.template_snapshot) FROM sites s JOIN theme_releases r ON r.id=s.current_theme_release_id WHERE s.id='${site.siteId}'),'null'::jsonb);`));
+        const proof={packageVersion:release?.snapshot?.liquidBundle?.package?.version||null,releaseId:release?.id||null,sourceDraftVersion:release?.sourceDraftVersion||null,releaseSha256:release?createHash('sha256').update(JSON.stringify(release.snapshot)).digest('hex'):null,orders:Number(owned.psql(`SELECT count(*) FROM orders WHERE store_id='${site.siteId}';`)),installed:Number(owned.psql(`SELECT count(*) FROM theme_instances WHERE store_id='${site.siteId}';`))};
+        res.writeHead(200,{'Content-Type':'application/json'});res.end(JSON.stringify({...proof,...(editorObservation?{editorObservations:editorObservation.summary()}:{} )}));return;
+      }
+      const chunks:Buffer[]=[];for await(const chunk of req)chunks.push(Buffer.from(chunk));
+      const body=Buffer.concat(chunks).toString(),headers=new Headers();
+      for(const[name,value]of Object.entries(req.headers))if(typeof value==='string'&&!['host','connection','content-length','transfer-encoding','accept-encoding'].includes(name))headers.set(name,value);
+      const result=await gateway.request(req.url||'/',{method:req.method,headers,...(body?{body}:{})});
+      editorObservation?.capture({ method: req.method || '', path: req.url || '/', body, headers, response: result });
+      res.writeHead(result.status,Object.fromEntries(result.headers.entries()));res.end(result.text);
+    } catch {res.writeHead(500);res.end('{}');}
+  });
+  await new Promise<void>(done=>bridge.listen(0,'127.0.0.1',done));
+  const apiOrigin=`http://127.0.0.1:${(bridge.address() as {port:number}).port}`,clients:OwnedClientProcess[]=[];
+  const common={INTERNAL_API_SECRET:INTERNAL_SECRET,LETBUYY_INTERNAL_API_SECRET:INTERNAL_SECRET,...origins.sharedEnvironment,LETBUYY_ENABLE_DEV_AUTH_BYPASS:'false',NEXT_PUBLIC_LETBUYY_ENABLE_DEV_AUTH_BYPASS:'false'};
+  const mode=process.env.LETBUYY_THREADLINE_PRODUCTION_BROWSER==='1'?'-next-production':'-next';
+  try {
+    const editorCatalog = profile === 'editor' ? await (await import('./threadline-qa-fixture')).prepareThemeEditorQaStore({ ...qaInput, commerceOrigin }) : undefined;
+    if (editorCatalog && editorObservation) {
+      const selected = editorCatalog.products.cloudRinse.id;
+      const positive = await editorObservation.control({ method: 'GET', path: `/__threadline_proof?product_id=${selected}`, nonce: finishNonce, body: '' });
+      assert.equal(positive?.status, 200, 'Owned Editor proof must read the real fixture schema before building apps');
+      const denied = await editorObservation.control({ method: 'GET', path: `/__threadline_proof?product_id=${randomUUID()}`, nonce: finishNonce, body: '' });
+      assert.equal(denied?.status, 404, 'Unknown/foreign proof selectors must remain denied');
+    }
+    if (qaMode) await (await import('./threadline-qa-fixture')).prepareThreadlineQaStore(qaInput);
+    const specs=[
+      {kind:`identity${mode}` as 'identity-next',port:identityPort,health:identityOrigin+'/login',env:{...common,...origins.identityEnvironment,LETBUYY_API_URL:apiOrigin+'/v1',LETBUYY_IDENTITY_PRIVATE_JWK:JSON.stringify({...await exportJWK(keys.privateKey),alg:'ES256',kid:keys.kid}),ACCOUNTS_COOKIE_SECRET:randomUUID()+randomUUID(),NEXT_PUBLIC_TURNSTILE_SITE_KEY:'1x00000000000000000000AA',TURNSTILE_SECRET_KEY:'1x0000000000000000000000000000000AA',RESEND_API_KEY:'',LETBUYY_EMAIL_API_KEY:''}},
+      {kind:`merchant${mode}` as 'merchant-next',port:merchantPort,health:merchantOrigin,env:{...common,LETBUYY_API_BASE_URL:apiOrigin+'/v1',NEXT_PUBLIC_STOREFRONT_URL:`http://localhost:${commercePort}`}},
+      {kind:`commerce${mode}` as 'commerce-next',port:commercePort,health:commerceOrigin+'/api/buyer-auth/session',env:{...common,LETBUYY_API_BASE_URL:apiOrigin+'/v1',LETBUYY_API_URL:apiOrigin+'/v1',NEXT_PUBLIC_API_BASE_URL:apiOrigin+'/v1',NEXT_PUBLIC_API_URL:apiOrigin+'/v1',NEXT_PUBLIC_STORE_ROOT_DOMAIN:'localhost',CHECKOUT_ORIGIN:checkoutOrigin,CHECKOUT_SIGNING_SECRET:signingSecret}},
+    ];
+    for(const spec of specs){
+      const logPath = threadlineFixtureLogPath(owned.runId,spec.kind);
+      const logFd = openSync(logPath,'wx',0o600);
+      let client: OwnedClientProcess;
+      try { client=startOwnedClientRuntime(owned,spec.kind,{port:spec.port,env:spec.env}); }
+      catch (error) { closeSync(logFd); throw error; }
+      clients.push(client);
+      const log=createWriteStream(logPath,{fd:logFd,autoClose:true});client.stdout.pipe(log,{end:false});client.stderr.pipe(log,{end:false});client.once('close',()=>log.end());
+      await ready(spec.health,client);
+      console.info('THREADLINE_BROWSER_APP_READY',spec.kind);
+    }
+    let buyer: Awaited<ReturnType<(typeof import('./threadline-qa-fixture'))['prepareThreadlineQaBuyer']>> | undefined;
+    let qaSetupFailure: string | undefined;
+    try { buyer = qaMode ? await (await import('./threadline-qa-fixture')).prepareThreadlineQaBuyer(qaInput) : undefined; }
+    catch (error) {
+      qaSetupFailure = error instanceof Error ? error.message.slice(0, 240) : 'QA account setup did not complete';
+      console.info('THREADLINE_QA_SETUP_FAILED: independent storefront checks remain available; no signup/order setup success claimed.');
+    }
+    const state={runId:owned.runId,identityOrigin,merchantOrigin,commerceOrigin,checkoutOrigin,apiOrigin,email,password,site,products,collections,finishNonce,platformCookieDomain:origins.platformCookieDomain,artifacts:{statePath,capturedMailPath:fixturePaths.capturedMailPath,logs:specs.map(spec=>threadlineFixtureLogPath(owned.runId,spec.kind))},...(editorObservation?{editorObservation:{proofPath:'/__threadline_proof',replayPath:EDITOR_CONFIRM_REPLAY_PATH}}:{}),...(editorCatalog?{editorCatalog}:{}),...(buyer?{buyer}:{}),...(qaSetupFailure?{qaSetupFailure}:{})};
+    writeFileSync(statePath,JSON.stringify(state),{mode:0o600,flag:'wx'});
+    console.info('THREADLINE_BROWSER_READY: private state file written; manual CUA acceptance remains pending.');
+    let timer:ReturnType<typeof setTimeout>;
+    await Promise.race([finished,new Promise<never>((_,reject)=>{timer=setTimeout(()=>reject(new Error('manual browser acceptance fixture expired')),6*60*60_000);})]).finally(()=>clearTimeout(timer));
+    if (qaSetupFailure) throw new Error(`QA fixture setup remained unconfirmed: ${qaSetupFailure}`);
+  } finally {
+    try { await Promise.allSettled(clients.map(client=>stopOwnedClientRuntime(client)));await close(bridge);await close(checkoutTls);await gateway.settle(); }
+    finally { editorObservation?.dispose();globalThis.fetch=originalFetch;if(capturedMailFd!==undefined)closeSync(capturedMailFd); }
+  }
+}

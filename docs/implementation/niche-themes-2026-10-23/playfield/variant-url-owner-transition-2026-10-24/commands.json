@@ -1,0 +1,39 @@
+[
+  {
+    "name": "source-regression",
+    "command": [
+      "node",
+      "--conditions=react-server",
+      "--import",
+      "tsx",
+      "--test",
+      "--test-concurrency=1",
+      "apps/commerce/web/src/lib/theme-engine/variant-selection-url.test.ts",
+      "apps/commerce/web/src/lib/theme-engine/liquid-add-to-cart-acceptance.test.ts",
+      "apps/commerce/web/src/lib/theme-engine/liquid-cart-island.test.ts",
+      "apps/commerce/web/src/lib/theme-engine/madeyours-cart-island.test.ts",
+      "apps/commerce/web/src/lib/theme-engine/variant-facts-controller.test.ts",
+      "apps/commerce/web/src/lib/theme-engine/variant-options-carrier.test.ts",
+      "apps/commerce/web/src/lib/theme-engine/madeyours-personalization.test.ts",
+      "apps/commerce/web/src/lib/theme-engine/product-liquid-drop.test.ts",
+      "apps/commerce/web/src/lib/theme-engine/playfield-v201-facts.test.ts",
+      "packages/theme-engine/test/playfield-v201.test.ts",
+      "packages/theme-engine/test/playfield.test.ts",
+      "packages/theme-engine/test/niche-catalog-dispatch.test.ts",
+      "packages/theme-engine/test/qi-security.test.ts",
+      "packages/theme-engine/test/liquid-s1-w5-adversarial-security.test.ts"
+    ],
+    "expectedPass": 123
+  },
+  {
+    "name": "buy-now-client-mode",
+    "command": [
+      "node",
+      "--import",
+      "tsx",
+      "--test",
+      "apps/commerce/web/src/lib/theme-engine/liquid-buy-now.test.ts"
+    ],
+    "expectedPass": 19
+  }
+]

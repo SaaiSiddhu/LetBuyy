@@ -1,0 +1,261 @@
+{
+  "recordedAt": "2026-10-25T01:00:24.373890+00:00",
+  "classification": "READONLY_RETAINED_RUNTIME07_EDITOR_COMPONENT_REVIEW",
+  "status": "ACCEPT_BOUNDED_OBSERVED_COMPONENTS_FULL_ROWS_PARTIAL",
+  "reviewer": "Circuit owner; independent of the Editor controller, programme acceptance pending",
+  "runtimeRunId": "49ada80bc494",
+  "controller": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+  "scope": "One home-template trust-badges host, shippingText and one badge root with two direct badge children; no grandchildren.",
+  "physicalReview": {
+    "artifactsRehashed": 21,
+    "axRecordsRead": 9,
+    "actualScreenshotEncodings": {
+      "evidence/074-circuit-local-cycle-entry.png": "image/jpeg",
+      "evidence/075-circuit-declared-field-full-reload.png": "image/jpeg",
+      "evidence/076-circuit-root-children-reorder-hide-full-reload.png": "image/jpeg",
+      "evidence/077-circuit-public-hidden-tree-and-unique-field.png": "image/jpeg",
+      "evidence/078-circuit-public-shown-children.png": "image/jpeg",
+      "evidence/079-circuit-public-child-removed-sibling-preserved.png": "image/jpeg",
+      "evidence/080-circuit-a2-readded-published.png": "image/jpeg",
+      "evidence/081-circuit-original-property-controls-restored-reload.png": "image/jpeg",
+      "evidence/082-circuit-clean-public-original-content.png": "image/jpeg"
+    },
+    "screenshotNameCaveat": "Controller .png filenames contain JPEG bytes; original bytes and names preserved, actual encoding verified before review.",
+    "screenshotsVisuallyInspected": [
+      "076-circuit-root-children-reorder-hide-full-reload.png",
+      "080-circuit-a2-readded-published.png",
+      "081-circuit-original-property-controls-restored-reload.png",
+      "082-circuit-clean-public-original-content.png"
+    ],
+    "storedRootAndDirectChildrenDistinctIds": [
+      "block-b2f1bd24-07e7-44e7-95f3-7676a42e0071",
+      "block-7384169a-1550-4e2c-b6ca-28c4de13ef17",
+      "block-59662680-655b-4b34-b9c3-f625ae31d4df"
+    ],
+    "draftTemplateMirrorIdsAndLabelsAgree": true,
+    "cleanFinalNoOwnedTemporaryNodes": true
+  },
+  "actualBindings": {
+    "siteId": "02049de4-41c3-4b10-b5b2-a60a6b5e82bf",
+    "instanceId": "86436232-2b4d-45f1-8e69-3d89427a8b02",
+    "packageId": "0166d767-ee06-43d9-877d-3ff226ff6fa2",
+    "packageVersionId": "8111dd79-b473-49de-8e35-da872d06dc8d",
+    "temporaryDraft": "c9efeca7-9e3d-496e-a2a3-fd8b44a319f3",
+    "temporaryDraftVersion": 17,
+    "temporaryRelease": "64c9ee74-aed6-4718-a8c0-62b977b51319",
+    "temporaryReleaseSourceDraftVersion": 15,
+    "cleanDraft": "6a43517c-36c3-4a41-82ee-e79b4d2f2526",
+    "cleanDraftVersion": 20,
+    "cleanRelease": "122f16a6-6e4c-4f79-b6ac-21d099a43341",
+    "cleanReleaseSourceDraftVersion": 18,
+    "sourceBundleDigestIndependentlyMatchedToInstalledVersion": false,
+    "bindingTimeCaveat": "Temporary draft and prior release are different acknowledged revisions. Clean-final binding was read after Editor moved the site to another theme; it does not claim Circuit remains the current site theme."
+  },
+  "acceptedObservedComponents": [
+    "Shipping text control value survives save/full reload and is consumed by the published page; clearing restores original empty field and public content.",
+    "One badge root and two direct children have distinct stored IDs mirrored in the same exact home-template host.",
+    "Direct-child B-before-A order and A hidden state survive reload; hidden public page omits A and contains root/B.",
+    "Published child show includes A; subsequent removal omits A while root/B remain; re-added A2 is published after B.",
+    "Final editor/public evidence and clean-final bounded binding have no owned temporary root/children/field marker."
+  ],
+  "controllerReportedNotSeparatelyTraceProved": [
+    "Cancel removal retained both children.",
+    "Undo restored two children and Redo cleaned them."
+  ],
+  "requirementOverlay": [
+    {
+      "caseId": "CE-F-section/trust-badges/shippingText",
+      "status": "PARTIAL",
+      "acceptedOperations": [
+        "valid_edit",
+        "clear_or_optional_absence",
+        "save",
+        "full_reload",
+        "publish",
+        "public_readback"
+      ],
+      "remaining": [
+        "invalid_or_limit_rejection",
+        "private_preview",
+        "exact_installed_descriptor_lineage"
+      ]
+    },
+    {
+      "caseId": "CE210-B-trust-badges-badge",
+      "status": "PARTIAL",
+      "remaining": [
+        "root_sibling_reorder",
+        "root_hide_show",
+        "root_re_add",
+        "private_preview",
+        "cross_template_preservation",
+        "exact_installed_descriptor_lineage"
+      ]
+    },
+    {
+      "caseId": "CE210-F-trust-badges-badge-label",
+      "status": "PARTIAL",
+      "remaining": [
+        "private_preview",
+        "exact_installed_descriptor_lineage"
+      ]
+    },
+    {
+      "caseId": "CE210-N-trust-badges-badge",
+      "status": "PARTIAL",
+      "acceptedDepths": [
+        2
+      ],
+      "remaining": [
+        "depth3_grandchildren",
+        "private_preview",
+        "cross_template_preservation",
+        "exact_installed_descriptor_lineage"
+      ]
+    }
+  ],
+  "openEvidenceCorrelation": {
+    "temporaryDigestEqualsDespiteDifferentNodeProjection": false,
+    "status": "NO_DISCREPANCY_OBSERVED",
+    "disposition": "Initial truncated-output reading concern was corrected with the complete raw arrays: both temporary draft and release contain root/B/A2 with the same IDs. Correction sent to Editor. This review hashes the retained artifact, not a newly queried full database manifest."
+  },
+  "preview": {
+    "status": "OPEN",
+    "finding": "ED-R07-PREVIEW-DEVICE-02",
+    "observation": "Retained desktop editor screenshots show blank live-preview content. No private preview, tablet/mobile, responsive or accessibility acceptance inferred."
+  },
+  "coverageDisposition": {
+    "original25": {
+      "PASS": 10,
+      "PARTIAL": 5,
+      "NOT_RUN": 10
+    },
+    "original288Overlay": {
+      "PARTIAL": 1,
+      "NOT_RUN": 287
+    },
+    "new210Overlay": {
+      "PARTIAL": 3,
+      "NOT_RUN": 12
+    },
+    "wholeCasePassesAdded": 0,
+    "sealedSourceRequirementAddendumModified": false,
+    "controller12AtomicReferencesAreNot12WholeCases": true
+  },
+  "preservation": {
+    "ordersCreatedByThisReview": 0,
+    "stockMutations": 0,
+    "appCalls": 0,
+    "databaseCalls": 0,
+    "nativeExecutions": 0,
+    "sourceEdits": 0
+  },
+  "fullThemeCertificate": false,
+  "artifacts": [
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/CIRCUIT_LOCAL_EDITOR_CYCLE_RESUME02.json",
+      "sha256": "1c00a3a8f57a65486329595c187e2f81bcfbdd13d7d3b5422ea29882bec26f99",
+      "bytes": 8442
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/CIRCUIT_EDITOR_BINDINGS_TEMPORARY_READDED.json",
+      "sha256": "382726be925793d3c2a931a0fa5b86a33977dcb1c9468c39b6ffa06584fc9927",
+      "bytes": 8762
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/CIRCUIT_EDITOR_BINDINGS_CLEAN_FINAL.json",
+      "sha256": "750bcd713cbda66dc4155c28751cb10457f34dfecfe07521205a6283d00afa8d",
+      "bytes": 3934
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/evidence/074-circuit-local-cycle-entry.ax.txt",
+      "sha256": "f8b9f19635544c6d2811bbdb7bfa05c55e9b89fb1f91647441d65516084b6761",
+      "bytes": 5031
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/evidence/074-circuit-local-cycle-entry.png",
+      "sha256": "58d350bf2e7989085d52979ce7a3a000d507753926b00f86fe36a9a7aab61999",
+      "bytes": 71982
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/evidence/075-circuit-declared-field-full-reload.ax.txt",
+      "sha256": "1e2c2f02d719c695497cd202abfc1138f1111cdc2a922a5a324513c05f01f4d2",
+      "bytes": 5082
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/evidence/075-circuit-declared-field-full-reload.png",
+      "sha256": "60706aab910496e601266d9a03013f3447af84eaac6db34934b3dcd6f7474168",
+      "bytes": 74276
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/evidence/076-circuit-root-children-reorder-hide-full-reload.ax.txt",
+      "sha256": "8839991e582f7ae1021c765f381f4685133de39f5b8ec89d0d84edbb46da254e",
+      "bytes": 5800
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/evidence/076-circuit-root-children-reorder-hide-full-reload.png",
+      "sha256": "7aeb75b4b05b1940714976c9880112546a67470b2d3f8e49594c9d0e9d49b0e0",
+      "bytes": 71744
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/evidence/077-circuit-public-hidden-tree-and-unique-field.ax.txt",
+      "sha256": "b5367c73e32a5fba6b637638c27be5928ad19f24f351681281fdc53a262d0bc6",
+      "bytes": 9494
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/evidence/077-circuit-public-hidden-tree-and-unique-field.png",
+      "sha256": "a0753bac291414467a131692eeff54dd48858f044e0d713979a809e4f2e92044",
+      "bytes": 83331
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/evidence/078-circuit-public-shown-children.ax.txt",
+      "sha256": "cb8fa928eb0dfd18df23c98ab7feaff6a12af7477084b9506522f2b9352ea818",
+      "bytes": 9520
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/evidence/078-circuit-public-shown-children.png",
+      "sha256": "a0753bac291414467a131692eeff54dd48858f044e0d713979a809e4f2e92044",
+      "bytes": 83331
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/evidence/079-circuit-public-child-removed-sibling-preserved.ax.txt",
+      "sha256": "b5367c73e32a5fba6b637638c27be5928ad19f24f351681281fdc53a262d0bc6",
+      "bytes": 9494
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/evidence/079-circuit-public-child-removed-sibling-preserved.png",
+      "sha256": "a0753bac291414467a131692eeff54dd48858f044e0d713979a809e4f2e92044",
+      "bytes": 83331
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/evidence/080-circuit-a2-readded-published.ax.txt",
+      "sha256": "a6bbfb7923616feb51568e6715d305077efe98f9a336821c1c96de04e4a272b7",
+      "bytes": 9521
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/evidence/080-circuit-a2-readded-published.png",
+      "sha256": "a0753bac291414467a131692eeff54dd48858f044e0d713979a809e4f2e92044",
+      "bytes": 83331
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/evidence/081-circuit-original-property-controls-restored-reload.ax.txt",
+      "sha256": "b192fdc212d4ddbf1858a212683491778e452c77427d6bf75bcc25baef74c0c1",
+      "bytes": 5027
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/evidence/081-circuit-original-property-controls-restored-reload.png",
+      "sha256": "6774feca1d866cafe205a4ccf37a2ce2b599f210a30e47d21e118cc7461a0c34",
+      "bytes": 71691
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/evidence/082-circuit-clean-public-original-content.ax.txt",
+      "sha256": "30a9e346b44ceac916d35e47bff582bf9abc39cc0a1284972e399ccf677e5601",
+      "bytes": 9288
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/evidence/082-circuit-clean-public-original-content.png",
+      "sha256": "eecc7844127123a9197d01d5a0a78b3e76c63abe799710d55c69b4fd501a3796",
+      "bytes": 83362
+    }
+  ]
+}

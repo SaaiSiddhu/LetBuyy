@@ -1,0 +1,74 @@
+{
+  "classification": "SOURCE_STATE_SERIALIZATION_ONLY_NOT_ACTUAL_UI_OPERATIONS",
+  "type": "contact-form",
+  "group": "template",
+  "originalId": "section-2b5ea642-073f-41f9-9f9f-b98844bace12",
+  "finalId": "section-00dbf585-1a23-4b65-a95b-b29704b59e27",
+  "sectionFieldsExercised": [
+    "title",
+    "subtitle",
+    "showPhone"
+  ],
+  "effectiveBlockFieldsExercised": [],
+  "phases": [
+    {
+      "phase": "edited",
+      "observed": {
+        "settings": {
+          "title": "Circuit source title",
+          "subtitle": "Circuit source subtitle",
+          "showPhone": false
+        },
+        "disabled": false,
+        "block_order": [],
+        "blocks": {}
+      }
+    },
+    {
+      "phase": "hidden-reordered",
+      "observed": {
+        "settings": {
+          "title": "Circuit source title",
+          "subtitle": "Circuit source subtitle",
+          "showPhone": false
+        },
+        "disabled": true,
+        "block_order": [],
+        "blocks": {}
+      }
+    },
+    {
+      "phase": "shown",
+      "observed": {
+        "settings": {
+          "title": "Circuit source title",
+          "subtitle": "Circuit source subtitle",
+          "showPhone": false
+        },
+        "disabled": false,
+        "block_order": [],
+        "blocks": {}
+      }
+    },
+    {
+      "phase": "removed",
+      "originalSectionAbsent": true,
+      "protectedGroupIdentityRetained": false
+    },
+    {
+      "phase": "readded",
+      "observed": {
+        "settings": {
+          "title": "Circuit source title",
+          "subtitle": "Circuit source subtitle",
+          "showPhone": false
+        },
+        "disabled": false,
+        "block_order": [],
+        "blocks": {}
+      }
+    }
+  ],
+  "resourceAuthorityProved": false,
+  "actualUiCallbacksExecuted": false
+}

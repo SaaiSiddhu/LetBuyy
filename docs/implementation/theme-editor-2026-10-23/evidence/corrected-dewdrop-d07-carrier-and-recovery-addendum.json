@@ -1,0 +1,15 @@
+{
+  "recordedAt": "2026-10-23T18:43:12.062742+00:00",
+  "runId": "f6074d90e894",
+  "caseId": "D07",
+  "httpStatus": 200,
+  "exactEscapedCarrierPresent": true,
+  "rawExecutablePayloadPresent": false,
+  "rawPrivateSsr0600": "/private/tmp/theme-editor-f607-d07-ssr.html",
+  "responseSha256": "f2f89ad021e7c89c3b35b48647a4100089f6ba5c4c8cf43cc2d5e88369379235",
+  "observationCorrection": "SSR visible search attributes omitted, but hidden platform query carrier retains HTML-escaped value; decoded HTMLParser value is expected. Do not claim universal removal or lossless unsafe-query roundtrip.",
+  "actualBrowserDomObservation": "No exact standalone fixtureAttack() script node; API-exposed search values null, without attributing all suppression to an application stage.",
+  "normalUiRecovery": "PASS actual Explore all products click \u219217 products/all4care",
+  "recoveryAx": "corrected-dewdrop-d07-recovery.ax.txt",
+  "ownerWholeRowAudit": "PENDING"
+}

@@ -1,0 +1,35 @@
+{
+  "recordedAtUtc": "2026-10-24T12:50:58.520516+00:00",
+  "classification": "SHARED_CATALOGUE_NATIVE06_FAILURE_NOT_DEWDROP_BROWSER_RESULTS",
+  "owner": "Themes",
+  "nativeRunId": "9a1393559a57",
+  "sourceReceipt": {
+    "path": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/native-runs/06/result.json",
+    "sha256": "96d0783c3816070fcab962dcc440f1dd9db5ec3aac6421d68264fa2d8ed73ee8"
+  },
+  "observedRunnerAggregate": {
+    "tests": 5,
+    "suites": 1,
+    "failedSuites": 1,
+    "assertionsPassed": 3,
+    "assertionsFailed": 2,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "wallSeconds": 33.9
+  },
+  "countsMeaning": "Runner aggregate may include parent/child assertions, not unique Dewdrop cases or native stages.",
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "ownerDetailedDiagnosis": "Await Main-owned review; no stage inferred from runner aggregate",
+  "frozenOriginal200Lane": "Conditionally admissible independently under completion-original-matrix-runtime-admission-decision-20261024-01.json; no runtime/browser lease yet",
+  "mainCapacityRecovery": "Existing Main chat active in new turn; model/settings not changed",
+  "newBrowserPasses": 0,
+  "all30Complete": false
+}

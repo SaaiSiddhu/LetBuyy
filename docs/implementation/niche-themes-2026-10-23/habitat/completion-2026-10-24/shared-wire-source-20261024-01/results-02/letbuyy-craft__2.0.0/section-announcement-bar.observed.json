@@ -1,0 +1,74 @@
+{
+  "id": "section-announcement-bar",
+  "status": "PASS_SOURCE_DATA_CONTRACT",
+  "observed": {
+    "type": "announcement-bar",
+    "group": "template",
+    "firstId": "section-05ba2d19-9430-41bf-9cac-da4301be55df",
+    "finalId": "section-3960aa42-1d4d-4dec-8263-c2866a04f31c",
+    "phases": [
+      {
+        "phase": "edited",
+        "data": {
+          "type": "announcement-bar",
+          "settings": {
+            "text": "Source fixture text",
+            "linkLabel": "Source fixture linkLabel",
+            "linkHref": "https://example.invalid/theme-source/linkHref.webp"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      {
+        "phase": "hidden-reordered",
+        "data": {
+          "type": "announcement-bar",
+          "settings": {
+            "text": "Source fixture text",
+            "linkLabel": "Source fixture linkLabel",
+            "linkHref": "https://example.invalid/theme-source/linkHref.webp"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": true
+        }
+      },
+      {
+        "phase": "shown",
+        "data": {
+          "type": "announcement-bar",
+          "settings": {
+            "text": "Source fixture text",
+            "linkLabel": "Source fixture linkLabel",
+            "linkHref": "https://example.invalid/theme-source/linkHref.webp"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      {
+        "phase": "removed",
+        "pinnedGroupSectionRetained": false
+      },
+      {
+        "phase": "readded",
+        "data": {
+          "type": "announcement-bar",
+          "settings": {
+            "text": "Source fixture text",
+            "linkLabel": "Source fixture linkLabel",
+            "linkHref": "https://example.invalid/theme-source/linkHref.webp"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      }
+    ],
+    "actualUICallbacksExecuted": false,
+    "resourceAuthorityProved": false
+  }
+}

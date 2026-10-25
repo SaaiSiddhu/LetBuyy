@@ -1,0 +1,33 @@
+Browser tab: 173052885, Title: "Search results for \"linen\" | Threadline", URL: "http://syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477/search?[redacted query]
+1 AXWebArea Search results for "linen" | Threadline, URL: syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477/search?[redacted query]
+	2 container
+		3 text Threadline Runtime07 A — everyday apparel
+		4 container Description: Primary, ID: lb-nav-panel-header-default
+		5 link Description: THREADLINE, Value: syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477
+		6 button (collapsed) Description: Search, Secondary Actions: Expand
+		7 link Description: Log in, Value: syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477/customers/login
+		8 link Description: Cart ( 0 ), Value: syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477/cart
+		9 container Filter products by country of origin
+			10 container
+				11 text Country of origin
+				12 text field (settable) Country of origin, ID: lb-product-origin-filter
+				13 button Apply filter
+		14 container
+			15 text Search products
+			16 search text field (settable) Description: Search products, Value: linen, ID: lb-search-input-search-box-default
+			17 button Search
+		18 text Results for "linen"
+		19 heading Search products, Value: 1
+			20 text Search products
+		21 container
+			22 link Description: The Everyday Linen Shirt The Everyday Linen Shirt INR 2,490.00, Value: syn-threadline-ui-ae3f0477.localhost:64595/product/b2814421-b6ca-44d6-8eae-139d9fa0cfe1
+			23 link Description: View product →, Value: syn-threadline-ui-ae3f0477.localhost:64595/product/b2814421-b6ca-44d6-8eae-139d9fa0cfe1
+		24 heading Threadline, Value: 3
+			25 text Threadline
+		26 heading CONTACT, Value: 4
+			27 text CONTACT
+		28 link Description: Contact us, Value: syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477/contact
+		29 text © Threadline. All rights reserved.
+		30 link Description: Powered by LetBuyy, Value: letbuyy.com/
+
+The focused UI element is 1 AXWebArea Search results for "linen" | Threadline, URL: syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477/search?[redacted query]

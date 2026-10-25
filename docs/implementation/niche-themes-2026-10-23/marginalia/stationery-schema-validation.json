@@ -1,0 +1,21 @@
+{
+  "classification": "CANONICAL_SCHEMA_VALIDATION_ONLY_NOT_EXECUTED_ACCEPTANCE",
+  "payloadPlan": "docs/implementation/niche-themes-2026-10-23/marginalia/stationery-create-product.plan.json",
+  "payloadPlanSha256": "bcbcb2cdf414dd4a21a967b73d6144c40f1a3fed0903934867a99845d6dd3649",
+  "schemas": [
+    "CreateProductSchema",
+    "ProductVariantSchema (zero variants)",
+    "BooksFactsSchema"
+  ],
+  "fullCreateCommandValidation": "PASS with synthetic validation-only store UUID and example.invalid media origin",
+  "actualStoreBound": false,
+  "canonicalProductCreated": false,
+  "actualLifecycleStatus": "NOT_RUN",
+  "variantCount": 0,
+  "kind": "stationery",
+  "ruling": "lined",
+  "paperGsm": 100,
+  "pageCount": 96,
+  "sheetCount": 48,
+  "networkDatabaseBrowserBuild": false
+}

@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "recordedAtUtc": "2026-10-24T09:01:40.886452+00:00",
+  "class": "STATIC_FORM_TO_BOUND_HANDLER_CONTRACT_TRACE_NOT_HTTP_OR_SUBMISSION_TEST",
+  "sources": [
+    {
+      "path": "packages/theme-engine/src/theme-bundle.ts",
+      "sha256": "cdbad4b28277431a3ab06e56ed0ce16539e04837bb107f5f951a3df39a92ed76"
+    },
+    {
+      "path": "apps/commerce/web/src/proxy.ts",
+      "sha256": "5a03c59a8d72c32b7a8e9437515ae0232138d51b5fb53a331ac191bbfd9f24a8"
+    },
+    {
+      "path": "apps/commerce/web/src/app/store/[subdomain]/contact/page.tsx",
+      "sha256": "fe7df75bff97877175a6028c1a516850aa126e916a46aafd8e5a8546addbd5bc"
+    },
+    {
+      "path": "services/api-gateway/src/routes/contacts.ts",
+      "sha256": "7d8a38ac18ce11a54a93100908bbddc8fc3c505cc1de5cbb67a758bfddad5d0d"
+    },
+    {
+      "path": "apps/commerce/web/src/app/api/customer/register/route.ts",
+      "sha256": "d3ac9d74c022b34e09d03875e64d8a2bafbd047515e7870d0e715ebbe743b33b"
+    },
+    {
+      "path": "apps/commerce/web/src/app/api/customer/login/route.ts",
+      "sha256": "80c0dff67c5f8dedd15d71d6d254cc43ce72dd491c82cf65a4bb5e797b3cf62e"
+    }
+  ],
+  "forms": [
+    {
+      "section": "contact-form",
+      "method": "POST",
+      "target": "/contact",
+      "declaredInputs": [
+        "name",
+        "email",
+        "phone when showPhone"
+      ],
+      "boundHandler": "apps/commerce/web/src/proxy.ts handleContactSubmit after storefront access gates",
+      "gateway": "POST /v1/contacts with host-resolved site.site_id",
+      "status": "SOURCE_CONNECTED_RUNTIME_NOT_RUN",
+      "limitations": "No form submit, persisted contact, notification or HTTPstatus observed."
+    },
+    {
+      "section": "newsletter-signup",
+      "method": "POST",
+      "target": "/contact",
+      "declaredInputs": [
+        "email"
+      ],
+      "boundHandlerRequired": "name and at least email or phone",
+      "status": "SOURCE_CONTRACT_MISMATCH",
+      "finding": "DD-FIND-006",
+      "consequence": "Email-only newsletter form cannot satisfy bound handler name guard. It has no demonstrated canonical subscription/consent success.",
+      "noFalseFix": "Do not synthesize a subscriber name, remove guard, relabel contact lead as opt-in, or build a second subscription identity."
+    },
+    {
+      "section": "customer-register",
+      "target": "/api/customer/register",
+      "status": "SOURCE_CANONICAL_BRIDGE_PRESENT_LIVE_NOT_RUN",
+      "observation": "Form submission redirects303 to existing buyer-auth/start with screen=register; JSONreturns410 canonical identity required. No legacy signup revival is proposed."
+    },
+    {
+      "section": "customer-login",
+      "target": "/api/customer/login plus explicit Continue with LetBuyy",
+      "status": "SUPPORTED_TRANSITIONAL_AND_CANONICAL_ENTRY_NEEDS_ACTUAL_ADMITTED_FLOW",
+      "observation": "Theme is not an issuer. Verify supported canonical buyer/customer entry under fresh admitted site; do not extend retired authority."
+    }
+  ],
+  "securityFinding": {
+    "id": "DD-FIND-007",
+    "source": "services/api-gateway/src/routes/contacts.ts",
+    "observation": "Unexpected insert error is returned with message:error.message.",
+    "rule": "CODE-R3 requires sanitized client error and structured redacted internal evidence.",
+    "scope": "Source-confirmed unsafe error presentation; no real database failure or personal-data leak was induced/observed.",
+    "ownerNeeded": "One shared API owner; preserve existing tenant/consent/notification and response contracts; no duplicate route."
+  },
+  "observedHttpStatuses": [],
+  "businessMutations": [],
+  "providerEffects": [],
+  "runtime07BoundaryQualification": {
+    "path": "runtime07/FORM_BOUNDARY_REVIEW.json",
+    "DD-FIND-007": "Global public-error sanitizer source present; external leak claim not established",
+    "DD-FIND-006": "Email-only/name-required mismatch remains; no fake consent or submission"
+  }
+}

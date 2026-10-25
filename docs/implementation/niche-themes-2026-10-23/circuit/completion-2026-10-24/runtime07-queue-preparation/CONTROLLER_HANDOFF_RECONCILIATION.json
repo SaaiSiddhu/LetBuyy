@@ -1,0 +1,20 @@
+{
+  "recordedAt": "2026-10-24T20:23:40.352761+00:00",
+  "status": "QUEUE_CURRENT_OWNER_RECONCILED_NO_BROWSER_ACTION",
+  "priorSubmission": "QUEUE_SUBMISSION.json",
+  "actualCurrentController": "01a16ce5-e5ba-7191-ab2c-a1b76947d2b5",
+  "sharedInteractiveBrowser": {
+    "owner": "01a16ce5-e5ba-7191-ab2c-a1b76947d2b5",
+    "status": "TEMPORARY_ROOT_CONTROLLER_DIRECT_HUMAN_AUTHORIZATION",
+    "runId": "49ada80bc494",
+    "candidate": "/private/tmp/letbuyy-shared-completion-20261024-06",
+    "reason": "Editor sender-context automatic approval rejected fresh storefront under superseded pause; Editor instructed browser-idle. Root will try same ordinary UI under actual direct human resume; approval controls unchanged."
+  },
+  "requestSnapshot": {
+    "file": "request-after-controller-handoff.json",
+    "sha256": "c8b7d00e09f946e85c58112e7a9395093ba04a0cc42712a13dfcb512ad489564"
+  },
+  "liveQueueLocator": "../COVERAGE.json#controllerQueueRequest",
+  "approvalBlockNotRetriedOrBypassedByThisOwner": true,
+  "newOwnUICasesClosed": 0
+}

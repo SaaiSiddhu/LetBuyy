@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-24T10:08:26.702982+00:00",
+  "status": "SEALED_LEAF_HANDOFF_WRITER_RELEASED",
+  "allocationId": "completion-threadline-main-v201-leaf01",
+  "allocation": {
+    "path": "docs/implementation/niche-theme-programme/completion-threadline-main-leaf-allocation-20261024-01.json",
+    "sha256": "3fe4a2d9a839602ad663d39783d12c71cbd1cd30e69c309a5c3f6f75db4253f0",
+    "bytes": 2845
+  },
+  "mainFiles": [
+    {
+      "path": "packages/theme-engine/src/threadline-theme-v201.ts",
+      "sha256": "a8bba702d94d8e5719ba50058d0e70229c1b261fdc5d49d258df99532b521de7",
+      "bytes": 4749,
+      "beforeSha256": null
+    },
+    {
+      "path": "packages/theme-engine/test/threadline-successor.test.ts",
+      "sha256": "710f418b62a91353e448a5af10eff1f13f7fba00d8b8f1e6942f0c29c9b2eedd",
+      "bytes": 19983,
+      "beforeSha256": null
+    }
+  ],
+  "results": {
+    "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/main-leaf-01/RESULTS.json",
+    "sha256": "e57c391dea4ab043081f0534e7a1f20578c4646f622c01debfc4e7ef66f4e075",
+    "bytes": 5596
+  },
+  "runtimeInputs": {
+    "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/main-leaf-01/FINAL_RUNTIME_INPUTS.json",
+    "sha256": "27c669434ef9b711ec68c014fb46277b1ec71e2f7b49bf4088186f629ae4be2a",
+    "bytes": 295472
+  },
+  "unappliedRootCatalogueDiff": {
+    "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/main-leaf-01/first-party-threadline-dispatch.UNAPPLIED.diff",
+    "sha256": "e24e4619840a27fb6fa41ef7d48424ca57f0b9bd0e9e54e65c68b7301d600357",
+    "bytes": 2030
+  },
+  "catalogueProposal": {
+    "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/main-leaf-01/CATALOGUE_PROPOSAL.json",
+    "sha256": "8978d7b406a5cbd4a87ce181fecd2916e7fc1b8d7033dac5975af950bf9ea23c",
+    "bytes": 943
+  },
+  "independentReview": "PENDING",
+  "furtherMainEditsUnderThisLease": "NONE",
+  "nextOwner": "Existing Themes allocator/Root, for independent review and explicit catalogue import/dispatch integration; editor/runtime/provider admission separate.",
+  "sourceTestOutcome": "20PASS/0FAIL/0SKIP;strict0diagnostics;lint0errors0warnings",
+  "messagesSent": false,
+  "fullThemeCertified": false
+}

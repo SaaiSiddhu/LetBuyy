@@ -1,0 +1,161 @@
+{
+  "recordedAt": "2026-10-24T11:54:07.201403+00:00",
+  "status": "TWO_NEW_MAIN_FILES_APPLIED_FOCUSED_SOURCE_GATES_PASS_WRITER_RELEASED",
+  "grant": {
+    "path": "docs/implementation/niche-theme-programme/completion-playfield-main-leaf-allocation-20261024-02.json",
+    "sha256": "d4f7c26d9f9bfea0e02fdf01006d75162b6823dc94a5a2c77d4dcbd196f4ffab",
+    "bytes": 2446
+  },
+  "sourceLease": "playfield-versioned-leaf-resume02",
+  "sourceLeaseReleased": true,
+  "files": [
+    {
+      "path": "packages/theme-engine/src/playfield-theme-v202.ts",
+      "sha256": "25aaec88541f8c46521596c1c01c3903018750e7057d1038a8ba13a773256bb1",
+      "bytes": 6420
+    },
+    {
+      "path": "packages/theme-engine/test/playfield-subtitle-successor.test.ts",
+      "sha256": "c73c1365de4f57b97959aa1a27093974f824f63271d486bfb20b7aff82172b0e",
+      "bytes": 19278
+    }
+  ],
+  "packageIdentity": {
+    "slug": "letbuyy-bloom",
+    "version": "2.0.2",
+    "versionNumber": 4,
+    "catalogueDispatched": false,
+    "persistedOrPublished": false
+  },
+  "implementation": "Compact wrapper around canonical201; saved200/201 bypass default reapplication, retain settings/layout/blocks/unknownJSON, upgrade200PDPthroughcanonical201source, consume existing order helpers before versionadvance, validate202idempotence, retire stale checksum.",
+  "finalSourceChecks": {
+    "tests": 20,
+    "pass": 20,
+    "fail": 0,
+    "skipped": 0,
+    "cancelled": 0
+  },
+  "distinctCounting": "20 current tests; frozen catalogue fingerprint cohort has20assertions and counts as1test. Prior13privatechecks overlap and are not added.",
+  "retainedAttempts": {
+    "source-tests-01.tap": {
+      "tests": 1,
+      "pass": 0,
+      "fail": 1,
+      "skipped": 0,
+      "cancelled": 0
+    },
+    "source-tests-02.tap": {
+      "tests": 19,
+      "pass": 17,
+      "fail": 2,
+      "skipped": 0,
+      "cancelled": 0
+    },
+    "source-tests-03.tap": {
+      "tests": 20,
+      "pass": 20,
+      "fail": 0,
+      "skipped": 0,
+      "cancelled": 0
+    },
+    "source-tests-04.tap": {
+      "tests": 20,
+      "pass": 20,
+      "fail": 0,
+      "skipped": 0,
+      "cancelled": 0
+    }
+  },
+  "attemptFindings": [
+    {
+      "log": "source-tests-01.tap",
+      "meaning": "Test import used nonexistent persistence-export name. Corrected only new test import; no product verdict."
+    },
+    {
+      "log": "source-tests-02.tap",
+      "meaning": "Saved200PDPembeddedSchema serialization prevented exact201source byte equality; fixed to reuse reference source when descriptorsmatch, preserving futuredescriptor branch. Duplicate-field negative fixture lackedrequiredlabel; corrected fixture, retained failure."
+    },
+    {
+      "log": "strict-noemit-01.log",
+      "meaning": "Scoped compiler inherited declaration-only option and lacked explicit installed Node type root; corrected owned qualification script. New test DOM cleanup was narrowed to canonical available close API."
+    },
+    {
+      "log": "closure-before-01-builtin-refusal.json",
+      "meaning": "Own collector incorrectly classified node:test as unresolved from builtinModules list; switched to Node isBuiltin, retained refusal."
+    }
+  ],
+  "strictScopedNoEmit": {
+    "command": "node --conditions=react-server --import tsx docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/main-v202-integration-20261024-02/qualify-source.cjs typecheck",
+    "diagnostics": 0,
+    "exitCode": 0,
+    "strict": true,
+    "noEmit": true,
+    "composite": false,
+    "incremental": false,
+    "entries": [
+      "packages/theme-engine/src/playfield-theme-v202.ts",
+      "packages/theme-engine/test/playfield-subtitle-successor.test.ts"
+    ],
+    "typescript": "5.9.3"
+  },
+  "themeGovernance": {
+    "command": "node scripts/validators/theme-governance-validator.mjs",
+    "exitCode": 0,
+    "log": {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/main-v202-integration-20261024-02/theme-governance.log",
+      "sha256": "7544f16c21c2dba16c1d21509b3cfd2fb5e9a2d3afac98da8e92ea1555795f57",
+      "bytes": 143
+    },
+    "scope": "Single existing theme validator; no fullgovernance/all-source-suite pass claim."
+  },
+  "runtimeAndTypeInputClosure": {
+    "before": {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/main-v202-integration-20261024-02/closure-before.json",
+      "sha256": "521a4676746c9d0b8d0fd0f7629a9506026a17fad27f236ddb547b9d8c841f71",
+      "bytes": 51217
+    },
+    "after": {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/main-v202-integration-20261024-02/closure-after.json",
+      "sha256": "e014e8eec2e58435d5df0423415e4d24947e03b6f52b3d2b139e251d038c4189",
+      "bytes": 51217
+    },
+    "inputs": 109,
+    "runtimeWorkspaceFiles": 60,
+    "runtimeLiteralEdges": 115,
+    "unresolved": [],
+    "changedInputs": [],
+    "nodeDefaultServerDomResolved": true,
+    "condition": "react-server/default with tsx; public server-dom resolves actual Node runtime module.",
+    "scope": "Resolved literal workspace runtime imports plus type-check,lock,package andfixture envelope. Not native/browser execution of every branch."
+  },
+  "preservation": {
+    "threeGrantedDependencyHashesExact": true,
+    "oldProtectedEvidenceFilesExact": 923,
+    "oldChanges": [],
+    "all20FrozenCatalogueFingerprintsExact": true,
+    "captured200And201FactoriesAndArtifactsUntouched": true,
+    "otherMainFilesWritten": false
+  },
+  "dispatch": {
+    "path": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/main-v202-integration-20261024-02/catalog-dispatch-PROPOSAL.json",
+    "sha256": "937c5d2f5090f33ef0ef4c024a813bd8302e827f0748fba6d3d17382e193bea2",
+    "bytes": 894
+  },
+  "scopeNotExecuted": [
+    "Catalogue dispatcher apply",
+    "Package orrelease artifact export/persistence/promotion",
+    "Migration/native/heavybuild/DB/browser/provider/runtime/apprestart"
+  ],
+  "currentInstalledOriginal14": {
+    "PASS": 0,
+    "FAIL": 0,
+    "NOT_RUN": 14
+  },
+  "oldInstalledFailuresRetained": [
+    "PF-I05",
+    "PF-I06"
+  ],
+  "independentReview": "PENDING_ROOT_REVIEW_OF_NEW_BYTES",
+  "fullThemeCertified": false,
+  "nextAction": "Root reviews new leaf/test and fresh109-input closure, then applies its own explicit202dispatch if accepted. Coherent native/catalogue/runtime/common-smoke/sole-editor allocation must precede installed14 and expanded acceptance."
+}

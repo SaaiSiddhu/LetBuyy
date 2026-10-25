@@ -1,5 +1,39 @@
 'use client'
 
+import {
+    type VariantOption,
+    type VariantRow,
+    type ProductFormSnapshot,
+    defaultProductSnapshot,
+    buildVariantMatrix,
+    appendVariantOptionValue,
+    appendVariantOptionAxis,
+    renameVariantOptionValue,
+    renameVariantOptionName,
+    normalizeApiVariants,
+    weightUnitOptions,
+    editStatusOptions,
+    statusOptions,
+    createFormSignature,
+    type ProductEditIntent,
+    publicMediaReference,
+    retainProductMediaReferences,
+    buildProductFormFields,
+    readUnsavedProduct,
+    restoreProductEdit,
+    restoreProductInventory,
+    keepCurrentProductInventory,
+    rebaseProductInventoryAfterSave,
+    generateHandle,
+    getPayloadError,
+    normalizeProductSnapshot,
+} from '@/lib/product-form-state'
+import { VariantFactsEditor } from '@/components/products/VariantFactsEditor'
+import { editVariantFacts, rebaseVariantFacts, variantFactsBaselineKnown, variantFactsValue } from '@/lib/variant-facts-draft'
+import { NicheFactsEditor } from '@/components/products/NicheFactsEditor'
+import { ApparelFactsEditor } from '@/components/products/ApparelFactsEditor'
+import { composeProductMetadata, readProductFactsDraft, resolveProductGiftImages } from '@/lib/product-facts-draft'
+
 import { useReadRequest } from '@/lib/api/use-read-request'
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
@@ -13,11 +47,14 @@ import {
 } from '@/lib/marketplace-resubmission-key'
 import { Button, Input,
     ArrowLeft,
+    ArrowRight,
     Badge,
     Banner,
     Card,
     EmptyState,
+    Edit3,
     Image as ImageIcon,
+    Modal,
     Package,
     Page,
     PageHeader,
@@ -33,277 +70,8 @@ import { Button, Input,
     Upload,
     X,
     useToast,
+    useFormProtection,
 } from '@letbuyy/ui'
-
-interface VariantOption {
-    name: string
-    values: string[]
-}
-
-interface VariantRow {
-    id?: string           // present when editing existing rows
-    option1: string | null
-    option2: string | null
-    option3: string | null
-    title: string
-    price: string
-    comparePrice: string
-    sku: string
-    stock: string
-}
-
-interface ProductFormSnapshot {
-    title: string
-    description: string
-    images: string[]
-    category: string
-    price: string
-    comparePrice: string
-    costPerItem: string
-    chargeTax: boolean
-    trackInventory: boolean
-    quantity: string
-    sku: string
-    barcode: string
-    sellWhenOos: boolean
-    isPhysical: boolean
-    weight: string
-    weightUnit: string
-    countryOfOrigin: string
-    importerDetails: string
-    hsCode: string
-    variantOptions: VariantOption[]
-    variantMatrix: VariantRow[]
-    seoTitle: string
-    seoDescription: string
-    urlHandle: string
-    status: 'active' | 'draft' | 'archived'
-    productType: string
-    vendor: string
-    tags: string
-}
-
-const defaultProductSnapshot: ProductFormSnapshot = {
-    title: '',
-    description: '',
-    images: [],
-    category: '',
-    price: '',
-    comparePrice: '',
-    costPerItem: '',
-    chargeTax: true,
-    trackInventory: true,
-    quantity: '10',
-    sku: '',
-    barcode: '',
-    sellWhenOos: false,
-    isPhysical: true,
-    weight: '',
-    weightUnit: 'kg',
-    countryOfOrigin: '',
-    importerDetails: '',
-    hsCode: '',
-    variantOptions: [],
-    variantMatrix: [],
-    seoTitle: '',
-    seoDescription: '',
-    urlHandle: '',
-    status: 'active',
-    productType: '',
-    vendor: '',
-    tags: '',
-}
-
-/** Generate cartesian product of option values then build VariantRow[] */
-function buildVariantMatrix(
-    options: VariantOption[],
-    basePrice: string,
-    existingRows: VariantRow[] = [],
-): VariantRow[] {
-    const filled = options.filter((o) => o.values.length > 0)
-    if (filled.length === 0) return []
-
-    // cartesian
-    const combos: string[][] = filled.reduce<string[][]>((acc, opt) => {
-        if (acc.length === 0) return opt.values.map((v) => [v])
-        return acc.flatMap((row) => opt.values.map((v) => [...row, v]))
-    }, [])
-
-    return combos.map((combo) => {
-        const o1 = combo[0] ?? null
-        const o2 = combo[1] ?? null
-        const o3 = combo[2] ?? null
-        const title = combo.join(' / ')
-
-        // Preserve edits from existing matching row
-        const existing = existingRows.find(
-            (r) => r.option1 === o1 && r.option2 === o2 && r.option3 === o3,
-        )
-        return {
-            id: existing?.id,
-            option1: o1,
-            option2: o2,
-            option3: o3,
-            title,
-            price: existing?.price ?? basePrice,
-            comparePrice: existing?.comparePrice ?? '',
-            sku: existing?.sku ?? '',
-            stock: existing?.stock ?? '0',
-        }
-    })
-}
-
-/** Map API variant rows back into VariantRow[] for edit hydration */
-function normalizeApiVariants(apiVariants: unknown[]): VariantRow[] {
-    return apiVariants
-        .filter((v): v is Record<string, unknown> => Boolean(v) && typeof v === 'object')
-        .map((v) => ({
-            id: typeof v.id === 'string' ? v.id : undefined,
-            option1: typeof v.option1 === 'string' ? v.option1 : null,
-            option2: typeof v.option2 === 'string' ? v.option2 : null,
-            option3: typeof v.option3 === 'string' ? v.option3 : null,
-            title: typeof v.title === 'string' ? v.title : '',
-            price: v.price !== undefined && v.price !== null ? String(v.price) : '',
-            comparePrice: v.compare_price !== undefined && v.compare_price !== null ? String(v.compare_price) : '',
-            sku: typeof v.sku === 'string' ? v.sku : '',
-            stock: v.inventory_qty !== undefined && v.inventory_qty !== null
-                ? String(v.inventory_qty)
-                : v.stock !== undefined && v.stock !== null ? String(v.stock) : '0',
-        }))
-}
-
-const weightUnitOptions = [
-    { label: 'kg', value: 'kg' },
-    { label: 'g', value: 'g' },
-    { label: 'lb', value: 'lb' },
-    { label: 'oz', value: 'oz' },
-]
-
-const editStatusOptions = [{ label: 'Archived', value: 'archived' }]
-
-const statusOptions = [
-    { label: 'Active', value: 'active' },
-    { label: 'Draft', value: 'draft' },
-]
-
-function createFormSignature(snapshot: ProductFormSnapshot) {
-    return JSON.stringify(snapshot)
-}
-
-interface ProductEditIntent {
-    scope: string
-    key: string
-    version: number
-    payload: string
-    signature: string
-    variantSignature: string
-    hasNewVariants: boolean
-}
-
-// This is a per-tab recovery record, never authority. SQL still verifies the
-// current actor/store, exact version and complete request binding on every retry.
-function restoreProductEdit(raw: string, scope: string): { intent: ProductEditIntent; draft: ProductFormSnapshot } {
-    const saved = JSON.parse(raw) as ProductEditIntent & { draftSignature?: string }
-    if (saved.scope !== scope || typeof saved.key !== 'string' || !/^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(saved.key)
-        || !Number.isInteger(saved.version) || saved.version <= 0 || typeof saved.payload !== 'string'
-        || typeof saved.signature !== 'string' || typeof saved.variantSignature !== 'string' || typeof saved.hasNewVariants !== 'boolean') {
-        throw new Error('The pending product request is unreadable. Keep this page open and review the saved request before continuing.')
-    }
-    const body = JSON.parse(saved.payload) as Record<string, unknown>
-    const draft = JSON.parse(saved.draftSignature ?? saved.signature) as ProductFormSnapshot
-    const validDraft = draft && typeof draft === 'object' && Object.entries(defaultProductSnapshot).every(([key, value]) => {
-        const stored = draft[key as keyof ProductFormSnapshot]
-        return Array.isArray(value) ? Array.isArray(stored) : typeof stored === typeof value
-    }) && draft.images.every(value => typeof value === 'string')
-        && draft.variantOptions.every(option => option && typeof option.name === 'string' && Array.isArray(option.values) && option.values.every(value => typeof value === 'string'))
-        && draft.variantMatrix.every(row => row && ['title', 'price', 'comparePrice', 'sku', 'stock'].every(key => typeof row[key as keyof VariantRow] === 'string')
-            && ['option1', 'option2', 'option3'].every(key => row[key as keyof VariantRow] === null || typeof row[key as keyof VariantRow] === 'string')
-            && (row.id === undefined || typeof row.id === 'string'))
-    if (!validDraft || !['active', 'draft', 'archived'].includes(draft.status) || !body || body.version !== saved.version || body.idempotency_key !== saved.key) {
-        throw new Error('The pending product request is unreadable. Keep this page open and review the saved request before continuing.')
-    }
-    const { draftSignature: _draft, ...intent } = saved
-    return { intent, draft }
-}
-
-function generateHandle(text: string) {
-    return text
-        .toLowerCase()
-        .replace(/[^a-z0-9\s-]/g, '')
-        .replace(/\s+/g, '-')
-        .replace(/-+/g, '-')
-        .trim()
-}
-
-function getPayloadError(payload: unknown, fallback: string) {
-    if (!payload || typeof payload !== 'object') return fallback
-    const errorValue = (payload as { error?: unknown }).error
-    if (typeof errorValue === 'string') return errorValue
-    if (errorValue && typeof errorValue === 'object' && typeof (errorValue as { message?: unknown }).message === 'string') {
-        return (errorValue as { message: string }).message
-    }
-    const message = (payload as { message?: unknown }).message
-    return typeof message === 'string' ? message : fallback
-}
-
-function normalizeString(value: unknown) {
-    return typeof value === 'string' ? value : ''
-}
-
-function normalizeNumberInput(value: unknown) {
-    if (value === null || value === undefined || value === '') return ''
-    const numberValue = Number(value)
-    return Number.isFinite(numberValue) ? String(numberValue) : ''
-}
-
-function normalizeProductSnapshot(product: Record<string, unknown>): ProductFormSnapshot {
-    const productOptions = Array.isArray(product.product_options)
-        ? product.product_options
-            .filter((option): option is VariantOption => {
-                if (!option || typeof option !== 'object') return false
-                const value = option as VariantOption
-                return typeof value.name === 'string' && Array.isArray(value.values)
-            })
-            .map((option) => ({
-                name: option.name,
-                values: option.values.filter((value): value is string => typeof value === 'string'),
-            }))
-        : []
-
-    const apiVariants = Array.isArray(product.variants) ? product.variants as unknown[] : []
-    const variantMatrix = apiVariants.length > 0 ? normalizeApiVariants(apiVariants) : []
-
-    return {
-        title: normalizeString(product.name),
-        description: normalizeString(product.description),
-        images: Array.isArray(product.images) ? product.images.filter((image): image is string => typeof image === 'string') : [],
-        category: normalizeString(product.category),
-        price: normalizeNumberInput(product.price),
-        comparePrice: normalizeNumberInput(product.compare_price ?? product.compare_at_price),
-        costPerItem: normalizeNumberInput(product.cost_per_item ?? product.cost_price),
-        chargeTax: product.charge_tax !== false,
-        trackInventory: product.track_inventory !== false,
-        quantity: normalizeNumberInput(product.stock ?? product.stock_quantity ?? 0),
-        sku: normalizeString(product.sku),
-        barcode: normalizeString(product.barcode),
-        sellWhenOos: Boolean(product.sell_when_oos),
-        isPhysical: product.is_physical !== false,
-        weight: normalizeNumberInput(product.weight),
-        weightUnit: normalizeString(product.weight_unit) || 'kg',
-        countryOfOrigin: normalizeString(product.country_of_origin),
-        importerDetails: normalizeString(product.importer_details),
-        hsCode: normalizeString(product.hs_code),
-        variantOptions: productOptions,
-        variantMatrix,
-        seoTitle: normalizeString(product.seo_title),
-        seoDescription: normalizeString(product.seo_description),
-        urlHandle: normalizeString(product.url_handle || product.slug),
-        status: product.status === 'archived' ? 'archived' : product.is_active === false || product.status === 'draft' ? 'draft' : 'active',
-        productType: normalizeString(product.product_type),
-        vendor: normalizeString(product.vendor),
-        tags: Array.isArray(product.tags) ? product.tags.filter((tag): tag is string => typeof tag === 'string').join(', ') : '',
-    }
-}
 
 function CheckboxControl({
     checked,
@@ -339,6 +107,7 @@ export default function AddProductPage() {
     const router = useRouter()
     const { notify } = useToast()
     const fileInputRef = useRef<HTMLInputElement>(null)
+    const titleInputRef = useRef<HTMLInputElement>(null)
     const isEditing = Boolean(productId && productId !== 'new')
 
     const [title, setTitle] = useState(defaultProductSnapshot.title)
@@ -352,6 +121,9 @@ export default function AddProductPage() {
     const [chargeTax, setChargeTax] = useState(defaultProductSnapshot.chargeTax)
     const [trackInventory, setTrackInventory] = useState(defaultProductSnapshot.trackInventory)
     const [quantity, setQuantity] = useState(defaultProductSnapshot.quantity)
+    const [quantityBaseline, setQuantityBaseline] = useState<string | undefined>()
+    const [quantityNeedsReview, setQuantityNeedsReview] = useState<boolean | undefined>()
+    const acknowledgedProduct = useRef<ProductFormSnapshot | null>(null)
     const [sku, setSku] = useState(defaultProductSnapshot.sku)
     const [barcode, setBarcode] = useState(defaultProductSnapshot.barcode)
     const [sellWhenOos, setSellWhenOos] = useState(defaultProductSnapshot.sellWhenOos)
@@ -367,12 +139,17 @@ export default function AddProductPage() {
     const [newOptionName, setNewOptionName] = useState('')
     const [newOptionValue, setNewOptionValue] = useState('')
     const [editingOptionIndex, setEditingOptionIndex] = useState<number | null>(null)
+    const [optionRename, setOptionRename] = useState<{ scope: string; optionIndex: number; valueIndex?: number; from: string; value: string; error?: string } | null>(null)
     const [seoTitle, setSeoTitle] = useState(defaultProductSnapshot.seoTitle)
     const [seoDescription, setSeoDescription] = useState(defaultProductSnapshot.seoDescription)
     const [urlHandle, setUrlHandle] = useState(defaultProductSnapshot.urlHandle)
     const [status, setStatus] = useState<ProductFormSnapshot['status']>(defaultProductSnapshot.status)
     const [productType, setProductType] = useState(defaultProductSnapshot.productType)
     const [vendor, setVendor] = useState(defaultProductSnapshot.vendor)
+    const [apparelFacts, setApparelFacts] = useState(defaultProductSnapshot.apparelFacts)
+    const [nicheFacts, setNicheFacts] = useState(defaultProductSnapshot.nicheFacts)
+    const [giftMediaImageOrder, setGiftMediaImageOrder] = useState(defaultProductSnapshot.giftMediaImageOrder)
+    const productMetadataRef = useRef<Record<string, unknown>>({})
     const [tags, setTags] = useState(defaultProductSnapshot.tags)
     const [saving, setSaving] = useState(false)
     const scopeKey = `${actorId}:${store}:${productId ?? 'new'}`
@@ -380,15 +157,21 @@ export default function AddProductPage() {
     const beginConflictRead = useReadRequest(scopeKey)
     const beginMarketplaceRead = useReadRequest(scopeKey)
     const pendingStorageKey = `letbuyy.product-edit.v1:${scopeKey}`
+    const draftStorageKey = `${pendingStorageKey}:unsaved`
+    const [draftRecoveryReady, setDraftRecoveryReady] = useState(false)
+    const [recoveredDraft, setRecoveredDraft] = useState<{ snapshot: ProductFormSnapshot; version: number | null } | null>(null)
+    const [draftStorageError, setDraftStorageError] = useState<string | null>(null)
+    const [draftReadBlocked, setDraftReadBlocked] = useState(false)
     const activeScope = useRef(scopeKey)
     activeScope.current = scopeKey
     const requestLifecycle = useRef({ mounted: false, generation: 0 })
     useEffect(() => {
-        requestLifecycle.current.mounted = true
-        requestLifecycle.current.generation += 1
+        const lifecycle = requestLifecycle.current
+        lifecycle.mounted = true
+        lifecycle.generation += 1
         return () => {
-            requestLifecycle.current.mounted = false
-            requestLifecycle.current.generation += 1
+            lifecycle.mounted = false
+            lifecycle.generation += 1
         }
     }, [scopeKey])
     const loadedScope = useRef<string | null>(null)
@@ -410,7 +193,11 @@ export default function AddProductPage() {
         isEditing ? null : createFormSignature(defaultProductSnapshot)
     ))
 
+    const resolvedGiftDraft = resolveProductGiftImages(nicheFacts, productMetadataRef.current, giftMediaImageOrder, images)
     const currentSnapshot = useMemo<ProductFormSnapshot>(() => ({
+        apparelFacts,
+        nicheFacts: resolvedGiftDraft.value,
+        giftMediaImageOrder: resolvedGiftDraft.imageOrder,
         title,
         description,
         images,
@@ -421,6 +208,8 @@ export default function AddProductPage() {
         chargeTax,
         trackInventory,
         quantity,
+        quantityBaseline,
+        quantityNeedsReview,
         sku,
         barcode,
         sellWhenOos,
@@ -440,6 +229,9 @@ export default function AddProductPage() {
         vendor,
         tags,
     }), [
+        apparelFacts,
+        resolvedGiftDraft.value,
+        resolvedGiftDraft.imageOrder,
         barcode,
         category,
         chargeTax,
@@ -454,6 +246,8 @@ export default function AddProductPage() {
         price,
         productType,
         quantity,
+        quantityBaseline,
+        quantityNeedsReview,
         sellWhenOos,
         seoDescription,
         seoTitle,
@@ -471,6 +265,9 @@ export default function AddProductPage() {
     ])
 
     const currentSignature = useMemo(() => createFormSignature(currentSnapshot), [currentSnapshot])
+    const recoverySignature = useMemo(() => createFormSignature(retainProductMediaReferences(currentSnapshot)), [currentSnapshot])
+    const latestProductDraft = useRef(currentSnapshot)
+    latestProductDraft.current = currentSnapshot
     const latestSignature = useRef(currentSignature)
     latestSignature.current = currentSignature
     const latestVariants = useRef(variantMatrix)
@@ -497,11 +294,28 @@ export default function AddProductPage() {
     useEffect(() => {
         if (editIntent.current?.scope !== scopeKey) return
         try {
-            window.sessionStorage.setItem(pendingStorageKey, JSON.stringify({ ...editIntent.current, draftSignature: currentSignature }))
+            window.sessionStorage.setItem(pendingStorageKey, JSON.stringify({ ...editIntent.current, draftSignature: recoverySignature }))
         } catch {
             setError('Your newer draft could not be retained across reload. Keep this page open and recover the pending save.')
         }
-    }, [currentSignature, pendingStorageKey, scopeKey])
+    }, [recoverySignature, pendingStorageKey, scopeKey])
+
+    const updateProductImages = useCallback((update: (previous: string[]) => string[]) => {
+        const before = latestProductDraft.current
+        const next = update(before.images)
+        const resolved = resolveProductGiftImages(before.nicheFacts, productMetadataRef.current, before.giftMediaImageOrder, next)
+        setImages(next)
+        setNicheFacts(resolved.value)
+        setGiftMediaImageOrder(resolved.imageOrder)
+        latestProductDraft.current = { ...before, images: next, nicheFacts: resolved.value, giftMediaImageOrder: resolved.imageOrder }
+    }, [])
+
+    const updateProductFacts = (next: string) => {
+        const order = next === '' || resolvedGiftDraft.issue ? '' : JSON.stringify(images)
+        setNicheFacts(next)
+        setGiftMediaImageOrder(order)
+        latestProductDraft.current = { ...currentSnapshot, nicheFacts: next, giftMediaImageOrder: order }
+    }
 
     const applySnapshot = useCallback((snapshot: ProductFormSnapshot) => {
         setTitle(snapshot.title)
@@ -514,6 +328,8 @@ export default function AddProductPage() {
         setChargeTax(snapshot.chargeTax)
         setTrackInventory(snapshot.trackInventory)
         setQuantity(snapshot.quantity)
+        setQuantityBaseline(snapshot.quantityBaseline)
+        setQuantityNeedsReview(snapshot.quantityNeedsReview)
         setSku(snapshot.sku)
         setBarcode(snapshot.barcode)
         setSellWhenOos(snapshot.sellWhenOos)
@@ -525,6 +341,7 @@ export default function AddProductPage() {
         setHsCode(snapshot.hsCode)
         setVariantOptions(snapshot.variantOptions)
         setVariantMatrix(snapshot.variantMatrix)
+        setOptionRename(null)
         setSeoTitle(snapshot.seoTitle)
         setSeoDescription(snapshot.seoDescription)
         setUrlHandle(snapshot.urlHandle)
@@ -532,8 +349,34 @@ export default function AddProductPage() {
         setProductType(snapshot.productType)
         setVendor(snapshot.vendor)
         setTags(snapshot.tags)
+        setApparelFacts(snapshot.apparelFacts ?? '{}')
+        setNicheFacts(snapshot.nicheFacts ?? '')
+        setGiftMediaImageOrder(snapshot.giftMediaImageOrder ?? '')
         setSavedSignature(createFormSignature(snapshot))
     }, [])
+
+    useEffect(() => {
+        if (isEditing) return
+        try {
+            const raw = window.sessionStorage.getItem(draftStorageKey)
+            if (raw) setRecoveredDraft(readUnsavedProduct(raw, scopeKey))
+        } catch { setDraftReadBlocked(true); setDraftStorageError('A retained draft could not be read. Keep this page open or discard the retained draft.') }
+        setDraftRecoveryReady(true)
+    }, [draftStorageKey, isEditing, scopeKey])
+
+    useEffect(() => {
+        if (!draftRecoveryReady || draftReadBlocked || recoveredDraft || (isEditing && loadedScope.current !== scopeKey) || editIntent.current?.scope === scopeKey) return
+        try {
+            if (!hasUnsavedChanges) window.sessionStorage.removeItem(draftStorageKey)
+            else {
+                const snapshot = retainProductMediaReferences({ ...currentSnapshot, importerDetails: '' })
+                const retained = JSON.stringify({ scope: scopeKey, version: productVersion, updatedAt: Date.now(), snapshot })
+                if (retained.length > 256_000) throw new Error('Draft too large')
+                window.sessionStorage.setItem(draftStorageKey, retained)
+            }
+            setDraftStorageError(null)
+        } catch { setDraftStorageError('Your draft could not be retained across reload. Keep this page open until you save or discard it.') }
+    }, [currentSnapshot, draftReadBlocked, draftRecoveryReady, draftStorageKey, hasUnsavedChanges, isEditing, productVersion, recoveredDraft, scopeKey])
 
     const loadProduct = useCallback(async () => {
         if (!isEditing || !productId) return
@@ -541,8 +384,12 @@ export default function AddProductPage() {
         const requestScope = scopeKey
         const requestGeneration = requestLifecycle.current.generation
         setLoadingProduct(true)
+        setDraftRecoveryReady(false)
+        setDraftReadBlocked(false)
+        setRecoveredDraft(null)
         setProductVersion(null)
         loadedScope.current = null
+        acknowledgedProduct.current = null
         editIntent.current = null
         setProductConflict(null)
         setEditBlocked(false)
@@ -563,6 +410,8 @@ export default function AddProductPage() {
             }
             loadedScope.current = requestScope
             setProductVersion(payload.data.version)
+            acknowledgedProduct.current = normalizeProductSnapshot(payload.data as Record<string, unknown>)
+            productMetadataRef.current = payload.data.metadata && typeof payload.data.metadata === 'object' ? payload.data.metadata : {}
             const stored = window.sessionStorage.getItem(pendingStorageKey)
             if (stored !== null) {
                 const recovered = restoreProductEdit(stored, requestScope)
@@ -571,8 +420,14 @@ export default function AddProductPage() {
                 setSavedSignature(recovered.intent.signature)
                 setError('An earlier save still needs confirmation. Retry pending save to recover it; your draft is kept.')
             } else {
-                applySnapshot(normalizeProductSnapshot(payload.data as Record<string, unknown>))
+                productMetadataRef.current = payload.data.metadata && typeof payload.data.metadata === 'object' ? payload.data.metadata : {}
+                applySnapshot(acknowledgedProduct.current)
+                try {
+                    const raw = window.sessionStorage.getItem(draftStorageKey)
+                    if (raw) setRecoveredDraft(readUnsavedProduct(raw, requestScope))
+                } catch { setDraftReadBlocked(true); setDraftStorageError('A retained draft could not be read. Discard the retained draft before continuing.') }
             }
+            setDraftRecoveryReady(true)
         } catch (err) {
             if (!request.isCurrent() || !requestLifecycle.current.mounted || requestLifecycle.current.generation !== requestGeneration || activeScope.current !== requestScope) return
             setEditBlocked(true)
@@ -586,7 +441,7 @@ export default function AddProductPage() {
         } finally {
             if (request.isCurrent() && requestLifecycle.current.mounted && requestLifecycle.current.generation === requestGeneration && activeScope.current === requestScope) setLoadingProduct(false)
         }
-    }, [beginProductRead, actorId, applySnapshot, isEditing, notify, pendingStorageKey, productId, store, scopeKey])
+    }, [beginProductRead, actorId, applySnapshot, draftStorageKey, isEditing, notify, pendingStorageKey, productId, store, scopeKey])
 
     useEffect(() => {
         void loadProduct()
@@ -690,7 +545,7 @@ export default function AddProductPage() {
         }
 
         if (newImages.length > 0) {
-            setImages((prev) => [...prev, ...newImages])
+            updateProductImages((prev) => [...prev, ...newImages])
             notify({
                 title: newImages.length === 1 ? 'Image uploaded' : 'Images uploaded',
                 description: 'Save the product to keep these media changes.',
@@ -711,58 +566,70 @@ export default function AddProductPage() {
     }
 
     const removeImage = (index: number) => {
-        setImages((prev) => prev.filter((_, imageIndex) => imageIndex !== index))
+        updateProductImages((prev) => prev.filter((_, imageIndex) => imageIndex !== index))
     }
 
-    const rebuildMatrix = useCallback((nextOptions: VariantOption[], currentMatrix: VariantRow[], basePrice: string) => {
-        setVariantMatrix(buildVariantMatrix(nextOptions, basePrice, currentMatrix))
-    }, [])
+    const moveImage = (from: number, to: number) => updateProductImages(previous => {
+        if (to < 0 || to >= previous.length) return previous
+        const next = [...previous]
+        const moved = next[from]
+        next[from] = next[to]
+        next[to] = moved
+        return next
+    })
+
+    const rebuildMatrix = (nextOptions: VariantOption[], addition?: { index: number; value: string }) => {
+        try {
+            const nextMatrix = addition ? appendVariantOptionValue(variantOptions, addition.index, addition.value, price, variantMatrix) : buildVariantMatrix(nextOptions, price, variantMatrix)
+            setVariantOptions(nextOptions)
+            setVariantMatrix(nextMatrix)
+            setError(null)
+            return true
+        } catch (error) { setError(error instanceof Error ? error.message : 'Review variant combinations before rebuilding.'); return false }
+    }
 
     const addVariantOption = () => {
         const optionName = newOptionName.trim()
         if (!optionName) return
-        const nextOptions = [...variantOptions, { name: optionName, values: [] }]
-        setVariantOptions(nextOptions)
+        try { setVariantOptions(appendVariantOptionAxis(variantOptions, optionName, variantMatrix)); setError(null) }
+        catch (error) { setError(error instanceof Error ? error.message : 'Review variant options.'); return }
         setEditingOptionIndex(variantOptions.length)
         setNewOptionName('')
         setShowVariantBuilder(false)
-        rebuildMatrix(nextOptions, variantMatrix, price)
     }
 
     const addValueToOption = (optionIndex: number) => {
         const optionValue = newOptionValue.trim()
-        if (!optionValue) return
-        setVariantOptions((prev) => {
-            const nextOptions = prev.map((option, index) => (
-                index === optionIndex
-                    ? { ...option, values: [...option.values, optionValue] }
-                    : option
-            ))
-            rebuildMatrix(nextOptions, variantMatrix, price)
-            return nextOptions
-        })
-        setNewOptionValue('')
+        if (optionValue && rebuildMatrix(variantOptions.map((option, index) => index === optionIndex ? { ...option, values: [...option.values, optionValue] } : option), { index: optionIndex, value: optionValue })) setNewOptionValue('')
     }
 
     const removeValueFromOption = (optionIndex: number, valueIndex: number) => {
-        setVariantOptions((prev) => {
-            const nextOptions = prev.map((option, index) => (
-                index === optionIndex
-                    ? { ...option, values: option.values.filter((_, valueIndexCurrent) => valueIndexCurrent !== valueIndex) }
-                    : option
-            ))
-            rebuildMatrix(nextOptions, variantMatrix, price)
-            return nextOptions
-        })
+        rebuildMatrix(variantOptions.map((option, index) => index === optionIndex ? { ...option, values: option.values.filter((_, current) => current !== valueIndex) } : option))
     }
 
     const removeOption = (index: number) => {
-        setVariantOptions((prev) => {
-            const nextOptions = prev.filter((_, optionIndex) => optionIndex !== index)
-            rebuildMatrix(nextOptions, variantMatrix, price)
-            return nextOptions
-        })
-        if (editingOptionIndex === index) setEditingOptionIndex(null)
+        if (rebuildMatrix(variantOptions.filter((_, optionIndex) => optionIndex !== index)) && editingOptionIndex === index) setEditingOptionIndex(null)
+    }
+
+    const renameOptionValue = () => {
+        if (!optionRename || saving || loadingProduct || editBlocked || contextChanged) return
+        try {
+            if (optionRename.valueIndex === undefined) {
+                if (optionRename.scope !== scopeKey || variantOptions[optionRename.optionIndex]?.name !== optionRename.from) throw new Error('This option has changed. Close and review the latest names.')
+                setVariantOptions(renameVariantOptionName(variantOptions, optionRename.optionIndex, optionRename.value, variantMatrix))
+                setOptionRename(null)
+                return
+            }
+            if (optionRename.scope !== scopeKey || variantOptions[optionRename.optionIndex]?.values[optionRename.valueIndex] !== optionRename.from) throw new Error('This option value has changed. Close and review the latest values.')
+            const next = renameVariantOptionValue(variantOptions, optionRename.optionIndex, optionRename.valueIndex, optionRename.value, variantMatrix)
+            setVariantOptions(next.options); setVariantMatrix(next.rows); setOptionRename(null)
+        } catch (error) { setOptionRename({ ...optionRename, error: error instanceof Error ? error.message : 'Review this option value.' }) }
+    }
+
+    let commonVariantFacts: unknown
+    try { commonVariantFacts = readProductFactsDraft(currentSnapshot.nicheFacts, productMetadataRef.current) } catch { /* Invalid common facts remain in their product editor. */ }
+    const updateVariantFacts = (row: VariantRow, metadata: Record<string, unknown>) => {
+        setVariantMatrix(previous => previous.map(candidate => (row.id ? candidate.id === row.id : candidate === row) ? editVariantFacts(candidate, metadata) : candidate))
     }
 
     const checkLatestProduct = useCallback(async () => {
@@ -788,7 +655,9 @@ export default function AddProductPage() {
     const reloadLatestProduct = () => {
         if (!productConflict || !Number.isInteger(productConflict.version) || Number(productConflict.version) <= 0) return
         try { forgetEditIntent() } catch { setError('The pending save could not be cleared. Keep this page open and retry.'); return }
-        applySnapshot(normalizeProductSnapshot(productConflict))
+        productMetadataRef.current = productConflict.metadata && typeof productConflict.metadata === 'object' && !Array.isArray(productConflict.metadata) ? productConflict.metadata as Record<string, unknown> : {}
+        acknowledgedProduct.current = normalizeProductSnapshot(productConflict)
+        applySnapshot(acknowledgedProduct.current)
         setProductVersion(Number(productConflict.version))
         loadedScope.current = scopeKey
         setProductConflict(null)
@@ -797,7 +666,7 @@ export default function AddProductPage() {
         setSuccess(null)
     }
 
-    const handleSave = useCallback(async () => {
+    const handleSave = useCallback(async (stayOnPage = false) => {
         const requestScope = scopeKey
         const requestGeneration = requestLifecycle.current.generation
         const pending = editIntent.current?.scope === requestScope ? editIntent.current : null
@@ -806,6 +675,7 @@ export default function AddProductPage() {
         if (!pending && !productTitle) {
             const message = 'Add a product title before saving.'
             setError(message)
+            if (!document.querySelector('[aria-modal="true"]')) titleInputRef.current?.focus()
             notify({
                 title: 'Product title is required',
                 description: message,
@@ -823,59 +693,9 @@ export default function AddProductPage() {
                 ? `/api/stores/${encodeURIComponent(store)}/products/${encodeURIComponent(productId)}`
                 : `/api/stores/${encodeURIComponent(store)}/products`
 
-            const fields = {
-                    name: productTitle,
-                    description: description.trim(),
-                    images,
-                    category: category || (isEditing ? null : undefined),
-                    price: parseFloat(price) || 0,
-                    compare_price: parseFloat(comparePrice) || null,
-                    cost_per_item: parseFloat(costPerItem) || null,
-                    charge_tax: chargeTax,
-                    stock: parseInt(quantity) || 0,
-                    track_inventory: trackInventory,
-                    sku: sku || null,
-                    barcode: barcode || null,
-                    sell_when_oos: sellWhenOos,
-                    is_physical: isPhysical,
-                    weight: parseFloat(weight) || null,
-                    weight_unit: weightUnit,
-                    country_of_origin: countryOfOrigin.trim() || null,
-                    importer_details: importerDetails.trim() || null,
-                    hs_code: hsCode || null,
-                    url_handle: urlHandle || null,
-                    seo_title: seoTitle || null,
-                    seo_description: seoDescription || null,
-                    product_type: productType || null,
-                    vendor: vendor || null,
-                    tags: tags ? tags.split(',').map((tag) => tag.trim()).filter(Boolean) : [],
-                    is_active: status === 'active',
-                    product_options: variantOptions.map((option, index) => ({
-                        name: option.name,
-                        position: index,
-                        values: option.values,
-                    })),
-                    variants: variantMatrix.map((row, index) => ({
-                        ...(isEditing && row.id ? { id: row.id } : {}),
-                        title: row.title,
-                        price: parseFloat(row.price) || parseFloat(price) || 0,
-                        compare_price: parseFloat(row.comparePrice) || null,
-                        sku: row.sku || null,
-                        stock: parseInt(row.stock) || 0,
-                        options: [
-                            row.option1 ? variantOptions[0]?.name ?? 'Option 1' : null,
-                            row.option2 ? variantOptions[1]?.name ?? 'Option 2' : null,
-                            row.option3 ? variantOptions[2]?.name ?? 'Option 3' : null,
-                        ]
-                            .map((name, i) => {
-                                const vals = [row.option1, row.option2, row.option3]
-                                return name && vals[i] ? [name, vals[i]] : null
-                            })
-                            .filter((entry): entry is [string, string] => entry !== null)
-                            .reduce<Record<string, string>>((acc, [k, v]) => { acc[k] = v; return acc }, {}),
-                        position: index,
-                    })),
-                }
+            if (!pending && resolvedGiftDraft.issue) throw new Error(resolvedGiftDraft.issue)
+            if (!pending && images.some(image => !publicMediaReference(image))) throw new Error('Use public product image URLs before saving. Your draft is kept.')
+            const fields = pending ? undefined : buildProductFormFields(currentSnapshot, composeProductMetadata(productMetadataRef.current, apparelFacts, currentSnapshot.nicheFacts), isEditing)
             let intent = pending
             if (isEditing && !intent) {
                 const key = crypto.randomUUID()
@@ -886,7 +706,7 @@ export default function AddProductPage() {
             if (intent) {
                 // Persist the immutable command before allowing its first effect.
                 // Later draft edits update only draftSignature, never this payload/key.
-                try { window.sessionStorage.setItem(pendingStorageKey, JSON.stringify({ ...intent, draftSignature: currentSignature })) }
+                try { window.sessionStorage.setItem(pendingStorageKey, JSON.stringify({ ...intent, draftSignature: recoverySignature })) }
                 catch { throw new Error('This browser could not retain the save request. Allow session storage before saving.') }
                 editIntent.current = intent
             }
@@ -917,15 +737,23 @@ export default function AddProductPage() {
                 setProductVersion(payload.data.version)
                 loadedScope.current = requestScope
                 forgetEditIntent(intent)
+                const acknowledged = normalizeProductSnapshot(payload.data as Record<string, unknown>)
+                acknowledgedProduct.current = acknowledged
                 const newerDraft = intent?.signature !== latestSignature.current
                 if (!newerDraft) {
-                    applySnapshot(normalizeProductSnapshot(payload.data as Record<string, unknown>))
+                    productMetadataRef.current = payload.data.metadata && typeof payload.data.metadata === 'object' ? payload.data.metadata : {}
+                    applySnapshot(acknowledged)
                 } else {
-                    setSavedSignature(intent?.signature ?? currentSignature)
+                    const rebased = rebaseProductInventoryAfterSave(latestProductDraft.current, JSON.parse(intent!.signature) as ProductFormSnapshot, acknowledged)
+                    setQuantity(rebased.quantity)
+                    setQuantityBaseline(rebased.quantityBaseline)
+                    setQuantityNeedsReview(rebased.quantityNeedsReview)
+                    setSavedSignature(createFormSignature(acknowledged))
                     if (intent?.variantSignature === JSON.stringify(latestVariants.current)) {
                         setVariantMatrix(normalizeApiVariants(payload.data.variants))
-                    } else if (intent?.hasNewVariants) {
-                        void checkLatestProduct()
+                    } else {
+                        setVariantMatrix(rebaseVariantFacts(rebased.variantMatrix, payload.data.variants))
+                        if (intent?.hasNewVariants) void checkLatestProduct()
                     }
                 }
                 setSuccess(newerDraft ? 'The earlier save is confirmed. Your newer draft is kept; review it and save again.' : 'Product saved')
@@ -936,12 +764,13 @@ export default function AddProductPage() {
                 })
             } else {
                 setSavedSignature(currentSignature)
+                window.sessionStorage.removeItem(draftStorageKey)
                 notify({
                     title: 'Product created',
                     description: `${productTitle} was added to your catalog.`,
                     variant: 'success',
                 })
-                router.push(`/${store}/products`)
+                if (!stayOnPage) router.push(`/${store}/products`)
             }
         } catch (err: unknown) {
             if (!requestLifecycle.current.mounted || requestLifecycle.current.generation !== requestGeneration || activeScope.current !== requestScope) return
@@ -957,8 +786,9 @@ export default function AddProductPage() {
         } finally {
             if (requestLifecycle.current.mounted && requestLifecycle.current.generation === requestGeneration && activeScope.current === requestScope) setSaving(false)
         }
-    }, [
+    }, [apparelFacts, currentSnapshot, resolvedGiftDraft.issue, recoverySignature,
         actorId,
+        draftStorageKey,
         applySnapshot,
         checkLatestProduct,
         contextChanged,
@@ -968,50 +798,45 @@ export default function AddProductPage() {
         saveBlocked,
         saving,
         scopeKey,
-        barcode,
-        category,
-        chargeTax,
-        comparePrice,
-        costPerItem,
-        countryOfOrigin,
-        importerDetails,
         currentSignature,
-        description,
-        hsCode,
         images,
         isEditing,
-        isPhysical,
         notify,
-        price,
         productId,
-        productType,
-        quantity,
         router,
-        sellWhenOos,
-        seoDescription,
-        seoTitle,
-        sku,
         status,
         store,
-        tags,
         title,
-        trackInventory,
-        urlHandle,
         variantMatrix,
-        variantOptions,
-        vendor,
-        weight,
-        weightUnit,
     ])
 
+    const discardDraft = useCallback(() => {
+        if (saving || editIntent.current?.scope === scopeKey) return
+        window.sessionStorage.removeItem(draftStorageKey)
+        setRecoveredDraft(null)
+        if (savedSignature) applySnapshot(JSON.parse(savedSignature) as ProductFormSnapshot)
+    }, [applySnapshot, draftStorageKey, savedSignature, saving, scopeKey])
+
     const discardChanges = useCallback(() => {
-        router.push(`/${store}/products`)
-    }, [router, store])
+        if (saving || editIntent.current?.scope === scopeKey) return
+        try { discardDraft(); router.push(`/${store}/products`) }
+        catch { setError('Your retained draft could not be discarded safely. Keep this page open and try again.') }
+    }, [discardDraft, router, saving, scopeKey, store])
+
+    useFormProtection({
+        dirty: hasUnsavedChanges,
+        saving,
+        onSave: () => handleSave(true),
+        onDiscard: discardDraft,
+        canSave: !contextChanged && (!saveBlocked || editIntent.current?.scope === scopeKey),
+        canDiscard: !contextChanged && editIntent.current?.scope !== scopeKey,
+    })
 
     if (loadingProduct) {
         return (
             <Page>
-                <PageHeader
+                <PageHeader identity="products"
+                    recipe="editor"
                     title="Edit product"
                     description="Loading product details."
                     breadcrumbs={[{ label: 'Products', href: `/${store}/products` }, { label: 'Edit product' }]}
@@ -1032,23 +857,57 @@ export default function AddProductPage() {
 
     return (
         <Page>
-            <PageHeader
+            <PageHeader identity="products"
+                recipe="editor"
                 title={isEditing ? 'Edit product' : 'Add product'}
                 description={isEditing ? 'Update product details, media, pricing, inventory, and search metadata.' : 'Create a catalog-ready product with the details shoppers need.'}
                 breadcrumbs={[{ label: 'Products', href: `/${store}/products` }, { label: isEditing ? 'Edit product' : 'Add product' }]}
-                primaryAction={{
+                primaryAction={saveState === 'saved' || saveBlocked ? {
                     label: saving ? 'Saving' : editIntent.current?.scope === scopeKey ? 'Retry pending save' : 'Save product',
                     onClick: () => void handleSave(),
                     icon: <Save className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
-                    disabled: saving || saveBlocked,
-                }}
-                secondaryActions={[{
+                    disabled: !hasUnsavedChanges || saving || saveBlocked,
+                    loading: saving,
+                } : undefined}
+                secondaryActions={saveState === 'saved' || saveBlocked ? [{
                     label: 'Discard',
-                    href: `/${store}/products`,
+                    onClick: discardChanges,
                     icon: <ArrowLeft className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
-                    disabled: saving,
-                }]}
+                    disabled: saving || editIntent.current?.scope === scopeKey,
+                }] : []}
             />
+
+            {recoveredDraft && <Banner variant="warning" title="Unsaved product draft found">
+                <p>{recoveredDraft.version !== productVersion ? 'The saved product has changed since this draft. Review both versions before saving.' : 'You can restore your unsaved catalog fields.'} Recheck media and importer details after restoring.</p>
+                <Button onClick={() => {
+                    const baseline = savedSignature
+                    const importerDetails = currentSnapshot.importerDetails
+                    const retained = isEditing && acknowledgedProduct.current ? restoreProductInventory(recoveredDraft.snapshot, acknowledgedProduct.current) : recoveredDraft.snapshot
+                    applySnapshot({ ...retained, importerDetails })
+                    setSavedSignature(baseline)
+                    setRecoveredDraft(null)
+                }}>Restore draft</Button>
+                <Button variant="secondary" onClick={() => {
+                    try { window.sessionStorage.removeItem(draftStorageKey); setRecoveredDraft(null); setDraftStorageError(null) }
+                    catch { setDraftStorageError('The retained draft could not be removed. Keep this page open.') }
+                }}>Discard retained draft</Button>
+            </Banner>}
+            {draftStorageError && <Banner variant="warning" title="Draft recovery needs attention">{draftStorageError}
+                <Button variant="secondary" onClick={() => {
+                    try { window.sessionStorage.removeItem(draftStorageKey); setDraftReadBlocked(false); setDraftStorageError(null) }
+                    catch { setDraftStorageError('The retained draft could not be removed. Keep this page open.') }
+                }}>Discard retained draft</Button>
+            </Banner>}
+
+            {isEditing && (quantityNeedsReview || variantMatrix.some(row => row.id && row.stockNeedsReview)) && <Banner variant="warning" title="Review retained inventory">
+                <p>These retained quantities may predate a purchase or an earlier editor. Keep current inventory to save your other changes, or confirm the quantities you intend to change.</p>
+                <Button disabled={saving || editIntent.current?.scope === scopeKey || !acknowledgedProduct.current} onClick={() => {
+                    if (!acknowledgedProduct.current || editIntent.current?.scope === scopeKey) return
+                    const baseline = savedSignature
+                    applySnapshot(keepCurrentProductInventory(currentSnapshot, acknowledgedProduct.current))
+                    setSavedSignature(baseline)
+                }}>Keep current inventory</Button>
+            </Banner>}
 
             {error && (
                 <Banner variant="critical" title="Product needs attention">
@@ -1082,6 +941,9 @@ export default function AddProductPage() {
                         <Section title="Details" description="Name and describe the product as shoppers will see it.">
                             <Input
                                 label="Title"
+                                ref={titleInputRef}
+                                required
+                                error={!title.trim() && error === 'Add a product title before saving.' ? error : undefined}
                                 placeholder="Short sleeve t-shirt"
                                 value={title}
                                 onChange={(event) => handleTitleChange(event.target.value)}
@@ -1096,6 +958,7 @@ export default function AddProductPage() {
                     </Card>
 
                     <Card>
+                        <div className="space-y-[var(--lb-space-4)] p-[var(--lb-space-4)]"><ApparelFactsEditor value={apparelFacts} onChange={setApparelFacts} /><NicheFactsEditor key={scopeKey} value={currentSnapshot.nicheFacts} metadata={productMetadataRef.current} onChange={updateProductFacts} resources={{ images, variantOptions }} disabled={loadingProduct || editBlocked || contextChanged} giftMediaIssue={resolvedGiftDraft.issue} onConfirmGiftMedia={() => setGiftMediaImageOrder(JSON.stringify(images))} /></div>
                         <Section title="Media" description="Upload images that help shoppers inspect the product.">
                             <Input unstyled
                                 ref={fileInputRef}
@@ -1126,6 +989,10 @@ export default function AddProductPage() {
                                             >
                                                 <X className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
                                             </Button>
+                                            <div className="absolute bottom-[var(--lb-space-2)] left-[var(--lb-space-2)] flex gap-[var(--lb-space-1)]">
+                                                <Button type="button" variant="secondary" size="icon" aria-label={`Move product media ${index + 1} earlier`} disabled={index === 0} onClick={() => moveImage(index, index - 1)}><ArrowLeft aria-hidden="true" /></Button>
+                                                <Button type="button" variant="secondary" size="icon" aria-label={`Move product media ${index + 1} later`} disabled={index === images.length - 1} onClick={() => moveImage(index, index + 1)}><ArrowRight aria-hidden="true" /></Button>
+                                            </div>
                                         </div>
                                     ))}
                                 </div>
@@ -1226,7 +1093,13 @@ export default function AddProductPage() {
                                         type="number"
                                         min="0"
                                         value={quantity}
-                                        onChange={(event) => setQuantity(event.target.value)}
+                                        onChange={(event) => {
+                                            setQuantity(event.target.value)
+                                            if (quantityNeedsReview || quantityBaseline === undefined) {
+                                                setQuantityBaseline(acknowledgedProduct.current?.quantity)
+                                                setQuantityNeedsReview(false)
+                                            }
+                                        }}
                                     />
                                     <CheckboxControl checked={sellWhenOos} onChange={setSellWhenOos}>
                                         Continue selling when out of stock
@@ -1305,11 +1178,15 @@ export default function AddProductPage() {
                             {variantOptions.length > 0 && (
                                 <div className="flex flex-col gap-[var(--lb-space-3)]">
                                     {variantOptions.map((option, optionIndex) => (
-                                        <div key={`${option.name}-${optionIndex}`} className="rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-4)]">
+                                        <div key={optionIndex} className="rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-4)]">
                                             <div className="flex items-center justify-between gap-[var(--lb-space-3)]">
                                                 <p className="m-0 text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
                                                     {option.name}
                                                 </p>
+                                                <Button type="button" variant="ghost" size="sm" disabled={saving || loadingProduct || editBlocked || contextChanged}
+                                                    aria-label={`Rename option ${option.name}`} onClick={() => setOptionRename({ scope: scopeKey, optionIndex, from: option.name, value: option.name })}>
+                                                    <Edit3 className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />Rename
+                                                </Button>
                                                 <Button
                                                     type="button"
                                                     variant="ghost"
@@ -1325,10 +1202,14 @@ export default function AddProductPage() {
                                                 <div className="mt-[var(--lb-space-3)] flex flex-wrap gap-[var(--lb-space-2)]">
                                                     {option.values.map((value, valueIndex) => (
                                                         <span
-                                                            key={`${value}-${valueIndex}`}
+                                                            key={`${option.name}-${valueIndex}`}
                                                             className="inline-flex items-center gap-[var(--lb-space-1)] rounded-[var(--lb-radius-md)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] px-[var(--lb-space-2)] py-[var(--lb-space-1)] text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text)]"
                                                         >
                                                             {value}
+                                                            <Button type="button" variant="ghost" size="sm" disabled={saving || loadingProduct || editBlocked || contextChanged}
+                                                                aria-label={`Rename ${option.name} value ${value}`} onClick={() => setOptionRename({ scope: scopeKey, optionIndex, valueIndex, from: value, value })}>
+                                                                <Edit3 className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />Rename
+                                                            </Button>
                                                             <Button unstyled
                                                                 type="button"
                                                                 className="text-[var(--lb-color-text-subdued)] hover:text-[var(--lb-color-critical)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
@@ -1423,7 +1304,7 @@ export default function AddProductPage() {
                                         </thead>
                                         <tbody>
                                             {variantMatrix.map((row, rowIndex) => (
-                                                <tr key={`${row.option1}-${row.option2}-${row.option3}-${rowIndex}`} className="border-b border-[var(--lb-color-border)] last:border-0">
+                                                <tr key={row.id ?? `new-${rowIndex}`} className="border-b border-[var(--lb-color-border)] last:border-0">
                                                     <td className="py-[var(--lb-space-2)] pr-[var(--lb-space-3)] font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text)]">
                                                         {row.title}
                                                     </td>
@@ -1471,7 +1352,13 @@ export default function AddProductPage() {
                                                             placeholder="0"
                                                             value={row.stock}
                                                             aria-label={`Stock for ${row.title}`}
-                                                            onChange={(e) => setVariantMatrix((prev) => prev.map((r, i) => i === rowIndex ? { ...r, stock: e.target.value } : r))}
+                                                            onChange={(e) => setVariantMatrix((prev) => prev.map((r, i) => i === rowIndex ? {
+                                                                ...r, stock: e.target.value,
+                                                                ...((r.stockNeedsReview || r.stockBaseline === undefined) && r.id ? {
+                                                                    stockBaseline: acknowledgedProduct.current?.variantMatrix.find(saved => saved.id === r.id)?.stock,
+                                                                    stockNeedsReview: !acknowledgedProduct.current?.variantMatrix.some(saved => saved.id === r.id),
+                                                                } : {}),
+                                                            } : r))}
                                                             className="w-[64px] rounded-md border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] px-[var(--lb-space-2)] py-[var(--lb-space-1)] text-[var(--lb-font-size-caption)]"
                                                         />
                                                     </td>
@@ -1491,6 +1378,13 @@ export default function AddProductPage() {
                                         </tbody>
                                     </Table>
                                 </div>
+                                {variantMatrix.map((row, rowIndex) => (
+                                    <details key={row.id ?? `new-${rowIndex}`} data-variant-facts={row.id ?? `new-${rowIndex}`}>
+                                        <summary>Facts for {row.title}</summary>
+                                        {!variantFactsBaselineKnown(row) && <Banner variant="warning" title="Review saved variant facts"><p>This restored row has no verified facts baseline. Check the latest product and explicitly reload it before editing these facts.</p><Button type="button" onClick={() => void checkLatestProduct()}>Review latest variant facts</Button></Banner>}
+                                        <VariantFactsEditor value={variantFactsValue(row)} onChange={metadata => updateVariantFacts(row, metadata)} commonFacts={commonVariantFacts} resources={{ images, variantOptions }} disabled={saving || loadingProduct || editBlocked || contextChanged || !variantFactsBaselineKnown(row)} />
+                                    </details>
+                                ))}
                             </Section>
                         )}
                     </Card>
@@ -1552,7 +1446,7 @@ export default function AddProductPage() {
 
                     <Card>
                         <Section title="Publishing">
-                            <CheckboxControl checked readOnly>
+                            <CheckboxControl checked disabled>
                                 Online Store
                             </CheckboxControl>
                         </Section>
@@ -1614,12 +1508,20 @@ export default function AddProductPage() {
             </div>
 
             {!saveBlocked && <SaveBar
+                protectNavigation={false}
+                discardDisabled={editIntent.current?.scope === scopeKey}
                 state={saveState}
                 onSave={() => void handleSave()}
                 onDiscard={discardChanges}
                 saveLabel={editIntent.current?.scope === scopeKey ? 'Retry pending save' : isEditing ? 'Save product' : 'Create product'}
             />}
 
+            <Modal open={optionRename !== null && optionRename.scope === scopeKey} title={optionRename?.valueIndex === undefined ? 'Rename option name' : 'Rename option value'} description={optionRename?.valueIndex === undefined ? 'Variant identities, values, facts and inventory are kept. Review named option references in product facts before saving the product.' : 'Existing variant facts, prices and inventory are kept. Save the product to apply the change.'} onClose={() => setOptionRename(null)}
+                footer={<><Button type="button" variant="secondary" onClick={() => setOptionRename(null)}>Cancel</Button><Button type="button" disabled={saving || loadingProduct || editBlocked || contextChanged} onClick={renameOptionValue}>{optionRename?.valueIndex === undefined ? 'Save name' : 'Save value'}</Button></>}>
+                <Input label={optionRename?.valueIndex === undefined ? 'New name' : 'New value'} value={optionRename?.value ?? ''} maxLength={100} error={optionRename?.error}
+                    onChange={event => setOptionRename(previous => previous ? { ...previous, value: event.target.value, error: undefined } : null)}
+                    onKeyDown={event => { if (event.key === 'Enter' && !event.nativeEvent.isComposing) { event.preventDefault(); renameOptionValue() } }} />
+            </Modal>
             {saving && <span className="sr-only" aria-live="polite">Saving product</span>}
         </Page>
     )

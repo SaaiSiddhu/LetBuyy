@@ -1,0 +1,172 @@
+TAP version 13
+# Subtest: letbuyy-forge: head DOM extraction preserves exact sanitized theme CSS
+ok 1 - letbuyy-forge: head DOM extraction preserves exact sanitized theme CSS
+  ---
+  duration_ms: 126.963542
+  type: 'test'
+  ...
+# Subtest: letbuyy-sense: head DOM extraction preserves exact sanitized theme CSS
+ok 2 - letbuyy-sense: head DOM extraction preserves exact sanitized theme CSS
+  ---
+  duration_ms: 41.583084
+  type: 'test'
+  ...
+# Subtest: letbuyy-aura: head DOM extraction preserves exact sanitized theme CSS
+ok 3 - letbuyy-aura: head DOM extraction preserves exact sanitized theme CSS
+  ---
+  duration_ms: 24.680709
+  type: 'test'
+  ...
+# Subtest: letbuyy-craft: head DOM extraction preserves exact sanitized theme CSS
+ok 4 - letbuyy-craft: head DOM extraction preserves exact sanitized theme CSS
+  ---
+  duration_ms: 22.948458
+  type: 'test'
+  ...
+# Subtest: letbuyy-refresh: head DOM extraction preserves exact sanitized theme CSS
+ok 5 - letbuyy-refresh: head DOM extraction preserves exact sanitized theme CSS
+  ---
+  duration_ms: 22.030958
+  type: 'test'
+  ...
+# Subtest: letbuyy-ride: head DOM extraction preserves exact sanitized theme CSS
+ok 6 - letbuyy-ride: head DOM extraction preserves exact sanitized theme CSS
+  ---
+  duration_ms: 21.643417
+  type: 'test'
+  ...
+# Subtest: letbuyy-dawn: head DOM extraction preserves exact sanitized theme CSS
+ok 7 - letbuyy-dawn: head DOM extraction preserves exact sanitized theme CSS
+  ---
+  duration_ms: 19.393625
+  type: 'test'
+  ...
+# Subtest: letbuyy-bloom: head DOM extraction preserves exact sanitized theme CSS
+ok 8 - letbuyy-bloom: head DOM extraction preserves exact sanitized theme CSS
+  ---
+  duration_ms: 24.478917
+  type: 'test'
+  ...
+# Subtest: letbuyy-nova: head DOM extraction preserves exact sanitized theme CSS
+ok 9 - letbuyy-nova: head DOM extraction preserves exact sanitized theme CSS
+  ---
+  duration_ms: 20.886208
+  type: 'test'
+  ...
+# Subtest: letbuyy-summit: head DOM extraction preserves exact sanitized theme CSS
+ok 10 - letbuyy-summit: head DOM extraction preserves exact sanitized theme CSS
+  ---
+  duration_ms: 20.099292
+  type: 'test'
+  ...
+# Subtest: head extraction retains sanitizer behavior for malformed and hostile metadata
+ok 11 - head extraction retains sanitizer behavior for malformed and hostile metadata
+  ---
+  duration_ms: 64.248584
+  type: 'test'
+  ...
+# Subtest: interleaved heads keep each theme independent and do not change body sanitization
+ok 12 - interleaved heads keep each theme independent and do not change body sanitization
+  ---
+  duration_ms: 218.764
+  type: 'test'
+  ...
+# Subtest: actual Liquid JSON filter keeps hostile display text inert and preserves the sanitized variant carrier
+ok 13 - actual Liquid JSON filter keeps hostile display text inert and preserves the sanitized variant carrier
+  ---
+  duration_ms: 94.705458
+  type: 'test'
+  ...
+# Subtest: W5-XSS-text: a "text" field with a <script> payload is neutralised
+ok 14 - W5-XSS-text: a "text" field with a <script> payload is neutralised
+  ---
+  duration_ms: 91.183209
+  type: 'test'
+  ...
+# Subtest: W5-XSS-textarea: a "textarea" field with a <script> payload is neutralised
+ok 15 - W5-XSS-textarea: a "textarea" field with a <script> payload is neutralised
+  ---
+  duration_ms: 13.681667
+  type: 'test'
+  ...
+# Subtest: W5-XSS-richtext: a "richtext" field with a <script> payload is neutralised (no `| raw` on settings values)
+ok 16 - W5-XSS-richtext: a "richtext" field with a <script> payload is neutralised (no `| raw` on settings values)
+  ---
+  duration_ms: 12.425625
+  type: 'test'
+  ...
+# Subtest: W5-XSS-select: a "select" field value is escaped even when it does not match a declared option
+ok 17 - W5-XSS-select: a "select" field value is escaped even when it does not match a declared option
+  ---
+  duration_ms: 14.26475
+  type: 'test'
+  ...
+# Subtest: W5-XSS-url: a "url" field with a javascript: scheme does not produce an executable href
+ok 18 - W5-XSS-url: a "url" field with a javascript: scheme does not produce an executable href
+  ---
+  duration_ms: 9.130917
+  type: 'test'
+  ...
+# Subtest: W5-XSS-image: an "image" field with an attribute-breakout payload does not create a live onerror handler
+ok 19 - W5-XSS-image: an "image" field with an attribute-breakout payload does not create a live onerror handler
+  ---
+  duration_ms: 11.705375
+  type: 'test'
+  ...
+# Subtest: W5-block-xss: a block setting with a <script> payload is neutralised in the block's own render
+ok 20 - W5-block-xss: a block setting with a <script> payload is neutralised in the block's own render
+  ---
+  duration_ms: 13.155542
+  type: 'test'
+  ...
+# Subtest: W5-block-ssti: a block setting value is never re-evaluated as a Liquid template (mirrors SEC-3a for blocks)
+ok 21 - W5-block-ssti: a block setting value is never re-evaluated as a Liquid template (mirrors SEC-3a for blocks)
+  ---
+  duration_ms: 7.754208
+  type: 'test'
+  ...
+# Subtest: W5-app-block-xss: a malicious liquidAppBlocks HTML payload is neutralised through resolveLiquidAppBlockHtml
+ok 22 - W5-app-block-xss: a malicious liquidAppBlocks HTML payload is neutralised through resolveLiquidAppBlockHtml
+  ---
+  duration_ms: 13.703125
+  type: 'test'
+  ...
+# Subtest: W5-app-block-settings-filtered: credential-adjacent app block settings never reach the Liquid drop
+ok 23 - W5-app-block-settings-filtered: credential-adjacent app block settings never reach the Liquid drop
+  ---
+  duration_ms: 7.020792
+  type: 'test'
+  ...
+# Subtest: W5-head-style-breakout: a </style> breakout with an injected <script> cannot escape the extracted CSS text
+ok 24 - W5-head-style-breakout: a </style> breakout with an injected <script> cannot escape the extracted CSS text
+  ---
+  duration_ms: 0.815666
+  type: 'test'
+  ...
+# Subtest: W5-head-style-jsurl: a javascript: URL smuggled into head-asset HTML cannot become a live href/src
+ok 25 - W5-head-style-jsurl: a javascript: URL smuggled into head-asset HTML cannot become a live href/src
+  ---
+  duration_ms: 0.479708
+  type: 'test'
+  ...
+# Subtest: W5-head-style-expression: a CSS expression()/onerror payload smuggled via an event handler attribute cannot execute
+ok 26 - W5-head-style-expression: a CSS expression()/onerror payload smuggled via an event handler attribute cannot execute
+  ---
+  duration_ms: 0.393375
+  type: 'test'
+  ...
+# Subtest: W5-head-style-real-pipeline: sanitizeLiquidHeadStyleText over the REAL buildLiquidThemeHeadAssets output stays safe end to end
+ok 27 - W5-head-style-real-pipeline: sanitizeLiquidHeadStyleText over the REAL buildLiquidThemeHeadAssets output stays safe end to end
+  ---
+  duration_ms: 6.67675
+  type: 'test'
+  ...
+1..27
+# tests 27
+# suites 0
+# pass 27
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1236.001667

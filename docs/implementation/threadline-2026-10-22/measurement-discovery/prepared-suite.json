@@ -1,0 +1,25 @@
+{
+  "checkedAt": "2026-10-23T13:06:52.154489+00:00",
+  "path": "services/api-gateway/src/__tests__/owned-db/storefront-measurement-discovery.postgres.test.ts",
+  "sha256": "041a97bd8dd920b2a0dbdbde14b5940235a4a9540a5ad4c2f0990c49f21612af",
+  "status": "EXECUTED_NATIVE10_GREEN_FINAL_TYPECHECK_GREEN",
+  "groups": 10,
+  "requires": "Fresh owned runner through388 with root allocation after N7/Marketplace387; no389/390 active migration insertion",
+  "databaseStartedOrSqlApplied": "Fresh owned through388; docs390 via owned.script only",
+  "centralSuiteInventoryEdited": "Coordinator registered suite; this chat did not edit central inventory",
+  "typecheck": {
+    "command": "pnpm --filter @letbuyy/api-gateway exec tsc --noEmit",
+    "exitCode": 0,
+    "log": "prepared-suite-typecheck.log"
+  },
+  "negativeRoleFixture": "app_tenant native inherited grant requires temporarily removing D4 reverse edge in disposable cluster; finally restores both membership directions/options and positive role controls; no live/held cluster touched",
+  "limitations": [
+    "active390 migration admission/promotion",
+    "hosted provider/managed-catalog-fence execution",
+    "production-scale performance or nested query plan proof",
+    "every one of49 specification permutations independently executed",
+    "live installed Trailmark/Habitat browser or responsive acceptance",
+    "any user preview/login/tab operation"
+  ],
+  "nativeQualification": "native-qualification.json"
+}

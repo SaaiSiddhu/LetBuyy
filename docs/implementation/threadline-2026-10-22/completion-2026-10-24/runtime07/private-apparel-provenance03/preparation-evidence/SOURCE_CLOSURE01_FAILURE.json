@@ -1,0 +1,5 @@
+{
+  "at": "2026-10-25T00:11:36.861774+00:00",
+  "failure": "ESM named import of CJS TS metadata helper rejected by loader before discovery. Corrected wrapper only to createRequire; no app module, native, DB or source overlay ran.",
+  "retainedStderr": "source-closure01.stderr"
+}

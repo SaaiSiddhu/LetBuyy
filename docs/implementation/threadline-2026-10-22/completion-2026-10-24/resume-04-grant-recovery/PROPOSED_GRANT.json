@@ -1,0 +1,25 @@
+{
+  "recordedAt": "2026-10-24T12:50:23.648658+00:00",
+  "classification": "NONEXECUTABLE_LEASE_PROPOSAL_NOT_GRANTED",
+  "actualIssuerRequired": "01a164a4-a342-76d3-ab33-65e021ed57db",
+  "proposedOwner": "01a16d03-613e-71b0-a591-07d4d24347d4",
+  "proposedScope": "Onecanonicalsharedsource-data-contract run only, preservefirstfailure/noretry, noMain/native/heavybuild/browser/DB/provider/runtime.",
+  "inputToBeIssued": "docs/implementation/niche-theme-programme/completion-threadline-shared-source-input-20261024-01.json",
+  "outputToBeGranted": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01",
+  "expiry": "Issuerchoosesfromactualadmissiontime; no liveexpiry/grant inthisproposal.",
+  "commandToBeAdmitted": [
+    "env",
+    "-u",
+    "NODE_OPTIONS",
+    "-u",
+    "NODE_PATH",
+    "node",
+    "--import",
+    "tsx",
+    "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/shared-roundtrip-harness/run.mjs",
+    "--input=/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-threadline-shared-source-input-20261024-01.json",
+    "--output=/Volumes/Projects/LetBuyy/docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01"
+  ],
+  "pinCount": 179,
+  "mustReverify": "AllcurrentpinsandRootexistingidentitywitness; anynewdriftneedsownreview, no silentrepin."
+}

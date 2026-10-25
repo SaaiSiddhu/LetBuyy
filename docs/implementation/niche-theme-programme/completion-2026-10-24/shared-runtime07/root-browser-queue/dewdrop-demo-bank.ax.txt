@@ -1,0 +1,6 @@
+- heading [level=1]:
+- heading "Welcome to Razorpay Software Private Ltd Bank" [level=3]
+- text: This is just a demo bank page.
+- text: "You can choose whether to make this payment successful or not:"
+- button "Success"
+- button "Failure"

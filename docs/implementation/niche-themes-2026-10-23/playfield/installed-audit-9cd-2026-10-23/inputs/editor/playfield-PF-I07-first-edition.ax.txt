@@ -1,0 +1,10 @@
+Browser tab: 11, Title: "Playfield lifecycle activity kit | Threadline", URL: "http://syn-threadline-ui-d11a8917.localhost:57226/product/db9fdd4f-da77-4d74-806b-759edce71270".
+1 AXWebArea Playfield lifecycle activity kit | Threadline, URL: syn-threadline-ui-d11a8917.localhost:57226/product/db9fdd4f-da77-4d74-806b-759edce71270
+	2 container Shopping cart
+		3 button
+		4 heading 2
+		5 button
+		6 link syn-threadline-ui-d11a8917.localhost:57226/store/syn-threadline-ui-d11a8917/cart
+		7 link syn-threadline-ui-d11a8917.localhost:57226/store/syn-threadline-ui-d11a8917/checkout
+
+The focused UI element is 3 button

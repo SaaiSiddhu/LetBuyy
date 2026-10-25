@@ -1,0 +1,141 @@
+{
+  "recordedAt": "2026-10-24T11:56:18.798765+00:00",
+  "classification": "SEALED_SOURCE_HANDOFF_NOT_INSTALLED_ACCEPTANCE",
+  "files": [
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/main-v202-integration-20261024-02/HANDOFF.json",
+      "sha256": "525f64098cbf7400e092d0d45de081487e0a4c842964f9d03532f83470a03cb2",
+      "bytes": 2402
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/main-v202-integration-20261024-02/LEASE_RELEASE.json",
+      "sha256": "bfd1b34e57c3c49af4366d5864b775006f5b17bf6dd8b5ccce3b11d26c354b5b",
+      "bytes": 689
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/main-v202-integration-20261024-02/REPORT.md",
+      "sha256": "9413c054cb421c001976fbd860588a868a83cad936d1a88137b3ffa45301b69f",
+      "bytes": 4844
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/main-v202-integration-20261024-02/SOURCE_RESULT.json",
+      "sha256": "0506d6c0d7f7d35ff28a2127af41a9968870279836bcdf902979130a2b0b13b8",
+      "bytes": 6470
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/main-v202-integration-20261024-02/WRITER_START.json",
+      "sha256": "26ee282eb676ffb6be80fa611f401f578bd88dc6d104b4e6e00c2c3bb025eed5",
+      "bytes": 247228
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/main-v202-integration-20261024-02/catalog-dispatch-PROPOSAL.json",
+      "sha256": "937c5d2f5090f33ef0ef4c024a813bd8302e827f0748fba6d3d17382e193bea2",
+      "bytes": 894
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/main-v202-integration-20261024-02/catalog-dispatch-UNAPPLIED.diff",
+      "sha256": "affcd3df58511bd5f24301a232c73f2e9363081a7b9c9d7283787c6389b27af3",
+      "bytes": 1954
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/main-v202-integration-20261024-02/closure-after.json",
+      "sha256": "e014e8eec2e58435d5df0423415e4d24947e03b6f52b3d2b139e251d038c4189",
+      "bytes": 51217
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/main-v202-integration-20261024-02/closure-before-01-builtin-refusal.json",
+      "sha256": "b04aa85a49b3a9880b6288b48787b403c1bef9442b592cc6e0b37c7016901fcc",
+      "bytes": 51344
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/main-v202-integration-20261024-02/closure-before-02-pre-dom-typing.json",
+      "sha256": "edf11b524bfa30500de51a1fc1c929ab4d50911478902e8ad46136194a038aa5",
+      "bytes": 51217
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/main-v202-integration-20261024-02/closure-before.json",
+      "sha256": "521a4676746c9d0b8d0fd0f7629a9506026a17fad27f236ddb547b9d8c841f71",
+      "bytes": 51217
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/main-v202-integration-20261024-02/qualify-source-before-builtin-fix.cjs.snapshot",
+      "sha256": "0a2c3f4dbe35ea9fb35fa96c9e381bbd69e32e56e8d098f6392bfcb28c726a33",
+      "bytes": 6211
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/main-v202-integration-20261024-02/qualify-source-before-type-config-fix.cjs.snapshot",
+      "sha256": "80b4469b9022ab0dfda38e4ca37a312402905196689026363c95e7ab0956413d",
+      "bytes": 6101
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/main-v202-integration-20261024-02/qualify-source.cjs",
+      "sha256": "c7cfe8cbedeb291d7c3876b63f0ea876c75234c2fd39dfbfff535cb4f25e75e3",
+      "bytes": 6388
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/main-v202-integration-20261024-02/source-tests-01.tap",
+      "sha256": "1890738f545770fc6174a6d50729e72ba84085f6c603523a4a3a2b41c7b26412",
+      "bytes": 1277
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/main-v202-integration-20261024-02/source-tests-02.tap",
+      "sha256": "14e76f1764c49834db1ae187e86d1d7b2074a061e295602d2cb6655a33c0a020",
+      "bytes": 42041
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/main-v202-integration-20261024-02/source-tests-03.tap",
+      "sha256": "10c745ef3969be1e6baa5fbca12887d15d5c8f9c9178829c56441974c33ad7fb",
+      "bytes": 5009
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/main-v202-integration-20261024-02/source-tests-04.tap",
+      "sha256": "854bdc1df042cd36db9aba3a513ea0dee0fef947701dcdd5e3c0f6e8793551e5",
+      "bytes": 5003
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/main-v202-integration-20261024-02/strict-noemit-01-result.json",
+      "sha256": "3316baeabb88f4c07edb5b535bb29251ff7ba41d94881b360fc39a11d1e9ee27",
+      "bytes": 493
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/main-v202-integration-20261024-02/strict-noemit-01.log",
+      "sha256": "11cd0ff5d7d93247404b30ae33046fedf37acdda8cbd3ba2ab4c67517a71ebe7",
+      "bytes": 871
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/main-v202-integration-20261024-02/strict-noemit-02.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/main-v202-integration-20261024-02/strict-noemit-result.json",
+      "sha256": "65c6c526e58d24497de0c19f65f6be09d8aec9c4b1b6db1b331695a19ef3507b",
+      "bytes": 493
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/main-v202-integration-20261024-02/test-before-contract-fixture-fix.ts.snapshot",
+      "sha256": "e3c272759c75f5cfd655b83032f8263cd3875e6543a83b45485451dc18b6a6ee",
+      "bytes": 18398
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/main-v202-integration-20261024-02/test-before-dom-typing-fix.ts.snapshot",
+      "sha256": "bcc649f36647c82e8dfd1c69bb695dce1ef7afe1e17b0840d48fbeffd8074401",
+      "bytes": 19098
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/main-v202-integration-20261024-02/test-before-import-correction.ts.snapshot",
+      "sha256": "a555dc504fc0e974eb706475ec340273c5ea831855bb7e07d2c52a7baeb2b063",
+      "bytes": 18370
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/main-v202-integration-20261024-02/theme-governance.log",
+      "sha256": "7544f16c21c2dba16c1d21509b3cfd2fb5e9a2d3afac98da8e92ea1555795f57",
+      "bytes": 143
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/main-v202-integration-20261024-02/v202-before-schema-byte-fix.ts.snapshot",
+      "sha256": "c7f76719cea13cec25ad2a7a189788e7af304913e5e03de19601735dde39b712",
+      "bytes": 6290
+    }
+  ]
+}

@@ -1,0 +1,102 @@
+{
+  "method": "WCAG relative luminance, opaque sRGB source pairs only",
+  "limits": "Not a full rendered component/state accessibility assessment; merchant overrides require new checks",
+  "pairs": [
+    {
+      "pair": "text/canvas",
+      "foreground": "#142236",
+      "background": "#F5F7FA",
+      "ratio": 14.92,
+      "threshold": 4.5,
+      "passed": true
+    },
+    {
+      "pair": "support/canvas",
+      "foreground": "#4C5B70",
+      "background": "#F5F7FA",
+      "ratio": 6.44,
+      "threshold": 4.5,
+      "passed": true
+    },
+    {
+      "pair": "label/action",
+      "foreground": "#FFFFFF",
+      "background": "#17476E",
+      "ratio": 9.71,
+      "threshold": 4.5,
+      "passed": true
+    },
+    {
+      "pair": "link/surface",
+      "foreground": "#17476E",
+      "background": "#FFFFFF",
+      "ratio": 9.71,
+      "threshold": 4.5,
+      "passed": true
+    },
+    {
+      "pair": "control border/surface",
+      "foreground": "#67768B",
+      "background": "#FFFFFF",
+      "ratio": 4.62,
+      "threshold": 3,
+      "passed": true
+    },
+    {
+      "pair": "focus/surface",
+      "foreground": "#005FCC",
+      "background": "#FFFFFF",
+      "ratio": 5.98,
+      "threshold": 3,
+      "passed": true
+    },
+    {
+      "pair": "error/error surface",
+      "foreground": "#B42318",
+      "background": "#FFF4F2",
+      "ratio": 6.1,
+      "threshold": 4.5,
+      "passed": true
+    },
+    {
+      "pair": "warning/warning surface",
+      "foreground": "#7A3E00",
+      "background": "#FFF4CE",
+      "ratio": 7.58,
+      "threshold": 4.5,
+      "passed": true
+    },
+    {
+      "pair": "success/success surface",
+      "foreground": "#166534",
+      "background": "#EDF8EF",
+      "ratio": 6.54,
+      "threshold": 4.5,
+      "passed": true
+    },
+    {
+      "pair": "identity label/primary",
+      "foreground": "#FFFFFF",
+      "background": "#2C2642",
+      "ratio": 14.35,
+      "threshold": 4.5,
+      "passed": true
+    },
+    {
+      "pair": "identity link/surface",
+      "foreground": "#523F97",
+      "background": "#FFFFFF",
+      "ratio": 8.34,
+      "threshold": 4.5,
+      "passed": true
+    },
+    {
+      "pair": "identity focus/surface",
+      "foreground": "#6C54C4",
+      "background": "#FFFFFF",
+      "ratio": 5.67,
+      "threshold": 3,
+      "passed": true
+    }
+  ]
+}

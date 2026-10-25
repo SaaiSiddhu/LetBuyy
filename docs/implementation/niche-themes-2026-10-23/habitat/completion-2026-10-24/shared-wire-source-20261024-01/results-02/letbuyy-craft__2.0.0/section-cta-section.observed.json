@@ -1,0 +1,78 @@
+{
+  "id": "section-cta-section",
+  "status": "PASS_SOURCE_DATA_CONTRACT",
+  "observed": {
+    "type": "cta-section",
+    "group": "template",
+    "firstId": "section-da770983-f9e1-4d8d-bb76-121a67456657",
+    "finalId": "section-24bcf7fe-42d5-4139-a36e-a7228ab025e0",
+    "phases": [
+      {
+        "phase": "edited",
+        "data": {
+          "type": "cta-section",
+          "settings": {
+            "heading": "Source fixture heading",
+            "subheading": "Source fixture subheading",
+            "ctaText": "Source fixture ctaText",
+            "ctaLink": "https://example.invalid/theme-source/ctaLink.webp"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      {
+        "phase": "hidden-reordered",
+        "data": {
+          "type": "cta-section",
+          "settings": {
+            "heading": "Source fixture heading",
+            "subheading": "Source fixture subheading",
+            "ctaText": "Source fixture ctaText",
+            "ctaLink": "https://example.invalid/theme-source/ctaLink.webp"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": true
+        }
+      },
+      {
+        "phase": "shown",
+        "data": {
+          "type": "cta-section",
+          "settings": {
+            "heading": "Source fixture heading",
+            "subheading": "Source fixture subheading",
+            "ctaText": "Source fixture ctaText",
+            "ctaLink": "https://example.invalid/theme-source/ctaLink.webp"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      {
+        "phase": "removed",
+        "pinnedGroupSectionRetained": false
+      },
+      {
+        "phase": "readded",
+        "data": {
+          "type": "cta-section",
+          "settings": {
+            "heading": "Source fixture heading",
+            "subheading": "Source fixture subheading",
+            "ctaText": "Source fixture ctaText",
+            "ctaLink": "https://example.invalid/theme-source/ctaLink.webp"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      }
+    ],
+    "actualUICallbacksExecuted": false,
+    "resourceAuthorityProved": false
+  }
+}

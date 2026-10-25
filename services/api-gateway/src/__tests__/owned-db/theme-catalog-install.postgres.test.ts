@@ -1,13 +1,17 @@
 // Real worker + owned PostgreSQL/PostgREST. No developer/hosted data is touched.
 import assert from 'node:assert/strict';
 import test, { after } from 'node:test';
-import { randomUUID } from 'node:crypto';
-import { readFileSync } from 'node:fs';
+import { randomUUID, createHash } from 'node:crypto';
+import { readFileSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { requireOwnedDatabase } from './owned-db-support';
 import { Gateway, gatewayEnv, newIdentityKeys, signedIdentityHeaders, tapRest, INTERNAL_SECRET } from './gateway-harness';
 import { newSyntheticTenant, seedSyntheticTenant } from './synthetic-tenant';
 import { parseDomainEventPayload } from '@letbuyy/event-core';
 import { firstPartyThemeListings } from '../../../../../packages/theme-engine/src/first-party-theme-catalog';
+import { confirmThemeInstallReceipt } from '@letbuyy/theme-engine';
+import { UuidSchema } from '@letbuyy/shared-types';
 const owned = requireOwnedDatabase();
 let gateway: Gateway;
 let tap: ReturnType<typeof tapRest> | undefined;
@@ -29,15 +33,41 @@ test('ten catalog themes install independently, atomically and without publishin
     assert.doesNotMatch(catalog.text, /liquidBundle|default_template/, 'listing does not transfer ten full source bundles');
     const before = owned.psql(`SELECT jsonb_build_object('config',template_config,'theme',theme_id,'status',status,'published',published,'release',current_theme_release_id) FROM sites WHERE id='${a.siteId}';`);
     for (const theme of firstPartyThemeListings()) {
-        const install = await request(`/v1/themes/${theme.slug}/install`, { store_id: a.siteId, config_overrides: {} });
+        let selected: { expected_version: string; expected_package_id: string; expected_package_version_id: string };
+        {
+            const resolved = await request(`/v1/themes/${theme.slug}/schema`);
+            // Public catalog source only: retain the exact default/schema bytes
+            // used by this fresh owned fixture without flooding the TAP log.
+            const persisted = JSON.parse(owned.psql(`SELECT jsonb_build_object('catalog',to_jsonb(t),'versions',coalesce((SELECT jsonb_agg(to_jsonb(v)||jsonb_build_object('schema_capture',(SELECT to_jsonb(s) FROM theme_schema_manifests s WHERE s.theme_package_version_id=v.id),'renderer_capture',(SELECT to_jsonb(r) FROM theme_renderer_manifests r WHERE r.theme_package_version_id=v.id))) FROM theme_packages p JOIN theme_package_versions v ON v.theme_package_id=p.id WHERE (p.slug=t.slug OR p.legacy_theme_id=t.id) AND v.version=t.version),'[]'::jsonb)) FROM themes t WHERE slug='${theme.slug}';`)) as { catalog: { version: string }; versions: Array<{ id: string; theme_package_id: string; version: string; schema_capture: unknown; renderer_capture: unknown }> };
+            const bytes = JSON.stringify({ runId: owned.runId, descriptorStatus: resolved.status, descriptor: resolved.json, persisted });
+            const proofPath = join(tmpdir(), `theme-install387-${owned.runId}-${theme.slug}-provenance.json`);
+            writeFileSync(proofPath, bytes, { mode: 0o600 });
+            console.info(JSON.stringify({ event: 'theme_install_schema_provenance', slug: theme.slug, path: proofPath, sha256: createHash('sha256').update(bytes).digest('hex') }));
+            assert.equal(resolved.status, 200, resolved.text);
+            selected = { expected_version: persisted.catalog.version,
+                expected_package_id: UuidSchema.parse(resolved.json!.data.theme.theme_package_id),
+                expected_package_version_id: UuidSchema.parse(resolved.json!.data.theme.theme_package_version_id) };
+            const capture = persisted.versions.find(version => version.id === selected.expected_package_version_id);
+            assert.ok(capture, 'the descriptor selects an actually persisted exact-version capture');
+            assert.equal(capture.version, selected.expected_version);
+            assert.equal(capture.theme_package_id, selected.expected_package_id);
+            assert.ok(capture.schema_capture);
+            assert.ok(capture.renderer_capture);
+        }
+        const install = await request(`/v1/themes/${theme.slug}/install`, { store_id: a.siteId, config_overrides: {}, ...selected });
         assert.equal(install.status, 201, install.text);
+        const confirmed = confirmThemeInstallReceipt(install.json!.data, { slug: theme.slug, version: selected.expected_version,
+            packageId: selected.expected_package_id, packageVersionId: selected.expected_package_version_id });
+        assert.equal(owned.psql(`SELECT theme_package_version_id::text FROM theme_instances WHERE id='${confirmed.instanceId}' AND store_id='${a.siteId}';`), selected.expected_package_version_id);
         const emitted = JSON.parse(owned.psql(`SELECT jsonb_build_object('payload',e.payload,'package',i.theme_package_id,'version',i.theme_package_version_id,'installation',st.id) FROM outbox_events e JOIN theme_instances i ON i.id=(e.payload->>'theme_instance_id')::uuid JOIN themes t ON t.slug=i.theme_slug JOIN store_themes st ON st.store_id=i.store_id AND st.theme_id=t.id WHERE e.store_id='${a.siteId}' AND e.event_type='theme.installed' AND e.payload->>'theme_slug'='${theme.slug}';`));
         const payload = parseDomainEventPayload('theme.installed',emitted.payload);
         assert.deepEqual(payload,{site_id:a.siteId,theme_package_id:emitted.package,theme_version_id:emitted.version,installation_id:emitted.installation});
         const editor = await request(`/v1/themes/${theme.slug}/editor?store_id=${a.siteId}`);
         assert.equal(editor.status, 200, editor.text);
-        assert.equal(editor.json!.data.template_config.themeSettings.primaryColor, theme.settings.primaryColor);
-        assert.equal(editor.json!.data.template_config.liquidBundle.config.settings_data.current.headingFontFamily, theme.settings.headingFontFamily);
+        const captured=JSON.parse(owned.psql(`SELECT package_manifest->'liquidBundle'->'config'->'settings_data'->'current' FROM theme_package_versions WHERE id='${selected.expected_package_version_id}';`));
+        assert.equal(typeof captured.primaryColor,'string');
+        assert.equal(editor.json!.data.template_config.themeSettings.primaryColor,captured.primaryColor);
+        assert.equal(editor.json!.data.template_config.liquidBundle.config.settings_data.current.headingFontFamily, captured.headingFontFamily);
         assert.equal(editor.json!.data.draft.exists, true);
         assert.equal(editor.json!.data.template_config.rendererEngine,'liquid','the approved captured package renders consistently before and after customization');
     }
@@ -51,6 +81,13 @@ test('ten catalog themes install independently, atomically and without publishin
     const privateSlug = String(duplicate.json!.data.slug);
     const privateEditor = await request(`/v1/themes/${privateSlug}/editor?store_id=${a.siteId}`);
     assert.equal(privateEditor.status, 200, privateEditor.text);
+    assert.equal(owned.psql(`SELECT version FROM themes WHERE slug='${privateSlug}';`), '2.0.0', 'a private Threadline clone retains its commerce version');
+    const privateState = () => owned.psql(`SELECT md5(jsonb_build_object('instances',(SELECT jsonb_agg(to_jsonb(i) ORDER BY id) FROM theme_instances i WHERE store_id='${a.siteId}' AND theme_slug='${privateSlug}'),'drafts',(SELECT jsonb_agg(to_jsonb(d) ORDER BY id) FROM theme_editor_drafts d WHERE store_id='${a.siteId}' AND theme_id='${privateSlug}'))::text);`);
+    const privateBeforeMismatch = privateState();
+    owned.psql(`UPDATE themes SET version='1.0.0' WHERE slug='${privateSlug}';`);
+    try { assert.equal((await request(`/v1/themes/${privateSlug}/editor?store_id=${a.siteId}`)).status, 503, 'a private catalog/bundle version mismatch stays unavailable'); }
+    finally { owned.psql(`UPDATE themes SET version='2.0.0' WHERE slug='${privateSlug}';`); }
+    assert.equal(privateState(), privateBeforeMismatch, 'the failed private load never rewrites its captured instance/draft');
     owned.psql(`UPDATE themes SET is_active=false,default_template='{}',settings_schema='{}',section_schemas='{}' WHERE slug='${privateSlug}';`);
     owned.script(readFileSync(new URL('../../../../../database/supabase/migrations/375_private_theme_editability.sql',import.meta.url),'utf8'));
     const repairedCopy=await request(`/v1/themes/${privateSlug}/editor?store_id=${a.siteId}`);assert.equal(repairedCopy.status,200,repairedCopy.text);
@@ -58,6 +95,13 @@ test('ten catalog themes install independently, atomically and without publishin
     const savePrivate = await gateway.request(`/v1/themes/${privateSlug}/editor/draft`, {method:'PUT',headers:await signedIdentityHeaders(actor,email,a.siteId),body:JSON.stringify({store_id:a.siteId,template_config:privateEditor.json!.data.template_config,base_version:privateEditor.json!.data.version,idempotency_key:'synthetic-save-private-copy'})});
     assert.equal(savePrivate.status,200,savePrivate.text);
     assert.equal((await request(`/v1/themes/${privateSlug}/preview-session`,{store_id:a.siteId,ttl_seconds:900})).status,201);
+    const coreDescriptor = await request('/v1/themes/letbuyy-core/schema');
+    const corePersisted = JSON.parse(owned.psql(`SELECT jsonb_build_object('catalog',to_jsonb(t),'versions',coalesce((SELECT jsonb_agg(to_jsonb(v)||jsonb_build_object('schema_capture',(SELECT to_jsonb(s) FROM theme_schema_manifests s WHERE s.theme_package_version_id=v.id),'renderer_capture',(SELECT to_jsonb(r) FROM theme_renderer_manifests r WHERE r.theme_package_version_id=v.id))) FROM theme_packages p JOIN theme_package_versions v ON v.theme_package_id=p.id WHERE (p.slug=t.slug OR p.legacy_theme_id=t.id) AND v.version=t.version),'[]'::jsonb)) FROM themes t WHERE slug='letbuyy-core';`));
+    const coreBytes = JSON.stringify({ runId: owned.runId, descriptorStatus: coreDescriptor.status, descriptor: coreDescriptor.json, persisted: corePersisted });
+    const coreProofPath = join(tmpdir(), `theme-install387-${owned.runId}-letbuyy-core-provenance.json`);
+    writeFileSync(coreProofPath, coreBytes, { mode: 0o600 });
+    console.info(JSON.stringify({ event: 'theme_install_schema_provenance', slug: 'letbuyy-core', path: coreProofPath, sha256: createHash('sha256').update(coreBytes).digest('hex') }));
+    assert.equal(coreDescriptor.status, 200, coreDescriptor.text);
     const blank=await request('/v1/themes/library/create',{store_id:a.siteId,name:'Synthetic blank'});assert.equal(blank.status,201,blank.text);
     const blankSlug=blank.json!.data.slug,blankEditor=await request(`/v1/themes/${blankSlug}/editor?store_id=${a.siteId}`);assert.equal(blankEditor.status,200,blankEditor.text);
     const saveBlank=await gateway.request(`/v1/themes/${blankSlug}/editor/draft`,{method:'PUT',headers:await signedIdentityHeaders(actor,email,a.siteId),body:JSON.stringify({store_id:a.siteId,template_config:blankEditor.json!.data.template_config,base_version:blankEditor.json!.data.version,idempotency_key:'synthetic-save-blank'})});assert.equal(saveBlank.status,200,saveBlank.text);
@@ -134,17 +178,21 @@ test('ten catalog themes install independently, atomically and without publishin
     const migration378=readFileSync(new URL('../../../../../database/supabase/migrations/378_storefront_metadata_role_closure.sql',import.meta.url),'utf8');
     const down377=readFileSync(new URL('../../../../../database/supabase/rollback/377_theme_install_event_contract.rollback.sql',import.meta.url),'utf8');
     const down378=readFileSync(new URL('../../../../../database/supabase/rollback/378_storefront_metadata_role_closure.rollback.sql',import.meta.url),'utf8');
+    const migration387=readFileSync(new URL('../../../../../database/supabase/migrations/387_theme_install_version_precondition.sql',import.meta.url),'utf8');
+    const down387=readFileSync(new URL('../../../../../database/supabase/rollback/387_theme_install_version_precondition.rollback.sql',import.meta.url),'utf8');
     const signature='public.install_owned_theme_v1(uuid,uuid,text,jsonb,jsonb,uuid,integer,text)';
     const installedState=()=>owned.psql(`SELECT md5(jsonb_build_object('events',(SELECT jsonb_agg(to_jsonb(e) ORDER BY id) FROM outbox_events e),'instances',(SELECT jsonb_agg(to_jsonb(i) ORDER BY id) FROM theme_instances i),'drafts',(SELECT jsonb_agg(to_jsonb(d) ORDER BY id) FROM theme_editor_drafts d),'installer',(SELECT md5(prosrc)||'|'||proacl::text FROM pg_proc WHERE oid='${signature}'::regprocedure))::text);`);
     const conserved=installedState();
-    for(const sql of [migration377,migration377,down377,migration378,migration378,down378]) owned.script(sql);
+    // Historical guarded installer definitions replay only after their dependent
+    // version precondition is rolled back, then the current contract is restored.
+    for(const sql of [down387,migration377,migration377,down377,migration378,migration378,down378,migration387,migration387]) owned.script(sql);
     assert.equal(installedState(),conserved,'forward replay and paired rollback conserve data and valid event producer');
     const runtime=JSON.parse(owned.psql(`SELECT jsonb_build_object('theme_package_id',theme_package_id,'theme_package_version_id',theme_package_version_id) FROM theme_instances WHERE store_id='${a.siteId}' AND theme_slug='letbuyy-forge' AND deleted_at IS NULL;`));
     runtime.theme_package_version_id=randomUUID();
     assert.match(owned.psqlExpectError(`SELECT ${signature.split('(')[0]}('${actor}','${a.siteId}','letbuyy-forge','{}','${JSON.stringify(runtime)}','${a.siteId}',NULL,NULL);`),/Theme runtime version unavailable/);
     assert.equal(installedState(),conserved,'an unbound version is refused before any effect');
     owned.script(`ALTER FUNCTION ${signature} COST 101;`);
-    try { assert.match(owned.psqlScriptExpectError(migration377),/refuses changed installer/); }
+    try { assert.match(owned.psqlScriptExpectError(migration387),/Migration387 refuses changed installer/); }
     finally { owned.script(`ALTER FUNCTION ${signature} COST 100;`); }
     assert.equal(installedState(),conserved,'unknown function profile refusal is atomic');
     for(const role of ['anon','authenticated','app_tenant','service_role'])

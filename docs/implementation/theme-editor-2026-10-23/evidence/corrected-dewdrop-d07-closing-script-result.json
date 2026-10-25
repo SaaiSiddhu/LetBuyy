@@ -1,0 +1,37 @@
+{
+  "recordedAt": "2026-10-23T18:41:10.220635+00:00",
+  "runId": "f6074d90e894",
+  "caseId": "D07",
+  "exactPlannedPayload": "</script><script>fixtureAttack()</script>",
+  "observedUrl": "http://syn-threadline-ui-33be9d94.localhost:62076/products?search=%3C%2Fscript%3E%3Cscript%3EfixtureAttack%28%29%3C%2Fscript%3E&routine_stage=&format=&shade=&sort=display_order&limit=20",
+  "httpStatus": 200,
+  "rawClosingScriptPayloadInHtml": false,
+  "ssrSearchInputAttributes": [
+    {
+      "type": "search",
+      "value": null
+    },
+    {
+      "type": "hidden",
+      "value": "</script><script>fixtureAttack()</script>"
+    },
+    {
+      "type": "search",
+      "value": null
+    }
+  ],
+  "unsafeSearchValueSuppressed": false,
+  "actualDomAlreadyObserved": {
+    "executableProbeScriptNodes": 0,
+    "searchInputValues": [
+      null,
+      null,
+      null
+    ]
+  },
+  "visibleResult": "0 products / No products found; actual Explore all products recovery link",
+  "http400Claim": false,
+  "losslessUnsafeQueryRoundtripClaim": false,
+  "responseSha256": "f2f89ad021e7c89c3b35b48647a4100089f6ba5c4c8cf43cc2d5e88369379235",
+  "recovery": "PENDING_NEXT_NORMAL_UI_CLICK"
+}

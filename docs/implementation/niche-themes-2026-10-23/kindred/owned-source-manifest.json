@@ -1,0 +1,126 @@
+{
+  "scope": "Kindred owned source handoff",
+  "files": [
+    {
+      "path": "packages/theme-engine/src/kindred-theme.ts",
+      "bytes": 18062,
+      "sha256": "3a47dc979dbdf5dce395fd44a858e007567820f4fac569fade603ff6da4fd551"
+    },
+    {
+      "path": "packages/theme-engine/src/kindred-styles.ts",
+      "bytes": 11883,
+      "sha256": "15e6670f6556a7b9cfd8e56891088f0abe9a8ffa1105822be1a1902ecd7282cf"
+    },
+    {
+      "path": "packages/theme-engine/src/kindred-discovery.ts",
+      "bytes": 6014,
+      "sha256": "14dd29777737158a61287bf54e98571c6b3abf1e07ec542d2e7f678180ad473f"
+    },
+    {
+      "path": "packages/theme-engine/test/kindred.test.ts",
+      "bytes": 11350,
+      "sha256": "480cb8c88df9c690bb8f1e1eb31b3e7cb4e08e34d2c50466ad31c64b57236b84"
+    },
+    {
+      "path": "packages/commerce-core/src/kindred-facts.ts",
+      "bytes": 5059,
+      "sha256": "f227bfe56432182fffce4ccfda347785d28568f4bdd787e96ea82dd18ade58f4"
+    },
+    {
+      "path": "packages/commerce-core/test/kindred-facts.test.ts",
+      "bytes": 6648,
+      "sha256": "63ab3eecd296233ae9a11b971d1fb204090fa557969364530263ca6a6464ab5d"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/demo/kindred-demo.ts",
+      "bytes": 5904,
+      "sha256": "ec8dadf3750e18f5caac7ebc7c1478a72f1b17ef589f21054e82fa7d2f33c213"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/demo/kindred-demo.test.ts",
+      "bytes": 5949,
+      "sha256": "9353ec62fa22c16ff540d5d4444a841d78675359dfb130b196b8a5e72d1048e8"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/niche-facts/kindred-facts-editor.tsx",
+      "bytes": 11509,
+      "sha256": "85ebac24ce142a74168fd34093ff548a8474cdb1252f821dce68acf1b7718513"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/niche-facts/kindred-facts-editor.test.tsx",
+      "bytes": 11262,
+      "sha256": "c31994818a05bd18b7da18dbe87ae071a4e3f1ef7cf697ebf691197a21d75af0"
+    },
+    {
+      "path": "apps/commerce/web/public/theme-assets/kindred/v2/desk-companion.webp",
+      "bytes": 97608,
+      "sha256": "54961c3bf2fe86ec55d015057e22b91219f93dd6383edee0c9e22ba997136ed4"
+    },
+    {
+      "path": "apps/commerce/web/public/theme-assets/kindred/v2/little-pause-closed.webp",
+      "bytes": 64810,
+      "sha256": "a8379ed174288fd70ed84a8fa130936dac84d1ebde02640cc72d45bedf3dca17"
+    },
+    {
+      "path": "apps/commerce/web/public/theme-assets/kindred/v2/little-pause-open.webp",
+      "bytes": 72046,
+      "sha256": "ede8e9fc0acc1a61a1998703b46cb690bba50264973aab1cbdc8fb62cc575ae5"
+    },
+    {
+      "path": "apps/commerce/web/public/theme-assets/kindred/v2/provenance.json",
+      "bytes": 1732,
+      "sha256": "d220f0bc6ac044f302b2c972a3f58d4be96fe7dea1709f32b9e459af3198eca3"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/kindred/kindred-app-mapper.test.ts",
+      "bytes": 10742,
+      "sha256": "3fe4f63e0a72cb108d124b7e8f5c959f3db0b489dc044528047ff98a67436656"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/kindred/kindred-media-write-probe.ts",
+      "bytes": 2095,
+      "sha256": "8f9e4bdb8104becef80d52393393d73943b3fc13f185be71727f0bb7e1844631"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/kindred/kindred-artifact-check.ts",
+      "bytes": 1612,
+      "sha256": "5dd2bbf3bc0b9ab0cbcb311ae94b42e67a04e686a2365175dd4e1c64af33ec10"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/kindred/render-fixtures.ts",
+      "bytes": 9599,
+      "sha256": "0ece3d37c54252a24d847285b2c9a151ff1636b58a91b056d8a4779d11f72d28"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/kindred/static-server.mjs",
+      "bytes": 1730,
+      "sha256": "98a1f47b6a97bc95cbefc238e297c132a005f781d32577b769287b38570cc422"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/kindred/capture-rendered.cjs",
+      "bytes": 10681,
+      "sha256": "0526bb3cff0c1795957399760bdcf2cb8ac7b18e17558faeb1d15187e42d7120"
+    },
+    {
+      "path": "packages/commerce-core/test/niche-order-snapshot-acceptance.test.ts",
+      "bytes": 27582,
+      "sha256": "bb0af5f8b0e7ace5f46567d6343d07949a1a2e3876514f3ddefc2b6f53a46f4d"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/kindred/capture-narrow-header.cjs",
+      "bytes": 6565,
+      "sha256": "fa8065431a98423ec470b7b26e7a2cb3d3203b36d55917a54bab5bbd937b2d14"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/kindred/kindred-editor-source-roundtrip.mjs",
+      "bytes": 9336,
+      "sha256": "f108e32bf9da3762fbd884fe19bf682c49b61a04f418254d8fea0c9a76260abb"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/kindred/kindred-discovery-form.test.ts",
+      "bytes": 16073,
+      "sha256": "c21c00c96ad3c98f1e2280b204ec1dc28a495b3e5570dc2c93be5b8036ed444e"
+    }
+  ],
+  "note": "Current Kindred owned source; static browser fixture captures retain their own source snapshot. Shared parent lease review uses parent-lease-manifest.json."
+}

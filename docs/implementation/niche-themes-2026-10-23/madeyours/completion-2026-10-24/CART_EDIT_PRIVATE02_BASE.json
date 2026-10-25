@@ -1,0 +1,48 @@
+{
+  "recordedAt": "2026-10-24T11:40:31.190220+00:00",
+  "classification": "FRESH_PRIVATE_EIGHT_PATH_CART_EDIT_SOURCE_OVERLAY_ONLY_NOT_NATIVE_ARTIFACT",
+  "allocation": {
+    "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-madeyours-cart-edit-private-allocation-20261024-02.json",
+    "sha256": "25819e5acebbc0eb16b10b3b4139152e5239b33df455b2e3b5f7dd8af2c3885f"
+  },
+  "privateRoot": "/private/tmp/madeyours-configured-cart-edit-20261024-02-fmj81g78",
+  "sourceInputs": [
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx",
+      "currentMainSHA256": "db6f884364955b8f9c3687bead875a7211b87b575a9b478f4520b2dc1f6c9712"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/madeyours-personalization.ts",
+      "currentMainSHA256": "cc2f0f484eb4a63e8e7c81a143611b6ddad01936eb0b3300780beb8a4eaf4f48"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/personalization-review-client.ts",
+      "currentMainSHA256": "1cb105f39245660177dd110403c6afba91efee1f2d4c5e63802b9dfe364a428b"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/madeyours-cart-edit.test.ts",
+      "currentMainSHA256": null
+    },
+    {
+      "path": "packages/checkout-core/src/index.ts",
+      "currentMainSHA256": "2822a721bafd176241deaf274db2fdb0ab40fb687e738842f9ddd80912391560"
+    },
+    {
+      "path": "packages/checkout-core/test/madeyours-cart-edit.test.ts",
+      "currentMainSHA256": null
+    },
+    {
+      "path": "services/api-gateway/src/routes/storefront/cart-routes.ts",
+      "currentMainSHA256": "18a17fc31b1f328bd52413885d264d7bc2f23728c3f2e5c75f074776765a533a"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/madeyours-cart-edit.postgres.test.ts",
+      "currentMainSHA256": null
+    }
+  ],
+  "sourceOnlyUnchangedDependencies": "Explicit symlinks/reference to current Main; later native closure/materialization must be separately allocated and reverified. No borrowed dependencies treated as private native proof.",
+  "mainWrites": false,
+  "nativeDbBrowserProvider": false,
+  "additionalWriterScopeRequest": "React cart-context.tsx private addendum needed for unversioned writer compatibility; Themes send rejected citing destination pause, no retry.",
+  "paymentHandoff": "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/RAZORPAY_RUNTIME_BINDING_PROPOSAL02.json"
+}

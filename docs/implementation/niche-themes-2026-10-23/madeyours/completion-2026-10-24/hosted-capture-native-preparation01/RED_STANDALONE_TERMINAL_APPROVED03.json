@@ -1,0 +1,49 @@
+{
+  "cohort": "RED",
+  "activation03": "979a14bf0434f7d455d3a02bd9b29d554cbcb73320005121af11eca129acc0a5",
+  "humanApproval04": "d8b8f789512d611ac9a93a88aea451c1c124389a2b541682adae27e0a5155c37",
+  "permission": "require_escalated",
+  "terminalExitCode": 0,
+  "invocation": {
+    "cohort": "RED",
+    "command": "'env' '-u' 'NODE_PATH' '-u' 'NODE_OPTIONS' '-u' 'TSX_TSCONFIG_PATH' '-u' 'LETBUYY_EXECUTABLE_PG_CONTAINER' '-u' 'LETBUYY_OWNED_DATABASE' '-u' 'SUPABASE_URL' '-u' 'SUPABASE_SERVICE_ROLE_KEY' '-u' 'SUPABASE_ANON_KEY' '-u' 'DATABASE_URL' '-u' 'RAZORPAY_KEY_ID' '-u' 'RAZORPAY_KEY_SECRET' '-u' 'RAZORPAY_WEBHOOK_SECRET' '-u' 'RESEND_API_KEY' '-u' 'CHECKOUT_SIGNING_SECRET' '-u' 'STORE_ACCESS_SIGNING_KEY' '-u' 'INTERNAL_API_SECRET' 'TSX_DISABLE_CACHE=1' '/private/tmp/letbuyy-hosted-capture-native-red-20261025-01/node_modules/.bin/tsx' '/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/hosted-capture-native-preparation01/standalone-preflight.cjs' '--root' '/private/tmp/letbuyy-hosted-capture-native-red-20261025-01' '--manifest' '/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/hosted-capture-native-preparation01/red-materialization.json' '--activation' '/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/HOSTED_CAPTURE_NATIVE_PREFLIGHT_ACTIVATION_03.json' '--out' '/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/hosted-capture-native-preparation01/preflight-red-approved03-result.json'",
+    "cwd": "/private/tmp/letbuyy-hosted-capture-native-red-20261025-01",
+    "chunks": [
+      {
+        "chunk_id": "259966",
+        "wall_time_seconds": 1.001969208,
+        "session_id": 25153,
+        "original_token_count": 0,
+        "output": ""
+      },
+      {
+        "chunk_id": "3a90be",
+        "wall_time_seconds": 0.000005417,
+        "exit_code": 0,
+        "original_token_count": 62,
+        "output": "{\"status\":\"PASS_STANDALONE_PREFLIGHT_ONLY\",\"root\":\"/private/tmp/letbuyy-hosted-capture-native-red-20261025-01\",\"error\":null,\"nativeExecuted\":false,\"guardedApplicationPhase\":{\"fetchCalls\":0,\"socketCalls\":0,\"subprocessCalls\":0,\"envReadsDenied\":0}}\n"
+      }
+    ],
+    "nativeExecuted": false
+  },
+  "result": {
+    "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/hosted-capture-native-preparation01/preflight-red-approved03-result.json",
+    "sha256": "74c17dacef3c08165f1144cfad5b0e57d76866880e06d28492837a9be163b84f",
+    "status": "PASS_STANDALONE_PREFLIGHT_ONLY",
+    "actualExportChecks": 7,
+    "loadedModuleFiles": 952,
+    "CjsEsmRuntimeLoads": 1,
+    "sourceFiles": 6545,
+    "vendorFiles": 41519,
+    "migrations": 322,
+    "maxMigration": 393,
+    "qualifiedUps": 4,
+    "guardedApplicationPhase": {
+      "fetchCalls": 0,
+      "socketCalls": 0,
+      "subprocessCalls": 0,
+      "envReadsDenied": 0
+    }
+  },
+  "nativeStarts": 0
+}

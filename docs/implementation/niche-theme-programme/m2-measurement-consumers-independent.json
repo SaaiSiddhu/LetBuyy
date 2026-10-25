@@ -1,0 +1,49 @@
+{
+  "createdAt": "2026-10-23T09:41:36.213078+00:00",
+  "classification": "INDEPENDENT_CURRENT_CANONICAL_TRANSPORT_PROJECTION_LIQUID_FORMDATA_CONTRACT_NOT_SQL_BROWSER_OR_INSTALLED_ACCEPTANCE",
+  "command": [
+    "node",
+    "--import",
+    "tsx",
+    "--test",
+    "/Volumes/Projects/LetBuyy/packages/commerce-core/test/storefront-discovery.test.ts",
+    "/Volumes/Projects/LetBuyy/services/api-gateway/src/__tests__/storefront-discovery.test.ts",
+    "/Volumes/Projects/LetBuyy/apps/commerce/web/src/lib/theme-engine/storefront-discovery-frontend.test.tsx",
+    "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/trailmark/shopping-form/forms.test.ts",
+    "/Volumes/Projects/LetBuyy/packages/theme-engine/test/trailmark.test.ts",
+    "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/habitat/discovery-form-roundtrip.test.ts",
+    "/Volumes/Projects/LetBuyy/packages/theme-engine/test/habitat.test.ts"
+  ],
+  "cwd": "/Volumes/Projects/LetBuyy/apps/commerce/web",
+  "exitCode": 0,
+  "sourceBefore": {
+    "apps/commerce/web/src/lib/product-service.ts": "2e30286b89c982dfd25aa52cc1bd92a40a958437fa178d24d0ff11c207d20a6b",
+    "apps/commerce/web/src/lib/theme-engine/composition-engine.tsx": "c7c4e98ddebf6a9c707d77e3f66cab975f894edab36e6f65c7ab58604bda2ef7",
+    "apps/commerce/web/src/lib/theme-engine/data-binding-engine.ts": "4b8334b7e07e64209d3585671ff98a4c7c359719424715119e3a2ea2d667e56d",
+    "apps/commerce/web/src/lib/theme-engine/storefront-discovery-frontend.test.tsx": "a5284f4407c5273ce23811bdf66390f5fa74818bbca4f40e43673c618a37f7a5",
+    "apps/commerce/web/src/lib/theme-engine/storefront-discovery.ts": "b59b34fbe89cf44f13f9dba56107f993af2632d4d2ed28fe3f9694e87743cbfc",
+    "docs/implementation/niche-themes-2026-10-23/habitat/discovery-form-roundtrip.test.ts": "4447aa81d52698f79fde7389b0f968480186f8ce0c951733df6fc65ecd895a73",
+    "docs/implementation/niche-themes-2026-10-23/trailmark/measurement390/source-probe.mjs": "8e37dc207dd949d648526fe78e1a7079e45f537f0d89dff5b4f89bc10dce2393",
+    "docs/implementation/niche-themes-2026-10-23/trailmark/shopping-form/forms.test.ts": "28add4679ffdc46d98cb37bc380089dbf016bc60b96679ba0b72dc22d5970d92",
+    "packages/commerce-core/src/storefront-discovery.ts": "c8de3871a998df011de12791db90c868139903b5c84afb211d9e9de3a1997ff1",
+    "packages/commerce-core/test/storefront-discovery.test.ts": "21e36c3e88b80400907d492ea449ebcdd0d49d4390d9dbcd12de454ea9cb0f63",
+    "packages/theme-engine/src/first-party-theme-catalog.ts": "cc11490138ae5c2f13ab022a60b4cc2fe7d8fc5eb766dbf087eeb227d6050d6e",
+    "packages/theme-engine/src/habitat-discovery.ts": "342843da57a6eef8488d906218d4225338f9f3c0afe2bbcc49073f3f34a1f873",
+    "packages/theme-engine/src/habitat-theme.ts": "0144fdf830ab3c5ddf42ebfcb86258b99e74ed8a8d724469012479705352e8c3",
+    "packages/theme-engine/src/theme-renderer.ts": "794cbc6ff9ae71f995560f302e1b0d5f0d4ff4da59fa31191585851b1e822164",
+    "packages/theme-engine/src/trailmark-discovery.ts": "f69edf5815a19e513416ebb970e661793a88994a12f70e1e0e6d214f021741cb",
+    "packages/theme-engine/test/habitat.test.ts": "fd1fa3d30be0841e41f00e4226fde5d23880ef31232d5c57c83ececdc3124bfc",
+    "packages/theme-engine/test/trailmark.test.ts": "1f6f59857460321700791d15b8ed03a9bea953473328fabf8b1031397b3c14b3",
+    "packages/typescript/api-client/src/index.ts": "bca9564794dc06352982fbcaa04d91bb095402d0b3f63cdeb8cfa7feab0bad47",
+    "services/api-gateway/src/__tests__/storefront-discovery.test.ts": "fe138aed7ca8e8b924b569366c9d187d702b131e904e6e1fb3429418bd514b82",
+    "services/api-gateway/src/lib/storefront-discovery.ts": "fa47b2c867e916ab082e5c420eed18751e4c313f98dd1ae2b19ec26de00afa37"
+  },
+  "changedDuringRun": [],
+  "tap": "m2-measurement-consumers-independent.tap",
+  "tests": {
+    "passed": 83,
+    "failed": 0,
+    "skipped": 0,
+    "cancelled": 0
+  }
+}

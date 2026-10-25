@@ -1,0 +1,41 @@
+Browser tab: 8, Title: "LetBuyy - Create Your Online Store", URL: "http://localhost:9002/onboarding".
+1 AXWebArea LetBuyy - Create Your Online Store, URL: localhost:9002/onboarding
+	2 container
+		3 button EN
+		4 button User menu
+	5 image LetBuyy
+	6 text Progress is saved on this browser.
+	7 heading Name your site, Value: 1
+		8 text Name your site
+	9 text This will be your store URL
+	10 text Display Name
+	11 text field (settable) Display Name, Value: UX Research Fixture, ID: store-display-name
+	12 text Subdomain
+	13 text field (settable) Subdomain, Value: ux-audit-1022, ID: store-subdomain
+	14 container subdomain-host-suffix
+		15 text . localhost
+	16 text Available!
+	17 container Where do you sell, or plan to sell?
+		18 text Where do you sell, or plan to sell?
+		19 text These choices guide setup only. They do not activate integrations or Marketplace access; Marketplace selling needs a separate review.
+		20 container
+			21 checkbox (settable, integer) Description: Online store, Value: 1
+			22 text Online store
+		23 container
+			24 checkbox (settable, integer) Description: In-person retail, Value: 0
+			25 text In-person retail
+		26 container
+			27 checkbox (settable, integer) Description: Social media, Value: 0
+			28 text Social media
+		29 container
+			30 checkbox (settable, integer) Description: Online marketplaces, Value: 0
+			31 text Online marketplaces
+		32 container
+			33 checkbox (settable, integer) Description: Events and pop-ups, Value: 0
+			34 text Events and pop-ups
+	35 button Back
+	36 button Next
+	37 pop up button (collapsed) Description: Open Next.js Dev Tools, ID: next-logo, Secondary Actions: Expand
+		38 image
+
+The focused UI element is 7 heading Name your site, Value: 1

@@ -1,0 +1,168 @@
+{
+  "capturedAt": "2026-10-23T04:35:42.046Z",
+  "runId": "fd5df14cfa1d",
+  "mode": "Next production; local unthrottled loopback; anonymous; real owned gateway/PostgreSQL",
+  "method": "Three sequential document reads per path, first/warm samples retained. Monotonic Node HTTP headers/completion timings; not browser paint or Core Web Vitals.",
+  "host": "syn-threadline-ui-769595d8.localhost:51642",
+  "samples": [
+    {
+      "path": "/",
+      "sample": 1,
+      "status": 200,
+      "headersMs": 115.6,
+      "completeMs": 117.1,
+      "decodedHtmlBytes": 207041,
+      "cacheControl": "private, no-store"
+    },
+    {
+      "path": "/",
+      "sample": 2,
+      "status": 200,
+      "headersMs": 15,
+      "completeMs": 15.7,
+      "decodedHtmlBytes": 207041,
+      "cacheControl": "private, no-store"
+    },
+    {
+      "path": "/",
+      "sample": 3,
+      "status": 200,
+      "headersMs": 10.5,
+      "completeMs": 11.1,
+      "decodedHtmlBytes": 207041,
+      "cacheControl": "private, no-store"
+    },
+    {
+      "path": "/store/syn-threadline-ui-769595d8/products",
+      "sample": 1,
+      "status": 200,
+      "headersMs": 312,
+      "completeMs": 421.5,
+      "decodedHtmlBytes": 309614,
+      "cacheControl": "private, no-store"
+    },
+    {
+      "path": "/store/syn-threadline-ui-769595d8/products",
+      "sample": 2,
+      "status": 200,
+      "headersMs": 96.3,
+      "completeMs": 152.7,
+      "decodedHtmlBytes": 309614,
+      "cacheControl": "private, no-store"
+    },
+    {
+      "path": "/store/syn-threadline-ui-769595d8/products",
+      "sample": 3,
+      "status": 200,
+      "headersMs": 83.9,
+      "completeMs": 142.4,
+      "decodedHtmlBytes": 309614,
+      "cacheControl": "private, no-store"
+    },
+    {
+      "path": "/store/syn-threadline-ui-769595d8/product/c24aa142-58f3-465e-810c-76c9ba509da9",
+      "sample": 1,
+      "status": 200,
+      "headersMs": 125.5,
+      "completeMs": 127,
+      "decodedHtmlBytes": 317520,
+      "cacheControl": "private, no-store"
+    },
+    {
+      "path": "/store/syn-threadline-ui-769595d8/product/c24aa142-58f3-465e-810c-76c9ba509da9",
+      "sample": 2,
+      "status": 200,
+      "headersMs": 131.3,
+      "completeMs": 133.2,
+      "decodedHtmlBytes": 317520,
+      "cacheControl": "private, no-store"
+    },
+    {
+      "path": "/store/syn-threadline-ui-769595d8/product/c24aa142-58f3-465e-810c-76c9ba509da9",
+      "sample": 3,
+      "status": 200,
+      "headersMs": 137.9,
+      "completeMs": 138.9,
+      "decodedHtmlBytes": 317520,
+      "cacheControl": "private, no-store"
+    }
+  ],
+  "scriptAssets": [
+    {
+      "path": "/_next/static/chunks/fee3e60c-aa3ab2d59836057c.js",
+      "status": 200,
+      "uncompressedBytes": 198492
+    },
+    {
+      "path": "/_next/static/chunks/6030-729d5479b4c2b3b5.js",
+      "status": 200,
+      "uncompressedBytes": 188639
+    },
+    {
+      "path": "/_next/static/chunks/main-app-2f6149211ea74b1a.js",
+      "status": 200,
+      "uncompressedBytes": 484
+    },
+    {
+      "path": "/_next/static/chunks/1834-ca7b8a0e5ed925e0.js",
+      "status": 200,
+      "uncompressedBytes": 48565
+    },
+    {
+      "path": "/_next/static/chunks/app/layout-1020bcdae9bc6b2d.js",
+      "status": 200,
+      "uncompressedBytes": 3841
+    },
+    {
+      "path": "/_next/static/chunks/9872-a9f7035f9c512219.js",
+      "status": 200,
+      "uncompressedBytes": 31912
+    },
+    {
+      "path": "/_next/static/chunks/2045-a57159a3a055f828.js",
+      "status": 200,
+      "uncompressedBytes": 24992
+    },
+    {
+      "path": "/_next/static/chunks/app/error-d5142e401c3c929e.js",
+      "status": 200,
+      "uncompressedBytes": 10773
+    },
+    {
+      "path": "/_next/static/chunks/4827-106526f01ad154e2.js",
+      "status": 200,
+      "uncompressedBytes": 8740
+    },
+    {
+      "path": "/_next/static/chunks/app/not-found-c508956c19697dfb.js",
+      "status": 200,
+      "uncompressedBytes": 196
+    },
+    {
+      "path": "/_next/static/chunks/app/global-error-2ac88daf2486cf4c.js",
+      "status": 200,
+      "uncompressedBytes": 10656
+    },
+    {
+      "path": "/_next/static/chunks/app/page-5f15583d4363b8f2.js",
+      "status": 200,
+      "uncompressedBytes": 23059
+    },
+    {
+      "path": "/_next/static/chunks/polyfills-42372ed130431b0a.js",
+      "status": 200,
+      "uncompressedBytes": 112594
+    },
+    {
+      "path": "/_next/static/chunks/webpack-06a7e336d599cdd0.js",
+      "status": 200,
+      "uncompressedBytes": 3368
+    }
+  ],
+  "scriptBytes": 666311,
+  "limitations": [
+    "No mobile CPU/network throttling",
+    "No LCP/INP/CLS claim; browser performance timeline is not exposed by the read-only UI bridge",
+    "Static resource bytes use identity encoding and do not represent compressed browser transfer"
+  ]
+}

@@ -14,14 +14,15 @@
  *   section_definitions or the schema object.
  *
  * Design ratchet:
- *   - Imports from @letbuyy/ui (Button, Input, MaterialIcon)
+ *   - Imports from @letbuyy/ui (Button, Input; Lucide icons)
  *   - --lb-* design tokens only; no raw rounded-[Npx] classes
  *   - No import from page.tsx, layout stylesheet, @letbuyy/api-client, @supabase
  *   - No unsafe inner HTML injection
  */
 
 import { useCallback, useId, useState, type ChangeEvent } from 'react'
-import { Button, Input, MaterialIcon, useToast } from '@letbuyy/ui'
+import { Images, LoaderCircle, Upload, X } from 'lucide-react'
+import { Button, Input, useToast } from '@letbuyy/ui'
 import { isUnsafeUrl } from '@/lib/theme-schemas'
 import { MediaLibrary } from './MediaLibrary'
 import styles from './controls.module.css'
@@ -152,7 +153,7 @@ export function ImagePickerControl({
                                 title="Remove image"
                                 aria-label={`Remove ${label} image`}
                             >
-                                <MaterialIcon name="close" size={14} />
+                                <X  size={14} aria-hidden="true" />
                             </Button>
                         </div>
                     ) : null}
@@ -173,7 +174,7 @@ export function ImagePickerControl({
                     <label
                         className={`te-field-upload-btn ${isUploading ? 'te-field-upload-btn--busy' : ''}`}
                     >
-                        <MaterialIcon name={isUploading ? 'hourglass_top' : 'cloud_upload'} size={16} />
+                        {isUploading ? <LoaderCircle size={16} aria-hidden="true" /> : <Upload size={16} aria-hidden="true" />}
                         {isUploading ? 'Uploading...' : 'Upload image'}
                         <Input
                             unstyled
@@ -195,7 +196,7 @@ export function ImagePickerControl({
                             onClick={() => setIsLibraryOpen(true)}
                             aria-label={`Browse media library for ${label}`}
                         >
-                            <MaterialIcon name="photo_library" size={15} aria-hidden />
+                            <Images size={15} aria-hidden />
                             Browse library
                         </Button>
                     ) : null}

@@ -1,0 +1,14 @@
+{
+  "status": "ROOT_PENDING_NOT_A_GRANT",
+  "upSha256": "f17f659b8d037c34f02b9cc1cda912ede406bda7950f99310ebae5ca77c61171",
+  "downSha256": "b66f348b56f8f45c60eacf1ba63e1f10177a2be6c0e9d33eb829649838d6a73e",
+  "predecessor391": {
+    "upPath": null,
+    "downPath": null,
+    "upSha256": null,
+    "downSha256": null,
+    "functionSignature": null,
+    "prosrcMd5": null
+  },
+  "instruction": "Root completes/writes admission.json only after actual391pair emission/exactacceptance and392 review. This template is not executable admission."
+}

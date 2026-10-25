@@ -1,0 +1,35 @@
+GUARD/SOURCE MODEL ONLY: actual route functions and canonical query guard; no mounted worker, Postgres or native result.
+TAP version 13
+# Subtest: actual sealed03 reentry function through canonical guard refuses exact tenant/cart-scoped model
+ok 1 - actual sealed03 reentry function through canonical guard refuses exact tenant/cart-scoped model
+  ---
+  duration_ms: 25.077834
+  type: 'test'
+  ...
+# Subtest: actual sealed03 committed COD receipt lookup through canonical guard refuses exact tenant/order-scoped model
+ok 2 - actual sealed03 committed COD receipt lookup through canonical guard refuses exact tenant/order-scoped model
+  ---
+  duration_ms: 4.381417
+  type: 'test'
+  ...
+# Subtest: actual actualMain08 reentry function through canonical guard accepts exact tenant/cart-scoped model
+ok 3 - actual actualMain08 reentry function through canonical guard accepts exact tenant/cart-scoped model
+  ---
+  duration_ms: 5.75525
+  type: 'test'
+  ...
+# Subtest: actual actualMain08 committed COD receipt lookup through canonical guard accepts exact tenant/order-scoped model
+ok 4 - actual actualMain08 committed COD receipt lookup through canonical guard accepts exact tenant/order-scoped model
+  ---
+  duration_ms: 6.384792
+  type: 'test'
+  ...
+1..4
+# tests 4
+# suites 0
+# pass 4
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 45.737083

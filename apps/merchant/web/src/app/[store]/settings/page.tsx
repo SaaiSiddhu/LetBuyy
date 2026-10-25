@@ -1,9 +1,11 @@
 import Link from 'next/link'
 import {
     AppWindow,
-    CheckCircle2,
+    Badge,
+    Card,
+    PageHeader,
+    Section,
     ChevronRight,
-    Circle,
     Globe,
     IndianRupee,
     Rocket,
@@ -81,26 +83,13 @@ export default async function SettingsDashboardPage({ params }: PageProps) {
         <div className="settings-dashboard">
 
             {/* ── Hero ── */}
-            <div className="settings-dashboard-hero">
-                <p className="settings-dashboard-hero-eyebrow">Store setup</p>
-                <h1 className="settings-dashboard-hero-title">Dashboard</h1>
-                <p className="settings-dashboard-hero-desc">
-                    Configure every aspect of your store — from payments and shipping to your
-                    custom domain and team. Use this guide to get ready for your first sale.
-                </p>
+            <Card className="settings-dashboard-hero">
+                <PageHeader identity="settings" recipe="settings" title="Dashboard" showIcon={false} description="Configure every aspect of your store — from payments and shipping to your custom domain and team. Use this guide to get ready for your first sale." showDescription />
                 <div className="settings-dashboard-hero-stats">
-                    <span className="settings-dashboard-hero-stat settings-dashboard-hero-stat--available">
-                        <CheckCircle2 className="letbuyy-icon" aria-hidden="true" />
-                        {availableCount} available now
-                    </span>
-                    {pendingCount > 0 && (
-                        <span className="settings-dashboard-hero-stat settings-dashboard-hero-stat--pending">
-                            <Circle className="letbuyy-icon" aria-hidden="true" />
-                            {pendingCount} coming soon
-                        </span>
-                    )}
+                    <Badge label={`${availableCount} available now`} variant="success" />
+                    {pendingCount > 0 && <Badge label={`${pendingCount} coming soon`} variant="warning" />}
                 </div>
-            </div>
+            </Card>
 
             {/* ── Setup phases grid ── */}
             <div className="settings-dashboard-phases">
@@ -114,23 +103,16 @@ export default async function SettingsDashboardPage({ params }: PageProps) {
                     const PhaseIcon = phase.Icon
 
                     return (
-                        <div
+                        <Card
                             key={phase.id}
                             className={`settings-dashboard-phase${phase.wide ? ' settings-dashboard-phase--wide' : ''}`}
                         >
-                            {/* Phase card header */}
-                            <div className="settings-dashboard-phase-header">
-                                <div className="settings-dashboard-phase-icon">
-                                    <PhaseIcon className="letbuyy-icon" aria-hidden="true" />
-                                </div>
-                                <div className="settings-dashboard-phase-meta">
-                                    <div className="settings-dashboard-phase-title">{phase.title}</div>
-                                    <div className="settings-dashboard-phase-subdesc">{phase.description}</div>
-                                </div>
-                                <span className={`settings-dashboard-phase-count settings-dashboard-phase-count--${allReady ? 'full' : 'partial'}`}>
-                                    {phaseAvailable}/{phaseItems.length}
+                            <Section title={phase.title} description={phase.description} action={
+                                <span className="inline-flex items-center gap-[var(--lb-space-2)]">
+                                    <span className="settings-dashboard-phase-icon"><PhaseIcon className="letbuyy-icon" aria-hidden="true" /></span>
+                                    <Badge aria-label={`${phaseAvailable} of ${phaseItems.length} settings available`} label={`${phaseAvailable}/${phaseItems.length}`} variant={allReady ? 'success' : 'warning'} />
                                 </span>
-                            </div>
+                            }>{null}</Section>
 
                             {/* Task rows */}
                             {phaseItems.map((item) => {
@@ -169,7 +151,7 @@ export default async function SettingsDashboardPage({ params }: PageProps) {
                                     </Link>
                                 )
                             })}
-                        </div>
+                        </Card>
                     )
                 })}
             </div>

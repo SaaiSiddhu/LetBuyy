@@ -1,0 +1,25 @@
+- heading [level=1]: Policies
+- heading "Policies" [level=1]
+- heading "Return and cancellation rules" [level=2]:
+- link "Add rule":
+- link "Default rules No rules set":
+- heading "Written policies" [level=2]:
+- button "More actions":
+- link "Return and refund policy":
+- link "Privacy policy":
+- link "Terms of service":
+- link "Shipping policy":
+- link "Contact information":
+- link "Legal notice":
+- paragraph:
+- link "Learn more":
+- status
+- status
+- status
+- paragraph
+- button "Close" [disabled]:
+- textbox "Work with Sidekick"
+- button "Add files and more":
+- button "Voice":
+- button "Open Sidekick":
+- status

@@ -1,0 +1,28 @@
+{
+  "responseSha256": "f2f89ad021e7c89c3b35b48647a4100089f6ba5c4c8cf43cc2d5e88369379235",
+  "sourceFileMode": "0o600",
+  "exactPayload": "</script><script>fixtureAttack()</script>",
+  "rawExecutablePayloadPresent": false,
+  "searchInputAttributes": [
+    {
+      "type": "search",
+      "decodedValue": null,
+      "exactHtmlEscapedPayloadInRawTag": false
+    },
+    {
+      "type": "hidden",
+      "decodedValue": "</script><script>fixtureAttack()</script>",
+      "exactHtmlEscapedPayloadInRawTag": true
+    },
+    {
+      "type": "search",
+      "decodedValue": null,
+      "exactHtmlEscapedPayloadInRawTag": false
+    }
+  ],
+  "standaloneProbeScriptNodes": 0,
+  "classification": "ACTUAL_CACHED_PUBLIC_SSR_INDEPENDENT_PARSE_NO_NETWORK_OR_BROWSER_REQUEST",
+  "globalAttributeRemovalClaim": false,
+  "losslessQueryRoundtripClaim": false,
+  "http400Claim": false
+}

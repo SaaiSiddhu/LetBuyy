@@ -1,0 +1,186 @@
+{
+  "recordedAt": "2026-10-23T19:14:36.139971+00:00",
+  "status": "SOURCE_RELEASED_FOR_ROOT_REVIEW_CONTROLLED_RUNTIME_RETEST_REQUIRED",
+  "rootLease": "Canonical first-value axis addition only; existing shared form/state and focused tests. No live runtime replacement.",
+  "files": [
+    {
+      "path": "apps/merchant/web/src/lib/product-form-state.ts",
+      "beforeSha256": "23ff59003b3297384a8de416ea08edfb5923cf95dfbd6fa7ab93e0b0455ec120",
+      "sha256": "bebce783d3bd28990ac691a180f5ef85d60de14d76021a3c4be04daa43920af3",
+      "bytes": 26690
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/products/new/page.tsx",
+      "beforeSha256": "1a99ded9a1e0dbf98fdf520af6c3685ad9ee3d46d2137a9e0d38e5b1e12c0b20",
+      "sha256": "6963ac68ee0e4eb76704372dd65d46742efdcc9485157ee9ad2a509b365857c4",
+      "bytes": 87358
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/product-conflict.test.tsx",
+      "beforeSha256": "b95d0d9be33bbca45467084766369ed9a0a4f616469733a463e2802e1b50e8e6",
+      "sha256": "39f39b7f5737da6456e8c7830fb95b80a0f66a27571e5a265ee4569d3ec9df7e",
+      "bytes": 87233
+    },
+    {
+      "path": "apps/merchant/web/src/lib/product-form-state.option-axis.test.ts",
+      "beforeSha256": null,
+      "sha256": "8932cff89ab28da0ad70b4c465a38e071577523ab8c06026ee1eca2252b658c5",
+      "bytes": 9572
+    }
+  ],
+  "validation": {
+    "redPure": {
+      "tests": 1,
+      "pass": 0,
+      "fail": 1,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "exitCode": 1,
+      "evidence": "red-pure.tap"
+    },
+    "redMounted": {
+      "tests": 1,
+      "pass": 0,
+      "fail": 1,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "exitCode": 1,
+      "evidence": "red-mounted.tap"
+    },
+    "focusedPure": {
+      "tests": 9,
+      "pass": 9,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    "focusedMounted": {
+      "tests": 3,
+      "pass": 3,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    "fullSharedRegression": {
+      "tests": 107,
+      "pass": 107,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "previousPass": 95,
+      "newTests": 12,
+      "exitCode": 0,
+      "evidence": "shared-regression.tap"
+    },
+    "merchantNoEmit": {
+      "exitCode": 0,
+      "runs": 2,
+      "initialTestHarnessErrorsPreserved": "merchant-noemit-first.log",
+      "evidence": "merchant-noemit.log"
+    },
+    "scopedEslint": {
+      "exitCode": 0,
+      "errors": 0,
+      "warnings": 11,
+      "newWarningSignatures": 0,
+      "baseline": "baseline-eslint.json",
+      "evidence": "scoped-eslint.json"
+    },
+    "unchangedGuardRenameSerializerRecoveryBodies": true,
+    "protectedSourcePinsExact": true,
+    "newTrailingWhitespace": 0
+  },
+  "algorithmScope": {
+    "newAxis": "One trailing empty axis; explicit first value maps existing rows1to1",
+    "sparseRowsAndOrderRetained": true,
+    "factsInferredFromLabels": false,
+    "oldFactsOrIdsCopiedToNewRows": false,
+    "apiSchemaSqlChanges": false,
+    "rawMetadataA483Preserved": true
+  },
+  "scope": {
+    "sourceLeaseReleased": true,
+    "currentF607Changed": false,
+    "candidateCopied": false,
+    "builds": 0,
+    "runtimeStarts": 0,
+    "browserActions": 0,
+    "apiWrites": 0,
+    "databaseRuns": 0,
+    "osProbes": 0,
+    "privateStateOrKeyRead": false
+  },
+  "installedCases": {
+    "PASS": 0,
+    "FAIL": 0,
+    "NOT_RUN": 16
+  },
+  "next": "Root admission and separately controlled runtime normal UI Save/fullreload/canonical readback; no external f607 replacement.",
+  "outputs": [
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/option-axis-addition/REPORT.md",
+      "sha256": "ed6930bbb9553f1459fddbcc6935b1fd7a314508ebad30bba721a5f9846b5179"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/option-axis-addition/before.json",
+      "sha256": "8b98868b9e0c658bb0a8aa0008dd3a0914832f8c551631011b0455ad03b24267"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/option-axis-addition/source.patch",
+      "sha256": "465c574f622dd9c856b2804de619e14b03008f5684359638b2501e7117ed424c"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/option-axis-addition/red-pure.tap",
+      "sha256": "51de59cc1b0673c2c7d0c5dc6c9b084b865c111ea5113a32c3fbdbcf148fff2d"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/option-axis-addition/red-mounted.tap",
+      "sha256": "597fbb1ef56beb4a4bb6211aadc4c53d37e82d45f5c555fa2fc6231e836436aa"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/option-axis-addition/green-first-pure.tap",
+      "sha256": "68e1cbc67a798143c0332c60617b197fa19d3c47628a95a46a863dfb8dfddd7e"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/option-axis-addition/green-first-mounted.tap",
+      "sha256": "f7576ed0988593889e6e1dc2456f9c897acedb9765f2fb3249ae3b00a9e392d6"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/option-axis-addition/focused-pure.tap",
+      "sha256": "d91a0899c628631c714880f1bddf8ae972d6196104ca0618ff66f727009c8cd2"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/option-axis-addition/focused-mounted.tap",
+      "sha256": "e59aa2eb5a839ebb191aaeac34881fa03a8e9859a6ca98d7759e04806fef8062"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/option-axis-addition/shared-regression-first.tap",
+      "sha256": "cea5d9d86ebf14fd73b0232691824bb0b55777aea634b4087b61e917ba6e0d85"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/option-axis-addition/shared-regression.tap",
+      "sha256": "ead020f4cce7a0637054a34c52ab477f3f4b095999278a0ba4bc3bfb12159508"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/option-axis-addition/merchant-noemit-first.log",
+      "sha256": "1485edce83419137b6399cdfc3ee94742bb39a7b286500cd52ece7f169717b6b"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/option-axis-addition/merchant-noemit.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/option-axis-addition/baseline-eslint.json",
+      "sha256": "3ea5d5a54df6776c29cf93b53be05fa1a607495d0a5346c27280684a0ca55e55"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/option-axis-addition/scoped-eslint.json",
+      "sha256": "c4965357003fcbfd5e0972d2ae4963e60fc0f2910bbf47bb42886d422a3c17ab"
+    }
+  ]
+}

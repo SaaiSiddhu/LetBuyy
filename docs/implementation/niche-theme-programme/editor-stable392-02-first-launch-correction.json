@@ -1,0 +1,29 @@
+{
+  "recordedAt": "2026-10-24T02:21:14.757394+00:00",
+  "status": "PRE_APPLICATION_STARTUP_ATTEMPT_FAILED_CLEANUP_EMPTY_RETRY_EXPLICIT_GATEWAY_KIND",
+  "runId": "6d9ec520ad66",
+  "sourceCandidate": "/private/tmp/theme-editor-stable392-20261024-02",
+  "sourceChanged": false,
+  "cause": "Manual .ts entry is outside *.test.ts discovery; --gateway-db selects suite sets but does not override explicit path kind. Omitted --kind gateway-db classified it postgres/plain node, causing extensionless TypeScript module resolution failure before fixture code.",
+  "actualKind": "postgres",
+  "actualTests": {
+    "pass": 0,
+    "fail": 1
+  },
+  "applicationStarted": false,
+  "stateCreated": false,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "reaped": [],
+  "rawResult": {
+    "path": "/private/tmp/theme-editor-stable392-20261024-02-runner.json",
+    "sha256": "dbe88649c355749ff86b41c6295d70f1edd90f7a1225e2d36cc303a27fd5a132"
+  },
+  "correction": "Use existing documented-source --kind gateway-db on the same explicit suite. No test loader/guard/source edits. Preserve original logs and use separate retry paths."
+}

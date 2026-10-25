@@ -1,0 +1,16 @@
+{
+  "classification": "SERIAL_SOURCE_CONTRACT_BATCH_NOT_THEME_CERTIFICATION",
+  "inputs": [
+    {
+      "identity": {
+        "slug": "letbuyy-craft",
+        "version": "2.0.0",
+        "bundleSha256": "2a652a7435f8a8a6ff699f02db829ce1ae1399d5b7609471d9e7192eb13ccd3d"
+      },
+      "pass": 47,
+      "fail": 0,
+      "scope": "SOURCE_DATA_CONTRACT_ONLY_NOT_UI_RESOURCE_OR_INSTALLED_ACCEPTANCE",
+      "sourcePinsExact": true
+    }
+  ]
+}

@@ -1,0 +1,138 @@
+{
+  "classification": "PREPARED_AWAITING_ROOT_GET_RELEASE_AND_EDITOR_PUBLISHED_CIRCUIT_CONTEXT",
+  "recordedAt": "2026-10-23T17:49:42.738Z",
+  "startupReceipt": {
+    "path": "docs/implementation/niche-theme-programme/editor-latest392-startup-admission.json",
+    "sha256": "f88fb010e7ded3a924376ab33ef3790468aad786f6f41c0d7bf341016e8cf6ae"
+  },
+  "publicBindings": {
+    "runId": "f6074d90e894",
+    "site": {
+      "siteId": "f83e5e3d-1474-4378-b99b-55f8f4475b9f",
+      "subdomain": "syn-threadline-ui-33be9d94"
+    },
+    "origins": {
+      "apiOrigin": "http://127.0.0.1:62083",
+      "commerceOrigin": "http://syn-threadline-ui-33be9d94.localhost:62076",
+      "checkoutOrigin": "https://checkout.localhost:62082"
+    },
+    "electronics": {
+      "id": "8a85a44b-cb98-4b1b-a94d-2c2c395d6c1b",
+      "productVersionAtStartup": 3,
+      "variantIds": [],
+      "nameAtStartup": "Circuit lifecycle hub",
+      "priceAtStartup": 1200
+    },
+    "collection": {
+      "id": "270aa77e-0162-4b7d-a074-57712ab96e74",
+      "storeId": "f83e5e3d-1474-4378-b99b-55f8f4475b9f",
+      "membershipVersionAtStartup": 3,
+      "productIdsAtStartup": [
+        "8a85a44b-cb98-4b1b-a94d-2c2c395d6c1b"
+      ]
+    }
+  },
+  "publicBindingsSha256": "9178fa8fe87559a181713210aef05b0b79eea82af612c37fc1bc0d9dce1733e2",
+  "sourceInputs": [
+    {
+      "path": "/private/tmp/theme-editor-candidate-20261023-latest392-manualtls01/packages/commerce-core/src/storefront-discovery.ts",
+      "sha256": "c8de3871a998df011de12791db90c868139903b5c84afb211d9e9de3a1997ff1"
+    },
+    {
+      "path": "/private/tmp/theme-editor-candidate-20261023-latest392-manualtls01/packages/commerce-core/src/circuit-facts.ts",
+      "sha256": "b95d4f2bc7c27bb8ebd5041d6dfb7fa42a6a9066d29e5a218e5b6f8daea0bbe6"
+    },
+    {
+      "path": "/private/tmp/theme-editor-candidate-20261023-latest392-manualtls01/services/api-gateway/src/__tests__/owned-db/threadline-qa-fixture.ts",
+      "sha256": "8e0880ac5f1b699d99faa4e4a47b9b6966d79a984858807a51b2d04eee65f997"
+    }
+  ],
+  "suppliedSearchTerms": {
+    "model": "Synthetic H1",
+    "connectorKinds": [
+      "usb-a",
+      "usb-c"
+    ],
+    "provenance": "Validated supplied startup fixture source; current public DTO verification is pending the allocated GETs"
+  },
+  "collectionScope": "Actual one-hub startup collection; does not represent the uncreated planned CircuitAll4 cohort",
+  "queries": [
+    {
+      "id": "name-positive",
+      "query": {
+        "page": 1,
+        "limit": 20,
+        "search": "Circuit lifecycle hub",
+        "category": "Accessories",
+        "country_of_origin": "India",
+        "sort": "display_order",
+        "collection_id": "270aa77e-0162-4b7d-a074-57712ab96e74"
+      },
+      "apiUrl": "http://127.0.0.1:62083/v1/storefront/syn-threadline-ui-33be9d94/products?limit=20&search=Circuit+lifecycle+hub&category=Accessories&country_of_origin=India&sort=display_order&collection_id=270aa77e-0162-4b7d-a074-57712ab96e74",
+      "uiUrl": "http://syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94/search?limit=20&search=Circuit+lifecycle+hub&category=Accessories&country_of_origin=India&sort=display_order&collection_id=270aa77e-0162-4b7d-a074-57712ab96e74",
+      "expectedProductIds": [
+        "8a85a44b-cb98-4b1b-a94d-2c2c395d6c1b"
+      ],
+      "expectedTotal": 1
+    },
+    {
+      "id": "model",
+      "query": {
+        "page": 1,
+        "limit": 20,
+        "search": "Synthetic H1",
+        "category": "Accessories",
+        "country_of_origin": "India",
+        "sort": "display_order",
+        "collection_id": "270aa77e-0162-4b7d-a074-57712ab96e74"
+      },
+      "apiUrl": "http://127.0.0.1:62083/v1/storefront/syn-threadline-ui-33be9d94/products?limit=20&search=Synthetic+H1&category=Accessories&country_of_origin=India&sort=display_order&collection_id=270aa77e-0162-4b7d-a074-57712ab96e74",
+      "uiUrl": "http://syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94/search?limit=20&search=Synthetic+H1&category=Accessories&country_of_origin=India&sort=display_order&collection_id=270aa77e-0162-4b7d-a074-57712ab96e74",
+      "expectedProductIds": [
+        "8a85a44b-cb98-4b1b-a94d-2c2c395d6c1b"
+      ],
+      "expectedTotal": 1
+    },
+    {
+      "id": "connector-usb-c",
+      "query": {
+        "page": 1,
+        "limit": 20,
+        "search": "usb-c",
+        "category": "Accessories",
+        "country_of_origin": "India",
+        "sort": "display_order",
+        "collection_id": "270aa77e-0162-4b7d-a074-57712ab96e74"
+      },
+      "apiUrl": "http://127.0.0.1:62083/v1/storefront/syn-threadline-ui-33be9d94/products?limit=20&search=usb-c&category=Accessories&country_of_origin=India&sort=display_order&collection_id=270aa77e-0162-4b7d-a074-57712ab96e74",
+      "uiUrl": "http://syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94/search?limit=20&search=usb-c&category=Accessories&country_of_origin=India&sort=display_order&collection_id=270aa77e-0162-4b7d-a074-57712ab96e74",
+      "expectedProductIds": [
+        "8a85a44b-cb98-4b1b-a94d-2c2c395d6c1b"
+      ],
+      "expectedTotal": 1
+    },
+    {
+      "id": "connector-usb-a",
+      "query": {
+        "page": 1,
+        "limit": 20,
+        "search": "usb-a",
+        "category": "Accessories",
+        "country_of_origin": "India",
+        "sort": "display_order",
+        "collection_id": "270aa77e-0162-4b7d-a074-57712ab96e74"
+      },
+      "apiUrl": "http://127.0.0.1:62083/v1/storefront/syn-threadline-ui-33be9d94/products?limit=20&search=usb-a&category=Accessories&country_of_origin=India&sort=display_order&collection_id=270aa77e-0162-4b7d-a074-57712ab96e74",
+      "uiUrl": "http://syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94/search?limit=20&search=usb-a&category=Accessories&country_of_origin=India&sort=display_order&collection_id=270aa77e-0162-4b7d-a074-57712ab96e74",
+      "expectedProductIds": [
+        "8a85a44b-cb98-4b1b-a94d-2c2c395d6c1b"
+      ],
+      "expectedTotal": 1
+    }
+  ],
+  "maxFutureHttpGets": 4,
+  "httpGetsExecuted": 0,
+  "publishedCircuitContext": null,
+  "fullCaseAcceptanceClaimed": false,
+  "stateCredentialsSerialized": false
+}

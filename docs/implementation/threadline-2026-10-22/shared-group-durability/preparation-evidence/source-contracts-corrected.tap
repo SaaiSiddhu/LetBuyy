@@ -1,0 +1,40 @@
+TAP version 13
+# Subtest: UP changes only explicit incoming global groups; qualified384 remains byte-identical after removing insertion
+ok 1 - UP changes only explicit incoming global groups; qualified384 remains byte-identical after removing insertion
+  ---
+  duration_ms: 0.964375
+  type: 'test'
+  ...
+# Subtest: selected page, nonselected draft/page/alternate preservation and global revision/idempotency/security writes stay exact
+ok 2 - selected page, nonselected draft/page/alternate preservation and global revision/idempotency/security writes stay exact
+  ---
+  duration_ms: 0.154792
+  type: 'test'
+  ...
+# Subtest: DOWN is the exact qualified384 definition and preserves the complete schema/constraint/data surface
+ok 3 - DOWN is the exact qualified384 definition and preserves the complete schema/constraint/data surface
+  ---
+  duration_ms: 0.165
+  type: 'test'
+  ...
+# Subtest: both legs conserve raw default-AST positions and every non-body profile/catalog dependency
+ok 4 - both legs conserve raw default-AST positions and every non-body profile/catalog dependency
+  ---
+  duration_ms: 0.158709
+  type: 'test'
+  ...
+# Subtest: both legs admit owner grantors and effective service-role privilege, reject inherited untrusted execution, retain native provider fence
+ok 5 - both legs admit owner grantors and effective service-role privilege, reject inherited untrusted execution, retain native provider fence
+  ---
+  duration_ms: 0.249083
+  type: 'test'
+  ...
+1..5
+# tests 5
+# suites 0
+# pass 5
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 86.287625

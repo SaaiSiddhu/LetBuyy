@@ -4,13 +4,13 @@ import { redirect } from 'next/navigation';
 import { Button, Input, Package, Globe, Palette, ExternalLink, CheckCircle, AlertCircle } from '@letbuyy/ui';
 import { ThemeService } from '@/lib/theme-service';
 import { cn } from '@/lib/utils';
-import { ThemeInstallFeedbackToast } from '@/components/theme-action-feedback';
-import { getAdminUrl } from '@/lib/public-urls';
+import { buildInstalledStoreUrl, getAdminUrl } from '@/lib/public-urls';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = { title: 'My Installations' };
 
 const STATUS_CONFIG: Record<string, { label: string; icon: typeof CheckCircle; className: string }> = {
+    installed: { label: 'In library', icon: Package, className: 'text-text-muted bg-surface border-border' },
     active: { label: 'Active', icon: CheckCircle, className: 'text-success bg-success/15 border-success/20' },
     update_available: { label: 'Update pending', icon: AlertCircle, className: 'text-warning bg-warning/15 border-warning/20' },
 };
@@ -28,6 +28,7 @@ type InstallationRecord = Record<string, unknown> & {
     store_id?: string;
     themes: ThemeRecord;
     store_url: string;
+    store_href: string;
     store_slug?: string;
     status: string;
     version_installed?: string;
@@ -61,22 +62,8 @@ async function rollbackReleaseAction(formData: FormData) {
     redirect(`/dashboard/installations?action=rolled-back&installed=${encodeURIComponent(slug)}`);
 }
 
-async function applyThemeUpdateAction(formData: FormData) {
-    'use server';
-
-    const slug = formStringValue(formData.get('theme'));
-    const storeId = formStringValue(formData.get('store_id'));
-    if (!slug || !storeId) {
-        redirect('/dashboard/installations?action=update-missing');
-    }
-
-    await ThemeService.installTheme(slug, storeId, { marketplace_update: true });
-    redirect(`/dashboard/installations?action=updated&installed=${encodeURIComponent(slug)}`);
-}
-
 export default async function InstallationsPage({ searchParams }: InstallationsPageProps) {
     const params = await searchParams;
-    const installedSlug = typeof params?.installed === 'string' ? params.installed : '';
     const installations: InstallationRecord[] = await Promise.all((await ThemeService.getUserInstallations()).map(async (inst: Record<string, unknown>) => {
         const site = (inst.sites && typeof inst.sites === 'object' ? inst.sites : {}) as Record<string, unknown>;
         const theme = (inst.themes && typeof inst.themes === 'object' ? inst.themes : {}) as ThemeRecord;
@@ -84,7 +71,8 @@ export default async function InstallationsPage({ searchParams }: InstallationsP
         const subdomain = typeof site.subdomain === 'string' ? site.subdomain : 'unknown';
         const versionInstalled = typeof inst.version_installed === 'string' ? inst.version_installed : undefined;
         const installedAt = typeof inst.installed_at === 'string' ? inst.installed_at : undefined;
-        const storeHost = customDomain || `${subdomain}.letbuyy.com`;
+        const storeHref = buildInstalledStoreUrl(subdomain, customDomain);
+        const storeHost = storeHref.replace(/^https?:\/\//, '');
         const storeId = typeof inst.store_id === 'string' ? inst.store_id : '';
         const slug = typeof theme.slug === 'string' ? theme.slug : '';
         const releases = storeId && slug ? await ThemeService.getThemeReleases(slug, storeId) : [];
@@ -94,10 +82,11 @@ export default async function InstallationsPage({ searchParams }: InstallationsP
             store_id: storeId,
             themes: theme,
             store_url: storeHost,
+            store_href: storeHref,
             store_slug: subdomain,
             status: theme.version && versionInstalled && versionInstalled !== theme.version
                 ? 'update_available'
-                : 'active',
+                : inst.is_active === true ? 'active' : 'installed',
             version_installed: versionInstalled,
             installed_at: installedAt,
             releases,
@@ -106,15 +95,9 @@ export default async function InstallationsPage({ searchParams }: InstallationsP
 
     return (
         <div>
-            <ThemeInstallFeedbackToast installed={installedSlug} themeName={installedSlug} />
             {params?.action === 'rolled-back' && (
                 <div className="mb-4 rounded-lg border border-success/25 bg-success/10 px-4 py-3 text-sm text-success">
                     Theme release rolled back.
-                </div>
-            )}
-            {params?.action === 'updated' && (
-                <div className="mb-4 rounded-lg border border-success/25 bg-success/10 px-4 py-3 text-sm text-success">
-                    Theme update applied as a new release.
                 </div>
             )}
             <div className="mb-8">
@@ -137,14 +120,13 @@ export default async function InstallationsPage({ searchParams }: InstallationsP
                         const theme = inst.themes;
                         const statusConfig = STATUS_CONFIG[inst.status] || STATUS_CONFIG.active;
                         const StatusIcon = statusConfig.icon;
-                        const themeEditorId = theme.id || theme.slug;
-                        const hasEditorLink = Boolean(themeEditorId && inst.store_slug);
+                        const hasLibraryLink = Boolean(inst.store_slug);
                         const slug = typeof theme.slug === 'string' ? theme.slug : '';
                         const storeId = typeof inst.store_id === 'string' ? inst.store_id : '';
                         const rollbackRelease = (inst.releases || []).find((release) => release.is_current !== true && typeof release.id === 'string');
                         const currentRelease = (inst.releases || []).find((release) => release.is_current === true && typeof release.id === 'string');
-                        const editorHref = hasEditorLink
-                            ? getAdminUrl(`/${inst.store_slug}/online-store/themes/${themeEditorId}/editor`)
+                        const libraryHref = hasLibraryLink
+                            ? getAdminUrl(`/${encodeURIComponent(inst.store_slug!)}/online-store/themes`)
                             : '/support';
 
                         return (
@@ -187,21 +169,15 @@ export default async function InstallationsPage({ searchParams }: InstallationsP
                                             </span>
                                             <span className="flex items-center gap-1">
                                                 <Package className="w-3 h-3" />
-                                                v{inst.version_installed || theme.version || '1.0'}
+                                                {inst.version_installed ? `v${inst.version_installed}` : 'Installed version unavailable'}
                                             </span>
                                         </div>
                                     </div>
 
                                     {/* Actions */}
                                     <div className="flex items-center gap-2 flex-shrink-0">
-                                        {inst.status === 'update_available' && slug && storeId && (
-                                            <form action={applyThemeUpdateAction}>
-                                                <Input unstyled type="hidden" name="theme" value={slug} />
-                                                <Input unstyled type="hidden" name="store_id" value={storeId} />
-                                                <Button unstyled type="submit" className="btn-secondary text-xs py-1.5 px-3">
-                                                    Apply update
-                                                </Button>
-                                            </form>
+                                        {inst.status === 'update_available' && hasLibraryLink && (
+                                            <Link href={libraryHref} className="btn-secondary text-xs py-1.5 px-3">Review update</Link>
                                         )}
                                         {rollbackRelease && currentRelease && slug && storeId && (
                                             <form action={rollbackReleaseAction}>
@@ -215,14 +191,14 @@ export default async function InstallationsPage({ searchParams }: InstallationsP
                                             </form>
                                         )}
                                         <Link
-                                            href={editorHref}
+                                            href={libraryHref}
                                             className="btn-primary text-xs py-1.5 px-3 flex items-center gap-1"
                                         >
                                             <Palette className="w-3 h-3" />
-                                            {hasEditorLink ? 'Open editor' : 'Editor unavailable'}
+                                            {hasLibraryLink ? 'Open theme library' : 'Store unavailable'}
                                         </Link>
                                         <a
-                                            href={`https://${inst.store_url}`}
+                                            href={inst.store_href}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="btn-secondary text-xs py-1.5 px-3 flex items-center gap-1"

@@ -1,0 +1,302 @@
+Browser tab: 55, Title: "LetBuyy Admin", URL: "http://admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/products/collections".
+1 AXWebArea LetBuyy Admin, URL: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/products/collections
+	2 container
+		3 link Description: LetBuyy dashboard, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/dashboard
+		4 button Search
+		5 button Setup assistant
+		6 button Notifications
+		7 button (collapsed) Description: Switch store, current store Threadline, Secondary Actions: Expand
+			8 text TH
+			9 text Threadline
+	10 container admin-nav-drawer
+		11 container
+			12 container Primary navigation
+				13 content list
+					14 link Description: Home, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/dashboard
+					15 link Description: Orders, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/orders
+					16 container
+						17 link Description: Products, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/products
+						18 button (expanded) Description: Toggle Products section, Secondary Actions: Collapse
+						19 content list
+							20 link Description: Add product, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/products/new
+							21 link Description: Collections, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/products/collections
+							22 link Description: Smart collections, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/products/smart-collections
+							23 link Description: Categories, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/categories
+							24 link Description: Export and import, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/export
+					25 container
+						26 link Description: Inventory, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/products/inventory
+						27 button (collapsed) Description: Toggle Inventory section, Secondary Actions: Expand
+					28 container
+						29 link Description: Purchasing, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/products/purchase-orders
+						30 button (collapsed) Description: Toggle Purchasing section, Secondary Actions: Expand
+					31 container
+						32 link Description: Customers, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/customers
+						33 button (collapsed) Description: Toggle Customers section, Secondary Actions: Expand
+					34 container
+						35 link Description: Money, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/settings/billing
+						36 button (collapsed) Description: Toggle Money section, Secondary Actions: Expand
+					37 container
+						38 link Description: Marketing, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/coupons
+						39 button (collapsed) Description: Toggle Marketing section, Secondary Actions: Expand
+					40 container
+						41 link Description: Content, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/pages
+						42 button (collapsed) Description: Toggle Content section, Secondary Actions: Expand
+					43 link Description: Analytics, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/analytics
+			44 text Sales channels
+			45 container Sales channels
+				46 content list
+					47 container
+						48 link Description: Online Store, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/online-store
+						49 button (collapsed) Description: Toggle Online Store section, Secondary Actions: Expand
+			50 text Apps
+			51 container Apps
+				52 content list
+					53 link Description: Add, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/apps
+		54 container Settings navigation
+			55 content list
+				56 link Description: Settings, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/settings
+	57 container admin-page-scroll
+		58 container
+			59 heading Collections, Value: 1
+				60 text Collections
+			61 button Refresh
+			62 button New collection
+		63 container
+			64 heading Collection list, Value: 2
+				65 text Collection list
+			66 text Review product groupings and their active storefront status. 19 total
+			67 table
+				68 row
+					69 cell
+						70 text Collection
+					71 cell
+						72 text Products
+					73 cell
+						74 text Status
+				75 row
+					76 cell
+						77 container Trailmark fixture equipment
+							78 text TF
+						79 text Trailmark fixture equipment
+						80 text Synthetic owned Trailmark lifecycle collection.
+					81 cell
+						82 text 0 products
+					83 cell
+						84 text Active
+					85 cell
+						86 button Manage products
+				87 row
+					88 cell
+						89 container Circuit lifecycle intentional empty
+							90 text CL
+						91 text Circuit lifecycle intentional empty
+						92 text Known empty collection; must not broaden to all products.
+					93 cell
+						94 text 0 products
+					95 cell
+						96 text Active
+					97 cell
+						98 button Manage products
+				99 row
+					100 cell
+						101 container Habitat dimensional controls
+							102 text HD
+						103 text Habitat dimensional controls
+						104 text Synthetic owned Habitat measurement controls only.
+					105 cell
+						106 text 0 products
+					107 cell
+						108 text Active
+					109 cell
+						110 button Manage products
+				111 row
+					112 cell
+						113 container Lifecycle stationery
+							114 text LS
+						115 text Lifecycle stationery
+						116 text Synthetic theme acceptance setup only.
+					117 cell
+						118 text 0 products
+					119 cell
+						120 text Active
+					121 cell
+						122 button Manage products
+				123 row
+					124 cell
+						125 container Lifecycle books
+							126 text LB
+						127 text Lifecycle books
+						128 text Synthetic theme acceptance setup only.
+					129 cell
+						130 text 0 products
+					131 cell
+						132 text Active
+					133 cell
+						134 button Manage products
+				135 row
+					136 cell
+						137 container Lifecycle recreation
+							138 text LR
+						139 text Lifecycle recreation
+						140 text Synthetic theme acceptance setup only.
+					141 cell
+						142 text 0 products
+					143 cell
+						144 text Active
+					145 cell
+						146 button Manage products
+				147 row
+					148 cell
+						149 container Colour
+							150 text C
+						151 text Colour
+						152 text Synthetic theme acceptance setup only.
+					153 cell
+						154 text 0 products
+					155 cell
+						156 text Active
+					157 cell
+						158 button Manage products
+				159 row
+					160 cell
+						161 container Care
+							162 text C
+						163 text Care
+						164 text Synthetic theme acceptance setup only.
+					165 cell
+						166 text 0 products
+					167 cell
+						168 text Active
+					169 cell
+						170 button Manage products
+				171 row
+					172 cell
+						173 container Cleanse
+							174 text C
+						175 text Cleanse
+						176 text Synthetic theme acceptance setup only.
+					177 cell
+						178 text 0 products
+					179 cell
+						180 text Active
+					181 cell
+						182 button Manage products
+				183 row
+					184 cell
+						185 container Lifecycle personalized
+							186 text LP
+						187 text Lifecycle personalized
+						188 text Synthetic theme acceptance setup only.
+					189 cell
+						190 text 0 products
+					191 cell
+						192 text Active
+					193 cell
+						194 button Manage products
+				195 row
+					196 cell
+						197 container Lifecycle gifts
+							198 text LG
+						199 text Lifecycle gifts
+						200 text Synthetic theme acceptance setup only.
+					201 cell
+						202 text 0 products
+					203 cell
+						204 text Active
+					205 cell
+						206 button Manage products
+				207 row
+					208 cell
+						209 container Lifecycle furniture
+							210 text LF
+						211 text Lifecycle furniture
+						212 text Synthetic theme acceptance setup only.
+					213 cell
+						214 text 0 products
+					215 cell
+						216 text Active
+					217 cell
+						218 button Manage products
+				219 row
+					220 cell
+						221 container Lifecycle rice
+							222 text LR
+						223 text Lifecycle rice
+						224 text Synthetic theme acceptance setup only.
+					225 cell
+						226 text 0 products
+					227 cell
+						228 text Active
+					229 cell
+						230 button Manage products
+				231 row
+					232 cell
+						233 container Lifecycle pulses
+							234 text LP
+						235 text Lifecycle pulses
+						236 text Synthetic theme acceptance setup only.
+					237 cell
+						238 text 0 products
+					239 cell
+						240 text Active
+					241 cell
+						242 button Manage products
+				243 row
+					244 cell
+						245 container Lifecycle accessories
+							246 text LA
+						247 text Lifecycle accessories
+						248 text Synthetic theme acceptance setup only.
+					249 cell
+						250 text 0 products
+					251 cell
+						252 text Active
+					253 cell
+						254 button Manage products
+				255 row
+					256 cell
+						257 container Lifecycle activities
+							258 text LA
+						259 text Lifecycle activities
+						260 text Synthetic theme acceptance setup only.
+					261 cell
+						262 text 0 products
+					263 cell
+						264 text Active
+					265 cell
+						266 button Manage products
+				267 row
+					268 cell
+						269 container Easy
+						270 text Easy
+					271 cell
+						272 text 0 products
+					273 cell
+						274 text Active
+					275 cell
+						276 button Manage products
+				277 row
+					278 cell
+						279 container Straight
+						280 text Straight
+					281 cell
+						282 text 0 products
+					283 cell
+						284 text Active
+					285 cell
+						286 button Manage products
+				287 row
+					288 cell
+						289 container Relaxed
+						290 text Relaxed
+					291 cell
+						292 text 0 products
+					293 cell
+						294 text Active
+					295 cell
+						296 button Manage products
+	297 container
+		298 text Collection created Trailmark fixture equipment is ready for product organization.
+		299 button Dismiss notification
+
+The focused UI element is 1 AXWebArea LetBuyy Admin, URL: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/products/collections

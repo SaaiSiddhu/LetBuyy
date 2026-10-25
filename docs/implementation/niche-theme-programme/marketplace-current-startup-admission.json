@@ -1,0 +1,27 @@
+{
+  "recordedAt": "2026-10-23T13:51:59.365479+00:00",
+  "classification": "OWNED_LOCAL_RUNTIME_STARTUP_ACCEPTED_NOT_FINAL_NINE_THEME_V2",
+  "runId": "d4eb85047858",
+  "receipt": "docs/implementation/theme-marketplace-2026-10-23/evidence/current-runtime-startup-lease-release.json",
+  "receiptEvidenceHashes": "Verifiedexact",
+  "independentLiveHealth": [
+    {
+      "name": "catalog",
+      "status": 200,
+      "url": "http://127.0.0.1:59599/v1/themes?limit=50"
+    },
+    {
+      "name": "commerceBuyerSession",
+      "status": 200,
+      "url": "http://127.0.0.1:59596/api/buyer-auth/session"
+    }
+  ],
+  "rootSandboxProbe": "InitialEPERM was localnetwork sandbox denial; exacttwo readonlyloopbackchecks permitted escalationthen200. Notclassifiedasruntimefailure.",
+  "databaseStartupLease": "ReleasedtoThreadlinenative389/390; retainedMarketplaceownfixturepreserved",
+  "notClaimed": [
+    "ninev2installed",
+    "privateAddsuccess",
+    "finalsharedEditorfixture",
+    "buyercheckout/accountacceptance"
+  ]
+}

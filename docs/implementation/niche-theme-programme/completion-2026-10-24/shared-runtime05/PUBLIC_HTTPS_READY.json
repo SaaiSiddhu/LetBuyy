@@ -1,0 +1,25 @@
+{
+  "recordedAt": "2026-10-24T18:41:18.765937+00:00",
+  "runId": "7773182e24de",
+  "publicUrl": "https://theme-e2e-rzp-20261024.letbuyy.com/razorpay",
+  "normalTLSValidation": true,
+  "unsignedWebhookRejected": true,
+  "canonicalReceiver": "http://127.0.0.1:61247/razorpay",
+  "checks": [
+    {
+      "method": "GET",
+      "path": "/razorpay",
+      "status": 404
+    },
+    {
+      "method": "POST",
+      "path": "/razorpay",
+      "status": 400
+    },
+    {
+      "method": "POST",
+      "path": "/unrelated-path",
+      "status": 404
+    }
+  ]
+}

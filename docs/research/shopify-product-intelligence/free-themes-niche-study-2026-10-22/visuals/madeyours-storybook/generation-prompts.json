@@ -1,0 +1,72 @@
+{
+  "theme": "MadeYours",
+  "designVersion": "1.0-design",
+  "date": "2026-10-22",
+  "method": "Built-in image_gen; original bitmap assets only. Native HTML/CSS text and Lucide icons compose the UI.",
+  "cliFallbackUsed": false,
+  "assets": [
+    {
+      "file": "assets/hero.png",
+      "useCase": "product-mockup",
+      "prompt": "Use case: product-mockup\nAsset type: original MadeYours storefront hero photograph\nPrimary request: refined studio product photograph of a blank walnut desktop name block with gently rounded edges, a blank ivory linen notebook and a single slim brass pen, on a pale lavender-grey tabletop. The wood block has a clean unmarked front face intended for text engraving; no engraving and no letters anywhere. Photo only, no graphic, no website UI.\nComposition: landscape 3:2, architectural close-up three-quarter view, wood block prominent in foreground, notebook farther back. Realistic material grain, calm diffuse daylight from left, elegant soft shadows, sharp object detail, restrained craft studio mood.\nConstraints: entirely original objects and composition, no logos, no text, no watermark, no hands, no florals, no extra props. Product proportions believable: 20cm wide, 5cm high, 3cm deep block.",
+      "generatorOutput": "Generated images are saved to /Users/saai_mithra/.codex/generated_images/01a164ba-e017-7b90-9053-efc5357459a6 as /Users/saai_mithra/.codex/generated_images/01a164ba-e017-7b90-9053-efc5357459a6/exec-8d2957c4-0ea1-4871-9c85-b8f6a3940d1d.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+      "inspection": "Generated product shown without branding or text. UI overlays are native illustrative text; authoritative summary is plain text."
+    },
+    {
+      "file": "assets/block.png",
+      "useCase": "product-mockup",
+      "prompt": "Use case: product-mockup\nAsset type: original MadeYours base product catalog photograph\nPrimary request: a single blank walnut desktop name block, gently rounded rectangular edges, 20cm wide by 5cm high by 3cm deep; realistic dark walnut grain. Front broad face completely blank, clean, unengraved. Photo only, no typography, no logos, no interface.\nComposition: square product studio photograph, large centered whole object at a slight three-quarter angle on pale lavender-grey seamless surface, front face fully visible, sufficient margin around all edges, soft natural daylight and elegant small contact shadow. Quiet premium craft stationery shop, entirely original photograph.\nAvoid: engraved letters, words, text, accessories, ruler, hands, watermark.",
+      "generatorOutput": "Generated images are saved to /Users/saai_mithra/.codex/generated_images/01a164ba-e017-7b90-9053-efc5357459a6 as /Users/saai_mithra/.codex/generated_images/01a164ba-e017-7b90-9053-efc5357459a6/exec-ea55d07a-ace2-4116-8311-92c885429d5a.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+      "inspection": "Generated product shown without branding or text. UI overlays are native illustrative text; authoritative summary is plain text."
+    },
+    {
+      "file": "assets/notebook.png",
+      "useCase": "product-mockup",
+      "prompt": "Use case: product-mockup\nAsset type: original MadeYours base product catalog photograph\nPrimary request: a single closed unbranded A5 ivory linen-covered notebook with a slim deep-indigo fabric spine and matching narrow elastic closure on the right. Smooth flat cover completely blank and unprinted, intended for bounded name personalization. Realistic linen fabric weave, cream paper edges.\nComposition: square studio photograph, whole notebook centered on pale lavender-grey seamless surface, three-quarter overhead angle, ample margin, soft diffuse daylight, crisp natural material detail and subtle shadow. Photo only, no UI.\nConstraints: no letters, logo, text, graphics, pen, flowers, hands or watermark.",
+      "generatorOutput": "Generated images are saved to /Users/saai_mithra/.codex/generated_images/01a164ba-e017-7b90-9053-efc5357459a6 as /Users/saai_mithra/.codex/generated_images/01a164ba-e017-7b90-9053-efc5357459a6/exec-dba4c014-031f-4f2d-ba8c-d0b7a80f8c7b.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+      "inspection": "Generated product shown without branding or text. UI overlays are native illustrative text; authoritative summary is plain text."
+    }
+  ],
+  "otherAssets": [
+    {
+      "file": "assets/letbuyy-logo.svg",
+      "source": "apps/platform/identity / copied from preserved Threadline storybook exact canonical logo",
+      "role": "Canonical shared credential identity only"
+    },
+    {
+      "file": "source/icons.json",
+      "source": "Installed lucide-react via React renderToStaticMarkup; source/generate-icons.mjs",
+      "role": "Governed Lucide native vector functional icons"
+    },
+    {
+      "file": "assets/inter-*.ttf",
+      "source": "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap",
+      "license": "SIL Open Font License 1.1; https://github.com/rsms/inter/blob/master/LICENSE.txt",
+      "weights": [
+        400,
+        500,
+        600,
+        700
+      ],
+      "role": "Local deterministic typography; official font files referenced by preserved stylesheet"
+    },
+    {
+      "file": "assets/geist-sans-latin.woff2",
+      "source": "packages/typescript/ui/assets/fonts/geist-sans-latin.woff2",
+      "license": "assets/GEIST-OFL-LICENSE.txt",
+      "role": "Current canonical identity typography only, matching apps/platform/identity/src/app/layout.tsx"
+    }
+  ],
+  "excluded": "No Shopify photography, copy, logo or layout was used as a MadeYours asset. Research comparisons reference saved evidence only.",
+  "identityReference": {
+    "observedOn": "2026-10-23",
+    "source": [
+      "apps/platform/identity/src/app/globals.css",
+      "apps/platform/identity/src/app/layout.tsx",
+      "packages/typescript/ui/src/tokens.ts adminSurfaceIdentity.light"
+    ],
+    "primary": "#2C2642",
+    "textLink": "#523F97",
+    "font": "GeistIdentity (bundled Geist sans)"
+  }
+}

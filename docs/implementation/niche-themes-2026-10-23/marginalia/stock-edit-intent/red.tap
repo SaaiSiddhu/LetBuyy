@@ -1,0 +1,108 @@
+TAP version 13
+# Subtest: metadata-only editor Save omits stale product and variant stock after server consumption
+not ok 1 - metadata-only editor Save omits stale product and variant stock after server consumption
+  ---
+  duration_ms: 325.927709
+  type: 'test'
+  location: '/Volumes/Projects/LetBuyy/apps/merchant/web/src/components/products/product-conflict.test.tsx:2:80099'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    true !== false
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: false
+  actual: true
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/Volumes/Projects/LetBuyy/apps/merchant/web/src/components/products/product-conflict.test.tsx:1325:16)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+# Subtest: metadata-only EDIT loaded at four omits stock and preserves server-consumed two
+not ok 2 - metadata-only EDIT loaded at four omits stock and preserves server-consumed two
+  ---
+  duration_ms: 1.865292
+  type: 'test'
+  location: '/Volumes/Projects/LetBuyy/apps/merchant/web/src/lib/product-form-state.stock-intent.test.ts:2:1564'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    true !== false
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: false
+  actual: true
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/Volumes/Projects/LetBuyy/apps/merchant/web/src/lib/product-form-state.stock-intent.test.ts:16:12)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.start (node:internal/test_runner/test:944:17)
+    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)
+  ...
+# Subtest: reordered sparse EDIT emits only a changed existing quantity and new rows including zero
+not ok 3 - reordered sparse EDIT emits only a changed existing quantity and new rows including zero
+  ---
+  duration_ms: 0.569167
+  type: 'test'
+  location: '/Volumes/Projects/LetBuyy/apps/merchant/web/src/lib/product-form-state.stock-intent.test.ts:2:2098'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    true !== false
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: false
+  actual: true
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/Volumes/Projects/LetBuyy/apps/merchant/web/src/lib/product-form-state.stock-intent.test.ts:27:12)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+# Subtest: tracking-only EDIT preserves quantities, CREATE still supplies all quantities
+not ok 4 - tracking-only EDIT preserves quantities, CREATE still supplies all quantities
+  ---
+  duration_ms: 0.439667
+  type: 'test'
+  location: '/Volumes/Projects/LetBuyy/apps/merchant/web/src/lib/product-form-state.stock-intent.test.ts:2:2825'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    true !== false
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: false
+  actual: true
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/Volumes/Projects/LetBuyy/apps/merchant/web/src/lib/product-form-state.stock-intent.test.ts:38:12)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+1..4
+# tests 4
+# suites 0
+# pass 0
+# fail 4
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1621.571125

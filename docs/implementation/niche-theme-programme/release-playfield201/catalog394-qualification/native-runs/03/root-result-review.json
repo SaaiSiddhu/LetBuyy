@@ -1,0 +1,58 @@
+{
+  "recordedAt": "2026-10-24T11:51:18.437350+00:00",
+  "status": "FAILED_PHASE4_STOPPED_NO_RETRY_NO394EMISSION_LANE_RELEASED",
+  "runId": "6ae2c4ae1f0a",
+  "tests": 5,
+  "PASS": 3,
+  "FAIL": 2,
+  "phaseCoverage": {
+    "PASS": [
+      1,
+      2,
+      3
+    ],
+    "FAIL": [
+      4
+    ],
+    "NOT_RUN": [
+      5,
+      6,
+      7,
+      8
+    ]
+  },
+  "actualError": "PostgresError: permission denied for table theme_package_versions",
+  "expectedError": "TenantPublicationContextError",
+  "location": "manual.ts:327 shadow-refusal transaction; precise denyingstatement stilltosource-trace",
+  "sourceFidelity": {
+    "all1160ActualMainHashesExactAfterRun": true,
+    "completeReconstruction": "474runtimeModules/2048literalEdges/299workspaceNodeResolutions/13JSedges;3negativecontrols"
+  },
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "reaped": [],
+  "oldFixturesAppsAndData": "Untouched; --no-reap",
+  "runnerResult": {
+    "path": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/native-runs/03/result.json",
+    "sha256": "4809a684002166e12301e43f66085811fc9e2e442e84c40175da5ec6865c3ac9"
+  },
+  "log": {
+    "path": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/native-runs/03/logs/playfield201-catalog394-qualification.manual.ts.log",
+    "sha256": "2e17b85244dfbb072da47f6146c6ed35bd95550807409636bbf1b7c72bbfc6fe"
+  },
+  "independentAcceptance": "NOT_QUALIFIED; fullprogramme gateopen",
+  "next": "Source-trace actual immutablecatalog row-lock permission requirements before any productionfix/newnativegrant; preserveexactoracle/roleACL/guards",
+  "independentDockerCleanup": {
+    "verifiedLabel": "com.letbuyy.executable-fixture.run-id=6ae2c4ae1f0a",
+    "containers": [],
+    "networks": [],
+    "volumes": [],
+    "note": "Initialcustomlabelread was insufficient; correctedcanonicalrunlabel independentlyempty. No deletioncommandissued."
+  }
+}

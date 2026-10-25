@@ -1,0 +1,80 @@
+
+  - iframe [name="app-modal-iframe"]:
+    - heading "Theme name" [level=2]
+    - button "Close":
+    - button: Submit
+    - generic: Theme name
+    - textbox "Theme name": Horizon
+    - iframe
+    - button "Cancel":
+      - generic: Cancel
+    - button "Save" [disabled]:
+      - generic: Save
+- generic "Navigation":
+  - img "Shopify"
+  - link "Settings":
+    - /url: /store/[test-store]/settings/general?[query omitted]
+  - button "Alerts Feed - 0 unread alerts":
+  - generic: Alerts about your store and account will show here
+  - button "[test identity]":
+    - img "[test identity]":
+      - generic: MS4
+    - paragraph: [test identity]
+  - generic: View Dev Dashboard
+  - button "Search":
+    - generic: Search
+    - generic: ⌘K
+  - navigation:
+    - list:
+      - link "Home":
+        - /url: /store/[test-store]
+        - generic: Home
+      - link "Orders":
+        - /url: /store/[test-store]/orders
+        - generic: Orders
+      - link "Products":
+        - /url: /store/[test-store]/products
+        - generic: Products
+      - link "Customers":
+        - /url: /store/[test-store]/customers
+        - generic: Customers
+      - link "Growth":
+        - /url: /store/[test-store]/growth
+        - generic: Growth
+      - link "Discounts":
+        - /url: /store/[test-store]/discounts
+        - generic: Discounts
+      - link "Content":
+        - /url: /store/[test-store]/content/metaobjects
+        - generic: Content
+      - link "Markets":
+        - /url: /store/[test-store]/markets
+        - generic: Markets
+      - link "Analytics":
+        - /url: /store/[test-store]/analytics
+        - generic: Analytics
+    - list:
+      - button "Sales channels":
+        - generic: Sales channels
+      - list:
+        - button "Online Store Pages Preferences":
+          - list:
+            - link "Online Store" [expanded]:
+              - /url: /store/[test-store]/themes
+              - generic: Online Store
+            - list:
+              - link "Pages":
+                - /url: /store/[test-store]/pages
+                - generic: Pages
+              - link "Preferences":
+                - /url: /store/[test-store]/online_store/preferences
+                - generic: Preferences
+        - button "Agentic":
+          - list:
+            - link "Agentic":
+              - /url: /store/[test-store]/apps/agentic?[query omitted]
+              - generic: Agentic
+      - button "Apps":
+        - generic: Apps
+      - button "Add":
+        - text: Add

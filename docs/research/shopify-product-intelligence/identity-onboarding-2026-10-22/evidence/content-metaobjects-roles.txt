@@ -1,0 +1,43 @@
+- heading "Metaobjects" [level=1]
+- link "Manage":
+- link "Add definition":
+- link "Available on storefront 0 entries":
+- heading "Available on storefront" [level=2]:
+- paragraph:
+- link "Web pages 0 entries":
+- heading "Web pages" [level=2]:
+- paragraph:
+- link "Active 1 entry":
+- heading "Active" [level=2]:
+- paragraph:
+- link "Draft 0 entries":
+- heading "Draft" [level=2]:
+- paragraph:
+- link "Recent entries":
+- heading "Recent entries" [level=2]:
+- link "Delivery countries Knowledge Base Facts":
+- paragraph:
+- paragraph:
+- link "View all 1 entries":
+- paragraph:
+- button "Custom":
+- textbox "Searching in metaobject definitions..."
+- button "Display options":
+- button "Show view filters":
+- button "Reset view" [disabled]:
+- button "Save" [disabled]:
+- table
+- paragraph: No definitions found
+- paragraph: Try changing the filters or search term
+- paragraph:
+- button "Learn more about metaobjects":
+- status
+- status
+- status
+- paragraph
+- button "Close" [disabled]:
+- textbox "Work with Sidekick"
+- button "Add files and more":
+- button "Voice":
+- button "Open Sidekick":
+- status

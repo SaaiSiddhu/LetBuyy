@@ -2,7 +2,7 @@
 
 import { useMemo, useRef, useState } from 'react'
 import { usePathname } from 'next/navigation'
-import Link from 'next/link'
+import { MerchantNavigationLink as Link } from '../MerchantNavigationLink'
 import { Input, LayoutDashboard, ScrollThumb, Search, X } from '@letbuyy/ui'
 import {
     SETTINGS_NAV_GROUPS,
@@ -70,7 +70,7 @@ export function SettingsShell({
     function renderNav() {
         return (
             <>
-                <Link prefetch={false}
+                <Link
                     href={settingsHomeHref}
                     aria-current={homeActive ? 'page' : undefined}
                     className={`settings-nav-item${homeActive ? ' active' : ''}`}
@@ -87,7 +87,7 @@ export function SettingsShell({
                             const active = pathname === href || !!pathname?.startsWith(`${href}/`)
                             const ItemIcon = item.Icon
                             return (
-                                <Link prefetch={false}
+                                <Link
                                     key={item.href}
                                     href={href}
                                     aria-current={active ? 'page' : undefined}
@@ -127,7 +127,7 @@ export function SettingsShell({
                             <span className="settings-sidebar-store-name">{storeName}</span>
                             <span className="settings-sidebar-store-domain">{subdomain}.letbuyy.com</span>
                         </span>
-                        <Link prefetch={false}
+                        <Link
                             href={`/${store}/dashboard`}
                             className="settings-sidebar-close"
                             aria-label="Close settings"

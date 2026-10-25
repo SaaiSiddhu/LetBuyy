@@ -1,0 +1,363 @@
+Browser tab: 55, Title: "LetBuyy Admin", URL: "http://admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/products/collections".
+1 AXWebArea LetBuyy Admin, URL: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/products/collections
+	2 container
+		3 link Description: LetBuyy dashboard, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/dashboard
+		4 button Search
+		5 button Setup assistant
+		6 button Notifications
+		7 button (collapsed) Description: Switch store, current store Threadline, Secondary Actions: Expand
+			8 text TH
+			9 text Threadline
+	10 container admin-nav-drawer
+		11 container
+			12 container Primary navigation
+				13 content list
+					14 link Description: Home, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/dashboard
+					15 link Description: Orders, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/orders
+					16 container
+						17 link Description: Products, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/products
+						18 button (expanded) Description: Toggle Products section, Secondary Actions: Collapse
+						19 content list
+							20 link Description: Add product, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/products/new
+							21 link Description: Collections, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/products/collections
+							22 link Description: Smart collections, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/products/smart-collections
+							23 link Description: Categories, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/categories
+							24 link Description: Export and import, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/export
+					25 container
+						26 link Description: Inventory, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/products/inventory
+						27 button (collapsed) Description: Toggle Inventory section, Secondary Actions: Expand
+					28 container
+						29 link Description: Purchasing, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/products/purchase-orders
+						30 button (collapsed) Description: Toggle Purchasing section, Secondary Actions: Expand
+					31 container
+						32 link Description: Customers, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/customers
+						33 button (collapsed) Description: Toggle Customers section, Secondary Actions: Expand
+					34 container
+						35 link Description: Money, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/settings/billing
+						36 button (collapsed) Description: Toggle Money section, Secondary Actions: Expand
+					37 container
+						38 link Description: Marketing, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/coupons
+						39 button (collapsed) Description: Toggle Marketing section, Secondary Actions: Expand
+					40 container
+						41 link Description: Content, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/pages
+						42 button (collapsed) Description: Toggle Content section, Secondary Actions: Expand
+					43 link Description: Analytics, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/analytics
+			44 text Sales channels
+			45 container Sales channels
+				46 content list
+					47 container
+						48 link Description: Online Store, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/online-store
+						49 button (collapsed) Description: Toggle Online Store section, Secondary Actions: Expand
+			50 text Apps
+			51 container Apps
+				52 content list
+					53 link Description: Add, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/apps
+		54 container Settings navigation
+			55 content list
+				56 link Description: Settings, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/settings
+	57 container admin-page-scroll
+		58 container
+			59 heading Collections, Value: 1
+				60 text Collections
+			61 button Refresh
+			62 button New collection
+		63 container
+			64 heading Collection list, Value: 2
+				65 text Collection list
+			66 text Review product groupings and their active storefront status. 17 total
+			67 table
+				68 row
+					69 cell
+						70 text Collection
+					71 cell
+						72 text Products
+					73 cell
+						74 text Status
+				75 row
+					76 cell
+						77 container Habitat dimensional controls
+							78 text HD
+						79 text Habitat dimensional controls
+						80 text Synthetic owned Habitat measurement controls only.
+					81 cell
+						82 text 0 products
+					83 cell
+						84 text Active
+					85 cell
+						86 button Manage products
+				87 row
+					88 cell
+						89 container Lifecycle stationery
+							90 text LS
+						91 text Lifecycle stationery
+						92 text Synthetic theme acceptance setup only.
+					93 cell
+						94 text 0 products
+					95 cell
+						96 text Active
+					97 cell
+						98 button Manage products
+				99 row
+					100 cell
+						101 container Lifecycle books
+							102 text LB
+						103 text Lifecycle books
+						104 text Synthetic theme acceptance setup only.
+					105 cell
+						106 text 0 products
+					107 cell
+						108 text Active
+					109 cell
+						110 button Manage products
+				111 row
+					112 cell
+						113 container Lifecycle recreation
+							114 text LR
+						115 text Lifecycle recreation
+						116 text Synthetic theme acceptance setup only.
+					117 cell
+						118 text 0 products
+					119 cell
+						120 text Active
+					121 cell
+						122 button Manage products
+				123 row
+					124 cell
+						125 container Colour
+							126 text C
+						127 text Colour
+						128 text Synthetic theme acceptance setup only.
+					129 cell
+						130 text 0 products
+					131 cell
+						132 text Active
+					133 cell
+						134 button Manage products
+				135 row
+					136 cell
+						137 container Care
+							138 text C
+						139 text Care
+						140 text Synthetic theme acceptance setup only.
+					141 cell
+						142 text 0 products
+					143 cell
+						144 text Active
+					145 cell
+						146 button Manage products
+				147 row
+					148 cell
+						149 container Cleanse
+							150 text C
+						151 text Cleanse
+						152 text Synthetic theme acceptance setup only.
+					153 cell
+						154 text 0 products
+					155 cell
+						156 text Active
+					157 cell
+						158 button Manage products
+				159 row
+					160 cell
+						161 container Lifecycle personalized
+							162 text LP
+						163 text Lifecycle personalized
+						164 text Synthetic theme acceptance setup only.
+					165 cell
+						166 text 0 products
+					167 cell
+						168 text Active
+					169 cell
+						170 button Manage products
+				171 row
+					172 cell
+						173 container Lifecycle gifts
+							174 text LG
+						175 text Lifecycle gifts
+						176 text Synthetic theme acceptance setup only.
+					177 cell
+						178 text 0 products
+					179 cell
+						180 text Active
+					181 cell
+						182 button Manage products
+				183 row
+					184 cell
+						185 container Lifecycle furniture
+							186 text LF
+						187 text Lifecycle furniture
+						188 text Synthetic theme acceptance setup only.
+					189 cell
+						190 text 0 products
+					191 cell
+						192 text Active
+					193 cell
+						194 button Manage products
+				195 row
+					196 cell
+						197 container Lifecycle rice
+							198 text LR
+						199 text Lifecycle rice
+						200 text Synthetic theme acceptance setup only.
+					201 cell
+						202 text 0 products
+					203 cell
+						204 text Active
+					205 cell
+						206 button Manage products
+				207 row
+					208 cell
+						209 container Lifecycle pulses
+							210 text LP
+						211 text Lifecycle pulses
+						212 text Synthetic theme acceptance setup only.
+					213 cell
+						214 text 0 products
+					215 cell
+						216 text Active
+					217 cell
+						218 button Manage products
+				219 row
+					220 cell
+						221 container Lifecycle accessories
+							222 text LA
+						223 text Lifecycle accessories
+						224 text Synthetic theme acceptance setup only.
+					225 cell
+						226 text 0 products
+					227 cell
+						228 text Active
+					229 cell
+						230 button Manage products
+				231 row
+					232 cell
+						233 container Lifecycle activities
+							234 text LA
+						235 text Lifecycle activities
+						236 text Synthetic theme acceptance setup only.
+					237 cell
+						238 text 0 products
+					239 cell
+						240 text Active
+					241 cell
+						242 button Manage products
+				243 row
+					244 cell
+						245 container Easy
+						246 text Easy
+					247 cell
+						248 text 0 products
+					249 cell
+						250 text Active
+					251 cell
+						252 button Manage products
+				253 row
+					254 cell
+						255 container Straight
+						256 text Straight
+					257 cell
+						258 text 0 products
+					259 cell
+						260 text Active
+					261 cell
+						262 button Manage products
+				263 row
+					264 cell
+						265 container Relaxed
+						266 text Relaxed
+					267 cell
+						268 text 0 products
+					269 cell
+						270 text Active
+					271 cell
+						272 button Manage products
+		273 container
+			274 heading Manage products — Habitat dimensional controls, Value: 2
+				275 text Manage products — Habitat dimensional controls
+			276 text Select which products belong to this collection. Changes take effect after saving.
+			277 button Save products
+			278 button Cancel
+			279 text 0  products selected Filter products
+			280 text field (settable) Filter products
+			281 checkbox (settable, integer) Description: Habitat width-only shelf, Value: 0
+			282 container Habitat width-only shelf
+				283 text HW
+			284 text Habitat width-only shelf ₹ 1,400
+			285 checkbox (settable, integer) Description: Habitat dimensions-only stand, Value: 0
+			286 container Habitat dimensions-only stand
+				287 text HD
+			288 text Habitat dimensions-only stand ₹ 1,200
+			289 checkbox (settable, integer) Description: Synthetic Dewdrop security936, Value: 0
+			290 container Synthetic Dewdrop security936
+				291 text SD
+			292 text Synthetic Dewdrop security936 ₹ 10
+			293 checkbox (settable, integer) Description: Marginalia lifecycle lined notebook, Value: 0
+			294 container Marginalia lifecycle lined notebook
+				295 text ML
+			296 text Marginalia lifecycle lined notebook ₹ 320
+			297 checkbox (settable, integer) Description: Marginalia lifecycle book, Value: 0
+			298 container Marginalia lifecycle book
+				299 text ML
+			300 text Marginalia lifecycle book ₹ 420
+			301 checkbox (settable, integer) Description: Trailmark lifecycle racket, Value: 0
+			302 container Trailmark lifecycle racket
+				303 text TL
+			304 text Trailmark lifecycle racket ₹ 1,800
+			305 checkbox (settable, integer) Description: Fixture Palm Wash, Value: 0
+			306 container Fixture Palm Wash
+				307 text FP
+			308 text Fixture Palm Wash ₹ 460
+			309 checkbox (settable, integer) Description: Fixture Soft Colour, Value: 0
+			310 container Fixture Soft Colour
+				311 text FS
+			312 text Fixture Soft Colour ₹ 520
+			313 checkbox (settable, integer) Description: Fixture Daily Veil, Value: 0
+			314 container Fixture Daily Veil
+				315 text FD
+			316 text Fixture Daily Veil ₹ 880
+			317 checkbox (settable, integer) Description: Fixture Cloud Rinse, Value: 0
+			318 container Fixture Cloud Rinse
+				319 text FC
+			320 text Fixture Cloud Rinse ₹ 640
+			321 checkbox (settable, integer) Description: MadeYours lifecycle notebook, Value: 0
+			322 container MadeYours lifecycle notebook
+				323 text ML
+			324 text MadeYours lifecycle notebook ₹ 690
+			325 checkbox (settable, integer) Description: Kindred lifecycle gift box, Value: 0
+			326 container Kindred lifecycle gift box
+				327 text KL
+			328 text Kindred lifecycle gift box ₹ 1,100
+			329 checkbox (settable, integer) Description: Habitat lifecycle desk, Value: 0
+			330 container Habitat lifecycle desk
+				331 text HL
+			332 text Habitat lifecycle desk ₹ 8,900
+			333 checkbox (settable, integer) Description: Pantry lifecycle rice, Value: 0
+			334 container Pantry lifecycle rice
+				335 text PL
+			336 text Pantry lifecycle rice ₹ 220
+			337 checkbox (settable, integer) Description: Pantry lifecycle red lentils, Value: 0
+			338 container Pantry lifecycle red lentils
+				339 text PL
+			340 text Pantry lifecycle red lentils ₹ 180
+			341 checkbox (settable, integer) Description: Circuit lifecycle hub, Value: 0
+			342 container Circuit lifecycle hub
+				343 text CL
+			344 text Circuit lifecycle hub ₹ 1,200
+			345 checkbox (settable, integer) Description: Playfield lifecycle activity kit, Value: 0
+			346 container Playfield lifecycle activity kit
+				347 text PL
+			348 text Playfield lifecycle activity kit ₹ 480
+			349 checkbox (settable, integer) Description: The Everyday Cotton Dress, Value: 0
+			350 container The Everyday Cotton Dress
+				351 text TE
+			352 text The Everyday Cotton Dress ₹ 3,990
+			353 checkbox (settable, integer) Description: Tailored Straight Trouser, Value: 0
+			354 container Tailored Straight Trouser
+				355 text TS
+			356 text Tailored Straight Trouser ₹ 3,290
+			357 checkbox (settable, integer) Description: The Everyday Linen Shirt, Value: 0
+			358 container The Everyday Linen Shirt
+				359 text TE
+			360 text The Everyday Linen Shirt ₹ 2,490
+
+The focused UI element is 86 button Manage products

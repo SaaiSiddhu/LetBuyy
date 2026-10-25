@@ -1,0 +1,2819 @@
+{
+  "classification": "READ_ONLY_VENDOR_LINK_NORMALIZATION_IN_OWNED_COPY",
+  "changes": [
+    {
+      "path": "node_modules/.pnpm/@adobe+css-tools@4.5.0",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/@adobe+css-tools@4.5.0",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/@adobe+css-tools@4.5.0"
+    },
+    {
+      "path": "node_modules/.pnpm/@alloc+quick-lru@5.2.0",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/@alloc+quick-lru@5.2.0",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/@alloc+quick-lru@5.2.0"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/accepts",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/accepts",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/accepts@2.0.0/node_modules/accepts"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/acorn",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/acorn",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/acorn@8.15.0/node_modules/acorn"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/acorn-jsx",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/acorn-jsx",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/acorn-jsx@5.3.2_acorn@8.15.0/node_modules/acorn-jsx"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/ajv",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/ajv",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/ajv@8.18.0/node_modules/ajv"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/ajv-formats",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/ajv-formats",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/ajv-formats@3.0.1/node_modules/ajv-formats"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/ansi-regex",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/ansi-regex",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/ansi-regex@5.0.1/node_modules/ansi-regex"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/ansi-styles",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/ansi-styles",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/ansi-styles@4.3.0/node_modules/ansi-styles"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/argparse",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/argparse",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/argparse@2.0.1/node_modules/argparse"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/aria-query",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/aria-query",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/aria-query@5.3.0/node_modules/aria-query"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/array-buffer-byte-length",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/array-buffer-byte-length",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/array-buffer-byte-length@1.0.2/node_modules/array-buffer-byte-length"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/array-includes",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/array-includes",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/array-includes@3.1.9/node_modules/array-includes"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/array.prototype.findlast",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/array.prototype.findlast",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/array.prototype.findlast@1.2.5/node_modules/array.prototype.findlast"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/array.prototype.findlastindex",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/array.prototype.findlastindex",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/array.prototype.findlastindex@1.2.6/node_modules/array.prototype.findlastindex"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/array.prototype.flat",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/array.prototype.flat",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/array.prototype.flat@1.3.3/node_modules/array.prototype.flat"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/array.prototype.flatmap",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/array.prototype.flatmap",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/array.prototype.flatmap@1.3.3/node_modules/array.prototype.flatmap"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/array.prototype.tosorted",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/array.prototype.tosorted",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/array.prototype.tosorted@1.1.4/node_modules/array.prototype.tosorted"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/arraybuffer.prototype.slice",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/arraybuffer.prototype.slice",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/arraybuffer.prototype.slice@1.0.4/node_modules/arraybuffer.prototype.slice"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/assertion-error",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/assertion-error",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/assertion-error@2.0.1/node_modules/assertion-error"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/ast-types",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/ast-types",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/ast-types@0.16.1/node_modules/ast-types"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/ast-types-flow",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/ast-types-flow",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/ast-types-flow@0.0.8/node_modules/ast-types-flow"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/astral-regex",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/astral-regex",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/astral-regex@2.0.0/node_modules/astral-regex"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/async-function",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/async-function",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/async-function@1.0.0/node_modules/async-function"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/atomically",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/atomically",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/atomically@2.1.1/node_modules/atomically"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/available-typed-arrays",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/available-typed-arrays",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/available-typed-arrays@1.0.7/node_modules/available-typed-arrays"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/axe-core",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/axe-core",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/axe-core@3.5.6/node_modules/axe-core"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/axobject-query",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/axobject-query",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/axobject-query@4.1.0/node_modules/axobject-query"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/balanced-match",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/balanced-match",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/balanced-match@1.0.2/node_modules/balanced-match"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/base64id",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/base64id",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/base64id@2.0.0/node_modules/base64id"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/baseline-browser-mapping",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/baseline-browser-mapping",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/baseline-browser-mapping@2.9.19/node_modules/baseline-browser-mapping"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/bcryptjs",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/bcryptjs",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/bcryptjs@3.0.3/node_modules/bcryptjs"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/bidi-js",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/bidi-js",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/bidi-js@1.0.3/node_modules/bidi-js"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/blake3-wasm",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/blake3-wasm",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/blake3-wasm@2.1.5/node_modules/blake3-wasm"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/body-parser",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/body-parser",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/body-parser@2.3.0/node_modules/body-parser"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/brace-expansion",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/brace-expansion",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/brace-expansion@1.1.12/node_modules/brace-expansion"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/braces",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/braces",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/braces@3.0.3/node_modules/braces"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/browserslist",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/browserslist",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/browserslist@4.28.1/node_modules/browserslist"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/bundle-name",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/bundle-name",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/bundle-name@4.1.0/node_modules/bundle-name"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/bytes",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/bytes",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/bytes@3.1.2/node_modules/bytes"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/cacheable",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/cacheable",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/cacheable@2.3.5/node_modules/cacheable"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/call-bind",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/call-bind",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/call-bind@1.0.8/node_modules/call-bind"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/call-bind-apply-helpers",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/call-bind-apply-helpers",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/call-bind-apply-helpers@1.0.2/node_modules/call-bind-apply-helpers"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/call-bound",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/call-bound",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/call-bound@1.0.4/node_modules/call-bound"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/callsites",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/callsites",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/callsites@3.1.0/node_modules/callsites"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/caniuse-lite",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/caniuse-lite",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/caniuse-lite@1.0.30001770/node_modules/caniuse-lite"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/chai",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/chai",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/chai@5.3.3/node_modules/chai"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/chalk",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/chalk",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/chalk@4.1.2/node_modules/chalk"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/check-error",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/check-error",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/check-error@2.1.3/node_modules/check-error"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/chokidar",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/chokidar",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/chokidar@4.0.3/node_modules/chokidar"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/ci-info",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/ci-info",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/ci-info@4.4.0/node_modules/ci-info"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/citty",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/citty",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/citty@0.1.6/node_modules/citty"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/cli-cursor",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/cli-cursor",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/cli-cursor@5.0.0/node_modules/cli-cursor"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/cli-spinners",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/cli-spinners",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/cli-spinners@2.9.2/node_modules/cli-spinners"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/client-only",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/client-only",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/client-only@0.0.1/node_modules/client-only"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/clsx",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/clsx",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/clsx@2.1.1/node_modules/clsx"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/color-convert",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/color-convert",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/color-convert@2.0.1/node_modules/color-convert"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/color-name",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/color-name",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/color-name@1.1.4/node_modules/color-name"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/colord",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/colord",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/colord@2.9.3/node_modules/colord"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/commander",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/commander",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/commander@12.1.0/node_modules/commander"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/concat-map",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/concat-map",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/concat-map@0.0.1/node_modules/concat-map"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/conf",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/conf",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/conf@15.1.0/node_modules/conf"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/confbox",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/confbox",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/confbox@0.2.4/node_modules/confbox"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/consola",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/consola",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/consola@3.4.2/node_modules/consola"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/content-disposition",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/content-disposition",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/content-disposition@1.1.0/node_modules/content-disposition"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/content-type",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/content-type",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/content-type@1.0.5/node_modules/content-type"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/convert-source-map",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/convert-source-map",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/convert-source-map@2.0.0/node_modules/convert-source-map"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/cookie",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/cookie",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/cookie@1.1.1/node_modules/cookie"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/cookie-signature",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/cookie-signature",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/cookie-signature@1.2.2/node_modules/cookie-signature"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/cors",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/cors",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/cors@2.8.6/node_modules/cors"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/cosmiconfig",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/cosmiconfig",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/cosmiconfig@9.0.2_typescript@5.9.3/node_modules/cosmiconfig"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/cross-spawn",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/cross-spawn",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/cross-spawn@7.0.6/node_modules/cross-spawn"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/css-functions-list",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/css-functions-list",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/css-functions-list@3.3.3/node_modules/css-functions-list"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/css-tree",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/css-tree",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/css-tree@3.2.1/node_modules/css-tree"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/css.escape",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/css.escape",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/css.escape@1.5.1/node_modules/css.escape"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/cssesc",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/cssesc",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/cssesc@3.0.0/node_modules/cssesc"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/csstype",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/csstype",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/csstype@3.2.3/node_modules/csstype"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/damerau-levenshtein",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/damerau-levenshtein",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/damerau-levenshtein@1.0.8/node_modules/damerau-levenshtein"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/data-urls",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/data-urls",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/data-urls@7.0.0/node_modules/data-urls"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/data-view-buffer",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/data-view-buffer",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/data-view-buffer@1.0.2/node_modules/data-view-buffer"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/data-view-byte-length",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/data-view-byte-length",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/data-view-byte-length@1.0.2/node_modules/data-view-byte-length"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/data-view-byte-offset",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/data-view-byte-offset",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/data-view-byte-offset@1.0.1/node_modules/data-view-byte-offset"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/debounce",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/debounce",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/debounce@2.2.0/node_modules/debounce"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/debounce-fn",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/debounce-fn",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/debounce-fn@6.0.0/node_modules/debounce-fn"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/debug",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/debug",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/debug@4.4.3/node_modules/debug"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/decimal.js",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/decimal.js",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/decimal.js@10.6.0/node_modules/decimal.js"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/deep-eql",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/deep-eql",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/deep-eql@5.0.2/node_modules/deep-eql"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/deep-is",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/deep-is",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/deep-is@0.1.4/node_modules/deep-is"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/deepmerge",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/deepmerge",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/deepmerge@4.3.1/node_modules/deepmerge"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/default-browser",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/default-browser",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/default-browser@5.5.0/node_modules/default-browser"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/default-browser-id",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/default-browser-id",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/default-browser-id@5.0.1/node_modules/default-browser-id"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/define-data-property",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/define-data-property",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/define-data-property@1.1.4/node_modules/define-data-property"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/define-lazy-prop",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/define-lazy-prop",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/define-lazy-prop@3.0.0/node_modules/define-lazy-prop"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/define-properties",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/define-properties",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/define-properties@1.2.1/node_modules/define-properties"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/depd",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/depd",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/depd@2.0.0/node_modules/depd"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/dequal",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/dequal",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/dequal@2.0.3/node_modules/dequal"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/detect-libc",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/detect-libc",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/detect-libc@2.1.2/node_modules/detect-libc"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/diff-sequences",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/diff-sequences",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/diff-sequences@29.6.3/node_modules/diff-sequences"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/doctrine",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/doctrine",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/doctrine@2.1.0/node_modules/doctrine"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/dom-accessibility-api",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/dom-accessibility-api",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/dom-accessibility-api@0.5.16/node_modules/dom-accessibility-api"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/dom-serializer",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/dom-serializer",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/dom-serializer@2.0.0/node_modules/dom-serializer"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/domelementtype",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/domelementtype",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/domelementtype@2.3.0/node_modules/domelementtype"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/domhandler",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/domhandler",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/domhandler@5.0.3/node_modules/domhandler"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/dompurify",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/dompurify",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/dompurify@3.4.9/node_modules/dompurify"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/domutils",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/domutils",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/domutils@3.2.2/node_modules/domutils"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/dot-prop",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/dot-prop",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/dot-prop@10.1.0/node_modules/dot-prop"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/dunder-proto",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/dunder-proto",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/dunder-proto@1.0.1/node_modules/dunder-proto"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/ee-first",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/ee-first",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/ee-first@1.1.1/node_modules/ee-first"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/electron-to-chromium",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/electron-to-chromium",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/electron-to-chromium@1.5.286/node_modules/electron-to-chromium"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/emoji-regex",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/emoji-regex",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/emoji-regex@9.2.2/node_modules/emoji-regex"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/empathic",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/empathic",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/empathic@2.0.1/node_modules/empathic"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/encodeurl",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/encodeurl",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/encodeurl@2.0.0/node_modules/encodeurl"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/engine.io",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/engine.io",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/engine.io@6.6.5/node_modules/engine.io"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/engine.io-parser",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/engine.io-parser",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/engine.io-parser@5.2.3/node_modules/engine.io-parser"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/enhanced-resolve",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/enhanced-resolve",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/enhanced-resolve@5.22.1/node_modules/enhanced-resolve"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/entities",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/entities",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/entities@8.0.0/node_modules/entities"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/env-paths",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/env-paths",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/env-paths@3.0.0/node_modules/env-paths"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/error-ex",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/error-ex",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/error-ex@1.3.4/node_modules/error-ex"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/error-stack-parser-es",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/error-stack-parser-es",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/error-stack-parser-es@1.0.5/node_modules/error-stack-parser-es"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/es-abstract",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/es-abstract",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/es-abstract@1.24.1/node_modules/es-abstract"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/es-define-property",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/es-define-property",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/es-define-property@1.0.1/node_modules/es-define-property"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/es-errors",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/es-errors",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/es-errors@1.3.0/node_modules/es-errors"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/es-iterator-helpers",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/es-iterator-helpers",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/es-iterator-helpers@1.2.2/node_modules/es-iterator-helpers"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/es-module-lexer",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/es-module-lexer",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/es-module-lexer@2.1.0/node_modules/es-module-lexer"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/es-object-atoms",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/es-object-atoms",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/es-object-atoms@1.1.1/node_modules/es-object-atoms"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/es-set-tostringtag",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/es-set-tostringtag",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/es-set-tostringtag@2.1.0/node_modules/es-set-tostringtag"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/es-shim-unscopables",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/es-shim-unscopables",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/es-shim-unscopables@1.1.0/node_modules/es-shim-unscopables"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/es-to-primitive",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/es-to-primitive",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/es-to-primitive@1.3.0/node_modules/es-to-primitive"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/esbuild",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/esbuild",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/esbuild@0.25.12/node_modules/esbuild"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/escalade",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/escalade",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/escalade@3.2.0/node_modules/escalade"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/escape-html",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/escape-html",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/escape-html@1.0.3/node_modules/escape-html"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/escape-string-regexp",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/escape-string-regexp",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/escape-string-regexp@4.0.0/node_modules/escape-string-regexp"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/eslint-config-next",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/eslint-config-next",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/eslint-config-next@16.1.6_eslint@9.39.2_jiti@2.6.1__typescript@5.9.3/node_modules/eslint-config-next"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/eslint-import-resolver-node",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/eslint-import-resolver-node",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/eslint-import-resolver-node@0.3.9/node_modules/eslint-import-resolver-node"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/eslint-import-resolver-typescript",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/eslint-import-resolver-typescript",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/eslint-import-resolver-typescript@3.10.1_eslint-plugin-import@2.32.0_eslint@9.39.2_jiti@2.6.1_/node_modules/eslint-import-resolver-typescript"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/eslint-module-utils",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/eslint-module-utils",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/eslint-module-utils@2.12.1_eslint-import-resolver-node@0.3.9_eslint-import-resolver-typ_b9c27d6737abf65c2c47472dab813b6e/node_modules/eslint-module-utils"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/eslint-plugin-import",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/eslint-plugin-import",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/eslint-plugin-import@2.32.0_eslint-import-resolver-typescript@3.10.1_eslint@9.39.2_jiti@2.6.1_/node_modules/eslint-plugin-import"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/eslint-plugin-jsx-a11y",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/eslint-plugin-jsx-a11y",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/eslint-plugin-jsx-a11y@6.10.2_eslint@9.39.2_jiti@2.6.1_/node_modules/eslint-plugin-jsx-a11y"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/eslint-plugin-react",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/eslint-plugin-react",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/eslint-plugin-react@7.37.5_eslint@9.39.2_jiti@2.6.1_/node_modules/eslint-plugin-react"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/eslint-plugin-react-hooks",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/eslint-plugin-react-hooks",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/eslint-plugin-react-hooks@7.0.1_eslint@9.39.2_jiti@2.6.1_/node_modules/eslint-plugin-react-hooks"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/eslint-scope",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/eslint-scope",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/eslint-scope@8.4.0/node_modules/eslint-scope"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/eslint-visitor-keys",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/eslint-visitor-keys",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/eslint-visitor-keys@4.2.1/node_modules/eslint-visitor-keys"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/espree",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/espree",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/espree@10.4.0/node_modules/espree"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/esprima",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/esprima",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/esprima@4.0.1/node_modules/esprima"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/esquery",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/esquery",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/esquery@1.7.0/node_modules/esquery"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/esrecurse",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/esrecurse",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/esrecurse@4.3.0/node_modules/esrecurse"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/estraverse",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/estraverse",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/estraverse@5.3.0/node_modules/estraverse"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/estree-walker",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/estree-walker",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/estree-walker@2.0.2/node_modules/estree-walker"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/esutils",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/esutils",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/esutils@2.0.3/node_modules/esutils"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/etag",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/etag",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/etag@1.8.1/node_modules/etag"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/eventsource",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/eventsource",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/eventsource@3.0.7/node_modules/eventsource"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/eventsource-parser",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/eventsource-parser",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/eventsource-parser@3.1.0/node_modules/eventsource-parser"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/expect",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/expect",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/expect@30.4.1/node_modules/expect"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/expect-type",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/expect-type",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/expect-type@1.3.0/node_modules/expect-type"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/express",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/express",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/express@5.2.1/node_modules/express"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/express-rate-limit",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/express-rate-limit",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/express-rate-limit@8.5.2_express@5.2.1/node_modules/express-rate-limit"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/exsolve",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/exsolve",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/exsolve@1.0.8/node_modules/exsolve"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/fast-deep-equal",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/fast-deep-equal",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/fast-deep-equal@3.1.3/node_modules/fast-deep-equal"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/fast-glob",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/fast-glob",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/fast-glob@3.3.3/node_modules/fast-glob"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/fast-json-stable-stringify",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/fast-json-stable-stringify",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/fast-json-stable-stringify@2.1.0/node_modules/fast-json-stable-stringify"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/fast-levenshtein",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/fast-levenshtein",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/fast-levenshtein@2.0.6/node_modules/fast-levenshtein"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/fast-sha256",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/fast-sha256",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/fast-sha256@1.3.0/node_modules/fast-sha256"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/fast-uri",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/fast-uri",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/fast-uri@3.1.2/node_modules/fast-uri"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/fastest-levenshtein",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/fastest-levenshtein",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/fastest-levenshtein@1.0.16/node_modules/fastest-levenshtein"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/fastq",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/fastq",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/fastq@1.20.1/node_modules/fastq"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/fdir",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/fdir",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/fdir@6.5.0_picomatch@4.0.4/node_modules/fdir"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/file-entry-cache",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/file-entry-cache",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/file-entry-cache@8.0.0/node_modules/file-entry-cache"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/fill-range",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/fill-range",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/fill-range@7.1.1/node_modules/fill-range"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/finalhandler",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/finalhandler",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/finalhandler@2.1.1/node_modules/finalhandler"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/find-up",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/find-up",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/find-up@5.0.0/node_modules/find-up"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/flat-cache",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/flat-cache",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/flat-cache@6.1.22/node_modules/flat-cache"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/flatted",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/flatted",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/flatted@3.4.2/node_modules/flatted"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/for-each",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/for-each",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/for-each@0.3.5/node_modules/for-each"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/foreground-child",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/foreground-child",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/foreground-child@3.3.1/node_modules/foreground-child"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/forwarded",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/forwarded",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/forwarded@0.2.0/node_modules/forwarded"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/framer-motion",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/framer-motion",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/framer-motion@12.34.0_react-dom@19.2.3_react@19.2.3__react@19.2.3/node_modules/framer-motion"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/fresh",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/fresh",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/fresh@2.0.0/node_modules/fresh"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/fsevents",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/fsevents",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/fsevents@2.3.3/node_modules/fsevents"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/function-bind",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/function-bind",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/function-bind@1.1.2/node_modules/function-bind"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/function.prototype.name",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/function.prototype.name",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/function.prototype.name@1.1.8/node_modules/function.prototype.name"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/functions-have-names",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/functions-have-names",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/functions-have-names@1.2.3/node_modules/functions-have-names"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/generator-function",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/generator-function",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/generator-function@2.0.1/node_modules/generator-function"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/gensync",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/gensync",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/gensync@1.0.0-beta.2/node_modules/gensync"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/get-east-asian-width",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/get-east-asian-width",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/get-east-asian-width@1.6.0/node_modules/get-east-asian-width"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/get-intrinsic",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/get-intrinsic",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/get-intrinsic@1.3.0/node_modules/get-intrinsic"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/get-proto",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/get-proto",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/get-proto@1.0.1/node_modules/get-proto"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/get-symbol-description",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/get-symbol-description",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/get-symbol-description@1.1.0/node_modules/get-symbol-description"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/get-tsconfig",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/get-tsconfig",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/get-tsconfig@4.13.6/node_modules/get-tsconfig"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/glob",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/glob",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/glob@11.1.0/node_modules/glob"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/glob-parent",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/glob-parent",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/glob-parent@6.0.2/node_modules/glob-parent"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/global-modules",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/global-modules",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/global-modules@2.0.0/node_modules/global-modules"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/global-prefix",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/global-prefix",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/global-prefix@3.0.0/node_modules/global-prefix"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/globals",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/globals",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/globals@16.4.0/node_modules/globals"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/globalthis",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/globalthis",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/globalthis@1.0.4/node_modules/globalthis"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/globby",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/globby",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/globby@16.2.0/node_modules/globby"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/globjoin",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/globjoin",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/globjoin@0.1.4/node_modules/globjoin"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/gopd",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/gopd",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/gopd@1.2.0/node_modules/gopd"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/graceful-fs",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/graceful-fs",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/graceful-fs@4.2.11/node_modules/graceful-fs"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/gsap",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/gsap",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/gsap@3.14.2/node_modules/gsap"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/has-bigints",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/has-bigints",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/has-bigints@1.1.0/node_modules/has-bigints"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/has-flag",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/has-flag",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/has-flag@5.0.1/node_modules/has-flag"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/has-property-descriptors",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/has-property-descriptors",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/has-property-descriptors@1.0.2/node_modules/has-property-descriptors"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/has-proto",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/has-proto",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/has-proto@1.2.0/node_modules/has-proto"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/has-symbols",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/has-symbols",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/has-symbols@1.1.0/node_modules/has-symbols"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/has-tostringtag",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/has-tostringtag",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/has-tostringtag@1.0.2/node_modules/has-tostringtag"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/hash-wasm",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/hash-wasm",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/hash-wasm@4.12.0/node_modules/hash-wasm"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/hashery",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/hashery",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/hashery@1.5.1/node_modules/hashery"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/hasown",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/hasown",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/hasown@2.0.2/node_modules/hasown"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/hermes-estree",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/hermes-estree",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/hermes-estree@0.25.1/node_modules/hermes-estree"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/hermes-parser",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/hermes-parser",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/hermes-parser@0.25.1/node_modules/hermes-parser"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/hookified",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/hookified",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/hookified@1.15.1/node_modules/hookified"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/html-encoding-sniffer",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/html-encoding-sniffer",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/html-encoding-sniffer@6.0.0/node_modules/html-encoding-sniffer"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/html-tags",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/html-tags",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/html-tags@5.1.0/node_modules/html-tags"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/html-to-text",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/html-to-text",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/html-to-text@9.0.5/node_modules/html-to-text"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/htmlparser2",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/htmlparser2",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/htmlparser2@8.0.2/node_modules/htmlparser2"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/http-errors",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/http-errors",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/http-errors@2.0.1/node_modules/http-errors"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/iceberg-js",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/iceberg-js",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/iceberg-js@0.8.1/node_modules/iceberg-js"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/iconv-lite",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/iconv-lite",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/iconv-lite@0.7.2/node_modules/iconv-lite"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/ignore",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/ignore",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/ignore@5.3.2/node_modules/ignore"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/import-fresh",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/import-fresh",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/import-fresh@3.3.1/node_modules/import-fresh"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/import-meta-resolve",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/import-meta-resolve",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/import-meta-resolve@4.2.0/node_modules/import-meta-resolve"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/imurmurhash",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/imurmurhash",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/imurmurhash@0.1.4/node_modules/imurmurhash"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/indent-string",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/indent-string",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/indent-string@4.0.0/node_modules/indent-string"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/inherits",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/inherits",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/inherits@2.0.4/node_modules/inherits"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/ini",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/ini",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/ini@1.3.8/node_modules/ini"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/internal-slot",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/internal-slot",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/internal-slot@1.1.0/node_modules/internal-slot"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/ip-address",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/ip-address",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/ip-address@10.2.0/node_modules/ip-address"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/ipaddr.js",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/ipaddr.js",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/ipaddr.js@1.9.1/node_modules/ipaddr.js"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-array-buffer",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-array-buffer",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/is-array-buffer@3.0.5/node_modules/is-array-buffer"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-arrayish",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-arrayish",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/is-arrayish@0.2.1/node_modules/is-arrayish"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-async-function",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-async-function",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/is-async-function@2.1.1/node_modules/is-async-function"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-bigint",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-bigint",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/is-bigint@1.1.0/node_modules/is-bigint"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-boolean-object",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-boolean-object",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/is-boolean-object@1.2.2/node_modules/is-boolean-object"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-bun-module",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-bun-module",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/is-bun-module@2.0.0/node_modules/is-bun-module"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-callable",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-callable",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/is-callable@1.2.7/node_modules/is-callable"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-core-module",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-core-module",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/is-core-module@2.16.1/node_modules/is-core-module"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-data-view",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-data-view",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/is-data-view@1.0.2/node_modules/is-data-view"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-date-object",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-date-object",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/is-date-object@1.1.0/node_modules/is-date-object"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-docker",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-docker",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/is-docker@3.0.0/node_modules/is-docker"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-extglob",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-extglob",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/is-extglob@2.1.1/node_modules/is-extglob"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-finalizationregistry",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-finalizationregistry",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/is-finalizationregistry@1.1.1/node_modules/is-finalizationregistry"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-fullwidth-code-point",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-fullwidth-code-point",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/is-fullwidth-code-point@3.0.0/node_modules/is-fullwidth-code-point"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-generator-function",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-generator-function",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/is-generator-function@1.1.2/node_modules/is-generator-function"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-glob",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-glob",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/is-glob@4.0.3/node_modules/is-glob"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-inside-container",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-inside-container",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/is-inside-container@1.0.0/node_modules/is-inside-container"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-interactive",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-interactive",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/is-interactive@2.0.0/node_modules/is-interactive"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-map",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-map",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/is-map@2.0.3/node_modules/is-map"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-negative-zero",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-negative-zero",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/is-negative-zero@2.0.3/node_modules/is-negative-zero"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-number",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-number",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/is-number@7.0.0/node_modules/is-number"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-number-object",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-number-object",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/is-number-object@1.1.1/node_modules/is-number-object"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-path-inside",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-path-inside",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/is-path-inside@4.0.0/node_modules/is-path-inside"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-potential-custom-element-name",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-potential-custom-element-name",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/is-potential-custom-element-name@1.0.1/node_modules/is-potential-custom-element-name"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-promise",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-promise",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/is-promise@4.0.0/node_modules/is-promise"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-regex",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-regex",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/is-regex@1.2.1/node_modules/is-regex"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-set",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-set",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/is-set@2.0.3/node_modules/is-set"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-shared-array-buffer",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-shared-array-buffer",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/is-shared-array-buffer@1.0.4/node_modules/is-shared-array-buffer"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-string",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-string",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/is-string@1.1.1/node_modules/is-string"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-symbol",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-symbol",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/is-symbol@1.1.1/node_modules/is-symbol"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-typed-array",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-typed-array",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/is-typed-array@1.1.15/node_modules/is-typed-array"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-unicode-supported",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-unicode-supported",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/is-unicode-supported@2.1.0/node_modules/is-unicode-supported"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-weakmap",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-weakmap",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/is-weakmap@2.0.2/node_modules/is-weakmap"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-weakref",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-weakref",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/is-weakref@1.1.1/node_modules/is-weakref"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-weakset",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-weakset",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/is-weakset@2.0.4/node_modules/is-weakset"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-wsl",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-wsl",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/is-wsl@3.1.1/node_modules/is-wsl"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/isarray",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/isarray",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/isarray@2.0.5/node_modules/isarray"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/isexe",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/isexe",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/isexe@2.0.0/node_modules/isexe"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/iterator.prototype",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/iterator.prototype",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/iterator.prototype@1.1.5/node_modules/iterator.prototype"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/jackspeak",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/jackspeak",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/jackspeak@4.2.3/node_modules/jackspeak"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/jest-axe",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/jest-axe",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/jest-axe@10.0.0/node_modules/jest-axe"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/jest-diff",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/jest-diff",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/jest-diff@29.7.0/node_modules/jest-diff"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/jest-get-type",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/jest-get-type",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/jest-get-type@29.6.3/node_modules/jest-get-type"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/jest-matcher-utils",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/jest-matcher-utils",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/jest-matcher-utils@29.2.2/node_modules/jest-matcher-utils"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/jest-message-util",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/jest-message-util",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/jest-message-util@30.4.1/node_modules/jest-message-util"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/jest-mock",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/jest-mock",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/jest-mock@30.4.1/node_modules/jest-mock"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/jest-regex-util",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/jest-regex-util",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/jest-regex-util@30.4.0/node_modules/jest-regex-util"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/jest-util",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/jest-util",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/jest-util@30.4.1/node_modules/jest-util"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/jiti",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/jiti",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/jiti@2.6.1/node_modules/jiti"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/js-tokens",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/js-tokens",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/js-tokens@4.0.0/node_modules/js-tokens"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/js-yaml",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/js-yaml",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/js-yaml@4.1.1/node_modules/js-yaml"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/jsdom",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/jsdom",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/jsdom@29.1.1/node_modules/jsdom"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/jsesc",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/jsesc",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/jsesc@3.1.0/node_modules/jsesc"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/json-buffer",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/json-buffer",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/json-buffer@3.0.1/node_modules/json-buffer"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/json-parse-even-better-errors",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/json-parse-even-better-errors",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/json-parse-even-better-errors@2.3.1/node_modules/json-parse-even-better-errors"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/json-schema-traverse",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/json-schema-traverse",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/json-schema-traverse@0.4.1/node_modules/json-schema-traverse"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/json-schema-typed",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/json-schema-typed",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/json-schema-typed@8.0.2/node_modules/json-schema-typed"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/json-stable-stringify-without-jsonify",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/json-stable-stringify-without-jsonify",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/json-stable-stringify-without-jsonify@1.0.1/node_modules/json-stable-stringify-without-jsonify"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/json5",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/json5",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/json5@2.2.3/node_modules/json5"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/jsx-ast-utils",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/jsx-ast-utils",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/jsx-ast-utils@3.3.5/node_modules/jsx-ast-utils"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/keyv",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/keyv",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/keyv@4.5.4/node_modules/keyv"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/kind-of",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/kind-of",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/kind-of@6.0.3/node_modules/kind-of"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/kleur",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/kleur",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/kleur@3.0.3/node_modules/kleur"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/language-subtag-registry",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/language-subtag-registry",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/language-subtag-registry@0.3.23/node_modules/language-subtag-registry"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/language-tags",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/language-tags",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/language-tags@1.0.9/node_modules/language-tags"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/leac",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/leac",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/leac@0.6.0/node_modules/leac"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/lenis",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/lenis",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/lenis@1.3.17_react@19.2.3/node_modules/lenis"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/levn",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/levn",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/levn@0.4.1/node_modules/levn"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/lightningcss",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/lightningcss",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/lightningcss@1.32.0/node_modules/lightningcss"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/lightningcss-darwin-arm64",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/lightningcss-darwin-arm64",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/lightningcss-darwin-arm64@1.32.0/node_modules/lightningcss-darwin-arm64"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/lilconfig",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/lilconfig",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/lilconfig@3.1.3/node_modules/lilconfig"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/lines-and-columns",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/lines-and-columns",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/lines-and-columns@1.2.4/node_modules/lines-and-columns"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/liquidjs",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/liquidjs",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/liquidjs@10.27.0/node_modules/liquidjs"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/locate-path",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/locate-path",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/locate-path@6.0.0/node_modules/locate-path"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/lodash.merge",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/lodash.merge",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/lodash.merge@4.6.2/node_modules/lodash.merge"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/lodash.truncate",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/lodash.truncate",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/lodash.truncate@4.4.2/node_modules/lodash.truncate"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/log-symbols",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/log-symbols",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/log-symbols@7.0.1/node_modules/log-symbols"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/loose-envify",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/loose-envify",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/loose-envify@1.4.0/node_modules/loose-envify"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/loupe",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/loupe",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/loupe@3.2.1/node_modules/loupe"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/lru-cache",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/lru-cache",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/lru-cache@11.5.1/node_modules/lru-cache"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/lucide-react",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/lucide-react",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/lucide-react@0.562.0_react@19.2.3/node_modules/lucide-react"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/lz-string",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/lz-string",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/lz-string@1.5.0/node_modules/lz-string"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/magic-string",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/magic-string",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/magic-string@0.30.21/node_modules/magic-string"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/marked",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/marked",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/marked@15.0.12/node_modules/marked"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/math-intrinsics",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/math-intrinsics",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/math-intrinsics@1.1.0/node_modules/math-intrinsics"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/mathml-tag-names",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/mathml-tag-names",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/mathml-tag-names@4.0.0/node_modules/mathml-tag-names"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/mdn-data",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/mdn-data",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/mdn-data@2.27.1/node_modules/mdn-data"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/media-typer",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/media-typer",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/media-typer@1.1.0/node_modules/media-typer"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/meow",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/meow",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/meow@14.1.0/node_modules/meow"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/merge-descriptors",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/merge-descriptors",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/merge-descriptors@2.0.0/node_modules/merge-descriptors"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/merge2",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/merge2",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/merge2@1.4.1/node_modules/merge2"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/micromatch",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/micromatch",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/micromatch@4.0.8/node_modules/micromatch"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/mime-db",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/mime-db",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/mime-db@1.54.0/node_modules/mime-db"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/mime-types",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/mime-types",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/mime-types@3.0.2/node_modules/mime-types"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/mimic-function",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/mimic-function",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/mimic-function@5.0.1/node_modules/mimic-function"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/min-indent",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/min-indent",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/min-indent@1.0.1/node_modules/min-indent"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/minimatch",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/minimatch",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/minimatch@3.1.4/node_modules/minimatch"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/minimist",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/minimist",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/minimist@1.2.8/node_modules/minimist"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/minipass",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/minipass",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/minipass@7.1.2/node_modules/minipass"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/motion-dom",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/motion-dom",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/motion-dom@12.34.0/node_modules/motion-dom"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/motion-utils",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/motion-utils",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/motion-utils@12.29.2/node_modules/motion-utils"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/ms",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/ms",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/ms@2.1.3/node_modules/ms"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/nanoid",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/nanoid",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/nanoid@3.3.12/node_modules/nanoid"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/napi-postinstall",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/napi-postinstall",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/napi-postinstall@0.3.4/node_modules/napi-postinstall"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/natural-compare",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/natural-compare",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/natural-compare@1.4.0/node_modules/natural-compare"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/negotiator",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/negotiator",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/negotiator@0.6.3/node_modules/negotiator"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/next",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/next",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/next@16.1.6_@babel+core@7.29.0_@playwright+test@1.60.0_react-dom@19.2.3_react@19.2.3__react@19.2.3/node_modules/next"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/node-releases",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/node-releases",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/node-releases@2.0.27/node_modules/node-releases"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/normalize-path",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/normalize-path",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/normalize-path@3.0.0/node_modules/normalize-path"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/nypm",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/nypm",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/nypm@0.6.2/node_modules/nypm"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/object-assign",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/object-assign",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/object-assign@4.1.1/node_modules/object-assign"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/object-inspect",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/object-inspect",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/object-inspect@1.13.4/node_modules/object-inspect"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/object-keys",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/object-keys",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/object-keys@1.1.1/node_modules/object-keys"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/object.assign",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/object.assign",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/object.assign@4.1.7/node_modules/object.assign"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/object.entries",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/object.entries",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/object.entries@1.1.9/node_modules/object.entries"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/object.fromentries",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/object.fromentries",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/object.fromentries@2.0.8/node_modules/object.fromentries"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/object.groupby",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/object.groupby",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/object.groupby@1.0.3/node_modules/object.groupby"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/object.values",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/object.values",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/object.values@1.2.1/node_modules/object.values"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/obug",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/obug",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/obug@2.1.2/node_modules/obug"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/on-finished",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/on-finished",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/on-finished@2.4.1/node_modules/on-finished"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/once",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/once",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/once@1.4.0/node_modules/once"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/onetime",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/onetime",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/onetime@7.0.0/node_modules/onetime"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/open",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/open",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/open@10.2.0/node_modules/open"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/optionator",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/optionator",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/optionator@0.9.4/node_modules/optionator"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/ora",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/ora",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/ora@8.2.0/node_modules/ora"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/own-keys",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/own-keys",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/own-keys@1.0.1/node_modules/own-keys"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/oxc-parser",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/oxc-parser",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/oxc-parser@0.127.0/node_modules/oxc-parser"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/oxc-resolver",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/oxc-resolver",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/oxc-resolver@11.20.0/node_modules/oxc-resolver"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/p-limit",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/p-limit",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/p-limit@3.1.0/node_modules/p-limit"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/p-locate",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/p-locate",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/p-locate@5.0.0/node_modules/p-locate"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/package-json-from-dist",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/package-json-from-dist",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/package-json-from-dist@1.0.1/node_modules/package-json-from-dist"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/parent-module",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/parent-module",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/parent-module@1.0.1/node_modules/parent-module"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/parse-json",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/parse-json",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/parse-json@5.2.0/node_modules/parse-json"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/parse5",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/parse5",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/parse5@8.0.1/node_modules/parse5"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/parseley",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/parseley",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/parseley@0.12.1/node_modules/parseley"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/parseurl",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/parseurl",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/parseurl@1.3.3/node_modules/parseurl"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/path-exists",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/path-exists",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/path-exists@4.0.0/node_modules/path-exists"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/path-key",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/path-key",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/path-key@3.1.1/node_modules/path-key"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/path-parse",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/path-parse",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/path-parse@1.0.7/node_modules/path-parse"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/path-scurry",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/path-scurry",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/path-scurry@2.0.1/node_modules/path-scurry"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/path-to-regexp",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/path-to-regexp",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/path-to-regexp@6.3.0/node_modules/path-to-regexp"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/pathe",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/pathe",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/pathe@2.0.3/node_modules/pathe"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/pathval",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/pathval",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/pathval@2.0.1/node_modules/pathval"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/peberminta",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/peberminta",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/peberminta@0.9.0/node_modules/peberminta"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/picocolors",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/picocolors",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/picocolors@1.1.1/node_modules/picocolors"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/picomatch",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/picomatch",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/picomatch@4.0.4/node_modules/picomatch"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/pkce-challenge",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/pkce-challenge",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/pkce-challenge@5.0.1/node_modules/pkce-challenge"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/pkg-types",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/pkg-types",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/pkg-types@2.3.0/node_modules/pkg-types"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/playwright",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/playwright",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/playwright@1.60.0/node_modules/playwright"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/playwright-core",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/playwright-core",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/playwright-core@1.60.0/node_modules/playwright-core"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/possible-typed-array-names",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/possible-typed-array-names",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/possible-typed-array-names@1.1.0/node_modules/possible-typed-array-names"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/postal-mime",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/postal-mime",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/postal-mime@2.7.3/node_modules/postal-mime"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/postcss",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/postcss",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/postcss@8.5.15/node_modules/postcss"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/postcss-load-config",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/postcss-load-config",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/postcss-load-config@6.0.1_jiti@2.6.1_postcss@8.5.15_tsx@4.20.6/node_modules/postcss-load-config"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/postcss-safe-parser",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/postcss-safe-parser",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/postcss-safe-parser@7.0.1_postcss@8.5.15/node_modules/postcss-safe-parser"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/postcss-selector-parser",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/postcss-selector-parser",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/postcss-selector-parser@7.1.2/node_modules/postcss-selector-parser"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/postcss-value-parser",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/postcss-value-parser",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/postcss-value-parser@4.2.0/node_modules/postcss-value-parser"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/postgres",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/postgres",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/postgres@3.4.9/node_modules/postgres"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/prelude-ls",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/prelude-ls",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/prelude-ls@1.2.1/node_modules/prelude-ls"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/prettier",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/prettier",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/prettier@3.8.1/node_modules/prettier"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/pretty-format",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/pretty-format",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/pretty-format@27.5.1/node_modules/pretty-format"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/prismjs",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/prismjs",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/prismjs@1.30.0/node_modules/prismjs"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/prompts",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/prompts",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/prompts@2.4.2/node_modules/prompts"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/prop-types",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/prop-types",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/prop-types@15.8.1/node_modules/prop-types"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/proxy-addr",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/proxy-addr",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/proxy-addr@2.0.7/node_modules/proxy-addr"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/punycode",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/punycode",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/punycode@2.3.1/node_modules/punycode"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/qified",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/qified",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/qified@0.10.1/node_modules/qified"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/qs",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/qs",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/qs@6.15.2/node_modules/qs"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/queue-microtask",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/queue-microtask",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/queue-microtask@1.2.3/node_modules/queue-microtask"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/range-parser",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/range-parser",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/range-parser@1.2.1/node_modules/range-parser"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/raw-body",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/raw-body",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/raw-body@3.0.2/node_modules/raw-body"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/react",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/react",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/react@19.2.3/node_modules/react"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/react-docgen",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/react-docgen",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/react-docgen@8.0.3/node_modules/react-docgen"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/react-docgen-typescript",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/react-docgen-typescript",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/react-docgen-typescript@2.4.0_typescript@5.9.3/node_modules/react-docgen-typescript"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/react-dom",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/react-dom",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/react-email",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/react-email",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/react-email@5.2.8/node_modules/react-email"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/react-is",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/react-is",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/react-is@17.0.2/node_modules/react-is"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/react-is-18",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/react-is-18",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/react-is@18.3.1/node_modules/react-is"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/react-is-19",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/react-is-19",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/react-is@19.2.7/node_modules/react-is"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/readdirp",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/readdirp",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/readdirp@4.1.2/node_modules/readdirp"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/recast",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/recast",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/recast@0.23.11/node_modules/recast"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/redent",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/redent",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/redent@3.0.0/node_modules/redent"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/reflect.getprototypeof",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/reflect.getprototypeof",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/reflect.getprototypeof@1.0.10/node_modules/reflect.getprototypeof"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/regexp.prototype.flags",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/regexp.prototype.flags",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/regexp.prototype.flags@1.5.4/node_modules/regexp.prototype.flags"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/require-from-string",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/require-from-string",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/require-from-string@2.0.2/node_modules/require-from-string"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/resend",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/resend",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/resend@6.9.2_@react-email+render@2.0.4_react-dom@19.2.3_react@19.2.3__react@19.2.3_/node_modules/resend"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/resolve",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/resolve",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/resolve@1.22.11/node_modules/resolve"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/resolve-from",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/resolve-from",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/resolve-from@4.0.0/node_modules/resolve-from"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/resolve-pkg-maps",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/resolve-pkg-maps",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/resolve-pkg-maps@1.0.0/node_modules/resolve-pkg-maps"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/restore-cursor",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/restore-cursor",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/restore-cursor@5.1.0/node_modules/restore-cursor"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/reusify",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/reusify",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/reusify@1.1.0/node_modules/reusify"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/rolldown",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/rolldown",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/rolldown@1.0.3/node_modules/rolldown"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/router",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/router",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/router@2.2.0/node_modules/router"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/run-applescript",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/run-applescript",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/run-applescript@7.1.0/node_modules/run-applescript"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/run-parallel",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/run-parallel",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/run-parallel@1.2.0/node_modules/run-parallel"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/safe-array-concat",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/safe-array-concat",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/safe-array-concat@1.1.3/node_modules/safe-array-concat"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/safe-push-apply",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/safe-push-apply",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/safe-push-apply@1.0.0/node_modules/safe-push-apply"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/safe-regex-test",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/safe-regex-test",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/safe-regex-test@1.1.0/node_modules/safe-regex-test"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/safer-buffer",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/safer-buffer",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/safer-buffer@2.1.2/node_modules/safer-buffer"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/saxes",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/saxes",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/saxes@6.0.0/node_modules/saxes"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/scheduler",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/scheduler",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/scheduler@0.27.0/node_modules/scheduler"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/selderee",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/selderee",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/selderee@0.11.0/node_modules/selderee"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/semver",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/semver",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/semver@7.7.4/node_modules/semver"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/send",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/send",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/send@1.2.1/node_modules/send"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/serve-static",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/serve-static",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/serve-static@2.2.1/node_modules/serve-static"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/server-only",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/server-only",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/server-only@0.0.1/node_modules/server-only"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/set-function-length",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/set-function-length",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/set-function-length@1.2.2/node_modules/set-function-length"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/set-function-name",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/set-function-name",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/set-function-name@2.0.2/node_modules/set-function-name"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/set-proto",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/set-proto",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/set-proto@1.0.0/node_modules/set-proto"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/setprototypeof",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/setprototypeof",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/setprototypeof@1.2.0/node_modules/setprototypeof"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/sharp",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/sharp",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/sharp@0.34.5/node_modules/sharp"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/shebang-command",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/shebang-command",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/shebang-command@2.0.0/node_modules/shebang-command"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/shebang-regex",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/shebang-regex",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/shebang-regex@3.0.0/node_modules/shebang-regex"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/side-channel",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/side-channel",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/side-channel@1.1.0/node_modules/side-channel"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/side-channel-list",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/side-channel-list",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/side-channel-list@1.0.0/node_modules/side-channel-list"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/side-channel-map",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/side-channel-map",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/side-channel-map@1.0.1/node_modules/side-channel-map"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/side-channel-weakmap",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/side-channel-weakmap",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/side-channel-weakmap@1.0.2/node_modules/side-channel-weakmap"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/siginfo",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/siginfo",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/siginfo@2.0.0/node_modules/siginfo"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/signal-exit",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/signal-exit",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/signal-exit@4.1.0/node_modules/signal-exit"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/sisteransi",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/sisteransi",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/sisteransi@1.0.5/node_modules/sisteransi"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/slash",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/slash",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/slash@5.1.0/node_modules/slash"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/slice-ansi",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/slice-ansi",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/slice-ansi@4.0.0/node_modules/slice-ansi"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/socket.io",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/socket.io",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/socket.io@4.8.3/node_modules/socket.io"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/socket.io-adapter",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/socket.io-adapter",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/socket.io-adapter@2.5.6/node_modules/socket.io-adapter"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/socket.io-parser",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/socket.io-parser",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/socket.io-parser@4.2.6/node_modules/socket.io-parser"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/source-map",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/source-map",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/source-map@0.6.1/node_modules/source-map"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/source-map-js",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/source-map-js",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/source-map-js@1.2.1/node_modules/source-map-js"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/stable-hash",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/stable-hash",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/stable-hash@0.0.5/node_modules/stable-hash"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/stack-utils",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/stack-utils",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/stack-utils@2.0.6/node_modules/stack-utils"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/stackback",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/stackback",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/stackback@0.0.2/node_modules/stackback"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/standardwebhooks",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/standardwebhooks",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/standardwebhooks@1.0.0/node_modules/standardwebhooks"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/statuses",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/statuses",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/statuses@2.0.2/node_modules/statuses"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/std-env",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/std-env",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/std-env@4.1.0/node_modules/std-env"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/stdin-discarder",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/stdin-discarder",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/stdin-discarder@0.2.2/node_modules/stdin-discarder"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/stop-iteration-iterator",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/stop-iteration-iterator",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/stop-iteration-iterator@1.1.0/node_modules/stop-iteration-iterator"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/storybook",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/storybook",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/storybook@10.4.1_@testing-library+dom@10.4.1_@types+react@19.2.14_prettier@3.8.1_react-_1c238f02218a7c7e949fd8e07e7c21e2/node_modules/storybook"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/string-width",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/string-width",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/string-width@8.2.1/node_modules/string-width"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/string.prototype.includes",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/string.prototype.includes",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/string.prototype.includes@2.0.1/node_modules/string.prototype.includes"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/string.prototype.matchall",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/string.prototype.matchall",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/string.prototype.matchall@4.0.12/node_modules/string.prototype.matchall"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/string.prototype.repeat",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/string.prototype.repeat",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/string.prototype.repeat@1.0.0/node_modules/string.prototype.repeat"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/string.prototype.trim",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/string.prototype.trim",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/string.prototype.trim@1.2.10/node_modules/string.prototype.trim"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/string.prototype.trimend",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/string.prototype.trimend",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/string.prototype.trimend@1.0.9/node_modules/string.prototype.trimend"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/string.prototype.trimstart",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/string.prototype.trimstart",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/string.prototype.trimstart@1.0.8/node_modules/string.prototype.trimstart"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/strip-ansi",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/strip-ansi",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/strip-ansi@7.1.2/node_modules/strip-ansi"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/strip-bom",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/strip-bom",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/strip-bom@3.0.0/node_modules/strip-bom"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/strip-indent",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/strip-indent",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/strip-indent@4.1.1/node_modules/strip-indent"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/strip-json-comments",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/strip-json-comments",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/strip-json-comments@3.1.1/node_modules/strip-json-comments"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/stubborn-fs",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/stubborn-fs",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/stubborn-fs@2.0.0/node_modules/stubborn-fs"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/stubborn-utils",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/stubborn-utils",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/stubborn-utils@1.0.2/node_modules/stubborn-utils"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/styled-jsx",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/styled-jsx",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/styled-jsx@5.1.6_@babel+core@7.29.0_react@19.2.3/node_modules/styled-jsx"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/stylelint-config-recommended",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/stylelint-config-recommended",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/stylelint-config-recommended@18.0.0_stylelint@17.13.0_typescript@5.9.3_/node_modules/stylelint-config-recommended"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/supports-color",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/supports-color",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/supports-color@7.2.0/node_modules/supports-color"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/supports-hyperlinks",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/supports-hyperlinks",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/supports-hyperlinks@4.4.0/node_modules/supports-hyperlinks"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/supports-preserve-symlinks-flag",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/supports-preserve-symlinks-flag",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/supports-preserve-symlinks-flag@1.0.0/node_modules/supports-preserve-symlinks-flag"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/svg-tags",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/svg-tags",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/svg-tags@1.0.0/node_modules/svg-tags"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/svix",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/svix",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/svix@1.84.1/node_modules/svix"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/symbol-tree",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/symbol-tree",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/symbol-tree@3.2.4/node_modules/symbol-tree"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/table",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/table",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/table@6.9.0/node_modules/table"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/tagged-tag",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/tagged-tag",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/tagged-tag@1.0.0/node_modules/tagged-tag"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/tailwind-merge",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/tailwind-merge",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/tailwind-merge@3.4.1/node_modules/tailwind-merge"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/tailwindcss",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/tailwindcss",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/tailwindcss@4.3.0/node_modules/tailwindcss"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/tapable",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/tapable",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/tapable@2.3.3/node_modules/tapable"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/tiny-invariant",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/tiny-invariant",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/tiny-invariant@1.3.3/node_modules/tiny-invariant"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/tinybench",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/tinybench",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/tinybench@2.9.0/node_modules/tinybench"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/tinyexec",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/tinyexec",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/tinyexec@1.0.2/node_modules/tinyexec"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/tinyglobby",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/tinyglobby",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/tinyglobby@0.2.17/node_modules/tinyglobby"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/tinyrainbow",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/tinyrainbow",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/tinyrainbow@3.1.0/node_modules/tinyrainbow"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/tinyspy",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/tinyspy",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/tinyspy@4.0.4/node_modules/tinyspy"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/tldts",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/tldts",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/tldts@7.4.2/node_modules/tldts"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/tldts-core",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/tldts-core",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/tldts-core@7.4.2/node_modules/tldts-core"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/to-regex-range",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/to-regex-range",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/to-regex-range@5.0.1/node_modules/to-regex-range"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/toidentifier",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/toidentifier",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/toidentifier@1.0.1/node_modules/toidentifier"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/tough-cookie",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/tough-cookie",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/tough-cookie@6.0.1/node_modules/tough-cookie"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/tr46",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/tr46",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/tr46@6.0.0/node_modules/tr46"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/ts-api-utils",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/ts-api-utils",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/ts-api-utils@2.4.0_typescript@5.9.3/node_modules/ts-api-utils"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/ts-dedent",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/ts-dedent",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/ts-dedent@2.2.0/node_modules/ts-dedent"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/tsconfig-paths",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/tsconfig-paths",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/tsconfig-paths@4.2.0/node_modules/tsconfig-paths"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/tslib",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/tslib",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/tslib@2.8.1/node_modules/tslib"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/turbo-darwin-arm64",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/turbo-darwin-arm64",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/turbo-darwin-arm64@2.8.9/node_modules/turbo-darwin-arm64"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/type-check",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/type-check",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/type-check@0.4.0/node_modules/type-check"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/type-fest",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/type-fest",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/type-fest@5.4.4/node_modules/type-fest"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/type-is",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/type-is",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/type-is@2.1.0/node_modules/type-is"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/typed-array-buffer",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/typed-array-buffer",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/typed-array-buffer@1.0.3/node_modules/typed-array-buffer"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/typed-array-byte-length",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/typed-array-byte-length",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/typed-array-byte-length@1.0.3/node_modules/typed-array-byte-length"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/typed-array-byte-offset",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/typed-array-byte-offset",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/typed-array-byte-offset@1.0.4/node_modules/typed-array-byte-offset"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/typed-array-length",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/typed-array-length",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/typed-array-length@1.0.7/node_modules/typed-array-length"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/typescript-eslint",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/typescript-eslint",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/typescript-eslint@8.55.0_eslint@9.39.2_jiti@2.6.1__typescript@5.9.3/node_modules/typescript-eslint"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/uint8array-extras",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/uint8array-extras",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/uint8array-extras@1.5.0/node_modules/uint8array-extras"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/unbox-primitive",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/unbox-primitive",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/unbox-primitive@1.1.0/node_modules/unbox-primitive"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/uncrypto",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/uncrypto",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/uncrypto@0.1.3/node_modules/uncrypto"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/undici",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/undici",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/undici@7.27.2/node_modules/undici"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/undici-types",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/undici-types",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/undici-types@7.27.2/node_modules/undici-types"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/unenv",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/unenv",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/unenv@2.0.0-rc.24/node_modules/unenv"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/unicorn-magic",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/unicorn-magic",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/unicorn-magic@0.4.0/node_modules/unicorn-magic"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/unpipe",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/unpipe",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/unpipe@1.0.0/node_modules/unpipe"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/unplugin",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/unplugin",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/unplugin@2.3.11/node_modules/unplugin"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/unrs-resolver",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/unrs-resolver",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/unrs-resolver@1.11.1/node_modules/unrs-resolver"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/update-browserslist-db",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/update-browserslist-db",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/update-browserslist-db@1.2.3_browserslist@4.28.1/node_modules/update-browserslist-db"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/uri-js",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/uri-js",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/uri-js@4.4.1/node_modules/uri-js"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/use-sync-external-store",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/use-sync-external-store",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/use-sync-external-store@1.6.0_react@19.2.3/node_modules/use-sync-external-store"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/util-deprecate",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/util-deprecate",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/util-deprecate@1.0.2/node_modules/util-deprecate"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/uuid",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/uuid",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/uuid@10.0.0/node_modules/uuid"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/vary",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/vary",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/vary@1.1.2/node_modules/vary"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/vite",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/vite",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/vite@8.0.16_@types+node@20.19.33_esbuild@0.27.3_jiti@2.6.1_tsx@4.20.6/node_modules/vite"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/vitest",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/vitest",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/vitest@4.1.8_@types+node@20.19.33_jsdom@29.1.1_vite@8.0.16_@types+node@20.19.33_esbuild@0.27.3_jiti@2.6.1_tsx@4.20.6_/node_modules/vitest"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/w3c-xmlserializer",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/w3c-xmlserializer",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/w3c-xmlserializer@5.0.0/node_modules/w3c-xmlserializer"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/webidl-conversions",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/webidl-conversions",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/webidl-conversions@8.0.1/node_modules/webidl-conversions"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/webpack-virtual-modules",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/webpack-virtual-modules",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/webpack-virtual-modules@0.6.2/node_modules/webpack-virtual-modules"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/whatwg-mimetype",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/whatwg-mimetype",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/whatwg-mimetype@5.0.0/node_modules/whatwg-mimetype"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/whatwg-url",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/whatwg-url",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/whatwg-url@16.0.1/node_modules/whatwg-url"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/when-exit",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/when-exit",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/when-exit@2.1.5/node_modules/when-exit"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/which",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/which",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/which@2.0.2/node_modules/which"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/which-boxed-primitive",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/which-boxed-primitive",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/which-boxed-primitive@1.1.1/node_modules/which-boxed-primitive"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/which-builtin-type",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/which-builtin-type",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/which-builtin-type@1.2.1/node_modules/which-builtin-type"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/which-collection",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/which-collection",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/which-collection@1.0.2/node_modules/which-collection"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/which-typed-array",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/which-typed-array",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/which-typed-array@1.1.20/node_modules/which-typed-array"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/why-is-node-running",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/why-is-node-running",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/why-is-node-running@2.3.0/node_modules/why-is-node-running"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/word-wrap",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/word-wrap",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/word-wrap@1.2.5/node_modules/word-wrap"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/workerd",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/workerd",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/workerd@1.20260611.1/node_modules/workerd"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/wrangler",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/wrangler",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/wrangler@4.100.0_@cloudflare+workers-types@4.20260611.1/node_modules/wrangler"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/wrappy",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/wrappy",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/wrappy@1.0.2/node_modules/wrappy"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/write-file-atomic",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/write-file-atomic",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/write-file-atomic@7.0.1/node_modules/write-file-atomic"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/ws",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/ws",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/ws@8.20.1/node_modules/ws"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/wsl-utils",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/wsl-utils",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/wsl-utils@0.1.0/node_modules/wsl-utils"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/xml-name-validator",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/xml-name-validator",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/xml-name-validator@5.0.0/node_modules/xml-name-validator"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/xmlchars",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/xmlchars",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/xmlchars@2.2.0/node_modules/xmlchars"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/yallist",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/yallist",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/yallist@3.1.1/node_modules/yallist"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/yocto-queue",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/yocto-queue",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/yocto-queue@0.1.0/node_modules/yocto-queue"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/yoctocolors",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/yoctocolors",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/yoctocolors@2.1.2/node_modules/yoctocolors"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/youch",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/youch",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/youch@4.1.0-beta.10/node_modules/youch"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/youch-core",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/youch-core",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/youch-core@0.3.3/node_modules/youch-core"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/zod",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/zod",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/zod@4.3.6/node_modules/zod"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/zod-to-json-schema",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/zod-to-json-schema",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/zod-to-json-schema@3.25.2_zod@4.3.6/node_modules/zod-to-json-schema"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/zod-validation-error",
+      "before": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/zod-validation-error",
+      "after": "/Volumes/Projects/LetBuyy/node_modules/.pnpm/zod-validation-error@4.0.2_zod@4.3.6/node_modules/zod-validation-error"
+    }
+  ],
+  "sourceBytesChanged": 0,
+  "globalOrPriorCandidateModified": false,
+  "purpose": "Remove intermediate dependency on mutable prior-candidate link layer; actual resolved installed vendor files are unchanged and will be pinned by SHA256.",
+  "nativeExecuted": false
+}

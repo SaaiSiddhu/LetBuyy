@@ -1,0 +1,72 @@
+{
+  "recordedAt": "2026-10-25T00:38:35.945Z",
+  "id": "ED-R07-PREVIEW-DEVICE-02",
+  "runId": "49ada80bc494",
+  "theme": "Threadline",
+  "status": "OBSERVED_CURRENT_UI_FAILURE_NOT_FIXED",
+  "initialDesktop": "Actual iframe1440/clientHTML1434/renderedcontent healthy afternormalretry",
+  "tablet": "Actual820box/766outerwidth;blank and20sloadingerror;one normalRetry didnotrecover",
+  "mobile": "Actual390box;visuallyblankiframe+20sloadingerror;one normalRetry didnotrecover",
+  "savedDraft": "Preserved; originalfitText restored, temporarybadge subtree removed and cleanpublicverified",
+  "consoleErrors": 0,
+  "consoleEvidence": "threadline-preview-resume02-console-redacted.txt",
+  "serverLogTail": "No relevant preview errors in bounded current production log tails",
+  "sourceNotes": "CenterPanel remountsiframewhenviewportquerychanges;20sreadycontexttimer. syncPreviewDraft createscanonicalpreview andcontext. No rootcauseasserted orMainpatchunderCSSonlygrant.",
+  "evidence": [
+    {
+      "recordedAt": "2026-10-25T00:30:52.183Z",
+      "runId": "49ada80bc494",
+      "label": "threadline-clean-preview-error-before-retry",
+      "tabId": "173052882",
+      "url": "http://admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes/letbuyy-sense/editor",
+      "ax": "evidence/042-threadline-clean-preview-error-before-retry.ax.txt",
+      "screenshot": "evidence/042-threadline-clean-preview-error-before-retry.png"
+    },
+    {
+      "recordedAt": "2026-10-25T00:30:52.752Z",
+      "runId": "49ada80bc494",
+      "label": "threadline-desktop-preview-restored-clean",
+      "tabId": "173052882",
+      "url": "http://admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes/letbuyy-sense/editor",
+      "ax": "evidence/043-threadline-desktop-preview-restored-clean.ax.txt",
+      "screenshot": "evidence/043-threadline-desktop-preview-restored-clean.png"
+    },
+    {
+      "recordedAt": "2026-10-25T00:31:22.908Z",
+      "runId": "49ada80bc494",
+      "label": "threadline-tablet820-error-before-retry",
+      "tabId": "173052882",
+      "url": "http://admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes/letbuyy-sense/editor",
+      "ax": "evidence/044-threadline-tablet820-error-before-retry.ax.txt",
+      "screenshot": "evidence/044-threadline-tablet820-error-before-retry.png"
+    },
+    {
+      "recordedAt": "2026-10-25T00:33:16.636Z",
+      "runId": "49ada80bc494",
+      "label": "threadline-tablet820-retry-still-error",
+      "tabId": "173052882",
+      "url": "http://admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes/letbuyy-sense/editor",
+      "ax": "evidence/045-threadline-tablet820-retry-still-error.ax.txt",
+      "screenshot": "evidence/045-threadline-tablet820-retry-still-error.png"
+    },
+    {
+      "recordedAt": "2026-10-25T00:34:04.790Z",
+      "runId": "49ada80bc494",
+      "label": "threadline-mobile390-blank-with-error",
+      "tabId": "173052882",
+      "url": "http://admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes/letbuyy-sense/editor",
+      "ax": "evidence/046-threadline-mobile390-blank-with-error.ax.txt",
+      "screenshot": "evidence/046-threadline-mobile390-blank-with-error.png"
+    },
+    {
+      "recordedAt": "2026-10-25T00:35:32.539Z",
+      "runId": "49ada80bc494",
+      "label": "threadline-mobile390-retry-outcome",
+      "tabId": "173052882",
+      "url": "http://admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes/letbuyy-sense/editor",
+      "ax": "evidence/047-threadline-mobile390-retry-outcome.ax.txt",
+      "screenshot": "evidence/047-threadline-mobile390-retry-outcome.png"
+    }
+  ],
+  "fullResponsivePass": false
+}

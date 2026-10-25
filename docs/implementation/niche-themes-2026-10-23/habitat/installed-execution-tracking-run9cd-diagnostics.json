@@ -1,0 +1,722 @@
+{
+  "requestedAt": "2026-10-23T12:59:15.848216+00:00",
+  "state": "CORRECTED_392_FIXTURE_STARTUP_PENDING_AFTER_DIRECT_LOCAL_CART_COD_APPROVAL",
+  "executor": {
+    "title": "Theme Editor \u2014 End-to-End",
+    "threadId": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+    "hostId": "local"
+  },
+  "scope": "Coordinator-allocated single fresh run; Habitat source and prepared matrix frozen",
+  "cases": [
+    {
+      "id": "HI-01",
+      "status": "PARTIAL",
+      "requirement": "Fresh installed2.0.0 source/tenant bindings and catalog/instance/release proof",
+      "reason": "Normal merchant session, actual Habitat2.0 install3 and serving release/candidate/site binding established. Current buyer order ownership not exercised.",
+      "evidence": [
+        "docs/implementation/theme-editor-2026-10-23/evidence/installed-bindings-first-three.json",
+        "docs/implementation/theme-editor-2026-10-23/evidence/habitat-publication-A-proof.json",
+        "docs/implementation/theme-editor-2026-10-23/evidence/habitat-public-A-readback.json",
+        "docs/implementation/niche-themes-2026-10-23/habitat/installed-executor-checkpoint-after-habitat-cycle.json#HI-01"
+      ],
+      "acknowledgedApi": null,
+      "durableReadback": null,
+      "executorObservations": [
+        "Normal merchant session, actual Habitat2.0 install3 and serving release/candidate/site binding established. Current buyer order ownership not exercised."
+      ],
+      "executorEvidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/habitat/installed-executor-checkpoint-after-habitat-cycle.json",
+        "sha256": "940b4315bec3359cb7ee02dbbe7ec29bfe3889ef51ee6b30ccf7d47f1dd22eea",
+        "caseId": "HI-01"
+      }
+    },
+    {
+      "id": "HI-02",
+      "status": "PARTIAL",
+      "requirement": "Existing baseline readback then single-plan integration of proposed records",
+      "reason": "Read existing primary furniture IDc44adb98-ed66-4ac4-a51e-3c1cc7f4d62d in normal UI: Width48in/Commonsize only, noFinish; common120x60x75cm/package130x65x20cm/Wood/Natural/careWipedry. Proposed four-variant cohort/probes not created after actual HI03 save rejection.",
+      "evidence": [
+        "docs/implementation/theme-editor-2026-10-23/evidence/habitat-merchant-initial.ax.txt",
+        "docs/implementation/niche-themes-2026-10-23/habitat/installed-executor-checkpoint-after-habitat-cycle.json#HI-02",
+        "docs/implementation/niche-themes-2026-10-23/habitat/installed-product-save-rejection-readback.json"
+      ],
+      "acknowledgedApi": null,
+      "durableReadback": null,
+      "executorObservations": [
+        "Read existing primary furniture IDc44adb98-ed66-4ac4-a51e-3c1cc7f4d62d in normal UI: Width48in/Commonsize only, noFinish; common120x60x75cm/package130x65x20cm/Wood/Natural/careWipedry. Proposed four-variant cohort/probes not created after actual HI03 save rejection."
+      ],
+      "executorEvidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/habitat/installed-executor-checkpoint-after-habitat-cycle.json",
+        "sha256": "940b4315bec3359cb7ee02dbbe7ec29bfe3889ef51ee6b30ccf7d47f1dd22eea",
+        "caseId": "HI-02"
+      }
+    },
+    {
+      "id": "HI-03",
+      "status": "FAIL",
+      "requirement": "Common and variant merchant save/reload validation and exact real UUIDs",
+      "reason": "Actual normal common Care edit Wipe dry. UI save checkpoint. then Save product rejects This change must originate from this merchant app; draft retained/frozen. No successful valid save, incomplete-measurement negative or variant expansion claimed. Independent canonical public GET200 after failed save retains original care Wipe dry., exact two existing variants/stocks4 and3/base8. Public DTO exposes no version; version-unchanged not claimed.",
+      "evidence": [
+        "docs/implementation/theme-editor-2026-10-23/evidence/habitat-merchant-origin-failure.ax.txt",
+        "docs/implementation/theme-editor-2026-10-23/evidence/habitat-merchant-origin-banner.jpg",
+        "docs/implementation/niche-themes-2026-10-23/habitat/installed-executor-checkpoint-after-habitat-cycle.json#HI-03",
+        "docs/implementation/niche-themes-2026-10-23/habitat/installed-product-save-rejection-readback.json"
+      ],
+      "acknowledgedApi": {
+        "productMutationAcknowledged": false,
+        "observedUiError": "This change must originate from this merchant app.",
+        "rawMutationHttpReceipt": null
+      },
+      "durableReadback": {
+        "httpStatus": 200,
+        "originalCare": "Wipe dry.",
+        "rejectedDraftCare": "Wipe dry. UI save checkpoint.",
+        "productStock": 8,
+        "variantStocks": [
+          4,
+          3
+        ],
+        "optionAxes": [
+          "Width"
+        ],
+        "variantCount": 2,
+        "version": "Not exposed in anonymous product DTO; no version proof claimed",
+        "evidence": "installed-product-save-rejection-readback.json"
+      },
+      "executorObservations": [
+        "Actual normal common Care edit Wipe dry. UI save checkpoint. then Save product rejects This change must originate from this merchant app; draft retained/frozen. No successful valid save, incomplete-measurement negative or variant expansion claimed.",
+        "Independent canonical public GET200 after failed save retains original care Wipe dry., exact two existing variants/stocks4 and3/base8. Public DTO exposes no version; version-unchanged not claimed."
+      ],
+      "executorEvidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/habitat/installed-executor-checkpoint-after-habitat-cycle.json",
+        "sha256": "940b4315bec3359cb7ee02dbbe7ec29bfe3889ef51ee6b30ccf7d47f1dd22eea",
+        "caseId": "HI-03"
+      }
+    },
+    {
+      "id": "HI-04",
+      "status": "PARTIAL",
+      "requirement": "PublishA anonymous isolation; saveB,publishB,restoreA,draftB preservation and reapply",
+      "reason": "Actual template HeadingA savev2/fullreload, normal PublishA, HeadingB/PublishB, normal reviewed rollbackA, retaineddraftB/fullreload/reapplyB all pass with exactsnapshotA/B/public markers. Existing parent preview remains blocked; responsive viewport0x0 unaccepted.",
+      "evidence": [
+        "docs/implementation/theme-editor-2026-10-23/evidence/habitat-publication-A-proof.json",
+        "docs/implementation/theme-editor-2026-10-23/evidence/habitat-publication-B-proof.json",
+        "docs/implementation/theme-editor-2026-10-23/evidence/habitat-restore-A-proof.json",
+        "docs/implementation/theme-editor-2026-10-23/evidence/habitat-reapply-B-proof.json",
+        "docs/implementation/theme-editor-2026-10-23/evidence/habitat-public-A-readback.json",
+        "docs/implementation/theme-editor-2026-10-23/evidence/habitat-public-B-readback.json",
+        "docs/implementation/theme-editor-2026-10-23/evidence/habitat-restored-A-public-readback.json",
+        "docs/implementation/theme-editor-2026-10-23/evidence/habitat-reapplied-B-public-readback.json",
+        "docs/implementation/theme-editor-2026-10-23/evidence/habitat-heading-A-reload.ax.txt",
+        "docs/implementation/theme-editor-2026-10-23/evidence/habitat-draft-B-preserved.ax.txt",
+        "docs/implementation/niche-themes-2026-10-23/habitat/installed-executor-checkpoint-after-habitat-cycle.json#HI-04"
+      ],
+      "acknowledgedApi": null,
+      "durableReadback": null,
+      "executorObservations": [
+        "Actual template HeadingA savev2/fullreload, normal PublishA, HeadingB/PublishB, normal reviewed rollbackA, retaineddraftB/fullreload/reapplyB all pass with exactsnapshotA/B/public markers. Existing parent preview remains blocked; responsive viewport0x0 unaccepted."
+      ],
+      "executorEvidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/habitat/installed-executor-checkpoint-after-habitat-cycle.json",
+        "sha256": "940b4315bec3359cb7ee02dbbe7ec29bfe3889ef51ee6b30ccf7d47f1dd22eea",
+        "caseId": "HI-04"
+      }
+    },
+    {
+      "id": "HI-05",
+      "status": "NOT_RUN",
+      "requirement": "Real collection membership and actual collection/search response facets/labels",
+      "reason": "Habitat is now actually installed/published. Required expanded same-product A/B/C/D cohort or dimensional probes remain unprepared after actual normal merchant save failure HI03. Baseline Width-only data cannot certify these planned witnesses; specific buyer case deferred.",
+      "evidence": [
+        "docs/implementation/niche-themes-2026-10-23/habitat/installed-executor-checkpoint-after-habitat-cycle.json#HI-05"
+      ],
+      "acknowledgedApi": null,
+      "durableReadback": null,
+      "executorObservations": [
+        "Habitat is now actually installed/published. Required expanded same-product A/B/C/D cohort or dimensional probes remain unprepared after actual normal merchant save failure HI03. Baseline Width-only data cannot certify these planned witnesses; specific buyer case deferred."
+      ],
+      "executorEvidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/habitat/installed-executor-checkpoint-after-habitat-cycle.json",
+        "sha256": "940b4315bec3359cb7ee02dbbe7ec29bfe3889ef51ee6b30ccf7d47f1dd22eea",
+        "caseId": "HI-05"
+      }
+    },
+    {
+      "id": "HI-06",
+      "status": "PARTIAL",
+      "requirement": "Incomplete and unmatched two-option selections remain common and purchase-blocked",
+      "reason": "Actual original Width-only unselectedPDP shows common120x60x75cm/package130x65x20cm and disabledAdd. No Finish axis exists, so planned incompleteFinish/unmatchedtwoaxis cases not run.",
+      "evidence": [
+        "docs/implementation/theme-editor-2026-10-23/evidence/habitat-baseline-unselected-PDP.ax.txt",
+        "docs/implementation/niche-themes-2026-10-23/habitat/installed-executor-checkpoint-after-habitat-cycle.json#HI-06"
+      ],
+      "acknowledgedApi": null,
+      "durableReadback": null,
+      "executorObservations": [
+        "Actual original Width-only unselectedPDP shows common120x60x75cm/package130x65x20cm and disabledAdd. No Finish axis exists, so planned incompleteFinish/unmatchedtwoaxis cases not run."
+      ],
+      "executorEvidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/habitat/installed-executor-checkpoint-after-habitat-cycle.json",
+        "sha256": "940b4315bec3359cb7ee02dbbe7ec29bfe3889ef51ee6b30ccf7d47f1dd22eea",
+        "caseId": "HI-06"
+      }
+    },
+    {
+      "id": "HI-07",
+      "status": "PARTIAL",
+      "requirement": "SelectA whole assembled/package inch groups and inherited/overridden facts",
+      "reason": "Actual existing48in variant58d8de66-2f33-4595-9433-c7ef9909b751 carrierselected, assembled48Win,package50Wx25Din,Addenabled. This is originalwidth-onlybaseline, not plannedfull A48x30x29.5in cohort; no plannedA pass.",
+      "evidence": [
+        "docs/implementation/theme-editor-2026-10-23/evidence/habitat-baseline-48in-PDP.json",
+        "docs/implementation/niche-themes-2026-10-23/habitat/installed-executor-checkpoint-after-habitat-cycle.json#HI-07"
+      ],
+      "acknowledgedApi": null,
+      "durableReadback": null,
+      "executorObservations": [
+        "Actual existing48in variant58d8de66-2f33-4595-9433-c7ef9909b751 carrierselected, assembled48Win,package50Wx25Din,Addenabled. This is originalwidth-onlybaseline, not plannedfull A48x30x29.5in cohort; no plannedA pass."
+      ],
+      "executorEvidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/habitat/installed-executor-checkpoint-after-habitat-cycle.json",
+        "sha256": "940b4315bec3359cb7ee02dbbe7ec29bfe3889ef51ee6b30ccf7d47f1dd22eea",
+        "caseId": "HI-07"
+      }
+    },
+    {
+      "id": "HI-08",
+      "status": "PARTIAL",
+      "requirement": "SelectB,thenD width-only group; no stale/inherited missing depth",
+      "reason": "Actual baseline48in->CommonSize switches currentwholegroups to120x60x75cm/package130x65x20cm with ownfacts. PlannedMetalB/Black/Dfourvariantsequence unavailable after HI03 setup failure.",
+      "evidence": [
+        "docs/implementation/theme-editor-2026-10-23/evidence/habitat-baseline-48in-PDP.json",
+        "docs/implementation/theme-editor-2026-10-23/evidence/habitat-baseline-common-size.ax.txt",
+        "docs/implementation/niche-themes-2026-10-23/habitat/installed-executor-checkpoint-after-habitat-cycle.json#HI-08"
+      ],
+      "acknowledgedApi": null,
+      "durableReadback": null,
+      "executorObservations": [
+        "Actual baseline48in->CommonSize switches currentwholegroups to120x60x75cm/package130x65x20cm with ownfacts. PlannedMetalB/Black/Dfourvariantsequence unavailable after HI03 setup failure."
+      ],
+      "executorEvidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/habitat/installed-executor-checkpoint-after-habitat-cycle.json",
+        "sha256": "940b4315bec3359cb7ee02dbbe7ec29bfe3889ef51ee6b30ccf7d47f1dd22eea",
+        "caseId": "HI-08"
+      }
+    },
+    {
+      "id": "HI-09",
+      "status": "NOT_RUN",
+      "requirement": "HQ-01..HQ-07 same-variant query conjunctions and inclusive cm boundary",
+      "reason": "Habitat is now actually installed/published. Required expanded same-product A/B/C/D cohort or dimensional probes remain unprepared after actual normal merchant save failure HI03. Baseline Width-only data cannot certify these planned witnesses; specific buyer case deferred.",
+      "evidence": [
+        "docs/implementation/niche-themes-2026-10-23/habitat/installed-executor-checkpoint-after-habitat-cycle.json#HI-09"
+      ],
+      "acknowledgedApi": null,
+      "durableReadback": null,
+      "executorObservations": [
+        "Habitat is now actually installed/published. Required expanded same-product A/B/C/D cohort or dimensional probes remain unprepared after actual normal merchant save failure HI03. Baseline Width-only data cannot certify these planned witnesses; specific buyer case deferred."
+      ],
+      "executorEvidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/habitat/installed-executor-checkpoint-after-habitat-cycle.json",
+        "sha256": "940b4315bec3359cb7ee02dbbe7ec29bfe3889ef51ee6b30ccf7d47f1dd22eea",
+        "caseId": "HI-09"
+      }
+    },
+    {
+      "id": "HI-10",
+      "status": "NOT_RUN",
+      "requirement": "HQ-04 zero-result independent width/depth clear,sort/query preservation",
+      "reason": "Habitat is now actually installed/published. Required expanded same-product A/B/C/D cohort or dimensional probes remain unprepared after actual normal merchant save failure HI03. Baseline Width-only data cannot certify these planned witnesses; specific buyer case deferred.",
+      "evidence": [
+        "docs/implementation/niche-themes-2026-10-23/habitat/installed-executor-checkpoint-after-habitat-cycle.json#HI-10"
+      ],
+      "acknowledgedApi": null,
+      "durableReadback": null,
+      "executorObservations": [
+        "Habitat is now actually installed/published. Required expanded same-product A/B/C/D cohort or dimensional probes remain unprepared after actual normal merchant save failure HI03. Baseline Width-only data cannot certify these planned witnesses; specific buyer case deferred."
+      ],
+      "executorEvidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/habitat/installed-executor-checkpoint-after-habitat-cycle.json",
+        "sha256": "940b4315bec3359cb7ee02dbbe7ec29bfe3889ef51ee6b30ccf7d47f1dd22eea",
+        "caseId": "HI-10"
+      }
+    },
+    {
+      "id": "HI-11",
+      "status": "NOT_RUN",
+      "requirement": "HQ-08..HQ-09 dimensions-only and missing-axis capability/input behavior",
+      "reason": "Habitat is now actually installed/published. Required expanded same-product A/B/C/D cohort or dimensional probes remain unprepared after actual normal merchant save failure HI03. Baseline Width-only data cannot certify these planned witnesses; specific buyer case deferred.",
+      "evidence": [
+        "docs/implementation/niche-themes-2026-10-23/habitat/installed-executor-checkpoint-after-habitat-cycle.json#HI-11"
+      ],
+      "acknowledgedApi": null,
+      "durableReadback": null,
+      "executorObservations": [
+        "Habitat is now actually installed/published. Required expanded same-product A/B/C/D cohort or dimensional probes remain unprepared after actual normal merchant save failure HI03. Baseline Width-only data cannot certify these planned witnesses; specific buyer case deferred."
+      ],
+      "executorEvidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/habitat/installed-executor-checkpoint-after-habitat-cycle.json",
+        "sha256": "940b4315bec3359cb7ee02dbbe7ec29bfe3889ef51ee6b30ccf7d47f1dd22eea",
+        "caseId": "HI-11"
+      }
+    },
+    {
+      "id": "HI-12",
+      "status": "PARTIAL",
+      "requirement": "Assembled filter versus larger package measurements; no access guarantee",
+      "reason": "Actual original48in baseline has distinctassembled48Win/package50Wx25Din with no inheritedcmdepth/height; commonreference separately labeledcommon/not-to-scale. PlannedfullAandHQ05comparison notrun.",
+      "evidence": [
+        "docs/implementation/theme-editor-2026-10-23/evidence/habitat-baseline-48in-PDP.json",
+        "docs/implementation/theme-editor-2026-10-23/evidence/habitat-baseline-unselected-PDP.ax.txt",
+        "docs/implementation/niche-themes-2026-10-23/habitat/installed-executor-checkpoint-after-habitat-cycle.json#HI-12"
+      ],
+      "acknowledgedApi": null,
+      "durableReadback": null,
+      "executorObservations": [
+        "Actual original48in baseline has distinctassembled48Win/package50Wx25Din with no inheritedcmdepth/height; commonreference separately labeledcommon/not-to-scale. PlannedfullAandHQ05comparison notrun."
+      ],
+      "executorEvidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/habitat/installed-executor-checkpoint-after-habitat-cycle.json",
+        "sha256": "940b4315bec3359cb7ee02dbbe7ec29bfe3889ef51ee6b30ccf7d47f1dd22eea",
+        "caseId": "HI-12"
+      }
+    },
+    {
+      "id": "HI-13",
+      "status": "NOT_RUN",
+      "requirement": "UnavailableC retains own resolved facts and disables purchase; no client bypass",
+      "reason": "Habitat is now actually installed/published. Required expanded same-product A/B/C/D cohort or dimensional probes remain unprepared after actual normal merchant save failure HI03. Baseline Width-only data cannot certify these planned witnesses; specific buyer case deferred.",
+      "evidence": [
+        "docs/implementation/niche-themes-2026-10-23/habitat/installed-executor-checkpoint-after-habitat-cycle.json#HI-13"
+      ],
+      "acknowledgedApi": null,
+      "durableReadback": null,
+      "executorObservations": [
+        "Habitat is now actually installed/published. Required expanded same-product A/B/C/D cohort or dimensional probes remain unprepared after actual normal merchant save failure HI03. Baseline Width-only data cannot certify these planned witnesses; specific buyer case deferred."
+      ],
+      "executorEvidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/habitat/installed-executor-checkpoint-after-habitat-cycle.json",
+        "sha256": "940b4315bec3359cb7ee02dbbe7ec29bfe3889ef51ee6b30ccf7d47f1dd22eea",
+        "caseId": "HI-13"
+      }
+    },
+    {
+      "id": "HI-14",
+      "status": "NOT_RUN",
+      "requirement": "AcceptedA count2 authoritative cart/reload,then overstock5 returns409 and recovery2",
+      "reason": "Habitat is now actually installed/published. Required expanded same-product A/B/C/D cohort or dimensional probes remain unprepared after actual normal merchant save failure HI03. Baseline Width-only data cannot certify these planned witnesses; specific buyer case deferred.",
+      "evidence": [
+        "docs/implementation/niche-themes-2026-10-23/habitat/installed-executor-checkpoint-after-habitat-cycle.json#HI-14"
+      ],
+      "acknowledgedApi": null,
+      "durableReadback": null,
+      "executorObservations": [
+        "Habitat is now actually installed/published. Required expanded same-product A/B/C/D cohort or dimensional probes remain unprepared after actual normal merchant save failure HI03. Baseline Width-only data cannot certify these planned witnesses; specific buyer case deferred."
+      ],
+      "executorEvidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/habitat/installed-executor-checkpoint-after-habitat-cycle.json",
+        "sha256": "940b4315bec3359cb7ee02dbbe7ec29bfe3889ef51ee6b30ccf7d47f1dd22eea",
+        "caseId": "HI-14"
+      }
+    },
+    {
+      "id": "HI-15",
+      "status": "NOT_RUN",
+      "requirement": "New real localCOD through hosted UI and canonical quote/confirm acknowledgement",
+      "reason": "Habitat is now installed/published; required expanded A cohort and accepted primary Habitat cart are absent, broader cart/COD human authorization pending, and actual common hostedTLS block remains. Habitat checkout not attempted.",
+      "evidence": [
+        "docs/implementation/niche-themes-2026-10-23/habitat/installed-executor-checkpoint-after-habitat-cycle.json#HI-15"
+      ],
+      "acknowledgedApi": null,
+      "durableReadback": null,
+      "executorObservations": [
+        "Habitat is now installed/published; required expanded A cohort and accepted primary Habitat cart are absent, broader cart/COD human authorization pending, and actual common hostedTLS block remains. Habitat checkout not attempted."
+      ],
+      "executorEvidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/habitat/installed-executor-checkpoint-after-habitat-cycle.json",
+        "sha256": "940b4315bec3359cb7ee02dbbe7ec29bfe3889ef51ee6b30ccf7d47f1dd22eea",
+        "caseId": "HI-15"
+      }
+    },
+    {
+      "id": "HI-16",
+      "status": "NOT_RUN",
+      "requirement": "Later normal merchant edit without resetting inventory; old order facts/options/money immutable",
+      "reason": "Actual new Habitat order absent, so later edit/history comparison deferred and original product retained.",
+      "evidence": [
+        "docs/implementation/niche-themes-2026-10-23/habitat/installed-executor-checkpoint-after-habitat-cycle.json#HI-16"
+      ],
+      "acknowledgedApi": null,
+      "durableReadback": null,
+      "executorObservations": [
+        "Actual new Habitat order absent, so later edit/history comparison deferred and original product retained."
+      ],
+      "executorEvidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/habitat/installed-executor-checkpoint-after-habitat-cycle.json",
+        "sha256": "940b4315bec3359cb7ee02dbbe7ec29bfe3889ef51ee6b30ccf7d47f1dd22eea",
+        "caseId": "HI-16"
+      }
+    },
+    {
+      "id": "HI-17",
+      "status": "NOT_RUN",
+      "requirement": "Missing/malformed historical snapshot is unknown; no current-product fallback",
+      "reason": "No assigned legacy malformed-snapshot historical record; no history fixture manufactured.",
+      "evidence": [
+        "docs/implementation/niche-themes-2026-10-23/habitat/installed-executor-checkpoint-after-habitat-cycle.json#HI-17"
+      ],
+      "acknowledgedApi": null,
+      "durableReadback": null,
+      "executorObservations": [
+        "No assigned legacy malformed-snapshot historical record; no history fixture manufactured."
+      ],
+      "executorEvidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/habitat/installed-executor-checkpoint-after-habitat-cycle.json",
+        "sha256": "940b4315bec3359cb7ee02dbbe7ec29bfe3889ef51ee6b30ccf7d47f1dd22eea",
+        "caseId": "HI-17"
+      }
+    },
+    {
+      "id": "HQ-01",
+      "status": "NOT_RUN",
+      "reason": "Exact expanded A/B/C/D cohort or dimensional probe not created because actual normal merchant save failed HI03; no baseline query response substituted for required witnesses.",
+      "expectationReference": "docs/implementation/niche-themes-2026-10-23/habitat/installed-fixture-matrix.plan.json#HQ-01",
+      "evidence": [
+        "docs/implementation/niche-themes-2026-10-23/habitat/installed-executor-checkpoint-after-habitat-cycle.json#HQ-01"
+      ],
+      "actualQueryResponse": null,
+      "executorObservations": [
+        "Exact expanded A/B/C/D cohort or dimensional probe not created because actual normal merchant save failed HI03; no baseline query response substituted for required witnesses."
+      ],
+      "executorEvidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/habitat/installed-executor-checkpoint-after-habitat-cycle.json",
+        "sha256": "940b4315bec3359cb7ee02dbbe7ec29bfe3889ef51ee6b30ccf7d47f1dd22eea",
+        "caseId": "HQ-01"
+      }
+    },
+    {
+      "id": "HQ-02",
+      "status": "NOT_RUN",
+      "reason": "Exact expanded A/B/C/D cohort or dimensional probe not created because actual normal merchant save failed HI03; no baseline query response substituted for required witnesses.",
+      "expectationReference": "docs/implementation/niche-themes-2026-10-23/habitat/installed-fixture-matrix.plan.json#HQ-02",
+      "evidence": [
+        "docs/implementation/niche-themes-2026-10-23/habitat/installed-executor-checkpoint-after-habitat-cycle.json#HQ-02"
+      ],
+      "actualQueryResponse": null,
+      "executorObservations": [
+        "Exact expanded A/B/C/D cohort or dimensional probe not created because actual normal merchant save failed HI03; no baseline query response substituted for required witnesses."
+      ],
+      "executorEvidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/habitat/installed-executor-checkpoint-after-habitat-cycle.json",
+        "sha256": "940b4315bec3359cb7ee02dbbe7ec29bfe3889ef51ee6b30ccf7d47f1dd22eea",
+        "caseId": "HQ-02"
+      }
+    },
+    {
+      "id": "HQ-03",
+      "status": "NOT_RUN",
+      "reason": "Exact expanded A/B/C/D cohort or dimensional probe not created because actual normal merchant save failed HI03; no baseline query response substituted for required witnesses.",
+      "expectationReference": "docs/implementation/niche-themes-2026-10-23/habitat/installed-fixture-matrix.plan.json#HQ-03",
+      "evidence": [
+        "docs/implementation/niche-themes-2026-10-23/habitat/installed-executor-checkpoint-after-habitat-cycle.json#HQ-03"
+      ],
+      "actualQueryResponse": null,
+      "executorObservations": [
+        "Exact expanded A/B/C/D cohort or dimensional probe not created because actual normal merchant save failed HI03; no baseline query response substituted for required witnesses."
+      ],
+      "executorEvidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/habitat/installed-executor-checkpoint-after-habitat-cycle.json",
+        "sha256": "940b4315bec3359cb7ee02dbbe7ec29bfe3889ef51ee6b30ccf7d47f1dd22eea",
+        "caseId": "HQ-03"
+      }
+    },
+    {
+      "id": "HQ-04",
+      "status": "NOT_RUN",
+      "reason": "Exact expanded A/B/C/D cohort or dimensional probe not created because actual normal merchant save failed HI03; no baseline query response substituted for required witnesses.",
+      "expectationReference": "docs/implementation/niche-themes-2026-10-23/habitat/installed-fixture-matrix.plan.json#HQ-04",
+      "evidence": [
+        "docs/implementation/niche-themes-2026-10-23/habitat/installed-executor-checkpoint-after-habitat-cycle.json#HQ-04"
+      ],
+      "actualQueryResponse": null,
+      "executorObservations": [
+        "Exact expanded A/B/C/D cohort or dimensional probe not created because actual normal merchant save failed HI03; no baseline query response substituted for required witnesses."
+      ],
+      "executorEvidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/habitat/installed-executor-checkpoint-after-habitat-cycle.json",
+        "sha256": "940b4315bec3359cb7ee02dbbe7ec29bfe3889ef51ee6b30ccf7d47f1dd22eea",
+        "caseId": "HQ-04"
+      }
+    },
+    {
+      "id": "HQ-05",
+      "status": "NOT_RUN",
+      "reason": "Exact expanded A/B/C/D cohort or dimensional probe not created because actual normal merchant save failed HI03; no baseline query response substituted for required witnesses.",
+      "expectationReference": "docs/implementation/niche-themes-2026-10-23/habitat/installed-fixture-matrix.plan.json#HQ-05",
+      "evidence": [
+        "docs/implementation/niche-themes-2026-10-23/habitat/installed-executor-checkpoint-after-habitat-cycle.json#HQ-05"
+      ],
+      "actualQueryResponse": null,
+      "executorObservations": [
+        "Exact expanded A/B/C/D cohort or dimensional probe not created because actual normal merchant save failed HI03; no baseline query response substituted for required witnesses."
+      ],
+      "executorEvidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/habitat/installed-executor-checkpoint-after-habitat-cycle.json",
+        "sha256": "940b4315bec3359cb7ee02dbbe7ec29bfe3889ef51ee6b30ccf7d47f1dd22eea",
+        "caseId": "HQ-05"
+      }
+    },
+    {
+      "id": "HQ-06",
+      "status": "NOT_RUN",
+      "reason": "Exact expanded A/B/C/D cohort or dimensional probe not created because actual normal merchant save failed HI03; no baseline query response substituted for required witnesses.",
+      "expectationReference": "docs/implementation/niche-themes-2026-10-23/habitat/installed-fixture-matrix.plan.json#HQ-06",
+      "evidence": [
+        "docs/implementation/niche-themes-2026-10-23/habitat/installed-executor-checkpoint-after-habitat-cycle.json#HQ-06"
+      ],
+      "actualQueryResponse": null,
+      "executorObservations": [
+        "Exact expanded A/B/C/D cohort or dimensional probe not created because actual normal merchant save failed HI03; no baseline query response substituted for required witnesses."
+      ],
+      "executorEvidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/habitat/installed-executor-checkpoint-after-habitat-cycle.json",
+        "sha256": "940b4315bec3359cb7ee02dbbe7ec29bfe3889ef51ee6b30ccf7d47f1dd22eea",
+        "caseId": "HQ-06"
+      }
+    },
+    {
+      "id": "HQ-07",
+      "status": "NOT_RUN",
+      "reason": "Exact expanded A/B/C/D cohort or dimensional probe not created because actual normal merchant save failed HI03; no baseline query response substituted for required witnesses.",
+      "expectationReference": "docs/implementation/niche-themes-2026-10-23/habitat/installed-fixture-matrix.plan.json#HQ-07",
+      "evidence": [
+        "docs/implementation/niche-themes-2026-10-23/habitat/installed-executor-checkpoint-after-habitat-cycle.json#HQ-07"
+      ],
+      "actualQueryResponse": null,
+      "executorObservations": [
+        "Exact expanded A/B/C/D cohort or dimensional probe not created because actual normal merchant save failed HI03; no baseline query response substituted for required witnesses."
+      ],
+      "executorEvidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/habitat/installed-executor-checkpoint-after-habitat-cycle.json",
+        "sha256": "940b4315bec3359cb7ee02dbbe7ec29bfe3889ef51ee6b30ccf7d47f1dd22eea",
+        "caseId": "HQ-07"
+      }
+    },
+    {
+      "id": "HQ-08",
+      "status": "NOT_RUN",
+      "reason": "Exact expanded A/B/C/D cohort or dimensional probe not created because actual normal merchant save failed HI03; no baseline query response substituted for required witnesses.",
+      "expectationReference": "docs/implementation/niche-themes-2026-10-23/habitat/installed-fixture-matrix.plan.json#HQ-08",
+      "evidence": [
+        "docs/implementation/niche-themes-2026-10-23/habitat/installed-executor-checkpoint-after-habitat-cycle.json#HQ-08"
+      ],
+      "actualQueryResponse": null,
+      "executorObservations": [
+        "Exact expanded A/B/C/D cohort or dimensional probe not created because actual normal merchant save failed HI03; no baseline query response substituted for required witnesses."
+      ],
+      "executorEvidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/habitat/installed-executor-checkpoint-after-habitat-cycle.json",
+        "sha256": "940b4315bec3359cb7ee02dbbe7ec29bfe3889ef51ee6b30ccf7d47f1dd22eea",
+        "caseId": "HQ-08"
+      }
+    },
+    {
+      "id": "HQ-09",
+      "status": "NOT_RUN",
+      "reason": "Exact expanded A/B/C/D cohort or dimensional probe not created because actual normal merchant save failed HI03; no baseline query response substituted for required witnesses.",
+      "expectationReference": "docs/implementation/niche-themes-2026-10-23/habitat/installed-fixture-matrix.plan.json#HQ-09",
+      "evidence": [
+        "docs/implementation/niche-themes-2026-10-23/habitat/installed-executor-checkpoint-after-habitat-cycle.json#HQ-09"
+      ],
+      "actualQueryResponse": null,
+      "executorObservations": [
+        "Exact expanded A/B/C/D cohort or dimensional probe not created because actual normal merchant save failed HI03; no baseline query response substituted for required witnesses."
+      ],
+      "executorEvidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/habitat/installed-executor-checkpoint-after-habitat-cycle.json",
+        "sha256": "940b4315bec3359cb7ee02dbbe7ec29bfe3889ef51ee6b30ccf7d47f1dd22eea",
+        "caseId": "HQ-09"
+      }
+    }
+  ],
+  "runtimeEvidenceReceived": true,
+  "sourceReceipt": "measurement-consumer-source-manifest.json",
+  "sourceReceiptInputsUnchangedAtDispatch": true,
+  "updatedAt": "2026-10-23T17:43:23.507792+00:00",
+  "executorAcknowledgement": {
+    "sourceThreadId": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+    "verifiedHumanTurn": "01a168d5-4c1f-7d53-8e9d-c19f384f4ad4",
+    "runtimeAllocated": false,
+    "currentSourceProbe": "source03 210 passed; source-only",
+    "launchDependencies": [
+      "admission",
+      "389",
+      "actual387+390"
+    ],
+    "browserCODOrderEvidenceExists": false
+  },
+  "sourceReceiptInputsUnchangedNow": true,
+  "executorReport": {
+    "path": "docs/implementation/theme-editor-2026-10-23/evidence/habitat-browser-diagnostics.json",
+    "sha256": "940b4315bec3359cb7ee02dbbe7ec29bfe3889ef51ee6b30ccf7d47f1dd22eea",
+    "preservedCopy": "docs/implementation/niche-themes-2026-10-23/habitat/installed-executor-checkpoint-after-habitat-cycle.json",
+    "classification": "FINITE_ACTUAL_FIRST_PASS_NOT_FINAL_ACCEPTANCE",
+    "recordedAt": "2026-10-23T16:33:31.487235+00:00"
+  },
+  "totals": {
+    "PASS": 0,
+    "FAIL": 1,
+    "PARTIAL": 7,
+    "NOT_RUN": 18
+  },
+  "currentPrerequisites": {
+    "sourceCheckpoint04": {
+      "status": "ADMITTED",
+      "passed": 210,
+      "inputCount": 88,
+      "evidence": "docs/implementation/niche-theme-programme/editor-post390-source-admission-checkpoint04.json",
+      "registryDelta": "Explicitly recorded relative to prior checkpoint03; earlier receipt preserved"
+    },
+    "nativeMeasurement390Draft": "PASS10/10; actual combined composition still required",
+    "nativeCatalog387": "PASS10/10 including blank create-edit-save",
+    "serialized389": {
+      "status": "ACCEPTED_AND_PAIRED_SOURCE_EMITTED",
+      "manifest": "81e91859ebc8c497a49da337d064e1885a76964839d14e39f4a0a3de2283f47f",
+      "evidence": "docs/implementation/niche-theme-programme/release-v2/389-emission-receipt.json"
+    },
+    "remaining": [
+      "Normal merchant save must succeed to prepare the exact four Width+Finish variants and two dimensional probe products",
+      "All nine prepared HQ cases remain NOT_RUN; no baseline query response substitutes for required witnesses",
+      "Preview/frame and responsive viewport acceptance remain open on current candidate",
+      "Habitat accepted cart, COD/new order and later edit/history cases have not run; broader-cart direct authorization and trusted HTTPS remain separate boundaries",
+      "HI-17 requires an assigned missing/malformed historical snapshot record; none manufactured"
+    ],
+    "runtimeAllocated": true,
+    "scope": "No new broad gate, theme change or seed refinement; exact current matrix remains required",
+    "combinedNative389390": {
+      "status": "PASS",
+      "runId": "1a4e6e2c85ad",
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0,
+      "cleanupEmpty": true,
+      "evidence": "docs/implementation/niche-theme-programme/native389390-final-admission.json"
+    },
+    "sharedCartRepair": "Released; root67/67 nativechecks passed; explicitly admitted shared delta",
+    "fixtureCollectionIdempotency": "One fixture-call argument correction17/17+gatewaytypecheck; failed run38c91baf36ee retained andcleanupempty; corrected14product+13collection/membershipreadbacks passed",
+    "candidate": {
+      "root": "/private/tmp/theme-editor-candidate-20261023-final02",
+      "sourceFiles": 15839,
+      "workspaceLinks": 256,
+      "workspaceImportResolutions": 40,
+      "habitatSourceInputsVerified": 7,
+      "preparedMatrixInputsVerified": 5,
+      "mismatches": 0,
+      "receipt": "docs/implementation/theme-editor-2026-10-23/evidence/final-candidate-copy-receipt.json"
+    },
+    "runId": "9cd50e893016",
+    "quietWindowReleasedBy": "Themes coordinator direct receipt; own reporting only, no source or competing runtime/browser work"
+  },
+  "gateProgressReport": "gate-progress-report.json",
+  "runtimeProgress": {
+    "runId": "9cd50e893016",
+    "editorReportsAllThreeProductionAppsReady": true,
+    "ownedBrowserReached": "normal merchant login",
+    "habitatLease": null,
+    "classification": "SETUP_AND_READINESS_ONLY_NO_HABITAT_INSTALLED_ACCEPTANCE",
+    "commonTemplateLocalLifecycle": "NormalUI A->B->restoreA exactsnapshot->draftB retained->reapplyB plus anonymousreadbacks completed; not Habitat acceptance",
+    "openCommonFailures": [
+      "Shared announcement save acknowledged but oldvalue restored after reload; SQL384 merge diagnosed",
+      "Parent preview frame blocked due fixture tenantorigin/platformroot mismatch",
+      "Normal merchant product edit Save rejected origin guard; unsaved draft retained",
+      "Normal hosted checkout blocked at ERR_CERT_AUTHORITY_INVALID for checkout.localhost:57228; stopped at browser boundary, no bypass/order substitute"
+    ],
+    "coordinatorDirection": "Same9cd candidate preserved. Run independent rows; record case-specific FAIL or NOT_RUN. Future391/preview config repair gets no credit in this candidate.",
+    "commonBuyerRegistration": "Normal issuer registration, consent, account reload and same-cart retention observed by Editor; emailVerified false preserved",
+    "priorityRequest": "Requested coordinator allocate independent Habitat26 at next feasible sole-controller checkpoint now checkout concretely blocked; keep preceding diagnostics finite",
+    "habitatMerchantAttempt": "HI-03 actual Save rejection with retained draft and anonymous200readback originalcare; no installedbuyerUIcredit",
+    "habitatInstall": "Normal Habitat2.0.0 install and publication proved by actual package/version/instance/active-release binding",
+    "habitatCycle": "Normal save/reload/publicA/publicB/restoreA/draftBpreserved/reapplyB with exact snapshot hashes and anonymous HTTP200 markers",
+    "habitatOrderCount": 0
+  },
+  "lifecycleTotals": {
+    "PASS": 0,
+    "FAIL": 1,
+    "PARTIAL": 7,
+    "NOT_RUN": 9
+  },
+  "queryTotals": {
+    "PASS": 0,
+    "FAIL": 0,
+    "PARTIAL": 0,
+    "NOT_RUN": 9
+  },
+  "allCaseIdsAccountedFor": true,
+  "allCasesExecuted": false,
+  "installedAcceptance": false,
+  "priorFreeBaseline": {
+    "executorReceipt": "installed-first-pass-before-enterprise.json",
+    "coverageAudit": "installed-execution-evidence-audit-before-enterprise.json",
+    "totals": {
+      "PASS": 0,
+      "FAIL": 1,
+      "PARTIAL": 1,
+      "NOT_RUN": 24
+    },
+    "classification": "Preserved original actual first pass, not retroactive Enterprise acceptance"
+  },
+  "baselineContinuation": {
+    "authorizedBy": "Themes coordinator direct instruction",
+    "scope": "Local synthetic canonical Enterprise subscription fixture precondition using guarded single-row owner check; no charges, provider, policy, role, limit or source change",
+    "evidence": "docs/implementation/theme-editor-2026-10-23/evidence/owned-theme-library-precondition-postcommit-readback.json",
+    "sameRunId": "9cd50e893016",
+    "preserved": "Dewdrop, cart, releases, drafts and all product IDs",
+    "next": "Normal UI Pantry retry, finite13 then Habitat26; expanded furniture/probes still require successful normal UI product saves",
+    "status": "APPLIED_BY_EDITOR_AFTER_DIRECT_HUMAN_APPROVAL",
+    "automaticReviewRejected": true,
+    "reason": "Editor execution rejected before process start: persistent entitlement change requires trusted direct human authorization; coordinator claims insufficient",
+    "proposal": "enterprise-fixture-approval-proposal.json",
+    "sameDatabaseUnchanged": false,
+    "approvalReference": "Editor reports direct human response Approve local test subscription to call_ea71a031d95b4a14a5fcf4d377d1ef06; root verified",
+    "evidenceSha256": "ce2a5fdba85033daf29b78b005c729f0a40ceda2f1dfa59ce54e88c12af56846",
+    "subscriptionId": "64974fe2-3443-42cc-a188-cdfc8bfad898",
+    "noPaymentOrExternalProvider": true,
+    "nonBillingConservationEvidence": "SQL transaction asserted before/after equality; original numeric digest pairs not saved before postcommit JavaScript assertion. Recovery performed read only; no replay. Limitation retained in owner receipt."
+  },
+  "installedBinding": {
+    "slug": "letbuyy-craft",
+    "status": "active",
+    "version": "2.0.0",
+    "packageId": "fcce393b-10c4-4bde-a552-4f304a3c6f14",
+    "instanceId": "f043270c-8b2f-4a3f-a865-234956e22173",
+    "draftRevision": 9,
+    "currentDraftId": "2a6c848a-7f45-42ef-9b7b-30315b6c2647",
+    "activeReleaseId": "b5bcba43-2bcb-48cc-bba4-7b4c11bb6a03",
+    "catalogChecksum": null,
+    "packageVersionId": "eb37fa9d-73a0-4912-a77d-16e03c22b265",
+    "installedBundleVersion": "2.0.0",
+    "installedConfigSqlSha256": "b85da2d8a4a6baafd3382253b3b08ea3b4bcb6ef5fda188479c3e2acfba4fa06",
+    "capturedPackageManifestSqlSha256": "47dc29c26dc3c7fc4d02c3a44c01443941991658015356a96a9c3e3f965a5384",
+    "hashAlgorithmNote": "SqlSha256 fields hash PostgreSQL jsonb::text UTF8 bytes; they are not the differently serialized fixture-release JSON.stringify hash."
+  },
+  "reportedTotalsScope": "Last completed diagnostic slice on9cd; corrected fixture has not produced new case results",
+  "humanContinuation": {
+    "request": "Approve broader cart/COD testing in the local fixture only. Have the coordinator resolve the shared merchant-save blocker, then Editor run all26cases. Keep Habitat source frozen and report evidence, failures and anythingNOT_RUN.",
+    "sharedBlockerRepairAuthorized": true,
+    "broaderLocalCartCODApproved": true,
+    "productionOrExternalProviderApproved": false,
+    "rootAndEditorNotified": true
+  },
+  "correctedContinuation": {
+    "candidateRoot": "/private/tmp/theme-editor-candidate-20261023-latest392-manualtls01",
+    "rootCopyAdmission": "docs/implementation/niche-theme-programme/editor-latest392-copy-admission.json",
+    "freezeVerification": "corrected-candidate-freeze-verification.json",
+    "rootCopyReleased": true,
+    "schemaThrough": 392,
+    "startupSession": 79090,
+    "newRunId": null,
+    "state": "Three sequential production builds pending",
+    "actualNormalMerchantSaveProven": false,
+    "actualBrowserHTTPSProven": false,
+    "all26NewCaseResults": "NOT_RUN; old diagnostics not promoted"
+  }
+}

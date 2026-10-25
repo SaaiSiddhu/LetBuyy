@@ -1,0 +1,311 @@
+{
+  "recordedAt": "2026-10-23T17:33:11.286407+00:00",
+  "status": "READONLY_STARTUP_HANDOFF_PENDING_FINAL_OBSERVER_SOURCE_AND_COPY_LAUNCH_ADMISSION",
+  "sourceRoot": "/Volumes/Projects/LetBuyy",
+  "observedInputs": [
+    {
+      "path": "/private/tmp/theme-editor-prepare-candidate.py",
+      "sha256": "0857d4be9d84c73f3d5d7cb34b64fafab221df959370942eb1124ffda8971e93",
+      "bytes": 6188
+    },
+    {
+      "path": "/private/tmp/theme-editor-verify-candidate-collection-fix.mjs",
+      "sha256": "bc17e24c2b43a404146ce400aab1ebf087f7d63bd21542fd9934c8684794c717",
+      "bytes": 3363
+    },
+    {
+      "path": "scripts/governance/run-executable-suites.mjs",
+      "sha256": "022085746f83c94979889a303044aa3b4503d53606f3f1e2ad3bd3084bc75213",
+      "bytes": 34889
+    },
+    {
+      "path": "scripts/governance/executable-pg-fixture.mjs",
+      "sha256": "1d4d39cd88c2469d4916bd5e770b91a3ca50bc900c4572d899a8620f69f30fea",
+      "bytes": 28692
+    },
+    {
+      "path": "scripts/governance/owned-database-provision.mjs",
+      "sha256": "e537a426bf0284a32d49728f31ea55d5d265f1dc5562ccb527a36c55eaaa0db7",
+      "bytes": 7532
+    },
+    {
+      "path": "scripts/governance/owned-fixture-guard.mjs",
+      "sha256": "c94f451113535b4c89a1a37d441453ba7803b08e46a328097c7086e1d22835f8",
+      "bytes": 17284
+    },
+    {
+      "path": "scripts/governance/owned-rest-proxy.mjs",
+      "sha256": "1b42adf835aea3adde998692398b4780d21d8d3a3ad8afa5bdc16cdd67b221e8",
+      "bytes": 3889
+    },
+    {
+      "path": "scripts/governance/owned-client-launcher.mjs",
+      "sha256": "2360564b5509bad66157dd4aa29a12c13bdb684bb0bf3b531a0f7251fa34f55f",
+      "bytes": 10341
+    },
+    {
+      "path": "scripts/governance/owned-next-production.mjs",
+      "sha256": "faca5a456437e6bc0979530cd28e712ad002d880e357215f2334aed7e5e68772",
+      "bytes": 2001
+    },
+    {
+      "path": "scripts/governance/owned-next-directory.mjs",
+      "sha256": "461eed7dcfa671e2f9bd9c1e8a854cd9afabe7a0bc66b1c7acf6e1230a902ad2",
+      "bytes": 4007
+    },
+    {
+      "path": "scripts/governance/owned-client-host-policy.mjs",
+      "sha256": "84859974f97664e41dac86b9e32106d2fd39151e36cb4728937b2311a2ff63e3",
+      "bytes": 1114
+    },
+    {
+      "path": "scripts/governance/owned-client-url-policy.mjs",
+      "sha256": "cf3d6fa3bc83216b1a4f979b2cd13b6f8184f80da2b204b7467f176868d837d0",
+      "bytes": 501
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/owned-db-support.ts",
+      "sha256": "bd87cee74313edf0842c275a944814c6f63b2a6e90353d5428fbef30c8301f12",
+      "bytes": 37692
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/theme-editor-browser.manual.ts",
+      "sha256": "722a170a86cdaaabd3503f3360d810d0e59b55f58dc1cc39cfc95f399a5df177",
+      "bytes": 988
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/threadline-browser-fixture.ts",
+      "sha256": "8a58c5d250239434ab52cd63540e8d9ba1160c26df75168fc5b82ba207c24910",
+      "bytes": 22080
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/threadline-qa-fixture.ts",
+      "sha256": "8e0880ac5f1b699d99faa4e4a47b9b6966d79a984858807a51b2d04eee65f997",
+      "bytes": 30733
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/theme-editor-fixture-observation.ts",
+      "sha256": "8e83deb402f138bace7ed37630f4212108e9fa121f02b0b31054e1cf4a32a44f",
+      "bytes": 12577
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "sha256": "15fd89109bbc17e0624e29d5a1b56db07e19f1f880c44d9a9abf847b52b6d09a",
+      "bytes": 380811
+    },
+    {
+      "path": "pnpm-workspace.yaml",
+      "sha256": "6e956d5e269cd13b4a739c5d17f80cb8bc34dc6feb257bf6558412a7f1f1cdc5",
+      "bytes": 2016
+    },
+    {
+      "path": "package.json",
+      "sha256": "39f2b3875b7321c5cae971d3f65ff545934e43470be9802be5f294332d116894",
+      "bytes": 19034
+    },
+    {
+      "path": "node_modules/.modules.yaml",
+      "sha256": "3aff4557ac5373e5d46354823615e81e3d6699002468242b500bdccb4abcfff1",
+      "bytes": 71279
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/dependent-latest392-native-admission.json",
+      "sha256": "1738fce154529168c02de2631ec46f97f18b2a3f5fb521da2c1a883ab2d33b7e",
+      "bytes": 2793
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/editor-enterprise-startup-source-admission.json",
+      "sha256": "fe80b645e9d0a42e02e3163e55818e0f520ec406b31c7f44feef4f7b519da754",
+      "bytes": 1315
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/trusted-checkout-setup-receipt.json",
+      "sha256": "8658d2bf36c28abcd18a8714171530c8e2e811cf34dc2eb2a1e34caf3654b2f4",
+      "bytes": 2657
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/platform-origin-query-source-admission.json",
+      "sha256": "821d9cd4273b1d602bda09014614f8fde8ce56797ccfd9e2b5a64963383df8a2",
+      "bytes": 2291
+    },
+    {
+      "path": "apps/platform/identity/package.json",
+      "sha256": "c41daacd67a1272b04ab764737793173c3f532adfb98933759f5cb7c3e8f5c3c",
+      "bytes": 1120
+    },
+    {
+      "path": "apps/merchant/web/package.json",
+      "sha256": "d8f36114e974952c712c7145c351f15e5fe9bf849d1771026eef492040ef77a3",
+      "bytes": 2931
+    },
+    {
+      "path": "apps/commerce/web/package.json",
+      "sha256": "e20e2f225259e33bf3cca93461e5edcdc65d576b2c5b94ab459b25f5f1a1b40b",
+      "bytes": 4991
+    },
+    {
+      "path": "services/api-gateway/package.json",
+      "sha256": "006f5ca798153eb68abd401b65c386cc412430dfe3104747ea14264fd3b0da75",
+      "bytes": 1991
+    },
+    {
+      "path": "database/supabase/migrations/389_niche_theme_catalog_v2.sql",
+      "sha256": "3d9a5e0344db7537558554b723ffc134707bf7b98fe4941bc6bf268bd7330e61",
+      "bytes": 5824537
+    },
+    {
+      "path": "database/supabase/rollback/389_niche_theme_catalog_v2.rollback.sql",
+      "sha256": "aecbd647393ac9dcec1466d8b7f80e21cd89a1522b6956bd0c9c479529e45927",
+      "bytes": 2744
+    },
+    {
+      "path": "database/supabase/migrations/390_storefront_measurement_capabilities.sql",
+      "sha256": "6e5eb5e50cecd43acc9a663dd79c505db6c7bfdbe4e559b34d998065f88e9027",
+      "bytes": 26476
+    },
+    {
+      "path": "database/supabase/rollback/390_storefront_measurement_capabilities.rollback.sql",
+      "sha256": "1aca479d735539ec3d92974da0eed7b8e48e83e874d8612ea78dba7acc91cb7a",
+      "bytes": 24601
+    },
+    {
+      "path": "database/supabase/migrations/391_theme_editor_shared_groups.sql",
+      "sha256": "27fa0234ad98c4b924fb0d1ecec22e9f592ab533f438ca348f99e4c6bb17a17c",
+      "bytes": 26249
+    },
+    {
+      "path": "database/supabase/rollback/391_theme_editor_shared_groups.rollback.sql",
+      "sha256": "7fea9fbf09df7f8f3af189ce3e406d3f7582ae2c371bf4dde225b59f91f25b54",
+      "bytes": 25784
+    },
+    {
+      "path": "database/supabase/migrations/392_storefront_electronics_search.sql",
+      "sha256": "f17f659b8d037c34f02b9cc1cda912ede406bda7950f99310ebae5ca77c61171",
+      "bytes": 27178
+    },
+    {
+      "path": "database/supabase/rollback/392_storefront_electronics_search.rollback.sql",
+      "sha256": "b66f348b56f8f45c60eacf1ba63e1f10177a2be6c0e9d33eb829649838d6a73e",
+      "bytes": 26513
+    }
+  ],
+  "rootNativeReceipt": {
+    "path": "docs/implementation/niche-theme-programme/dependent-latest392-native-admission.json",
+    "sha256": "1738fce154529168c02de2631ec46f97f18b2a3f5fb521da2c1a883ab2d33b7e",
+    "bytes": 2793
+  },
+  "historicalNativeRun": "bc5db405796b",
+  "historicalNativeResult": "19PASS/0FAIL/0SKIP; frozen, not rerun",
+  "enterpriseStartupSource": {
+    "rootReceipt": {
+      "path": "docs/implementation/niche-theme-programme/editor-enterprise-startup-source-admission.json",
+      "sha256": "fe80b645e9d0a42e02e3163e55818e0f520ec406b31c7f44feef4f7b519da754",
+      "bytes": 1315
+    },
+    "fixturePriorSha256": "3cd5e06a69fe97d6094a0b5dda168b7a67908ba975166008f9638b1e42eae445",
+    "fixtureObservedAdmittedSha256": "8a58c5d250239434ab52cd63540e8d9ba1160c26df75168fc5b82ba207c24910",
+    "historical816PinsReinterpreted": false,
+    "actualSetupExecution": "NOT_RUN"
+  },
+  "nativeByteProtection": {
+    "ownedGuardAndBindingExact": true,
+    "ownedGuardAndBindingSha256": "77d9dfb051678a2eb55f9a2e68faf7de0e44150748139814661cde568b33f8c1",
+    "defaultNativeGenerationBodyExact": true,
+    "defaultNativeBodySha256": "ba74460b6ccf58b1592a9d7038e161ba5413df933d2e35aa976c164c32e73586",
+    "method": "Read-only exact source slices versus archived pre-admission helper; no tests/certificate commands executed"
+  },
+  "proposalOnly": {
+    "cwd": "/private/tmp/theme-editor-candidate-20261023-latest392-manualtls01",
+    "candidatePathCurrentlyExists": false,
+    "allOutputPathsFreshAtObservation": true,
+    "copyArgv": [
+      "python3",
+      "/private/tmp/theme-editor-prepare-candidate.py",
+      "/private/tmp/theme-editor-candidate-20261023-latest392-manualtls01"
+    ],
+    "startupArgv": [
+      "node",
+      "scripts/governance/run-executable-suites.mjs",
+      "--kind",
+      "gateway-db",
+      "--suite",
+      "services/api-gateway/src/__tests__/owned-db/theme-editor-browser.manual.ts",
+      "--jobs",
+      "1",
+      "--no-reap",
+      "--prepared-transactions",
+      "2",
+      "--timeout",
+      "24000",
+      "--log-dir",
+      "/private/tmp/theme-editor-latest392-manualtls01-suite-logs",
+      "--json-out",
+      "/private/tmp/theme-editor-latest392-manualtls01-runner.json",
+      "--json"
+    ],
+    "unsetEnvironment": [
+      "LETBUYY_THREADLINE_BROWSER_HOLD",
+      "LETBUYY_THREADLINE_QA",
+      "LETBUYY_THREADLINE_STATE_PATH",
+      "LETBUYY_THREADLINE_MAILPIT_ORIGIN",
+      "LETBUYY_EXECUTABLE_REPORT_DIR"
+    ],
+    "setEnvironment": {
+      "LETBUYY_THEME_EDITOR_BROWSER_HOLD": "1",
+      "LETBUYY_THREADLINE_PRODUCTION_BROWSER": "1",
+      "LETBUYY_MANUAL_CHECKOUT_TLS_MODE": "manual-os-trusted"
+    },
+    "stdout": "/private/tmp/theme-editor-latest392-manualtls01-runner.stdout",
+    "stderr": "/private/tmp/theme-editor-latest392-manualtls01-runner.stderr",
+    "migrationCeiling": null,
+    "sourceMaxRequired": 392,
+    "expectedMigrationFiles": 321,
+    "runnerTimeoutSeconds": 24000,
+    "serviceKeyLifetimeSeconds": 24300,
+    "fixtureHoldSecondsAfterReady": 21600,
+    "timeoutCaveat": "Coordinator proposes24000s outer budget:21600s hold plus2400s setup/build margin. Six-hour internal hold is unchanged; if setup/build exceeds40min the outer deadline still cuts the available browser hold. No launch performed.",
+    "startupBuildMarginSeconds": 2400
+  },
+  "ambientOverridePresenceAtObservation": {
+    "NODE_OPTIONS": false,
+    "NODE_PATH": false,
+    "LETBUYY_EXECUTABLE_PG_IMAGE": false,
+    "LETBUYY_EXECUTABLE_REST_IMAGE": false,
+    "DOCKER_HOST": false,
+    "DOCKER_CONTEXT": false
+  },
+  "dependencies": {
+    "observation": {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/candidate-handoff/dependency-observation.json",
+      "sha256": "a6858ef3e036e9bef56dbd8d281f69a67e2639b40af6d2f026b2fa1e7b1414e0",
+      "bytes": 30803
+    },
+    "currentWorkspaceResolutions": 40,
+    "freshCandidateProof": "NOT_RUN_NO_COPY",
+    "oldVerifierReusableUnmodified": false,
+    "why": "Old verifier hardcodes fixture0a867 and old source epoch; final allowed source map must include 391/392, manual TLS, enterprise and separately admitted observer changes."
+  },
+  "copySourceQuietWindow": "ALL inventoried tracked/modified/intended-untracked files, including docs/receipts, stable across both complete inventory passes. This handoff must finish before coordinator starts the window. Installed dependency stores also stay unchanged through build and held run.",
+  "pending": [
+    "Final bounded observer/replay source release and exact coordinator source pin",
+    "Coordinator grants source-copy quiet window and admits final source/dependency proof",
+    "Coordinator allocates one owned production-build/DB lane and Editor sole browser slot",
+    "Actual new runtime readiness, canonical Enterprise allowance readback and normal trusted HTTPS browser proof"
+  ],
+  "performed": {
+    "sourceReads": true,
+    "ownHandoffDocsOnly": true,
+    "copy": false,
+    "dependencyInstall": false,
+    "nativeRetest": false,
+    "build": false,
+    "database": false,
+    "runtime": false,
+    "browser": false,
+    "certificateOrTrustCommand": false,
+    "privateCertificateOrKeyRead": false,
+    "retainedFixtureAccess": false
+  },
+  "updatedAt": "2026-10-23T17:34:50.573056+00:00",
+  "budgetSource": "Latest Root bounded read-only handoff update; proposed argv only, no runtime or source change."
+}

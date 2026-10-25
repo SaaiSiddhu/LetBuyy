@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="990" viewBox="0 0 1200 990" role="img" aria-labelledby="title desc"><title id="title">Shopify observed color roles October 2026</title><desc id="desc">Current admin neutral and accent swatches, followed by separately measured account login colors. Hex values are labeled.</desc><rect width="1200" height="990" fill="#F5F5F5"/>
+<text x="44" y="66" font-family="Arial, sans-serif" font-size="34" fill="#101010" font-weight="700">Shopify observed color roles</text>
+<text x="44" y="101" font-family="Arial, sans-serif" font-size="18" fill="#4A4A4A">22 October 2026  |  Current native admin and public account entry are separate surfaces</text>
+<text x="44" y="156" font-family="Arial, sans-serif" font-size="24" fill="#101010">Current admin neutrals</text>
+<rect x="44" y="177" width="266" height="124" rx="14" fill="#FFFFFF" stroke="#DDDDDD"/>
+<rect x="56" y="189" width="242" height="48" rx="7" fill="#0A0A0A" stroke="#DDDDDD"/>
+<text x="58" y="263" font-family="Arial, sans-serif" font-size="16" fill="#101010">Application shell</text>
+<text x="58" y="285" font-family="Arial, sans-serif" font-size="14" fill="#4A4A4A">#0A0A0A</text>
+<rect x="326" y="177" width="266" height="124" rx="14" fill="#FFFFFF" stroke="#DDDDDD"/>
+<rect x="338" y="189" width="242" height="48" rx="7" fill="#FFFFFF" stroke="#DDDDDD"/>
+<text x="340" y="263" font-family="Arial, sans-serif" font-size="16" fill="#101010">Workspace / surface</text>
+<text x="340" y="285" font-family="Arial, sans-serif" font-size="14" fill="#4A4A4A">#FFFFFF</text>
+<rect x="608" y="177" width="266" height="124" rx="14" fill="#FFFFFF" stroke="#DDDDDD"/>
+<rect x="620" y="189" width="242" height="48" rx="7" fill="#101010" stroke="#DDDDDD"/>
+<text x="622" y="263" font-family="Arial, sans-serif" font-size="16" fill="#101010">Main text / primary action</text>
+<text x="622" y="285" font-family="Arial, sans-serif" font-size="14" fill="#4A4A4A">#101010</text>
+<rect x="890" y="177" width="266" height="124" rx="14" fill="#FFFFFF" stroke="#DDDDDD"/>
+<rect x="902" y="189" width="242" height="48" rx="7" fill="#4A4A4A" stroke="#DDDDDD"/>
+<text x="904" y="263" font-family="Arial, sans-serif" font-size="16" fill="#101010">Secondary text</text>
+<text x="904" y="285" font-family="Arial, sans-serif" font-size="14" fill="#4A4A4A">#4A4A4A</text>
+<rect x="44" y="323" width="266" height="124" rx="14" fill="#FFFFFF" stroke="#DDDDDD"/>
+<rect x="56" y="335" width="242" height="48" rx="7" fill="#F7F7F7" stroke="#DDDDDD"/>
+<text x="58" y="409" font-family="Arial, sans-serif" font-size="16" fill="#101010">Secondary surface</text>
+<text x="58" y="431" font-family="Arial, sans-serif" font-size="14" fill="#4A4A4A">#F7F7F7</text>
+<rect x="326" y="323" width="266" height="124" rx="14" fill="#FFFFFF" stroke="#DDDDDD"/>
+<rect x="338" y="335" width="242" height="48" rx="7" fill="#DDDDDD" stroke="#DDDDDD"/>
+<text x="340" y="409" font-family="Arial, sans-serif" font-size="16" fill="#101010">General border</text>
+<text x="340" y="431" font-family="Arial, sans-serif" font-size="14" fill="#4A4A4A">#DDDDDD</text>
+<rect x="608" y="323" width="266" height="124" rx="14" fill="#FFFFFF" stroke="#DDDDDD"/>
+<rect x="620" y="335" width="242" height="48" rx="7" fill="#8C8C8C" stroke="#DDDDDD"/>
+<text x="622" y="409" font-family="Arial, sans-serif" font-size="16" fill="#101010">Input border / nav icon</text>
+<text x="622" y="431" font-family="Arial, sans-serif" font-size="14" fill="#4A4A4A">#8C8C8C</text>
+<rect x="890" y="323" width="266" height="124" rx="14" fill="#FFFFFF" stroke="#DDDDDD"/>
+<rect x="902" y="335" width="242" height="48" rx="7" fill="#D0D0D0" stroke="#DDDDDD"/>
+<text x="904" y="409" font-family="Arial, sans-serif" font-size="16" fill="#101010">Navigation text token</text>
+<text x="904" y="431" font-family="Arial, sans-serif" font-size="14" fill="#4A4A4A">#D0D0D0</text>
+<text x="44" y="502" font-family="Arial, sans-serif" font-size="24" fill="#101010">Current admin accent examples</text>
+<rect x="44" y="523" width="266" height="124" rx="14" fill="#FFFFFF" stroke="#DDDDDD"/>
+<rect x="56" y="535" width="242" height="48" rx="7" fill="#8AE156" stroke="#DDDDDD"/>
+<text x="58" y="609" font-family="Arial, sans-serif" font-size="16" fill="#101010">Success accent</text>
+<text x="58" y="631" font-family="Arial, sans-serif" font-size="14" fill="#4A4A4A">#8AE156</text>
+<rect x="326" y="523" width="266" height="124" rx="14" fill="#FFFFFF" stroke="#DDDDDD"/>
+<rect x="338" y="535" width="242" height="48" rx="7" fill="#5BC9EB" stroke="#DDDDDD"/>
+<text x="340" y="609" font-family="Arial, sans-serif" font-size="16" fill="#101010">Information accent</text>
+<text x="340" y="631" font-family="Arial, sans-serif" font-size="14" fill="#4A4A4A">#5BC9EB</text>
+<rect x="608" y="523" width="266" height="124" rx="14" fill="#FFFFFF" stroke="#DDDDDD"/>
+<rect x="620" y="535" width="242" height="48" rx="7" fill="#FF8A3E" stroke="#DDDDDD"/>
+<text x="622" y="609" font-family="Arial, sans-serif" font-size="16" fill="#101010">Warning accent</text>
+<text x="622" y="631" font-family="Arial, sans-serif" font-size="14" fill="#4A4A4A">#FF8A3E</text>
+<rect x="890" y="523" width="266" height="124" rx="14" fill="#FFFFFF" stroke="#DDDDDD"/>
+<rect x="902" y="535" width="242" height="48" rx="7" fill="#8051FF" stroke="#DDDDDD"/>
+<text x="904" y="609" font-family="Arial, sans-serif" font-size="16" fill="#101010">AI border hover role</text>
+<text x="904" y="631" font-family="Arial, sans-serif" font-size="14" fill="#4A4A4A">#8051FF</text>
+<text x="44" y="701" font-family="Arial, sans-serif" font-size="24" fill="#101010">Public account login colors</text>
+<rect x="44" y="722" width="266" height="124" rx="14" fill="#FFFFFF" stroke="#DDDDDD"/>
+<rect x="56" y="734" width="242" height="48" rx="7" fill="#0A1314" stroke="#DDDDDD"/>
+<text x="58" y="808" font-family="Arial, sans-serif" font-size="16" fill="#101010">Page fallback</text>
+<text x="58" y="830" font-family="Arial, sans-serif" font-size="14" fill="#4A4A4A">#0A1314</text>
+<rect x="326" y="722" width="266" height="124" rx="14" fill="#FFFFFF" stroke="#DDDDDD"/>
+<rect x="338" y="734" width="242" height="48" rx="7" fill="#303030" stroke="#DDDDDD"/>
+<text x="340" y="808" font-family="Arial, sans-serif" font-size="16" fill="#101010">Title / input text</text>
+<text x="340" y="830" font-family="Arial, sans-serif" font-size="14" fill="#4A4A4A">#303030</text>
+<rect x="608" y="722" width="266" height="124" rx="14" fill="#FFFFFF" stroke="#DDDDDD"/>
+<rect x="620" y="734" width="242" height="48" rx="7" fill="#616161" stroke="#DDDDDD"/>
+<text x="622" y="808" font-family="Arial, sans-serif" font-size="16" fill="#101010">Subtitle</text>
+<text x="622" y="830" font-family="Arial, sans-serif" font-size="14" fill="#4A4A4A">#616161</text>
+<rect x="890" y="722" width="266" height="124" rx="14" fill="#FFFFFF" stroke="#DDDDDD"/>
+<rect x="902" y="734" width="242" height="48" rx="7" fill="#005BD3" stroke="#DDDDDD"/>
+<text x="904" y="808" font-family="Arial, sans-serif" font-size="16" fill="#101010">Link and focus ring</text>
+<text x="904" y="830" font-family="Arial, sans-serif" font-size="14" fill="#4A4A4A">#005BD3</text>
+<text x="44" y="904" font-family="Arial, sans-serif" font-size="20" fill="#101010">Read swatches by role. Green is not the universal primary action.</text>
+<text x="44" y="936" font-family="Arial, sans-serif" font-size="16" fill="#4A4A4A">Current status surfaces also use OKLCH; their exact strings are in chapter 07 and the evidence JSON.</text>
+<text x="44" y="961" font-family="Arial, sans-serif" font-size="14" fill="#4A4A4A">Research reference only. This is not a Shopify specification or LetBuyy implementation token file.</text>
+</svg>

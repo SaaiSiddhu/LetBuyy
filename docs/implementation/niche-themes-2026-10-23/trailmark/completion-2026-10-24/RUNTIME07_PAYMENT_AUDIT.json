@@ -1,0 +1,363 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-24T21:26:10.548735+00:00",
+  "classification": "OWNER_REVIEW_OF_CURRENT_CONTROLLER_UI_AND_READONLY_DURABLE_RECEIPTS_NOT_FULL_THEME_ACCEPTANCE",
+  "runId": "49ada80bc494",
+  "controller": "01a16ce5-e5ba-7191-ab2c-a1b76947d2b5",
+  "readbackOwner": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+  "receipt": {
+    "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/TRAILMARK_ORDER_10006_READONLY_CORRELATION.json",
+    "sha256": "2cd3c02939d845128a3ac1cc78eb3be6a9efc53a862077498c34a0555ba32c8f"
+  },
+  "sourceAdmission": {
+    "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/source-runtime-admission.json",
+    "sha256": "60a841b2282aa75b9244586203b784ba7f90c46c7ab11ea0e921c16318ea3071"
+  },
+  "humanResume": {
+    "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/HUMAN_RESUME_20261025.json",
+    "sha256": "e7cc69390865d45e4d5623555c39a6c0d3c1e931a143866aee1822f15f033d4b"
+  },
+  "expectedDescriptor": {
+    "path": "docs/implementation/niche-themes-2026-10-23/trailmark/completion-2026-10-24/RUNTIME07_EXPECTED_210_INVENTORY.json",
+    "sha256": "c5b78f864547fa5320f4052f5abd8af169734a580ebcdeb8efa277f971429985"
+  },
+  "checks": {
+    "ownedRuntime": true,
+    "oneConfirmedPaidIntendedOrder": true,
+    "oneExactVariantQuantityPrice": true,
+    "savedOptionAndFacts": true,
+    "serverOrderAndCanonicalCaptureAmount": true,
+    "realProcessedCallbacks": true,
+    "oneCompletedSandboxRazorpayIntent": true,
+    "oneSaleEventAndAvailable4to3": true,
+    "commonVariantUnchanged": true,
+    "currentFactsPriceUnedited": true
+  },
+  "status": "ACTUAL_TEST_PURCHASE_FINANCIAL_AND_SAVED_FACTS_POSITIVE_PASS_WITH_OPEN_BINDING_METADATA_AND_SEQUENCE_GAPS",
+  "binding": {
+    "siteId": "02049de4-41c3-4b10-b5b2-a60a6b5e82bf",
+    "productId": "22446d70-4e10-41f0-97f0-55662eeea763",
+    "selectedVariantId": "ef6281cd-7148-4cc5-be34-37e1a4f98e74",
+    "unselectedCommonVariantId": "69729510-82e4-44fa-8892-19bbd9d59700",
+    "orderId": "c2991cb7-d637-4f11-86d4-fe02252dfc7f",
+    "orderNumber": "ORD-20261024-10006",
+    "orderItemId": "9d7ffc18-dcc8-46f0-9697-6b09bb9c5c1d",
+    "productVersionInAcceptedSnapshot": 8,
+    "themeVersionReportedByController": "2.1.0",
+    "themeInstanceIdInOrder": null,
+    "themeReleaseIdInOrder": null,
+    "exactPackageInstanceReleaseDraftConfigTemplateAssetReceipt": "NOT_PROVIDED_BY_THIS_READBACK; no identity fabricated. Separate actual installation/release receipt required.",
+    "exactReleaseGapIsNotAssumedSourceBug": true
+  },
+  "payment": {
+    "provider": "razorpay",
+    "mode": "sandbox",
+    "actualTestBrowserPurchaseReported": true,
+    "orderStatus": "confirmed",
+    "paymentStatus": "paid",
+    "paymentId": "pay_TrtDBBhYggySd6",
+    "currency": "INR",
+    "unitMajor": 1800,
+    "quantity": 1,
+    "totalMinor": 182000,
+    "captureTransactions": [
+      {
+        "id": "6c0d1833-c760-410a-8d27-742ed67b4888",
+        "entries": 2,
+        "currency": "INR",
+        "sourceId": "razorpay:pay_TrtDBBhYggySd6",
+        "debitMinor": 182000,
+        "sourceType": "payment_capture",
+        "creditMinor": 182000,
+        "writerModule": "settlement"
+      }
+    ],
+    "paymentsTableRows": 0,
+    "canonicalMoneyTruth": "Exactly one actual canonical payment_capture ledger transaction; zero payments-table rows explicitly retained.",
+    "codExecuted": false
+  },
+  "webhooks": [
+    {
+      "event": "payment.authorized",
+      "providerEventId": "TrtDOYINsiFZiH",
+      "receivedAt": "2026-10-24T21:13:05.522Z",
+      "canonicalStatus": 200,
+      "bodySha256": "b68c9bd66f0aea3ec625b252e666f4447778029a90de8f533246ebc80966c3ce",
+      "signaturePresent": true
+    },
+    {
+      "event": "payment.captured",
+      "providerEventId": "TrtDPTZc9FHf99",
+      "receivedAt": "2026-10-24T21:13:06.174Z",
+      "canonicalStatus": 200,
+      "bodySha256": "8bfc7448603b50ab049ed8039cb53d7a9952485dc7159bd81c85d21e7f6611bf",
+      "signaturePresent": true
+    }
+  ],
+  "durableCallbackSignatureAndProcessing": [
+    {
+      "provider": "razorpay",
+      "eventType": "payment.authorized",
+      "processedAt": "2026-10-24T21:13:05.508+00:00",
+      "signatureValid": true,
+      "providerEventId": "payment.authorized:pay_TrtDBBhYggySd6",
+      "processingStatus": "processed"
+    },
+    {
+      "provider": "razorpay",
+      "eventType": "payment.captured",
+      "processedAt": "2026-10-24T21:13:06.172+00:00",
+      "signatureValid": true,
+      "providerEventId": "payment.captured:pay_TrtDBBhYggySd6",
+      "processingStatus": "processed"
+    }
+  ],
+  "requestIds": {
+    "productBefore": null,
+    "productAfter": null,
+    "browserCartAndCheckout": null,
+    "callbackHttpRequestIds": null,
+    "limit": "Actual callback HTTP200 and durable provider event IDs are present; no HTTP request IDs retained in supplied receipts. ProviderEventId/orderId/cartId are not relabelled as request IDs."
+  },
+  "stock": {
+    "beforeReceipt": {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/trailmark-before-stock.json",
+      "sha256": "c00b505b131a9c9df838300c9972dcda6ab706ef4cb064f37ce6f0b0367e1143"
+    },
+    "afterReceipt": {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/trailmark-after-stock.json",
+      "sha256": "f0d92410cf3fce662dae5c3dbd58055f93081b3b0f7c98b2abd65c8de0961d0d"
+    },
+    "inchAvailableBefore": 4,
+    "inchAvailableAfter": 3,
+    "commonAvailableBefore": 4,
+    "commonAvailableAfter": 4,
+    "durableInventory": [
+      {
+        "id": "adfd0cb7-c74a-4499-b931-26d92ebdff4f",
+        "productId": "22446d70-4e10-41f0-97f0-55662eeea763",
+        "updatedAt": "2026-10-24T21:12:29.655705+00:00",
+        "variantId": "ef6281cd-7148-4cc5-be34-37e1a4f98e74",
+        "locationId": "6e4baabc-b0c7-46ce-8be0-98395d9ef30c",
+        "onHandQuantity": 4,
+        "reservedQuantity": 0,
+        "availableQuantity": 3,
+        "committedQuantity": 1
+      }
+    ],
+    "durableEvents": [
+      {
+        "id": "c4cac54a-67e4-4de8-9bb4-77e9c95378f0",
+        "orderId": "c2991cb7-d637-4f11-86d4-fe02252dfc7f",
+        "createdAt": "2026-10-24T21:12:29.655705+00:00",
+        "eventType": "sale_committed",
+        "productId": "22446d70-4e10-41f0-97f0-55662eeea763",
+        "variantId": "ef6281cd-7148-4cc5-be34-37e1a4f98e74",
+        "quantityDelta": -1,
+        "onHandQuantity": 4,
+        "reservedQuantity": 0,
+        "availableQuantity": 3,
+        "committedQuantity": 1
+      }
+    ],
+    "parentProductStockFieldBefore": 8,
+    "parentProductStockFieldAfter": 8,
+    "interpretation": "One selected-variant sale_committed: available4to3, committed1, reserved0; durable onHand remains4. Parent product stock field stays8 and is not used to replace variant availability."
+  },
+  "savedSnapshot": {
+    "sha256AsReportedByAuthorizedReader": "056fbfe0fe6eb124b3eb65cc40d573cbc8d82d720eee2d2b320f0e0919820fea",
+    "algorithmLimit": "Retain the same reader SQL serialization/hash algorithm for after-edit comparison; no cross-algorithm hash equality asserted.",
+    "snapshotFingerprint": "a21e52686a496cb3f80fcdb833271ed73f09bf65de71a71225d5388d5b10442a",
+    "niche": {
+      "facts": {
+        "sports": {
+          "length": {
+            "unit": "in",
+            "value": 26.5
+          },
+          "weight": {
+            "unit": "g",
+            "value": 80
+          },
+          "version": 1,
+          "activity": "Badminton",
+          "dimensions": {
+            "unit": "in",
+            "width": 10,
+            "length": 26.5
+          },
+          "compatibility": {
+            "status": "unconfirmed"
+          },
+          "equipmentType": "racket"
+        }
+      },
+      "version": 1,
+      "selected_options": [
+        {
+          "name": "Length",
+          "value": "26.5 in"
+        }
+      ]
+    },
+    "unitPriceMajor": 1800.0,
+    "beforeCatalogueEditOnly": true
+  },
+  "ui": {
+    "redactedOrderFacts": {
+      "path": "docs/implementation/niche-themes-2026-10-23/trailmark/completion-2026-10-24/RUNTIME07_UI_FACTS_REDACTED.json",
+      "sha256": "654de74824f9359a30cbbeb47b92bf4ad20c067fc515f199c97ec0f6a0c05590"
+    },
+    "inspectedPdpScreenshot": {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/trailmark-26inch-selected.png",
+      "sha256": "8943a76a7d26f819ce7993d41483d0a3866f8a366dded7a0dd34cb5b2d31fc6e"
+    },
+    "inspectedInitialCartGuard": {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/trailmark-cart-recovery-required.png",
+      "sha256": "0a4061734e85d1373b34dbf27a88e4a45eab72e92f558af124b19913e02690fd"
+    },
+    "inspectedRecoveredCart": {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/trailmark-cart-restored.png",
+      "sha256": "ac57c5708c1c8589bc0ee3f4845f24372a02bea37a3f061231190aadde7fbcc9"
+    },
+    "initialGuard": "We could not confirm this update. Reload the saved cart before checkout.",
+    "normalRecovery": "Reload saved cart then Proceed to checkout; one visible quantity1 line, exact26.5in/80g/noheight facts, cartsubtotal/total1800.",
+    "initialRequestOrTransportCause": "NOT_ESTABLISHED; no clean initial reload or exact HTTP status claimed.",
+    "cartRetirementReportedByController": 0,
+    "afterEditHistoryOrDenials": "NOT_RUN"
+  },
+  "artifactVerification": {
+    "filesChecked": 22,
+    "mismatches": 0,
+    "checks": [
+      {
+        "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/trailmark-26inch-selected.ax.txt",
+        "expected": "f6474aead1c00bdfde01be1611e414e092f7b2ba9c7b319bb75e871743b3dd2a",
+        "matches": true
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/trailmark-26inch-selected.png",
+        "expected": "8943a76a7d26f819ce7993d41483d0a3866f8a366dded7a0dd34cb5b2d31fc6e",
+        "matches": true
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/trailmark-after-stock.json",
+        "expected": "f0d92410cf3fce662dae5c3dbd58055f93081b3b0f7c98b2abd65c8de0961d0d",
+        "matches": true
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/trailmark-before-stock.json",
+        "expected": "c00b505b131a9c9df838300c9972dcda6ab706ef4cb064f37ce6f0b0367e1143",
+        "matches": true
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/trailmark-buyer-equipment-details.ax.txt",
+        "expected": "b505d69092817e4369fd490262549cc69bcd7fb55cf6ddab7a5a70f656001e53",
+        "matches": true
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/trailmark-buyer-equipment-details.png",
+        "expected": "d0792043eceef7ac2a963d7ff800034880127aa5526ba790793cd06f1d49df38",
+        "matches": true
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/trailmark-cart-recovery-required.ax.txt",
+        "expected": "99bfbf5d7d10b1d14da57d29db8fb50a2b543cdc501bea48f0d42702580df645",
+        "matches": true
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/trailmark-cart-recovery-required.png",
+        "expected": "0a4061734e85d1373b34dbf27a88e4a45eab72e92f558af124b19913e02690fd",
+        "matches": true
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/trailmark-cart-restored.ax.txt",
+        "expected": "ed8fe6a7597740f7b9cd04803b0b93fc6f631dce108e82072604339b65b6674d",
+        "matches": true
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/trailmark-cart-restored.png",
+        "expected": "ac57c5708c1c8589bc0ee3f4845f24372a02bea37a3f061231190aadde7fbcc9",
+        "matches": true
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/trailmark-checkout-quote.ax.txt",
+        "expected": "7c367eb9534888ed429a2dd2b32a6a3c8a6c5e69107fb668a42e958a214c94f3",
+        "matches": true
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/trailmark-checkout-quote.png",
+        "expected": "261a1db3dee94707d364fb5513fbf111eb2de3c4804d34c56d5fa4777c970baf",
+        "matches": true
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/trailmark-demo-bank.ax.txt",
+        "expected": "60497899b8d075a364c24f7f9a82cce144dad3e7af526582f621dee85137509a",
+        "matches": true
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/trailmark-demo-bank.png",
+        "expected": "211d87098b3e8cbc2a64509f25c07bb6b4b62c2c6ed68530689aa857e8c82b64",
+        "matches": true
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/trailmark-editor-save-reload.ax.txt",
+        "expected": "38ffef9add0703c26cbbccaa57a09cfe9f28fcd01abd6236b55a202756e9deb8",
+        "matches": true
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/trailmark-editor-save-reload.png",
+        "expected": "402e8e4b4aa9a933a17fac4e9587df8c48fffd86351cd45475d208c009cd6053",
+        "matches": true
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/trailmark-merchant-equipment-details.ax.txt",
+        "expected": "0345dabd3550537e9b85b8e3d74442e88654f83f61f3fc8420014e512f89d713",
+        "matches": true
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/trailmark-merchant-equipment-details.png",
+        "expected": "d46c208da88b4b2626a3e92c120f3779cde7e1f4a4b1c54c6ffc3b139953c65c",
+        "matches": true
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/trailmark-order-confirmed.ax.txt",
+        "expected": "922bda699aaf3a26178bb1b0dc41736a17338eae993c40f1857c68d9e1b4aa52",
+        "matches": true
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/trailmark-order-confirmed.png",
+        "expected": "ba8bee8db9918abed448e07f3065d471e577de47a3481c4881bf7d66a4a958c5",
+        "matches": true
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/trailmark-published-home.ax.txt",
+        "expected": "f2133f0aa86f3d3697ed042ad066accdc7a20869fe755ae7a63e3df4a42a99d6",
+        "matches": true
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/trailmark-published-home.png",
+        "expected": "762c8fa6ba2974c0028eb5a7f7ba1ebc554d33458a8cc810fc33d41bc25917e3",
+        "matches": true
+      }
+    ]
+  },
+  "openSharedFinding": {
+    "storedCapturePostedToLedger": false,
+    "actualCanonicalCaptureCount": 1,
+    "matchesCanonicalLedger": false,
+    "findingId": "R07-HOSTED-CAPTURE-FLAG-01"
+  },
+  "sequenceDeviation": {
+    "plannedSeparateTestVariant": "COMMON",
+    "actualSeparateTestVariant": "INCH",
+    "actualTestAvailableEffect": "4to3",
+    "originalFutureCOD4to3AndC01Stock4Preconditions": "BLOCKED_ON_SAME_CURRENT_UUID_AFTER_THIS_TEST_SALE_UNLESS_ALLOCATOR_EXPLICITLY_DISPOSITIONS_SCOPE; no refill/replacement permitted.",
+    "noCommonTestOrderExistsInThisEvidence": true
+  },
+  "caseAccounting": "Positive financial/UI clauses only. OriginalCOD O01/O02 and immutable after-edit/denial/stale cases remain unexecuted. Exact release binding, original12/17 and full control/quality/security requirements remain open.",
+  "ownerDirectRuntimeActions": [],
+  "ownerSourceEdits": [],
+  "independentProgrammeReview": "PENDING",
+  "certificates": "ALL_NOT_ISSUED"
+}

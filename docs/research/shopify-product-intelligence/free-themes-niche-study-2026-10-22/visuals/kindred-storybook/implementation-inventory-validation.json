@@ -1,0 +1,14 @@
+{
+  "date": "2026-10-23",
+  "result": "pass",
+  "ownerGroups": 11,
+  "exactOwnerReferences": 49,
+  "missingFiles": [],
+  "frozenFilesChecked": 91,
+  "changedFrozenFiles": [],
+  "jsonParses": true,
+  "runtimeTestsExecuted": false,
+  "productionWrites": false,
+  "visualRevision": "1.2 corrected candidate",
+  "priorVisualFreeze": "frozen-visual-manifest-v1.1.json"
+}

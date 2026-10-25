@@ -1,0 +1,90 @@
+[
+  {
+    "runId": "deb4c7b78655",
+    "jobs": 1,
+    "reaped": [],
+    "suites": 3,
+    "failedSuites": 1,
+    "tests": 38,
+    "assertionsPassed": 37,
+    "assertionsFailed": 1,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "wallSeconds": 255.1,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    }
+  },
+  {
+    "runId": "d0dc55e6b514",
+    "jobs": 1,
+    "reaped": [],
+    "suites": 1,
+    "failedSuites": 1,
+    "tests": 2,
+    "assertionsPassed": 1,
+    "assertionsFailed": 1,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "wallSeconds": 31.7,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    }
+  },
+  {
+    "runId": "4e36c50c2fc5",
+    "jobs": 1,
+    "reaped": [],
+    "suites": 1,
+    "failedSuites": 0,
+    "tests": 2,
+    "assertionsPassed": 2,
+    "assertionsFailed": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "wallSeconds": 33.7,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    }
+  },
+  {
+    "runId": "ba9fec662a00",
+    "jobs": 1,
+    "reaped": [],
+    "suites": 2,
+    "failedSuites": 0,
+    "tests": 36,
+    "assertionsPassed": 36,
+    "assertionsFailed": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "wallSeconds": 217,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    }
+  }
+]

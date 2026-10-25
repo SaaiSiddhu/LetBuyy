@@ -1,0 +1,29 @@
+// Actual canonical helper module, injected pool only. Native role/RLS/rollback acceptance remains mandatory.
+import assert from 'node:assert/strict';
+import {test} from 'node:test';
+import {readFileSync} from 'node:fs';
+import {createRequire} from 'node:module';
+import {resolve,dirname} from 'node:path';
+import ts from 'typescript';
+import type {OwnedStoreScope} from '../lib/tenant-context';
+import type {Env} from '../index';
+import type {PooledSqlClient} from '@letbuyy/infrastructure/pooled-sql-adapter';
+import {publishThemeReleaseInTenantTx,bindOwnedTenantActor,TenantPublicationContextError} from '../lib/tenant-transaction';
+import {createMinimalLiquidThemeBundleFixture} from '@letbuyy/theme-engine';
+const id='a0000000-0000-4000-8000-000000000001',actor='f0000000-0000-4000-8000-000000000001';
+const scope=():OwnedStoreScope=>({siteId:id,storeId:id,db:{} as OwnedStoreScope['db'],customUser:{id:actor,email:'synthetic@example.invalid'},authUser:{id:actor,email:'synthetic@example.invalid',storeId:id},tenant:{siteId:id,userId:actor,membershipId:null,roles:['owner'],permissions:['store:owner'],plan:'enterprise',entitlements:{},requestId:'synthetic:scope'}});
+const intent=()=>({themeSlug:'liquid-starter',releaseConfig:{liquidBundle:createMinimalLiquidThemeBundleFixture()},targetPackageVersionId:id,priorReleaseId:actor,requestHash:'a'.repeat(64),makeStoreLive:true});
+test('unregistered transaction cannot bind an actor or invoke the capability',async()=>{let calls=0;const tx={unsafe:async()=>{calls++;return[];}} as unknown as PooledSqlClient;await assert.rejects(()=>bindOwnedTenantActor(tx,scope()),TenantPublicationContextError);await assert.rejects(()=>publishThemeReleaseInTenantTx(tx,scope(),intent()),TenantPublicationContextError);assert.equal(calls,0);});
+function loaded(){
+ const file=resolve('services/api-gateway/src/lib/tenant-transaction.ts'),require=createRequire(file),loadedModule={exports:{}};
+ const calls:string[]=[],guc:Record<string,string>={};let role='authenticator';
+ const unsafe=async(q:string,p:unknown[]=[])=>{calls.push(q);if(q==='SET LOCAL ROLE app_tenant')role='app_tenant';if(q.includes('SELECT set_config'))for(let i=0;i<p.length;i+=2)guc[String(p[i])]=String(p[i+1]);if(q.includes('SELECT current_user::text'))return[{role,site_id:guc['app.site_id'],request_id:guc['app.request_id'],actor_id:guc['app.actor_id'],subject:guc['request.jwt.claim.sub']}];if(q.includes('SELECT id FROM public.sites')||q.includes('SELECT i.id FROM public.theme_instances'))return[{id}];if(q.includes('AS prior_package_version_id'))return[{prior_package_version_id:id}];return[];};
+ let tx:unknown;const pool={begin:async(callback:(c:{unsafe:typeof unsafe})=>Promise<unknown>)=>{tx={unsafe};try{return await callback(tx as {unsafe:typeof unsafe});}finally{role='authenticator';}}};
+ const js=ts.transpileModule(readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,esModuleInterop:true}}).outputText;
+ new Function('require','module','exports','__filename','__dirname',js)((name:string)=>name==='@letbuyy/infrastructure/pooled-sql-adapter'?{getPooledSql:()=>pool}:require(name),loadedModule,loadedModule.exports,file,dirname(file));
+ return{helper:loadedModule.exports as typeof import('../lib/tenant-transaction'),calls,lastTx:()=>tx as PooledSqlClient};
+}
+test('ordinary withTenantTx callback behavior and initial role/GUC setup remain unchanged',async()=>{const f=loaded(),s=scope();assert.equal(await f.helper.withTenantTx({} as Env,s.tenant,async()=>7),7);assert.equal(f.calls[0],'SET LOCAL ROLE app_tenant');assert.equal(f.calls.length,3);await assert.rejects(()=>f.helper.bindOwnedTenantActor(f.lastTx(),s));});
+test('invalid resolved actor poisons commit even if callback catches refusal',async()=>{const f=loaded(),s=scope();s.tenant.userId=id;await assert.rejects(()=>f.helper.withTenantTx({} as Env,s.tenant,async tx=>{try{await f.helper.bindOwnedTenantActor(tx,s);}catch{/* caller cannot turn refusal into a commit */}return'caught';}));assert(!f.calls.includes('SET LOCAL ROLE service_role'));});
+test('unknown publisher profile poisons the full outer update before privilege use',async()=>{const f=loaded(),s=scope(),bundle=createMinimalLiquidThemeBundleFixture();await assert.rejects(()=>f.helper.withTenantTx({} as Env,s.tenant,async tx=>{await f.helper.bindOwnedTenantActor(tx,s);try{await f.helper.publishThemeReleaseInTenantTx(tx,s,{...intent(),themeSlug:bundle.package.slug});}catch{/* deliberately swallowed */}return'caught';}));assert(f.calls.some(q=>q.includes('AS profile FROM pg_proc')));assert(!f.calls.includes('SET LOCAL ROLE service_role'));});
+test('governance source guard detects rejected baseline and confines elevation to one fixed helper',()=>{const baseline=readFileSync('docs/implementation/niche-theme-programme/release-playfield201/native-qualification/tenant-correction/services__api-gateway__src__execution__theme-execution.adapter.ts.before.snapshot','utf8');assert(baseline.includes("SET LOCAL ROLE service_role"));const adapter=readFileSync(new URL('../execution/theme-execution.adapter.ts',import.meta.url),'utf8');assert(!adapter.includes('SET LOCAL ROLE service_role'));const helper=readFileSync(new URL('../lib/tenant-transaction.ts',import.meta.url),'utf8');assert.equal((helper.match(/SET LOCAL ROLE service_role/g)||[]).length,1);assert(helper.includes('ROLLBACK TO SAVEPOINT tenant_theme_publication'));assert(helper.includes("'theme.publish.capability_used'"));assert(helper.includes('if(frame.poisoned)throw'));});

@@ -1,0 +1,276 @@
+{
+  "runId": "936e5f577646",
+  "originalEarlyPublicCapturesAndFalseChecksPreserved": true,
+  "retake": "Exactly one Root-allocated normal A restore/B reapply; explicit Rollback confirmed/Theme published notifications and settled complete public DOM. No new Save/product edit/cache-buster/source/runtime change.",
+  "checks": {
+    "aSavedReloaded": true,
+    "bSavedReloaded": true,
+    "bPrivateWhileAPublic": true,
+    "bPublished": true,
+    "aRestored": true,
+    "bRetained": true,
+    "bReapplied": true,
+    "allResourceBindingsExact": true
+  },
+  "finalActual": {
+    "drafts": [
+      {
+        "footer": [
+          {}
+        ],
+        "header": null,
+        "status": "published",
+        "draftId": "3d2d44de-af82-4a96-ac64-d811ca1e8f7f",
+        "version": 7,
+        "manifestSha256": "cc662e3dcd09011019486bcd1cf99e9fdef6b3009944ee3778f21efd72d1f38d",
+        "indexSectionSettings": {
+          "marginalia-index": {
+            "title": "Marginalia936 A subject index",
+            "product1": "f2382fe0-6a3e-4241-9aef-9a54c765433f"
+          },
+          "marginalia-paper": {
+            "content": "Marginalia936 A paper editorial saved.",
+            "linkUrl": "/product/43fba2a8-bc4d-4939-917e-8430991fbd09",
+            "linkLabel": "Read the supplied notebook facts"
+          },
+          "marginalia-opening": {
+            "heading": "Marginalia936 A \u2014 a supplied reading shelf"
+          },
+          "marginalia-reading": {
+            "title": "A little further along the shelf",
+            "columns": 3,
+            "collectionId": "d5609b77-743c-45b5-b435-814f2ca95058",
+            "productLimit": 6
+          }
+        }
+      },
+      {
+        "footer": [
+          {}
+        ],
+        "header": null,
+        "status": "published",
+        "draftId": "4de975dc-9525-40e5-96f5-52c2d6393949",
+        "version": 11,
+        "manifestSha256": "6d4ca2bb07f4b94685f50ff4b7feb89c7d708d17822bfc0b2c30197e5ddef314",
+        "indexSectionSettings": {
+          "marginalia-index": {
+            "title": "Marginalia936 B subject index",
+            "product1": "f2382fe0-6a3e-4241-9aef-9a54c765433f"
+          },
+          "marginalia-paper": {
+            "content": "Marginalia936 B paper editorial saved.",
+            "linkUrl": "/product/43fba2a8-bc4d-4939-917e-8430991fbd09",
+            "linkLabel": "Read the supplied notebook facts"
+          },
+          "marginalia-opening": {
+            "heading": "Marginalia936 B \u2014 a supplied reading shelf"
+          },
+          "marginalia-reading": {
+            "title": "A little further along the shelf",
+            "columns": 3,
+            "collectionId": "d5609b77-743c-45b5-b435-814f2ca95058",
+            "productLimit": 6
+          }
+        }
+      },
+      {
+        "footer": [
+          {}
+        ],
+        "header": null,
+        "status": "published",
+        "draftId": "44ec1c5e-f65c-4af7-8172-d813bac87cfe",
+        "version": 13,
+        "manifestSha256": "6d4ca2bb07f4b94685f50ff4b7feb89c7d708d17822bfc0b2c30197e5ddef314",
+        "indexSectionSettings": {
+          "marginalia-index": {
+            "title": "Marginalia936 B subject index",
+            "product1": "f2382fe0-6a3e-4241-9aef-9a54c765433f"
+          },
+          "marginalia-paper": {
+            "content": "Marginalia936 B paper editorial saved.",
+            "linkUrl": "/product/43fba2a8-bc4d-4939-917e-8430991fbd09",
+            "linkLabel": "Read the supplied notebook facts"
+          },
+          "marginalia-opening": {
+            "heading": "Marginalia936 B \u2014 a supplied reading shelf"
+          },
+          "marginalia-reading": {
+            "title": "A little further along the shelf",
+            "columns": 3,
+            "collectionId": "d5609b77-743c-45b5-b435-814f2ca95058",
+            "productLimit": 6
+          }
+        }
+      },
+      {
+        "footer": [
+          {}
+        ],
+        "header": null,
+        "status": "published",
+        "draftId": "b03eec02-69f5-44f2-a3ff-4c760e3c987a",
+        "version": 15,
+        "manifestSha256": "6d4ca2bb07f4b94685f50ff4b7feb89c7d708d17822bfc0b2c30197e5ddef314",
+        "indexSectionSettings": {
+          "marginalia-index": {
+            "title": "Marginalia936 B subject index",
+            "product1": "f2382fe0-6a3e-4241-9aef-9a54c765433f"
+          },
+          "marginalia-paper": {
+            "content": "Marginalia936 B paper editorial saved.",
+            "linkUrl": "/product/43fba2a8-bc4d-4939-917e-8430991fbd09",
+            "linkLabel": "Read the supplied notebook facts"
+          },
+          "marginalia-opening": {
+            "heading": "Marginalia936 B \u2014 a supplied reading shelf"
+          },
+          "marginalia-reading": {
+            "title": "A little further along the shelf",
+            "columns": 3,
+            "collectionId": "d5609b77-743c-45b5-b435-814f2ca95058",
+            "productLimit": 6
+          }
+        }
+      },
+      {
+        "footer": [
+          {}
+        ],
+        "header": null,
+        "status": "active",
+        "draftId": "29dae105-919a-4315-8905-619ab6f15f52",
+        "version": 16,
+        "manifestSha256": "6d4ca2bb07f4b94685f50ff4b7feb89c7d708d17822bfc0b2c30197e5ddef314",
+        "indexSectionSettings": {
+          "marginalia-index": {
+            "title": "Marginalia936 B subject index",
+            "product1": "f2382fe0-6a3e-4241-9aef-9a54c765433f"
+          },
+          "marginalia-paper": {
+            "content": "Marginalia936 B paper editorial saved.",
+            "linkUrl": "/product/43fba2a8-bc4d-4939-917e-8430991fbd09",
+            "linkLabel": "Read the supplied notebook facts"
+          },
+          "marginalia-opening": {
+            "heading": "Marginalia936 B \u2014 a supplied reading shelf"
+          },
+          "marginalia-reading": {
+            "title": "A little further along the shelf",
+            "columns": 3,
+            "collectionId": "d5609b77-743c-45b5-b435-814f2ca95058",
+            "productLimit": 6
+          }
+        }
+      }
+    ],
+    "siteId": "2f958a36-71bf-4e8f-89fd-d3363f4fe42c",
+    "instances": [
+      {
+        "slug": "letbuyy-aura",
+        "status": "inactive",
+        "version": "2.0.0",
+        "packageId": "3117f19d-8171-4e55-a3a7-8da90c5ebd8e",
+        "instanceId": "a2a027ec-0215-44bf-b7b3-7b38b86586c2",
+        "bundleVersion": "2.0.0",
+        "draftRevision": 16,
+        "currentDraftId": "c5b620e2-32f0-49b7-a52d-0c45409d8281",
+        "activeReleaseId": "9c07ebe4-f7c4-43f3-92e1-5fe807b1d0ca",
+        "catalogChecksum": null,
+        "packageVersionId": "3747ef06-f0b2-4071-bffb-6b2fd4da77a6",
+        "installedConfigSqlSha256": "a82030f4c29c5d8c43b8e534610fa6698cb2056bc677f1ff7f7633cf76177706",
+        "packageManifestSqlSha256": "d0c6e2e26452d82adb03b28f467502c2ca6ca6a2e50f7c93d7d8798ec356c2b9"
+      },
+      {
+        "slug": "letbuyy-craft",
+        "status": "inactive",
+        "version": "2.0.0",
+        "packageId": "807b2c76-ae1a-4a94-850f-fe774a742279",
+        "instanceId": "019c6520-f027-49bd-86c0-4ca5e6108a86",
+        "bundleVersion": "2.0.0",
+        "draftRevision": 10,
+        "currentDraftId": "98b12656-7d85-46d1-9362-cfbc98cb4aae",
+        "activeReleaseId": "0a590f99-b38d-4f59-ba9f-b593e3a8f834",
+        "catalogChecksum": null,
+        "packageVersionId": "d924bbd6-a1b6-4b76-8fa6-b7548bb94aaf",
+        "installedConfigSqlSha256": "b85da2d8a4a6baafd3382253b3b08ea3b4bcb6ef5fda188479c3e2acfba4fa06",
+        "packageManifestSqlSha256": "47dc29c26dc3c7fc4d02c3a44c01443941991658015356a96a9c3e3f965a5384"
+      },
+      {
+        "slug": "letbuyy-dawn",
+        "status": "active",
+        "version": "2.0.0",
+        "packageId": "9134e98c-0650-41b5-9c1d-e3686e1f7751",
+        "instanceId": "597507a7-47f0-44a6-9bcb-69990c5ebf4b",
+        "bundleVersion": "2.0.0",
+        "draftRevision": 16,
+        "currentDraftId": "29dae105-919a-4315-8905-619ab6f15f52",
+        "activeReleaseId": "6a374853-bf7f-4b22-8427-1b69513fb146",
+        "catalogChecksum": null,
+        "packageVersionId": "f052c554-94ef-4977-9f02-a7daca8c6c57",
+        "installedConfigSqlSha256": "57b8bf54480ebe8fac2843d1b0b7d7f3ac314ebbfafb070b4fb66e6ec14ca6ca",
+        "packageManifestSqlSha256": "1d6e26dd386a77eb0a15b03b1bf20f37b400d2febef9d8a73343c044297e5cb0"
+      },
+      {
+        "slug": "letbuyy-forge",
+        "status": "inactive",
+        "version": "2.0.0",
+        "packageId": "10e09ccb-345d-42dd-aded-673892805faa",
+        "instanceId": "1ad37268-0d67-4abd-80fb-a9ea694d6fd3",
+        "bundleVersion": "2.0.0",
+        "draftRevision": 11,
+        "currentDraftId": "5b8fdf80-b928-471e-a6bf-dc5a592430da",
+        "activeReleaseId": "b742ec29-23b6-4b26-b913-04ea988062a6",
+        "catalogChecksum": null,
+        "packageVersionId": "30fc0df2-79d8-486f-b6b3-48dce0743682",
+        "installedConfigSqlSha256": "1240a255950240a20087f7b23511f58a5c0b7d543fb43616b9a4c6e0121d3ab9",
+        "packageManifestSqlSha256": "58ce61efc27ee3f174ee8fd06c3d39fd20d5d0af2d632aff5c8743f1ad5b89bd"
+      },
+      {
+        "slug": "letbuyy-refresh",
+        "status": "inactive",
+        "version": "2.0.0",
+        "packageId": "368749ba-8eab-424d-be77-6987015b0210",
+        "instanceId": "13d91850-8ea2-4ec6-be97-6c3fc3abe9b6",
+        "bundleVersion": "2.0.0",
+        "draftRevision": 11,
+        "currentDraftId": "c824202c-2234-42ce-8567-35d05a319202",
+        "activeReleaseId": "f1a1d5ac-47b6-4084-abc1-50859f8a1355",
+        "catalogChecksum": null,
+        "packageVersionId": "296fd771-e249-46f7-b997-262e460556c9",
+        "installedConfigSqlSha256": "20e24ce9a60a3584b71b16f482460d81cd0dc8c4af7339744401c84e98c8cc12",
+        "packageManifestSqlSha256": "4b752db87450b34d47b2df1590346337ab15dfc4bc54b84133cb45ab986bdae7"
+      },
+      {
+        "slug": "letbuyy-ride",
+        "status": "inactive",
+        "version": "2.0.0",
+        "packageId": "e764c050-15e0-4255-bf83-c5b4d8f00dc8",
+        "instanceId": "786e992f-c59a-4f40-b6ab-a428b471e7d1",
+        "bundleVersion": "2.0.0",
+        "draftRevision": 11,
+        "currentDraftId": "9812e848-d18c-4b37-b830-15fbea4fe2b2",
+        "activeReleaseId": "feca3a21-b0a3-4375-bbf2-9c6ceb776df0",
+        "catalogChecksum": null,
+        "packageVersionId": "868767f4-2053-40ed-8879-60bb49a6629d",
+        "installedConfigSqlSha256": "185d12bc5f2a7c3b548b1f60074cd42685ea923cdc781dabbe388d04850eb4b7",
+        "packageManifestSqlSha256": "81b52dd26a4b83ad49fcb6cd12e45cf8b173261789229cce48bac867ad748611"
+      }
+    ],
+    "ordersCount": 2,
+    "productsCount": 25,
+    "currentRelease": {
+      "id": "6a374853-bf7f-4b22-8427-1b69513fb146",
+      "status": "published",
+      "themeId": "letbuyy-dawn",
+      "sourceDraftVersion": 14,
+      "assetManifestSqlSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "releaseConfigSqlSha256": "6d4ca2bb07f4b94685f50ff4b7feb89c7d708d17822bfc0b2c30197e5ddef314",
+      "templateSnapshotSqlSha256": "6d4ca2bb07f4b94685f50ff4b7feb89c7d708d17822bfc0b2c30197e5ddef314"
+    },
+    "currentReleaseId": "6a374853-bf7f-4b22-8427-1b69513fb146"
+  },
+  "retakeDOM": "stable936-marginalia-bounded-recovery-retake-DOM.json",
+  "prematureFileLabelCorrection": "stable936-marginalia-retake-b-reapplied-readback.json was a PRE-B read: optional Dismiss notification autoexpired, controller stopped before any B action. Its actual restored-A data is correct; it is not B acknowledgement proof. Final B proof is the distinct acknowledged-readback file."
+}

@@ -1,0 +1,490 @@
+Browser tab: 23, Title: "LetBuyy Admin", URL: "http://admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/products".
+0 AXWebArea LetBuyy Admin, URL: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/products
+	1 container
+		2 link Description: LetBuyy dashboard, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/dashboard
+		3 button Search
+		4 button Setup assistant
+		5 button Notifications
+		6 button (collapsed) Description: Switch store, current store Threadline, Secondary Actions: Expand
+			7 text TH
+			8 text Threadline
+	9 container admin-nav-drawer
+		10 container
+			11 container Primary navigation
+				12 content list
+					13 link Description: Home, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/dashboard
+					14 link Description: Orders, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/orders
+					15 container
+						16 link Description: Products, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/products
+						17 button (expanded) Description: Toggle Products section, Secondary Actions: Collapse
+						18 content list
+							19 link Description: Add product, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/products/new
+							20 link Description: Collections, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/products/collections
+							21 link Description: Smart collections, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/products/smart-collections
+							22 link Description: Categories, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/categories
+							23 link Description: Export and import, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/export
+					24 container
+						25 link Description: Inventory, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/products/inventory
+						26 button (collapsed) Description: Toggle Inventory section, Secondary Actions: Expand
+					27 container
+						28 link Description: Purchasing, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/products/purchase-orders
+						29 button (collapsed) Description: Toggle Purchasing section, Secondary Actions: Expand
+					30 container
+						31 link Description: Customers, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/customers
+						32 button (collapsed) Description: Toggle Customers section, Secondary Actions: Expand
+					33 container
+						34 link Description: Money, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/settings/billing
+						35 button (collapsed) Description: Toggle Money section, Secondary Actions: Expand
+					36 container
+						37 link Description: Marketing, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/coupons
+						38 button (collapsed) Description: Toggle Marketing section, Secondary Actions: Expand
+					39 container
+						40 link Description: Content, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/pages
+						41 button (collapsed) Description: Toggle Content section, Secondary Actions: Expand
+					42 link Description: Analytics, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/analytics
+			43 text Sales channels
+			44 container Sales channels
+				45 content list
+					46 container
+						47 link Description: Online Store, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/online-store
+						48 button (collapsed) Description: Toggle Online Store section, Secondary Actions: Expand
+			49 text Apps
+			50 container Apps
+				51 content list
+					52 link Description: Add, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/apps
+		53 container Settings navigation
+			54 content list
+				55 link Description: Settings, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/settings
+	56 container admin-page-scroll
+		57 container
+			58 heading Products, Value: 1
+				59 text Products
+			60 link Description: Collections, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/products/collections
+			61 link Description: Add product, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/products/new
+		62 container
+			63 heading Catalog, Value: 2
+				64 text Catalog
+			65 text 19 products shown in this view. Search products
+			66 text field (settable) Search products
+			67 button Refresh
+			68 checkbox All, Value: 1
+			69 checkbox Active, Value: 0
+			70 checkbox Draft, Value: 0
+			71 checkbox Archived, Value: 0
+			72 table
+				73 row
+					74 cell
+						75 container
+							76 checkbox (settable, integer) Description: Select all rows, Value: 0
+							77 text Select all rows
+					78 cell
+						79 button Product
+					80 cell
+						81 button Status
+					82 cell
+						83 button Inventory
+					84 cell
+						85 button Type
+					86 cell
+						87 button Vendor
+				88 row
+					89 cell
+						90 container
+							91 checkbox (settable, integer) Description: Select row 1, Value: 0
+							92 text Select row 1
+					93 cell
+						94 link Description: Circuit lifecycle hub Accessories, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/products/8a85a44b-cb98-4b1b-a94d-2c2c395d6c1b
+					95 cell
+						96 container
+							97 text Active
+							98 pop up button (collapsed, settable) Description: Change status for Circuit lifecycle hub, Value: Active, Secondary Actions: Expand
+								99 menu
+									100 (selected) Active
+									101 Draft
+									102 Archived
+					103 cell
+						104 text 8 in stock
+					105 cell
+						106 text Accessories
+					107 cell
+						108 text No vendor
+				109 row
+					110 cell
+						111 container
+							112 checkbox (settable, integer) Description: Select row 2, Value: 0
+							113 text Select row 2
+					114 cell
+						115 link Description: Fixture Cloud Rinse Care, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/products/aa02e0ad-1151-4999-90b0-5fd61aa96260
+					116 cell
+						117 container
+							118 text Active
+							119 pop up button (collapsed, settable) Description: Change status for Fixture Cloud Rinse, Value: Active, Secondary Actions: Expand
+								120 menu
+									121 (selected) Active
+									122 Draft
+									123 Archived
+					124 cell
+						125 text 12 in stock
+					126 cell
+						127 text Care
+					128 cell
+						129 text No vendor
+				130 row
+					131 cell
+						132 container
+							133 checkbox (settable, integer) Description: Select row 3, Value: 0
+							134 text Select row 3
+					135 cell
+						136 link Description: Fixture Daily Veil Care, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/products/ddf882c4-d6e9-4c3e-8082-edfbcb4a2bc9
+					137 cell
+						138 container
+							139 text Active
+							140 pop up button (collapsed, settable) Description: Change status for Fixture Daily Veil, Value: Active, Secondary Actions: Expand
+								141 menu
+									142 (selected) Active
+									143 Draft
+									144 Archived
+					145 cell
+						146 text 12 in stock
+					147 cell
+						148 text Care
+					149 cell
+						150 text No vendor
+				151 row
+					152 cell
+						153 container
+							154 checkbox (settable, integer) Description: Select row 4, Value: 0
+							155 text Select row 4
+					156 cell
+						157 link Description: Fixture Palm Wash Care, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/products/084711bb-a989-4708-bb0a-11f6c9d4d3d5
+					158 cell
+						159 container
+							160 text Active
+							161 pop up button (collapsed, settable) Description: Change status for Fixture Palm Wash, Value: Active, Secondary Actions: Expand
+								162 menu
+									163 (selected) Active
+									164 Draft
+									165 Archived
+					166 cell
+						167 text 8 in stock
+					168 cell
+						169 text Care
+					170 cell
+						171 text No vendor
+				172 row
+					173 cell
+						174 container
+							175 checkbox (settable, integer) Description: Select row 5, Value: 0
+							176 text Select row 5
+					177 cell
+						178 link Description: Fixture Soft Colour Care, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/products/2bcbdf71-270c-40ac-8819-82d8921e35f0
+					179 cell
+						180 container
+							181 text Active
+							182 pop up button (collapsed, settable) Description: Change status for Fixture Soft Colour, Value: Active, Secondary Actions: Expand
+								183 menu
+									184 (selected) Active
+									185 Draft
+									186 Archived
+					187 cell
+						188 text 8 in stock
+					189 cell
+						190 text Care
+					191 cell
+						192 text No vendor
+				193 row
+					194 cell
+						195 container
+							196 checkbox (settable, integer) Description: Select row 6, Value: 0
+							197 text Select row 6
+					198 cell
+						199 link Description: Habitat dimensions-only stand Habitat dimensional controls, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/products/646e8bcb-3267-4f70-b31b-e44fb5f542a6
+					200 cell
+						201 container
+							202 text Active
+							203 pop up button (collapsed, settable) Description: Change status for Habitat dimensions-only stand, Value: Active, Secondary Actions: Expand
+								204 menu
+									205 (selected) Active
+									206 Draft
+									207 Archived
+					208 cell
+						209 text 2 in stock
+					210 cell
+						211 text Habitat dimensional controls
+					212 cell
+						213 text No vendor
+				214 row
+					215 cell
+						216 container
+							217 checkbox (settable, integer) Description: Select row 7, Value: 0
+							218 text Select row 7
+					219 cell
+						220 link Description: Habitat lifecycle desk Furniture, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/products/54301d6f-f54e-4209-95a0-4fbc32bcf8e6
+					221 cell
+						222 container
+							223 text Active
+							224 pop up button (collapsed, settable) Description: Change status for Habitat lifecycle desk, Value: Active, Secondary Actions: Expand
+								225 menu
+									226 (selected) Active
+									227 Draft
+									228 Archived
+					229 cell
+						230 text 8 in stock
+					231 cell
+						232 text Furniture
+					233 cell
+						234 text No vendor
+				235 row
+					236 cell
+						237 container
+							238 checkbox (settable, integer) Description: Select row 8, Value: 0
+							239 text Select row 8
+					240 cell
+						241 link Description: Habitat width-only shelf Habitat dimensional controls, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/products/57d0c360-01a6-49dc-88f7-f3796e313b2e
+					242 cell
+						243 container
+							244 text Active
+							245 pop up button (collapsed, settable) Description: Change status for Habitat width-only shelf, Value: Active, Secondary Actions: Expand
+								246 menu
+									247 (selected) Active
+									248 Draft
+									249 Archived
+					250 cell
+						251 text 2 in stock
+					252 cell
+						253 text Habitat dimensional controls
+					254 cell
+						255 text No vendor
+				256 row
+					257 cell
+						258 container
+							259 checkbox (settable, integer) Description: Select row 9, Value: 0
+							260 text Select row 9
+					261 cell
+						262 link Description: Kindred lifecycle gift box Gifts, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/products/df01e4a6-6067-485e-b6f9-84e751d59915
+					263 cell
+						264 container
+							265 text Active
+							266 pop up button (collapsed, settable) Description: Change status for Kindred lifecycle gift box, Value: Active, Secondary Actions: Expand
+								267 menu
+									268 (selected) Active
+									269 Draft
+									270 Archived
+					271 cell
+						272 text 8 in stock
+					273 cell
+						274 text Gifts
+					275 cell
+						276 text No vendor
+				277 row
+					278 cell
+						279 container
+							280 checkbox (settable, integer) Description: Select row 10, Value: 0
+							281 text Select row 10
+					282 cell
+						283 link Description: MadeYours lifecycle notebook Personalized, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/products/895d7ee5-b618-4130-806d-f359f4adc492
+					284 cell
+						285 container
+							286 text Active
+							287 pop up button (collapsed, settable) Description: Change status for MadeYours lifecycle notebook, Value: Active, Secondary Actions: Expand
+								288 menu
+									289 (selected) Active
+									290 Draft
+									291 Archived
+					292 cell
+						293 text 8 in stock
+					294 cell
+						295 text Personalized
+					296 cell
+						297 text No vendor
+				298 row
+					299 cell
+						300 container
+							301 checkbox (settable, integer) Description: Select row 11, Value: 0
+							302 text Select row 11
+					303 cell
+						304 link Description: Marginalia lifecycle book Books, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/products/592643bb-6a6c-4d51-8619-ffb743f49495
+					305 cell
+						306 container
+							307 text Active
+							308 pop up button (collapsed, settable) Description: Change status for Marginalia lifecycle book, Value: Active, Secondary Actions: Expand
+								309 menu
+									310 (selected) Active
+									311 Draft
+									312 Archived
+					313 cell
+						314 text 8 in stock
+					315 cell
+						316 text Books
+					317 cell
+						318 text No vendor
+				319 row
+					320 cell
+						321 container
+							322 checkbox (settable, integer) Description: Select row 12, Value: 0
+							323 text Select row 12
+					324 cell
+						325 link Description: Marginalia lifecycle lined notebook Stationery, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/products/6d9d5b54-f930-4382-b21c-958c7818ea0d
+					326 cell
+						327 container
+							328 text Active
+							329 pop up button (collapsed, settable) Description: Change status for Marginalia lifecycle lined notebook, Value: Active, Secondary Actions: Expand
+								330 menu
+									331 (selected) Active
+									332 Draft
+									333 Archived
+					334 cell
+						335 text 6 in stock
+					336 cell
+						337 text Stationery
+					338 cell
+						339 text No vendor
+				340 row
+					341 cell
+						342 container
+							343 checkbox (settable, integer) Description: Select row 13, Value: 0
+							344 text Select row 13
+					345 cell
+						346 link Description: Pantry lifecycle red lentils Staples, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/products/d9bd8cae-b211-48c5-8440-5f446dc57c0e
+					347 cell
+						348 container
+							349 text Active
+							350 pop up button (collapsed, settable) Description: Change status for Pantry lifecycle red lentils, Value: Active, Secondary Actions: Expand
+								351 menu
+									352 (selected) Active
+									353 Draft
+									354 Archived
+					355 cell
+						356 text 6 in stock
+					357 cell
+						358 text Staples
+					359 cell
+						360 text No vendor
+				361 row
+					362 cell
+						363 container
+							364 checkbox (settable, integer) Description: Select row 14, Value: 0
+							365 text Select row 14
+					366 cell
+						367 link Description: Pantry lifecycle rice Staples, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/products/fb090833-cbd5-44aa-803d-af9e8c00c56a
+					368 cell
+						369 container
+							370 text Active
+							371 pop up button (collapsed, settable) Description: Change status for Pantry lifecycle rice, Value: Active, Secondary Actions: Expand
+								372 menu
+									373 (selected) Active
+									374 Draft
+									375 Archived
+					376 cell
+						377 text 4 in stock
+					378 cell
+						379 text Staples
+					380 cell
+						381 text No vendor
+				382 row
+					383 cell
+						384 container
+							385 checkbox (settable, integer) Description: Select row 15, Value: 0
+							386 text Select row 15
+					387 cell
+						388 link Description: Playfield lifecycle activity kit Activities, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/products/1682c90c-8888-483a-a1b5-3251a3e91737
+					389 cell
+						390 container
+							391 text Active
+							392 pop up button (collapsed, settable) Description: Change status for Playfield lifecycle activity kit, Value: Active, Secondary Actions: Expand
+								393 menu
+									394 (selected) Active
+									395 Draft
+									396 Archived
+					397 cell
+						398 text 8 in stock
+					399 cell
+						400 text Activities
+					401 cell
+						402 text No vendor
+				403 row
+					404 cell
+						405 container
+							406 checkbox (settable, integer) Description: Select row 16, Value: 0
+							407 text Select row 16
+					408 cell
+						409 link Description: Tailored Straight Trouser Not categorized, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/products/a48293b5-21e0-4b74-b6ea-995e415691e3
+					410 cell
+						411 container
+							412 text Active
+							413 pop up button (collapsed, settable) Description: Change status for Tailored Straight Trouser, Value: Active, Secondary Actions: Expand
+								414 menu
+									415 (selected) Active
+									416 Draft
+									417 Archived
+					418 cell
+						419 text 12 in stock
+					420 cell
+						421 text Not categorized
+					422 cell
+						423 text No vendor
+				424 row
+					425 cell
+						426 container
+							427 checkbox (settable, integer) Description: Select row 17, Value: 0
+							428 text Select row 17
+					429 cell
+						430 link Description: The Everyday Cotton Dress Not categorized, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/products/a494bd38-ef37-4f65-9157-fa0c4c869b92
+					431 cell
+						432 container
+							433 text Active
+							434 pop up button (collapsed, settable) Description: Change status for The Everyday Cotton Dress, Value: Active, Secondary Actions: Expand
+								435 menu
+									436 (selected) Active
+									437 Draft
+									438 Archived
+					439 cell
+						440 text 12 in stock
+					441 cell
+						442 text Not categorized
+					443 cell
+						444 text No vendor
+				445 row
+					446 cell
+						447 container
+							448 checkbox (settable, integer) Description: Select row 18, Value: 0
+							449 text Select row 18
+					450 cell
+						451 link Description: The Everyday Linen Shirt Not categorized, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/products/3c7ffd00-5cf8-419a-80cd-00bb56918465
+					452 cell
+						453 container
+							454 text Active
+							455 pop up button (collapsed, settable) Description: Change status for The Everyday Linen Shirt, Value: Active, Secondary Actions: Expand
+								456 menu
+									457 (selected) Active
+									458 Draft
+									459 Archived
+					460 cell
+						461 text 12 in stock
+					462 cell
+						463 text Not categorized
+					464 cell
+						465 text No vendor
+				466 row
+					467 cell
+						468 container
+							469 checkbox (settable, integer) Description: Select row 19, Value: 0
+							470 text Select row 19
+					471 cell
+						472 link Description: Trailmark lifecycle racket Recreation, Value: …
+					473 cell
+						474 container
+							475 text Active
+							476 pop up button (collapsed, settable) Description: Change status for Trailmark lifecycle racket, Value: Active, Secondary Actions: Expand
+								477 menu
+									478 (selected) Active
+									479 Draft
+									480 Archived
+					481 cell
+						482 text 8 in stock
+					483 cell
+						484 text Recreation
+					485 cell
+						486 text No vendor
+
+The focused UI element is 58 heading Products, Value: 1

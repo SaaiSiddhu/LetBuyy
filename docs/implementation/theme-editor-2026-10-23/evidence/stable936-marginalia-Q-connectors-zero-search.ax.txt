@@ -1,0 +1,48 @@
+Browser tab: 77, Title: "Search results for \"Marginalia lifecycle\" | Threadline", URL: "http://syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/search?collection_id=d5609b77-743c-45b5-b435-814f2ca95058&country_of_origin=India&search=Marginalia+lifecycle&limit=1&page=1&sort=price-asc&category=Stationery&books_kind=stationery&books_ruling=lined&connector=usb-c&connector=hdmi".
+1 AXWebArea Search results for "Marginalia lifecycle" | Threadline, URL: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/search?collection_id=d5609b77-743c-45b5-b435-814f2ca95058&country_of_origin=India&search=Marginalia+lifecycle&limit=1&page=1&sort=price-asc&category=Stationery&books_kind=stationery&books_ruling=lined&connector=usb-c&connector=hdmi
+	2 container
+		3 container Description: Primary, ID: lb-nav-panel-header-default
+		4 link Description: Threadline, Value: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b
+		5 button (collapsed) Description: Search, Secondary Actions: Expand
+		6 link Description: Log in, Value: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/customers/login
+		7 link Description: Cart ( 0 ), Value: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/cart
+		8 container Filter products by country of origin
+			9 container
+				10 text Country of origin
+				11 text field (settable) Country of origin, Value: India, ID: lb-product-origin-filter
+				12 button Apply filter
+				13 link Description: Clear origin filter, Value: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/search?limit=1&search=Marginalia+lifecycle&category=Stationery&sort=price-asc&collection_id=d5609b77-743c-45b5-b435-814f2ca95058&connector=hdmi&connector=usb-c&books_kind=stationery&books_ruling=lined
+		14 container
+			15 text Search
+			16 search text field (settable) Search, Value: Marginalia lifecycle
+			17 text Sort
+			18 pop up button (collapsed, settable) Sort, Value: Price: low to high, Secondary Actions: Expand
+				19 menu
+					20 Featured
+					21 Title
+					22 (selected) Price: low to high
+					23 Price: high to low
+					24 Newest
+			25 button Apply
+		26 container Applied filters
+			27 link Description: Remove Category: Stationery, Value: syn-threadline-ui-6815276b.localhost:58091/search?limit=1&search=Marginalia+lifecycle&country_of_origin=India&sort=price-asc&collection_id=d5609b77-743c-45b5-b435-814f2ca95058&connector=hdmi&connector=usb-c&books_kind=stationery&books_ruling=lined
+			28 link Description: Remove Country of origin: India, Value: syn-threadline-ui-6815276b.localhost:58091/search?limit=1&search=Marginalia+lifecycle&category=Stationery&sort=price-asc&collection_id=d5609b77-743c-45b5-b435-814f2ca95058&connector=hdmi&connector=usb-c&books_kind=stationery&books_ruling=lined
+			29 link Description: Remove Collection: d5609b77-743c-45b5-b435-814f2ca95058, Value: syn-threadline-ui-6815276b.localhost:58091/search?limit=1&search=Marginalia+lifecycle&category=Stationery&country_of_origin=India&sort=price-asc&connector=hdmi&connector=usb-c&books_kind=stationery&books_ruling=lined
+			30 link Description: Remove Connector: usb-c, Value: syn-threadline-ui-6815276b.localhost:58091/search?limit=1&search=Marginalia+lifecycle&category=Stationery&country_of_origin=India&sort=price-asc&collection_id=d5609b77-743c-45b5-b435-814f2ca95058&connector=hdmi&books_kind=stationery&books_ruling=lined
+			31 link Description: Remove Connector: hdmi, Value: syn-threadline-ui-6815276b.localhost:58091/search?limit=1&search=Marginalia+lifecycle&category=Stationery&country_of_origin=India&sort=price-asc&collection_id=d5609b77-743c-45b5-b435-814f2ca95058&connector=usb-c&books_kind=stationery&books_ruling=lined
+			32 link Description: Remove Product type: stationery, Value: syn-threadline-ui-6815276b.localhost:58091/search?limit=1&search=Marginalia+lifecycle&category=Stationery&country_of_origin=India&sort=price-asc&collection_id=d5609b77-743c-45b5-b435-814f2ca95058&connector=hdmi&connector=usb-c&books_ruling=lined
+			33 link Description: Remove Ruling: lined, Value: syn-threadline-ui-6815276b.localhost:58091/search?limit=1&search=Marginalia+lifecycle&category=Stationery&country_of_origin=India&sort=price-asc&collection_id=d5609b77-743c-45b5-b435-814f2ca95058&connector=hdmi&connector=usb-c&books_kind=stationery
+		34 heading Search products, Value: 1
+			35 text Search products
+		36 text 0 products
+		37 text No products found. Try another title, author or keyword.
+		38 link Description: Explore all products, Value: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/products
+		39 heading Threadline, Value: 3
+			40 text Threadline
+		41 heading CONTACT, Value: 4
+			42 text CONTACT
+		43 link Description: Contact us, Value: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/contact
+		44 text © Threadline. All rights reserved.
+		45 link Description: Powered by LetBuyy, Value: letbuyy.com/
+
+The focused UI element is 1 AXWebArea Search results for "Marginalia lifecycle" | Threadline, URL: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/search?collection_id=d5609b77-743c-45b5-b435-814f2ca95058&country_of_origin=India&search=Marginalia+lifecycle&limit=1&page=1&sort=price-asc&category=Stationery&books_kind=stationery&books_ruling=lined&connector=usb-c&connector=hdmi

@@ -1,0 +1,15 @@
+{
+  "recordedAt": "2026-10-25T00:31:31.581Z",
+  "classification": "PURE_BOUNDED_CHILD_STDOUT_PROBE_NOT_APP_DB_DOCKER_NATIVE",
+  "requestedStdoutBytes": 2097152,
+  "defaultExecFileSync": {
+    "failed": true,
+    "code": "ENOBUFS",
+    "signal": "SIGTERM",
+    "stdoutBytes": 1114112,
+    "message": "spawnSync /opt/homebrew/Cellar/node@22/22.23.3_2/bin/node ENOBUFS"
+  },
+  "largeOwnedHelper": "owned-db-support.ts scriptLarge explicitly provides64MiB; psql/script use implicit default",
+  "consequence": "Apparel functions() and tables() aggregate all public function/column profiles via psql, risking preflight buffer failure. Use existing scriptLarge for these large metadata reads before native admission.",
+  "nativeExecuted": false
+}

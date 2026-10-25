@@ -1,0 +1,177 @@
+[
+  {
+    "theme": "fabric",
+    "probe": "variant selection",
+    "load": "load completed",
+    "result": "no nonselected labeled radio found; selection not exercised"
+  },
+  {
+    "theme": "dwell",
+    "probe": "variant selection",
+    "load": "load completed",
+    "result": "no nonselected labeled radio found; selection not exercised"
+  },
+  {
+    "theme": "savor",
+    "probe": "variant selection",
+    "load": "load completed",
+    "result": "no nonselected labeled radio found; selection not exercised"
+  },
+  {
+    "theme": "atelier",
+    "probe": "variant selection",
+    "load": "load completed",
+    "result": "no nonselected labeled radio found; selection not exercised"
+  },
+  {
+    "theme": "ride",
+    "probe": "variant selection",
+    "load": "load completed",
+    "requested": "SMALL",
+    "selected": [
+      {
+        "label": "SMALL",
+        "value": "SMALL"
+      }
+    ],
+    "result": "selection activated; selected values captured"
+  },
+  {
+    "theme": "origin",
+    "probe": "variant selection",
+    "load": "load completed",
+    "requested": "Gray",
+    "selected": [
+      {
+        "label": "Gray",
+        "value": "Gray"
+      },
+      {
+        "label": "",
+        "value": "Gray"
+      }
+    ],
+    "result": "selection activated; selected values captured"
+  },
+  {
+    "theme": "colorblock",
+    "probe": "variant selection",
+    "load": "load completed",
+    "result": "no nonselected labeled radio found; selection not exercised"
+  },
+  {
+    "theme": "sense",
+    "probe": "variant selection",
+    "load": "load completed",
+    "requested": "Mask + applicator",
+    "selected": [
+      {
+        "label": "Mask + applicator",
+        "value": "Mask + applicator"
+      }
+    ],
+    "result": "selection activated; selected values captured"
+  },
+  {
+    "theme": "pitch",
+    "probe": "variant selection",
+    "load": "load completed",
+    "result": "no nonselected labeled radio found; selection not exercised"
+  },
+  {
+    "theme": "taste",
+    "probe": "variant selection",
+    "load": "load completed",
+    "result": "no nonselected labeled radio found; selection not exercised"
+  },
+  {
+    "theme": "refresh",
+    "probe": "variant selection",
+    "load": "load completed",
+    "result": "no nonselected labeled radio found; selection not exercised"
+  },
+  {
+    "theme": "tinker",
+    "probe": "variant selection",
+    "load": "load completed",
+    "result": "no nonselected labeled radio found; selection not exercised"
+  },
+  {
+    "theme": "ritual",
+    "probe": "variant selection",
+    "load": "load completed",
+    "result": "no nonselected labeled radio found; selection not exercised"
+  },
+  {
+    "theme": "heritage",
+    "probe": "variant selection",
+    "load": "load completed",
+    "result": "no nonselected labeled radio found; selection not exercised"
+  },
+  {
+    "theme": "horizon",
+    "probe": "variant selection",
+    "load": "load completed",
+    "result": "no nonselected labeled radio found; selection not exercised"
+  },
+  {
+    "theme": "studio",
+    "probe": "variant selection",
+    "load": "load completed",
+    "requested": "$100",
+    "selected": [
+      {
+        "label": "$100",
+        "value": "$100"
+      }
+    ],
+    "result": "selection activated; selected values captured"
+  },
+  {
+    "theme": "spotlight",
+    "probe": "variant selection",
+    "load": "load completed",
+    "result": "no nonselected labeled radio found; selection not exercised"
+  },
+  {
+    "theme": "trade",
+    "probe": "variant selection",
+    "load": "load completed",
+    "result": "no nonselected labeled radio found; selection not exercised"
+  },
+  {
+    "theme": "publisher",
+    "probe": "variant selection",
+    "load": "load completed",
+    "result": "no nonselected labeled radio found; selection not exercised"
+  },
+  {
+    "theme": "vessel",
+    "probe": "variant selection",
+    "load": "load completed",
+    "result": "no nonselected labeled radio found; selection not exercised"
+  },
+  {
+    "theme": "craft",
+    "probe": "variant selection",
+    "load": "load completed",
+    "result": "no nonselected labeled radio found; selection not exercised"
+  },
+  {
+    "theme": "dawn",
+    "probe": "variant selection",
+    "load": "load completed",
+    "requested": "Mosstone",
+    "selected": [
+      {
+        "label": "Mosstone",
+        "value": "Mosstone"
+      },
+      {
+        "label": "",
+        "value": "Mosstone"
+      }
+    ],
+    "result": "selection activated; selected values captured"
+  }
+]

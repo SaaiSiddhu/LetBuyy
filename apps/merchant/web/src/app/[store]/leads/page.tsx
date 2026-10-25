@@ -327,7 +327,8 @@ export default function LeadsPage() {
     if (loading) {
         return (
             <Page>
-                <PageHeader
+                <PageHeader identity="customers"
+                    recipe="index"
                     title="Leads"
                     description="Track storefront lead captures and move each prospect through follow-up."
                     breadcrumbs={[{ label: 'Customers' }, { label: 'Leads' }]}
@@ -350,7 +351,8 @@ export default function LeadsPage() {
 
     return (
         <Page>
-            <PageHeader
+            <PageHeader identity="customers"
+                recipe="index"
                 title="Leads"
                 description="Track storefront lead captures and move each prospect through follow-up."
                 breadcrumbs={[{ label: 'Customers' }, { label: 'Leads' }]}

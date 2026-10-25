@@ -1,0 +1,1423 @@
+{
+  "date": "2026-10-22",
+  "taxonomy": "Original research IDs; no claim to Shopify private package/component ownership",
+  "scope": "Observed shared patterns + cited primary documentation + explicitly prior/open branches",
+  "official_sources": {
+    "page": "https://shopify.dev/docs/api/app-home/latest/web-components/layout-and-structure/page",
+    "section": "https://shopify.dev/docs/api/app-home/latest/web-components/layout-and-structure/section",
+    "button": "https://shopify.dev/docs/api/app-home/latest/web-components/actions/button",
+    "forms": "https://shopify.dev/docs/apps/design/user-experience/forms",
+    "savebar": "https://shopify.dev/docs/api/app-home/latest/apis/user-interface-and-interactions/save-bar-api",
+    "loading": "https://shopify.dev/docs/api/app-home/latest/apis/user-interface-and-interactions/loading-api",
+    "table": "https://shopify.dev/docs/api/app-home/latest/web-components/layout-and-structure/table",
+    "modal": "https://shopify.dev/docs/api/app-home/latest/web-components/overlays/modal"
+  },
+  "patterns": [
+    {
+      "id": "PAT-01",
+      "name": "Stable shell and task workspace",
+      "layer": "layout",
+      "surface_family": "Native admin / Settings",
+      "user_task": "Keep store and navigation context",
+      "evidence": [
+        "02-products-index-1440.json",
+        "14-domains-overview.json"
+      ],
+      "shared_rule": "Stable chrome surrounds a scoped work area; Settings introduces local navigation.",
+      "required_slots": [
+        "store/actor scope",
+        "navigation",
+        "work content"
+      ],
+      "optional_slots": [
+        "global navigation",
+        "settings navigation",
+        "store context"
+      ],
+      "state_model": [
+        "destination pending",
+        "current"
+      ],
+      "actions": "Task-supported actions are optional; consumers retain authority and relevant state.",
+      "responsive_behavior": "Mobile removes persistent rails and exposes menu/quick links.",
+      "accessibility_behavior": "One main landmark; named navigation and current destination.",
+      "authority_dependencies": "Existing membership, record/version, capability and relevant domain contract; presentation never grants authority",
+      "exceptions": "Theme editor intentionally replaces merchant chrome.",
+      "confidence": {
+        "level": "high for stated observation/contract",
+        "limit": "Internal package ownership and unexercised backend/security branches are not established."
+      },
+      "letbuyy_owner": "apps/merchant/web/src/components/AdminShell.tsx",
+      "recommended_disposition": "Preserve",
+      "gap_ids": [
+        "UX-16",
+        "UX-46"
+      ],
+      "acceptance": "Existing shell retains scope, keyboard drawer and scroll; Page cannot create a nested main."
+    },
+    {
+      "id": "PAT-02",
+      "name": "Context header and task header",
+      "layer": "pattern",
+      "surface_family": "Native index / record / Settings",
+      "user_task": "Identify destination and current object",
+      "evidence": [
+        "02-products-index-1440.json",
+        "03-product-create-clean.json",
+        "12-settings-general-header.json"
+      ],
+      "shared_rule": "Compact context and larger task heading are distinct levels; index need not repeat a large title.",
+      "required_slots": [
+        "task title",
+        "context/parent when nested"
+      ],
+      "optional_slots": [
+        "back/breadcrumb",
+        "status accessory",
+        "actions",
+        "task description"
+      ],
+      "state_model": [
+        "index",
+        "create",
+        "detail",
+        "settings"
+      ],
+      "actions": "Task-supported actions are optional; consumers retain authority and relevant state.",
+      "responsive_behavior": "Actions and content reflow; mobile may remove compact context row.",
+      "accessibility_behavior": "Meaningful accessible page heading and labels; DOM appearance alone does not establish accessible outline.",
+      "authority_dependencies": "Existing membership, record/version, capability and relevant domain contract; presentation never grants authority",
+      "exceptions": "Keep LetBuyy 24/32 task title; do not globally shrink it to 13 px.",
+      "confidence": {
+        "level": "high for stated observation/contract",
+        "limit": "Internal package ownership and unexercised backend/security branches are not established."
+      },
+      "letbuyy_owner": "packages/typescript/ui/src/layout.tsx",
+      "recommended_disposition": "Refine",
+      "gap_ids": [
+        "UX-43"
+      ],
+      "acceptance": "Explicit index/record/settings/workbench recipes use existing PageHeader without title-string guesses or unexplained hidden context."
+    },
+    {
+      "id": "PAT-03",
+      "name": "Decisive primary action",
+      "layer": "component",
+      "surface_family": "Native / Settings / dialog",
+      "user_task": "Advance the main task",
+      "evidence": [
+        "04-product-dirty.json",
+        "14-domains-overview.json",
+        "DOC:button"
+      ],
+      "shared_rule": "One visually decisive action within a task scope; its meaning follows actual effect.",
+      "required_slots": [
+        "accessible action label",
+        "command or destination",
+        "current availability"
+      ],
+      "optional_slots": [
+        "icon",
+        "pending label",
+        "destructive tone"
+      ],
+      "state_model": [
+        "enabled",
+        "busy",
+        "invalid",
+        "unavailable"
+      ],
+      "actions": "icon; pending label; destructive tone",
+      "responsive_behavior": "May move to a compact mobile action row with accessible names.",
+      "accessibility_behavior": "Visible focus, appropriate target, named busy/disabled state.",
+      "authority_dependencies": "Existing membership, record/version, capability and relevant domain contract; presentation never grants authority",
+      "exceptions": "A primary elsewhere on the page can belong to a separate task, not competing global emphasis.",
+      "confidence": {
+        "level": "high for stated observation/contract",
+        "limit": "Internal package ownership and unexercised backend/security branches are not established."
+      },
+      "letbuyy_owner": "packages/typescript/ui/src/button.tsx",
+      "recommended_disposition": "Complete",
+      "gap_ids": [
+        "UX-43",
+        "UX-36"
+      ],
+      "acceptance": "PageHeader action metadata forwards loading/label/disabled semantics to the canonical Button."
+    },
+    {
+      "id": "PAT-04",
+      "name": "Secondary and overflow actions",
+      "layer": "component",
+      "surface_family": "Index / detail / theme",
+      "user_task": "Offer supporting operations",
+      "evidence": [
+        "07-customers-index.json",
+        "09-discounts-index.json",
+        "PRIOR:10_THEMES_PAGE_DETAILED_REFERENCE.md"
+      ],
+      "shared_rule": "Related operations use quieter styling and menus; the menu is an entry, not the operation.",
+      "required_slots": [
+        "named supporting actions",
+        "scope"
+      ],
+      "optional_slots": [
+        "secondary action group",
+        "overflow"
+      ],
+      "state_model": [
+        "available",
+        "unavailable"
+      ],
+      "actions": "secondary action group; overflow",
+      "responsive_behavior": "Collapse according to space while keeping critical actions discoverable.",
+      "accessibility_behavior": "Menu keyboard/restore-focus and understandable labels.",
+      "authority_dependencies": "Existing membership, record/version, capability and relevant domain contract; presentation never grants authority",
+      "exceptions": "No exact universal action count or overflow breakpoint inferred.",
+      "confidence": {
+        "level": "high for stated observation/contract",
+        "limit": "Internal package ownership and unexercised backend/security branches are not established."
+      },
+      "letbuyy_owner": "packages/typescript/ui/src/overlays.tsx",
+      "recommended_disposition": "Refine",
+      "gap_ids": [
+        "UX-43"
+      ],
+      "acceptance": "Overflow preserves action effect, permission, busy state and a useful return."
+    },
+    {
+      "id": "PAT-05",
+      "name": "Named compact icon action",
+      "layer": "component",
+      "surface_family": "Native / editor / mobile",
+      "user_task": "Act in limited space",
+      "evidence": [
+        "05-product-dirty-mobile.json",
+        "26-editor-resolved-ax.txt"
+      ],
+      "shared_rule": "Icon form can change while the accessible action name remains stable.",
+      "required_slots": [
+        "accessible name",
+        "icon",
+        "command"
+      ],
+      "optional_slots": [
+        "tooltip",
+        "icon-only",
+        "selected"
+      ],
+      "state_model": [
+        "focus",
+        "selected",
+        "disabled"
+      ],
+      "actions": "tooltip; icon-only; selected",
+      "responsive_behavior": "Product Discard/Save became close/check icons at 390 px.",
+      "accessibility_behavior": "Names survive icon-only presentation; target/spacing verified separately.",
+      "authority_dependencies": "Existing membership, record/version, capability and relevant domain contract; presentation never grants authority",
+      "exceptions": "Observed 28 px Shopify visual button is not LetBuyy target-size law.",
+      "confidence": {
+        "level": "high for stated observation/contract",
+        "limit": "Internal package ownership and unexercised backend/security branches are not established."
+      },
+      "letbuyy_owner": "packages/typescript/ui/src/button.tsx",
+      "recommended_disposition": "Complete",
+      "gap_ids": [
+        "UX-36"
+      ],
+      "acceptance": "Name, tooltip, focus and touch area remain usable in all density variants."
+    },
+    {
+      "id": "PAT-06",
+      "name": "Contextual dirty-form save bar",
+      "layer": "workflow",
+      "surface_family": "Product / General settings",
+      "user_task": "Save or discard unsaved input",
+      "evidence": [
+        "product-dirty-bar-geometry.json",
+        "product-dirty-bar-after-scroll.json",
+        "13-settings-unsaved-bar.json",
+        "product-leave-attempt-ax.txt"
+      ],
+      "shared_rule": "Dirty input summons a workspace-overlay bar; guard/commit state owns it, not page-specific decoration.",
+      "required_slots": [
+        "form/scope identity",
+        "dirty state",
+        "save/discard handlers",
+        "pending/outcome state"
+      ],
+      "optional_slots": [
+        "status text",
+        "Save",
+        "Discard"
+      ],
+      "state_model": [
+        "clean",
+        "dirty",
+        "saving",
+        "rejected",
+        "unknown",
+        "conflict"
+      ],
+      "actions": "status text; Save; Discard",
+      "responsive_behavior": "390 px becomes top close/check row.",
+      "accessibility_behavior": "Dirty navigation protection, visible focus and no invisible enabled controls.",
+      "authority_dependencies": "Existing membership, record/version, capability and relevant domain contract; presentation never grants authority",
+      "exceptions": "Shopify desktop pill is absolute in workspace overlay, not CSS position:fixed; persistence comes from scroll ownership.",
+      "confidence": {
+        "level": "high for stated observation/contract",
+        "limit": "Internal package ownership and unexercised backend/security branches are not established."
+      },
+      "letbuyy_owner": "packages/typescript/ui/src/feedback.tsx",
+      "recommended_disposition": "Complete",
+      "gap_ids": [
+        "UX-02",
+        "UX-44"
+      ],
+      "acceptance": "Saved bar is absent/inert; dirty input protected across navigation; uncertain command recovers original intent."
+    },
+    {
+      "id": "PAT-07",
+      "name": "Bulk-selection action context",
+      "layer": "workflow",
+      "surface_family": "Collection workspace",
+      "user_task": "Act on a defined record population",
+      "evidence": [
+        "PRIOR:04_ADMIN_AND_COMMERCE_PATTERNS.md",
+        "OPEN:no populated Shopify bulk fixture"
+      ],
+      "shared_rule": "Selection must identify its population and effect before action.",
+      "required_slots": [
+        "selection population",
+        "selection count",
+        "supported actions"
+      ],
+      "optional_slots": [
+        "count",
+        "row/page selection",
+        "bulk actions"
+      ],
+      "state_model": [
+        "none selected",
+        "selected",
+        "partial",
+        "unknown"
+      ],
+      "actions": "count; row/page selection; bulk actions",
+      "responsive_behavior": "Keep explicit selection and actions reachable in mobile summaries.",
+      "accessibility_behavior": "Named checkboxes and selection status.",
+      "authority_dependencies": "Existing membership, record/version, capability and relevant domain contract; presentation never grants authority",
+      "exceptions": "Fresh account had no products; native populated bulk-bar geometry and mutations remain open.",
+      "confidence": {
+        "level": "limited",
+        "limit": "Internal package ownership and unexercised backend/security branches are not established."
+      },
+      "letbuyy_owner": "apps/merchant/web/src/app/[store]/products/page.tsx",
+      "recommended_disposition": "Verify",
+      "gap_ids": [
+        "UX-18"
+      ],
+      "acceptance": "Selection never silently expands; partial/unknown outcomes retain original commands."
+    },
+    {
+      "id": "PAT-08",
+      "name": "Sticky bottom actions",
+      "layer": "pattern",
+      "surface_family": "Long forms / constrained panels",
+      "user_task": "Keep commit actions reachable",
+      "evidence": [
+        "SOURCE:SaveBar",
+        "PRIOR:09_SURFACE_CONTAINERS_AND_NAVIGATION_LOADING.md"
+      ],
+      "shared_rule": "Sticky footer and overlay bar have different scroll/elevation ownership.",
+      "required_slots": [
+        "owning scroll container",
+        "action group",
+        "content inset"
+      ],
+      "optional_slots": [
+        "footer",
+        "reserved inset"
+      ],
+      "state_model": [
+        "editing",
+        "busy"
+      ],
+      "actions": "footer; reserved inset",
+      "responsive_behavior": "Account for keyboard and safe area.",
+      "accessibility_behavior": "Focused controls remain visible.",
+      "authority_dependencies": "Existing membership, record/version, capability and relevant domain contract; presentation never grants authority",
+      "exceptions": "Do not call every floating control a save bar.",
+      "confidence": {
+        "level": "medium",
+        "limit": "Internal package ownership and unexercised backend/security branches are not established."
+      },
+      "letbuyy_owner": "packages/typescript/ui/src/feedback.tsx",
+      "recommended_disposition": "Refine",
+      "gap_ids": [
+        "UX-39"
+      ],
+      "acceptance": "A single scoped placement recipe avoids overlap with trial/toast/dialog actions."
+    },
+    {
+      "id": "PAT-09",
+      "name": "Persistent editor command toolbar",
+      "layer": "layout",
+      "surface_family": "Theme editor",
+      "user_task": "Navigate scope and save theme work",
+      "evidence": [
+        "26-editor-resolved-ax.txt",
+        "editor-toolbar.png"
+      ],
+      "shared_rule": "Theme/template identity, selection tools, undo/redo and commit remain in the editor toolbar.",
+      "required_slots": [
+        "theme/template scope",
+        "save/version state",
+        "editor commands"
+      ],
+      "optional_slots": [
+        "template picker",
+        "preview mode",
+        "history",
+        "Save as"
+      ],
+      "state_model": [
+        "unchanged",
+        "dirty",
+        "saved",
+        "conflict"
+      ],
+      "actions": "template picker; preview mode; history; Save as",
+      "responsive_behavior": "Dedicated compact layout; prior 390 sheet evidence retained.",
+      "accessibility_behavior": "Names, disabled semantics and keyboard reachability.",
+      "authority_dependencies": "Existing membership, record/version, capability and relevant domain contract; presentation never grants authority",
+      "exceptions": "Not the merchant dirty-form floating bar; publication authority stays separate.",
+      "confidence": {
+        "level": "high for stated observation/contract",
+        "limit": "Internal package ownership and unexercised backend/security branches are not established."
+      },
+      "letbuyy_owner": "apps/merchant/web/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx",
+      "recommended_disposition": "Preserve",
+      "gap_ids": [
+        "UX-33"
+      ],
+      "acceptance": "Existing saved-version publication and undo/redo survive layout work."
+    },
+    {
+      "id": "PAT-10",
+      "name": "Selected-object contextual toolbar",
+      "layer": "pattern",
+      "surface_family": "Theme editor",
+      "user_task": "Operate on a selected section",
+      "evidence": [
+        "27-editor-hero-properties-ax.txt"
+      ],
+      "shared_rule": "Selected object scope determines contextual actions such as duplicate/hide/remove/ask.",
+      "required_slots": [
+        "selected object identity",
+        "permitted object actions"
+      ],
+      "optional_slots": [
+        "selection name",
+        "object actions",
+        "assistant context"
+      ],
+      "state_model": [
+        "selected",
+        "dismissed"
+      ],
+      "actions": "selection name; object actions; assistant context",
+      "responsive_behavior": "Keep selection-to-properties handoff usable.",
+      "accessibility_behavior": "Keyboard alternatives for drag and named object actions.",
+      "authority_dependencies": "Existing membership, record/version, capability and relevant domain contract; presentation never grants authority",
+      "exceptions": "Fresh inspection selected Hero only; no section mutation was performed.",
+      "confidence": {
+        "level": "high for stated observation/contract",
+        "limit": "Internal package ownership and unexercised backend/security branches are not established."
+      },
+      "letbuyy_owner": "apps/merchant/web/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx",
+      "recommended_disposition": "Refine",
+      "gap_ids": [
+        "UX-32",
+        "UX-41"
+      ],
+      "acceptance": "Actions target the selected schema object once; accepting a suggestion does not publish."
+    },
+    {
+      "id": "PAT-11",
+      "name": "Settings local navigation",
+      "layer": "layout",
+      "surface_family": "Settings",
+      "user_task": "Locate a configuration task",
+      "evidence": [
+        "14-domains-overview.json",
+        "21-shipping-header-390.json",
+        "shipping-mobile-ax.txt"
+      ],
+      "shared_rule": "A separate settings workspace has searchable local navigation and a return to prior work.",
+      "required_slots": [
+        "store identity",
+        "local destinations",
+        "return action"
+      ],
+      "optional_slots": [
+        "local search",
+        "close/back"
+      ],
+      "state_model": [
+        "current",
+        "no match",
+        "unavailable"
+      ],
+      "actions": "local search; close/back",
+      "responsive_behavior": "390 px exposes a Settings return/control instead of persistent local rail.",
+      "accessibility_behavior": "Named current item and usable focus/return.",
+      "authority_dependencies": "Existing membership, record/version, capability and relevant domain contract; presentation never grants authority",
+      "exceptions": "Apps availability in Shopify does not reopen LetBuyy app platform.",
+      "confidence": {
+        "level": "high for stated observation/contract",
+        "limit": "Internal package ownership and unexercised backend/security branches are not established."
+      },
+      "letbuyy_owner": "apps/merchant/web/src/components/settings/SettingsShell.tsx",
+      "recommended_disposition": "Preserve",
+      "gap_ids": [
+        "UX-14",
+        "UX-15"
+      ],
+      "acceptance": "Capability rules agree across cards/nav/commands/routes; valid return retains store context."
+    },
+    {
+      "id": "PAT-12",
+      "name": "Semantic section composition",
+      "layer": "component",
+      "surface_family": "Form / Settings / editor",
+      "user_task": "Group related information",
+      "evidence": [
+        "08-customer-create.json",
+        "19-shipping-header.json",
+        "DOC:section"
+      ],
+      "shared_rule": "Sections communicate task groups and hierarchy, with compact or expanded treatment.",
+      "required_slots": [
+        "related content",
+        "meaningful heading or accessible grouping label"
+      ],
+      "optional_slots": [
+        "heading",
+        "subheading",
+        "accessory",
+        "actions"
+      ],
+      "state_model": [
+        "expanded",
+        "collapsed",
+        "unavailable"
+      ],
+      "actions": "Task-supported actions are optional; consumers retain authority and relevant state.",
+      "responsive_behavior": "Stack related groups; preserve readable headings.",
+      "accessibility_behavior": "Semantic heading/label survives visual variant.",
+      "authority_dependencies": "Existing membership, record/version, capability and relevant domain contract; presentation never grants authority",
+      "exceptions": "Existing LetBuyy grouped Section already exists; complete it rather than add a second Card system.",
+      "confidence": {
+        "level": "high for stated observation/contract",
+        "limit": "Internal package ownership and unexercised backend/security branches are not established."
+      },
+      "letbuyy_owner": "packages/typescript/ui/src/layout.tsx",
+      "recommended_disposition": "Complete",
+      "gap_ids": [
+        "UX-45",
+        "UX-37"
+      ],
+      "acceptance": "Grouped Section and settings recipes preserve heading navigation and avoid redundant card nesting."
+    },
+    {
+      "id": "PAT-13",
+      "name": "Form rhythm and layout recipe",
+      "layer": "pattern",
+      "surface_family": "Record / Settings",
+      "user_task": "Enter related values coherently",
+      "evidence": [
+        "03-product-create-clean.json",
+        "08-customer-create.json",
+        "DOC:forms"
+      ],
+      "shared_rule": "Shared field rhythm plus task-specific main/aside and grouped composition.",
+      "required_slots": [
+        "field relationships",
+        "layout/spacing recipe",
+        "validation/commit owner"
+      ],
+      "optional_slots": [
+        "field group",
+        "help",
+        "aside"
+      ],
+      "state_model": [
+        "editing",
+        "validation",
+        "submission"
+      ],
+      "actions": "Task-supported actions are optional; consumers retain authority and relevant state.",
+      "responsive_behavior": "Two-column task becomes ordered single-column content.",
+      "accessibility_behavior": "Long labels/reflow retain relationships.",
+      "authority_dependencies": "Existing membership, record/version, capability and relevant domain contract; presentation never grants authority",
+      "exceptions": "Field count alone cannot decide modal versus page.",
+      "confidence": {
+        "level": "high for stated observation/contract",
+        "limit": "Internal package ownership and unexercised backend/security branches are not established."
+      },
+      "letbuyy_owner": "packages/typescript/ui/src/layout.tsx",
+      "recommended_disposition": "Consolidate",
+      "gap_ids": [
+        "UX-37"
+      ],
+      "acceptance": "Document reusable BlockStack/Grid/Section recipes and adopt them in product/Settings without a new form engine."
+    },
+    {
+      "id": "PAT-14",
+      "name": "Labeled field and inline error",
+      "layer": "component",
+      "surface_family": "Form / dialog",
+      "user_task": "Understand and correct a value",
+      "evidence": [
+        "16-domain-validation.json",
+        "16-domain-validation-ax.txt"
+      ],
+      "shared_rule": "Label, editable boundary, hint and specific error form one field contract.",
+      "required_slots": [
+        "programmatic label",
+        "value control",
+        "applicable validation state"
+      ],
+      "optional_slots": [
+        "prefix/suffix",
+        "counter",
+        "help",
+        "error"
+      ],
+      "state_model": [
+        "empty",
+        "focused",
+        "invalid",
+        "disabled"
+      ],
+      "actions": "prefix/suffix; counter; help; error",
+      "responsive_behavior": "Maintain logical order and appropriate keyboard.",
+      "accessibility_behavior": "Label and error association; move focus appropriately when useful.",
+      "authority_dependencies": "Existing membership, record/version, capability and relevant domain contract; presentation never grants authority",
+      "exceptions": "Fresh Shopify empty-domain validation left focus on Next; do not assume every reference behavior is optimal.",
+      "confidence": {
+        "level": "high for stated observation/contract",
+        "limit": "Internal package ownership and unexercised backend/security branches are not established."
+      },
+      "letbuyy_owner": "packages/typescript/ui/src/input.tsx",
+      "recommended_disposition": "Complete",
+      "gap_ids": [
+        "UX-36",
+        "UX-07"
+      ],
+      "acceptance": "Shared field semantics survive custom/unstyled adoption and validation; useful input preserved."
+    },
+    {
+      "id": "PAT-15",
+      "name": "Progressive disclosure",
+      "layer": "pattern",
+      "surface_family": "Product / Shipping / schema form",
+      "user_task": "Reveal applicable complexity",
+      "evidence": [
+        "03-product-create-clean.json",
+        "shipping-mobile-ax.txt",
+        "27-editor-hero-properties-ax.txt"
+      ],
+      "shared_rule": "Optional price/stock/shipping properties and conditional schema fields unfold in context.",
+      "required_slots": [
+        "named trigger",
+        "expanded/applicable state",
+        "dependent content"
+      ],
+      "optional_slots": [
+        "disclosure",
+        "conditional group"
+      ],
+      "state_model": [
+        "closed",
+        "open",
+        "conditional"
+      ],
+      "actions": "disclosure; conditional group",
+      "responsive_behavior": "Keep control and revealed content adjacent.",
+      "accessibility_behavior": "Expanded state and heading relationship remain clear.",
+      "authority_dependencies": "Existing membership, record/version, capability and relevant domain contract; presentation never grants authority",
+      "exceptions": "Do not hide launch-critical consequences solely to reduce visible height.",
+      "confidence": {
+        "level": "high for stated observation/contract",
+        "limit": "Internal package ownership and unexercised backend/security branches are not established."
+      },
+      "letbuyy_owner": "packages/typescript/ui/src/controls.tsx",
+      "recommended_disposition": "Preserve",
+      "gap_ids": [
+        "UX-21",
+        "UX-33"
+      ],
+      "acceptance": "Hidden fields do not silently commit stale values; errors reveal the appropriate group."
+    },
+    {
+      "id": "PAT-16",
+      "name": "Rich description authoring",
+      "layer": "pattern",
+      "surface_family": "Product",
+      "user_task": "Write structured product information",
+      "evidence": [
+        "03-product-create-clean-ax.txt",
+        "PRIOR:04_ADMIN_AND_COMMERCE_PATTERNS.md"
+      ],
+      "shared_rule": "Formatting and HTML view are authoring modes with safety limits.",
+      "required_slots": [
+        "content value",
+        "approved format",
+        "editing controls",
+        "sanitized persistence/output contract"
+      ],
+      "optional_slots": [
+        "toolbar",
+        "source view",
+        "media/link"
+      ],
+      "state_model": [
+        "editing",
+        "unsupported paste",
+        "invalid source"
+      ],
+      "actions": "toolbar; source view; media/link",
+      "responsive_behavior": "Toolbar adapts/overflows while editing remains usable.",
+      "accessibility_behavior": "Named toolbar actions and keyboard operation.",
+      "authority_dependencies": "Existing membership, record/version, capability and relevant domain contract; presentation never grants authority",
+      "exceptions": "A toolbar is not proof that every HTML tag or embed is permitted.",
+      "confidence": {
+        "level": "high for stated observation/contract",
+        "limit": "Internal package ownership and unexercised backend/security branches are not established."
+      },
+      "letbuyy_owner": "apps/merchant/web/src/app/[store]/products/new/page.tsx",
+      "recommended_disposition": "Complete",
+      "gap_ids": [
+        "UX-19"
+      ],
+      "acceptance": "Bounded format round trips through existing product/API/storefront sanitization; no arbitrary scripts."
+    },
+    {
+      "id": "PAT-17",
+      "name": "Focused modal",
+      "layer": "layout",
+      "surface_family": "Domains / discount / rename",
+      "user_task": "Finish a short contextual task",
+      "evidence": [
+        "15-domain-dialog-geometry.json",
+        "10-discount-type-dialog-ax.txt",
+        "PRIOR:09_SURFACE_CONTAINERS_AND_NAVIGATION_LOADING.md"
+      ],
+      "shared_rule": "Bounded task with named header, content and explicit close/commit.",
+      "required_slots": [
+        "dialog name",
+        "bounded task content",
+        "close/commit behavior"
+      ],
+      "optional_slots": [
+        "primary/secondary actions",
+        "footer"
+      ],
+      "state_model": [
+        "open",
+        "invalid",
+        "busy"
+      ],
+      "actions": "primary/secondary actions; footer",
+      "responsive_behavior": "Bounded scrolling and keyboard-safe actions.",
+      "accessibility_behavior": "Contain/restore focus and prevent unintended background operation.",
+      "authority_dependencies": "Existing membership, record/version, capability and relevant domain contract; presentation never grants authority",
+      "exceptions": "Native domain dialog measured 620\u00d7180, radius24; prior embedded rename radius8 is a different surface.",
+      "confidence": {
+        "level": "high for stated observation/contract",
+        "limit": "Internal package ownership and unexercised backend/security branches are not established."
+      },
+      "letbuyy_owner": "packages/typescript/ui/src/overlays.tsx",
+      "recommended_disposition": "Preserve",
+      "gap_ids": [
+        "UX-36",
+        "UX-39"
+      ],
+      "acceptance": "Existing dialog variants work with nested pickers and exact failure/retry states."
+    },
+    {
+      "id": "PAT-18",
+      "name": "Resource and value picker",
+      "layer": "component",
+      "surface_family": "Form / editor",
+      "user_task": "Choose an existing related value",
+      "evidence": [
+        "03-product-create-clean-ax.txt",
+        "27-editor-hero-properties-ax.txt",
+        "PRIOR:11_THEME_EDITOR_DETAILED_REFERENCE.md"
+      ],
+      "shared_rule": "Small local choice retains parent task; large libraries get suitable catalog/media surfaces.",
+      "required_slots": [
+        "field/relationship label",
+        "permitted options",
+        "selection handler"
+      ],
+      "optional_slots": [
+        "query",
+        "options",
+        "preview",
+        "Add"
+      ],
+      "state_model": [
+        "searching",
+        "no match",
+        "unavailable",
+        "selected"
+      ],
+      "actions": "query; options; preview; Add",
+      "responsive_behavior": "Fit viewport and keep keyboard navigation.",
+      "accessibility_behavior": "Combobox/menu semantics appropriate to task.",
+      "authority_dependencies": "Existing membership, record/version, capability and relevant domain contract; presentation never grants authority",
+      "exceptions": "Picker does not grant access to unavailable entities.",
+      "confidence": {
+        "level": "high for stated observation/contract",
+        "limit": "Internal package ownership and unexercised backend/security branches are not established."
+      },
+      "letbuyy_owner": "packages/typescript/ui/src/controls.tsx",
+      "recommended_disposition": "Refine",
+      "gap_ids": [
+        "UX-21",
+        "UX-32"
+      ],
+      "acceptance": "Use existing Combobox/media selection; enforce store ownership; selection differs from upload completion."
+    },
+    {
+      "id": "PAT-19",
+      "name": "Status badge and qualification",
+      "layer": "component",
+      "surface_family": "Index / Settings / theme",
+      "user_task": "Read entity or readiness state",
+      "evidence": [
+        "17-domain-detail.json",
+        "26-editor-resolved-ax.txt"
+      ],
+      "shared_rule": "Status names the exact entity/fact, not generic success.",
+      "required_slots": [
+        "entity/fact scope",
+        "state label",
+        "semantic tone"
+      ],
+      "optional_slots": [
+        "icon",
+        "tone",
+        "label"
+      ],
+      "state_model": [
+        "neutral",
+        "warning",
+        "critical",
+        "ready"
+      ],
+      "actions": "Task-supported actions are optional; consumers retain authority and relevant state.",
+      "responsive_behavior": "Wrap without losing meaning.",
+      "accessibility_behavior": "Text/icon supplement hue.",
+      "authority_dependencies": "Existing membership, record/version, capability and relevant domain contract; presentation never grants authority",
+      "exceptions": "Purple brand identity must not replace success/warning/danger hues.",
+      "confidence": {
+        "level": "high for stated observation/contract",
+        "limit": "Internal package ownership and unexercised backend/security branches are not established."
+      },
+      "letbuyy_owner": "packages/typescript/ui/src/feedback.tsx",
+      "recommended_disposition": "Preserve",
+      "gap_ids": [
+        "UX-22",
+        "UX-29"
+      ],
+      "acceptance": "Draft/release/store visibility/provider readiness remain separate."
+    },
+    {
+      "id": "PAT-20",
+      "name": "Metric widget with supporting evidence",
+      "layer": "pattern",
+      "surface_family": "Analytics",
+      "user_task": "Understand and investigate a metric",
+      "evidence": [
+        "11-analytics-overview.json",
+        "11-analytics-overview-ax.txt"
+      ],
+      "shared_rule": "Metric name, value/undefined state, period and supporting report belong together.",
+      "required_slots": [
+        "metric definition",
+        "value/undefined state",
+        "reporting scope"
+      ],
+      "optional_slots": [
+        "comparison",
+        "chart",
+        "drill-through"
+      ],
+      "state_model": [
+        "loading",
+        "zero",
+        "undefined",
+        "no range data",
+        "error"
+      ],
+      "actions": "Task-supported actions are optional; consumers retain authority and relevant state.",
+      "responsive_behavior": "Reflow rather than shrink all labels.",
+      "accessibility_behavior": "Accessible values and meaningful chart alternatives.",
+      "authority_dependencies": "Existing membership, record/version, capability and relevant domain contract; presentation never grants authority",
+      "exceptions": "Appearance alone does not establish aggregation correctness.",
+      "confidence": {
+        "level": "high for stated observation/contract",
+        "limit": "Internal package ownership and unexercised backend/security branches are not established."
+      },
+      "letbuyy_owner": "packages/typescript/ui/src/productivity.tsx",
+      "recommended_disposition": "Complete",
+      "gap_ids": [
+        "UX-24"
+      ],
+      "acceptance": "Keep existing MetricCard; define scope/freshness/period and matching drill-through at consumer contract."
+    },
+    {
+      "id": "PAT-21",
+      "name": "Reporting scope controls",
+      "layer": "pattern",
+      "surface_family": "Analytics / index",
+      "user_task": "Change the population or period",
+      "evidence": [
+        "11-analytics-overview-ax.txt"
+      ],
+      "shared_rule": "Date/comparison/filter scope must be visible and shared by results.",
+      "required_slots": [
+        "visible period/predicate",
+        "selection state",
+        "authorized read scope"
+      ],
+      "optional_slots": [
+        "date range",
+        "comparison",
+        "timezone"
+      ],
+      "state_model": [
+        "changing",
+        "ready",
+        "unavailable"
+      ],
+      "actions": "date range; comparison; timezone",
+      "responsive_behavior": "Picker remains reachable in compact layout.",
+      "accessibility_behavior": "Labels and selected range announced.",
+      "authority_dependencies": "Existing membership, record/version, capability and relevant domain contract; presentation never grants authority",
+      "exceptions": "No exact native server-query behavior proved by browser labels.",
+      "confidence": {
+        "level": "high for stated observation/contract",
+        "limit": "Internal package ownership and unexercised backend/security branches are not established."
+      },
+      "letbuyy_owner": "packages/typescript/ui/src/controls.tsx",
+      "recommended_disposition": "Refine",
+      "gap_ids": [
+        "UX-24"
+      ],
+      "acceptance": "URL/state and endpoint predicates agree; undefined comparisons are not invented deltas."
+    },
+    {
+      "id": "PAT-22",
+      "name": "Responsive collection table",
+      "layer": "pattern",
+      "surface_family": "Native index / Settings",
+      "user_task": "Compare records and navigate",
+      "evidence": [
+        "14-domains-overview.json",
+        "07-customers-index.json",
+        "DOC:table"
+      ],
+      "shared_rule": "Headers, filters, rows, count and pagination compose a workspace; mobile can use labeled summaries.",
+      "required_slots": [
+        "collection scope",
+        "column/value relationships",
+        "record access"
+      ],
+      "optional_slots": [
+        "filters",
+        "sort",
+        "pagination",
+        "selection"
+      ],
+      "state_model": [
+        "loading",
+        "empty",
+        "no match",
+        "ready",
+        "denied"
+      ],
+      "actions": "filters; sort; pagination; selection",
+      "responsive_behavior": "Preserve key/value relationships at narrow widths.",
+      "accessibility_behavior": "Semantic headers, sort/selection state, independent detail links.",
+      "authority_dependencies": "Existing membership, record/version, capability and relevant domain contract; presentation never grants authority",
+      "exceptions": "Public Table docs explicitly leave search/sort to application logic; using a component does not solve collection semantics.",
+      "confidence": {
+        "level": "high for stated observation/contract",
+        "limit": "Internal package ownership and unexercised backend/security branches are not established."
+      },
+      "letbuyy_owner": "packages/typescript/ui/src/table.tsx",
+      "recommended_disposition": "Complete",
+      "gap_ids": [
+        "UX-17",
+        "UX-18"
+      ],
+      "acceptance": "Existing server matching/pagination, selection and return context work beyond first100 rows."
+    },
+    {
+      "id": "PAT-23",
+      "name": "Meaning-specific empty state",
+      "layer": "pattern",
+      "surface_family": "Index / Settings / Analytics",
+      "user_task": "Understand absence and next action",
+      "evidence": [
+        "02-products-index-1440.json",
+        "06-orders-index.json",
+        "22-settings-apps.json",
+        "11-analytics-overview-ax.txt"
+      ],
+      "shared_rule": "First use, plan-gated, no-match and no-range-data are different messages/actions.",
+      "required_slots": [
+        "specific absence meaning",
+        "next supported action when applicable"
+      ],
+      "optional_slots": [
+        "art",
+        "primary action",
+        "help"
+      ],
+      "state_model": [
+        "empty",
+        "gated",
+        "no match",
+        "unavailable"
+      ],
+      "actions": "art; primary action; help",
+      "responsive_behavior": "Art/content fit without hiding action.",
+      "accessibility_behavior": "Useful heading, text and enabled recovery.",
+      "authority_dependencies": "Existing membership, record/version, capability and relevant domain contract; presentation never grants authority",
+      "exceptions": "Empty account prevented populated order/product-detail research.",
+      "confidence": {
+        "level": "high for stated observation/contract",
+        "limit": "Internal package ownership and unexercised backend/security branches are not established."
+      },
+      "letbuyy_owner": "packages/typescript/ui/src/feedback.tsx",
+      "recommended_disposition": "Consolidate",
+      "gap_ids": [
+        "UX-25",
+        "UX-38"
+      ],
+      "acceptance": "No backend jargon, fake empty data or dead app CTA; reuse existing art registry."
+    },
+    {
+      "id": "PAT-24",
+      "name": "Navigation and layered readiness",
+      "layer": "workflow",
+      "surface_family": "Native / embedded channel / editor",
+      "user_task": "Know what is pending",
+      "evidence": [
+        "24-themes-transition-ax.txt",
+        "25-theme-host-resolved-ax.txt",
+        "DOC:loading",
+        "PRIOR:09_SURFACE_CONTAINERS_AND_NAVIGATION_LOADING.md"
+      ],
+      "shared_rule": "Activation, route, data and embedded preview have distinct readiness.",
+      "required_slots": [
+        "transition identity",
+        "pending ownership",
+        "completion/cancellation signal"
+      ],
+      "optional_slots": [
+        "pending link",
+        "top strip",
+        "skeleton",
+        "preview status"
+      ],
+      "state_model": [
+        "pending",
+        "committed",
+        "data ready",
+        "preview ready",
+        "failed",
+        "superseded"
+      ],
+      "actions": "pending link; top strip; skeleton; preview status",
+      "responsive_behavior": "Stable shell and focus; reduced motion.",
+      "accessibility_behavior": "Busy regions and useful progress announcements.",
+      "authority_dependencies": "Existing membership, record/version, capability and relevant domain contract; presentation never grants authority",
+      "exceptions": "Fresh capture settled before a timed strip series; prior 2px evidence is retained as prior, not newly measured.",
+      "confidence": {
+        "level": "high for stated observation/contract",
+        "limit": "Internal package ownership and unexercised backend/security branches are not established."
+      },
+      "letbuyy_owner": "apps/merchant/web/src/components/MerchantNavigationLink.tsx",
+      "recommended_disposition": "Complete",
+      "gap_ids": [
+        "UX-03",
+        "UX-40"
+      ],
+      "acceptance": "Immediate feedback plus profiled latency; preserve private prefetch limits and auth checks."
+    },
+    {
+      "id": "PAT-25",
+      "name": "Error with retained context and retry",
+      "layer": "workflow",
+      "surface_family": "Reads / forms",
+      "user_task": "Recover without starting over",
+      "evidence": [
+        "16-domain-validation-ax.txt",
+        "SOURCE:useReadRequest"
+      ],
+      "shared_rule": "Failure is distinct from empty and unknown command outcome.",
+      "required_slots": [
+        "safe failure meaning",
+        "preserved task context",
+        "appropriate recovery"
+      ],
+      "optional_slots": [
+        "error summary",
+        "field error",
+        "retry"
+      ],
+      "state_model": [
+        "invalid",
+        "denied",
+        "timeout",
+        "partial",
+        "unknown"
+      ],
+      "actions": "error summary; field error; retry",
+      "responsive_behavior": "Action reachable above keyboard.",
+      "accessibility_behavior": "Associated errors/status and sensible focus.",
+      "authority_dependencies": "Existing membership, record/version, capability and relevant domain contract; presentation never grants authority",
+      "exceptions": "No provider/network fault injected into Shopify to prove all error branches.",
+      "confidence": {
+        "level": "high for stated observation/contract",
+        "limit": "Internal package ownership and unexercised backend/security branches are not established."
+      },
+      "letbuyy_owner": "apps/merchant/web/src/lib/api/use-read-request.ts",
+      "recommended_disposition": "Preserve",
+      "gap_ids": [
+        "UX-12",
+        "UX-09"
+      ],
+      "acceptance": "Retry retains scope/input and original intent; current helpers abort stale reads."
+    },
+    {
+      "id": "PAT-26",
+      "name": "Scoped notification and promotion",
+      "layer": "pattern",
+      "surface_family": "Shell / Settings",
+      "user_task": "Read transient result or trial status",
+      "evidence": [
+        "PRIOR:07_CURRENT_ADMIN_VISUAL_REFERENCE.md",
+        "SOURCE:TrialBanner"
+      ],
+      "shared_rule": "Toast, promotion and durable mutation evidence are separate roles.",
+      "required_slots": [
+        "notification/promotion meaning",
+        "current state",
+        "scope"
+      ],
+      "optional_slots": [
+        "action",
+        "collapse",
+        "dismiss"
+      ],
+      "state_model": [
+        "visible",
+        "collapsed",
+        "expired"
+      ],
+      "actions": "action; collapse; dismiss",
+      "responsive_behavior": "Avoid overlap with focused work/save bars.",
+      "accessibility_behavior": "Announce appropriately; do not steal focus.",
+      "authority_dependencies": "Existing membership, record/version, capability and relevant domain contract; presentation never grants authority",
+      "exceptions": "No copying Shopify plan prices or promotion terms.",
+      "confidence": {
+        "level": "medium",
+        "limit": "Internal package ownership and unexercised backend/security branches are not established."
+      },
+      "letbuyy_owner": "apps/merchant/web/src/components/TrialBanner.tsx",
+      "recommended_disposition": "Refine",
+      "gap_ids": [
+        "UX-39"
+      ],
+      "acceptance": "Trial dates/provider facts truthful; layered panels never obscure critical actions."
+    },
+    {
+      "id": "PAT-27",
+      "name": "Theme lifecycle workspace",
+      "layer": "workflow",
+      "surface_family": "Online Store channel",
+      "user_task": "Choose/edit the intended theme",
+      "evidence": [
+        "25-theme-host-resolved-ax.txt",
+        "PRIOR:10_THEMES_PAGE_DETAILED_REFERENCE.md"
+      ],
+      "shared_rule": "Current theme, library, preview and visibility are distinct scopes.",
+      "required_slots": [
+        "theme identity",
+        "instance/release/draft/visibility facts",
+        "permitted actions"
+      ],
+      "optional_slots": [
+        "catalog",
+        "menus",
+        "version",
+        "visibility"
+      ],
+      "state_model": [
+        "installed",
+        "draft",
+        "release",
+        "private"
+      ],
+      "actions": "catalog; menus; version; visibility",
+      "responsive_behavior": "Responsive discovery and action placement.",
+      "accessibility_behavior": "Named theme actions and truthful preview alternatives.",
+      "authority_dependencies": "Existing membership, record/version, capability and relevant domain contract; presentation never grants authority",
+      "exceptions": "Theme Active does not mean store launched.",
+      "confidence": {
+        "level": "high for stated observation/contract",
+        "limit": "Internal package ownership and unexercised backend/security branches are not established."
+      },
+      "letbuyy_owner": "apps/merchant/web/src/components/theme-library/ThemeLibraryWorkspace.tsx",
+      "recommended_disposition": "Complete",
+      "gap_ids": [
+        "UX-29",
+        "UX-34"
+      ],
+      "acceptance": "One lifecycle resolver and canonical release contract; no marketplace activation."
+    },
+    {
+      "id": "PAT-28",
+      "name": "Schema inspector and outline",
+      "layer": "layout",
+      "surface_family": "Theme editor",
+      "user_task": "Edit the selected structure",
+      "evidence": [
+        "27-editor-hero-properties-ax.txt",
+        "PRIOR:11_THEME_EDITOR_DETAILED_REFERENCE.md"
+      ],
+      "shared_rule": "Outline selection, properties and preview maintain the same schema scope.",
+      "required_slots": [
+        "schema selection",
+        "properties",
+        "outline/preview relationship"
+      ],
+      "optional_slots": [
+        "settings groups",
+        "catalog",
+        "conditional controls"
+      ],
+      "state_model": [
+        "selected",
+        "hidden",
+        "invalid"
+      ],
+      "actions": "settings groups; catalog; conditional controls",
+      "responsive_behavior": "Prior1440 stacked/1920 dual rails/390 sheet; LetBuyy mobile tabs can remain.",
+      "accessibility_behavior": "Keyboard outline and alternatives to drag.",
+      "authority_dependencies": "Existing membership, record/version, capability and relevant domain contract; presentation never grants authority",
+      "exceptions": "Do not hardcode Horizon groups as universal LetBuyy schema.",
+      "confidence": {
+        "level": "high for stated observation/contract",
+        "limit": "Internal package ownership and unexercised backend/security branches are not established."
+      },
+      "letbuyy_owner": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "recommended_disposition": "Preserve",
+      "gap_ids": [
+        "UX-30",
+        "UX-33"
+      ],
+      "acceptance": "Supported schemas remain source of truth; wide layout improves without replacing mobile handoff."
+    },
+    {
+      "id": "PAT-29",
+      "name": "Version-correlated preview",
+      "layer": "workflow",
+      "surface_family": "Theme editor",
+      "user_task": "See the intended saved or local draft",
+      "evidence": [
+        "26-editor-resolved-ax.txt",
+        "PRIOR:11_THEME_EDITOR_DETAILED_REFERENCE.md"
+      ],
+      "shared_rule": "Preview has independent loading/error/readiness and selected context.",
+      "required_slots": [
+        "store/template/version scope",
+        "preview frame",
+        "readiness acknowledgement"
+      ],
+      "optional_slots": [
+        "device mode",
+        "retry",
+        "version"
+      ],
+      "state_model": [
+        "initializing",
+        "syncing",
+        "ready",
+        "failed"
+      ],
+      "actions": "device mode; retry; version",
+      "responsive_behavior": "Device simulation is different from editor mobile layout.",
+      "accessibility_behavior": "Preview frame named; controls reachable.",
+      "authority_dependencies": "Existing membership, record/version, capability and relevant domain contract; presentation never grants authority",
+      "exceptions": "Fresh Shopify preview rendered; earlier blank captures remain valid historical states, not a permanent failure.",
+      "confidence": {
+        "level": "high for stated observation/contract",
+        "limit": "Internal package ownership and unexercised backend/security branches are not established."
+      },
+      "letbuyy_owner": "apps/merchant/web/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx",
+      "recommended_disposition": "Complete",
+      "gap_ids": [
+        "UX-31"
+      ],
+      "acceptance": "Only scoped version/origin acknowledgements mark synchronized; saved draft survives preview error."
+    },
+    {
+      "id": "PAT-30",
+      "name": "Contextual assistance proposal",
+      "layer": "workflow",
+      "surface_family": "Product / editor / setup",
+      "user_task": "Get bounded help and review output",
+      "evidence": [
+        "03-product-create-clean-ax.txt",
+        "27-editor-hero-properties-ax.txt",
+        "PRIOR:08_AI_MOTION_AND_PERFORMANCE.md"
+      ],
+      "shared_rule": "Assistance belongs to a visible object/task; acceptance differs from save/publication.",
+      "required_slots": [
+        "task/object scope",
+        "input/proposal",
+        "review/acceptance boundary"
+      ],
+      "optional_slots": [
+        "prompt",
+        "preview",
+        "Accept/Discard"
+      ],
+      "state_model": [
+        "suggested",
+        "generating",
+        "review",
+        "unavailable"
+      ],
+      "actions": "prompt; preview; Accept/Discard",
+      "responsive_behavior": "Keep manual editing available.",
+      "accessibility_behavior": "Named actions and preserved input.",
+      "authority_dependencies": "Existing membership, record/version, capability and relevant domain contract; presentation never grants authority",
+      "exceptions": "No new generated output was requested or accepted in this follow-up.",
+      "confidence": {
+        "level": "high for stated observation/contract",
+        "limit": "Internal package ownership and unexercised backend/security branches are not established."
+      },
+      "letbuyy_owner": "apps/merchant/web/src/app/[store]/ai/page.tsx",
+      "recommended_disposition": "Refine",
+      "gap_ids": [
+        "UX-41"
+      ],
+      "acceptance": "Deterministic suggestions/checklists remain honest; no general agent platform built."
+    },
+    {
+      "id": "PAT-31",
+      "name": "Scroll, elevation and overlay ownership",
+      "layer": "layout",
+      "surface_family": "Shell / forms / modal / editor",
+      "user_task": "Keep context and actions usable",
+      "evidence": [
+        "product-dirty-bar-after-scroll.json",
+        "15-domain-dialog-geometry.json",
+        "LETBUYY:canonical-current-products-semantics.json"
+      ],
+      "shared_rule": "Scroll ports and overlays must have explicit owners; appearance alone does not reveal fixed/sticky semantics.",
+      "required_slots": [
+        "scroll/overlay owner",
+        "placement/layer",
+        "focus contract"
+      ],
+      "optional_slots": [
+        "portal",
+        "scroll region",
+        "insets"
+      ],
+      "state_model": [
+        "open",
+        "nested",
+        "busy"
+      ],
+      "actions": "Task-supported actions are optional; consumers retain authority and relevant state.",
+      "responsive_behavior": "Safe areas/keyboard and text scaling.",
+      "accessibility_behavior": "Single main and correct focus containment/restoration.",
+      "authority_dependencies": "Existing membership, record/version, capability and relevant domain contract; presentation never grants authority",
+      "exceptions": "Save bar absolute517/overlay510 and dialog fixed519 are observed local CSS layers, not a reusable global Shopify z-index scale.",
+      "confidence": {
+        "level": "high for stated observation/contract",
+        "limit": "Internal package ownership and unexercised backend/security branches are not established."
+      },
+      "letbuyy_owner": "packages/typescript/ui/src/app-shell.tsx",
+      "recommended_disposition": "Complete",
+      "gap_ids": [
+        "UX-39",
+        "UX-46"
+      ],
+      "acceptance": "Canonical scope prevents nested landmarks and overlay/portal conflict."
+    },
+    {
+      "id": "PAT-32",
+      "name": "Semantic visual roles and density",
+      "layer": "primitive",
+      "surface_family": "Cross-surface",
+      "user_task": "Recognize hierarchy and state",
+      "evidence": [
+        "02-products-index-1440.json",
+        "product-dirty-bar-geometry.json",
+        "12-settings-general-header.json",
+        "PRIOR:07_CURRENT_ADMIN_VISUAL_REFERENCE.md"
+      ],
+      "shared_rule": "Shared role intent can coexist with surface-specific geometry and paint.",
+      "required_slots": [
+        "semantic role",
+        "authoring token source",
+        "surface/density scope"
+      ],
+      "optional_slots": [
+        "surface",
+        "text",
+        "action",
+        "focus",
+        "status",
+        "density"
+      ],
+      "state_model": [
+        "hover",
+        "focus",
+        "pressed",
+        "selected",
+        "disabled"
+      ],
+      "actions": "Task-supported actions are optional; consumers retain authority and relevant state.",
+      "responsive_behavior": "Task density adapts without sacrificing readable text.",
+      "accessibility_behavior": "Measure composed contrast and target cues.",
+      "authority_dependencies": "Existing membership, record/version, capability and relevant domain contract; presentation never grants authority",
+      "exceptions": "Polaris public2.0, refreshed native and embedded legacy styling are separate evidence scopes.",
+      "confidence": {
+        "level": "high for stated observation/contract",
+        "limit": "Internal package ownership and unexercised backend/security branches are not established."
+      },
+      "letbuyy_owner": "packages/typescript/ui/src/tokens.ts",
+      "recommended_disposition": "Refine",
+      "gap_ids": [
+        "UX-35",
+        "UX-36",
+        "UX-37"
+      ],
+      "acceptance": "Premium brandInk roles remain canonical; no app-local palette or universal28px controls."
+    }
+  ]
+}

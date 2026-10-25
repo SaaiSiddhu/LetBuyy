@@ -1,0 +1,34 @@
+{
+  "recordedAt": "2026-10-24T08:38:46.414994+00:00",
+  "status": "PRIVATE_PROPOSAL_NOT_APPLIED_NOT_TESTED_NOT_ADMITTED",
+  "finding": "PANTRY-COMP-DECLARED-01",
+  "files": [
+    {
+      "path": "packages/theme-engine/src/pantry-theme.ts",
+      "baseSha256": "9c440d32f146b8155ba78f522da52979fd09a0f3d32c4b25e5c3e289ef390925",
+      "proposedSha256": "0722d3d6f6377699a107bcc05f1b2077d09a4920000a93a87be6bc77f6143827"
+    }
+  ],
+  "patch": {
+    "path": "private-proposals/collection-row-heading.patch",
+    "sha256": "03b5e097818428c90bc63d8059f7d7d42130cc1eb78128041ec2c23d6c64e1c1"
+  },
+  "scope": "Connect existing collection-product-list title descriptor to escaped optional heading in existing shelf container. No new control, CSS, template, provider, auth or data authority.",
+  "sourceEvidence": "The actual canonical factory/schema declares title; current Liquid body has no title reference. No browser reproduction or source-test PASS claimed.",
+  "versionBoundary": "Never patch a frozen installed/captured2.0.0 bundle. Allocator must select reviewed versioned release path before this proposal can reach a buyer.",
+  "requestedSharedLease": [
+    "packages/theme-engine/src/pantry-theme.ts",
+    "packages/theme-engine/test/pantry.test.ts (focused heading contract only)"
+  ],
+  "qualificationPlan": [
+    "Existing real Liquid render test: nonempty configured collection/search rows title appears in both populated and empty result output",
+    "Blank title produces no empty heading",
+    "Markup in title stays escaped through canonical sanitizer",
+    "Retain query/filter/pagination and current explicit food facts assertions",
+    "Exact canonical package/schema/document/wire validation; no changed2.0.0 promotion",
+    "Sole controller normal sacrificial draft Save/fullreload/private preview/publish/current-package public output when admitted"
+  ],
+  "sourceWritesPerformed": false,
+  "testsRun": false,
+  "browserOrRuntimeActions": false
+}

@@ -1,0 +1,290 @@
+{
+  "recordedAt": "2026-10-25T00:14:10.020343+00:00",
+  "classification": "INDEPENDENT_SAVED_UI_EVIDENCE_REVIEW_SCOPED_SUBCHECKS_ONLY",
+  "sourceReceipt": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/KINDRED_EDITOR_CHILD_LIFECYCLE_02.json",
+  "sourceReceiptSha256": "873433936a66e55f8202f8305a3322767500bc6d63efee7816811312dbeb91d1",
+  "producerReportedAtomicPasses": 15,
+  "independentAtomicEvidenceLevels": {
+    "PARTIAL_ACTION_OR_ID_PROVENANCE": 6,
+    "CORROBORATED_SAVED_UI_STATE": 9
+  },
+  "atomicChecks": [
+    {
+      "id": "KG-R07-INSTALL",
+      "controllerStatus": "PASS",
+      "controllerObservation": "Installed Kindred210 through normal catalog Add/Customize",
+      "independentSavedEvidenceVerdict": "PARTIAL_ACTION_OR_ID_PROVENANCE",
+      "limit": "Current Kindred editor/name observed; normal catalog action/version210 is controller-reported. Saved receipt does not bind installed package-versionUUID or manifest digest.",
+      "evidence": [
+        "kindred-editor-marker-saved-reloaded-20261025.ax.txt"
+      ]
+    },
+    {
+      "id": "KG-R07-MARKER_ROUNDTRIP",
+      "controllerStatus": "PASS",
+      "controllerObservation": "Announcement marker saved and fullreload exact",
+      "independentSavedEvidenceVerdict": "CORROBORATED_SAVED_UI_STATE",
+      "limit": "Scoped state supported by listed savedAX and controller action receipt; no whole matrix row or geometry acceptance inferred.",
+      "evidence": [
+        "kindred-editor-marker-saved-reloaded-20261025.ax.txt",
+        "kindred-published-home-20261025.ax.txt"
+      ]
+    },
+    {
+      "id": "KG-R07-DRAFT_ISOLATION",
+      "controllerStatus": "PASS",
+      "controllerObservation": "Public page still Marginalia before Kindred publish",
+      "independentSavedEvidenceVerdict": "CORROBORATED_SAVED_UI_STATE",
+      "limit": "Scoped state supported by listed savedAX and controller action receipt; no whole matrix row or geometry acceptance inferred.",
+      "evidence": [
+        "kindred-private-draft-public-still-marginalia-20261025.ax.txt",
+        "kindred-editor-marker-saved-reloaded-20261025.ax.txt"
+      ]
+    },
+    {
+      "id": "KG-R07-PUBLISH",
+      "controllerStatus": "PASS",
+      "controllerObservation": "Normal publish and fullpublicreload Kindred marker/hero",
+      "independentSavedEvidenceVerdict": "CORROBORATED_SAVED_UI_STATE",
+      "limit": "Scoped state supported by listed savedAX and controller action receipt; no whole matrix row or geometry acceptance inferred.",
+      "evidence": [
+        "kindred-published-home-20261025.ax.txt"
+      ]
+    },
+    {
+      "id": "KG-R07-ROOT_ADD_EDIT",
+      "controllerStatus": "PASS",
+      "controllerObservation": "New Badge root on existing trust-badges host; no original block",
+      "independentSavedEvidenceVerdict": "CORROBORATED_SAVED_UI_STATE",
+      "limit": "Scoped state supported by listed savedAX and controller action receipt; no whole matrix row or geometry acceptance inferred.",
+      "evidence": [
+        "kindred-nested-reordered-hidden-saved-20261025.ax.txt",
+        "kindred-published-nested-hidden-output-20261025.ax.txt"
+      ]
+    },
+    {
+      "id": "KG-R07-CHILD_ADD_EDIT",
+      "controllerStatus": "PASS",
+      "controllerObservation": "Two new nested Badge children A/B edited",
+      "independentSavedEvidenceVerdict": "CORROBORATED_SAVED_UI_STATE",
+      "limit": "Scoped state supported by listed savedAX and controller action receipt; no whole matrix row or geometry acceptance inferred.",
+      "evidence": [
+        "kindred-reloaded-three-labels-20261025.ax.txt",
+        "kindred-published-child-show-output-20261025.ax.txt"
+      ]
+    },
+    {
+      "id": "KG-R07-REORDER",
+      "controllerStatus": "PASS",
+      "controllerObservation": "B moved before A; exactfullreloadtree values RootA,B,A",
+      "independentSavedEvidenceVerdict": "PARTIAL_ACTION_OR_ID_PROVENANCE",
+      "limit": "Public shown order is RootA,B,A and reloaded tree has2children; before/after UUID conservation is not present in listed captures.",
+      "evidence": [
+        "kindred-reloaded-three-labels-20261025.ax.txt",
+        "kindred-published-child-show-output-20261025.ax.txt"
+      ]
+    },
+    {
+      "id": "KG-R07-HIDE",
+      "controllerStatus": "PASS",
+      "controllerObservation": "A hidden; visibilitytrue,true,false survivedfullreload",
+      "independentSavedEvidenceVerdict": "CORROBORATED_SAVED_UI_STATE",
+      "limit": "Scoped state supported by listed savedAX and controller action receipt; no whole matrix row or geometry acceptance inferred.",
+      "evidence": [
+        "kindred-reloaded-three-labels-20261025.ax.txt",
+        "kindred-published-nested-hidden-output-20261025.ax.txt"
+      ]
+    },
+    {
+      "id": "KG-R07-CHILD_LIQUID",
+      "controllerStatus": "PASS",
+      "controllerObservation": "Published RootA+B visible; A absent",
+      "independentSavedEvidenceVerdict": "CORROBORATED_SAVED_UI_STATE",
+      "limit": "Scoped state supported by listed savedAX and controller action receipt; no whole matrix row or geometry acceptance inferred.",
+      "evidence": [
+        "kindred-published-nested-hidden-output-20261025.ax.txt"
+      ]
+    },
+    {
+      "id": "KG-R07-SHOW",
+      "controllerStatus": "PASS",
+      "controllerObservation": "A shown and actualpublicreload visible withB",
+      "independentSavedEvidenceVerdict": "CORROBORATED_SAVED_UI_STATE",
+      "limit": "Scoped state supported by listed savedAX and controller action receipt; no whole matrix row or geometry acceptance inferred.",
+      "evidence": [
+        "kindred-published-child-show-output-20261025.ax.txt"
+      ]
+    },
+    {
+      "id": "KG-R07-REMOVE_CHILD",
+      "controllerStatus": "PASS",
+      "controllerObservation": "Normal selectedblock confirmation removedonlyA; B preservedpublicly",
+      "independentSavedEvidenceVerdict": "PARTIAL_ACTION_OR_ID_PROVENANCE",
+      "limit": "A disappears while B remains in the next publicAX; hide and remove share this same output. Exact normal remove action is controller-reported without saved intermediate post-delete tree/UUID receipt.",
+      "evidence": [
+        "kindred-child-removed-public-sibling-retained-20261025.ax.txt",
+        "kindred-published-child-show-output-20261025.ax.txt"
+      ]
+    },
+    {
+      "id": "KG-R07-READD_CHILD",
+      "controllerStatus": "PASS",
+      "controllerObservation": "Fresh A2 child added/edited/published; actualpublicvisible",
+      "independentSavedEvidenceVerdict": "PARTIAL_ACTION_OR_ID_PROVENANCE",
+      "limit": "A2 new label appears with RootA/B; fresh childUUID/new binding is not independently pinned by listed captures.",
+      "evidence": [
+        "kindred-child-readded-published-output-20261025.ax.txt"
+      ]
+    },
+    {
+      "id": "KG-R07-CLEANUP_OWN_SUBTREE",
+      "controllerStatus": "PASS",
+      "controllerObservation": "Verified exactrootlabel before removal; onlyownednewroot+children removed",
+      "independentSavedEvidenceVerdict": "PARTIAL_ACTION_OR_ID_PROVENANCE",
+      "limit": "Final publicAX exactly equals first Kindred published baseline and all temporary labels absent; serialized original configuration/DB conservation is controller-reported, not a saved bounded equality proof.",
+      "evidence": [
+        "kindred-published-home-20261025.ax.txt",
+        "kindred-temporary-subtree-cleaned-undo-redo-20261025.ax.txt"
+      ]
+    },
+    {
+      "id": "KG-R07-UNDO_REDO",
+      "controllerStatus": "PASS",
+      "controllerObservation": "Undo restored2nestedrows; Redoremovedall",
+      "independentSavedEvidenceVerdict": "PARTIAL_ACTION_OR_ID_PROVENANCE",
+      "limit": "Root reports Undo2nested/Redo0; listed evidence supplies finalcleanpublic state, not intermediateUndo/Redo tree counts/IDs.",
+      "evidence": [
+        "kindred-temporary-subtree-cleaned-undo-redo-20261025.ax.txt"
+      ]
+    },
+    {
+      "id": "KG-R07-CLEAN_PUBLIC",
+      "controllerStatus": "PASS",
+      "controllerObservation": "Finalpublication no temporarytext; intendedhero+marker retained",
+      "independentSavedEvidenceVerdict": "CORROBORATED_SAVED_UI_STATE",
+      "limit": "Scoped state supported by listed savedAX and controller action receipt; no whole matrix row or geometry acceptance inferred.",
+      "evidence": [
+        "kindred-published-home-20261025.ax.txt",
+        "kindred-temporary-subtree-cleaned-undo-redo-20261025.ax.txt"
+      ]
+    }
+  ],
+  "directAxAssertions": {
+    "all22EvidenceFilesExist": true,
+    "editorMarkerAndSaved": true,
+    "privateDraftPublicStillMarginalia": true,
+    "publishedKindredMarkerAndHero": true,
+    "reloadedNestedRows": 2,
+    "badgeVisibilityCount": {
+      "total": 3,
+      "pressed": 2
+    },
+    "publicLabelStates": {
+      "kindred-published-nested-hidden-output": {
+        "root": 1,
+        "B": 1,
+        "A": 0,
+        "A2": 0
+      },
+      "kindred-published-child-show-output": {
+        "root": 1,
+        "B": 1,
+        "A": 1,
+        "A2": 0
+      },
+      "kindred-child-removed-public-sibling-retained": {
+        "root": 1,
+        "B": 1,
+        "A": 0,
+        "A2": 0
+      },
+      "kindred-child-readded-published-output": {
+        "root": 1,
+        "B": 1,
+        "A": 0,
+        "A2": 1
+      },
+      "kindred-published-home": {
+        "root": 0,
+        "B": 0,
+        "A": 0,
+        "A2": 0
+      },
+      "kindred-temporary-subtree-cleaned-undo-redo": {
+        "root": 0,
+        "B": 0,
+        "A": 0,
+        "A2": 0
+      }
+    },
+    "finalPublicAXExactlyEqualsFirstKindredPublishedBaseline": true,
+    "previewErrorInFreshFullReload": true
+  },
+  "limits": [
+    "No captured installed package-versionUUID/current manifest hash; current210iscontroller-reported and expectedadmission, not newly joined byKindred.",
+    "Fullreload tree visibility is corroborated, but exact root/childUUID conservation is not recorded in listedcaptures.",
+    "Public child state proof is AX-based. Hidden/show/remove/readd screenshots have identical hashes because they show the topviewport; no childpixelgeometry/focus proof is claimed.",
+    "Undo2/Redo0intermediate counts and exact originalserializedconfiguration/DBconservation are controller-reported; finalpublicbaseline equality is independentlycorroborated.",
+    "Current preview failure text is observed; current HTTPcause, old820session404and exact768longbrand bug must remain distinct.",
+    "New trust-badges/badge/badge context does not complete any of KR-CHILD-01through11."
+  ],
+  "original19RetainedTotals": {
+    "PASS": 3,
+    "FAIL": 1,
+    "NOT_RUN": 15
+  },
+  "newWholeOriginalRowsAccepted": 0,
+  "newWholeExpandedRowsAccepted": 0,
+  "newProviderOrOrderAcceptance": 0,
+  "KQA01": "OPEN P2",
+  "runtime": {
+    "reconnectionReceipt": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/PRESERVED_RUNTIME_RECONNECTION_02.json",
+    "reportedState": "Same runtime07childruntime55109/apps/DB survived; outer54685exited, no relaunch/reseed/build/reset.",
+    "rootSoleController": true,
+    "callbackExposure": "OFFLINE_PENDING_ROOT_DURATION_APPROVAL; no renewal byKindred"
+  },
+  "cleanup": {
+    "rootControllerReported": "OnlynewtemporaryUIroot+children removed; Undo2/Redo0and finalpublicclean recorded. CurrentKindred markerandoriginalcontent remain published.",
+    "independentlyObserved": "No temporarylabels in finalpublicAX; exact equality with firstKindredpublished baseline. This does not restore the precedingMarginalia publication.",
+    "auditorOwnedResourcesStarted": [],
+    "auditorOwnedResourcesClosed": [],
+    "auditorLeasesAcquiredOrReturned": [],
+    "rootBrowserLeaseReturned": false,
+    "sharedRuntimeOrDatabaseStopped": false,
+    "persistentResourcesRetained": "Root sharedbrowser/runtime/apps/DB/drafts/orders/stock retained; no processlivenessorDBteardownaudit byKindred.",
+    "giftProductEditOrPayment": "None reported in thisUI-onlyslice; no independentDBconservationjoin byKindred."
+  },
+  "sourceFreezeChecks": [
+    {
+      "path": "packages/theme-engine/src/kindred-theme.ts",
+      "sha256": "3a47dc979dbdf5dce395fd44a858e007567820f4fac569fade603ff6da4fd551",
+      "matchesFrozen": true
+    },
+    {
+      "path": "packages/theme-engine/src/kindred-discovery.ts",
+      "sha256": "14dd29777737158a61287bf54e98571c6b3abf1e07ec542d2e7f678180ad473f",
+      "matchesFrozen": true
+    },
+    {
+      "path": "packages/theme-engine/src/kindred-styles.ts",
+      "sha256": "15e6670f6556a7b9cfd8e56891088f0abe9a8ffa1105822be1a1902ecd7282cf",
+      "matchesFrozen": true
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/release-v2/proposals/81e91859ebc8c497a49da337d064e1885a76964839d14e39f4a0a3de2283f47f/letbuyy-summit-2.0.0.json",
+      "sha256": "54f9d916749d64f80b6bd5dd6ec85a7e50b5e17bef765e61fffe727d94c8d411",
+      "matchesFrozen": true
+    }
+  ],
+  "productionSourceOrArtifactEdits": [],
+  "priorEvidenceOverwritten": false,
+  "outgoingMessages": [],
+  "automationsChanged": false,
+  "fullThemeCertified": false,
+  "nextRequiredEvidence": [
+    "Fresh normal preview/session recovery and actualG08dimensions/keyboard/longbrand observations",
+    "Actualpackage/draft/release/source lineage and completeG02clauses",
+    "Normalgiftbuyer/cart/COD/provider/history/stale-cart/isolation/productconflict cases afterfreshallocationandproviderreceipt",
+    "Missingintermediateaction/UUIDproof only if claiming those preciseeditoroperationsaccepted"
+  ]
+}

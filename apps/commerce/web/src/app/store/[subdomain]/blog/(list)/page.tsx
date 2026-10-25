@@ -5,7 +5,7 @@
 // Fields available: id, title, slug, excerpt, featured_image, published_at, is_pinned.
 // Author name NOT returned by public endpoint — omitted per plan honesty contract.
 //
-// E9 contract: liquidContext.blog = { articles: StorefrontBlogPostSummary[], current_page: 1, pages_count: 1 }
+// The canonical public API supplies the real page and total for Liquid pagination.
 // The 'blog-listing' Liquid section (LANE-A, E1) iterates {{ blog.articles }}.
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
@@ -21,6 +21,7 @@ export const revalidate = 60;
 
 type Props = {
     params: Promise<{ subdomain: string }>;
+    searchParams?: Promise<{ page?: string | string[] }>;
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -50,21 +51,31 @@ function blogPostToArticleDrop(post: StorefrontBlogPostSummary): Record<string, 
     };
 }
 
-export default async function BlogListingPage({ params }: Props) {
+function blogPageNumber(value: string | string[] | undefined): number | null {
+    if (value === undefined) return 1;
+    if (typeof value !== 'string' || !/^[1-9]\d*$/.test(value)) return null;
+    const page = Number(value);
+    return Number.isSafeInteger(page) && page <= 1000 ? page : null;
+}
+
+export default async function BlogListingPage({ params, searchParams }: Props) {
     const { subdomain } = await params;
+    const page = blogPageNumber((await searchParams)?.page);
+    if (page === null) return notFound();
     const [store, posts] = await Promise.all([
         StoreService.getStoreBySubdomain(subdomain),
-        ContentService.listBlogPosts(subdomain),
+        ContentService.listBlogPosts(subdomain, { page, limit: 20 }),
     ]);
 
     if (!store) return notFound();
 
-    const articles = posts.map(blogPostToArticleDrop);
+    const articles = posts.data.map(blogPostToArticleDrop);
 
     const renderPlan = resolveStorefrontTemplate(store, {
         type: 'blog',
         path: `/store/${subdomain}/blog`,
         subdomain,
+        searchParams: { page: String(page) },
     });
 
     const sectionData = new Map<string, SectionRenderData>();
@@ -78,10 +89,10 @@ export default async function BlogListingPage({ params }: Props) {
     // E9 branch in buildLiquidCommerceContext can forward it to the Liquid scope.
     const blogDrop: Record<string, unknown> = {
         articles,
-        // Pagination: the gateway returns up to 100 items with no offset in this call.
-        // Report honest page counts — only one page of data is loaded.
-        current_page: 1,
-        pages_count: 1,
+        current_page: posts.page,
+        pages_count: Math.max(1, Math.ceil(posts.total / posts.limit)),
+        total: posts.total,
+        has_more: posts.has_more,
     };
 
     // liquidPage is forwarded to buildLiquidCommerceContext → spread into the scope.

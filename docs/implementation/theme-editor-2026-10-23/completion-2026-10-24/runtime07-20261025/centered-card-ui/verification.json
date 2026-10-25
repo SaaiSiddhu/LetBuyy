@@ -1,0 +1,38 @@
+{
+  "recordedAt": "2026-10-24T20:07:29.878Z",
+  "url": "http://localhost:9001/snaz/online-store/themes/letbuyy-dawn/editor",
+  "sourceAlreadyContainsRequestedFix": true,
+  "sourceHashes": {
+    "page": "c5fd47e41702e760889a505bd19927fd7345a4e3e2a3a8323decc53bae59a8d0",
+    "css": "a18b469a13e822b7d55b9746ea588aa2eb9536461b754dbe6eddacf7d9b76856"
+  },
+  "viewports": [
+    {
+      "width": 1280,
+      "height": 720,
+      "centerOffsetX": 0,
+      "centerOffsetY": 0,
+      "horizontalOverflow": false
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "centerOffsetY": 0,
+      "horizontalOverflow": false,
+      "stackedActions": true
+    },
+    {
+      "width": 657,
+      "height": 1034,
+      "centerOffsetX": 0,
+      "centerOffsetY": 0,
+      "horizontalOverflow": false
+    }
+  ],
+  "actionTargetHeight": 44,
+  "loadingStatusObservedOnInitialNavigation": true,
+  "retry": "Normal Try again action returns the real manifest-unavailable error. Fast response prevented a distinct loading screenshot; retry-result.png is an error result.",
+  "keyboard": "Tab from Try again reaches Back to themes.",
+  "dataMutations": 0,
+  "viewportReset": true
+}

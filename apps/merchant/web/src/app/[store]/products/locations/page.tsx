@@ -255,7 +255,8 @@ export default function LocationsPage() {
 
     return (
         <Page>
-            <PageHeader
+            <PageHeader identity="products"
+                recipe="index"
                 title="Locations"
                 description="Manage warehouses, stores, and fulfilment centres where inventory is held."
                 breadcrumbs={[{ label: 'Inventory' }, { label: 'Locations' }]}

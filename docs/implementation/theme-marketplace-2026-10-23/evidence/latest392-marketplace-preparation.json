@@ -1,0 +1,94 @@
+{
+  "recordedAt": "2026-10-23T18:15:14.402452+00:00",
+  "status": "LATEST392_READONLY_PREPARATION_COMPLETE_SOURCE_RUNTIME_BROWSER_ALLOCATION_PENDING",
+  "requestedOutcome": "Latest standalone marketplace with real embedded previews and normal owned-store Add to library",
+  "latestCandidate": "/private/tmp/theme-editor-candidate-20261023-latest392-manualtls01",
+  "backendRunId": "f6074d90e894",
+  "proposedMarketplaceOrigin": "http://themes.threadline-f6074d90e894.localhost:9015",
+  "publicDemoHealth": {
+    "origin": "http://localhost:62076",
+    "path": "/theme-preview/letbuyy-sense",
+    "status": 200,
+    "frameAncestors": [
+      "self",
+      "http://admin.threadline-f6074d90e894.localhost:62075"
+    ],
+    "marketplaceEmbeddingAllowed": false
+  },
+  "authActualCurrentHelper": {
+    "configuredScopedAdminAccepted": false,
+    "configuredScopedMarketplaceAccepted": false,
+    "unrelatedOriginAccepted": false
+  },
+  "preparedReview": {
+    "patch": "/private/tmp/marketplace-local-return-to-proposed.patch",
+    "patchSha256": "29014c08692b415fe966bde0585ddb2eb04427a0162c57be207f0fdccbfe3f78",
+    "isolatedTestDirectory": "/private/tmp/marketplace-return-review-20261023",
+    "testPass": 2,
+    "testFail": 0,
+    "testSkip": 0,
+    "mainOrCandidateApplied": false
+  },
+  "browserMutationVerified": false,
+  "sourceMutation": false,
+  "runtimeLaunched": false,
+  "databaseProvisioned": false,
+  "old9005Preserved": true,
+  "editorSoleBrowserOwner": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+  "next": "Coordinate bounded canonical return-to repair, explicit own marketplace config and isolated runtime startup; then serialized normal UI Add receipt and owned library readback.",
+  "proposedDemoOrigin": "http://localhost:9016",
+  "portChecks": {
+    "9006": "occupied by marketing; preserved",
+    "9007": "occupied by internal console; preserved",
+    "9015": "free when checked",
+    "9016": "free when checked"
+  },
+  "latestPublicCatalog": {
+    "httpStatus": 200,
+    "count": 10,
+    "allVersion": "2.0.0",
+    "responseSha256": "c6704715a96b56107fbc254e5dc1f1d36fffc8cbdd0a4c8a355b55df21d33945",
+    "themes": [
+      {
+        "slug": "letbuyy-aura",
+        "version": "2.0.0"
+      },
+      {
+        "slug": "letbuyy-sense",
+        "version": "2.0.0"
+      },
+      {
+        "slug": "letbuyy-bloom",
+        "version": "2.0.0"
+      },
+      {
+        "slug": "letbuyy-craft",
+        "version": "2.0.0"
+      },
+      {
+        "slug": "letbuyy-dawn",
+        "version": "2.0.0"
+      },
+      {
+        "slug": "letbuyy-forge",
+        "version": "2.0.0"
+      },
+      {
+        "slug": "letbuyy-refresh",
+        "version": "2.0.0"
+      },
+      {
+        "slug": "letbuyy-ride",
+        "version": "2.0.0"
+      },
+      {
+        "slug": "letbuyy-summit",
+        "version": "2.0.0"
+      },
+      {
+        "slug": "letbuyy-nova",
+        "version": "2.0.0"
+      }
+    ]
+  }
+}

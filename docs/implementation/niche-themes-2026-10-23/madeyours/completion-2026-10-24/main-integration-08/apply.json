@@ -1,0 +1,72 @@
+{
+  "classification": "EXACT_ELEVEN_FILE_ACCEPTED08_MAIN_SOURCE_APPLIED_NOT_RUNTIME_RESTARTED",
+  "appliedAt": "2026-10-24T09:54:06.858339+00:00",
+  "allocation": {
+    "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-checkout-main-allocation-20261024-08.json",
+    "sha256": "06975dfcd37c74c25b02a553124fe47f20cf1cd32cfd14514bc7ba33be85313a"
+  },
+  "files": [
+    {
+      "path": "packages/checkout-core/src/index.ts",
+      "beforeSha256": "a67fc493111683a2d839995a3a1d40e4fef419a35f5414839793dd3555f747da",
+      "afterSha256": "2822a721bafd176241deaf274db2fdb0ab40fb687e738842f9ddd80912391560"
+    },
+    {
+      "path": "services/api-gateway/src/lib/hosted-checkout-session.ts",
+      "beforeSha256": null,
+      "afterSha256": "23d489f61d762497c1ecdbf445691c140fa698947161b17426c11bf2b1ae753b"
+    },
+    {
+      "path": "services/api-gateway/src/routes/checkout.ts",
+      "beforeSha256": "2bee4e2e2d69a87e1acde3ab4e3009ee92f78f6e349b57ba8b0376d6ff47f68a",
+      "afterSha256": "d4600bb711dff02d00e3b77587a0b5d2e9c2020f22dcf065ad673171859aad9c"
+    },
+    {
+      "path": "services/api-gateway/src/routes/storefront/cart-routes.ts",
+      "beforeSha256": "a92dc02137ff70c71336487b16f627ddf7b35213250a34c5cec835fd3fdf5588",
+      "afterSha256": "18a17fc31b1f328bd52413885d264d7bc2f23728c3f2e5c75f074776765a533a"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/hosted-checkout-contact-reentry.postgres.test.ts",
+      "beforeSha256": null,
+      "afterSha256": "2fcef3f55fb935c56b3c646ef54769a220136c447e171c649f393bd647793e10"
+    },
+    {
+      "path": "apps/commerce/web/src/app/store/[subdomain]/checkout/checkout-client.tsx",
+      "beforeSha256": "2c03e5a030eb890a63ba248d56f7447305565858a49f3b0ee1e67b53fee18baa",
+      "afterSha256": "4f32a47ef71ae9e51a4df644c957d6f1d53bffd217352546f7c57772abe6573b"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/checkout/step-idempotency.ts",
+      "beforeSha256": null,
+      "afterSha256": "a59c32b2f1244f3c0cdbb41fe598faaf917b69cadc8ee9cea2d60b2b95c4db1f"
+    },
+    {
+      "path": "apps/commerce/web/src/app/checkout-origin/checkout/page.tsx",
+      "beforeSha256": "46ee9de23dc13f263ee473cc92f2752915ed8f7a334ccf1d71ae9ab57bffb75c",
+      "afterSha256": "f2ef023361a35610902db6e8671e9a115091c33c725357166a675dfacc7281cc"
+    },
+    {
+      "path": "apps/commerce/web/src/app/api/checkout/[cartId]/[step]/route.ts",
+      "beforeSha256": "94455bc02ad97b801de5e8cabd995473c022bb330d468fe412aeb8b6590a339b",
+      "afterSha256": "e56399bb248c3657dfc967f16eb1858481405d24e0e1dee32c91380b80273c08"
+    },
+    {
+      "path": "apps/commerce/web/src/app/api/orders/route.ts",
+      "beforeSha256": "040cdf78aee2ece526d8d5aa5f531e6da6b0ae423171142ab37d4e920c31d939",
+      "afterSha256": "719835143f45442016954365974cad3e41393248fb98e1568893258c57d4a698"
+    },
+    {
+      "path": "apps/commerce/web/src/app/api/checkout/route.test.ts",
+      "beforeSha256": "095cb48fff4222cb2eb43615e6cfe29cb528657718493f869283c4fa9708d00c",
+      "afterSha256": "58ee3790dc74b7e9d283a3a05abed2e3b7ed62bdd923c04351ded0664766cfd1"
+    }
+  ],
+  "protectedVisualSourceUnchanged": true,
+  "mixedPrivateCartChanges": false,
+  "privateCandidates05Through08Changed": false,
+  "nativeRunStartedHere": false,
+  "databaseBrowserAppAction": false,
+  "providerAction": false,
+  "next": "Actual Main Next/BFF/source/guard/type/lint checks; exact source handoff ends lease."
+}

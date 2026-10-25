@@ -1,0 +1,40 @@
+{
+  "checkedAt": "2026-10-23T14:04:57.036985+00:00",
+  "heartbeat": "2026-10-23T14:03:23.927Z",
+  "status": "WAITING_FOR_SHARED_FIXTURE_AND_KINDRED_LEASE",
+  "allocation": null,
+  "runtimeBindings": null,
+  "upstreamNative": {
+    "path": "docs/implementation/threadline-2026-10-22/promotion-qualification/native-runs/02/result.json",
+    "sha256": "151d29be732337d5141600683e96f24d1cefc0a7c925fe02619cc9df670f22cf",
+    "runId": "eccf5f1df418",
+    "tests": 5,
+    "assertionsPassed": 3,
+    "assertionsFailed": 2,
+    "failedSuites": 1,
+    "failure": "GET storefront products returned503 STOREFRONT_ACCESS_UNAVAILABLE during dependent measurement/ordered DOWN-UP phase; parent failure follows that same phase",
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    },
+    "ownership": "Threadline/coordinator; not rerun or modified by Kindred"
+  },
+  "editorObservabilityRelease": {
+    "path": "docs/implementation/theme-editor-2026-10-23/evidence/fixture-observability-source-release.json",
+    "sha256": "a4706bec4f63e3eb0dcf72ffa3f097d882ffb814f5c02e7a0ee80e47075b8220",
+    "classification": "OWNED_FIXTURE_OBSERVABILITY_SOURCE_ONLY_NOT_REAL_REPLAY",
+    "sourcePassed": 17,
+    "gatewayNoEmitExit": 0,
+    "runtimeExecuted": false
+  },
+  "kindredCasesRun": 0,
+  "kindredCasesNotRun": 19,
+  "kqa01": "OPEN P2; original evidence/source freeze preserved",
+  "resourcesStarted": [],
+  "sourceOrArtifactEdits": false,
+  "continuation": "Heartbeat remains active; upstream owner tracing the503; await real fixture and explicit Kindred lease"
+}

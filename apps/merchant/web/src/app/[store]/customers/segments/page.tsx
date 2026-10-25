@@ -661,7 +661,8 @@ export default function CustomerSegmentsPage() {
 
     return (
         <Page>
-            <PageHeader
+            <PageHeader identity="customers"
+                recipe="index"
                 eyebrow="Relationships"
                 title="Customer segments"
                 description="Group customers by shared attributes to target campaigns and understand your audience."

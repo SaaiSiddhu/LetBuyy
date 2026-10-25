@@ -39,7 +39,7 @@
 // Usage:
 //   node scripts/governance/run-executable-suites.mjs [--filter <substring>] [--suite <path>]...
 //        [--suite-dir <dir>]... [--gateway-db] [--jobs <n>] [--timeout <seconds>] [--log-dir <dir>] [--json]
-//        [--json-out <file>] [--list] [--keep-container] [--container <name>] [--kind postgres|gateway-db] [--no-reap]
+//        [--json-out <file>] [--list] [--keep-container] [--container <name>] [--kind postgres|gateway-db] [--no-reap] [--through-migration <positive integer>]
 //        [--reap-only] [--reap-min-age <seconds>]
 // --container names the cluster(s); it must be one of this runner's own names (letbuyy-exec-...), and anything else -
 // a Supabase development container included - is refused before a single docker command runs. --kind applies to
@@ -62,6 +62,7 @@ import {
     createNetwork,
     createVolume,
     docker,
+    fixtureServiceKeyLifetimeSeconds,
     listRunResources,
     newRunId,
     publishedHostPort,
@@ -77,11 +78,11 @@ import {
     uniqueContainerName,
     waitUntilAccepting,
 } from './executable-pg-fixture.mjs';
-import { buildGatewayTemplate, createSuiteDatabase, dropSuiteDatabase } from './owned-database-provision.mjs';
+import { buildGatewayTemplate, createSuiteDatabase, dropSuiteDatabase, parseMigrationCeiling, GATEWAY_TEMPLATE_DATABASE } from './owned-database-provision.mjs';
 import { OWNED_FIXTURE_ENV, verifyOwnedFixture } from './owned-fixture-guard.mjs';
 import { ownedDatabaseNameFor } from './owned-database-name.mjs';
 import { startRestProxy } from './owned-rest-proxy.mjs';
-import { discoverSuites, isGatewayDatabaseSuite } from './test-suite-catalog.mjs';
+import { HISTORICAL_GATEWAY_MIGRATION_CEILINGS, discoverSuites, isGatewayDatabaseSuite } from './test-suite-catalog.mjs';
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 
@@ -90,6 +91,8 @@ const flag = (name) => args.includes(name);
 const values = (name) => args.flatMap((arg, i) => (arg === name && i < args.length - 1 ? [args[i + 1]] : []));
 const value = (name, fallback) => values(name)[0] ?? fallback;
 
+const throughMigration = parseMigrationCeiling(flag('--through-migration') ? value('--through-migration', '') : undefined);
+if (args.filter(arg => arg === '--through-migration').length > 1) throw new Error('--through-migration may be supplied only once');
 const runId = newRunId();
 const filter = value('--filter', null);
 const asJson = flag('--json');
@@ -110,6 +113,9 @@ const merchantBrowserTimeouts = new Map([
     ['services/api-gateway/src/__tests__/owned-db/merchant-staff-browser.postgres.test.ts', 900_000],
     ['services/api-gateway/src/__tests__/owned-db/merchant-payout-statements-browser.postgres.test.ts', 1_200_000],
 ]);
+const suiteTimeoutMs = (suite) => !flag('--timeout') && exhaustiveCatalogSuites.has(suite?.path)
+    ? 1_800_000 : !flag('--timeout') && merchantBrowserTimeouts.has(suite?.path)
+        ? merchantBrowserTimeouts.get(suite.path) : perSuiteTimeoutMs;
 const requestedJobs = Number(value('--jobs', process.env.LETBUYY_EXECUTABLE_PG_JOBS || '2'));
 const reportDir = process.env.LETBUYY_EXECUTABLE_REPORT_DIR
     ? join(resolve(process.env.LETBUYY_EXECUTABLE_REPORT_DIR), runId) : null;
@@ -210,9 +216,7 @@ function spawnAndCollect(command, commandArgs, env, suite) {
         running.add(child);
         let out = '';
         let timedOut = false;
-        const deadline = !flag('--timeout') && exhaustiveCatalogSuites.has(suite?.path)
-            ? 1_800_000 : !flag('--timeout') && merchantBrowserTimeouts.has(suite?.path)
-                ? merchantBrowserTimeouts.get(suite.path) : perSuiteTimeoutMs;
+        const deadline = suiteTimeoutMs(suite);
         const timer = setTimeout(() => { timedOut = true; killGroup(child, 'SIGKILL'); }, deadline);
         const collect=(d)=>{out+=d;if(suite&&logDir)appendFileSync(join(logDir,`${basename(suite.path).replace(/\.test\.(mjs|ts)$/, '')}.log`),d);};
         child.stdout.on('data', collect);
@@ -354,17 +358,29 @@ async function runGatewaySuite(suite, cluster) {
     try {
         // The template is built once per cluster; a second suite on the cluster waits on the same promise.
         const templateStarted = Date.now();
-        cluster.template ??= buildGatewayTemplate(cluster, { repoRoot, restPassword: cluster.restPassword });
-        await cluster.template;
+        const ceiling=throughMigration ?? HISTORICAL_GATEWAY_MIGRATION_CEILINGS[suite.path];
+        const key=ceiling ?? 'current';
+        const templateDatabase=ceiling === undefined ? GATEWAY_TEMPLATE_DATABASE : GATEWAY_TEMPLATE_DATABASE+'_through_'+ceiling;
+        cluster.templates ??= new Map();
+        if(!cluster.templates.has(key)) cluster.templates.set(key,(async()=>{
+            await buildGatewayTemplate(cluster,{repoRoot,restPassword:cluster.restPassword,throughMigration:ceiling,templateDatabase});
+            return {database:templateDatabase,migrations:cluster.migrationEvidence};
+        })());
+        const template=await cluster.templates.get(key);
+        record.migrations = template.migrations;
         record.templateSeconds = seconds(templateStarted);
 
         const provisionStarted = Date.now();
-        await createSuiteDatabase(cluster, database, runId);
+        await createSuiteDatabase(cluster, database, runId, {templateDatabase:template.database});
         databaseCreated = true;
 
         const jwtSecret = randomBytes(32).toString('hex');
         const issuedAt = Math.floor(Date.now() / 1000);
-        const serviceKey = signJwtHs256(jwtSecret, { role: 'service_role', iss: 'letbuyy-owned-fixture', iat: issuedAt, exp: issuedAt + 7200 });
+        const serviceKey = signJwtHs256(jwtSecret, {
+            role: 'service_role', iss: 'letbuyy-owned-fixture', iat: issuedAt,
+            exp: issuedAt + fixtureServiceKeyLifetimeSeconds(suiteTimeoutMs(suite)),
+        });
+        const anonKey = signJwtHs256(jwtSecret, { role: 'anon', iss: 'letbuyy-owned-fixture', iat: issuedAt, exp: issuedAt + fixtureServiceKeyLifetimeSeconds(suiteTimeoutMs(suite)) });
         startPostgrest({ name: restName, runId, network: cluster.network, database, dbPassword: cluster.restPassword, jwtSecret });
         restStarted = true;
         activeRest.add(restName);
@@ -383,6 +399,7 @@ async function runGatewaySuite(suite, cluster) {
             [OWNED_FIXTURE_ENV.restContainer]: restName,
             [OWNED_FIXTURE_ENV.restUpstreamPort]: String(upstreamPort),
             [OWNED_FIXTURE_ENV.restServiceKey]: serviceKey,
+            LETBUYY_OWNED_REST_ANON_KEY: anonKey,
             LETBUYY_OWNED_SQL_PASSWORD: cluster.restPassword,
         };
         // The runner holds itself to the rule it imposes: nothing starts until ownership is proven.
@@ -592,8 +609,15 @@ async function main() {
     return Math.min(failed.length, 125);
 }
 
-main().then((code) => process.exit(code), (error) => {
+async function exitAfterOutput(code) {
+    // Pipe writes are asynchronous. A forced exit can truncate a large JSON
+    // receipt at the pipe buffer boundary even after every suite completed.
+    await Promise.all([process.stdout, process.stderr].map(stream =>
+        new Promise(resolve => stream.write('', resolve))));
+    process.exit(code);
+}
+main().then(exitAfterOutput, async (error) => {
     removeClusters();
     warn(error.message);
-    process.exit(70);
+    await exitAfterOutput(70);
 });

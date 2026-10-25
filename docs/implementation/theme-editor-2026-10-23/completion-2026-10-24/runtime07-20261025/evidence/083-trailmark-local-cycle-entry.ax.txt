@@ -1,0 +1,146 @@
+Browser tab: 173052882, Title: "LetBuyy Admin", URL: "http://admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes/letbuyy-ride/editor".
+1 AXWebArea LetBuyy Admin, URL: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes/letbuyy-ride/editor
+	2 container
+		3 link Description: Back to themes, Value: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes
+		4 checkbox Description: Toggle navigation panel, Value: 1
+		5 button Sections
+		6 button Theme settings
+		7 button Theme styles
+		8 button Versions
+		9 text Trailmark Draft theme
+		10 text Saved
+		11 container Template
+			12 pop up button (collapsed, settable) Description: Template, Value: Trailmark activity home, Secondary Actions: Expand
+				13 menu
+					14 (selected) Trailmark activity home
+					15 LetBuyy Core product
+					16 Trailmark equipment collection
+					17 Page
+					18 LetBuyy Core cart
+					19 Blog
+					20 Article
+					21 Policy page
+					22 Trailmark equipment search
+					23 Contact
+					24 Password
+					25 404 Not Found
+					26 Login
+					27 Order detail
+					28 Order history
+					29 All collections
+					30 Account
+					31 Register
+					32 Account settings
+					33 Wishlist
+					34 Addresses
+		35 button (disabled) Undo
+		36 button (disabled) Redo
+		37 button (disabled) Save
+		38 button Publish
+		39 container Theme editor navigation
+			40 heading Trailmark activity home, Value: 2
+				41 text Trailmark activity home
+			42 text v4
+			43 outline Theme sections
+				44 container
+					45 text HEADER
+					46 button Announcement Bar
+					47 button Header
+				48 container
+					49 text TEMPLATE
+					50 container Template sections
+						51 row (selectable) Activity masthead
+							52 button Activity masthead
+						53 row (selectable) Activity pathways
+							54 button Activity pathways
+						55 row (selectable) Factual equipment cards
+							56 button Factual equipment cards
+						57 row (selectable) Equipment selection guide
+							58 button Equipment selection guide
+						59 row (selected) Merchant service information Toggle Merchant service information visibility Move Merchant service information up Move Merchant service information down Remove Merchant service information
+							60 button Merchant service information
+							61 checkbox Description: Toggle Merchant service information visibility, Value: 1
+							62 button Move Merchant service information up
+							63 button (disabled) Move Merchant service information down
+							64 button Remove Merchant service information
+					65 pop up button (collapsed, settable) Value: Marquee, Secondary Actions: Expand
+						66 menu
+							67 (selected) Marquee
+							68 404 Not Found
+							69 Spotlight
+							70 Search
+							71 Video Hero
+							72 Call to Action
+							73 Activity masthead
+							74 Blog Listing
+							75 Cart
+							76 Contact Form
+							77 Page Content
+							78 Factual equipment cards
+							79 Rich Content
+							80 Testimonials
+							81 Merchant service information
+							82 Equipment selection guide
+							83 Brand Marquee
+							84 Activity pathways
+							85 FAQ Accordion
+							86 Password Gate
+							87 Services Grid
+							88 App Block Slot
+							89 Customer Login
+							90 Policy Content
+							91 Portfolio Grid
+							92 Product Detail
+							93 Skills Section
+							94 Article Content
+							95 Banner Carousel
+							96 Order History
+							97 Announcement Bar
+							98 Customer Account
+							99 Collection Banner
+							100 Equipment discovery controls
+							101 Customer Register
+							102 Account Settings
+							103 Wishlist
+							104 Independent court accessories
+							105 Newsletter Signup
+							106 Addresses
+							107 Experience Timeline
+							108 Order Detail
+							109 Activity equipment discovery
+					110 button Add
+				111 container
+					112 text FOOTER
+					113 button Footer
+		114 container Live theme preview
+			115 text Live preview
+			116 text syn-threadline-ui-ae3f0477 . localhost  -  1440 px
+			117 container Preview device
+				118 checkbox Desktop, Value: 1
+				119 checkbox Tablet, Value: 0
+				120 checkbox Mobile, Value: 0
+			121 container
+				122 text syn-threadline-ui-ae3f0477 . localhost
+				123 checkbox Description: Inspect preview, Value: 1
+				124 container syn-threadline-ui-ae3f0477 storefront preview
+					125 AXWebArea about:blank
+		126 container Theme properties
+			127 text Selected section
+			128 heading Merchant service information, Value: 2
+				129 text Merchant service information
+			130 container Smart defaults
+				131 button (collapsed) Smart defaults, Secondary Actions: Expand
+					132 text Smart defaults
+			133 container
+				134 text Support information
+				135 text field (settable) Support information
+				136 text Included contents information
+				137 text field (settable) Included contents information
+				138 text Measurements information
+				139 text field (settable) Measurements information
+				140 text BLOCKS
+				141 button Add Badge
+					142 text Add 
+					143 text Badge
+
+The focused UI element is 60 button Merchant service information

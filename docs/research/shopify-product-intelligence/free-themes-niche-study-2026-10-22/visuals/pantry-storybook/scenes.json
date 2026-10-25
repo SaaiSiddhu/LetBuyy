@@ -1,0 +1,107 @@
+[
+  {
+    "id": "01-home-top",
+    "title": "Home \u00b7 seasonal staples",
+    "route": "/",
+    "mission": "Choose a useful shelf without an oversized campaign blocking product access.",
+    "source": "source/01-home-top.html"
+  },
+  {
+    "id": "02-home-bottom",
+    "title": "Home \u00b7 ingredients & everyday use",
+    "route": "/#continuation",
+    "mission": "Continue the same homepage into product education, separate recipe links and honest service information.",
+    "source": "source/02-home-bottom.html"
+  },
+  {
+    "id": "03-collection",
+    "title": "Pantry shelves \u00b7 collection & search",
+    "route": "/collections/staples",
+    "mission": "Scan shelf rows with net quantity beside price; filters/sort require real query contracts.",
+    "source": "source/03-collection.html"
+  },
+  {
+    "id": "04-product-main",
+    "title": "Product \u00b7 pack selection",
+    "route": "/products/split-red-lentils",
+    "mission": "See ingredients and unknown allergens before submitting 2 \u00d7 250g, preserving 500g net and \u20b9360.",
+    "source": "source/04-product-main.html"
+  },
+  {
+    "id": "05-product-facts",
+    "title": "Product \u00b7 ingredients, storage & preparation",
+    "route": "/products/split-red-lentils#facts",
+    "mission": "Present ingredients, absent allergen/nutrition information, quantity units and supplied storage without invented health claims.",
+    "source": "source/05-product-facts.html"
+  },
+  {
+    "id": "06-product-continuation",
+    "title": "Product \u00b7 use, pairings & policy",
+    "route": "/products/split-red-lentils#continuation",
+    "mission": "Keep recipe education, independent related products and actual policy references separate from invented bundle/fulfillment capability.",
+    "source": "source/06-product-continuation.html"
+  },
+  {
+    "id": "07-cart",
+    "title": "Cart \u00b7 pack quantities & totals",
+    "route": "/cart",
+    "mission": "Review named SKUs, independent quantity/remove controls and recoverable server-update failure before hosted checkout.",
+    "source": "source/07-cart.html"
+  },
+  {
+    "id": "08-checkout-address",
+    "title": "Shared checkout \u00b7 contact, address & shipping",
+    "route": "checkout.letbuyy.com/checkout#address",
+    "mission": "Use the canonical hosted address/quote owner; display full pack identity and no unsupported ETA.",
+    "source": "source/08-checkout-address.html"
+  },
+  {
+    "id": "09-checkout-review",
+    "title": "Shared checkout \u00b7 review & payment recovery",
+    "route": "checkout.letbuyy.com/checkout#review",
+    "mission": "Review all lines/totals before commitment; render eligible mock methods and an explicit recoverable payment-start error.",
+    "source": "source/09-checkout-review.html"
+  },
+  {
+    "id": "10-sign-in",
+    "title": "LetBuyy buyer sign-in \u00b7 Pantry destination",
+    "route": "identity.letbuyy.com/buyer/authorize",
+    "mission": "Keep credentials within the sole LetBuyy buyer issuer, explicit destination and recovery context.",
+    "source": "source/10-sign-in.html"
+  },
+  {
+    "id": "11-sign-up",
+    "title": "LetBuyy create account \u00b7 verification & consent",
+    "route": "identity.letbuyy.com/buyer/authorize?screen=register",
+    "mission": "Show canonical registration and actual security check and explicit account-sharing continuation requirement without inventing verification codes or providers.",
+    "source": "source/11-sign-up.html"
+  },
+  {
+    "id": "12-profile",
+    "title": "Your Pantry account \u00b7 overview & profile",
+    "route": "/account",
+    "mission": "Allow supported profile editing and tenant-scoped navigation; distinguish buyer identity from store relationship.",
+    "source": "source/12-profile.html"
+  },
+  {
+    "id": "13-orders",
+    "title": "Your orders \u00b7 history",
+    "route": "/account/orders",
+    "mission": "Identify owned orders clearly with pack variants, pagination and safe missing-order recovery.",
+    "source": "source/13-orders.html"
+  },
+  {
+    "id": "14-order-detail",
+    "title": "Order PN-1048 \u00b7 owned detail",
+    "route": "/account/orders/PN-1048",
+    "mission": "Read exact selected SKU, pack count, net weight, totals and truthful mock fulfillment/payment states for owned order only.",
+    "source": "source/14-order-detail.html"
+  },
+  {
+    "id": "15-addresses",
+    "title": "Saved addresses \u00b7 edit, validation & default",
+    "route": "/account/addresses",
+    "mission": "Show list plus supported add/edit/default controls with precise retained-input validation.",
+    "source": "source/15-addresses.html"
+  }
+]

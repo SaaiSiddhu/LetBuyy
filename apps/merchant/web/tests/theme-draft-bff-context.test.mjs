@@ -6,19 +6,24 @@ import * as domain from '@letbuyy/theme-engine';
 
 const storeA='11111111-1111-4111-8111-111111111111';
 const storeB='22222222-2222-4222-8222-222222222222';
+class MerchantApiRequestError extends Error {
+    constructor(message,status,payload) { super(message);this.status=status;this.payload=payload; }
+}
 function route(relative,{actor='actor-a',resolvedStore=storeA}={}) {
-    const calls={auth:0,resolve:0,save:[],publish:[]};
+    const calls={auth:0,resolve:0,save:[],publish:[],editor:[],preview:[]};
     const modules={
         'next/server':{NextResponse:{json:(body,init)=>Response.json(body,init)}},
         '@letbuyy/theme-engine':domain,
         '@/lib/auth/session':{getSessionUser:async()=>{calls.auth++;return actor?{id:actor}:null;}},
         '@/lib/stores/resolve-owned-store':{resolveOwnedStoreId:async()=>{calls.resolve++;return {storeId:resolvedStore};}},
         '@/lib/api/client':{
-            merchantApiErrorResponse:error=>{throw error;},
+            MerchantApiRequestError,
+            merchantApiErrorResponse:error=>{if(error instanceof MerchantApiRequestError)return Response.json(error.payload,{status:error.status});throw error;},
             createMerchantApiClient:()=>({themes:{
-                editor:async()=>({store:{id:resolvedStore},theme:{slug:'modern'},version:1,template_config:{},draft:{exists:true},schemas:{}}),
+                editor:async(slug,site,options)=>{calls.editor.push({slug,site,options});return {store:{id:resolvedStore},theme:{slug:'modern'},version:1,template_config:{},draft:{exists:true},schemas:{}};},
                 saveDraft:async(slug,input)=>{calls.save.push({slug,input});return {saved_at:'2026-10-18T00:00:00Z',version:2,current_version:2,replayed:false};},
                 publish:async(slug,input)=>{calls.publish.push({slug,input});return {release:{published_at:'2026-10-18T00:00:00Z'},version:2,current_version:2,replayed:false};},
+                previewSession:async(slug,input)=>{calls.preview.push({slug,input});return {preview_session_id:'synthetic-session'};},
             }}),
         },
     };
@@ -27,7 +32,7 @@ function route(relative,{actor='actor-a',resolvedStore=storeA}={}) {
     const exports={};new Function('require','exports',js)(name=>{assert.ok(modules[name],`Unexpected import ${name}`);return modules[name];},exports);
     return {...exports,calls};
 }
-const paths={save:'../src/app/api/themes/[themeId]/editor/draft/route.ts',publish:'../src/app/api/themes/[themeId]/editor/route.ts'};
+const paths={save:'../src/app/api/themes/[themeId]/editor/draft/route.ts',publish:'../src/app/api/themes/[themeId]/editor/route.ts',preview:'../src/app/api/themes/[themeId]/preview-session/route.ts'};
 const input={actorId:'actor-a',storeId:storeA,draftConfig:{owned:'saved draft'},baseVersion:1,idempotencyKey:'owned-key-12345678'};
 const request=(operation,body)=>new Request('http://merchant.invalid/api/themes/modern/editor?store_name=store-a&template=index',{method:operation==='save'?'POST':'PUT',body:JSON.stringify(body)});
 const params={params:Promise.resolve({themeId:'modern'})};
@@ -53,3 +58,29 @@ test('actual editor GET exposes its authenticated actor and canonical store toge
     const r=route(paths.publish);const response=await r.GET(new Request('http://merchant.invalid/api/themes/modern/editor?store_name=store-a'),params);
     assert.equal(response.status,200);const payload=await response.json();assert.equal(payload.actorId,'actor-a');assert.equal(payload.store.id,storeA);
 });
+
+for(const key of ['page.faq','product.alternate','customers/account']) {
+    test(`actual editor BFF load/save/publish/preview preserve the selected template ${key}`,async()=>{
+        const get=route(paths.publish);
+        assert.equal((await get.GET(new Request(`http://merchant.invalid/api/themes/modern/editor?store_name=store-a&template=${encodeURIComponent(key)}`),params)).status,200);
+        assert.equal(get.calls.editor[0].options.query.template_key,key);
+        for(const [operation,method] of [['save','POST'],['publish','PUT'],['preview','POST']]) {
+            const r=route(paths[operation]);
+            const response=await r[method](new Request('http://merchant.invalid/api/themes/modern/editor?store_name=store-a',{method,body:JSON.stringify({...input,store_name:'store-a',templateKey:key})}),params);
+            assert.equal(response.status,200);
+            assert.equal(r.calls[operation][0].input.template_key,key);
+        }
+    });
+}
+for(const key of ['','../private','constructor','prototype','Page','page.faq/other']) {
+    test(`actual BFF boundaries reject invalid template ${JSON.stringify(key)} without touching the API`,async()=>{
+        const get=route(paths.publish);
+        assert.equal((await get.GET(new Request(`http://merchant.invalid/api/themes/modern/editor?store_name=store-a&template=${encodeURIComponent(key)}`),params)).status,400);
+        assert.equal(get.calls.editor.length,0);
+        for(const [operation,method] of [['save','POST'],['publish','PUT'],['preview','POST']]) {
+            const r=route(paths[operation]);
+            assert.equal((await r[method](new Request('http://merchant.invalid/api/themes/modern/editor?store_name=store-a',{method,body:JSON.stringify({...input,store_name:'store-a',templateKey:key})}),params)).status,400);
+            assert.equal(r.calls[operation].length,0);
+        }
+    });
+}

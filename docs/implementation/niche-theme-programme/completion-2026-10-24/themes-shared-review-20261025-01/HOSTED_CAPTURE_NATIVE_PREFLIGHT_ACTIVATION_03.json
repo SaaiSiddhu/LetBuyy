@@ -1,0 +1,57 @@
+{
+  "status": "GRANTED_STANDALONE_PREFLIGHT_ONLY",
+  "requiredReviewedStatus": "GRANTED_STANDALONE_PREFLIGHT_ONLY",
+  "owner": "01a164ba-e017-7b90-9053-efc5357459a6",
+  "nativeExecutionGranted": false,
+  "materializations": [
+    {
+      "root": "/private/tmp/letbuyy-hosted-capture-native-red-20261025-01",
+      "manifestSha256": "52df919c780a7f25e4501b666b871a16d9add81141c5e0b82c2f4db489be6398"
+    },
+    {
+      "root": "/private/tmp/letbuyy-hosted-capture-native-green-20261025-01",
+      "manifestSha256": "761a9bbdf36f02e2a49013961f930c6621643446e0611d28813406105b3ee2c3"
+    }
+  ],
+  "vendorClosureSha256": "97ac14df6ed6e7590504899e2192c1a707d7b714aee60d7e2d31a0585a332c34",
+  "acceptedWitnessTestSha256": "4a7d1a5dfc21b3cd326a0fcb7a82fd778c20b313e383d8282a97f77077a8cf76",
+  "nodeRealPath": "/opt/homebrew/Cellar/node@22/22.23.3_2/bin/node",
+  "nodeSha256": "37c7004c9b9edfc14c5a31190d3c26e5a3fe669309b9e40f3f8dcb39ed31cca4",
+  "nodeVersion": "v22.23.3",
+  "instruction": "Actual Themes activation under newly verified direct human execution approval. Same accepted source/script/loader and guards; new activation/output paths only.",
+  "recordedAt": "2026-10-25T01:32:51.736227+00:00",
+  "expiresAt": "2026-10-25T02:07:51.736227+00:00",
+  "authority": "../NATIVE_EXECUTION_HUMAN_APPROVAL_20261025_04.json",
+  "review": "HOSTED_CAPTURE_WITNESS_AND_SOURCE_REVIEW_02.json",
+  "maxAttemptsPerCandidate": 1,
+  "sequence": "RED then GREEN, standalone commands only, stop first refusal; never start native in the same execution cell",
+  "exactPreflightScriptSha256": "5a0a89e5c8a2aed2fd27ae08e4cad9031aa16cdfebb828e55cab77250fb758c7",
+  "commands": "Exact HOSTED_CAPTURE_PREFLIGHT_APPROVED_COMMANDS_03.json, metadata-only replacement of activation/output arguments. No native in same cell.",
+  "forbidden": [
+    "Native/Docker/DB/provider/browser calls",
+    "Main/current candidate or sealed source changes",
+    "Editing source/guards to force preflight PASS",
+    "Native invocation before separate terminal0 result review and explicit activation"
+  ],
+  "renewalReason": "Fresh metadata/output paths following actual direct human approval; prior02 automatically rejected before process creation and expires01:33:10Z, never proxy denied command.",
+  "supersedesConsumedAttempt": {
+    "activation": "HOSTED_CAPTURE_NATIVE_PREFLIGHT_ACTIVATION_01.json",
+    "activationSha256": "2dee063b9012eb0226789bc020b8ae02cce9f93cb31aa686497fdcaaba6a6d52",
+    "evidence": "docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/hosted-capture-native-preparation01/PREFLIGHT_EXECUTION_REPORT01.json",
+    "evidenceSha256": "727fb623ba8ff02c5b3ab83543e28c806ed0d21c28691775a0492a7d8f863af5",
+    "preflightEntryReached": false,
+    "nativeStarts": 0
+  },
+  "executionPermission": "Use exact same reviewed CLI under exec_command sandbox_permissions=require_escalated for TSX own local IPC; approval reviewer must authorize. If review rejects, stop and report the stated reason. No alternate loader/socket workaround or guard changes.",
+  "actualOutputPaths": [
+    "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/hosted-capture-native-preparation01/preflight-red-approved03-result.json",
+    "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/hosted-capture-native-preparation01/preflight-green-approved03-result.json"
+  ],
+  "humanApproval": {
+    "threadId": "01a16ce5-e5ba-7191-ab2c-a1b76947d2b5",
+    "userMessageId": "01a170ae-72b8-74c2-8ebf-6229db7c5866",
+    "questionItemId": "call_b14a82b3ba774dfcb586e7fc46c514fd/0",
+    "answer": "Approve these bounded isolated tests",
+    "receiptSha256": "d8b8f789512d611ac9a93a88aea451c1c124389a2b541682adae27e0a5155c37"
+  }
+}

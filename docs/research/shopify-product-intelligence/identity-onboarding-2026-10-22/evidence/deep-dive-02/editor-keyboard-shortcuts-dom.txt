@@ -1,0 +1,73 @@
+
+  - iframe [active] [name="app-modal-iframe"]:
+    - heading "Keyboard Shortcuts" [active] [level=2]
+    - button "Close":
+    - heading "General" [level=3]
+    - list:
+      - paragraph: Undo
+      - generic: ⌘
+      - generic: Z
+      - paragraph: Redo
+      - generic: ⌘
+      - generic: "Y"
+      - paragraph: Save
+      - generic: ⌘
+      - generic: S
+      - paragraph: See all shortcuts
+      - generic: ⌘
+      - generic: /
+    - heading "Tools" [level=3]
+    - list:
+      - paragraph: Preview inspector
+      - generic: ⌘
+      - generic: ⇧
+      - generic: I
+      - paragraph: Preview mode
+      - generic: ⌘
+      - generic: ⌃
+      - generic: I
+      - paragraph: Sidekick
+      - generic: ⌘
+      - generic: .
+    - heading "Navigation" [level=3]
+    - list:
+      - paragraph: Sections
+      - generic: ⌘
+      - generic: ⌃
+      - generic: "1"
+      - paragraph: Theme Settings
+      - generic: ⌘
+      - generic: ⌃
+      - generic: "2"
+      - paragraph: App Embeds
+      - generic: ⌘
+      - generic: ⌃
+      - generic: "3"
+    - heading "Sections & Blocks" [level=3]
+    - list:
+      - paragraph: Hide & show
+      - generic: ⌘
+      - generic: ⇧
+      - generic: H
+      - paragraph: Remove
+      - generic: ⇧
+      - generic: ⌫
+      - paragraph: Select previous
+      - generic: ⇧
+      - generic: ↑
+      - paragraph: Select next
+      - generic: ⇧
+      - generic: ↓
+      - paragraph: Open selected element
+      - generic: ⇧
+      - generic: ↵
+      - paragraph: Expand all sections
+      - generic: ⌘
+      - generic: ⇧
+      - generic: O
+      - paragraph: Collapse all sections
+      - generic: ⌘
+      - generic: ⇧
+      - generic: P
+    - iframe
+- status

@@ -398,6 +398,7 @@ export default function TaxesSettingsPage() {
     if (loading) {
         return (
             <SettingsPane
+                navigationKey="taxes"
                 title="Taxes and duties"
                 description="Configure price tax handling and checkout tax rates."
                 store={store}
@@ -414,6 +415,7 @@ export default function TaxesSettingsPage() {
     return (
         <>
             <SettingsPane
+                navigationKey="taxes"
                 title="Taxes and duties"
                 description="Configure price tax handling and checkout tax rates."
                 store={store}

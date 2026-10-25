@@ -1,0 +1,959 @@
+--- before/packages/theme-engine/src/theme-safe-update.ts
++++ after/packages/theme-engine/src/theme-safe-update.ts
+@@ -28,8 +28,9 @@
+ //
+ // VERSION FLOW:
+ //   1. G4 gate  : isThemeBundleSchemaCompatible(nextBundle) — unknown/future → REJECT
+-//   2. Direction: compareSchemaVersions(next, current) — downgrade/unknown → REJECT
+-//                 same-version → no-op (updatedDoc = currentDocument, diff empty)
++//   2. Direction: reject schema downgrades separately from package-edition order.
++//      Package version_number is the catalog ordinal; version is its display label.
++//      A no-op requires the same schema and the same package edition.
+ //   3. G migration : migrateThemeTemplateSchemasWithRegistry on current sections
+ //   4. Merge    : per-section classify+carry forward merchant content
+ //   5. parseThemeDocument: fail-closed final gate
+@@ -62,7 +63,7 @@
+  */
+ export class UpdateVersionRejectedError extends Error {
+   readonly targetVersion: string;
+-  readonly reason: 'unknown-version' | 'incompatible-compatibility-range' | 'unresolvable-direction';
++  readonly reason: 'unknown-version' | 'incompatible-compatibility-range' | 'unresolvable-direction' | 'package-mismatch';
+ 
+   constructor(
+     targetVersion: string,
+@@ -144,6 +145,14 @@
+   fromVersion: string;
+   /** Bundle schema_version of the target bundle. */
+   toVersion: string;
++  /** Package editions remain distinct even when their supported schema is unchanged. */
++  package: {
++    slug: string;
++    fromVersion: string;
++    toVersion: string;
++    fromVersionNumber: number;
++    toVersionNumber: number;
++  };
+   /** Per-section diff entries across all templates. */
+   sections: ThemeUpdateSectionDiff[];
+   /**
+@@ -510,6 +519,26 @@
+  *   schema_version direction cannot be resolved against the current document.
+  * @throws UpdateDowngradeError when nextBundle would be a downgrade.
+  */
++function updateDirection(current: ThemeDocument, next: LiquidThemePackageBundle): 0 | 1 {
++  if (!isThemeBundleSchemaCompatible(next)) throw new UpdateVersionRejectedError(next.schema_version, 'unknown-version');
++  const schemaDirection = compareSchemaVersions(next.schema_version, current.bundle_schema_version);
++  if (schemaDirection === null) throw new UpdateVersionRejectedError(next.schema_version, 'unresolvable-direction');
++  if (schemaDirection === -1) throw new UpdateDowngradeError(current.bundle_schema_version, next.schema_version);
++  if (next.package.slug !== current.package.slug) throw new UpdateVersionRejectedError(next.package.version, 'package-mismatch');
++  const from = current.package, to = next.package;
++  if (!Number.isSafeInteger(from.version_number) || !Number.isSafeInteger(to.version_number) || from.version_number < 1 || to.version_number < 1)
++    throw new UpdateVersionRejectedError(to.version, 'unresolvable-direction');
++  if (to.version_number < from.version_number) throw new UpdateDowngradeError(from.version, to.version);
++  if ((to.version_number === from.version_number) !== (to.version === from.version))
++    throw new UpdateVersionRejectedError(to.version, 'unresolvable-direction');
++  return schemaDirection === 1 || to.version_number > from.version_number ? 1 : 0;
++}
++
++function packageDiff(current: ThemeDocument, next: LiquidThemePackageBundle): ThemeUpdateDiff['package'] {
++  return { slug: current.package.slug, fromVersion: current.package.version, toVersion: next.package.version,
++    fromVersionNumber: current.package.version_number, toVersionNumber: next.package.version_number };
++}
++
+ export function computeThemeUpdateDiff(
+   currentDocument: ThemeDocument,
+   nextBundle: LiquidThemePackageBundle,
+@@ -517,27 +546,14 @@
+   const fromVersion = currentDocument.bundle_schema_version;
+   const toVersion = nextBundle.schema_version;
+ 
+-  // ── G4 gate ─────────────────────────────────────────────────────────────────
+-  if (!isThemeBundleSchemaCompatible(nextBundle)) {
+-    throw new UpdateVersionRejectedError(toVersion, 'unknown-version');
+-  }
+-
+-  // ── Direction ───────────────────────────────────────────────────────────────
+-  const direction = compareSchemaVersions(toVersion, fromVersion);
+-
+-  if (direction === null) {
+-    throw new UpdateVersionRejectedError(toVersion, 'unresolvable-direction');
+-  }
+-
+-  if (direction === -1) {
+-    throw new UpdateDowngradeError(fromVersion, toVersion);
+-  }
++  const direction = updateDirection(currentDocument, nextBundle);
+ 
+   // ── Same-version no-op ───────────────────────────────────────────────────────
+   if (direction === 0) {
+     return {
+       fromVersion,
+       toVersion,
++      package: packageDiff(currentDocument, nextBundle),
+       sections: [],
+       conflicts: [],
+       requiresDuplicateBeforeApply: false,
+@@ -616,6 +632,7 @@
+   return {
+     fromVersion,
+     toVersion,
++    package: packageDiff(currentDocument, nextBundle),
+     sections: allEntries,
+     conflicts,
+     requiresDuplicateBeforeApply: conflicts.length > 0,
+@@ -661,28 +678,15 @@
+   const fromVersion = currentDocument.bundle_schema_version;
+   const toVersion = nextBundle.schema_version;
+ 
+-  // ── 1. G4 gate (MUST run before any mutation) ────────────────────────────────
+-  // RISK-DUAL-N01 assertion: this check fires before any document mutation or DB write.
+-  if (!isThemeBundleSchemaCompatible(nextBundle)) {
+-    throw new UpdateVersionRejectedError(toVersion, 'unknown-version');
+-  }
+-
+-  // ── 2. Direction check ───────────────────────────────────────────────────────
+-  const direction = compareSchemaVersions(toVersion, fromVersion);
+-
+-  if (direction === null) {
+-    throw new UpdateVersionRejectedError(toVersion, 'unresolvable-direction');
+-  }
+-
+-  if (direction === -1) {
+-    throw new UpdateDowngradeError(fromVersion, toVersion);
+-  }
++  // G4 and independent schema/package direction checks precede any merge.
++  const direction = updateDirection(currentDocument, nextBundle);
+ 
+   // ── 3. Same-version no-op ────────────────────────────────────────────────────
+   if (direction === 0) {
+     const noop: ThemeUpdateDiff = {
+       fromVersion,
+       toVersion,
++      package: packageDiff(currentDocument, nextBundle),
+       sections: [],
+       conflicts: [],
+       requiresDuplicateBeforeApply: false,
+@@ -802,6 +806,7 @@
+   const diff: ThemeUpdateDiff = {
+     fromVersion,
+     toVersion,
++    package: packageDiff(currentDocument, nextBundle),
+     sections: allEntries,
+     conflicts,
+     requiresDuplicateBeforeApply: conflicts.length > 0,
+--- before/packages/theme-engine/test/theme-safe-update.test.ts
++++ after/packages/theme-engine/test/theme-safe-update.test.ts
+@@ -7,6 +7,7 @@
+ 
+ import assert from 'node:assert/strict';
+ import test from 'node:test';
++import { readFileSync } from 'node:fs';
+ 
+ import {
+   planThemeSafeUpdate,
+@@ -20,6 +21,7 @@
+ import {
+   parseThemeDocument,
+   toThemeDocumentV2,
++  fromThemeDocumentV2,
+   THEME_DOCUMENT_VERSION,
+   type ThemeDocument,
+   type ThemeDocumentBlock,
+@@ -35,6 +37,59 @@
+ } from '../src/theme-bundle.ts';
+ 
+ import { isDynamicSourceDescriptor } from '../src/dynamic-source-binding.ts';
++
++// Exact immutable captures: package edition ordering is independent of schema epochs.
++const capturedPlayfield = (version: '2.0.0' | '2.0.1'): LiquidThemePackageBundle => {
++  const path = version === '2.0.0'
++    ? '../../../docs/implementation/niche-theme-programme/release-v2/proposals/81e91859ebc8c497a49da337d064e1885a76964839d14e39f4a0a3de2283f47f/letbuyy-bloom-2.0.0.json'
++    : '../../../docs/implementation/niche-theme-programme/release-playfield201/proposals/6bd27e70ca6f0a2169a15c3fe850d07bebb948a276002a483f730ac1f690885c/letbuyy-bloom-2.0.1.json';
++  return parseLiquidThemePackageBundle(JSON.parse(readFileSync(new URL(path, import.meta.url), 'utf8')).document.liquidBundle);
++};
++
++test('package-edition: exact captured Playfield200→201 with unchanged schema adopts target source and preserves merchant content', () => {
++  const current = toThemeDocumentV2(capturedPlayfield('2.0.0')), next = capturedPlayfield('2.0.1');
++  const heading = current.templates.find(t => t.key === 'index')!.sections.find(s => typeof s.settings.heading === 'string')!;
++  heading.settings.heading = 'Synthetic retained merchant heading';
++  const before = JSON.stringify(current), result = planThemeSafeUpdate({ currentDocument: current, nextBundle: next });
++  const output = fromThemeDocumentV2(result.updatedDoc);
++  assert.equal(output.package.version, '2.0.1'); assert.equal(output.package.version_number, 3);
++  assert.equal(output.sections['product-detail'].source, next.sections['product-detail'].source);
++  assert.match(JSON.stringify(output.templates.index), /Synthetic retained merchant heading/);
++  assert.equal(JSON.stringify(current), before); assert.notEqual(result.updatedDoc, current);
++  assert.deepEqual(computeThemeUpdateDiff(current, next), result.diff);
++  assert.notEqual(JSON.stringify(result.diff), JSON.stringify(computeThemeUpdateDiff(current, capturedPlayfield('2.0.0'))));
++});
++
++test('package-edition: same-schema downgrade is rejected by both preview and apply with no input mutation', () => {
++  const current = toThemeDocumentV2(capturedPlayfield('2.0.1')), next = capturedPlayfield('2.0.0'), before = JSON.stringify(current);
++  for (const operation of [() => computeThemeUpdateDiff(current, next), () => planThemeSafeUpdate({ currentDocument: current, nextBundle: next })])
++    assert.throws(operation, error => error instanceof UpdateDowngradeError && error.fromVersion === '2.0.1' && error.toVersion === '2.0.0');
++  assert.equal(JSON.stringify(current), before);
++});
++
++test('package-edition: a different package or reused ordinal with another label fails closed before merge', () => {
++  const current = toThemeDocumentV2(capturedPlayfield('2.0.0')), target = capturedPlayfield('2.0.1'), before = JSON.stringify(current);
++  for (const next of [{ ...target, package: { ...target.package, slug: 'another-package' } }, { ...target, package: { ...target.package, version_number: current.package.version_number } }]) {
++    assert.throws(() => computeThemeUpdateDiff(current, next), UpdateVersionRejectedError);
++    assert.throws(() => planThemeSafeUpdate({ currentDocument: current, nextBundle: next }), UpdateVersionRejectedError);
++  }
++  assert.equal(JSON.stringify(current), before);
++});
++
++test('package-edition: an advancing package ordinal cannot bypass a supported-schema downgrade', () => {
++  const current = toThemeDocumentV2(createV2BundleSameSections());
++  const next = createMinimalLiquidThemeBundleFixture();
++  next.package = {...next.package,slug:current.package.slug,version:'3.0.0',version_number:3};
++  assert.throws(() => computeThemeUpdateDiff(current,next), error => error instanceof UpdateDowngradeError && error.fromVersion === THEME_LIQUID_BUNDLE_SCHEMA_VERSION_V2);
++  assert.throws(() => planThemeSafeUpdate({currentDocument:current,nextBundle:next}), UpdateDowngradeError);
++});
++
++test('package-edition: display labels can be opaque while the existing catalog ordinal orders editions', () => {
++  const first=createMinimalLiquidThemeBundleFixture();first.package={...first.package,version:'Autumn launch',version_number:4};
++  const next=structuredClone(first);next.package={...next.package,version:'Festival edition',version_number:5};
++  const current=toThemeDocumentV2(first),result=planThemeSafeUpdate({currentDocument:current,nextBundle:next});
++  assert.equal(result.updatedDoc.package.version,'Festival edition');assert.equal(result.updatedDoc.bundle_schema_version,current.bundle_schema_version);
++});
+ 
+ // ──────────────────────────────────────────────────────────────────────────────
+ // Fixture helpers
+@@ -77,8 +132,9 @@
+     schema_version: THEME_LIQUID_BUNDLE_SCHEMA_VERSION_V2,
+     package: {
+       ...v1.package,
+-      slug: 'liquid-starter-v2',
++      slug: v1.package.slug,
+       version: '2.0.0',
++      version_number: 2,
+       compatibility_range: `>=${THEME_LIQUID_BUNDLE_SCHEMA_VERSION}`,
+     },
+     // Keep identical sections/blocks/locales/renderer/layout so the merge is clean.
+@@ -107,10 +163,11 @@
+   return parseLiquidThemePackageBundle({
+     schema_version: THEME_LIQUID_BUNDLE_SCHEMA_VERSION_V2,
+     package: {
+-      slug: 'liquid-starter-v2-alt',
++      slug: v1.package.slug,
+       name: 'Liquid Starter V2 Alt',
+       description: 'V2 bundle with only promo-bar (no spotlight).',
+       version: '2.0.0',
++      version_number: 2,
+       compatibility_range: `>=${THEME_LIQUID_BUNDLE_SCHEMA_VERSION}`,
+     },
+     layout: v1.layout,
+@@ -1027,10 +1084,11 @@
+   return parseLiquidThemePackageBundle({
+     schema_version: THEME_LIQUID_BUNDLE_SCHEMA_VERSION_V2,
+     package: {
+-      slug: 'liquid-starter-v2-no-badge',
++      slug: v1.package.slug,
+       name: 'Liquid Starter V2 No Badge',
+       description: 'V2 bundle with spotlight section but badge block removed.',
+       version: '2.0.0',
++      version_number: 2,
+       compatibility_range: `>=${THEME_LIQUID_BUNDLE_SCHEMA_VERSION}`,
+     },
+     layout: v1.layout,
+--- before/services/api-gateway/src/routes/themes/theme-update-route.ts
++++ after/services/api-gateway/src/routes/themes/theme-update-route.ts
+@@ -32,6 +32,7 @@
+ 
+ import { Hono } from 'hono';
+ import { z } from 'zod';
++import { getPooledSql } from '@letbuyy/infrastructure/pooled-sql-adapter';
+ import type { Env } from '../../index';
+ import { resolveCustomUser, verifySiteOwnership } from '../../lib/auth-user';
+ import { sha256Hex } from '../../lib/crypto';
+@@ -56,7 +57,7 @@
+ const UpdatePostBodySchema = z.object({
+     store_id: z.string().uuid(),
+     target_package_version_id: z.string().uuid(),
+-    /** SHA-256 hex digest of JSON.stringify(diff) returned by GET /update-preview. */
++    /** Opaque confirmation binds the reviewed diff, current release and selected target. */
+     confirm_diff_hash: z
+         .string()
+         .length(64)
+@@ -65,6 +66,9 @@
+     make_store_live: z.boolean().default(false),
+     publish_message: z.string().trim().max(500).optional(),
+ });
++
++export const themeUpdateConfirmationHash = (diff: unknown, currentReleaseId: string, targetPackageVersionId: string) =>
++    sha256Hex(JSON.stringify({ diff, current_release_id: currentReleaseId, target_package_version_id: targetPackageVersionId }));
+ 
+ // ── Error response helpers ─────────────────────────────────────────────────────
+ 
+@@ -149,13 +153,13 @@
+ 
+         try {
+             // Load current bundle (DB-scoped by storeId + themeSlug)
+-            const { currentDocument } = await adapter.loadCurrentReleaseBundle(storeId, slug);
++            const { currentDocument, currentReleaseId } = await adapter.loadCurrentReleaseBundle(storeId, slug);
+             // Load target bundle (global catalog row; G4 gate inside parseLiquidThemePackageBundle)
+-            const nextBundle = await adapter.loadTargetPackageVersionBundle(targetPkgVersionId);
++            const nextBundle = await adapter.loadTargetPackageVersionBundle(targetPkgVersionId, {themeSlug:slug,storeId,userId:customUser.id});
+             // Compute diff — pure, no I/O, G4 + direction checks inside
+             const diff = computeThemeUpdateDiff(currentDocument, nextBundle);
+             // CAS token: the POST route verifies this hash against the applied diff
+-            const diffHash = await sha256Hex(JSON.stringify(diff));
++            const diffHash = await themeUpdateConfirmationHash(diff, currentReleaseId, targetPkgVersionId);
+ 
+             return c.json({
+                 slug,
+@@ -194,13 +198,12 @@
+     //   2. Load current release bundle → ThemeDocument.
+     //   3. Load target package version bundle (G4 gate).
+     //   4. planThemeSafeUpdate — pure merge (G4 + direction + downgrade inside).
+-    //   5. CAS guard — confirm_diff_hash must match sha256(JSON.stringify(result.diff)).
++    //   5. CAS guard — confirmation binds this diff, current release and selected target.
+     //   6. fromThemeDocumentV2 — convert merged ThemeDocument back to LiquidThemePackageBundle.
+-    //   7. Publish — adapter handles idempotency pre-check → publishReleaseSnapshot → post-enrich.
++    //   7. Publish — adapter repeats guards/receipt under the site lock and calls the existing publisher atomically.
+     //
+-    // TOCTOU RESIDUAL: the CAS guard is TS-level only. Two concurrent POSTs with the
+-    // same hash both pass step 5. Full closure requires a DB-level lock inside the
+-    // publish_theme_release RPC (ARB-gated follow-up). This is a known accepted limitation.
++    // The adapter rechecks ownership, target availability, current release and retry
++    // receipt under the site lock, then calls the existing publisher in that transaction.
+     router.post('/:slug/update', async (c) => {
+         const auth = c.get('auth');
+         const slug = c.req.param('slug');
+@@ -265,22 +268,24 @@
+             );
+         }
+ 
+-        const adapter = new ThemeExecutionAdapter(db);
++        const adapter = new ThemeExecutionAdapter(db, auth.user.storeId, () => getPooledSql(c.env));
+ 
+         try {
+-            // Step 1: Load current bundle (DB-scoped by storeId + themeSlug)
+-            const { currentDocument, currentReleaseConfig } =
+-                await adapter.loadCurrentReleaseBundle(storeId, slug);
+-
+-            // Step 2: Load target bundle (G4 gate inside)
+-            const nextBundle = await adapter.loadTargetPackageVersionBundle(targetPkgVersionId);
++            const nextBundle = await adapter.loadTargetPackageVersionBundle(targetPkgVersionId, {themeSlug:slug,storeId,userId:customUser.id});
++            const requestHash = await sha256Hex(JSON.stringify({storeId,slug,targetPkgVersionId,confirmDiffHash,makeStoreLive,publishMessage:publishMessage||null}));
++            // Exact response-loss retry survives its own committed baseline change.
++            // Changed intent/key pairs conflict; current auth and availability were checked first.
++            const replay = await adapter.findVersionUpdateReplay(storeId,slug,idempotencyKey,requestHash);
++            if (replay) return c.json({slug,target_package_version_id:targetPkgVersionId,release_id:replay.release_id,
++                release_version:replay.release_version,published_at:replay.published_at,idempotent:true,
++                diff:replay.diff,requires_confirmation:replay.requiresConfirmation});
++            const { currentDocument, currentReleaseConfig, currentReleaseId } = await adapter.loadCurrentReleaseBundle(storeId, slug);
+ 
+             // Step 3: Pure merge — G4 + direction + downgrade guards fire here
+             const result = planThemeSafeUpdate({ currentDocument, nextBundle });
+ 
+             // Step 4: CAS guard — the caller's hash must match this diff exactly.
+-            // (TOCTOU residual: TS-level only; concurrent POSTs both pass — accepted limitation.)
+-            const computedHash = await sha256Hex(JSON.stringify(result.diff));
++            const computedHash = await themeUpdateConfirmationHash(result.diff, currentReleaseId, targetPkgVersionId);
+             if (computedHash !== confirmDiffHash) {
+                 throw new ConflictError(
+                     'confirm_diff_hash does not match the current diff — ' +
+@@ -291,10 +296,16 @@
+             // Step 5: Convert merged ThemeDocument → LiquidThemePackageBundle for publishing
+             const mergedBundle = fromThemeDocumentV2(result.updatedDoc);
+ 
+-            // Step 6: Publish (idempotency pre-check → publishReleaseSnapshot → post-enrich)
++            // Step 6: Commit the selected version, existing publisher and exact receipt together.
+             const release = await adapter.publishVersionUpdateRelease({
+                 storeId,
+                 themeSlug: slug,
++                targetPackageVersionId:targetPkgVersionId,
++                currentReleaseId,
++                requestHash,
++                confirmedDiffHash:confirmDiffHash,
++                diff:result.diff,
++                requiresConfirmation:result.requiresConfirmation,
+                 mergedBundle,
+                 currentReleaseConfig,
+                 userId: customUser.id,
+@@ -311,8 +322,8 @@
+                 release_version: release.release_version,
+                 published_at: release.published_at,
+                 idempotent: release.idempotent,
+-                diff: result.diff,
+-                requires_confirmation: result.requiresConfirmation,
++                diff: release.diff,
++                requires_confirmation: release.requiresConfirmation,
+             });
+         } catch (err) {
+             if (err instanceof UpdateVersionRejectedError) {
+--- before/services/api-gateway/src/execution/theme-execution.adapter.ts
++++ after/services/api-gateway/src/execution/theme-execution.adapter.ts
+@@ -1,11 +1,13 @@
+ import { resolveLiquidBundleArtifact } from '../lib/theme-release-bundle';
+ import type { SupabaseClient } from '@letbuyy/infrastructure/supabase-adapter';
++import type { PooledSqlClient } from '@letbuyy/infrastructure/pooled-sql-adapter';
+ import { THEME_APPLICATION_WORKFLOWS, THEME_EXECUTION_PIPELINES, defineRuntimeBridge, ThemeDraftSaveResultSchema, ThemePublishResultSchema, ThemeRollbackResultSchema, UuidSchema } from '@letbuyy/shared-types';
+ import {
+     asThemeRecord as asRecord,
+     collectThemeTemplateValidationIssues,
+     hasRenderableThemeTemplate,
+     LiquidThemePackageBundleSchema,
++    buildLiquidThemePackagePersistencePayload,
+     InstallThemeSchema,
+     getThemeDefaultTemplate,
+     LETBUYY_CORE_THEME_SLUG,
+@@ -23,8 +25,10 @@
+     type ThemeDocument,
+     type ThemeDraftSaveResult,
+     type ThemePublishResult,
++    type ThemeUpdateDiff,
+ } from '@letbuyy/theme-engine';
+ import { AppError, ConflictError, ForbiddenError, NotFoundError, ValidationError } from '../lib/errors';
++import { foundationStructuredLog } from '../lib/foundation-observability';
+ import { isMissingSchemaError } from '../lib/supabase';
+ import type {
+     ArchiveSiteThemeInput,
+@@ -132,6 +136,17 @@
+     rollbackOfReleaseId?: string | null;
+ }
+ 
++interface VersionUpdateInput {
++    storeId: string; themeSlug: string; targetPackageVersionId: string; currentReleaseId: string;
++    mergedBundle: LiquidThemePackageBundle; currentReleaseConfig: DbRecord;
++    userId: string; idempotencyKey: string; requestHash: string; confirmedDiffHash: string;
++    diff: ThemeUpdateDiff; requiresConfirmation: boolean;
++    publishMessage?: string | null; makeStoreLive: boolean; requestId?: string | null;
++}
++interface VersionUpdateResult extends PublishThemeReleaseResult {
++    idempotent: boolean; diff: ThemeUpdateDiff; requiresConfirmation: boolean;
++}
++
+ function isMissingDeletedAtError(
+     error: { message?: string } | null | undefined,
+     tableName: string
+@@ -199,6 +214,12 @@
+     };
+ }
+ 
++/** postgres.js returns Date; REST returns a string. Both retry paths expose the same UTC representation. */
++function versionUpdateTimestamp(value: unknown): string | null {
++    const date = value instanceof Date ? value : typeof value === 'string' ? new Date(value) : null;
++    return date && Number.isFinite(date.getTime()) ? date.toISOString() : null;
++}
++
+ async function sha256Hex(input: string): Promise<string> {
+     const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(input));
+     return Array.from(new Uint8Array(digest))
+@@ -275,7 +296,7 @@
+ 
+     private schemaRegistry: SchemaRegistryExecutionAdapter;
+ 
+-    constructor(private db: SupabaseClient, private boundSiteId?: string) {
++    constructor(private db: SupabaseClient, private boundSiteId?: string, private versionUpdateSql?: () => PooledSqlClient | null) {
+         this.schemaRegistry = new SchemaRegistryExecutionAdapter(db);
+     }
+ 
+@@ -1933,40 +1954,56 @@
+      * NOT tenant-scoped at this layer (package versions are global catalog rows).
+      * Callers must verify ownership of the store before calling this method.
+      */
+-    async loadTargetPackageVersionBundle(packageVersionId: string): Promise<LiquidThemePackageBundle> {
++    private validateUpdateTarget(packageVersionId: string, version: DbRecord, pkg: DbRecord, catalog: DbRecord,
++        scope: { themeSlug: string; storeId: string; userId: string }): LiquidThemePackageBundle {
++        if (version.id !== packageVersionId || version.deleted_at != null) throw new NotFoundError('Theme package version not found');
++        if (version.release_status !== 'published' || pkg.status !== 'active' || pkg.deleted_at != null)
++            throw new ValidationError('The target theme package version is unavailable');
++        if (pkg.id !== version.theme_package_id || pkg.slug !== scope.themeSlug || catalog.id !== pkg.legacy_theme_id
++            || catalog.slug !== scope.themeSlug || catalog.is_active !== true)
++            throw new ValidationError('The target version does not belong to this available theme');
++        if ((this.boundSiteId && this.boundSiteId !== scope.storeId)
++            || (catalog.is_site_private === true && catalog.owned_by_site_id !== scope.storeId)
++            || (catalog.owned_by_site_id != null && catalog.owned_by_site_id !== scope.storeId))
++            throw new ForbiddenError('This theme is not available to this store');
++        let bundle: LiquidThemePackageBundle;
++        try { bundle = parseLiquidThemePackageBundle(asRecord(version.package_manifest).liquidBundle); }
++        catch { throw new ValidationError('Target package version has an invalid or unsupported Liquid bundle'); }
++        if (bundle.package.slug !== scope.themeSlug || bundle.package.version !== version.version
++            || bundle.package.version_number !== version.version_number || bundle.schema_version !== version.schema_version
++            || bundle.renderer.renderer_version !== version.renderer_version)
++            throw new ValidationError('Target package version identity does not match its immutable bundle');
++        return bundle;
++    }
++
++    async loadTargetPackageVersionBundle(packageVersionId: string,
++        scope: { themeSlug: string; storeId: string; userId: string }): Promise<LiquidThemePackageBundle> {
+         const { data: pkgVersion, error } = await this.db
+             .from('theme_package_versions')
+-            .select('id, package_manifest')
++            .select('id,theme_package_id,version,version_number,schema_version,renderer_version,release_status,deleted_at,package_manifest')
+             .eq('id', packageVersionId)
++            .is('deleted_at', null)
+             .maybeSingle();
+ 
+-        if (error || !pkgVersion) {
++        if (error) throw new AppError('The theme version is temporarily unavailable.', 503, 'THEME_UPDATE_UNAVAILABLE');
++        if (!pkgVersion) {
+             throw new NotFoundError('Theme package version not found');
+         }
+ 
+-        const manifest = asRecord((pkgVersion as DbRecord).package_manifest ?? {});
+-        const rawBundle = manifest.liquidBundle;
+-
+-        if (!rawBundle) {
+-            throw new ValidationError('Package version does not contain a Liquid bundle');
+-        }
+-
+-        try {
+-            return parseLiquidThemePackageBundle(rawBundle);
+-        } catch (err) {
+-            // Convert ZodError / UnsupportedLiquidBundleSchemaVersionError → ValidationError
+-            // so the route can surface it as a 422 rather than an unhandled 500.
+-            throw new ValidationError(
+-                `Target package version has an invalid or unsupported Liquid bundle: ${(err as Error).message}`,
+-            );
+-        }
++        const version = asRecord(pkgVersion);
++        const { data: pkg, error: packageError } = await this.db.from('theme_packages').select('id,slug,status,deleted_at,legacy_theme_id')
++            .eq('id', version.theme_package_id).is('deleted_at', null).maybeSingle();
++        if (packageError) throw new AppError('The theme package is temporarily unavailable.', 503, 'THEME_UPDATE_UNAVAILABLE');
++        const { data: catalog, error: catalogError } = await this.db.from('themes').select('id,slug,is_active,is_site_private,owned_by_site_id')
++            .eq('id', asRecord(pkg).legacy_theme_id).eq('slug', scope.themeSlug).maybeSingle();
++        if (catalogError) throw new AppError('The theme catalog is temporarily unavailable.', 503, 'THEME_UPDATE_UNAVAILABLE');
++        return this.validateUpdateTarget(packageVersionId, version, asRecord(pkg), asRecord(catalog), scope);
+     }
+ 
+     /**
+      * Publish a new theme release with a merged Liquid bundle produced by
+-     * planThemeSafeUpdate / fromThemeDocumentV2. Includes idempotency pre-check
+-     * (returns existing release if the same idempotency_key was already used for
+-     * this store) and post-enrich (persists the key on the new release row).
++     * planThemeSafeUpdate / fromThemeDocumentV2. Exact intent receipts survive
++     * response loss; the instance pin, existing publisher and receipt share one transaction.
+      *
+      * TENANCY: store_id is the FIRST filter in every DB query — cross-tenant
+      * collision is structurally impossible.
+@@ -1974,70 +2011,112 @@
+      * planThemeSafeUpdate before being passed here; conflicts are surfaced to the caller
+      * via diff.conflicts before this method is invoked.
+      */
+-    async publishVersionUpdateRelease(input: {
+-        storeId: string;
+-        themeSlug: string;
+-        mergedBundle: LiquidThemePackageBundle;
+-        currentReleaseConfig: DbRecord;
+-        userId: string;
+-        idempotencyKey: string;
+-        publishMessage?: string | null;
+-        makeStoreLive: boolean;
+-        requestId?: string | null;
+-    }): Promise<{ release_id: string; release_version: number; published_at: string; idempotent: boolean }> {
+-        // Idempotency pre-check — store_id is always the FIRST filter (cross-tenant proof)
+-        const { data: existingRelease } = await this.db
++    private versionUpdateReceipt(row: DbRecord | null, requestHash: string): VersionUpdateResult | null {
++        if (!row) return null;
++        const receipt = asRecord(asRecord(row.metadata).theme_version_update);
++        if (receipt.request_hash !== requestHash) throw new ConflictError('This update key belongs to a different confirmed request');
++        const diff = asRecord(receipt.diff);
++        const publishedAt = versionUpdateTimestamp(row.published_at);
++        if (!Array.isArray(diff.sections) || !Array.isArray(diff.conflicts) || typeof receipt.requires_confirmation !== 'boolean'
++            || !publishedAt || !UuidSchema.safeParse(row.id).success
++            || !Number.isSafeInteger(Number(row.release_version)) || Number(row.release_version) < 1)
++            throw new AppError('The original theme update receipt is unavailable.', 503, 'THEME_UPDATE_UNAVAILABLE');
++        return { release_id: String(row.id), release_version: Number(row.release_version), published_at: publishedAt,
++            idempotent: true, diff: diff as unknown as ThemeUpdateDiff, requiresConfirmation: receipt.requires_confirmation };
++    }
++
++    /** Authorization and target availability must precede replay. The transaction repeats it under its site lock. */
++    async findVersionUpdateReplay(storeId: string, themeSlug: string, idempotencyKey: string, requestHash: string): Promise<VersionUpdateResult | null> {
++        const { data: existingRelease, error } = await this.db
+             .from('theme_releases')
+-            .select('id, release_version, published_at')
+-            .eq('store_id', input.storeId)
+-            .eq('idempotency_key', input.idempotencyKey)
++            .select('id,release_version,published_at,metadata')
++            .eq('store_id', storeId)
++            .eq('theme_id', themeSlug)
++            .eq('idempotency_key', idempotencyKey)
+             .is('deleted_at', null)
+             .maybeSingle();
+-
+-        if (existingRelease) {
+-            const existing = existingRelease as ThemeReleaseRecord;
+-            return {
+-                release_id: existing.id,
+-                release_version: existing.release_version,
+-                published_at: existing.published_at || new Date().toISOString(),
+-                idempotent: true,
+-            };
+-        }
+-
+-        // Build release config: inherit all current release fields, replace liquidBundle
+-        // with the merged bundle produced by planThemeSafeUpdate → fromThemeDocumentV2.
++        if (error) throw new AppError('The original theme update could not be checked. Retry this request.', 503, 'THEME_UPDATE_UNAVAILABLE');
++        return this.versionUpdateReceipt(existingRelease ? asRecord(existingRelease) : null, requestHash);
++    }
++
++    /** One transaction around the existing publisher: selected instance, release artifacts and receipt commit together. */
++    async publishVersionUpdateRelease(input: VersionUpdateInput): Promise<VersionUpdateResult> {
+         const releaseConfig: DbRecord = {
+             ...input.currentReleaseConfig,
+             liquidBundle: input.mergedBundle,
++            templates: input.mergedBundle.templates,
+         };
+-
+-        const release = await this.publishReleaseSnapshot({
+-            storeId: input.storeId,
+-            themeId: input.themeSlug,
+-            releaseConfig,
+-            publishedBy: input.userId,
+-            publishMessage:
+-                input.publishMessage ||
+-                `Version update to ${String((input.mergedBundle as unknown as DbRecord).schema_version)}`,
+-            makeStoreLive: input.makeStoreLive,
+-            requestId: input.requestId,
+-        });
+-
+-        // Idempotency post-enrich: persist the caller-supplied key so subsequent retries
+-        // hit the pre-check above. Both store_id and id are required — always tenant-scoped.
+-        if (!release.release_id.startsWith('local-fallback:')) {
+-            await this.db
+-                .from('theme_releases')
+-                .update({ idempotency_key: input.idempotencyKey })
+-                .eq('store_id', input.storeId)
+-                .eq('id', release.release_id);
+-        }
+-
+-        return {
+-            release_id: release.release_id,
+-            release_version: release.release_version,
+-            published_at: release.published_at,
+-            idempotent: false,
+-        };
++        try {
++            const sql = this.versionUpdateSql?.();
++            if (!sql) throw new AppError('Theme updates require the transactional database connection. Retry this request.', 503, 'THEME_UPDATE_UNAVAILABLE');
++            const result = await sql.begin(async tx => {
++                // Same backend role as REST; ownership is rechecked under the canonical site-first lock.
++                await tx.unsafe('SET LOCAL ROLE service_role');
++                await tx.unsafe('SELECT set_config($1,$2,true)', ['app.site_id', input.storeId]);
++                const sites = await tx.unsafe(`SELECT id FROM public.sites WHERE id=$1::uuid AND deleted_at IS NULL
++                    AND(custom_user_id=$2::uuid OR user_id=$2::uuid) FOR UPDATE`, [input.storeId, input.userId]);
++                if (sites.length !== 1 || this.boundSiteId && this.boundSiteId !== input.storeId) throw new ForbiddenError('Your access to this store changed');
++                const targets = await tx.unsafe(`SELECT to_jsonb(v) AS version,to_jsonb(p) AS package,to_jsonb(t) AS catalog
++                    FROM public.theme_package_versions v JOIN public.theme_packages p ON p.id=v.theme_package_id
++                    JOIN public.themes t ON t.id=p.legacy_theme_id WHERE v.id=$1::uuid FOR SHARE OF v,p,t`, [input.targetPackageVersionId]);
++                if (targets.length !== 1) throw new NotFoundError('Theme package version not found');
++                const target = this.validateUpdateTarget(input.targetPackageVersionId, asRecord(targets[0].version), asRecord(targets[0].package), asRecord(targets[0].catalog),
++                    { themeSlug: input.themeSlug, storeId: input.storeId, userId: input.userId });
++                if (target.package.version !== input.mergedBundle.package.version || target.package.version_number !== input.mergedBundle.package.version_number)
++                    throw new ConflictError('The selected theme version changed');
++                const receipts = await tx.unsafe(`SELECT id,release_version,published_at,metadata FROM public.theme_releases
++                    WHERE store_id=$1::uuid AND theme_id=$2 AND idempotency_key=$3 AND deleted_at IS NULL`, [input.storeId, input.themeSlug, input.idempotencyKey]);
++                const replay = this.versionUpdateReceipt(receipts.length ? asRecord(receipts[0]) : null, input.requestHash);
++                if (replay) return replay;
++                const current = await tx.unsafe(`SELECT id,theme_instance_id FROM public.theme_releases WHERE store_id=$1::uuid AND theme_id=$2
++                    AND id=$3::uuid AND is_current AND deleted_at IS NULL AND release_config=$4::text::jsonb FOR UPDATE`,
++                    [input.storeId, input.themeSlug, input.currentReleaseId, JSON.stringify(input.currentReleaseConfig)]);
++                if (current.length !== 1) throw new ConflictError('The published theme changed; review a fresh update preview');
++                const instances = await tx.unsafe(`SELECT id FROM public.theme_instances WHERE store_id=$1::uuid AND theme_slug=$2
++                    AND id=$3::uuid AND theme_package_id=$4::uuid AND deleted_at IS NULL FOR UPDATE`,
++                    [input.storeId, input.themeSlug, current[0].theme_instance_id as string, asRecord(targets[0].package).id as string]);
++                if (instances.length !== 1) throw new ConflictError('The installed theme changed; review a fresh update preview');
++                const instanceId = String(instances[0].id);
++                // Private drafts/patches/revisions are deliberately not consumed by a package update.
++                await tx.unsafe(`UPDATE public.theme_instances SET theme_package_version_id=$3::uuid,installed_config=$4::text::jsonb,
++                    updated_at=now(),updated_by=$5::uuid WHERE store_id=$1::uuid AND id=$2::uuid`,
++                    [input.storeId, instanceId, input.targetPackageVersionId, JSON.stringify(releaseConfig), input.userId]);
++                const rows = await tx.unsafe(`SELECT * FROM public.publish_theme_release($1::uuid,$2,$3::text::jsonb,NULL::uuid,NULL::integer,
++                    $4::uuid,$5,$6::boolean,$7,NULL::uuid)`, [input.storeId, input.themeSlug, JSON.stringify(releaseConfig), input.userId,
++                    input.publishMessage || `Version update to ${target.package.version}`, input.makeStoreLive, input.requestId || null]);
++                const release = readPublishedReleaseResult(rows.map(row => ({...row,published_at:versionUpdateTimestamp(row.published_at)})));
++                const payload = buildLiquidThemePackagePersistencePayload(target), capturedSchema = payload.schemaManifest, renderer = payload.rendererManifest;
++                const runtime: ThemeRuntimeSchema = {
++                    source: 'database', themePackageId: String(asRecord(targets[0].package).id), themePackageVersionId: input.targetPackageVersionId,
++                    schemaManifestVersion: capturedSchema.manifest_version, rendererVersion: target.renderer.renderer_version,
++                    sectionSchemas: capturedSchema.section_schemas as ThemeRuntimeSchema['sectionSchemas'], blockSchemas: capturedSchema.block_schemas,
++                    settingsSchema: capturedSchema.settings_schema as unknown as ThemeRuntimeSchema['settingsSchema'], templateSchema: capturedSchema.template_schema,
++                    layoutSchema: capturedSchema.layout_schema, rendererManifest: renderer.renderer_manifest, approvedRendererKeys: renderer.approved_renderer_keys,
++                    assetManifest: renderer.asset_manifest, performanceBudget: renderer.performance_budget,
++                };
++                const artifacts = this.buildReleaseArtifacts({storeId:input.storeId,themeId:input.themeSlug,releaseConfig,runtime,themeInstanceId:instanceId,
++                    publishedBy:input.userId,makeStoreLive:input.makeStoreLive},release.release_id,release.release_version);
++                const receipt = {request_hash:input.requestHash,confirmed_diff_hash:input.confirmedDiffHash,target_package_version_id:input.targetPackageVersionId,
++                    prior_release_id:input.currentReleaseId,diff:input.diff,requires_confirmation:input.requiresConfirmation};
++                const persisted = await tx.unsafe(`UPDATE public.theme_releases SET idempotency_key=$4,release_manifest=$5::text::jsonb,
++                    asset_manifest=$6::text::jsonb,cache_manifest=$7::text::jsonb,schema_manifest_version=$8,
++                    metadata=coalesce(metadata,'{}'::jsonb)||jsonb_build_object('theme_version_update',$9::text::jsonb)
++                    WHERE store_id=$1::uuid AND theme_id=$2 AND id=$3::uuid RETURNING id`,
++                    [input.storeId,input.themeSlug,release.release_id,input.idempotencyKey,JSON.stringify(artifacts.release_manifest),JSON.stringify(artifacts.asset_manifest),
++                    JSON.stringify(artifacts.cache_manifest),runtime.schemaManifestVersion,JSON.stringify(receipt)]);
++                if (persisted.length !== 1) throw new Error('Missing transactional theme update receipt');
++                return {...release,idempotent:false,diff:input.diff,requiresConfirmation:input.requiresConfirmation};
++            });
++            return result as VersionUpdateResult;
++        } catch (error) {
++            if (error instanceof AppError) throw error;
++            const code = (error as {code?:unknown})?.code;
++            if (typeof code === 'string' && ['40P01','40001','23505'].includes(code)) throw new ConflictError('The theme update changed concurrently; review a fresh preview');
++            const requestId = typeof input.requestId === 'string' && /^[a-zA-Z0-9][a-zA-Z0-9._:-]{0,127}$/.test(input.requestId) ? input.requestId : null;
++            const sqlstate = typeof code === 'string' && /^[0-9A-Z]{5}$/.test(code) ? code : null;
++            console.error(JSON.stringify(foundationStructuredLog({level:'error',operation:'theme.version_update',...(requestId?{request_id:requestId}: {}),
++                classification:'unexpected_transaction_failure',...(sqlstate?{sqlstate}: {})})));
++            throw new AppError('An internal error occurred', 500, 'INTERNAL_ERROR');
++        }
+     }
+ }
+--- before/services/api-gateway/src/__tests__/theme-update.test.ts
++++ after/services/api-gateway/src/__tests__/theme-update.test.ts
+@@ -26,8 +26,11 @@
+ import { readFileSync } from 'node:fs';
+ import { test } from 'node:test';
+ import path from 'node:path';
+-
+-import { ForbiddenError, ConflictError, ValidationError, NotFoundError } from '../lib/errors';
++import { parseLiquidThemePackageBundle, createMinimalLiquidThemeBundleFixture, toThemeDocumentV2, fromThemeDocumentV2, computeThemeUpdateDiff, planThemeSafeUpdate } from '@letbuyy/theme-engine';
++import type { PooledSqlClient } from '@letbuyy/infrastructure/pooled-sql-adapter';
++import { themeUpdateConfirmationHash } from '../routes/themes/theme-update-route';
++
++import { AppError, ForbiddenError, ConflictError, ValidationError, NotFoundError } from '../lib/errors';
+ 
+ // ─── Source paths ──────────────────────────────────────────────────────────────
+ 
+@@ -102,6 +105,134 @@
+ 
+ // Fixed UUIDs for tenant isolation tests
+ const VALID_STORE_UUID = 'a0000000-0000-4000-8000-000000000001';
++const TARGET_ID = 'c0000000-0000-4000-8000-000000000003';
++const PACKAGE_ID = 'b0000000-0000-4000-8000-000000000002';
++const UPDATE_SCOPE = { themeSlug: 'letbuyy-bloom', storeId: VALID_STORE_UUID, userId: 'f0000000-0000-4000-8000-000000000001' };
++const receiptDiff = () => {const bundle=createMinimalLiquidThemeBundleFixture();return computeThemeUpdateDiff(toThemeDocumentV2(bundle),bundle);};
++test('confirmation contract: digest binds the exact diff, current release and selected UUID independently',async()=>{
++    const diff=receiptDiff(),hash=await themeUpdateConfirmationHash(diff,'current-a',TARGET_ID);
++    assert.match(hash,/^[0-9a-f]{64}$/);assert.equal(await themeUpdateConfirmationHash(diff,'current-a',TARGET_ID),hash);
++    assert.notEqual(await themeUpdateConfirmationHash(diff,'current-b',TARGET_ID),hash);
++    assert.notEqual(await themeUpdateConfirmationHash(diff,'current-a','another-target'),hash);
++    assert.notEqual(await themeUpdateConfirmationHash({...diff,summary:{...diff.summary,sectionsAdded:1}},'current-a',TARGET_ID),hash);
++});
++const capturedTarget = () => parseLiquidThemePackageBundle(JSON.parse(readFileSync(new URL('../../../../docs/implementation/niche-theme-programme/release-playfield201/proposals/6bd27e70ca6f0a2169a15c3fe850d07bebb948a276002a483f730ac1f690885c/letbuyy-bloom-2.0.1.json', import.meta.url), 'utf8')).document.liquidBundle);
++function targetRows() {
++    const bundle = capturedTarget();
++    return {
++        theme_package_versions: { data: { id: TARGET_ID, theme_package_id: PACKAGE_ID, version: bundle.package.version, version_number: bundle.package.version_number, schema_version: bundle.schema_version, renderer_version: bundle.renderer.renderer_version, release_status: 'published', deleted_at: null as string|null, package_manifest: { liquidBundle: bundle } }, error: null },
++        theme_packages: { data: { id: PACKAGE_ID, slug: bundle.package.slug, status: 'active', deleted_at: null as string|null, legacy_theme_id: '7b669c70-0000-4000-8000-000000000008' }, error: null },
++        themes: { data: { id: '7b669c70-0000-4000-8000-000000000008', slug: bundle.package.slug, is_active: true, is_site_private: false, owned_by_site_id: null as string|null }, error: null },
++    };
++}
++
++test('target selection: exact captured published package is a read-only positive control', async () => {
++    const { db, calls } = makeMockDb(targetRows()), { ThemeExecutionAdapter } = await import('../execution/theme-execution.adapter');
++    const bundle = await new ThemeExecutionAdapter(db as never).loadTargetPackageVersionBundle(TARGET_ID, UPDATE_SCOPE);
++    assert.equal(bundle.package.version, '2.0.1');
++    assert(!calls.some(c => ['update','insert','upsert','delete'].includes(c.method) || c.table === '__rpc__'));
++});
++test('target selection: a private package owned by this verified store is a positive control', async () => {
++    const rows=targetRows();rows.themes.data.is_site_private=true;rows.themes.data.owned_by_site_id=VALID_STORE_UUID;
++    const {db}=makeMockDb(rows),{ThemeExecutionAdapter}=await import('../execution/theme-execution.adapter');
++    assert.equal((await new ThemeExecutionAdapter(db as never).loadTargetPackageVersionBundle(TARGET_ID,UPDATE_SCOPE)).package.version,'2.0.1');
++});
++for (const change of ['deleted-version', 'revoked-version', 'disabled-package', 'deleted-package', 'wrong-package', 'identity-mismatch', 'unsupported-schema', 'private-other-store']) test(`target selection: ${change} refuses without writes`, async () => {
++    const { ThemeExecutionAdapter } = await import('../execution/theme-execution.adapter');
++        const rows = targetRows();
++        if (change === 'deleted-version') rows.theme_package_versions.data.deleted_at = '2026-10-24T00:00:00Z';
++        if (change === 'revoked-version') rows.theme_package_versions.data.release_status = 'revoked';
++        if (change === 'disabled-package') rows.theme_packages.data.status = 'disabled';
++        if (change === 'deleted-package') rows.theme_packages.data.deleted_at = '2026-10-24T00:00:00Z';
++        if (change === 'wrong-package') rows.theme_packages.data.slug = 'another-package';
++        if (change === 'identity-mismatch') rows.theme_package_versions.data.version_number = 44;
++        if (change === 'unsupported-schema') rows.theme_package_versions.data.package_manifest.liquidBundle.schema_version = 'unsupported-future-schema';
++        if (change === 'private-other-store') { rows.themes.data.is_site_private = true; rows.themes.data.owned_by_site_id = 'a0000000-0000-4000-8000-000000000099'; }
++        const { db, calls } = makeMockDb(rows);
++        await assert.rejects(() => new ThemeExecutionAdapter(db as never).loadTargetPackageVersionBundle(TARGET_ID, UPDATE_SCOPE), error => error instanceof ValidationError || error instanceof NotFoundError || error instanceof ForbiddenError, change);
++        assert(!calls.some(c => ['update','insert','upsert','delete'].includes(c.method) || c.table === '__rpc__'), change);
++});
++
++// Exercise the production adapter's transaction control flow with injected SQL results.
++// This is not PostgreSQL/RLS/commit/fault acceptance; the separately admitted native lane is required for those.
++function updateInput() {
++    const previous=parseLiquidThemePackageBundle(JSON.parse(readFileSync(new URL('../../../../docs/implementation/niche-theme-programme/release-v2/proposals/81e91859ebc8c497a49da337d064e1885a76964839d14e39f4a0a3de2283f47f/letbuyy-bloom-2.0.0.json',import.meta.url),'utf8')).document.liquidBundle);
++    const plan=planThemeSafeUpdate({currentDocument:toThemeDocumentV2(previous),nextBundle:capturedTarget()});
++    return {storeId:VALID_STORE_UUID,themeSlug:'letbuyy-bloom',targetPackageVersionId:TARGET_ID,currentReleaseId:'d0000000-0000-4000-8000-000000000001',
++        mergedBundle:fromThemeDocumentV2(plan.updatedDoc),currentReleaseConfig:{liquidBundle:previous},userId:UPDATE_SCOPE.userId,
++        idempotencyKey:'synthetic-reviewed-update',requestHash:'a'.repeat(64),confirmedDiffHash:'b'.repeat(64),
++        diff:plan.diff,requiresConfirmation:plan.requiresConfirmation,makeStoreLive:true};
++}
++function sqlControl(mode: 'success'|'success-date'|'foreign'|'stale'|'changed-key'|'replay'|'replay-date'|'late-fault'='success') {
++    const calls:Array<{query:string;parameters:unknown[]}>=[],rows=targetRows(),input=updateInput(),releaseId='e0000000-0000-4000-8000-000000000001';
++    const unsafe=async(query:string,parameters:unknown[]=[])=>{
++        calls.push({query,parameters});
++        if(query.includes('SELECT id FROM public.sites'))return mode==='foreign'?[]:[{id:VALID_STORE_UUID}];
++        if(query.includes('to_jsonb(v) AS version'))return[{version:rows.theme_package_versions.data,package:rows.theme_packages.data,catalog:rows.themes.data}];
++        if(query.includes('idempotency_key=$3'))return mode==='changed-key'||mode==='replay'||mode==='replay-date'?[{id:releaseId,release_version:8,published_at:mode==='replay-date'?new Date('2026-10-24T00:00:00Z'):'2026-10-24T00:00:00Z',metadata:{theme_version_update:{request_hash:mode==='changed-key'?'different':input.requestHash,diff:input.diff,requires_confirmation:false}}}]:[];
++        if(query.includes('SELECT id,theme_instance_id'))return mode==='stale'?[]:[{id:input.currentReleaseId,theme_instance_id:'f0000000-0000-4000-8000-000000000002'}];
++        if(query.includes('SELECT id FROM public.theme_instances'))return[{id:'f0000000-0000-4000-8000-000000000002'}];
++        if(query.includes('SELECT * FROM public.publish_theme_release'))return[{release_id:releaseId,release_version:8,published_at:mode==='success-date'?new Date('2026-10-24T00:00:00Z'):'2026-10-24T00:00:00Z'}];
++        if(query.includes('UPDATE public.theme_releases')){if(mode==='late-fault')throw Object.assign(new Error('PRIVATE_SQL_DIAGNOSTIC'),{code:'P0001'});return[{id:releaseId}];}
++        return[];
++    };
++    let transactions=0;
++    const sql={begin:async(callback:(tx:{unsafe:typeof unsafe})=>Promise<unknown>)=>{transactions++;return callback({unsafe});}} as unknown as PooledSqlClient;
++    return{sql,calls,input,transactions:()=>transactions,releaseId};
++}
++test('confirmed update control flow: one existing publisher call and receipt inside the same transaction with selected IDs',async()=>{
++    const fixture=sqlControl(),{db}=makeMockDb({}),{ThemeExecutionAdapter}=await import('../execution/theme-execution.adapter');
++    const result=await new ThemeExecutionAdapter(db as never,VALID_STORE_UUID,()=>fixture.sql).publishVersionUpdateRelease(fixture.input);
++    assert.equal(result.release_id,fixture.releaseId);assert.equal(result.idempotent,false);assert.equal(fixture.transactions(),1);
++    assert.equal(fixture.calls.filter(c=>c.query.includes('SELECT * FROM public.publish_theme_release')).length,1);
++    const pin=fixture.calls.find(c=>c.query.startsWith('UPDATE public.theme_instances'))!;assert.equal(pin.parameters[0],VALID_STORE_UUID);assert.equal(pin.parameters[2],TARGET_ID);
++    const receipt=fixture.calls.find(c=>c.query.startsWith('UPDATE public.theme_releases'))!;
++    const manifest=JSON.parse(String(receipt.parameters[4]));assert.equal(manifest.theme_package_version_id,TARGET_ID);assert.equal(manifest.liquidBundle.package.version,'2.0.1');
++    assert.equal(JSON.parse(String(receipt.parameters[8])).request_hash,fixture.input.requestHash);
++    assert(!fixture.calls.some(c=>/UPDATE\s+(?:public\.)?theme_(?:instance_drafts|editor_drafts|draft_patches)/i.test(c.query)));
++});
++for(const mode of ['foreign','stale','changed-key'] as const)test(`confirmed update control flow: ${mode} refuses before any mutation`,async()=>{
++    const fixture=sqlControl(mode),{db}=makeMockDb({}),{ThemeExecutionAdapter}=await import('../execution/theme-execution.adapter');
++    await assert.rejects(()=>new ThemeExecutionAdapter(db as never,VALID_STORE_UUID,()=>fixture.sql).publishVersionUpdateRelease(fixture.input),error=>error instanceof ForbiddenError||error instanceof ConflictError);
++    assert(!fixture.calls.some(c=>/^UPDATE |SELECT \* FROM public\.publish_theme_release/.test(c.query)));
++});
++test('confirmed update control flow: receipt replay under the site lock has no second publisher or mutation',async()=>{
++    const fixture=sqlControl('replay'),{db}=makeMockDb({}),{ThemeExecutionAdapter}=await import('../execution/theme-execution.adapter');
++    const replay=await new ThemeExecutionAdapter(db as never,VALID_STORE_UUID,()=>fixture.sql).publishVersionUpdateRelease(fixture.input);assert.equal(replay.idempotent,true);
++    assert(!fixture.calls.some(c=>/^UPDATE |SELECT \* FROM public\.publish_theme_release/.test(c.query)));
++});
++for(const mode of ['success-date','replay-date'] as const)test(`confirmed update control flow: actual driver Date timestamps work for ${mode}`,async()=>{
++    const fixture=sqlControl(mode),{db}=makeMockDb({}),{ThemeExecutionAdapter}=await import('../execution/theme-execution.adapter');
++    const result=await new ThemeExecutionAdapter(db as never,VALID_STORE_UUID,()=>fixture.sql).publishVersionUpdateRelease(fixture.input);
++    assert.equal(result.published_at,'2026-10-24T00:00:00.000Z');assert.equal(result.idempotent,mode==='replay-date');
++});
++test('confirmed update control flow: missing transactional transport refuses',async()=>{
++    const fixture=sqlControl('late-fault'),{db}=makeMockDb({}),{ThemeExecutionAdapter}=await import('../execution/theme-execution.adapter');
++    await assert.rejects(()=>new ThemeExecutionAdapter(db as never).publishVersionUpdateRelease(fixture.input),error=>error instanceof AppError&&error.statusCode===503);
++});
++test('confirmed update unexpected failure: one structured safe log and sanitized INTERNAL_ERROR, no raw SQL/message/request leakage',async t=>{
++    const log:unknown[][]=[];t.mock.method(console,'error',(...args:unknown[])=>{log.push(args);});
++    const fixture=sqlControl('late-fault'),{db}=makeMockDb({}),{ThemeExecutionAdapter}=await import('../execution/theme-execution.adapter');
++    await assert.rejects(()=>new ThemeExecutionAdapter(db as never,VALID_STORE_UUID,()=>fixture.sql).publishVersionUpdateRelease({...fixture.input,requestId:'bad\nSYNTHETIC_SECRET'}),
++        error=>error instanceof AppError&&error.statusCode===500&&error.code==='INTERNAL_ERROR'&&error.message==='An internal error occurred');
++    assert.equal(log.length,1);const event=JSON.parse(String(log[0][0]));assert.equal(event.operation,'theme.version_update');assert.equal(event.sqlstate,'P0001');assert(!Object.hasOwn(event,'request_id'));
++    assert.equal(event.classification,'unexpected_transaction_failure');assert.doesNotMatch(JSON.stringify(log),/PRIVATE_SQL_DIAGNOSTIC|SYNTHETIC_SECRET|\b(?:SELECT|UPDATE)\s+|liquidBundle|idempotency/i);
++});
++test('confirmed update unexpected transport failure: safe request ID retained, non-SQLSTATE code and raw connection text omitted',async t=>{
++    const log:unknown[][]=[];t.mock.method(console,'error',(...args:unknown[])=>{log.push(args);});
++    const {db}=makeMockDb({}),{ThemeExecutionAdapter}=await import('../execution/theme-execution.adapter');
++    await assert.rejects(()=>new ThemeExecutionAdapter(db as never,VALID_STORE_UUID,()=>{throw Object.assign(new Error('SYNTHETIC_URI_SECRET'),{code:'SYNTHETIC_CODE_SECRET'});})
++        .publishVersionUpdateRelease({...updateInput(),requestId:'synthetic-request:123'}),error=>error instanceof AppError&&error.code==='INTERNAL_ERROR'&&error.statusCode===500);
++    assert.equal(log.length,1);const event=JSON.parse(String(log[0][0]));assert.equal(event.request_id,'synthetic-request:123');assert(!Object.hasOwn(event,'sqlstate'));
++    assert.doesNotMatch(JSON.stringify(log),/SYNTHETIC_URI_SECRET|SYNTHETIC_CODE_SECRET/);
++});
++test('confirmed update known concurrency failure: conflict remains409 and emits no unexpected-error log',async t=>{
++    const log:unknown[][]=[];t.mock.method(console,'error',(...args:unknown[])=>{log.push(args);});
++    const {db}=makeMockDb({}),{ThemeExecutionAdapter}=await import('../execution/theme-execution.adapter');
++    const sql={begin:async()=>{throw Object.assign(new Error('Synthetic concurrency'),{code:'40001'});}} as unknown as PooledSqlClient;
++    await assert.rejects(()=>new ThemeExecutionAdapter(db as never,VALID_STORE_UUID,()=>sql).publishVersionUpdateRelease(updateInput()),error=>error instanceof ConflictError&&error.statusCode===409);
++    assert.equal(log.length,0);
++});
+ 
+ // ─── Source-pattern assertions ─────────────────────────────────────────────────
+ 
+@@ -195,8 +326,8 @@
+     // In publishVersionUpdateRelease, the idempotency query must scope by store_id first.
+     // Source-pattern: the adapter source must have .eq('store_id', ...) before .eq('idempotency_key', ...)
+     // in the publishVersionUpdateRelease method body.
+-    const methodStart = ADAPTER_SRC.indexOf('publishVersionUpdateRelease');
+-    assert.ok(methodStart > -1, "publishVersionUpdateRelease method must exist in adapter");
++    const methodStart = ADAPTER_SRC.indexOf('async findVersionUpdateReplay');
++    assert.ok(methodStart > -1, "findVersionUpdateReplay method must exist in adapter");
+ 
+     // Extract the method body (between the method start and its closing brace)
+     const methodSlice = ADAPTER_SRC.slice(methodStart, methodStart + 2000);
+@@ -267,7 +398,7 @@
+     const adapter = new ThemeExecutionAdapter(db as never);
+ 
+     await assert.rejects(
+-        () => adapter.loadTargetPackageVersionBundle('c0000000-0000-4000-8000-000000000003'),
++        () => adapter.loadTargetPackageVersionBundle(TARGET_ID, UPDATE_SCOPE),
+         (err: unknown) => {
+             assert.ok(
+                 err instanceof NotFoundError,
+@@ -280,8 +411,9 @@
+ 
+ test('loadTargetPackageVersionBundle: ValidationError when package_manifest has no liquidBundle', async () => {
+     const { db } = makeMockDb({
++        ...targetRows(),
+         theme_package_versions: {
+-            data: { id: 'c0000000-0000-4000-8000-000000000003', package_manifest: {} },
++            data: { ...targetRows().theme_package_versions.data, package_manifest: {} },
+             error: null,
+         },
+     });
+@@ -290,7 +422,7 @@
+     const adapter = new ThemeExecutionAdapter(db as never);
+ 
+     await assert.rejects(
+-        () => adapter.loadTargetPackageVersionBundle('c0000000-0000-4000-8000-000000000003'),
++        () => adapter.loadTargetPackageVersionBundle(TARGET_ID, UPDATE_SCOPE),
+         (err: unknown) => {
+             assert.ok(
+                 err instanceof ValidationError,
+@@ -301,12 +433,13 @@
+     );
+ });
+ 
+-test('publishVersionUpdateRelease: idempotent=true returned when key already exists', async () => {
++test('findVersionUpdateReplay: exact stored intent returns original release after its baseline changed', async () => {
+     const existingReleaseId = 'd0000000-0000-4000-8000-000000000004';
+     const existingRelease = {
+         id: existingReleaseId,
+         release_version: 3,
+         published_at: '2026-07-10T12:00:00.000Z',
++        metadata: {theme_version_update:{request_hash:'synthetic-exact-request',diff:receiptDiff(),requires_confirmation:false}},
+     };
+ 
+     const { db, calls } = makeMockDb({
+@@ -316,15 +449,8 @@
+     const { ThemeExecutionAdapter } = await import('../execution/theme-execution.adapter');
+     const adapter = new ThemeExecutionAdapter(db as never);
+ 
+-    const result = await adapter.publishVersionUpdateRelease({
+-        storeId: VALID_STORE_UUID,
+-        themeSlug: 'urban-kicks',
+-        mergedBundle: {} as never,
+-        currentReleaseConfig: {},
+-        userId: 'user-123',
+-        idempotencyKey: 'idempotency-key-abc',
+-        makeStoreLive: false,
+-    });
++    const result = await adapter.findVersionUpdateReplay(VALID_STORE_UUID,'urban-kicks','idempotency-key-abc','synthetic-exact-request');
++    assert(result);
+ 
+     assert.equal(result.idempotent, true, 'Must return idempotent=true when key already exists');
+     assert.equal(result.release_id, existingReleaseId, 'Must return the existing release id');
+@@ -335,13 +461,14 @@
+     assert.equal(rpcCalls.length, 0, 'publish_theme_release RPC must not be called on idempotent return');
+ });
+ 
+-test('publishVersionUpdateRelease: idempotency pre-check filters by store_id THEN idempotency_key', async () => {
++test('findVersionUpdateReplay: idempotency pre-check filters by store_id and theme before idempotency key', async () => {
+     const { db, calls } = makeMockDb({
+         theme_releases: {
+             data: {
+                 id: 'e0000000-0000-4000-8000-000000000005',
+                 release_version: 1,
+                 published_at: '2026-07-10T10:00:00.000Z',
++                metadata: {theme_version_update:{request_hash:'synthetic-exact-request',diff:receiptDiff(),requires_confirmation:false}},
+             },
+             error: null,
+         },
+@@ -350,15 +477,7 @@
+     const { ThemeExecutionAdapter } = await import('../execution/theme-execution.adapter');
+     const adapter = new ThemeExecutionAdapter(db as never);
+ 
+-    await adapter.publishVersionUpdateRelease({
+-        storeId: VALID_STORE_UUID,
+-        themeSlug: 'urban-kicks',
+-        mergedBundle: {} as never,
+-        currentReleaseConfig: {},
+-        userId: 'user-123',
+-        idempotencyKey: 'test-idem-key',
+-        makeStoreLive: false,
+-    });
++    await adapter.findVersionUpdateReplay(VALID_STORE_UUID,'urban-kicks','test-idem-key','synthetic-exact-request');
+ 
+     // Find the theme_releases eq() calls — store_id must precede idempotency_key
+     const releaseCalls = calls.filter((c) => c.table === 'theme_releases' && c.method === 'eq');

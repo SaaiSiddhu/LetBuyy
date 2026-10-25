@@ -1,0 +1,58 @@
+{
+  "id": "section-article-content",
+  "status": "PASS_SOURCE_DATA_CONTRACT",
+  "observed": {
+    "type": "article-content",
+    "group": "template",
+    "firstId": "section-18383cb1-a368-4aa7-8179-3e5e3b2ebd13",
+    "finalId": "section-722bbfc7-a2e7-4541-b20b-6b87a233c2f6",
+    "phases": [
+      {
+        "phase": "edited",
+        "data": {
+          "type": "article-content",
+          "settings": {},
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      {
+        "phase": "hidden-reordered",
+        "data": {
+          "type": "article-content",
+          "settings": {},
+          "blocks": {},
+          "block_order": [],
+          "disabled": true
+        }
+      },
+      {
+        "phase": "shown",
+        "data": {
+          "type": "article-content",
+          "settings": {},
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      {
+        "phase": "removed",
+        "pinnedGroupSectionRetained": false
+      },
+      {
+        "phase": "readded",
+        "data": {
+          "type": "article-content",
+          "settings": {},
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      }
+    ],
+    "actualUICallbacksExecuted": false,
+    "resourceAuthorityProved": false
+  }
+}

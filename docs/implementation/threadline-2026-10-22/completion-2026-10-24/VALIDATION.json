@@ -1,0 +1,102 @@
+{
+  "recordedAt": "2026-10-24T08:44:16.675904+00:00",
+  "classification": "MECHANICAL_DOCUMENT_CONSISTENCY_ONLY_NOT_PRODUCT_GOVERNANCE_OR_RUNTIME_TESTS",
+  "checks": [
+    {
+      "name": "All owned JSON documents parse",
+      "result": "CONSISTENT"
+    },
+    {
+      "name": "Exact frozen 2.0.0 bundle SHA",
+      "result": "CONSISTENT"
+    },
+    {
+      "name": "Every captured template enumerated once",
+      "result": "CONSISTENT"
+    },
+    {
+      "name": "21 page templates plus 2 shared groups",
+      "result": "CONSISTENT"
+    },
+    {
+      "name": "All 45 section types enumerated once",
+      "result": "CONSISTENT"
+    },
+    {
+      "name": "All section-instance identities retained",
+      "result": "CONSISTENT"
+    },
+    {
+      "name": "All 13 declared block contexts enumerated",
+      "result": "CONSISTENT"
+    },
+    {
+      "name": "All 141 effective field descriptors resolve exactly to source",
+      "result": "CONSISTENT"
+    },
+    {
+      "name": "Case IDs unique",
+      "result": "CONSISTENT"
+    },
+    {
+      "name": "Exact original 26 IDs, clauses and statuses preserved",
+      "result": "CONSISTENT"
+    },
+    {
+      "name": "Every template/section/block/field/default-instance has a mapped case",
+      "result": "CONSISTENT"
+    },
+    {
+      "name": "All current cases and operation slots remain NOT_RUN",
+      "result": "CONSISTENT"
+    },
+    {
+      "name": "No invented evidence, actor, runtime or acceptance",
+      "result": "CONSISTENT"
+    },
+    {
+      "name": "Rollup counts describe actual requirement records",
+      "result": "CONSISTENT"
+    },
+    {
+      "name": "App activation excluded, safe denial remains required",
+      "result": "CONSISTENT"
+    },
+    {
+      "name": "Historical 22 evidence pins retained without reuse credit",
+      "result": "CONSISTENT"
+    },
+    {
+      "name": "Five journey-source contracts linked",
+      "result": "CONSISTENT"
+    },
+    {
+      "name": "Rejected V1 and current V2 are separately preserved",
+      "result": "CONSISTENT"
+    },
+    {
+      "name": "Proposal base remains exact current source",
+      "result": "CONSISTENT"
+    },
+    {
+      "name": "No certification or goal completion claimed",
+      "result": "CONSISTENT"
+    },
+    {
+      "name": "No captured product/source bytes changed",
+      "result": "CONSISTENT"
+    }
+  ],
+  "consistentChecks": 21,
+  "requirementRecords": 318,
+  "boundedSnapshotFiles": 77,
+  "changedEvidenceSinceIntake": [
+    "docs/implementation/niche-theme-programme/completion-2026-10-24/EXECUTION_RUNBOOK.md",
+    "docs/implementation/niche-theme-programme/completion-2026-10-24/EXECUTION_STATE.json"
+  ],
+  "sourceChanges": [],
+  "runtimeActions": 0,
+  "databaseActions": 0,
+  "newProductPasses": 0,
+  "independentAcceptance": false
+}

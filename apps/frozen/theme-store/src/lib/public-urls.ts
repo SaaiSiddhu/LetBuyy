@@ -15,6 +15,15 @@ const PUBLIC_URL_ENV_NAMES: Record<PublicUrlTarget, string> = {
     themeMarketplace: 'NEXT_PUBLIC_THEME_MARKETPLACE_URL',
 }
 
+// Next inlines direct public environment reads into client bundles. A dynamic
+// process.env[name] lookup loses the configured local origin after hydration.
+const CONFIGURED_PUBLIC_URLS: Record<PublicUrlTarget, string | undefined> = {
+    accounts: process.env.NEXT_PUBLIC_ACCOUNTS_URL,
+    admin: process.env.NEXT_PUBLIC_ADMIN_URL,
+    storefront: process.env.NEXT_PUBLIC_STOREFRONT_URL,
+    themeMarketplace: process.env.NEXT_PUBLIC_THEME_MARKETPLACE_URL,
+}
+
 const LOCAL_BROWSER_URLS: Record<PublicUrlTarget, string> = {
     accounts: 'http://127.0.0.1:9001',
     admin: 'http://127.0.0.1:9002',
@@ -85,7 +94,7 @@ function getServerPublicOrigin(target: PublicUrlTarget): string {
 
 function readRequiredPublicUrl(target: PublicUrlTarget, label: string): string {
     const envName = PUBLIC_URL_ENV_NAMES[target]
-    const configured = process.env[envName]?.trim() || getBrowserPublicOrigin(target) || getServerPublicOrigin(target)
+    const configured = CONFIGURED_PUBLIC_URLS[target]?.trim() || getBrowserPublicOrigin(target) || getServerPublicOrigin(target)
     if (!configured) {
         throw new Error(`${envName} is not configured; refusing to use a hardcoded ${label} host`)
     }
@@ -124,4 +133,12 @@ export function buildStorefrontPreviewUrl(themePreviewToken: string): string {
     const url = new URL(getStorefrontUrl('/preview'))
     url.searchParams.set('theme_preview_token', themePreviewToken)
     return url.toString()
+}
+
+export function buildInstalledStoreUrl(subdomain: string, customDomain = ''): string {
+    const base = new URL(getStorefrontUrl())
+    if (['localhost', '127.0.0.1', '[::1]'].includes(base.hostname) || base.hostname.endsWith('.localhost')) {
+        return new URL(`/store/${encodeURIComponent(subdomain)}`, base).toString()
+    }
+    return `https://${customDomain || `${subdomain}.${getConfiguredStorefrontRootDomain()}`}`
 }

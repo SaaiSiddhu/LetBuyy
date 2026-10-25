@@ -1,0 +1,226 @@
+{
+  "method": "WCAG sRGB luminance; source-over alpha in sRGB over an explicit opaque surface",
+  "limitations": "Explicit pairs only; no CSS/gradient parsing, role eligibility inference or page certification",
+  "pairs": [
+    {
+      "id": "Main text",
+      "foreground": "#30291E",
+      "background": "#FAF6EA",
+      "canvas": null,
+      "role": "normal-text",
+      "ratio": 13.297228642913858,
+      "threshold": 4.5,
+      "meets_pair_threshold": true,
+      "resolved_foreground_srgb": [
+        0.18823529411764706,
+        0.1607843137254902,
+        0.11764705882352941
+      ],
+      "resolved_background_srgb": [
+        0.9803921568627451,
+        0.9647058823529412,
+        0.9176470588235294
+      ]
+    },
+    {
+      "id": "Support text",
+      "foreground": "#6B5C45",
+      "background": "#FAF6EA",
+      "canvas": null,
+      "role": "normal-text",
+      "ratio": 5.994908136340461,
+      "threshold": 4.5,
+      "meets_pair_threshold": true,
+      "resolved_foreground_srgb": [
+        0.4196078431372549,
+        0.3607843137254902,
+        0.27058823529411763
+      ],
+      "resolved_background_srgb": [
+        0.9803921568627451,
+        0.9647058823529412,
+        0.9176470588235294
+      ]
+    },
+    {
+      "id": "Support secondary",
+      "foreground": "#6B5C45",
+      "background": "#EDE5D1",
+      "canvas": null,
+      "role": "normal-text",
+      "ratio": 5.160260295391073,
+      "threshold": 4.5,
+      "meets_pair_threshold": true,
+      "resolved_foreground_srgb": [
+        0.4196078431372549,
+        0.3607843137254902,
+        0.27058823529411763
+      ],
+      "resolved_background_srgb": [
+        0.9294117647058824,
+        0.8980392156862745,
+        0.8196078431372549
+      ]
+    },
+    {
+      "id": "Action",
+      "foreground": "#FFFFFF",
+      "background": "#744A26",
+      "canvas": null,
+      "role": "normal-text",
+      "ratio": 7.636084208385411,
+      "threshold": 4.5,
+      "meets_pair_threshold": true,
+      "resolved_foreground_srgb": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "resolved_background_srgb": [
+        0.4549019607843137,
+        0.2901960784313726,
+        0.14901960784313725
+      ]
+    },
+    {
+      "id": "Essential border",
+      "foreground": "#867354",
+      "background": "#FFFFFF",
+      "canvas": null,
+      "role": "essential-nontext",
+      "ratio": 4.571201038481387,
+      "threshold": 3.0,
+      "meets_pair_threshold": true,
+      "resolved_foreground_srgb": [
+        0.5254901960784314,
+        0.45098039215686275,
+        0.32941176470588235
+      ],
+      "resolved_background_srgb": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "id": "Error",
+      "foreground": "#B42318",
+      "background": "#FFF4F2",
+      "canvas": null,
+      "role": "normal-text",
+      "ratio": 6.096692976518706,
+      "threshold": 4.5,
+      "meets_pair_threshold": true,
+      "resolved_foreground_srgb": [
+        0.7058823529411765,
+        0.13725490196078433,
+        0.09411764705882353
+      ],
+      "resolved_background_srgb": [
+        1.0,
+        0.9568627450980393,
+        0.9490196078431372
+      ]
+    },
+    {
+      "id": "Warning",
+      "foreground": "#7A3E00",
+      "background": "#FFF4CE",
+      "canvas": null,
+      "role": "normal-text",
+      "ratio": 7.58316249186812,
+      "threshold": 4.5,
+      "meets_pair_threshold": true,
+      "resolved_foreground_srgb": [
+        0.47843137254901963,
+        0.24313725490196078,
+        0.0
+      ],
+      "resolved_background_srgb": [
+        1.0,
+        0.9568627450980393,
+        0.807843137254902
+      ]
+    },
+    {
+      "id": "Success",
+      "foreground": "#166534",
+      "background": "#EDF8EF",
+      "canvas": null,
+      "role": "normal-text",
+      "ratio": 6.5443563569466,
+      "threshold": 4.5,
+      "meets_pair_threshold": true,
+      "resolved_foreground_srgb": [
+        0.08627450980392157,
+        0.396078431372549,
+        0.20392156862745098
+      ],
+      "resolved_background_srgb": [
+        0.9294117647058824,
+        0.9725490196078431,
+        0.9372549019607843
+      ]
+    },
+    {
+      "id": "Identity primary",
+      "foreground": "#FFFFFF",
+      "background": "#2C2642",
+      "canvas": null,
+      "role": "normal-text",
+      "ratio": 14.353975372880244,
+      "threshold": 4.5,
+      "meets_pair_threshold": true,
+      "resolved_foreground_srgb": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "resolved_background_srgb": [
+        0.17254901960784313,
+        0.14901960784313725,
+        0.25882352941176473
+      ]
+    },
+    {
+      "id": "Identity link",
+      "foreground": "#523F97",
+      "background": "#FFFFFF",
+      "canvas": null,
+      "role": "normal-text",
+      "ratio": 8.344447687744767,
+      "threshold": 4.5,
+      "meets_pair_threshold": true,
+      "resolved_foreground_srgb": [
+        0.3215686274509804,
+        0.24705882352941178,
+        0.592156862745098
+      ],
+      "resolved_background_srgb": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "id": "Identity focus",
+      "foreground": "#6C54C4",
+      "background": "#FFFFFF",
+      "canvas": null,
+      "role": "essential-nontext",
+      "ratio": 5.671287331192647,
+      "threshold": 3.0,
+      "meets_pair_threshold": true,
+      "resolved_foreground_srgb": [
+        0.4235294117647059,
+        0.32941176470588235,
+        0.7686274509803922
+      ],
+      "resolved_background_srgb": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    }
+  ]
+}

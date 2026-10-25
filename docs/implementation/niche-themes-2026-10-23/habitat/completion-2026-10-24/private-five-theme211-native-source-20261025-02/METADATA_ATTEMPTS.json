@@ -1,0 +1,8 @@
+{
+  "recordedAt": "2026-10-25T01:55:33.326140+00:00",
+  "initialType": "TYPE_EVIDENCE.run01.json,20total/15new-case errors; final5unchanged external/0new-case",
+  "initialClosureAndInventory": "Preserved dated manifests before adding full raw nonsecret security witness; final manifests/source pins supersede them",
+  "verificationPathError": "Wrong metadata VERIFY_NATIVE_SOURCE path; ModuleNotFound before target execution, no app/Worker/native/runner/resource module loaded. Corrected invocation terminal0 in source-closure-verification-final.log",
+  "noActualNativeFailuresClaimed": true,
+  "nativePhases": "ALL_NOT_RUN"
+}

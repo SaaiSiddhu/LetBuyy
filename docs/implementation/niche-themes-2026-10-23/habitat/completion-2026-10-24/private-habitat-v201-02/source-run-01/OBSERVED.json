@@ -1,0 +1,135 @@
+{
+  "classification": "PRIVATE_FACTORY_AND_ACTUAL_LIQUID_SOURCE_RENDER_TESTS_NOT_BROWSER_PERSISTENCE_AUTH_OR_PURCHASE",
+  "node": "v22.23.3",
+  "frozenFactorySha256": "2a652a7435f8a8a6ff699f02db829ce1ae1399d5b7609471d9e7192eb13ccd3d",
+  "sourcePinFiles": {
+    "packages/theme-engine/src/habitat-theme.ts": "0144fdf830ab3c5ddf42ebfcb86258b99e74ed8a8d724469012479705352e8c3",
+    "packages/theme-engine/src/theme-bundle.ts": "cdbad4b28277431a3ab06e56ed0ce16539e04837bb107f5f951a3df39a92ed76",
+    "packages/theme-engine/src/schema-field-extensions.ts": "a5c53fdfc687bc9c7913ff64c1af1d51e496b70fd74b2a78e2b000bb66ee4d71",
+    "packages/theme-engine/src/experience-fonts.ts": "3ee9bdb23a8c18410fd36ee6302f0f8fae929484a7c2dbfd9bc6a424e30f64be",
+    "packages/theme-engine/src/theme-presets.ts": "283028890199a34e67863c337ebd0c788c830c60ddaa87854c3bad28f9581e82",
+    "packages/theme-engine/src/built-in-section-schemas.ts": "5e44b89d7ebc3d40b82e7d12dfccf399f7a336d39e1a1b04c7deaf4c57486734",
+    "packages/theme-engine/src/theme-registry.ts": "df47c3ff4a6bfb0b4dfb56a49559249ab69d44f876bf1d422ecda385f09533ce",
+    "packages/theme-engine/src/theme-document.ts": "7ba285a54d71a01545c4cb1e4a3c1540a30caae2db793079b2b3cb32b8612412",
+    "packages/theme-engine/src/template-registry.ts": "2ab00379414a40769d793175dac97d4b795668587a48f081414326cfbb1555c7",
+    "packages/theme-engine/src/habitat-discovery.ts": "342843da57a6eef8488d906218d4225338f9f3c0afe2bbcc49073f3f34a1f873",
+    "packages/theme-engine/src/habitat-styles.ts": "e4b89a41c526cc9a96e0e3106e084124717eb56d9837bcf09214045d7fa817e6",
+    "packages/theme-engine/src/theme-bundle-core.ts": "0e1650a4d71ef358792c0f877f4ae678794fb6d2cfdebbb30d79563e4a2f452f",
+    "packages/theme-engine/src/niche-order-presentation.ts": "5683e413e48bc11d6b0906dc344ec6c3b0c7413113172b11bda91c49d08cb444",
+    "packages/theme-engine/src/theme-renderer.ts": "794cbc6ff9ae71f995560f302e1b0d5f0d4ff4da59fa31191585851b1e822164",
+    "packages/theme-engine/src/theme-settings.ts": "3ac7b069b156f89d8f412103cbe6003775524fe4660f47c16a82b13c6a1a2e00"
+  },
+  "observations": [
+    {
+      "label": "frozen-alpha",
+      "heading": "Order #HAB-SOURCE-ONLY",
+      "sha256": "16792e57881f8f6a5e09e95851cfd29cfd9d9f35db53f1ac3dfcb9a3150fe529",
+      "status": "rendered",
+      "warnings": [],
+      "orderSource": "synthetic in-memory drop; NOT primary/history proof"
+    },
+    {
+      "label": "frozen-beta",
+      "heading": "Order #HAB-SOURCE-ONLY",
+      "sha256": "16792e57881f8f6a5e09e95851cfd29cfd9d9f35db53f1ac3dfcb9a3150fe529",
+      "status": "rendered",
+      "warnings": [],
+      "orderSource": "synthetic in-memory drop; NOT primary/history proof"
+    },
+    {
+      "label": "proposed-alpha",
+      "heading": "Habitat alpha #HAB-SOURCE-ONLY",
+      "sha256": "431b56b0231621dd0a94d7ba0ad809ba244c06dea9e1989a6dcda89a01cb3d8b",
+      "status": "rendered",
+      "warnings": [],
+      "orderSource": "synthetic in-memory drop; NOT primary/history proof"
+    },
+    {
+      "label": "proposed-beta",
+      "heading": "Habitat beta #HAB-SOURCE-ONLY",
+      "sha256": "afae06a87e2acacd9142451a9cbbcb923ef04b445f3aa766260c9e702eb6570c",
+      "status": "rendered",
+      "warnings": [],
+      "orderSource": "synthetic in-memory drop; NOT primary/history proof"
+    },
+    {
+      "label": "proposed-default",
+      "heading": "Order #HAB-SOURCE-ONLY",
+      "sha256": "16792e57881f8f6a5e09e95851cfd29cfd9d9f35db53f1ac3dfcb9a3150fe529",
+      "status": "rendered",
+      "warnings": [],
+      "orderSource": "synthetic in-memory drop; NOT primary/history proof"
+    },
+    {
+      "label": "proposed-blank",
+      "heading": "Order #HAB-SOURCE-ONLY",
+      "sha256": "16792e57881f8f6a5e09e95851cfd29cfd9d9f35db53f1ac3dfcb9a3150fe529",
+      "status": "rendered",
+      "warnings": [],
+      "orderSource": "synthetic in-memory drop; NOT primary/history proof"
+    },
+    {
+      "label": "proposed-escaped",
+      "heading": "<img src=x onerror=\"attack()\"><script>attack()</script> #HAB-SOURCE-ONLY",
+      "sha256": "0bf91b3fb31c3f54529a9b9bba7707f6395a19bf62855c86bd6d41324e1d30a4",
+      "status": "rendered",
+      "warnings": [],
+      "orderSource": "synthetic in-memory drop; NOT primary/history proof"
+    },
+    {
+      "label": "badge-frozen-no-children",
+      "status": "rendered",
+      "sha256": "3b9ee3440bd9f2570bccf477ee9207d10ee0da1a6c5d065a898e8050159505a7",
+      "warnings": [],
+      "class": "in-memory source render; NOT actual UI operation"
+    },
+    {
+      "label": "badge-proposed-no-children",
+      "status": "rendered",
+      "sha256": "3b9ee3440bd9f2570bccf477ee9207d10ee0da1a6c5d065a898e8050159505a7",
+      "warnings": [],
+      "class": "in-memory source render; NOT actual UI operation"
+    },
+    {
+      "label": "badge-nested",
+      "status": "rendered",
+      "sha256": "b1ecf2ccbb1445328137c31eba0817e1809f11e8199446329865de1e73cb2421",
+      "warnings": [],
+      "class": "in-memory source render; NOT actual UI operation"
+    },
+    {
+      "label": "badge-edited-reordered",
+      "status": "rendered",
+      "sha256": "0681f7c4a4aa282ec6b781a1aa0abfdcf2e33825681f7699e15ab1b2a4d4fdbd",
+      "warnings": [],
+      "class": "in-memory source render; NOT actual UI operation"
+    },
+    {
+      "label": "badge-child-hidden",
+      "status": "rendered",
+      "sha256": "f8d508e9d3a15761f0aa39b7b554419f445a1cea97fac1af5cdd2dc9a1d12f13",
+      "warnings": [],
+      "class": "in-memory source render; NOT actual UI operation"
+    },
+    {
+      "label": "badge-sibling-deleted",
+      "status": "rendered",
+      "sha256": "83dd59e7a840aabcd96e0dc238b1f77d6c8668bf079a02352dba98e1719aefd1",
+      "warnings": [],
+      "class": "in-memory source render; NOT actual UI operation"
+    },
+    {
+      "label": "badge-nested-escaped-public",
+      "status": "rendered",
+      "sha256": "044ec8f87ef714ef736fd66a2349852e1940cec4c41c333c49ca9519eb0764d4",
+      "warnings": [],
+      "class": "in-memory source render; NOT actual UI operation"
+    }
+  ],
+  "mainEdits": false,
+  "catalogDispatchEdited": false,
+  "primaryOrdersCreated": 0,
+  "browserActions": 0,
+  "providerCalls": 0,
+  "allPinnedFilesStillExact": true
+}

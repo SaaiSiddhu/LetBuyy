@@ -1,0 +1,15 @@
+{
+  "extends": "../../../../services/api-gateway/tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true
+  },
+  "files": [
+    "../../../../services/api-gateway/src/routes/storefront/cart-routes.ts",
+    "../../../../services/api-gateway/src/routes/checkout.ts",
+    "../../../../services/api-gateway/src/execution/order-execution.adapter.ts",
+    "../../../../services/api-gateway/src/execution/product-mutation.adapter.ts",
+    "../../../../services/api-gateway/src/lib/cart-product-facts.ts",
+    "../../../../services/api-gateway/src/__tests__/owned-db/cart-order-fact-snapshots.postgres.test.ts"
+  ],
+  "include": []
+}

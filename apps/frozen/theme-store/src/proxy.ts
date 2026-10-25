@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { LETBUYY_MERCHANT_SESSION_COOKIE, verifyLetbuyySessionCookieValue } from '@letbuyy/auth-core'
-import { getAccountsUrl } from '@/lib/public-urls'
+import { getAccountsUrl, getThemeMarketplaceUrl } from '@/lib/public-urls'
 
 const PROTECTED_ROUTES = ['/checkout', '/dashboard', '/install']
 const ACCOUNTS_URL = getAccountsUrl()
@@ -26,7 +26,7 @@ export function proxy(request: NextRequest) {
     }
 
     const loginUrl = new URL('/lookup', ACCOUNTS_URL)
-    loginUrl.searchParams.set('return_to', request.url)
+    loginUrl.searchParams.set('return_to', getThemeMarketplaceUrl(`${pathname}${request.nextUrl.search}`))
     return NextResponse.redirect(loginUrl)
 }
 

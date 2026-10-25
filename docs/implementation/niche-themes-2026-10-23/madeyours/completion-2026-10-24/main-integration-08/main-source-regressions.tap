@@ -1,0 +1,232 @@
+TAP version 13
+# Subtest: storefront order creation requires idempotency and bounded cart lines
+ok 1 - storefront order creation requires idempotency and bounded cart lines
+  ---
+  duration_ms: 2.997667
+  type: 'test'
+  ...
+# Subtest: marketplace cart line binds listing identity independently from catalog product identity
+ok 2 - marketplace cart line binds listing identity independently from catalog product identity
+  ---
+  duration_ms: 0.607333
+  type: 'test'
+  ...
+# Subtest: Phase M1: the admin/draft order and hosted-checkout payment-intent schemas admit only canonical rails
+ok 3 - Phase M1: the admin/draft order and hosted-checkout payment-intent schemas admit only canonical rails
+  ---
+  duration_ms: 1.587333
+  type: 'test'
+  ...
+# Subtest: hosted checkout confirmation accepts explicit Razorpay proof fields and rejects generic payment IDs
+ok 4 - hosted checkout confirmation accepts explicit Razorpay proof fields and rejects generic payment IDs
+  ---
+  duration_ms: 0.202417
+  type: 'test'
+  ...
+# Subtest: GST invoice generation separates intra-state CGST/SGST from inter-state IGST
+ok 5 - GST invoice generation separates intra-state CGST/SGST from inter-state IGST
+  ---
+  duration_ms: 1.404125
+  type: 'test'
+  ...
+# Subtest: discount stack planner applies product, order, and shipping classes deterministically
+ok 6 - discount stack planner applies product, order, and shipping classes deterministically
+  ---
+  duration_ms: 0.813916
+  type: 'test'
+  ...
+# Subtest: discount stack planner rejects non-combinable discounts instead of reordering them
+ok 7 - discount stack planner rejects non-combinable discounts instead of reordering them
+  ---
+  duration_ms: 0.18125
+  type: 'test'
+  ...
+# Subtest: shipping serviceability planner enforces pincode, COD, amount, and weight limits
+ok 8 - shipping serviceability planner enforces pincode, COD, amount, and weight limits
+  ---
+  duration_ms: 0.134583
+  type: 'test'
+  ...
+# Subtest: checkout state transitions move forward and stop at terminal states
+ok 9 - checkout state transitions move forward and stop at terminal states
+  ---
+  duration_ms: 0.328208
+  type: 'test'
+  ...
+# Subtest: store branding is constrained to data, not executable checkout code
+ok 10 - store branding is constrained to data, not executable checkout code
+  ---
+  duration_ms: 0.476333
+  type: 'test'
+  ...
+# Subtest: order risk heuristic requests COD confirmation without fraud ML
+ok 11 - order risk heuristic requests COD confirmation without fraud ML
+  ---
+  duration_ms: 0.217042
+  type: 'test'
+  ...
+# Subtest: one strict cart schema accepts only reviewed buyer draft IDs/text and stale-review echo
+ok 12 - one strict cart schema accepts only reviewed buyer draft IDs/text and stale-review echo
+  ---
+  duration_ms: 12.56775
+  type: 'test'
+  ...
+# Subtest: signed binding is order invariant across configurations and changes with facts, quantity or exact configuration
+ok 13 - signed binding is order invariant across configurations and changes with facts, quantity or exact configuration
+  ---
+  duration_ms: 5.353208
+  type: 'test'
+  ...
+# Subtest: normalized private order readback projects only the canonical saved snapshot and keeps legacy fallback honest
+ok 14 - normalized private order readback projects only the canonical saved snapshot and keeps legacy fallback honest
+  ---
+  duration_ms: 3.306542
+  type: 'test'
+  ...
+# Subtest: buyer identity update without a channel preserves the cart acquisition channel
+ok 15 - buyer identity update without a channel preserves the cart acquisition channel
+  ---
+  duration_ms: 23.415792
+  type: 'test'
+  ...
+# Subtest: Task 002 cart migration adds channel, buyer identity, checkout handoff, abandonment marker, and tenant GUC RLS
+ok 16 - Task 002 cart migration adds channel, buyer identity, checkout handoff, abandonment marker, and tenant GUC RLS
+  ---
+  duration_ms: 0.487958
+  type: 'test'
+  ...
+# Subtest: Task 002 storefront cart route exposes buyer identity, discount code, signed checkout URL, events, and abandonment enqueue
+ok 17 - Task 002 storefront cart route exposes buyer identity, discount code, signed checkout URL, events, and abandonment enqueue
+  ---
+  duration_ms: 0.228875
+  type: 'test'
+  ...
+# Subtest: Task 002 shared cart contract carries channel and buyer email
+ok 18 - Task 002 shared cart contract carries channel and buyer email
+  ---
+  duration_ms: 0.104625
+  type: 'test'
+  ...
+# Subtest: D6 checkout handoff canonical binding is content stable and order independent
+ok 19 - D6 checkout handoff canonical binding is content stable and order independent
+  ---
+  duration_ms: 1.239417
+  type: 'test'
+  ...
+# Subtest: D6 cart checkout URL signs the cart content digest, not just cart identity
+ok 20 - D6 cart checkout URL signs the cart content digest, not just cart identity
+  ---
+  duration_ms: 0.090417
+  type: 'test'
+  ...
+# Subtest: D6 hosted checkout rejects mutated cart handoffs by recomputing digest from server cart
+ok 21 - D6 hosted checkout rejects mutated cart handoffs by recomputing digest from server cart
+  ---
+  duration_ms: 0.10575
+  type: 'test'
+  ...
+# Subtest: marketplace cart admission and checkout preserve listing identity through dedicated order transaction
+ok 22 - marketplace cart admission and checkout preserve listing identity through dedicated order transaction
+  ---
+  duration_ms: 0.578083
+  type: 'test'
+  ...
+# Subtest: D6 order inventory path uses reserve then commit lifecycle and rollback restores direct decrement
+ok 23 - D6 order inventory path uses reserve then commit lifecycle and rollback restores direct decrement
+  ---
+  duration_ms: 0.0555
+  type: 'test'
+  ...
+# Subtest: D6 payment capture no longer directly adjusts product stock from legacy JSON orders
+ok 24 - D6 payment capture no longer directly adjusts product stock from legacy JSON orders
+  ---
+  duration_ms: 0.063875
+  type: 'test'
+  ...
+# Subtest: D6 stale reservation sweeper is scheduled in queue-workers
+ok 25 - D6 stale reservation sweeper is scheduled in queue-workers
+  ---
+  duration_ms: 0.0765
+  type: 'test'
+  ...
+# Subtest: D6 hosted checkout origin is provisioned as config and human-applied DNS
+ok 26 - D6 hosted checkout origin is provisioned as config and human-applied DNS
+  ---
+  duration_ms: 0.081667
+  type: 'test'
+  ...
+# Subtest: Task 003 checkout routes mount public session steps and split branding auth
+ok 27 - Task 003 checkout routes mount public session steps and split branding auth
+  ---
+  duration_ms: 0.720709
+  type: 'test'
+  ...
+# Subtest: Task 003 checkout verifies signed handoff, uses idempotency, and queues review for a captured mismatch
+ok 28 - Task 003 checkout verifies signed handoff, uses idempotency, and queues review for a captured mismatch
+  ---
+  duration_ms: 0.315209
+  type: 'test'
+  ...
+# Subtest: Wave 7 checkout confirm creates server order and posts provider capture to ledger
+ok 29 - Wave 7 checkout confirm creates server order and posts provider capture to ledger
+  ---
+  duration_ms: 0.480042
+  type: 'test'
+  ...
+# Subtest: hosted Razorpay intent creates and persists a server order before returning a public checkout binding
+ok 30 - hosted Razorpay intent creates and persists a server order before returning a public checkout binding
+  ---
+  duration_ms: 0.088209
+  type: 'test'
+  ...
+# Subtest: hosted Razorpay confirmation checks provider capture status and exact bound amount before ledger posting
+ok 31 - hosted Razorpay confirmation checks provider capture status and exact bound amount before ledger posting
+  ---
+  duration_ms: 0.090875
+  type: 'test'
+  ...
+# Subtest: hosted checkout binds only a verified buyer before origin transfer and confirms through the buyer-owned order RPC
+ok 32 - hosted checkout binds only a verified buyer before origin transfer and confirms through the buyer-owned order RPC
+  ---
+  duration_ms: 0.130583
+  type: 'test'
+  ...
+# Subtest: Wave 7 checkout confirm fails closed for unsupported hosted payment methods
+ok 33 - Wave 7 checkout confirm fails closed for unsupported hosted payment methods
+  ---
+  duration_ms: 0.078375
+  type: 'test'
+  ...
+# Subtest: Task 003 checkout core exposes lifecycle schemas and data-only branding
+ok 34 - Task 003 checkout core exposes lifecycle schemas and data-only branding
+  ---
+  duration_ms: 0.058958
+  type: 'test'
+  ...
+# Subtest: Task 003 checkout migration extends sessions, adds branding, RLS, rollback, and no code execution
+ok 35 - Task 003 checkout migration extends sessions, adds branding, RLS, rollback, and no code execution
+  ---
+  duration_ms: 0.220292
+  type: 'test'
+  ...
+# Subtest: Task 003 hosted checkout live origin is human-required, not auto-cut over
+ok 36 - Task 003 hosted checkout live origin is human-required, not auto-cut over
+  ---
+  duration_ms: 0.243917
+  type: 'test'
+  ...
+# Subtest: signed hosted delivery options use storefront quotes for storefront carts and preserve per-rate COD eligibility
+ok 37 - signed hosted delivery options use storefront quotes for storefront carts and preserve per-rate COD eligibility
+  ---
+  duration_ms: 0.073083
+  type: 'test'
+  ...
+1..37
+# tests 37
+# suites 0
+# pass 37
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 919.838709

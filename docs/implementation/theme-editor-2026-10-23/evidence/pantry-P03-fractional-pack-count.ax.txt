@@ -1,0 +1,5 @@
+Browser tab: 11, Title: "Pantry lifecycle red lentils | Threadline", URL: "http://syn-threadline-ui-d11a8917.localhost:57226/product/7369995f-a9f9-44bb-8dee-bb0ab7b8e265".
+The following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+~			63 text Enter a whole pack count from 1 to 999 to compare total net contents.
+~			45 stepper (settable, float) Number of packs, Value: 1.5, ID: lb-quantity-pantry-selection
+The focused UI element is 45 stepper (settable, float) Number of packs, Value: 1.5, ID: lb-quantity-pantry-selection

@@ -1,0 +1,94 @@
+{
+  "recordedAt": "2026-10-23T18:39:03.274320+00:00",
+  "classification": "BOUNDED_COMMERCE_FIXTURE_ENV_SOURCE_AFTER",
+  "changedInputs": [
+    {
+      "before": {
+        "path": "services/api-gateway/src/__tests__/owned-db/threadline-browser-fixture.ts",
+        "sha256": "70f20dd157bb05a697af9c9b458cb7846ea6b012f72a2c7845382adf8344e835",
+        "bytes": 23039
+      },
+      "after": {
+        "path": "services/api-gateway/src/__tests__/owned-db/threadline-browser-fixture.ts",
+        "sha256": "b17600512a50d3be39338325cc4baf83bdfd89508486a821b00328bb3d22e4b8",
+        "bytes": 23081
+      }
+    }
+  ],
+  "conservedInputs": [
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/owned-db-support.ts",
+      "sha256": "bd87cee74313edf0842c275a944814c6f63b2a6e90353d5428fbef30c8301f12",
+      "bytes": 37692
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/threadline-qa-fixture.ts",
+      "sha256": "8e0880ac5f1b699d99faa4e4a47b9b6966d79a984858807a51b2d04eee65f997",
+      "bytes": 30733
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/theme-editor-fixture-observation.ts",
+      "sha256": "b7753b14b8706231e136d6e7d0af03a01dc8782b1316c1fb04ceb88309bb612e",
+      "bytes": 13637
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/threadline-fixture-origins.test.ts",
+      "sha256": "c89814b2b93712d85008c87530d029066e6433e09d855a6cdc25c41a6823136c",
+      "bytes": 12173
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/theme-editor-fixture-observation.test.ts",
+      "sha256": "6e25fdec57a25ba8282f0a2420b4dc19bc620c51370f3b867b33794322b3f0c2",
+      "bytes": 16838
+    },
+    {
+      "path": "config/security/next-security-headers.ts",
+      "sha256": "8089e54450b0d7f4b02e93813e95afb562f04a0b5fb821d6d66a08c2b040a337",
+      "bytes": 5563
+    },
+    {
+      "path": "apps/commerce/web/next.config.ts",
+      "sha256": "7dfdff73080fd82a194cfe7d516f8e765e38948726b4849bbe42187601dd0ced",
+      "bytes": 8508
+    },
+    {
+      "path": "apps/merchant/web/next.config.ts",
+      "sha256": "5f6fafd2bf71c42508c08df47e22e5dd7dbbfba95443f22e9e3f774ef86ee33a",
+      "bytes": 5025
+    },
+    {
+      "path": "scripts/governance/owned-client-launcher.mjs",
+      "sha256": "2360564b5509bad66157dd4aa29a12c13bdb684bb0bf3b531a0f7251fa34f55f",
+      "bytes": 10341
+    },
+    {
+      "path": "scripts/governance/owned-client-url-policy.mjs",
+      "sha256": "cf3d6fa3bc83216b1a4f979b2cd13b6f8184f80da2b204b7467f176868d837d0",
+      "bytes": 501
+    },
+    {
+      "path": "tests/contracts/theme-preview-framing.test.mjs",
+      "sha256": "e7a010b84da15c4e6c9ef0c5b9eda31dfed50451f68f57a6f31b9635867f9e38",
+      "bytes": 4172
+    },
+    {
+      "path": "tests/contracts/security-headers.test.ts",
+      "sha256": "5fcef49c85f45c7790ac39a8ad865f5441a0d848640ae5b8cbaf5b877c1d6117",
+      "bytes": 2276
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "sha256": "15fd89109bbc17e0624e29d5a1b56db07e19f1f880c44d9a9abf847b52b6d09a",
+      "bytes": 380811
+    },
+    {
+      "path": "services/api-gateway/package.json",
+      "sha256": "006f5ca798153eb68abd401b65c386cc412430dfe3104747ea14264fd3b0da75",
+      "bytes": 1991
+    }
+  ],
+  "otherInputsConservedCount": 14,
+  "exactOnePropertyInsertion": true,
+  "merchantPlatformPreviewUrlByteExact": true,
+  "MarketplaceOptInAndAllOtherFixtureSourceByteExact": true
+}

@@ -1,0 +1,50 @@
+{
+  "recordedAt": "2026-10-24T01:29:30.534065+00:00",
+  "status": "STABLE392_SOURCE_COPY_ONLY_ISOLATED_GATE_NEXT_NO_RUNTIME",
+  "candidate": "/private/tmp/theme-editor-stable392-20261024-02",
+  "sourceBase": "/private/tmp/theme-editor-recovery-20261024-01",
+  "parentProof": {
+    "path": "/private/tmp/theme-editor-recovery-20261024-01/supplemental-recovery-source-proof.json",
+    "sha256": "702b3a632462cff507993e80b58171fb8d0c246c2913de643bfbe4cf3438522f"
+  },
+  "sourceMax": 392,
+  "sourceMigrationFiles": 321,
+  "deltas": [
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/theme-editor-fixture-observation.ts",
+      "sha256": "c37c7779822b50d533496a7ad4aa6fb14f1d5422894b90adb27fa98589ad6a11"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/theme-editor-fixture-observation.test.ts",
+      "sha256": "6ae2734f24f0e54e272bf63fe4f512fe98266e3b8fcc4d9d3f388b2961680256"
+    },
+    {
+      "path": "apps/commerce/web/src/app/api/checkout/[cartId]/[step]/route.ts",
+      "sha256": "94455bc02ad97b801de5e8cabd995473c022bb330d468fe412aeb8b6590a339b"
+    },
+    {
+      "path": "apps/commerce/web/src/app/api/checkout/route.test.ts",
+      "sha256": "095cb48fff4222cb2eb43615e6cfe29cb528657718493f869283c4fa9708d00c"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/threadline-browser-fixture.ts",
+      "sha256": "b17600512a50d3be39338325cc4baf83bdfd89508486a821b00328bb3d22e4b8",
+      "bytes": 23081
+    }
+  ],
+  "dependencyLinksVerified": 2174,
+  "containedLinks": 256,
+  "currentMainUpdaterExcluded": true,
+  "observerGlobalTypeGate": "CURRENT_MAIN_OPEN; THIS_EXACT_ISOLATED_SOURCE_GATE_PENDING",
+  "primaryNextCohort": "DEWDROP_FULL30_AFTER_MARKETPLACE_FINITE_BROWSER_SLOT",
+  "oldRuntimeBindingsReused": false,
+  "runtimeStarts": 0,
+  "databaseActions": 0,
+  "sourceFileCount": 17243,
+  "moduleConsumers": 55,
+  "workspaceResolutionCount": 45,
+  "proof": {
+    "path": "/private/tmp/theme-editor-stable392-20261024-02/stable392-editor-source-proof.json",
+    "sha256": "ca4eb60667972e4a8c8ac61a78a0303fcdaca10b1d9189e9f5675864f689fe6a"
+  }
+}

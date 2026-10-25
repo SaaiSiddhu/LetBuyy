@@ -161,7 +161,8 @@ export default function OperationsDashboardPage() {
 
     return (
         <Page>
-            <PageHeader
+            <PageHeader identity="products"
+                recipe="index"
                 title="Operations dashboard"
                 description="Real-time view of inventory, suppliers, warehouses, and transfers."
                 breadcrumbs={[{ label: 'Inventory' }, { label: 'Operations dashboard' }]}

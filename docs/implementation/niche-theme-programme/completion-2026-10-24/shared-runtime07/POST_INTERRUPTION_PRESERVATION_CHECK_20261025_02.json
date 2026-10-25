@@ -1,0 +1,28 @@
+{
+  "recordedAt": "2026-10-25T03:43:26.461177+00:00",
+  "status": "POST_INTERRUPTION_READ_ONLY_PRESERVATION_REVALIDATION",
+  "processes": [
+    {
+      "pid": 54685,
+      "present": false,
+      "processMetadata": "",
+      "commandSha256Matches": false
+    },
+    {
+      "pid": 55109,
+      "present": true,
+      "processMetadata": "T    Sun Oct 25 01:05:20 2026         1",
+      "commandSha256Matches": true
+    }
+  ],
+  "container": {
+    "running": true,
+    "runId": "49ada80bc494",
+    "mounts": [
+      "letbuyy-exec-49ada80bc494-1-data"
+    ]
+  },
+  "durableFinalArchiveVerified": true,
+  "signalsOrDatabaseChanges": 0,
+  "noServingHealthClaim": true
+}

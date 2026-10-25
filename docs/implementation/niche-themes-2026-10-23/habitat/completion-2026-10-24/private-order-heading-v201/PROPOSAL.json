@@ -1,0 +1,18 @@
+{
+  "recordedAt": "2026-10-24T09:53:07.981861+00:00",
+  "classification": "PRIVATE_UNAPPLIED_VERSIONED_SOURCE_PROPOSAL_NOT_CATALOG_OR_UI_ACCEPTANCE",
+  "case": "HAB-G10",
+  "intendedDestination": "packages/theme-engine/src/habitat-theme-v201.ts",
+  "privateRuntimeImports": "Relative paths to unchanged canonical Main source; intended file uses sibling imports. Body is byte-identical after import path normalization.",
+  "intendedSha256": "a59c26c268bb85970a33eb635c1d81638642feba7da4041dca445d9bf0fc15fa",
+  "testedPrivateSourceSha256": "4ca03ff9579d24362170b8d1c4b79fd7b22f68c6a3ebb5263d74788777dc82fb",
+  "catalogDispatchChanged": false,
+  "mainSourceEdited": false,
+  "ownedFrozen20Edited": false,
+  "integrationRequest": "Existing Themes allocator may grant exact additive source/catalog/export/test integration after review; this file does not grant it. Default craft2.0.0 stays frozen; expose2.0.1 only by explicit option/selection.",
+  "canonicalHelper": "withConfiguredOrderHeading(withNicheOrderPresentation(source))",
+  "preservation": "An existing Habitat2.0.0 document is cloned; it never re-enters defaults factory and loses merchant edits.",
+  "patchSha256": "fcf37260b9303a2901b615a669ed595469cfa46c8ffd1f49cdc42aff409f9450",
+  "updatedAt": "2026-10-24T09:57:30.071052+00:00",
+  "qualification": "QUALIFICATION.json"
+}

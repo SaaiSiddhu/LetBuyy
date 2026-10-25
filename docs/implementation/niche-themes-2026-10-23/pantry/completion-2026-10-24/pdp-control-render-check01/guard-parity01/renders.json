@@ -1,0 +1,64 @@
+{
+  "classification": "FROZEN200_OR_PRIVATE_VERSION_NEUTRAL_GUARD_SOURCE_RENDER_ONLY_NOT_BROWSER_RESOURCE_ORDER_OR_PAYMENT_ACCEPTANCE",
+  "mode": "candidate",
+  "inputPackage": "docs/implementation/niche-theme-programme/release-v2/proposals/81e91859ebc8c497a49da337d064e1885a76964839d14e39f4a0a3de2283f47f/letbuyy-refresh-2.0.0.json",
+  "inputPackageSha256": "39866e8607d2f0e98bd6abafd4d33141e915b44140d2e8f70c2893462dae8cf9",
+  "privateCandidateForDistribution": false,
+  "networkAttempts": 0,
+  "observations": [
+    {
+      "settings": {
+        "showDescription": true
+      },
+      "useCandidate": false,
+      "outputSha256": "b8f84abebfa2a130f8fee40ab0279beae62d13f5cfecfb863eb33c587d3731e8",
+      "htmlSha256": "633eff0a6c51b67348675ea7518b4314e54b7c470caaaa0d0e3367e44b32018a",
+      "styleSha256": "6ae27b8f751eab06813f13cd913d8886b60f30f2d26d869ca82bdc63d87ed0ce"
+    },
+    {
+      "settings": {
+        "showDescription": true
+      },
+      "useCandidate": true,
+      "outputSha256": "b8f84abebfa2a130f8fee40ab0279beae62d13f5cfecfb863eb33c587d3731e8",
+      "htmlSha256": "633eff0a6c51b67348675ea7518b4314e54b7c470caaaa0d0e3367e44b32018a",
+      "styleSha256": "6ae27b8f751eab06813f13cd913d8886b60f30f2d26d869ca82bdc63d87ed0ce"
+    },
+    {
+      "settings": {
+        "showDescription": true
+      },
+      "useCandidate": false,
+      "outputSha256": "c8f8cd244caf30dafc6edd62527d83bf26183257694d35851893dc1e9104404b",
+      "htmlSha256": "31420b5706372bdad4830e406543bdfee38961409f368c056bc15adf897de15a",
+      "styleSha256": "6ae27b8f751eab06813f13cd913d8886b60f30f2d26d869ca82bdc63d87ed0ce"
+    },
+    {
+      "settings": {
+        "showDescription": true
+      },
+      "useCandidate": true,
+      "outputSha256": "c8f8cd244caf30dafc6edd62527d83bf26183257694d35851893dc1e9104404b",
+      "htmlSha256": "31420b5706372bdad4830e406543bdfee38961409f368c056bc15adf897de15a",
+      "styleSha256": "6ae27b8f751eab06813f13cd913d8886b60f30f2d26d869ca82bdc63d87ed0ce"
+    },
+    {
+      "settings": {
+        "showDescription": false
+      },
+      "useCandidate": false,
+      "outputSha256": "249f6ee57df648ec59a39a1b43633d8fea5712c9aceac12948d7f141ef3ecca9",
+      "htmlSha256": "df2b7d2541de899549377e58984940658e9e59b0f88be304c082fd74bda1e4cf",
+      "styleSha256": "6ae27b8f751eab06813f13cd913d8886b60f30f2d26d869ca82bdc63d87ed0ce"
+    },
+    {
+      "settings": {
+        "showDescription": false
+      },
+      "useCandidate": true,
+      "outputSha256": "249f6ee57df648ec59a39a1b43633d8fea5712c9aceac12948d7f141ef3ecca9",
+      "htmlSha256": "df2b7d2541de899549377e58984940658e9e59b0f88be304c082fd74bda1e4cf",
+      "styleSha256": "6ae27b8f751eab06813f13cd913d8886b60f30f2d26d869ca82bdc63d87ed0ce"
+    }
+  ]
+}

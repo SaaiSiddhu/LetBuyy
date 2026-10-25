@@ -1,0 +1,122 @@
+[
+  {
+    "scene": "01-home-top",
+    "file": "boards/01-home-top.png",
+    "height": 1000,
+    "loaded": true,
+    "scrollWidth": 1440,
+    "width": 1440
+  },
+  {
+    "scene": "02-home-bottom",
+    "file": "boards/02-home-bottom.png",
+    "height": 1813,
+    "loaded": true,
+    "scrollWidth": 1440,
+    "width": 1440
+  },
+  {
+    "scene": "03-collection",
+    "file": "boards/03-collection.png",
+    "height": 1493,
+    "loaded": true,
+    "scrollWidth": 1440,
+    "width": 1440
+  },
+  {
+    "scene": "04-product-main",
+    "file": "boards/04-product-main.png",
+    "height": 1078,
+    "loaded": true,
+    "scrollWidth": 1440,
+    "width": 1440
+  },
+  {
+    "scene": "05-product-fit",
+    "file": "boards/05-product-fit.png",
+    "height": 1429,
+    "loaded": true,
+    "scrollWidth": 1440,
+    "width": 1440
+  },
+  {
+    "scene": "06-product-outfit",
+    "file": "boards/06-product-outfit.png",
+    "height": 1420,
+    "loaded": true,
+    "scrollWidth": 1440,
+    "width": 1440
+  },
+  {
+    "scene": "07-cart",
+    "file": "boards/07-cart.png",
+    "height": 1297,
+    "loaded": true,
+    "scrollWidth": 1440,
+    "width": 1440
+  },
+  {
+    "scene": "08-checkout-address",
+    "file": "boards/08-checkout-address.png",
+    "height": 1071,
+    "loaded": true,
+    "scrollWidth": 1440,
+    "width": 1440
+  },
+  {
+    "scene": "09-checkout-review",
+    "file": "boards/09-checkout-review.png",
+    "height": 1105,
+    "loaded": true,
+    "scrollWidth": 1440,
+    "width": 1440
+  },
+  {
+    "scene": "10-sign-in",
+    "file": "boards/10-sign-in.png",
+    "height": 1000,
+    "loaded": true,
+    "scrollWidth": 1440,
+    "width": 1440
+  },
+  {
+    "scene": "11-sign-up",
+    "file": "boards/11-sign-up.png",
+    "height": 1000,
+    "loaded": true,
+    "scrollWidth": 1440,
+    "width": 1440
+  },
+  {
+    "scene": "12-profile",
+    "file": "boards/12-profile.png",
+    "height": 1190,
+    "loaded": true,
+    "scrollWidth": 1440,
+    "width": 1440
+  },
+  {
+    "scene": "13-orders",
+    "file": "boards/13-orders.png",
+    "height": 1076,
+    "loaded": true,
+    "scrollWidth": 1440,
+    "width": 1440
+  },
+  {
+    "scene": "14-order-detail",
+    "file": "boards/14-order-detail.png",
+    "height": 1360,
+    "loaded": true,
+    "scrollWidth": 1440,
+    "width": 1440
+  },
+  {
+    "scene": "15-addresses",
+    "file": "boards/15-addresses.png",
+    "height": 1017,
+    "loaded": true,
+    "scrollWidth": 1440,
+    "width": 1440
+  }
+]

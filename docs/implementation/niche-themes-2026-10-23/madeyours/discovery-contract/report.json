@@ -1,0 +1,236 @@
+{
+  "inputs": {
+    "docs/implementation/niche-themes-2026-10-23/madeyours/discovery-contract.test.ts": "cd1198e18c9d506e4d1162e9fc7ca7cd0b7b9945feeaf3af3dc76141d3482cbe",
+    "database/supabase/migrations/386_storefront_discovery.sql": "33c2849f93fc594902e5017f00ab3141780bd06f856ce67f4a21aa77e87da81d",
+    "services/api-gateway/src/lib/storefront-discovery.ts": "87705315461c3095df91f28a2b05064451aefb1907a1591c59ff6da236ab8b96",
+    "apps/commerce/web/src/lib/theme-engine/storefront-discovery.ts": "de99c9a108fcc26e0d621d056a62f7d8438eceb032fbcbf61e400684a2e15863",
+    "packages/commerce-core/src/storefront-discovery.ts": "ac242f435b336a1c5bc61df8a306b75a3e9a717cf9a762129565b53ee82a30b4"
+  },
+  "fixtureContract": "Actual backend response reader and frontend page validator admit synthetic finite metadata. Facet values are lowercase and labels retain source values, as386 emits. Author substring and physical threshold/unit facets are omitted as in386. No local filter algorithm or SQL acceptance is claimed.",
+  "classification": "IN_PROCESS_UI_QUERY_CONTRACT_NOT_BROWSER_SQL_OR_INSTALLED_ACCEPTANCE",
+  "createdAt": "2026-10-23T09:00:00.132Z",
+  "networkCalls": 0,
+  "rows": [
+    {
+      "slug": "letbuyy-nova",
+      "route": "collection",
+      "html": "madeyours-collection.html",
+      "query": {
+        "page": 2,
+        "limit": 1,
+        "search": "Model guide",
+        "category": "Accessories",
+        "country_of_origin": "India",
+        "sort": "price-desc",
+        "connector": [
+          "usb-c",
+          "hdmi"
+        ],
+        "personalization_method": "engrave"
+      },
+      "facets": [
+        {
+          "key": "personalization_method",
+          "value": "engrave",
+          "label": "engrave",
+          "count": 4
+        },
+        {
+          "key": "personalization_method",
+          "value": "embroidery",
+          "label": "embroidery",
+          "count": 4
+        }
+      ],
+      "sourceHashes": {
+        "packages/theme-engine/src/madeyours-theme.ts": "c56bdba5b9e9376c4a296cadc2d4f31a33598a033692d2f6c21daa71b3e98193",
+        "packages/theme-engine/src/madeyours-discovery.ts": "d1fc0993efd1d876e67c60f997e6cea53efd65a4fd7aba69bafe377f02803eda",
+        "apps/commerce/web/src/lib/theme-engine/storefront-discovery.ts": "de99c9a108fcc26e0d621d056a62f7d8438eceb032fbcbf61e400684a2e15863",
+        "packages/commerce-core/src/storefront-discovery.ts": "ac242f435b336a1c5bc61df8a306b75a3e9a717cf9a762129565b53ee82a30b4"
+      },
+      "forms": [
+        {
+          "selector": "form.my-filters",
+          "entries": [
+            [
+              "limit",
+              "1"
+            ],
+            [
+              "search",
+              "Model guide"
+            ],
+            [
+              "category",
+              "Accessories"
+            ],
+            [
+              "country_of_origin",
+              "India"
+            ],
+            [
+              "connector",
+              "usb-c"
+            ],
+            [
+              "connector",
+              "hdmi"
+            ],
+            [
+              "page",
+              "1"
+            ],
+            [
+              "min_price",
+              ""
+            ],
+            [
+              "max_price",
+              ""
+            ],
+            [
+              "personalization_method",
+              "engrave"
+            ],
+            [
+              "sort",
+              "price-desc"
+            ]
+          ]
+        }
+      ],
+      "findings": []
+    },
+    {
+      "slug": "letbuyy-nova",
+      "route": "search",
+      "html": "madeyours-search.html",
+      "query": {
+        "page": 2,
+        "limit": 1,
+        "search": "Model guide",
+        "category": "Accessories",
+        "country_of_origin": "India",
+        "sort": "price-desc",
+        "connector": [
+          "usb-c",
+          "hdmi"
+        ],
+        "personalization_method": "engrave"
+      },
+      "facets": [
+        {
+          "key": "personalization_method",
+          "value": "engrave",
+          "label": "engrave",
+          "count": 4
+        },
+        {
+          "key": "personalization_method",
+          "value": "embroidery",
+          "label": "embroidery",
+          "count": 4
+        }
+      ],
+      "sourceHashes": {
+        "packages/theme-engine/src/madeyours-theme.ts": "c56bdba5b9e9376c4a296cadc2d4f31a33598a033692d2f6c21daa71b3e98193",
+        "packages/theme-engine/src/madeyours-discovery.ts": "d1fc0993efd1d876e67c60f997e6cea53efd65a4fd7aba69bafe377f02803eda",
+        "apps/commerce/web/src/lib/theme-engine/storefront-discovery.ts": "de99c9a108fcc26e0d621d056a62f7d8438eceb032fbcbf61e400684a2e15863",
+        "packages/commerce-core/src/storefront-discovery.ts": "ac242f435b336a1c5bc61df8a306b75a3e9a717cf9a762129565b53ee82a30b4"
+      },
+      "forms": [
+        {
+          "selector": "form",
+          "entries": [
+            [
+              "limit",
+              "1"
+            ],
+            [
+              "category",
+              "Accessories"
+            ],
+            [
+              "country_of_origin",
+              "India"
+            ],
+            [
+              "sort",
+              "price-desc"
+            ],
+            [
+              "connector",
+              "usb-c"
+            ],
+            [
+              "connector",
+              "hdmi"
+            ],
+            [
+              "personalization_method",
+              "engrave"
+            ],
+            [
+              "page",
+              "1"
+            ],
+            [
+              "search",
+              "Model guide"
+            ]
+          ]
+        },
+        {
+          "selector": "form.my-filters",
+          "entries": [
+            [
+              "limit",
+              "1"
+            ],
+            [
+              "search",
+              "Model guide"
+            ],
+            [
+              "category",
+              "Accessories"
+            ],
+            [
+              "country_of_origin",
+              "India"
+            ],
+            [
+              "connector",
+              "usb-c"
+            ],
+            [
+              "connector",
+              "hdmi"
+            ],
+            [
+              "page",
+              "1"
+            ],
+            [
+              "min_price",
+              ""
+            ],
+            [
+              "max_price",
+              ""
+            ],
+            [
+              "personalization_method",
+              "engrave"
+            ],
+            [
+              "sort",
+              "price-desc"
+            ]
+          ]
+        }
+      ],
+      "findings": []
+    }
+  ]
+}

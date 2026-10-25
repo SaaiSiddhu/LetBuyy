@@ -1,0 +1,22 @@
+{
+  "recordedAt": "2026-10-25T01:31:04.496231+00:00",
+  "status": "PURE_EXISTING_BASELINE_TESTS_PASS",
+  "command": "node --import tsx --test apps/merchant/web/tests/theme-preview-parent-bridge.test.mjs apps/commerce/web/tests/editor-preview-context.test.ts packages/theme-engine/test/editor-bridge-protocol.test.ts",
+  "exitCode": 0,
+  "counts": {
+    "tests": 29,
+    "pass": 29,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "testSourceHashes": {
+    "apps/merchant/web/tests/theme-preview-parent-bridge.test.mjs": "dede1302d45fa6adf8c22b49ac1f338e05bd8a1b27b578926e08d1a961972f4c",
+    "apps/commerce/web/tests/editor-preview-context.test.ts": "56555738fe4f5c55307e23ab048f7391855295f605536d71431a048be9962b09",
+    "packages/theme-engine/test/editor-bridge-protocol.test.ts": "c8e3fa6b90429dcef334323ec0c25276f9c9f3afd9c33416a0501b96acd02667"
+  },
+  "meaning": "Existing parent READY/source/origin/context, commerce context and protocol baseline remains green. These existing tests do not assert stable iframe identity across device transitions and do not close the observed browser failure. Controlled new source diagnosis is separately recorded.",
+  "applicationSourceChanges": 0,
+  "browserRuntimeDatabaseNetworkProbes": 0
+}

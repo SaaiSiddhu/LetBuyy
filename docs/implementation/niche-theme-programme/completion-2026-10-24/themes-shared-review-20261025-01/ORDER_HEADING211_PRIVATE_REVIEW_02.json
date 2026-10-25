@@ -1,0 +1,42 @@
+{
+  "recordedAt": "2026-10-25T00:34:31.734465+00:00",
+  "status": "ACCEPT_R01_R02_PRIVATE_SOURCE_AMENDMENT_NATIVE_QUEUED_FINAL_TOOL_CLOSURE_AND_PREFLIGHT_REQUIRED",
+  "handoff": {
+    "path": "docs/implementation/niche-themes-2026-10-23/habitat/completion-2026-10-24/private-heading211-20261025-02/HANDOFF.json",
+    "sha256": "50d8ccf6c2b5f5a68b3f251a01e32ba94659661af91eadd031a0234687d85af3"
+  },
+  "sealSha256": "3b0438e037beb8d768597bdbd36977f4219437b70d3f174bb7afc04c41eadc06",
+  "physicalReview": {
+    "sealed02Artifacts": 29,
+    "privateWorkspaceClosureFiles": 1080,
+    "preserved01Artifacts": 31,
+    "mismatches": [],
+    "fourPackageArtifactsAndPayloadUnchanged": true
+  },
+  "sourceFindingsClosed": [
+    {
+      "id": "HEADING211-R01",
+      "review": "Every10 deterministic prior managed field bound to exact immutable210 value, exact11-field prior and two-key journal shape, no nested checkpoint in original config, current outer config equals retained original config. Native prepares both replay/DOWN refusal for17 nested corruptions plus original8 controls."
+    },
+    {
+      "id": "HEADING211-R02",
+      "review": "Four actual authenticated response request/trace IDs bound to one log and metric each, expected actor/status/source/fields/timestamps and before/after base-parent-leaf mirrors; every pre-existing base row exact, all business/unclassified tables exact. Later SQL witnesses use settled postHTTP state."
+    }
+  ],
+  "retainedEvidence": {
+    "newPureSourceChecks": 31,
+    "pass": 31,
+    "fail": 0,
+    "old61NotRerun": true,
+    "mutableTypeErrors": 0,
+    "unchangedExternalFocusedDiagnostics": 5,
+    "notNativeOrE2E": true
+  },
+  "nativeSourceScope": "One600s cohort, populated210/211 installs/drafts/releases and four secondary RPC orders; full-public SQL conservation,42 prepared refusal controls, pairedDOWN/final replay and actual captured bundle match. NOT_RUN.",
+  "remainingPreflightInputs": [
+    "Existing1080-file closure records workspace/runtime/SQL/lock inputs, but installed external packages and Node/tsx/tool content are not pinned. Complete actual runtime/tool inventory and source-only standalone preflight/command plan before native activation; no Main edits needed.",
+    "Separate terminal0 resource/source preflight and exact runner-owned image/cleanup/effect admission when MadeYours reserved pair closes. Full322/max393/no ceiling and actual applied migration order/hash must be verified against real parent result."
+  ],
+  "fullThemeCertificate": false,
+  "MainOrRuntimeActions": 0
+}

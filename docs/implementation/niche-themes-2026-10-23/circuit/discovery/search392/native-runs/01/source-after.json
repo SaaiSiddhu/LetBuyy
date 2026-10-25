@@ -1,0 +1,965 @@
+{
+  "recordedAt": "2026-10-23T16:38:29.709902+00:00",
+  "runId": "e9e26bcac125",
+  "inputs": [
+    {
+      "path": "database/supabase/migrations/382_threadline_catalog_v2.sql",
+      "sha256": "475717e0f7afd78327ce89b55768e0a13347394a98a2bfcf8bfad19ed088b9dc",
+      "bytes": 166123
+    },
+    {
+      "path": "database/supabase/migrations/383_storefront_apparel_discovery.sql",
+      "sha256": "2231fc7137df40cc65422760f47d1bf40da6d1c9ae520f9d83adae5bee404855",
+      "bytes": 5055
+    },
+    {
+      "path": "database/supabase/migrations/384_theme_editor_template_keys.sql",
+      "sha256": "e7304c2306956dd3784175d4f735e3d8f9029ddc1631f97b9d396d1ee9f55cca",
+      "bytes": 23320
+    },
+    {
+      "path": "database/supabase/migrations/385_product_variant_facts.sql",
+      "sha256": "d3761b5226c88fe4a609395500e8ace46d082b3bdb2c11176d86cb3bca4a486b",
+      "bytes": 35281
+    },
+    {
+      "path": "database/supabase/migrations/386_storefront_discovery.sql",
+      "sha256": "33c2849f93fc594902e5017f00ab3141780bd06f856ce67f4a21aa77e87da81d",
+      "bytes": 169316
+    },
+    {
+      "path": "database/supabase/migrations/387_theme_install_version_precondition.sql",
+      "sha256": "0e3efc617809fea71296d0325067b89b0b18c8e23210d9a6bda27ac05cbb61f0",
+      "bytes": 11007
+    },
+    {
+      "path": "database/supabase/migrations/388_cart_order_fact_snapshots.sql",
+      "sha256": "9de7c35b68684cd5d3c752166e5c6ae0b33c64c6b1ea8ac353a82bcac936d2c3",
+      "bytes": 90848
+    },
+    {
+      "path": "database/supabase/migrations/389_niche_theme_catalog_v2.sql",
+      "sha256": "3d9a5e0344db7537558554b723ffc134707bf7b98fe4941bc6bf268bd7330e61",
+      "bytes": 5824537
+    },
+    {
+      "path": "database/supabase/migrations/390_storefront_measurement_capabilities.sql",
+      "sha256": "6e5eb5e50cecd43acc9a663dd79c505db6c7bfdbe4e559b34d998065f88e9027",
+      "bytes": 26476
+    },
+    {
+      "path": "database/supabase/migrations/391_theme_editor_shared_groups.sql",
+      "sha256": "27fa0234ad98c4b924fb0d1ecec22e9f592ab533f438ca348f99e4c6bb17a17c",
+      "bytes": 26249
+    },
+    {
+      "path": "database/supabase/rollback/382_threadline_catalog_v2.rollback.sql",
+      "sha256": "6866dc1cdadf828ce9c392e9fe71ede2acb08a3159d77887af8bd5a038a2105e",
+      "bytes": 990
+    },
+    {
+      "path": "database/supabase/rollback/383_storefront_apparel_discovery.rollback.sql",
+      "sha256": "e999bfc20bd07ed3a5eba855ca89eef3d033b4922f77eb73b24d8e8d306656a7",
+      "bytes": 157
+    },
+    {
+      "path": "database/supabase/rollback/384_theme_editor_template_keys.rollback.sql",
+      "sha256": "1486ecf234eaad866cfc79f3a4aea8f4e9dda8d10860358e2de790e22053e625",
+      "bytes": 23129
+    },
+    {
+      "path": "database/supabase/rollback/385_product_variant_facts.rollback.sql",
+      "sha256": "1f2bc994991baa7e7581e19ac5e12e96b23fcf646e07df3f8d5444afa783f85d",
+      "bytes": 28692
+    },
+    {
+      "path": "database/supabase/rollback/386_storefront_discovery.rollback.sql",
+      "sha256": "775db15081b25b1eeaa2d646fcb4695ec520f9d7ab470035cb40f8c979fdd2b5",
+      "bytes": 15470
+    },
+    {
+      "path": "database/supabase/rollback/387_theme_install_version_precondition.rollback.sql",
+      "sha256": "d1d0f53a45c7af774c8d9dc709e32e05ccc5e313135ca841a01a6f4775f14ad2",
+      "bytes": 9020
+    },
+    {
+      "path": "database/supabase/rollback/388_cart_order_fact_snapshots.rollback.sql",
+      "sha256": "12d10a0ef5043cfa330356dfae1b31b58df3c06f393c1d0db208ee4a9513ac5b",
+      "bytes": 70735
+    },
+    {
+      "path": "database/supabase/rollback/389_niche_theme_catalog_v2.rollback.sql",
+      "sha256": "aecbd647393ac9dcec1466d8b7f80e21cd89a1522b6956bd0c9c479529e45927",
+      "bytes": 2744
+    },
+    {
+      "path": "database/supabase/rollback/390_storefront_measurement_capabilities.rollback.sql",
+      "sha256": "1aca479d735539ec3d92974da0eed7b8e48e83e874d8612ea78dba7acc91cb7a",
+      "bytes": 24601
+    },
+    {
+      "path": "database/supabase/rollback/391_theme_editor_shared_groups.rollback.sql",
+      "sha256": "7fea9fbf09df7f8f3af189ce3e406d3f7582ae2c371bf4dde225b59f91f25b54",
+      "bytes": 25784
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/circuit-search392-draft-review.json",
+      "sha256": "708119bd85605cdb05da877ec9fa6aec94ca4e00b7b7e46eb45f59e345a154cd",
+      "bytes": 2260
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/circuit-search392-evidence-source-admission.json",
+      "sha256": "40e56b9e2f6ac9f8a2c8a05edd77f66b94524cb3cd7d0c19ba671c173a996e2e",
+      "bytes": 1613
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/release-v2/generate-release.ts",
+      "sha256": "ccbd78a2b0b47e8a6cfb33390965a32ddc611711cc4c369772199db5adb389b3",
+      "bytes": 23630
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/release-v2/proposals/81e91859ebc8c497a49da337d064e1885a76964839d14e39f4a0a3de2283f47f/letbuyy-aura-2.0.0.json",
+      "sha256": "9c274b283c2fc36b42658033e79004b4c9ccbf84ad3417aabca6174c7e1674e7",
+      "bytes": 639005
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/release-v2/proposals/81e91859ebc8c497a49da337d064e1885a76964839d14e39f4a0a3de2283f47f/letbuyy-bloom-2.0.0.json",
+      "sha256": "de251c7edc9bae2e18edcd9cae0ff474b9545222da782a470f509633e41f5299",
+      "bytes": 636039
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/release-v2/proposals/81e91859ebc8c497a49da337d064e1885a76964839d14e39f4a0a3de2283f47f/letbuyy-craft-2.0.0.json",
+      "sha256": "16db7fb8ea5dafb12d4c075d49222abfd5e15fc85a23ad13923d649e94767326",
+      "bytes": 725155
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/release-v2/proposals/81e91859ebc8c497a49da337d064e1885a76964839d14e39f4a0a3de2283f47f/letbuyy-dawn-2.0.0.json",
+      "sha256": "a4e23c63a700f87294a291a1760b94a93d2ee594f9bfea55038c0ff7ab335f3c",
+      "bytes": 659796
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/release-v2/proposals/81e91859ebc8c497a49da337d064e1885a76964839d14e39f4a0a3de2283f47f/letbuyy-forge-2.0.0.json",
+      "sha256": "47d6f0cf0b07adbf6266fb2fb2d4584932c7173497d8f5d838d4b4a70c428568",
+      "bytes": 656547
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/release-v2/proposals/81e91859ebc8c497a49da337d064e1885a76964839d14e39f4a0a3de2283f47f/letbuyy-nova-2.0.0.json",
+      "sha256": "71c1690f66cd4176a3c3b9b9768ef86c3f6134afa0ea4ab6dda2ea5791186ba0",
+      "bytes": 614794
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/release-v2/proposals/81e91859ebc8c497a49da337d064e1885a76964839d14e39f4a0a3de2283f47f/letbuyy-refresh-2.0.0.json",
+      "sha256": "39866e8607d2f0e98bd6abafd4d33141e915b44140d2e8f70c2893462dae8cf9",
+      "bytes": 621828
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/release-v2/proposals/81e91859ebc8c497a49da337d064e1885a76964839d14e39f4a0a3de2283f47f/letbuyy-ride-2.0.0.json",
+      "sha256": "0ac93f9e452fe455301fc30f598b85c7541edeb4fcc87c2e21ed0d81316419f5",
+      "bytes": 641816
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/release-v2/proposals/81e91859ebc8c497a49da337d064e1885a76964839d14e39f4a0a3de2283f47f/letbuyy-summit-2.0.0.json",
+      "sha256": "54f9d916749d64f80b6bd5dd6ec85a7e50b5e17bef765e61fffe727d94c8d411",
+      "bytes": 623200
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/release-v2/proposals/81e91859ebc8c497a49da337d064e1885a76964839d14e39f4a0a3de2283f47f/manifest.json",
+      "sha256": "c0e8d5b7338a70a797a2acc24976700a146f8df4f9a3716d55fab4c03e8cf515",
+      "bytes": 11078
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/shared-groups391-draft-admission.json",
+      "sha256": "a3f95b0619ffe8fe4f6cf6a4e9b40f7b9ff7ed29a9dc86f01b4ac5dfc740e376",
+      "bytes": 2365
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/shared-groups391-latest-native-admission.json",
+      "sha256": "5c4b1d8cefdf118e249a57e2aee2a8164728de383e319e9788616e5cdfdbf307",
+      "bytes": 1238
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/shared-groups391-native-admission.json",
+      "sha256": "f22a9c45e6b9305a56904cb21904ff6e0f96c5274bcf66a15fe4e65400ed31f6",
+      "bytes": 1975
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/392_electronics_search.down.draft.sql",
+      "sha256": "b66f348b56f8f45c60eacf1ba63e1f10177a2be6c0e9d33eb829649838d6a73e",
+      "bytes": 26513
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/392_electronics_search.up.draft.sql",
+      "sha256": "f17f659b8d037c34f02b9cc1cda912ede406bda7950f99310ebae5ca77c61171",
+      "bytes": 27178
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/README.md",
+      "sha256": "eb4455924cd9f6cc894b6e36c20fc82f4df5526d90bea124f25b60fbc123d893",
+      "bytes": 4279
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/admission.json",
+      "sha256": "7365adc5beeb9a86c2b05f43e1aefde8a7342fa2384579da0a971f21625b6afe",
+      "bytes": 1652
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/admission.template.json",
+      "sha256": "3cdfcab17b0efaa265a163fcd1e3a6043729d3da71617f65a7921d5be030a821",
+      "bytes": 542
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/build-drafts.mjs",
+      "sha256": "f5fd3ee04922b51304b0962627b5f6d8c3b2672b65f8ee3bf214b7304b35511c",
+      "bytes": 4828
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/evidence-writer-conservation.json",
+      "sha256": "ff9472a948dc39e412bdb4c7b910c726ae4aefee6eb9d881a06ad25bc7963a00",
+      "bytes": 164
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/evidence-writer-gateway-noEmit.command.json",
+      "sha256": "560061bbc56bf42caf149776979884d945d91193365b3f4db79c2d0bc0142d09",
+      "bytes": 340
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/evidence-writer-gateway-noEmit.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/evidence-writer-release.json",
+      "sha256": "5b45fb36212709435dfb387ad9c76703f04e46d96f34b7ffb5c6a786f816144b",
+      "bytes": 2231
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/evidence-writer-source-validation.command.json",
+      "sha256": "0441167fa98ff9bf85fb6f8e727a07c274bd9e8e8db78dc7f05727139378c222",
+      "bytes": 445
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/evidence-writer-source-validation.log",
+      "sha256": "9295e59555a62e989c70a5772bbdf01b961fd658d0416b12412c17efcf0f3a34",
+      "bytes": 1897
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/evidence-writer.diff",
+      "sha256": "9d92f6032085a08df2f8fabca83e0de6f1688aca798952a1777fb813a364f057",
+      "bytes": 14834
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/gateway-noEmit.command.json",
+      "sha256": "ed9b132a803798466368a5f566ea18f1307989fa52ab49cb383256113a051860",
+      "bytes": 346
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/gateway-noEmit.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-plan.json",
+      "sha256": "e04710279be2705e4a9451a18a2d984d6e02ea3f51bf70a908e4afad4bdad7e3",
+      "bytes": 4943
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/predecessor391-inputs.json",
+      "sha256": "51a12f4801c016547b2f873213f9b7479851b64b0911f1ebf9ca97a745583f6a",
+      "bytes": 1713
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/preparation-release.json",
+      "sha256": "4a78a7c69b3d616e685ac656a46e0e9caa3e63a9e937f3a8f5480f1be526978c",
+      "bytes": 3499
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/source-contract.test.mjs",
+      "sha256": "6469fc6cdf0a70469b0dfd8f69055f2c79261bc0a1f0076fe8ce80ae900b65a6",
+      "bytes": 3345
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/source-evidence.json",
+      "sha256": "4e6ebf530b062182ef3cde4e7be40630eaffd7c4c8eb64e4f2a07b55d502df8e",
+      "bytes": 1610
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/source-validation.command.json",
+      "sha256": "8042e6e7285ad8d1754b7e9bcfd0b19a624b5b4c66992cb69f721a7943d2f6ef",
+      "bytes": 637
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/source-validation.log",
+      "sha256": "c716d577f4612bd6e7cadbf6efcafd82a6b94f77317394b8181f83048f6b77a6",
+      "bytes": 1900
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/validator-boundaries.test.mjs",
+      "sha256": "d4157a817a053e7037e10a5673b363177793c2ff294afd65ad994d53d5949a5e",
+      "bytes": 2732
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/validator-cases.json",
+      "sha256": "34af5bba863bc02a82e65413fd96e9843df5690df01d44917a0f9d742e9727cf",
+      "bytes": 1180
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/madeyours/local-checkout-tls-proposal/source-handoff.json",
+      "sha256": "ca782193a266ea902207d3d26cab0214e7d5a8026a113e0f39855f78e1eeefd3",
+      "bytes": 2228
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/391-emission-receipt.json",
+      "sha256": "1c0ad7ea01504dd6d84d28ca3d05669fd05469a76e8d86ba4fa43d30119cd833",
+      "bytes": 1170
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/391_shared_group_durability.down.draft.sql",
+      "sha256": "7fea9fbf09df7f8f3af189ce3e406d3f7582ae2c371bf4dde225b59f91f25b54",
+      "bytes": 25784
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/391_shared_group_durability.up.draft.sql",
+      "sha256": "27fa0234ad98c4b924fb0d1ecec22e9f592ab533f438ca348f99e4c6bb17a17c",
+      "bytes": 26249
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/admission.json",
+      "sha256": "90e5d74b5b22ce70f0138aa4225d5e0f958004ee017cd40ec90ab22ccb632744",
+      "bytes": 556
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/final-review.json",
+      "sha256": "9592387e4ba3eabcb2b92d1d80fcb9f804f6787cf456c03c00f16f5b71cc0dfe",
+      "bytes": 2249
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-evidence-manifest.json",
+      "sha256": "5aa2242bff4fc528d54aaaef5cd431a813dd90a3045cb6f6bbf7d3649acbddd4",
+      "bytes": 5518
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/baseline-real-worker-defect.json",
+      "sha256": "923f5fc33680e1dc7bbe06a998099c5e89fe8c555ad42e4b826c973b3272cbbe",
+      "bytes": 235
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/entry.json",
+      "sha256": "f6fca8b7438fdc66027d7ecc59e73f447ea489a2483d623a27b054484401b5c1",
+      "bytes": 42498
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/evidence-copy-receipt.json",
+      "sha256": "d894fbb4c75d6267dc0001d2db24ba01587a849d2954b059439ee5a10f0041f7",
+      "bytes": 5706
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/letbuyy-aura.json",
+      "sha256": "9f94004a44bf0941af3355dda11e18b3a58d6a5997157705e43595ae51ebf734",
+      "bytes": 2261
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/letbuyy-bloom.json",
+      "sha256": "481fccb29153cdbbc485decaf79f7831dfd952fbbd8e878a0fffe3576f83d504",
+      "bytes": 2270
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/letbuyy-craft.json",
+      "sha256": "d8222fccad3ec6be0e6ca636e91c3a2fffa1d4474b448eae673006286002f7a0",
+      "bytes": 2269
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/letbuyy-dawn.json",
+      "sha256": "b57393c356d45d03391d1642b95396d145e00f58f3a6b26605ecad89b1f639aa",
+      "bytes": 2256
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/letbuyy-forge.json",
+      "sha256": "f385f588b70368645f32196c18a8ffd7d9c08198687a72419b275dca67fbe455",
+      "bytes": 2268
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/letbuyy-nova.json",
+      "sha256": "1dc4f81b653aadae7e1418ed16c253e096f21a31407dfb63a4b94d4e3b8e1adb",
+      "bytes": 2254
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/letbuyy-refresh.json",
+      "sha256": "90813077f8fdfbc1bcfb9ae023b4cfba04fbf8df11f43c061bf9af0872a6601a",
+      "bytes": 2286
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/letbuyy-ride.json",
+      "sha256": "cccf7954aca42b29175a2cb489a4bef3dc8e3f3ec5cc0a977fc959cd10a51382",
+      "bytes": 2254
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/letbuyy-sense.json",
+      "sha256": "85e84d7d0628d7e7d637800158619f7c99c9ee8bca94f7c3f08b64c4cd6ab7d9",
+      "bytes": 2303
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/letbuyy-summit.json",
+      "sha256": "d93c8ff6ac2aee933b0337ed8c9896453b59ad1433ff36fefe55fd8017bba85e",
+      "bytes": 2284
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/profile-current-proposed.json",
+      "sha256": "dc93267053a46dcb42605440ac62cffb42daa048f8f1ebaad4b7033d9acd1ce7",
+      "bytes": 40634
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/qualified-restoration.json",
+      "sha256": "677c84d5e28fa275fdc1bceb15da7f33442e5d8f1be2d2ba6420f7e9b3bbc220",
+      "bytes": 925
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/result.json",
+      "sha256": "3af1783022ef9988ad2373d9004d3e1f9a195fa7e229917a2c93f6e78329817c",
+      "bytes": 66344
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/run-binding.json",
+      "sha256": "e1ccd9d0e0167e7327d62c6cf4c5a4ebb0a282f19cd5b28b53eda1da67e91893",
+      "bytes": 1083
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/runner.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/runner.stdout",
+      "sha256": "6187a7d163abff5389d1f6790d53eb81d63349ae1e9b565b8c466b9255b07d9a",
+      "bytes": 66345
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/source-after.json",
+      "sha256": "8b96e398020537ef2ca8f5e782c8b3e9f14a89d393bbc73c2249849143ce5de1",
+      "bytes": 16687
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/source-before.json",
+      "sha256": "01859cb8dd135456e3f962b079982babd8e3f967f7b46435f9d9bc0cb1a8b284",
+      "bytes": 16596
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/suite-logs/theme-shared-groups.postgres.log",
+      "sha256": "6f549ee4fa3707e6463130ce7b71b7e6cd4846ac3a44f18d3d91297efe77fae3",
+      "bytes": 110091
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/02/baseline-real-worker-defect.json",
+      "sha256": "923f5fc33680e1dc7bbe06a998099c5e89fe8c555ad42e4b826c973b3272cbbe",
+      "bytes": 235
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/02/entry.json",
+      "sha256": "68aa0e23b76b329091eb492e54283dbbece2855a4bf9871cc187428a0d39b8dd",
+      "bytes": 42983
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/02/evidence-copy-receipt.json",
+      "sha256": "8195ded51ef86c2019781b6b8671945d1f241aeabd9b4c07f7aa6349897bc5b6",
+      "bytes": 5706
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/02/letbuyy-aura.json",
+      "sha256": "70989cd7ca91e7cdac41900c47caf5e073a7c9c0d1cf807ed26f150ff380e991",
+      "bytes": 2261
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/02/letbuyy-bloom.json",
+      "sha256": "264e85507c8629a8f3e250ce31352342d230ad44f29d3feb88d2a4c2262672e0",
+      "bytes": 2270
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/02/letbuyy-craft.json",
+      "sha256": "a180d0517c2d0a6da2bf034b1d23f3dad3b83f9d8a1686ec5f05d4ac9feed401",
+      "bytes": 2269
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/02/letbuyy-dawn.json",
+      "sha256": "e7ec05d5fdf244eb79fdb24a0777a184194a3f0b7da73db4892eb13bb8d46024",
+      "bytes": 2256
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/02/letbuyy-forge.json",
+      "sha256": "0f9914165a52898ff58c5b017e2d036536f4a33452b178350c230ef1f635388f",
+      "bytes": 2268
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/02/letbuyy-nova.json",
+      "sha256": "3b8478e47cf9ebd90e03a6d2f5600fcb551fb8e4977a6f17bd6536fe994c7534",
+      "bytes": 2254
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/02/letbuyy-refresh.json",
+      "sha256": "d251bd561aed31823dbd92e982197cb01e3475f6c3d7a72a1812a94836e8ed67",
+      "bytes": 2286
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/02/letbuyy-ride.json",
+      "sha256": "d36f502fd7b276e84cb3b3e4b661166be2612ba8d1e4604750b962f05734bafe",
+      "bytes": 2254
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/02/letbuyy-sense.json",
+      "sha256": "fc37ed68e5071805002d0d89012db7872092714503d179c436abb2e1f3eb5800",
+      "bytes": 2303
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/02/letbuyy-summit.json",
+      "sha256": "b0c9f182c6d0ae9851ce8522fb1d9abba202c32d26a47805219942840a4b67ab",
+      "bytes": 2284
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/02/profile-current-proposed.json",
+      "sha256": "057b52c40acbc7f91f2448a181b8bed450f4cd1a76d8001e82c4bb76840f6a83",
+      "bytes": 40634
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/02/qualified-restoration.json",
+      "sha256": "573725cbaecfe29e2441e8c6744a5fb56aeafe61052353a2dc3b001be8d2b9ff",
+      "bytes": 925
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/02/result.json",
+      "sha256": "4a398a665f46104abd83cbedb66b906803542afdbc80d5da2e8d2f8c1fd5e3db",
+      "bytes": 66542
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/02/run-binding.json",
+      "sha256": "b04dfce9dae27423b56a52af47853ba4b1cbf96f22f1e17543fb103d94b485b3",
+      "bytes": 1013
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/02/runner.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/02/runner.stdout",
+      "sha256": "921bcae45bd9989b43e3d58d0e3342d215c66c3bd2c96f6e67d0c4a06cf3c5ae",
+      "bytes": 66543
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/02/source-after.json",
+      "sha256": "34fdc47d4350c77d4a1adf714296061b0f1705084c310dee506d05760c234e2b",
+      "bytes": 23466
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/02/source-before.json",
+      "sha256": "42027f273a0a83489a32fd3c14da3671c8e4ebad38cba6a6223a9415dcb82c3b",
+      "bytes": 23851
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/02/suite-logs/theme-shared-groups.postgres.log",
+      "sha256": "642706e5b98e6009055b191db357f5504e909b9069ad8982d88ad8baddf4c9a5",
+      "bytes": 110109
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/preparation.json",
+      "sha256": "1603ee255efb77bbb1e47bba52e4c1cbfffa9ec7a1fb568cc22fae42da81f68a",
+      "bytes": 12620
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/profile-contract.json",
+      "sha256": "23725aeae2c3d48ab7398fa9bbb49963299d96ef82784874d4dd34cd39a2e49a",
+      "bytes": 4657
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/qualification.json",
+      "sha256": "83d81cd81559bc10a61f98ddba566fe4461bedb2130b58b46d10b82e9ee42622",
+      "bytes": 26997
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/threadline-descriptor-pin.json",
+      "sha256": "3cd7daadb9d42e6ebb648dd0273482dafe5f0fa1016234feb391e05b89787d05",
+      "bytes": 733
+    },
+    {
+      "path": "packages/commerce-core/package.json",
+      "sha256": "b9e2b19585b35d9534ba67825236d99f4186ccf9330670a6016d9a9cf7bdb858",
+      "bytes": 422
+    },
+    {
+      "path": "packages/commerce-core/src/apparel.ts",
+      "sha256": "2d8833f58ac431a0f0acf4e348906476758240606f2d5ddb7014be7426040b3e",
+      "bytes": 2286
+    },
+    {
+      "path": "packages/commerce-core/src/circuit-facts.ts",
+      "sha256": "b95d4f2bc7c27bb8ebd5041d6dfb7fa42a6a9066d29e5a218e5b6f8daea0bbe6",
+      "bytes": 4984
+    },
+    {
+      "path": "packages/commerce-core/src/dewdrop-facts.ts",
+      "sha256": "5f4aee4b13d48a8575464a4ace5abb217eac029491ea3ac00b2dcf2e92b5aaed",
+      "bytes": 2173
+    },
+    {
+      "path": "packages/commerce-core/src/habitat-facts.ts",
+      "sha256": "a77bd48835b094b3136b12a055b38485ce55b461c6cf743f6f54f8323ced0a36",
+      "bytes": 3534
+    },
+    {
+      "path": "packages/commerce-core/src/index.ts",
+      "sha256": "b36af7e65c00d8b9d16fe84ffc7da522b6107c4010208cc224363fa90bdee6b9",
+      "bytes": 47209
+    },
+    {
+      "path": "packages/commerce-core/src/kindred-facts.ts",
+      "sha256": "f227bfe56432182fffce4ccfda347785d28568f4bdd787e96ea82dd18ade58f4",
+      "bytes": 5059
+    },
+    {
+      "path": "packages/commerce-core/src/madeyours-facts.ts",
+      "sha256": "4428e76412e4189fe09815d18b9c2d7d8643c95f01822d783e536a6304b22813",
+      "bytes": 7554
+    },
+    {
+      "path": "packages/commerce-core/src/marginalia-facts.ts",
+      "sha256": "891d8e5f77cf301213421b1fd945746fb22a887cc024f2ad4ca5d1cd0d2071c0",
+      "bytes": 4326
+    },
+    {
+      "path": "packages/commerce-core/src/niche-product-facts.ts",
+      "sha256": "efdefb2c5a20306a6b80afa133a962d873341b01df51ac701696d8256c13eb2e",
+      "bytes": 5187
+    },
+    {
+      "path": "packages/commerce-core/src/pantry-facts.ts",
+      "sha256": "1166f6ff89be545b446e0e072575b9bb761f9ddf81b39164d9579ce3206b396a",
+      "bytes": 3341
+    },
+    {
+      "path": "packages/commerce-core/src/playfield-facts.ts",
+      "sha256": "96c17f8c65c1aa1e12233b00368ba29f4e76eb07dcf0374f822747f4f472e9a4",
+      "bytes": 5022
+    },
+    {
+      "path": "packages/commerce-core/src/product-fact-presentation.ts",
+      "sha256": "17f291e91a8888d943363643f2f203ec52b95d308b999865fd9df6cd91947084",
+      "bytes": 7396
+    },
+    {
+      "path": "packages/commerce-core/src/product-fact-snapshot.ts",
+      "sha256": "0cbc6299ed4464bf7b46141ca786c98c7a01c2bea0ac93bb975caa790a1f3582",
+      "bytes": 14852
+    },
+    {
+      "path": "packages/commerce-core/src/product-facts-summary.ts",
+      "sha256": "d6697c70abaee0b1be3f94c1737eba1c2de8852b211b09225601d5080eacf0c8",
+      "bytes": 13455
+    },
+    {
+      "path": "packages/commerce-core/src/storefront-discovery.ts",
+      "sha256": "c8de3871a998df011de12791db90c868139903b5c84afb211d9e9de3a1997ff1",
+      "bytes": 10232
+    },
+    {
+      "path": "packages/commerce-core/src/trailmark-facts.ts",
+      "sha256": "9d8bb5ae2f033858ed77a48bd8425dbbd169c724021ae42835abf7993a4a903d",
+      "bytes": 3046
+    },
+    {
+      "path": "packages/infrastructure/pooled-sql-adapter/index.ts",
+      "sha256": "96af98a1b39b49a9ed3799ef6d6cf0915f2c9c51a76e5af784c6510fee4338fd",
+      "bytes": 6418
+    },
+    {
+      "path": "packages/theme-engine/package.json",
+      "sha256": "8eec1e66946b79412200297e8755d67f6769fe49beec86c5d7eeb2ccf013b763",
+      "bytes": 1076
+    },
+    {
+      "path": "packages/theme-engine/src/built-in-section-schemas.ts",
+      "sha256": "5e44b89d7ebc3d40b82e7d12dfccf399f7a336d39e1a1b04c7deaf4c57486734",
+      "bytes": 11244
+    },
+    {
+      "path": "packages/theme-engine/src/circuit-discovery.ts",
+      "sha256": "160c6a61a567f87bbcab20bf337336ede6e748c1326110ab977f61ec9c14523b",
+      "bytes": 4571
+    },
+    {
+      "path": "packages/theme-engine/src/circuit-styles.ts",
+      "sha256": "09c1be83d56d1640770bcf8c76df249f4fa309aa227d81a3d46d0f81879911c2",
+      "bytes": 12444
+    },
+    {
+      "path": "packages/theme-engine/src/circuit-theme.ts",
+      "sha256": "44f78cdaa4d9241723b7bc9ae0f0952d946e72b11775c05160c9949f87a69d2a",
+      "bytes": 21755
+    },
+    {
+      "path": "packages/theme-engine/src/dewdrop-discovery.ts",
+      "sha256": "a9d866eeb5dedc2b123bdf2a287b9a0be23789b39c93c1e1872471c975de1fe1",
+      "bytes": 7091
+    },
+    {
+      "path": "packages/theme-engine/src/dewdrop-styles.ts",
+      "sha256": "693a0be116d404baac41ef0b044ce69f6c8dcf35d4dfe26b02ac507678ba129e",
+      "bytes": 13200
+    },
+    {
+      "path": "packages/theme-engine/src/dewdrop-theme.ts",
+      "sha256": "ec0cf0890c607056c1da13087b1c51ee6931d120c46370802360b740f0693190",
+      "bytes": 16639
+    },
+    {
+      "path": "packages/theme-engine/src/experience-apply.ts",
+      "sha256": "fcf62ca230b604f6dd4d33cc34a1b0d990caa131f815fc3666dae4fbce15f6b4",
+      "bytes": 35703
+    },
+    {
+      "path": "packages/theme-engine/src/experience-compositions.ts",
+      "sha256": "25b73068b7a4fcce5b4bad3768a376e08c7e384e843f707c3cf8f8fb361abc68",
+      "bytes": 32111
+    },
+    {
+      "path": "packages/theme-engine/src/experience-fonts.ts",
+      "sha256": "3ee9bdb23a8c18410fd36ee6302f0f8fae929484a7c2dbfd9bc6a424e30f64be",
+      "bytes": 4723
+    },
+    {
+      "path": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "sha256": "cc11490138ae5c2f13ab022a60b4cc2fe7d8fc5eb766dbf087eeb227d6050d6e",
+      "bytes": 4588
+    },
+    {
+      "path": "packages/theme-engine/src/habitat-discovery.ts",
+      "sha256": "342843da57a6eef8488d906218d4225338f9f3c0afe2bbcc49073f3f34a1f873",
+      "bytes": 7951
+    },
+    {
+      "path": "packages/theme-engine/src/habitat-styles.ts",
+      "sha256": "e4b89a41c526cc9a96e0e3106e084124717eb56d9837bcf09214045d7fa817e6",
+      "bytes": 14223
+    },
+    {
+      "path": "packages/theme-engine/src/habitat-theme.ts",
+      "sha256": "0144fdf830ab3c5ddf42ebfcb86258b99e74ed8a8d724469012479705352e8c3",
+      "bytes": 26571
+    },
+    {
+      "path": "packages/theme-engine/src/kindred-discovery.ts",
+      "sha256": "14dd29777737158a61287bf54e98571c6b3abf1e07ec542d2e7f678180ad473f",
+      "bytes": 6014
+    },
+    {
+      "path": "packages/theme-engine/src/kindred-styles.ts",
+      "sha256": "15e6670f6556a7b9cfd8e56891088f0abe9a8ffa1105822be1a1902ecd7282cf",
+      "bytes": 11883
+    },
+    {
+      "path": "packages/theme-engine/src/kindred-theme.ts",
+      "sha256": "3a47dc979dbdf5dce395fd44a858e007567820f4fac569fade603ff6da4fd551",
+      "bytes": 18062
+    },
+    {
+      "path": "packages/theme-engine/src/madeyours-discovery.ts",
+      "sha256": "d1fc0993efd1d876e67c60f997e6cea53efd65a4fd7aba69bafe377f02803eda",
+      "bytes": 5290
+    },
+    {
+      "path": "packages/theme-engine/src/madeyours-styles.ts",
+      "sha256": "5253e57fcb217526d7bf46e8ddc54b921a5f64ec42f69c7c0dae177eadb5ee6e",
+      "bytes": 11904
+    },
+    {
+      "path": "packages/theme-engine/src/madeyours-theme.ts",
+      "sha256": "c56bdba5b9e9376c4a296cadc2d4f31a33598a033692d2f6c21daa71b3e98193",
+      "bytes": 18882
+    },
+    {
+      "path": "packages/theme-engine/src/marginalia-discovery.ts",
+      "sha256": "a1c2c75b3497fc3f0edc1280686b75c7434e1a400c0944154c462561b62cc8d3",
+      "bytes": 7498
+    },
+    {
+      "path": "packages/theme-engine/src/marginalia-styles.ts",
+      "sha256": "112747bc358f7fb1fcaafbec32d2bc4f866cec76f0a4324003650bf4dd80e88d",
+      "bytes": 14583
+    },
+    {
+      "path": "packages/theme-engine/src/marginalia-theme.ts",
+      "sha256": "a109aa33018aa786dffaea7a067415b13fe73ddc17beca7ef18a83f58301b7e9",
+      "bytes": 19248
+    },
+    {
+      "path": "packages/theme-engine/src/niche-order-presentation.ts",
+      "sha256": "6d3cb80e5dc5c922328ae0f653d74492cc202b0f4714fc08314a81a60cfdfc00",
+      "bytes": 2503
+    },
+    {
+      "path": "packages/theme-engine/src/pantry-discovery.ts",
+      "sha256": "d9c09fe8097123623d26cde25ec9951233792adadbdf8d0eb6628659234759d0",
+      "bytes": 4344
+    },
+    {
+      "path": "packages/theme-engine/src/pantry-styles.ts",
+      "sha256": "3a7e53583942a5188970d4f5e2901ce4e894ab3b4da55a30176073eaa03db278",
+      "bytes": 11713
+    },
+    {
+      "path": "packages/theme-engine/src/pantry-theme.ts",
+      "sha256": "9c440d32f146b8155ba78f522da52979fd09a0f3d32c4b25e5c3e289ef390925",
+      "bytes": 18388
+    },
+    {
+      "path": "packages/theme-engine/src/playfield-discovery.ts",
+      "sha256": "876769a92360a5cc8cd89ab69a436c12c1eda6df32eb4466bdda10111ef297a8",
+      "bytes": 6937
+    },
+    {
+      "path": "packages/theme-engine/src/playfield-styles.ts",
+      "sha256": "7cb3da13790ec83dcb4bcf6a837abc68e53ebf9a8a49f44b5582af55b1d59243",
+      "bytes": 14097
+    },
+    {
+      "path": "packages/theme-engine/src/playfield-theme.ts",
+      "sha256": "00493cb361c8fc796941524d9673ee4c1bfa3a12785017e2397e408b924edb63",
+      "bytes": 18284
+    },
+    {
+      "path": "packages/theme-engine/src/schema-field-extensions.ts",
+      "sha256": "a5c53fdfc687bc9c7913ff64c1af1d51e496b70fd74b2a78e2b000bb66ee4d71",
+      "bytes": 17463
+    },
+    {
+      "path": "packages/theme-engine/src/section-type-map.ts",
+      "sha256": "b262e6d801be599399f18a53944507ab6886c6d9488784381297f72658331d94",
+      "bytes": 5415
+    },
+    {
+      "path": "packages/theme-engine/src/template-registry.ts",
+      "sha256": "2ab00379414a40769d793175dac97d4b795668587a48f081414326cfbb1555c7",
+      "bytes": 27675
+    },
+    {
+      "path": "packages/theme-engine/src/theme-bundle-core.ts",
+      "sha256": "0e1650a4d71ef358792c0f877f4ae678794fb6d2cfdebbb30d79563e4a2f452f",
+      "bytes": 5963
+    },
+    {
+      "path": "packages/theme-engine/src/theme-bundle.ts",
+      "sha256": "cdbad4b28277431a3ab06e56ed0ce16539e04837bb107f5f951a3df39a92ed76",
+      "bytes": 213170
+    },
+    {
+      "path": "packages/theme-engine/src/theme-document.ts",
+      "sha256": "7ba285a54d71a01545c4cb1e4a3c1540a30caae2db793079b2b3cb32b8612412",
+      "bytes": 37055
+    },
+    {
+      "path": "packages/theme-engine/src/theme-presets.ts",
+      "sha256": "283028890199a34e67863c337ebd0c788c830c60ddaa87854c3bad28f9581e82",
+      "bytes": 26801
+    },
+    {
+      "path": "packages/theme-engine/src/theme-registry.ts",
+      "sha256": "df47c3ff4a6bfb0b4dfb56a49559249ab69d44f876bf1d422ecda385f09533ce",
+      "bytes": 33011
+    },
+    {
+      "path": "packages/theme-engine/src/threadline-discovery.ts",
+      "sha256": "a3fba143d1217f0da83cf70ab335da66e82bc79cb883a9ad0e3b48773459e4b8",
+      "bytes": 2599
+    },
+    {
+      "path": "packages/theme-engine/src/threadline-styles.ts",
+      "sha256": "19927c48340b3ff3403b13a945ebe186bf928de638f47281b0fe0421ded48385",
+      "bytes": 10278
+    },
+    {
+      "path": "packages/theme-engine/src/threadline-theme.ts",
+      "sha256": "1e922e6c056de5017f35dfe08827eef0b41212b96bbff5b6695ab087422d523b",
+      "bytes": 15830
+    },
+    {
+      "path": "packages/theme-engine/src/trailmark-discovery.ts",
+      "sha256": "f69edf5815a19e513416ebb970e661793a88994a12f70e1e0e6d214f021741cb",
+      "bytes": 4940
+    },
+    {
+      "path": "packages/theme-engine/src/trailmark-styles.ts",
+      "sha256": "5dc2ae055b560a56842f4d3399f5b3b88b59c37ab5ede6c62731e44da3d1c4b0",
+      "bytes": 13200
+    },
+    {
+      "path": "packages/theme-engine/src/trailmark-theme.ts",
+      "sha256": "ec412bcee2940769612323c2155ac807cef8d73bd1a06caa754cbb1fd11e90b5",
+      "bytes": 21627
+    },
+    {
+      "path": "packages/typescript/api-client/src/index.ts",
+      "sha256": "bca9564794dc06352982fbcaa04d91bb095402d0b3f63cdeb8cfa7feab0bad47",
+      "bytes": 252594
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "sha256": "15fd89109bbc17e0624e29d5a1b56db07e19f1f880c44d9a9abf847b52b6d09a",
+      "bytes": 380811
+    },
+    {
+      "path": "scripts/governance/run-executable-suites.mjs",
+      "sha256": "022085746f83c94979889a303044aa3b4503d53606f3f1e2ad3bd3084bc75213",
+      "bytes": 34889
+    },
+    {
+      "path": "scripts/governance/test-suite-catalog.mjs",
+      "sha256": "d3a176967f9b23fa3aed93d17f4e68670becdc08c36227e06447d50f7b71d3af",
+      "bytes": 9244
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/gateway-harness.ts",
+      "sha256": "8ea080a22eda42ad030a849c9aed109d2224ad52a346081d3a0466c1f8b648f7",
+      "bytes": 14309
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/owned-db-support.ts",
+      "sha256": "bd87cee74313edf0842c275a944814c6f63b2a6e90353d5428fbef30c8301f12",
+      "bytes": 37692
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/storefront-electronics-search.postgres.test.ts",
+      "sha256": "f0893696d1104c7f46e382eab4eb44ea48758eceeed223e52a6f052385ce1617",
+      "bytes": 31294
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/synthetic-tenant.ts",
+      "sha256": "4c295d82439263daa3680138b95d624247af8fc9b201abb6df9eeb271a4644c8",
+      "bytes": 4905
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/theme-shared-groups.postgres.test.ts",
+      "sha256": "d549131349081802288196440f21bf1f7387543da126a1e5460cc44117a6044c",
+      "bytes": 33370
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/threadline-browser-fixture.ts",
+      "sha256": "3cd5e06a69fe97d6094a0b5dda168b7a67908ba975166008f9638b1e42eae445",
+      "bytes": 21156
+    },
+    {
+      "path": "services/api-gateway/src/lib/storefront-discovery.ts",
+      "sha256": "fa47b2c867e916ab082e5c420eed18751e4c313f98dd1ae2b19ec26de00afa37",
+      "bytes": 2883
+    },
+    {
+      "path": "services/api-gateway/src/routes/storefront/public-routes.ts",
+      "sha256": "21a7e4e2ffc46c1d50305a8b08360ddbac86edd06058b921a6ff06729a37163c",
+      "bytes": 75063
+    }
+  ],
+  "changes": [],
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  }
+}

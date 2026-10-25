@@ -1,0 +1,26 @@
+{
+  "purpose": "Root integration fixtures for the canonical atomic variant writer, never a seed or live merchant catalog.",
+  "identity": "Creation commands contain no ID. Readback and edit must use the durable UUID returned by canonical persistence. No SKU correlation, guessed UUID or second save.",
+  "productMetadata": {
+    "toys": {
+      "ageBands": ["6-8"], "ageStatement": "6–8 years", "interests": ["art"],
+      "contents": [{ "label": "tiles", "quantity": 12 }, { "label": "idea cards", "quantity": 2 }, { "label": "tray", "quantity": 1 }],
+      "contentsComplete": true,
+      "dimensions": { "label": "Tray", "length": 24, "width": 19, "height": 1.5, "unit": "cm" },
+      "additionalDimensions": [{ "label": "Each tile", "length": 5, "width": 5, "height": 0.6, "unit": "cm" }],
+      "materials": "Wood", "warnings": [{ "text": "Read the sample kit information.", "sourceLabel": "Fictional integration fixture" }]
+    }
+  },
+  "variants": [
+    { "title": "Inherited sample edition", "stock": 4, "options": { "Edition": "Inherited" }, "metadata": { "toys": { "finish": "Sample blue finish" } } },
+    { "title": "Explicit unknown sample edition", "stock": 2, "options": { "Edition": "Unknown facts" }, "metadata": { "toys": { "ageBands": [], "contents": [], "dimensions": null, "additionalDimensions": [], "warnings": [] } } },
+    { "title": "Different paper sample edition", "stock": 3, "options": { "Edition": "Paper" }, "metadata": { "toys": { "ageBands": ["9-12"], "contents": [{ "label": "paper sheets", "quantity": 36 }], "contentsComplete": true, "dimensions": { "label": "A5 sheet", "length": 21, "width": 14.8, "unit": "cm" }, "additionalDimensions": [], "materials": "Paper", "warnings": [] } } }
+  ],
+  "expectations": [
+    "Inherited edition has 15 complete items, common tray/tile measurements, age and warning; only finish changes.",
+    "Unknown edition has no ageStatement, no ageBands, no contents, contentsComplete false, dimensions null, no additional measurements or warnings.",
+    "Paper edition has 36 sheets, one A5 measurement, no inherited tray height/tile measurements, no old prose ageStatement, and no warning from another edition.",
+    "Changing selected variants updates the displayed accepted facts and server cart/order snapshot; prior selection never leaks.",
+    "A bad variant payload rejects the atomic mutation; parent/variants/outbox remain unchanged. Cross-tenant facts never read or mutate."
+  ]
+}

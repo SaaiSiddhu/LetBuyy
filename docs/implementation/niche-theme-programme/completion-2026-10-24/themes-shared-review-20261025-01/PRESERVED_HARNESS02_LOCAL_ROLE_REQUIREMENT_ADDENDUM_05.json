@@ -1,0 +1,58 @@
+{
+  "recordedAt": "2026-10-25T04:15:28.497000+00:00",
+  "expiresAt": "2026-10-25T04:39:27.265902+00:00",
+  "ends": "Samefirstcombinedsupplementseal/deadlineaslauncher04",
+  "status": "GRANTED_PRECISE_LOCAL_FIXTURE_ROLE_VALIDATOR_CORRECTION_COMBINED_WITH_UNSEALED_LAUNCHER_SUPPLEMENT",
+  "owner": "01a16d03-613e-71b0-a591-07d4d24347d4",
+  "privateRoot": "/private/tmp/letbuyy-preserved-runtime07-prep-20261025-02",
+  "parent": "PRESERVED_HARNESS02_LAUNCHER_SUPPLEMENT_CONTINUATION_04.json",
+  "newContext": [
+    {
+      "path": "scripts/governance/owned-database-provision.mjs",
+      "beforeSha256": "2960af9b57479eb9365ad3962239a44c406ab7d216d1e0f99d6357542f023f34",
+      "scope": "Onlycanonicalminimumrolenames validation sixactualownedfixture roles; allroleattributes/passwords/settings/membership/profile/witness/restorewriter unchanged."
+    },
+    {
+      "path": "tests/governance/owned-preserved-runtime.test.mjs",
+      "beforeSha256": "bf5e6594e7c2d96a52748e2a2651ddc7a3da1028ef2677a66e9b5dd88f6a1540",
+      "scope": "Samealreadyownedlauncher supplementtestpath; addfocusedlocal20rolenoSupabaseAdminpositive, missingeachactualrequiredroleandfullprofiletampernegative. No actualprivateprofile/keys read."
+    }
+  ],
+  "cumulativeSupplementMutablePaths": [
+    "scripts/governance/owned-database-provision.mjs",
+    "scripts/governance/run-executable-suites.mjs",
+    "tests/governance/owned-preserved-runtime.test.mjs"
+  ],
+  "verifiedFinding": {
+    "source": "validatePreservedCapsule currentlyrequires supabase_admin in7-roleminimum",
+    "actualRootReceipt": {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/original210-recovery-candidate01/PRIVATE_CAPSULE_PROVISIONAL_PREFLIGHT01.json",
+      "sha256": "9be3d03a4cd6fc161cea95ad574e78b07f715802ef03083bced3dc2a6f6a4e7e"
+    },
+    "actual": "Original20roles/8memberships lacksupabase_admin; actualcapsulerejectedCANONICAL_ROLES_REQUIRED beforeanyDocker/resource. RootreadonlyPG16profile matched exactoriginal; nofakecapsuleprofile allowed.",
+    "sourceContext": "CanonicallocalSupabase-faithful ownedfixture bootstrap/transport roles do notrequire managedprovideradministrationrole; thisislocalfixture validation, notproductionidentity/architecture rolepolicy."
+  },
+  "requiredRoles": [
+    "postgres",
+    "anon",
+    "authenticated",
+    "service_role",
+    "authenticator",
+    "app_tenant"
+  ],
+  "optionalOnly": "supabase_adminifactuallypresent remainsallowedsubjecttoexistingattribute/superuser validation andexactprofile/witness; never add/inventrole tosourceDB/capsule/target.",
+  "checks": [
+    "Synthetic20-roleactualshape withoutsupabase_admin accepted; rawactualprivateroles neverprinted/readunderthissourcegrant.",
+    "Omit eachsixrequiredrole and recomputesyntheticprofiledigest, stillrejectCANONICAL_ROLES_REQUIRED so testexercisesguard notincidentalhashfailure.",
+    "Full20-role attributes/settings/passworddigest/membership mutation remainsrejected byexistinghash/validation/witness; superuserallowlist unaffected.",
+    "Keep launchernegative/valid/list/reap-onlycontrols incombinedsame3path supplement; preserveallother7context/frozen02durableevidence/accepted5P1sourcebytes."
+  ],
+  "delivery": "Onecombined HANDOFF_LAUNCHER03.json/patch/TAP/sourcepins now3paths plus bothgrant04/addendum05 hashes. No newroot/copy/resealoldHANDOFF; exactsource02beforepinsretained. Rootcopiesonlyreviewedfinal3sourcefiles, notprivateprofiles.",
+  "forbidden": [
+    "Actualprivatecapsule/backup/rolepassword/state/keyread",
+    "Docker/PG/restore/build/stage/serve/browser/provider/network",
+    "FakeSupabaseadmincreation/attributeorroleprofileloosening",
+    "Main/globalvendor/source02frozenhistoryrewrite/ordinaryguardchange"
+  ],
+  "nativePermission": "None; separate newresourceapprovalrequiredafterRootactualprivatecapsulepreflightpasses."
+}

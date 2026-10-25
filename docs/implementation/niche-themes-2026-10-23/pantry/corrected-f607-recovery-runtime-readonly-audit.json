@@ -1,0 +1,58 @@
+{
+  "recordedAt": "2026-10-23T20:53:50.291322+00:00",
+  "classification": "READ_ONLY_OWNER_RUNTIME_STARTUP_AND_EXPLICIT_SOLE_EDITOR_ALLOCATION_AUDIT",
+  "status": "BOTH_CONTROLLED_CLIENTS_READY_OWNER_SAVED_RECEIPTS_VERIFIED_PANTRY_RETEST_PENDING",
+  "databaseRun": "f6074d90e894",
+  "candidateRoot": "/private/tmp/theme-editor-recovery-20261024-01",
+  "sourceProofSha256": "702b3a632462cff507993e80b58171fb8d0c246c2913de643bfbe4cf3438522f",
+  "runtimeAdmission": {
+    "path": "docs/implementation/niche-theme-programme/supplemental-recovery-runtime-admission.json",
+    "sha256": "c75a1b41d6c0b76ae840fc636cdbee421624d84d9b057948037c077ed1b630f2"
+  },
+  "clientStartupReceipts": [
+    {
+      "kind": "merchant-next-production",
+      "port": 49943,
+      "recordedHealthStatus": 307,
+      "receipt": {
+        "path": "docs/implementation/niche-theme-programme/supplemental-recovery-merchant-next-production-startup.json",
+        "sha256": "3fc504156c19489171336c58baae1e78f56211d49f8c561a4d798e59ed1d344b"
+      },
+      "sourceProofSha256": "702b3a632462cff507993e80b58171fb8d0c246c2913de643bfbe4cf3438522f",
+      "all19DeltaHashAndSizeChecksMatch": true,
+      "recordedOtherThemeOrderCountAtStartup": 1
+    },
+    {
+      "kind": "commerce-next-production",
+      "port": 49944,
+      "recordedHealthStatus": 200,
+      "receipt": {
+        "path": "docs/implementation/niche-theme-programme/supplemental-recovery-commerce-next-production-startup.json",
+        "sha256": "0bc64af20d264ded3d6a0371d2c51355e8e44b8b1c1392e4ea7c0d6e554385d5"
+      },
+      "sourceProofSha256": "702b3a632462cff507993e80b58171fb8d0c246c2913de643bfbe4cf3438522f",
+      "all19DeltaHashAndSizeChecksMatch": true,
+      "recordedOtherThemeOrderCountAtStartup": 1
+    }
+  ],
+  "allocation": "Sole Editor first natural merchant Habitat later edit with actual stock omission/conserved consumed inventory, original loaded pre-edit cart and both old order histories; then normal new-commerce session/cart/stock recovery. No separate Pantry browser or fixture granted.",
+  "continuityLimits": [
+    "New commerce origin has its own localStorage; create its cart normally through existing UI.",
+    "Do not copy tokens/cookies/storage/capabilities or replace the preserved old Habitat pre-edit cart.",
+    "Original hosted checkout return links still target original commerce origin; cross-port cart continuity is not accepted.",
+    "Original issuer/hosted checkout retained; no new payment provider or signing key access."
+  ],
+  "caseCredit": {
+    "originalPantryP00P07": "PASS retained",
+    "originalPantryP08": "FAIL retained until actual Pantry recovery receipts",
+    "PantryP09P12": "NOT RUN",
+    "P12StaleCartResult": "NOT RUN"
+  },
+  "limits": [
+    "Saved startup HTTP readiness receipts verified; Pantry did not probe running ports, browser, API or DB.",
+    "Source delta hashes checked read-only after builds; full17243-source rehash/dependency resolution is Root-reported and not independently repeated.",
+    "No normal UI success is inferred from HTTP-ready startup or source gates.",
+    "One order recorded in startup is Habitat; it is not Pantry P09/P10 evidence."
+  ],
+  "sourceChangesByPantry": []
+}

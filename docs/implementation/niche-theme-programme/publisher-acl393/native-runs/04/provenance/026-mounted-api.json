@@ -1,0 +1,39 @@
+{
+  "runId": "3948938e7c9b",
+  "name": "mounted-api",
+  "sequence": 26,
+  "suiteSha256": "e71b15856e4868d28f249d8debf7f758de31cf61715bd10c0844ce79c2bc66b2",
+  "value": {
+    "path": "/v1/themes/letbuyy-sense/publish",
+    "method": "POST",
+    "status": 200,
+    "response": {
+      "success": true,
+      "data": {
+        "store": {
+          "id": "4989fad3-906c-44f0-9878-782fe2a2b7b1",
+          "status": "published",
+          "theme_id": "letbuyy-sense",
+          "updated_at": "2026-10-24T05:35:51.463382Z",
+          "current_theme_release_id": "fe93872b-8ec8-4206-9391-006a2221d99c",
+          "storefront_release_version": 1
+        },
+        "theme": {
+          "id": "7b669c70-0000-4000-8000-000000000002",
+          "name": "Threadline",
+          "slug": "letbuyy-sense"
+        },
+        "release": {
+          "release_id": "fe93872b-8ec8-4206-9391-006a2221d99c",
+          "published_at": "2026-10-24T05:35:51.463382Z",
+          "release_version": 1
+        },
+        "version": 3,
+        "replayed": true,
+        "published_at": "2026-10-24T05:35:51.463382Z",
+        "template_key": "index",
+        "current_version": 3
+      }
+    }
+  }
+}

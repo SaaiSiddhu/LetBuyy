@@ -1,0 +1,193 @@
+- status
+- status: Apps
+- link "Skip to content":
+  - /url: "#AppFrameMain"
+  - strong:
+    - generic: Skip to content
+- generic "Navigation":
+  - img "Shopify"
+  - button "Search":
+  - navigation:
+    - list:
+      - link "Home":
+        - /url: /store/[test-store]
+        - generic: Home
+      - link "Orders":
+        - /url: /store/[test-store]/orders
+        - generic: Orders
+      - link "Products":
+        - /url: /store/[test-store]/products
+        - generic: Products
+      - link "Customers":
+        - /url: /store/[test-store]/customers
+        - generic: Customers
+      - link "Growth":
+        - /url: /store/[test-store]/growth
+        - generic: Growth
+      - link "Discounts":
+        - /url: /store/[test-store]/discounts
+        - generic: Discounts
+      - link "Content":
+        - /url: /store/[test-store]/content/metaobjects
+        - generic: Content
+      - link "Markets":
+        - /url: /store/[test-store]/markets
+        - generic: Markets
+      - link "Analytics":
+        - /url: /store/[test-store]/analytics
+        - generic: Analytics
+    - list:
+      - separator
+      - list:
+        - button "Sales channels":
+          - generic: Sales channels
+      - separator
+      - list:
+        - button "Apps":
+          - generic: Apps
+    - list:
+      - link "Settings":
+        - /url: /store/[test-store]/settings
+        - generic: Settings
+      - button "Alerts Feed - 0 unread alerts":
+      - generic: Mark all as read
+      - generic: Alerts about your store and account will show here
+      - button "[test identity]":
+        - img "[test identity]":
+          - generic: MS4
+      - generic: View Dev Dashboard
+    - link "Trial ends in 2 days. Subscribe for ₹20":
+      - /url: /store/[test-store]/subscribe/checkout
+  - button "Back from Settings":
+    - generic: Settings
+  - search "Shop settings menu":
+    - combobox "Search settings"
+  - navigation "Shop settings menu":
+    - heading "[test identity]" [level=3]:
+      - generic: [test identity]
+    - link "[test identity].myshopify.com":
+      - /url: /store/[test-store]/settings/domains
+      - generic: [test identity].myshopify.com
+    - button "Update internal icon":
+      - img "[test identity]":
+        - generic: MS4
+    - list:
+      - link "General":
+        - /url: /store/[test-store]/settings/general
+        - generic: General
+      - link "Plan":
+        - /url: /store/[test-store]/settings/plan
+        - generic: Plan
+      - link "Billing":
+        - /url: /store/[test-store]/settings/billing
+        - generic: Billing
+      - link "Users":
+        - /url: /store/[test-store]/settings/organization-account
+        - generic: Users
+      - link "Payments":
+        - /url: /store/[test-store]/settings/payments
+        - generic: Payments
+      - link "Checkout":
+        - /url: /store/[test-store]/settings/checkout
+        - generic: Checkout
+      - link "Customer accounts":
+        - /url: /store/[test-store]/settings/customer_accounts
+        - generic: Customer accounts
+      - link "Shipping and delivery":
+        - /url: /store/[test-store]/settings/shipping
+        - generic: Shipping and delivery
+      - link "Taxes and duties":
+        - /url: /store/[test-store]/settings/taxes
+        - generic: Taxes and duties
+      - link "Locations":
+        - /url: /store/[test-store]/settings/locations
+        - generic: Locations
+      - link "Apps" [active]:
+        - /url: /store/[test-store]/settings/apps
+        - generic: Apps
+      - link "Sales channels":
+        - /url: /store/[test-store]/settings/sales_channels
+        - generic: Sales channels
+      - link "Domains":
+        - /url: /store/[test-store]/settings/domains
+        - generic: Domains
+      - link "Customer events":
+        - /url: /store/[test-store]/settings/customer_events
+        - generic: Customer events
+      - link "Notifications":
+        - /url: /store/[test-store]/settings/notifications
+        - generic: Notifications
+      - link "Metafields and metaobjects":
+        - /url: /store/[test-store]/settings/custom_data
+        - generic: Metafields and metaobjects
+      - link "Languages":
+        - /url: /store/[test-store]/settings/languages
+        - generic: Languages
+      - link "Customer privacy":
+        - /url: /store/[test-store]/settings/privacy
+        - generic: Customer privacy
+      - link "Policies":
+        - /url: /store/[test-store]/settings/legal
+        - generic: Policies
+  - link "[test identity] [email redacted]":
+    - /url: https://accounts.shopify.com/accounts/[account]/redirect
+    - img "SM":
+      - generic: SM
+    - heading "[test identity]" [level=6]:
+      - generic: [test identity]
+    - generic: [email redacted]
+- main:
+  - heading [level=1]: Apps
+  - link "Link to develop apps":
+    - /url: /store/[test-store]/settings/apps/development
+    - generic: Develop apps
+  - link "Shopify App Store":
+    - /url: https://apps.shopify.com/login/authenticate?[query omitted]
+    - generic: Shopify App Store
+  - heading "Apps" [level=1]
+  - paragraph: Add apps to your store
+  - paragraph: Apps and sales channels add features and tools that take your business to the next level. Choose from thousands of free and paid apps to find what works for you.
+  - link "Explore apps":
+    - /url: https://apps.shopify.com/login/authenticate?[query omitted]
+    - generic: Explore apps
+  - paragraph:
+    - button "Learn more about apps":
+      - generic: Learn more about apps
+  - status
+- status
+- region "Sidekick":
+  - status
+  - paragraph
+  - button "Close" [disabled]:
+  - generic: Work with Sidekick
+  - textbox "Work with Sidekick"
+  - button "Add files and more":
+  - button "Voice":
+  - button "Open Sidekick":
+- generic: General shortcuts
+- generic: Adding items to your store
+- generic: Navigating your admin panel
+- generic: Navigating settings
+- separator "Resize sidebar"
+- complementary "Sidekick":
+  - button "Recents":
+    - generic: Recents
+  - button "Memory settings":
+  - generic: Memory
+  - generic: Allow Sidekick to update and access preferences you've shared.
+  - button "Expand":
+  - button "Close Sidekick":
+  - status
+  - heading "Where should we begin?" [level=2]:
+    - generic: Where should we begin?
+  - status
+  - paragraph: You appear to be offline. Messaging may not work as expected.
+  - button "Close" [disabled]:
+  - generic: Heading
+  - button "Remove Heading":
+  - generic: Work with Sidekick
+  - textbox "Work with Sidekick"
+  - button "Add files and more":
+  - button "Voice":
+- status
+- alert

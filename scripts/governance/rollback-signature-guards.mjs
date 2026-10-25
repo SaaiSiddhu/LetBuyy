@@ -1,3 +1,4 @@
+import { normalizeVerifiedManagedCatalogFences } from './managed-catalog-fence.mjs';
 import {createHash} from 'node:crypto';
 // Pure, deliberately finite source recognizer. A label/comment is never a guard.
 // Unknown PL/pgSQL is rejected; executable catalog behavior is tested separately.
@@ -543,6 +544,38 @@ function publicationVisibilityGuard(body, definitions) {
     return [{name:'publish_theme_release',identity:signature,input_names:inputs,result_type:'record',returns_set:true,overloads:1,level:'typed-ABI',
         output_abi:{names,types,modes:[...Array(10).fill('i'),...Array(3).fill('t')]},profile_fingerprint:{body_md5:reviewedBody,defaults:7,api_roles_closed:true}}];
 }
+// The canonical template-key draft mutation has one reviewed 12-input ABI.
+// Recognize its complete immutable profile; neither a filename nor a label is proof.
+function draftTemplateKeyGuard(body, definitions) {
+    const {nodes,declarations}=new GuardParser(body).parse();
+    const signature='public.mutate_owned_theme_draft_v1(uuid,uuid,text,text,integer,text,text,jsonb,jsonb,uuid,text,jsonb)';
+    const inputs=['p_actor_id','p_store_id','p_theme_slug','p_template_key','p_base_version','p_key','p_operation','p_config','p_runtime','p_bound_site_id','p_request_id','p_publish_options'];
+    if(declarations.length!==1 || !same(declarations[0],'p pg_catalog.pg_proc%ROWTYPE') || nodes.length!==2
+       || nodes[0].op!=='select' || !same(nodes[0].tokens,"SELECT * INTO p FROM pg_catalog.pg_proc WHERE oid=pg_catalog.to_regprocedure('"+signature+"')")
+       || !refuses(nodes[1]) || nodes[1].branches.length!==1 || nodes[1].branches[0].nodes[0].tokens.length!==3)return [];
+    const restored=definitions.filter(fn=>fn.identity===signature);
+    if(restored.length!==1 || JSON.stringify(restored[0].inputNames)!==JSON.stringify(inputs))return [];
+    const conditions=[
+      'p.oid IS NULL', "p.prokind<>'f'", 'p.prosecdef', 'p.proretset',
+      "p.prorettype<>'jsonb'::regtype", 'p.pronargdefaults<>5', 'p.provariadic<>0',
+      "p.provolatile<>'v'", 'p.proisstrict', 'p.proleakproof', "p.proparallel<>'u'",
+      'p.procost<>100', 'p.prorows<>0', 'p.prosupport<>0', 'p.probin IS NOT NULL', 'p.prosqlbody IS NOT NULL',
+      'p.proallargtypes IS NOT NULL', 'p.proargmodes IS NOT NULL', 'p.protrftypes IS NOT NULL',
+      "p.proargnames IS DISTINCT FROM ARRAY["+inputs.map(v=>"'"+v+"'").join(',')+"]::text[]",
+      "p.proconfig IS DISTINCT FROM ARRAY['search_path=pg_catalog, public']::text[]",
+      "pg_catalog.pg_get_expr(p.proargdefaults,0) IS DISTINCT FROM 'NULL::jsonb, ''{}''::jsonb, NULL::uuid, NULL::text, ''{}''::jsonb'",
+      "p.proowner<>(SELECT relowner FROM pg_catalog.pg_class WHERE oid='public.sites'::regclass)",
+      "p.prolang<>(SELECT oid FROM pg_catalog.pg_language WHERE lanname='plpgsql')",
+      '(SELECT count(*) FROM pg_catalog.pg_proc q WHERE q.pronamespace=p.pronamespace AND q.proname=p.proname)<>1',
+      "pg_catalog.md5(p.prosrc) NOT IN('b770c5c649eee8eca3b5cc8f5e488c69','2a6e74135720d0557ba921d517e88a13')",
+      "NOT pg_catalog.has_function_privilege('service_role',p.oid,'EXECUTE')",
+      "EXISTS(SELECT 1 FROM pg_catalog.aclexplode(coalesce(p.proacl,pg_catalog.acldefault('f',p.proowner))) a WHERE a.grantee NOT IN(p.proowner,'service_role'::regrole::oid) OR (a.grantee<>p.proowner AND a.is_grantable))"
+    ];
+    if(!equalTerms(nodes[1].branches[0].condition,conditions))return [];
+    return [{name:'mutate_owned_theme_draft_v1',identity:signature,input_names:inputs,result_type:'jsonb',returns_set:false,overloads:1,level:'typed-ABI',
+      profile_fingerprint:{body_md5s:['b770c5c649eee8eca3b5cc8f5e488c69','2a6e74135720d0557ba921d517e88a13'],defaults:5,requires_private_acl:true}}];
+}
+
 // The backend-only metadata reader retains the exact full-profile/ACL refusal.
 // All predicate tokens, allowed body hashes, argument names and overload checks
 // are literal-reviewed here. Any altered or extra statement earns no proof.
@@ -592,6 +625,7 @@ function baseRollbackSignatureGuards(sql) {
                 let profile=storefrontMetadataGuard(statement[1].value,restoredDefinitions(sql));
                 if (!profile.length && (profileRefusal(statement[1].value,guards)||fingerprintRefusal(statement[1].value,guards)))continue;
                 if (!profile.length) profile=publicationVisibilityGuard(statement[1].value,restoredDefinitions(sql));
+                if (!profile.length) profile=draftTemplateKeyGuard(statement[1].value,restoredDefinitions(sql));
                 const rows=profile.length?profile:analyzeBlock(statement[1].value, restoredDefinitions(sql));
                 if(!rows.length && !new GuardParser(statement[1].value).parse().nodes.every(node=>node.op==='raise'||readOnlyRefusal(node)))return [];
                 guards.push(...rows.map(row=>({...row,guard_start:statement[0].start})));
@@ -616,7 +650,7 @@ function literalRestorations(statement) {
     return found;
 }
 function restoredDefinitions(sql) {
-    return [...functionDefinitions(sql), ...sqlStatements(sql).flatMap(literalRestorations)];
+    return functionDefinitions(sql);
 }
 export function guardedRestorations(sql, {forwardSql} = {}) {
     const guards=[...rollbackSignatureGuards(sql), ...birthBoundSignatureGuards(sql,forwardSql)];
@@ -2967,9 +3001,157 @@ function traversalCatalogCertificate(sql) {
     }catch{return [];}
 }
 
+
+const CART_FACT_ROLLBACK_PREFIX = String.raw`--388 DOWN: preserve all historical order snapshots/images. Refuse active capability loss.
+BEGIN;
+SET LOCAL search_path=pg_catalog,public;
+LOCK TABLE pg_catalog.pg_proc IN SHARE ROW EXCLUSIVE MODE;
+LOCK TABLE public.carts,public.products,public.product_variants,public.product_options IN ACCESS EXCLUSIVE MODE;
+DO $cart_rollback_typed_abi$
+DECLARE expected record; live pg_catalog.pg_proc%ROWTYPE;
+BEGIN
+ FOR expected IN SELECT * FROM (VALUES
+ ('public.create_order_with_inventory_reservations(uuid,text,text,text,jsonb,jsonb,text,text,text,uuid,text)',ARRAY['p_store_id','p_customer_name','p_customer_email','p_customer_phone','p_shipping_address','p_items','p_payment_method','p_notes','p_coupon_code','p_actor_id','p_request_id']::text[]),
+ ('public.apply_product_edit_v1(uuid,uuid,uuid,integer,uuid,jsonb)',ARRAY['p_store_id','p_product_id','p_actor_id','p_expected_version','p_idempotency_key','p_mutation']::text[]),
+ ('public.create_marketplace_checkout_order(uuid,text,text,text,jsonb,jsonb,text,text,text,text,text,text,uuid,text,uuid,numeric,text,jsonb,uuid,integer)',ARRAY['p_store_id','p_customer_name','p_customer_email','p_customer_phone','p_shipping_address','p_items','p_payment_method','p_notes','p_coupon_code','p_gift_card_code','p_shipping_method','p_idempotency_key','p_actor_id','p_request_id','p_shipping_rate_id','p_tax_amount','p_place_of_supply_state','p_tax_lines','p_buyer_account_id','p_buyer_session_epoch']::text[]),
+ ('public.create_checkout_order(uuid,text,text,text,jsonb,jsonb,text,text,text,text,text,text,uuid,text,uuid,numeric,text,jsonb,uuid,bigint)',ARRAY['p_store_id','p_customer_name','p_customer_email','p_customer_phone','p_shipping_address','p_items','p_payment_method','p_notes','p_coupon_code','p_gift_card_code','p_shipping_method','p_idempotency_key','p_actor_id','p_request_id','p_shipping_rate_id','p_tax_amount','p_place_of_supply_state','p_tax_lines','p_buyer_account_id','p_loyalty_points']::text[])
+ ) AS bounded(signature,input_names) LOOP
+  SELECT * INTO live FROM pg_catalog.pg_proc WHERE oid=pg_catalog.to_regprocedure(expected.signature);
+  IF live.oid IS NULL OR live.prokind<>'f' OR NOT live.prosecdef OR live.proretset
+   OR live.prorettype<>'jsonb'::regtype OR live.provariadic<>0
+   OR live.proargnames IS DISTINCT FROM expected.input_names
+   OR live.proargmodes IS NOT NULL OR live.proallargtypes IS NOT NULL
+   OR (SELECT count(*) FROM pg_catalog.pg_proc other WHERE other.pronamespace=live.pronamespace AND other.proname=live.proname)<>1
+   OR pg_catalog.has_function_privilege('anon',live.oid,'EXECUTE')
+   OR pg_catalog.has_function_privilege('authenticated',live.oid,'EXECUTE') THEN
+   RAISE EXCEPTION '388 rollback refuses changed typed ABI or API role authority';
+  END IF;
+ END LOOP;
+END $cart_rollback_typed_abi$;
+
+DO $snapshot_rollback_contract$
+BEGIN
+ IF NOT EXISTS(SELECT 1 FROM pg_catalog.pg_proc p WHERE p.oid='public.create_order_with_inventory_reservations(uuid,text,text,text,jsonb,jsonb,text,text,text,uuid,text)'::regprocedure
+   AND pg_catalog.md5(p.prosrc)='fff80af060ac84b405796811f0e63fd3' AND p.prosecdef AND p.pronargs=11
+   AND p.proconfig=ARRAY['search_path=public']::text[] AND p.prorettype='jsonb'::regtype
+   AND p.proowner=(SELECT relowner FROM pg_catalog.pg_class WHERE oid='public.orders'::regclass))
+ OR NOT EXISTS(SELECT 1 FROM pg_catalog.pg_proc p WHERE p.oid='public.apply_product_edit_v1(uuid,uuid,uuid,integer,uuid,jsonb)'::regprocedure
+   AND pg_catalog.md5(p.prosrc)='6abf85c4c775fb493076a36481b8864e' AND p.prosecdef AND p.pronargs=6
+   AND p.proconfig=ARRAY['search_path=pg_catalog, public, pg_temp']::text[] AND p.prorettype='jsonb'::regtype
+   AND p.proowner=(SELECT relowner FROM pg_catalog.pg_class WHERE oid='public.products'::regclass))
+ OR NOT EXISTS(SELECT 1 FROM pg_proc p WHERE p.oid='public.create_marketplace_checkout_order(uuid,text,text,text,jsonb,jsonb,text,text,text,text,text,text,uuid,text,uuid,numeric,text,jsonb,uuid,integer)'::regprocedure AND md5(p.prosrc)='cf2045226f9e4e8137e79c43f779d440' AND p.prosecdef AND p.proowner=(SELECT relowner FROM pg_class WHERE oid='public.orders'::regclass) AND p.proconfig=ARRAY['search_path=pg_catalog, public']::text[])
+ OR NOT EXISTS(SELECT 1 FROM pg_proc p WHERE p.oid='public.create_checkout_order(uuid,text,text,text,jsonb,jsonb,text,text,text,text,text,text,uuid,text,uuid,numeric,text,jsonb,uuid,bigint)'::regprocedure AND md5(p.prosrc)='e767fab28186e86e523f92a8a9b59898' AND p.prosecdef AND p.proowner=(SELECT relowner FROM pg_class WHERE oid='public.orders'::regclass) AND p.proconfig=ARRAY['search_path=public']::text[]) THEN
+   RAISE EXCEPTION '388 refuses changed predecessor/rollback writer contract'; END IF;
+END $snapshot_rollback_contract$;
+DO $snapshot_rollback_safe$
+BEGIN
+ IF EXISTS(SELECT 1 FROM public.products WHERE deleted_at IS NULL AND is_active AND metadata ?| ARRAY['toys','electronics','food','furniture','gifts','personalization','beauty','sports','books'])
+ OR EXISTS(SELECT 1 FROM public.products p JOIN public.product_variants v ON v.product_id=p.id
+   WHERE p.deleted_at IS NULL AND p.is_active AND (v.metadata<>'{}'::jsonb OR v.option1 IS NOT NULL OR v.option2 IS NOT NULL OR v.option3 IS NOT NULL))
+ OR EXISTS(SELECT 1 FROM public.products p JOIN public.product_options o ON o.product_id=p.id WHERE p.deleted_at IS NULL AND p.is_active)
+ OR EXISTS(SELECT 1 FROM public.carts WHERE deleted_at IS NULL AND status='active' AND fact_acceptance_version=1 AND jsonb_array_length(items)>0) THEN
+ RAISE EXCEPTION '388 rollback requires archiving factful products and closing accepted active carts first; historical snapshots are retained'; END IF;
+END $snapshot_rollback_safe$;
+DO $restore_cart_authority$
+DECLARE journal_entry record; target text;
+BEGIN
+ IF EXISTS(SELECT 1 FROM public.migration_privilege_journal j LEFT JOIN pg_proc p ON p.oid=j.object_oid WHERE j.migration='388' AND j.object_signature NOT LIKE 'public.carts%' AND (p.oid IS NULL OR j.object_definition_hash IS DISTINCT FROM encode(sha256(convert_to(pg_get_functiondef(p.oid),'UTF8')),'hex'))) THEN RAISE EXCEPTION '388 rollback function identity changed'; END IF;
+ FOR journal_entry IN SELECT * FROM public.migration_privilege_journal WHERE migration='388' ORDER BY action,object_signature,grantee,privilege LOOP
+   IF journal_entry.object_signature LIKE 'public.carts%' THEN
+     IF journal_entry.object_oid IS DISTINCT FROM 'public.carts'::regclass::oid OR journal_entry.object_owner IS DISTINCT FROM (SELECT relowner FROM pg_class WHERE oid='public.carts'::regclass) THEN RAISE EXCEPTION '388 rollback object changed'; END IF;
+     target:='TABLE public.carts';
+   ELSE
+     IF journal_entry.object_oid IS DISTINCT FROM to_regprocedure(journal_entry.object_signature)::oid OR journal_entry.object_owner IS DISTINCT FROM (SELECT proowner FROM pg_proc WHERE oid=journal_entry.object_oid) THEN RAISE EXCEPTION '388 rollback object changed'; END IF;
+     target:='FUNCTION '||journal_entry.object_signature;
+   END IF;
+   IF journal_entry.action='granted' THEN EXECUTE format('REVOKE %s ON %s FROM %I',journal_entry.privilege,target,journal_entry.grantee);
+   ELSE EXECUTE format('GRANT %s ON %s TO %s%s',replace(journal_entry.privilege,' WITH GRANT OPTION',''),target,
+      CASE WHEN journal_entry.grantee='PUBLIC' THEN 'PUBLIC' ELSE quote_ident(journal_entry.grantee) END,
+      CASE WHEN journal_entry.privilege LIKE '% WITH GRANT OPTION' THEN ' WITH GRANT OPTION' ELSE '' END); END IF;
+ END LOOP;
+ DELETE FROM public.migration_privilege_journal WHERE migration='388';
+END $restore_cart_authority$;
+
+
+`;
+const CART_FACT_ROLLBACK_ABIS = [{"name": "create_order_with_inventory_reservations", "identity": "public.create_order_with_inventory_reservations(uuid,text,text,text,jsonb,jsonb,text,text,text,uuid,text)", "inputNames": ["p_store_id", "p_customer_name", "p_customer_email", "p_customer_phone", "p_shipping_address", "p_items", "p_payment_method", "p_notes", "p_coupon_code", "p_actor_id", "p_request_id"], "definer": true, "sameNames": true}, {"name": "apply_product_edit_v1", "identity": "public.apply_product_edit_v1(uuid,uuid,uuid,integer,uuid,jsonb)", "inputNames": ["p_store_id", "p_product_id", "p_actor_id", "p_expected_version", "p_idempotency_key", "p_mutation"], "definer": true, "sameNames": true}, {"name": "create_marketplace_checkout_order", "identity": "public.create_marketplace_checkout_order(uuid,text,text,text,jsonb,jsonb,text,text,text,text,text,text,uuid,text,uuid,numeric,text,jsonb,uuid,integer)", "inputNames": ["p_store_id", "p_customer_name", "p_customer_email", "p_customer_phone", "p_shipping_address", "p_items", "p_payment_method", "p_notes", "p_coupon_code", "p_gift_card_code", "p_shipping_method", "p_idempotency_key", "p_actor_id", "p_request_id", "p_shipping_rate_id", "p_tax_amount", "p_place_of_supply_state", "p_tax_lines", "p_buyer_account_id", "p_buyer_session_epoch"], "definer": true, "sameNames": true}, {"name": "create_checkout_order", "identity": "public.create_checkout_order(uuid,text,text,text,jsonb,jsonb,text,text,text,text,text,text,uuid,text,uuid,numeric,text,jsonb,uuid,bigint)", "inputNames": ["p_store_id", "p_customer_name", "p_customer_email", "p_customer_phone", "p_shipping_address", "p_items", "p_payment_method", "p_notes", "p_coupon_code", "p_gift_card_code", "p_shipping_method", "p_idempotency_key", "p_actor_id", "p_request_id", "p_shipping_rate_id", "p_tax_amount", "p_place_of_supply_state", "p_tax_lines", "p_buyer_account_id", "p_loyalty_points"], "definer": true, "sameNames": true}];
+const rollbackPrefixModel = sql => sqlStatements(sql).map(statement => statement[0]?.value==='do'
+    ? ['do',sqlTokens(statement[1].value).map((token,index,tokens)=>[token.kind,
+        token.kind==='string' && tokens[index-2]?.value==='raise' && tokens[index-1]?.value==='exception'
+            ? '__refusal__' : token.value])]
+    : statement.map(token=>[token.kind,token.value]));
+function cartFactRollbackGuards(sql) {
+    try {
+        const statements=sqlStatements(sql),definitions=functionDefinitions(sql);
+        if(!same(statements[0]??[],'BEGIN;') || !same(statements.at(-1)??[],'COMMIT;')
+          || statements.slice(1,-1).some(statement=>['begin','commit','rollback','savepoint'].includes(statement[0]?.value))
+          || definitions.length!==CART_FACT_ROLLBACK_ABIS.length)return [];
+        const first=Math.min(...definitions.map(fn=>fn.start));
+        if(JSON.stringify(rollbackPrefixModel(sql.slice(0,first)))!==JSON.stringify(rollbackPrefixModel(CART_FACT_ROLLBACK_PREFIX)))return [];
+        return CART_FACT_ROLLBACK_ABIS.map(binding=>{
+            const restored=definitions.find(fn=>fn.identity===binding.identity);
+            if(!restored || JSON.stringify(restored.inputNames)!==JSON.stringify(binding.inputNames))throw Error('Changed restored named ABI');
+            return {identity:binding.identity,name:binding.name,input_names:binding.inputNames,level:'typed-ABI',
+                result_type:'jsonb',returns_set:false,overloads:1,guard_start:statements[0].start,
+                profile_fingerprint:{typed_arguments:true,body_owner_checks:true,private_journal:true,active_capabilities_refused:true}};
+        });
+    }catch{return [];}
+}
+
+// A uniform, unconditional typed-family guard may establish ABI proof for a
+// new rollback before any mutation. Its finite rows and exact predicates are
+// checked independently of the later implementation and any filename.
+function firstTypedFamilyGuards(sql) {
+    try {
+        const statements=sqlStatements(sql),definitions=restoredDefinitions(sql);
+        if(!same(statements[0]??[],'BEGIN;') || !same(statements.at(-1)??[],'COMMIT;')
+          || statements.slice(1,-1).some(row=>['begin','commit','rollback','savepoint'].includes(row[0]?.value)))return [];
+        let catalogLock=false;
+        for(const statement of statements.slice(1)) {
+            const text=tokenText(statement);
+            if(statement[0]?.value==='set' && /^set local (?:search_path = pg_catalog , public|(?:lock_timeout|statement_timeout) = '[1-9][0-9]*(?:ms|s)') ;$/.test(text))continue;
+            if(statement[0]?.value==='select' && /^select pg_advisory_xact_lock \( hashtextextended \( '[^']+' , 0 \) \) ;$/.test(text))continue;
+            if(statement[0]?.value==='lock' && /^lock table pg_catalog \. [a-z_][a-z0-9_]*(?: , pg_catalog \. [a-z_][a-z0-9_]*)* in share row exclusive mode(?: nowait)? ;$/.test(text)) {
+                catalogLock ||= /pg_catalog \. pg_proc(?: |$)/.test(text);continue;
+            }
+            if(!catalogLock || statement[0]?.value!=='do' || statement.length!==3 || statement[1]?.kind!=='body')return [];
+            const parsed=new GuardParser(statement[1].value).parse();
+            if(parsed.declarations.length!==2 || !same(parsed.declarations[0],'expected record')
+              || !same(parsed.declarations[1],'live pg_catalog.pg_proc%ROWTYPE') || parsed.nodes.length!==1 || parsed.nodes[0].op!=='for')return [];
+            const loop=parsed.nodes[0],table=finiteRows(loop.head);
+            if(table.variable!=='expected' || JSON.stringify(table.columns)!==JSON.stringify(['signature','input_names','result_type','definer'])
+              || loop.nodes.length!==2 || !same(loop.nodes[0].tokens,'SELECT * INTO live FROM pg_catalog.pg_proc WHERE oid=pg_catalog.to_regprocedure(expected.signature)')
+              || !refuses(loop.nodes[1]) || loop.nodes[1].branches.length!==1 || loop.nodes[1].branches[0].nodes[0].tokens.length!==3)return [];
+            const conditions=[
+              'live.oid IS NULL', "live.prokind<>'f'",'live.prosecdef IS DISTINCT FROM expected.definer','live.proretset',
+              'live.prorettype IS DISTINCT FROM expected.result_type::regtype','live.provariadic<>0',
+              'live.proargnames[1:live.pronargs] IS DISTINCT FROM expected.input_names',
+              'live.proargmodes IS NOT NULL','live.proallargtypes IS NOT NULL',
+              '(SELECT count(*) FROM pg_catalog.pg_proc other WHERE other.pronamespace=live.pronamespace AND other.proname=live.proname)<>1',
+              "(expected.definer AND (pg_catalog.has_function_privilege('anon',live.oid,'EXECUTE') OR pg_catalog.has_function_privilege('authenticated',live.oid,'EXECUTE')))"
+            ];
+            if(!equalTerms(loop.nodes[1].branches[0].condition,conditions) || definitions.some(fn=>fn.start<=statement[0].start)
+              || table.rows.length!==definitions.length || new Set(table.rows.map(row=>row.signature)).size!==table.rows.length)return [];
+            return table.rows.map(row=>{
+                const identity=typeof row.signature==='string' && functionIdentity(row.signature),restored=definitions.find(fn=>fn.identity===identity);
+                if(!identity || !restored || !Array.isArray(row.input_names) || JSON.stringify(restored.inputNames)!==JSON.stringify(row.input_names)
+                  || !['jsonb','integer'].includes(row.result_type) || typeof row.definer!=='boolean')throw Error('Unbound typed family');
+                return {identity,name:restored.name,input_names:row.input_names,level:'typed-ABI',result_type:row.result_type,
+                    returns_set:false,overloads:1,guard_start:statement[0].start,native_catalog_lock:true};
+            });
+        }
+        return [];
+    }catch{return [];}
+}
+
 export function rollbackSignatureGuards(sql) {
+    sql = normalizeVerifiedManagedCatalogFences(sql);
     const existing=baseRollbackSignatureGuards(sql);
     if(existing.length)return existing;
+    const currentProof=firstTypedFamilyGuards(sql);
+    if(currentProof.length)return currentProof;
+    const cartProof=cartFactRollbackGuards(sql);
+    if(cartProof.length)return cartProof;
     const receipt=retentionCatalogCertificate(sql,baseRollbackSignatureGuards);
     return receipt.length?receipt:traversalCatalogCertificate(sql);
 }
@@ -2978,6 +3160,8 @@ export function rollbackSignatureGuards(sql) {
 // The forward source must enumerate every restored ABI in its finite birth set;
 // the rollback must revalidate that set from the receipt before any mutation.
 export function birthBoundSignatureGuards(sql, forwardSql) {
+    sql = normalizeVerifiedManagedCatalogFences(sql);
+    if (forwardSql) forwardSql = normalizeVerifiedManagedCatalogFences(forwardSql);
     try {
         if (!forwardSql) return [];
         const statements=sqlStatements(sql), definitions=functionDefinitions(sql);
@@ -2997,7 +3181,7 @@ export function birthBoundSignatureGuards(sql, forwardSql) {
         // exception handler, assignment, EXECUTE or mutating statement can bypass
         // the checks or replace their captured binding. All callees are builtins
         // under the pinned pg_catalog-first search path.
-        const builtins=new Set('acldefault aclexplode array_fill coalesce convert_to count current_database current_setting encode has_function_privilege has_schema_privilege has_table_privilege jsonb_agg jsonb_array_length jsonb_each jsonb_each_text jsonb_typeof left length pg_backend_pid pg_current_xact_id_if_assigned pg_get_constraintdef pg_get_expr pg_get_functiondef pg_get_indexdef quote_ident regexp_matches regexp_replace sha256 split_part starts_with string_agg substring to_jsonb to_regclass to_regprocedure to_regrole unnest'.split(' '));
+        const builtins=new Set('acldefault aclexplode array_fill coalesce convert_to convert_from decode regexp_match count current_database current_setting encode has_function_privilege has_schema_privilege has_table_privilege jsonb_agg jsonb_array_length jsonb_each jsonb_each_text jsonb_typeof left length pg_backend_pid pg_current_xact_id_if_assigned pg_get_constraintdef pg_get_expr pg_get_functiondef pg_get_indexdef quote_ident regexp_matches regexp_replace sha256 split_part starts_with string_agg substring to_jsonb to_regclass to_regprocedure to_regrole unnest'.split(' '));
         const syntax=new Set('and array e exists from if in not or roles select values z'.split(' '));
         for (const {statement} of parsed) {
             const tokens=sqlTokens(statement[1].value);
@@ -3015,10 +3199,15 @@ export function birthBoundSignatureGuards(sql, forwardSql) {
             'v_fn.oid IS NULL',
             "v_fn.oid IS DISTINCT FROM (v_entry.value->>'oid')::oid",
             "v_fn.proowner IS DISTINCT FROM (v_entry.value->>'owner')::oid",
-            "encode(sha256(convert_to(v_fn.prosrc,'UTF8')),'hex') IS DISTINCT FROM v_entry.value->>'body_hash'",
             "(SELECT count(*) FROM pg_proc WHERE pronamespace='public'::regnamespace AND proname=v_fn.proname)<>1",
             "v_fn.prokind<>'f'",'v_fn.proretset','v_fn.proargmodes IS NOT NULL','v_fn.proallargtypes IS NOT NULL',
         ]) if(!condition.includes(norm(required)))return [];
+        // Managed PostgreSQL seals the birth receipt in verifier prosrc rather
+        // than a custom GUC. Its full definition remains bound to the private
+        // grant/OID journal below; a free-standing comment is never custody.
+        const sealedBodyTerm="encode(sha256(convert_to(CASE WHEN v_entry.key='public.guard_subscription_tax_ddl_360()' THEN regexp_replace(v_fn.prosrc,E'\\\\n/\\\\*TAX360_BINDING_BASE64:[A-Za-z0-9+/=]+\\\\*/\\\\n?$','') ELSE v_fn.prosrc END,'UTF8')),'hex') IS DISTINCT FROM v_entry.value->>'body_hash'";
+        if(!condition.includes(norm("encode(sha256(convert_to(v_fn.prosrc,'UTF8')),'hex') IS DISTINCT FROM v_entry.value->>'body_hash'"))
+          && !condition.includes(norm(sealedBodyTerm)))return [];
         const hashTerm=condition.find(c=>c.includes('definition_hash'));
         const verifier=hashTerm?.match(/v_entry \. key <> '([^']+)'/)?.[1];
         if(!verifier || !functionIdentity(verifier) || !same(sqlTokens(hashTerm),`(v_entry.key<>'${verifier}' AND encode(sha256(convert_to(pg_get_functiondef(v_fn.oid),'UTF8')),'hex') IS DISTINCT FROM v_entry.value->>'definition_hash')`)) return [];
@@ -3033,8 +3222,12 @@ export function birthBoundSignatureGuards(sql, forwardSql) {
             'v_fn.oid IS NULL','v_journal.object_oid IS DISTINCT FROM v_fn.oid','v_journal.object_owner IS DISTINCT FROM v_fn.proowner',
             "v_journal.object_definition_hash IS DISTINCT FROM encode(sha256(convert_to(pg_get_functiondef(v_fn.oid),'UTF8')),'hex')"
         ]))return [];
-        const binding=nodes[capture+3]?.tokens, key=binding?.find(t=>t.kind==='string')?.value;
-        if(!key || !/^[a-z_][a-z0-9_]*\.[a-z_][a-z0-9_]*=$/.test(key) || !same(binding,`SELECT substring(config from length('${key}')+1)::jsonb INTO binding FROM unnest(v_fn.proconfig)config WHERE starts_with(config,'${key}')`))return [];
+        const binding=nodes[capture+3]?.tokens;
+        const sealedBinding="SELECT convert_from(decode((regexp_match(v_fn.prosrc,E'\\\\n/\\\\*TAX360_BINDING_BASE64:([A-Za-z0-9+/=]+)\\\\*/\\\\n?$'))[1],'base64'),'UTF8')::jsonb INTO binding";
+        const sealed=same(binding??[],sealedBinding);
+        const key=sealed?'TAX360_BINDING_BASE64':binding?.find(t=>t.kind==='string')?.value;
+        if(!sealed && (!key || !/^[a-z_][a-z0-9_]*\.[a-z_][a-z0-9_]*=$/.test(key) || !same(binding,"SELECT substring(config from length('"+key+"')+1)::jsonb INTO binding FROM unnest(v_fn.proconfig)config WHERE starts_with(config,'"+key+"')")))return [];
+        if(sealed && !condition.includes(norm(sealedBodyTerm)))return [];
         const allTokens=sqlTokens(block.statement[1].value);
         if(allTokens.filter((t,i)=>t.value==='into' && allTokens[i+1]?.value==='binding').length!==1)return [];
         const valid=nodes[capture+4];
@@ -3045,7 +3238,7 @@ export function birthBoundSignatureGuards(sql, forwardSql) {
         // The forward birth loop is finite, and each restored signature/name list
         // must match its installed definition. Capture must include exactly that
         // finite family, so deleting a member cannot turn the loop vacuous.
-        const forward=sqlStatements(forwardSql), birth=forward.find(s=>s[0]?.value==='do' && s[1]?.kind==='body' && s[1].value.includes(key.slice(0,-1)));
+        const forward=sqlStatements(forwardSql), birth=forward.find(s=>s[0]?.value==='do' && s[1]?.kind==='body' && s[1].value.includes(sealed?key:key.slice(0,-1)));
         if(!birth)return [];
         const tokens=sqlTokens(birth[1].value), begin=tokens.findIndex(t=>word(t,'begin'));
         const loopStart=tokens.findIndex((t,i)=>i>begin && word(t,'for')), loopEnd=tokens.findIndex((t,i)=>i>loopStart && word(t,'loop'));

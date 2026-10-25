@@ -1,0 +1,198 @@
+{
+  "recordedAt": "2026-10-23T17:43:23.507792+00:00",
+  "classification": "CORRECTED_CANDIDATE_SOURCE_PARITY_ONLY_NOT_LIVE_SAVE_OR_INSTALLED_ACCEPTANCE",
+  "candidateRoot": "/private/tmp/theme-editor-candidate-20261023-latest392-manualtls01",
+  "rootCopyAdmission": "docs/implementation/niche-theme-programme/editor-latest392-copy-admission.json",
+  "rootCopyAdmissionSha256": "d92a292c805bb9f16827f89af9e898481d5bb0db271cc4d2ece6dbff23a7f2dd",
+  "checks": [
+    {
+      "receipt": "docs/implementation/niche-themes-2026-10-23/habitat/source-manifest.json",
+      "count": 11,
+      "changed": 0,
+      "files": [
+        {
+          "path": "packages/theme-engine/src/habitat-theme.ts",
+          "expected": "0144fdf830ab3c5ddf42ebfcb86258b99e74ed8a8d724469012479705352e8c3",
+          "workspace": "0144fdf830ab3c5ddf42ebfcb86258b99e74ed8a8d724469012479705352e8c3",
+          "candidate": "0144fdf830ab3c5ddf42ebfcb86258b99e74ed8a8d724469012479705352e8c3",
+          "passed": true
+        },
+        {
+          "path": "packages/theme-engine/src/habitat-styles.ts",
+          "expected": "e4b89a41c526cc9a96e0e3106e084124717eb56d9837bcf09214045d7fa817e6",
+          "workspace": "e4b89a41c526cc9a96e0e3106e084124717eb56d9837bcf09214045d7fa817e6",
+          "candidate": "e4b89a41c526cc9a96e0e3106e084124717eb56d9837bcf09214045d7fa817e6",
+          "passed": true
+        },
+        {
+          "path": "packages/theme-engine/src/habitat-discovery.ts",
+          "expected": "342843da57a6eef8488d906218d4225338f9f3c0afe2bbcc49073f3f34a1f873",
+          "workspace": "342843da57a6eef8488d906218d4225338f9f3c0afe2bbcc49073f3f34a1f873",
+          "candidate": "342843da57a6eef8488d906218d4225338f9f3c0afe2bbcc49073f3f34a1f873",
+          "passed": true
+        },
+        {
+          "path": "packages/theme-engine/test/habitat.test.ts",
+          "expected": "fd1fa3d30be0841e41f00e4226fde5d23880ef31232d5c57c83ececdc3124bfc",
+          "workspace": "fd1fa3d30be0841e41f00e4226fde5d23880ef31232d5c57c83ececdc3124bfc",
+          "candidate": "fd1fa3d30be0841e41f00e4226fde5d23880ef31232d5c57c83ececdc3124bfc",
+          "passed": true
+        },
+        {
+          "path": "packages/commerce-core/src/habitat-facts.ts",
+          "expected": "a77bd48835b094b3136b12a055b38485ce55b461c6cf743f6f54f8323ced0a36",
+          "workspace": "a77bd48835b094b3136b12a055b38485ce55b461c6cf743f6f54f8323ced0a36",
+          "candidate": "a77bd48835b094b3136b12a055b38485ce55b461c6cf743f6f54f8323ced0a36",
+          "passed": true
+        },
+        {
+          "path": "packages/commerce-core/test/habitat-facts.test.ts",
+          "expected": "96672adf296af231862723968efafcee1a72de45fed9b5ef193b568d6d665595",
+          "workspace": "96672adf296af231862723968efafcee1a72de45fed9b5ef193b568d6d665595",
+          "candidate": "96672adf296af231862723968efafcee1a72de45fed9b5ef193b568d6d665595",
+          "passed": true
+        },
+        {
+          "path": "apps/commerce/web/src/lib/demo/habitat-demo.ts",
+          "expected": "13daf6160eddea811e2fac7fbc30478c96147df0ff9753c3b63078fc530d8468",
+          "workspace": "13daf6160eddea811e2fac7fbc30478c96147df0ff9753c3b63078fc530d8468",
+          "candidate": "13daf6160eddea811e2fac7fbc30478c96147df0ff9753c3b63078fc530d8468",
+          "passed": true
+        },
+        {
+          "path": "apps/merchant/web/src/components/products/niche-facts/habitat-facts-editor.tsx",
+          "expected": "e4a0aa7b2150d1aaa9404c009d7e57a00ec1b10ee0c47b5b6ad16c8fc752c589",
+          "workspace": "e4a0aa7b2150d1aaa9404c009d7e57a00ec1b10ee0c47b5b6ad16c8fc752c589",
+          "candidate": "e4a0aa7b2150d1aaa9404c009d7e57a00ec1b10ee0c47b5b6ad16c8fc752c589",
+          "passed": true
+        },
+        {
+          "path": "apps/merchant/web/src/components/products/niche-facts/habitat-facts-editor.test.tsx",
+          "expected": "7bd6fb34533ca8d025288e2f06eb48bb952e6a38a39c1358ef444c4106f6c6a3",
+          "workspace": "7bd6fb34533ca8d025288e2f06eb48bb952e6a38a39c1358ef444c4106f6c6a3",
+          "candidate": "7bd6fb34533ca8d025288e2f06eb48bb952e6a38a39c1358ef444c4106f6c6a3",
+          "passed": true
+        },
+        {
+          "path": "apps/merchant/web/src/components/products/niche-facts/habitat-variant-facts-editor.tsx",
+          "expected": "505f37568af597ba0a1d87df9135dbb5377982fb3c7d9af3b3f719cd8aaa59fb",
+          "workspace": "505f37568af597ba0a1d87df9135dbb5377982fb3c7d9af3b3f719cd8aaa59fb",
+          "candidate": "505f37568af597ba0a1d87df9135dbb5377982fb3c7d9af3b3f719cd8aaa59fb",
+          "passed": true
+        },
+        {
+          "path": "apps/merchant/web/src/components/products/niche-facts/habitat-variant-facts-editor.test.tsx",
+          "expected": "adcd99e9fdd9b79cb5eb2eddb4e8cfe9db2e4cc9d978038d1143d72eda65dcea",
+          "workspace": "adcd99e9fdd9b79cb5eb2eddb4e8cfe9db2e4cc9d978038d1143d72eda65dcea",
+          "candidate": "adcd99e9fdd9b79cb5eb2eddb4e8cfe9db2e4cc9d978038d1143d72eda65dcea",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "receipt": "docs/implementation/niche-themes-2026-10-23/habitat/measurement-consumer-source-manifest.json",
+      "count": 7,
+      "changed": 0,
+      "files": [
+        {
+          "path": "packages/theme-engine/src/habitat-discovery.ts",
+          "expected": "342843da57a6eef8488d906218d4225338f9f3c0afe2bbcc49073f3f34a1f873",
+          "workspace": "342843da57a6eef8488d906218d4225338f9f3c0afe2bbcc49073f3f34a1f873",
+          "candidate": "342843da57a6eef8488d906218d4225338f9f3c0afe2bbcc49073f3f34a1f873",
+          "passed": true
+        },
+        {
+          "path": "packages/theme-engine/src/habitat-theme.ts",
+          "expected": "0144fdf830ab3c5ddf42ebfcb86258b99e74ed8a8d724469012479705352e8c3",
+          "workspace": "0144fdf830ab3c5ddf42ebfcb86258b99e74ed8a8d724469012479705352e8c3",
+          "candidate": "0144fdf830ab3c5ddf42ebfcb86258b99e74ed8a8d724469012479705352e8c3",
+          "passed": true
+        },
+        {
+          "path": "packages/theme-engine/test/habitat.test.ts",
+          "expected": "fd1fa3d30be0841e41f00e4226fde5d23880ef31232d5c57c83ececdc3124bfc",
+          "workspace": "fd1fa3d30be0841e41f00e4226fde5d23880ef31232d5c57c83ececdc3124bfc",
+          "candidate": "fd1fa3d30be0841e41f00e4226fde5d23880ef31232d5c57c83ececdc3124bfc",
+          "passed": true
+        },
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/habitat/discovery-form-roundtrip.test.ts",
+          "expected": "4447aa81d52698f79fde7389b0f968480186f8ce0c951733df6fc65ecd895a73",
+          "workspace": "4447aa81d52698f79fde7389b0f968480186f8ce0c951733df6fc65ecd895a73",
+          "candidate": "4447aa81d52698f79fde7389b0f968480186f8ce0c951733df6fc65ecd895a73",
+          "passed": true
+        },
+        {
+          "path": "packages/commerce-core/src/storefront-discovery.ts",
+          "expected": "c8de3871a998df011de12791db90c868139903b5c84afb211d9e9de3a1997ff1",
+          "workspace": "c8de3871a998df011de12791db90c868139903b5c84afb211d9e9de3a1997ff1",
+          "candidate": "c8de3871a998df011de12791db90c868139903b5c84afb211d9e9de3a1997ff1",
+          "passed": true
+        },
+        {
+          "path": "services/api-gateway/src/lib/storefront-discovery.ts",
+          "expected": "fa47b2c867e916ab082e5c420eed18751e4c313f98dd1ae2b19ec26de00afa37",
+          "workspace": "fa47b2c867e916ab082e5c420eed18751e4c313f98dd1ae2b19ec26de00afa37",
+          "candidate": "fa47b2c867e916ab082e5c420eed18751e4c313f98dd1ae2b19ec26de00afa37",
+          "passed": true
+        },
+        {
+          "path": "apps/commerce/web/src/lib/theme-engine/storefront-discovery.ts",
+          "expected": "b59b34fbe89cf44f13f9dba56107f993af2632d4d2ed28fe3f9694e87743cbfc",
+          "workspace": "b59b34fbe89cf44f13f9dba56107f993af2632d4d2ed28fe3f9694e87743cbfc",
+          "candidate": "b59b34fbe89cf44f13f9dba56107f993af2632d4d2ed28fe3f9694e87743cbfc",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "receipt": "docs/implementation/niche-themes-2026-10-23/habitat/installed-matrix-preparation-receipt.json",
+      "count": 5,
+      "changed": 0,
+      "files": [
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/habitat/installed-lifecycle-matrix.md",
+          "expected": "46941565c11dd5fa8cbab5a4e406efe610dc24afdf782a18dc5c8e430f7c3ddc",
+          "workspace": "46941565c11dd5fa8cbab5a4e406efe610dc24afdf782a18dc5c8e430f7c3ddc",
+          "candidate": "46941565c11dd5fa8cbab5a4e406efe610dc24afdf782a18dc5c8e430f7c3ddc",
+          "passed": true
+        },
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/habitat/installed-fixture-matrix.plan.json",
+          "expected": "e635e388d772e51e97e8f30158dc9e3a79a6cdf205d2c3e99065ad5ae728cff1",
+          "workspace": "e635e388d772e51e97e8f30158dc9e3a79a6cdf205d2c3e99065ad5ae728cff1",
+          "candidate": "e635e388d772e51e97e8f30158dc9e3a79a6cdf205d2c3e99065ad5ae728cff1",
+          "passed": true
+        },
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/habitat/validate-installed-fixture-plan.ts",
+          "expected": "c2d64fbc8ca71865ba6e885edcb7f46e0a49933ac30d8145370ac189dd6ca7ce",
+          "workspace": "c2d64fbc8ca71865ba6e885edcb7f46e0a49933ac30d8145370ac189dd6ca7ce",
+          "candidate": "c2d64fbc8ca71865ba6e885edcb7f46e0a49933ac30d8145370ac189dd6ca7ce",
+          "passed": true
+        },
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/habitat/installed-fixture-schema-validation.json",
+          "expected": "f64404bc31d3109e411813a48f786b90a496ee4c04f21e75cc021f9bda86e8f8",
+          "workspace": "f64404bc31d3109e411813a48f786b90a496ee4c04f21e75cc021f9bda86e8f8",
+          "candidate": "f64404bc31d3109e411813a48f786b90a496ee4c04f21e75cc021f9bda86e8f8",
+          "passed": true
+        },
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/habitat/tsconfig.installed-fixture-plan.json",
+          "expected": "71acb6dc8e8b3ab57697efabe315493d2b42f26407b27523ecc4bd5332385e07",
+          "workspace": "71acb6dc8e8b3ab57697efabe315493d2b42f26407b27523ecc4bd5332385e07",
+          "candidate": "71acb6dc8e8b3ab57697efabe315493d2b42f26407b27523ecc4bd5332385e07",
+          "passed": true
+        }
+      ]
+    }
+  ],
+  "sharedOriginGuard": {
+    "path": "apps/merchant/web/src/lib/api/request-origin.ts",
+    "expected": "4e1671afcb62bba3dc1d93a3e588b92e58d0d9ba7a3c081e8df4ee6ddb174f96",
+    "candidate": "4e1671afcb62bba3dc1d93a3e588b92e58d0d9ba7a3c081e8df4ee6ddb174f96",
+    "passed": true
+  },
+  "passed": true
+}

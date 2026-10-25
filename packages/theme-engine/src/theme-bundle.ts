@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { EDITOR_FIELD_TYPES, ThemeFieldOptionSchema } from './schema-field-extensions';
 // S4 — the 10 Experiences, portable. theme-presets.ts imports nothing from this file (verified),
 // so importing it here carries no circular-import risk.
 import { listExperiences, buildExperienceSettingsOverlay } from './theme-presets';
@@ -185,13 +186,16 @@ export const ThemeBundleJsonSchema: z.ZodType<ThemeBundleJson> = z.lazy(() =>
 export const ThemeBundleJsonObjectSchema = z.record(z.string(), ThemeBundleJsonSchema);
 
 export const ThemeBundleSettingFieldSchema = z.object({
-  type: z.enum(['text', 'textarea', 'richtext', 'color', 'image', 'select', 'toggle', 'range', 'number', 'url', 'radio']),
+  type: z.enum(EDITOR_FIELD_TYPES),
   label: z.string().min(1).max(120),
   default: ThemeBundleJsonSchema.optional(),
   description: z.string().max(500).optional(),
   info: z.string().max(500).optional(),
   placeholder: z.string().max(160).optional(),
-  options: z.array(z.string().min(1).max(120)).max(100).optional(),
+  options: z.array(ThemeFieldOptionSchema).max(100).optional(),
+  required: z.boolean().optional(),
+  visible_if: z.object({ field: z.string().min(1).max(120), value: ThemeBundleJsonSchema }).strict().optional(),
+  resource_type: z.string().min(1).max(120).optional(),
   min: z.number().optional(),
   max: z.number().optional(),
   step: z.number().positive().optional(),
@@ -1816,7 +1820,6 @@ function buildLiquidRuntimeSectionSchemas(bundle: LiquidThemePackageBundle): Rec
       renderer_key: `liquid.section.${sectionType}`,
       settings_schema: liquidSettingsToFieldRecord(sectionFile.schema.settings),
       blocks_schema: {
-        ...reusableBlockSchemas,
         ...inlineBlockSchemas,
       },
       source_path: sectionFile.path,

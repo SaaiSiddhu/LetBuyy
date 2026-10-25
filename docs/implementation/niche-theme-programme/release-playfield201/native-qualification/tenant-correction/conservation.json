@@ -1,0 +1,48 @@
+{
+  "proposalAdmission": {
+    "path": "docs/implementation/niche-theme-programme/playfield201-proposal-admission.json",
+    "sha256": "fafc7990283a89725841ce672b3136e034d33c72bc5ba66729beaf019d520a51",
+    "bytes": 3149
+  },
+  "proposalFilesExact": 5,
+  "factorySourcePinsExact": 61,
+  "currentClosureEveryFileMatches": 1079,
+  "migrations": {
+    "count": 321,
+    "max": 392,
+    "candidate393Emitted": false
+  },
+  "unchangedInputs": [
+    {
+      "path": "scripts/governance/run-executable-suites.mjs",
+      "sha256": "022085746f83c94979889a303044aa3b4503d53606f3f1e2ad3bd3084bc75213",
+      "bytes": 34889
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/owned-db-support.ts",
+      "sha256": "bd87cee74313edf0842c275a944814c6f63b2a6e90353d5428fbef30c8301f12",
+      "bytes": 37692
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/threadline-browser-fixture.ts",
+      "sha256": "b17600512a50d3be39338325cc4baf83bdfd89508486a821b00328bb3d22e4b8",
+      "bytes": 23081
+    },
+    {
+      "path": "tests/executable/tenant-redteam-postgres.test.mjs",
+      "sha256": "5652a08084dabc6f4d817f10222ae8ed908f53be49c3460c6b81e7088730297a",
+      "bytes": 23653
+    },
+    {
+      "path": "database/supabase/migrations/376_atomic_theme_instance_switch.sql",
+      "sha256": "f9c2490cc60bde775b9298e9d4bbbae0288c00f500fe8e8a4d3028d858b53746",
+      "bytes": 14590
+    }
+  ],
+  "rt1rt2rt7Changed": false,
+  "databaseActions": 0,
+  "browserActions": 0,
+  "runtimeStarts": 0,
+  "ownerPreviewLoginTabsTouched": false,
+  "hostedOrProviderActions": false
+}

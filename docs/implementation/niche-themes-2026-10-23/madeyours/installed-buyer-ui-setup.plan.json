@@ -1,0 +1,197 @@
+{
+  "classification": "CURRENT_EXECUTION_AMENDMENT_UI_SETUP_ONLY_ALL_RUNTIME_CASES_NOT_RUN",
+  "preparedAt": "2026-10-23T13:13:03.499936+00:00",
+  "proposalSha256": "c3045d3295669dd9c38dea65339857ccd7fb2e63e349b611aa98b1dbad89fd3d",
+  "reason": "Coordinator restored Editor baseline seed; author additional capability choices/OOS variant through normal merchant UI. Existing revision1 capabilities require meaningful-change revision advancement.",
+  "baseFacts": {
+    "version": 1,
+    "revision": 1,
+    "methods": [
+      {
+        "id": "engrave",
+        "label": "Front engraving",
+        "min_graphemes": 1,
+        "max_graphemes": 18,
+        "character_set": "unicode-letters",
+        "styles": [
+          {
+            "id": "sans",
+            "label": "Sans"
+          }
+        ],
+        "placements": [
+          {
+            "id": "front",
+            "label": "Front"
+          }
+        ]
+      }
+    ]
+  },
+  "setupFacts": {
+    "version": 1,
+    "revision": 2,
+    "methods": [
+      {
+        "id": "engrave",
+        "label": "Front engraving",
+        "min_graphemes": 1,
+        "max_graphemes": 18,
+        "character_set": "unicode-letters",
+        "styles": [
+          {
+            "id": "sans",
+            "label": "Sans"
+          },
+          {
+            "id": "serif",
+            "label": "Serif"
+          }
+        ],
+        "placements": [
+          {
+            "id": "front",
+            "label": "Front"
+          },
+          {
+            "id": "back",
+            "label": "Back"
+          }
+        ]
+      },
+      {
+        "id": "print",
+        "label": "Cover printing",
+        "min_graphemes": 1,
+        "max_graphemes": 18,
+        "character_set": "unicode-letters",
+        "styles": [
+          {
+            "id": "sans",
+            "label": "Sans"
+          },
+          {
+            "id": "serif",
+            "label": "Serif"
+          }
+        ],
+        "placements": [
+          {
+            "id": "front",
+            "label": "Front"
+          },
+          {
+            "id": "back",
+            "label": "Back"
+          }
+        ]
+      }
+    ]
+  },
+  "afterPurchaseFacts": {
+    "version": 1,
+    "revision": 3,
+    "methods": [
+      {
+        "id": "engrave",
+        "label": "Cover engraving revision three",
+        "min_graphemes": 1,
+        "max_graphemes": 18,
+        "character_set": "unicode-letters",
+        "styles": [
+          {
+            "id": "sans",
+            "label": "Sans revision three"
+          },
+          {
+            "id": "serif",
+            "label": "Serif"
+          }
+        ],
+        "placements": [
+          {
+            "id": "front",
+            "label": "Front cover revision three"
+          },
+          {
+            "id": "back",
+            "label": "Back"
+          }
+        ]
+      },
+      {
+        "id": "print",
+        "label": "Cover printing",
+        "min_graphemes": 1,
+        "max_graphemes": 18,
+        "character_set": "unicode-letters",
+        "styles": [
+          {
+            "id": "sans",
+            "label": "Sans"
+          },
+          {
+            "id": "serif",
+            "label": "Serif"
+          }
+        ],
+        "placements": [
+          {
+            "id": "front",
+            "label": "Front"
+          },
+          {
+            "id": "back",
+            "label": "Back"
+          }
+        ]
+      }
+    ]
+  },
+  "uiSetup": {
+    "case": "MY-00",
+    "status": "NOT_RUN",
+    "product": "Actual created baseline personalization product; never create a second product to bypass this lifecycle",
+    "factsEditor": "Use existing Personalization revision, Method ID/label, min/max/Allowed characters, Add style/placement to methodN and Add personalization method controls. Fill exact setupFacts; Save only after canonical validation.",
+    "revision": 2,
+    "variants": "Preserve actual Moss/Oat durable IDs, option maps and existing stock; add Cover value Slate unavailable and one matching new variant at stock0 using existing merchant variant controls. Capture actual returned UUID.",
+    "images": "Use existing media control if it supports the existing notebook asset. Record actual persisted image URLs; no hidden DOM/JS/API injection to manufacture UI success.",
+    "privateMetadata": "Preserve actual existing siblings. Do not inject private_supplier if no ordinary merchant field supports it. Mark sentinel-specific assertion unexercised unless a real marker exists.",
+    "expectedPrice": 690,
+    "expectedExistingOptionMaps": [
+      {
+        "Cover": "Moss"
+      },
+      {
+        "Cover": "Oat"
+      }
+    ],
+    "expectedNewVariantFields": {
+      "title": "Slate unavailable",
+      "stock": 0,
+      "options": {
+        "Cover": "Slate unavailable"
+      }
+    },
+    "readback": "Only saved canonical product and real subsequent public/review responses qualify setup; screenshot of unsaved controls does not.",
+    "completeCommand": "Actual current version/key/variant IDs remain runtime-only; existing product Save owns request/idempotency."
+  },
+  "caseOverrides": {
+    "MY-00": "Author setupFacts at revision2 and the missing choice/OOS variant through normal merchant UI; verify actual saved readback.",
+    "MY-01": "Initial reviewed context facts_revision2, not1.",
+    "MY-17": "Purchased snapshot facts_revision2; initial labels unchanged Front engraving/Sans/Front.",
+    "MY-18": "Hold unsubmitted Oat review at revision2; merchant saves afterPurchaseFacts at revision3 and documented name/price/options update; old Add409, re-review returned revision3 then retry.",
+    "MY-19": "Old history retains revision2, labels Front engraving/Sans/Front and Cover=Moss after current catalog is revision3.",
+    "MY-20": "Remove current revision3 facts deliberately through ordinary product controls; do not introduce a fake numeric revision for absence."
+  },
+  "privacyExpected": {
+    "privateSentinels": "Only test actual persisted private sibling values, never claim hypothetical sentinel coverage.",
+    "alwaysRequired": [
+      "No raw catalog_source/product_snapshot or review token in customer/Liquid history",
+      "Real own-buyer/other-buyer/anonymous ownership checks",
+      "No accepted buyer text published in public catalog data"
+    ]
+  },
+  "runtimeStatus": "NOT_RUN",
+  "runtimeObservations": []
+}

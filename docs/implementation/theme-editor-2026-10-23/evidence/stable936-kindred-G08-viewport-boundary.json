@@ -1,0 +1,62 @@
+{
+  "runId": "936e5f577646",
+  "actual": [
+    {
+      "device": "Desktop",
+      "actual": {
+        "frames": [
+          {
+            "clientHeight": 1420,
+            "clientWidth": 1440,
+            "originPath": "http://localhost:58091/preview",
+            "renderedHeight": 564.0555419921875,
+            "renderedWidth": 572
+          }
+        ],
+        "outer": {
+          "height": 720,
+          "width": 1280
+        }
+      }
+    },
+    {
+      "device": "Tablet",
+      "actual": {
+        "frames": [
+          {
+            "clientHeight": 809,
+            "clientWidth": 820,
+            "originPath": "http://localhost:58091/preview",
+            "renderedHeight": 564.3268432617188,
+            "renderedWidth": 572
+          }
+        ],
+        "outer": {
+          "height": 720,
+          "width": 1280
+        }
+      }
+    },
+    {
+      "device": "Mobile",
+      "actual": {
+        "frames": [
+          {
+            "clientHeight": 567,
+            "clientWidth": 390,
+            "originPath": "http://localhost:58091/preview",
+            "renderedHeight": 564.09228515625,
+            "renderedWidth": 388
+          }
+        ],
+        "outer": {
+          "height": 720,
+          "width": 1280
+        }
+      }
+    }
+  ],
+  "outerResponsive3207681440": "NOT_RUN: advertised viewport override is browser-wide; current allocation permits per-tab only. No override was applied.",
+  "longBrand": "NOT_RUN: requires unallocated global store-name edit; no four navigation links in actual installed menu.",
+  "KQA01": "OPEN P2, original artifacts untouched; no fix or closure claim"
+}

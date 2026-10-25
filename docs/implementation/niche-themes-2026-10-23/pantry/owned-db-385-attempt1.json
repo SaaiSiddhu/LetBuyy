@@ -1,0 +1,73 @@
+{
+  "runId": "201e19e4058b",
+  "image": "postgres:16-alpine",
+  "restImage": "public.ecr.aws/supabase/postgrest:v16.2",
+  "limits": {
+    "postgres": {
+      "memory": "1g",
+      "cpus": "2",
+      "pids": "512"
+    },
+    "rest": {
+      "memory": "256m",
+      "cpus": "1",
+      "pids": "256"
+    }
+  },
+  "jobs": 1,
+  "containers": [
+    "letbuyy-exec-58589-mvkk5g1h-8d262e"
+  ],
+  "reaped": [],
+  "suites": 1,
+  "gatewayDbSuites": 1,
+  "failedSuites": 1,
+  "tests": 0,
+  "assertionsPassed": 0,
+  "assertionsFailed": 0,
+  "cancelled": 0,
+  "skipped": 0,
+  "todo": 0,
+  "wallSeconds": 37.1,
+  "suiteSeconds": 34.2,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "results": [
+    {
+      "name": "pantry-variant-facts.postgres",
+      "path": "services/api-gateway/src/__tests__/owned-db/pantry-variant-facts.postgres.test.ts",
+      "kind": "gateway-db",
+      "cluster": "letbuyy-exec-58589-mvkk5g1h-8d262e",
+      "code": 70,
+      "timedOut": false,
+      "hasSummary": false,
+      "tests": 0,
+      "pass": 0,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "seconds": 34.2,
+      "firstFailure": "infrastructure: migration 385_product_variant_facts.sql failed in letbuyy-exec-58589-mvkk5g1h-8d",
+      "failures": [
+        "infrastructure: migration 385_product_variant_facts.sql failed in letbuyy-exec-58589-mvkk5g1h-8d262e/letbuyy_tpl_gateway: ERROR:  Migration385 refuses changed product function contract"
+      ],
+      "skips": [],
+      "database": "letbuyy_exec_pantry_variant_facts_postgres",
+      "templateSeconds": 0,
+      "provisionSeconds": 0,
+      "rest": null,
+      "ownership": "not verified",
+      "cleanup": {
+        "rest": null,
+        "database": null
+      }
+    }
+  ]
+}

@@ -1,0 +1,118 @@
+{
+  "recordedAt": "2026-10-25T00:57:14.479940+00:00",
+  "runId": "49ada80bc494",
+  "theme": "Circuit",
+  "slug": "letbuyy-forge",
+  "phase": "clean-final",
+  "classification": "BOUNDED_READONLY_ACTIVE_EDITOR_INSTANCE_DRAFT_RELEASE_BINDING",
+  "ownership": {
+    "container": "letbuyy-exec-54685-mvmssydy-fe81e9",
+    "database": "letbuyy_exec_theme_completion_razorpay_browser_manual_ts",
+    "labelsAndRunMarkerVerified": true,
+    "originalOwnerPid": 54685
+  },
+  "binding": {
+    "draft": {
+      "id": "6a43517c-36c3-4a41-82ee-e79b4d2f2526",
+      "status": "active",
+      "version": 20,
+      "updatedAt": "2026-10-25T00:53:41.790102+00:00",
+      "workingManifestSha256": "5381a7c60d82c65969c9937010cf5b344ceea78a5a002a2b18bef871f9cc955a",
+      "ownedTemporaryAndHostNodes": [
+        {
+          "path": "/sections/template/4",
+          "idField": "forge-service-index",
+          "mapKey": null,
+          "type": "trust-badges",
+          "order": 40,
+          "visibleRaw": true,
+          "disabledRaw": null,
+          "label": null,
+          "title": null
+        },
+        {
+          "path": "/templates/index/sections/forge-service-index",
+          "idField": null,
+          "mapKey": "forge-service-index",
+          "type": "trust-badges",
+          "order": null,
+          "visibleRaw": true,
+          "disabledRaw": null,
+          "label": null,
+          "title": null
+        },
+        {
+          "path": "/liquidBundle/templates/index/sections/forge-service-index",
+          "idField": null,
+          "mapKey": "forge-service-index",
+          "type": "trust-badges",
+          "order": null,
+          "visibleRaw": null,
+          "disabledRaw": false,
+          "label": null,
+          "title": null
+        }
+      ]
+    },
+    "release": {
+      "id": "122f16a6-6e4c-4f79-b6ac-21d099a43341",
+      "createdAt": "2026-10-25T00:53:41.642227+00:00",
+      "snapshotSha256": "5381a7c60d82c65969c9937010cf5b344ceea78a5a002a2b18bef871f9cc955a",
+      "sourceDraftVersion": 18,
+      "ownedTemporaryAndHostNodes": [
+        {
+          "path": "/sections/template/4",
+          "idField": "forge-service-index",
+          "mapKey": null,
+          "type": "trust-badges",
+          "order": 40,
+          "visibleRaw": true,
+          "disabledRaw": null,
+          "label": null,
+          "title": null
+        },
+        {
+          "path": "/templates/index/sections/forge-service-index",
+          "idField": null,
+          "mapKey": "forge-service-index",
+          "type": "trust-badges",
+          "order": null,
+          "visibleRaw": true,
+          "disabledRaw": null,
+          "label": null,
+          "title": null
+        },
+        {
+          "path": "/liquidBundle/templates/index/sections/forge-service-index",
+          "idField": null,
+          "mapKey": "forge-service-index",
+          "type": "trust-badges",
+          "order": null,
+          "visibleRaw": null,
+          "disabledRaw": false,
+          "label": null,
+          "title": null
+        }
+      ]
+    },
+    "instance": {
+      "id": "86436232-2b4d-45f1-8e69-3d89427a8b02",
+      "slug": "letbuyy-forge",
+      "siteId": "02049de4-41c3-4b10-b5b2-a60a6b5e82bf",
+      "packageId": "0166d767-ee06-43d9-877d-3ff226ff6fa2",
+      "updatedAt": "2026-10-25T00:53:47.858713+00:00",
+      "currentDraftId": "6a43517c-36c3-4a41-82ee-e79b4d2f2526",
+      "instanceStatus": "inactive",
+      "activeReleaseId": "122f16a6-6e4c-4f79-b6ac-21d099a43341",
+      "packageVersionId": "8111dd79-b473-49de-8e35-da872d06dc8d"
+    },
+    "siteCurrentTheme": {
+      "slug": "letbuyy-bloom",
+      "releaseId": "1a53db11-eda2-45db-8ba7-077fac56cdfa"
+    }
+  },
+  "nodeScope": "Only actual trust-badges hosts and uniquely labelled owned temporary nodes; schema declarations excluded. IDs and map keys are raw stored values, not inferred UUIDs.",
+  "browserActions": 0,
+  "businessMutations": 0,
+  "fullThemeCertified": false
+}

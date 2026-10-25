@@ -1,0 +1,372 @@
+{
+  "createdAt": "2026-10-23T09:34:26.269Z",
+  "classification": "SOURCE_CONTRACT_ONLY_NOT_INSTALLED_OR_BROWSER_ACCEPTANCE",
+  "inputs": [
+    {
+      "path": "apps/merchant/web/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx",
+      "sha256": "8fe3b25fa551758fd4b9bf2c040b9cbc8810f71df331f5b1b39559790c2c637c"
+    },
+    {
+      "path": "services/api-gateway/src/execution/schema-registry-execution.adapter.ts",
+      "sha256": "a181fc35cb97ce58d2be93ebbd40fe299f95333640c54548284955c20be18e99"
+    },
+    {
+      "path": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "sha256": "cc11490138ae5c2f13ab022a60b4cc2fe7d8fc5eb766dbf087eeb227d6050d6e"
+    },
+    {
+      "path": "packages/theme-engine/src/portable-to-liquid.ts",
+      "sha256": "c981e822ec3f51bd7975e72862a957fc011b14a7f8984cdd0b38f8ba9a27803b"
+    },
+    {
+      "path": "packages/theme-engine/src/trailmark-theme.ts",
+      "sha256": "ec412bcee2940769612323c2155ac807cef8d73bd1a06caa754cbb1fd11e90b5"
+    },
+    {
+      "path": "packages/theme-engine/test/trailmark.test.ts",
+      "sha256": "1f6f59857460321700791d15b8ed03a9bea953473328fabf8b1031397b3c14b3"
+    },
+    {
+      "path": "packages/theme-engine/src/trailmark-discovery.ts",
+      "sha256": "f69edf5815a19e513416ebb970e661793a88994a12f70e1e0e6d214f021741cb"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/storefront-discovery.ts",
+      "sha256": "b59b34fbe89cf44f13f9dba56107f993af2632d4d2ed28fe3f9694e87743cbfc"
+    },
+    {
+      "path": "packages/commerce-core/src/storefront-discovery.ts",
+      "sha256": "c8de3871a998df011de12791db90c868139903b5c84afb211d9e9de3a1997ff1"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/trailmark/shopping-form/forms.test.ts",
+      "sha256": "28add4679ffdc46d98cb37bc380089dbf016bc60b96679ba0b72dc22d5970d92"
+    }
+  ],
+  "themes": [
+    {
+      "slug": "letbuyy-ride",
+      "name": "Trailmark",
+      "version": "2.0.0",
+      "bundleSha256": "127a261320b208ec845277abe51c176921767934988f98a2ce73188bfa95c224",
+      "baselineValidationIssues": [],
+      "baselineWireValidationIssues": [],
+      "baselineSettings": [
+        {
+          "key": "primaryColor",
+          "type": "string",
+          "value": "#314E3B",
+          "wireOwn": true
+        },
+        {
+          "key": "secondaryColor",
+          "type": "string",
+          "value": "#FFFFFF",
+          "wireOwn": true
+        },
+        {
+          "key": "accentColor",
+          "type": "string",
+          "value": "#005FCC",
+          "wireOwn": true
+        },
+        {
+          "key": "backgroundColor",
+          "type": "string",
+          "value": "#F5F6F1",
+          "wireOwn": true
+        },
+        {
+          "key": "textColor",
+          "type": "string",
+          "value": "#222B22",
+          "wireOwn": true
+        },
+        {
+          "key": "surfaceColor",
+          "type": "string",
+          "value": "#E5E9DD",
+          "wireOwn": true
+        },
+        {
+          "key": "headingFontFamily",
+          "type": "string",
+          "value": "Inter",
+          "wireOwn": true
+        },
+        {
+          "key": "bodyFontFamily",
+          "type": "string",
+          "value": "Inter",
+          "wireOwn": true
+        },
+        {
+          "key": "borderRadius",
+          "type": "number",
+          "value": 4,
+          "wireOwn": true
+        },
+        {
+          "key": "metaDescription",
+          "type": "string",
+          "value": "",
+          "wireOwn": true
+        },
+        {
+          "key": "socialImageUrl",
+          "type": "string",
+          "value": "",
+          "wireOwn": true
+        },
+        {
+          "key": "faviconUrl",
+          "type": "string",
+          "value": "",
+          "wireOwn": true
+        }
+      ],
+      "inheritedSettings": [
+        {
+          "key": "list-collections",
+          "sections": {
+            "list-collections-grid": {
+              "type": "category-grid",
+              "settings": {
+                "title": "All collections"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          }
+        },
+        {
+          "key": "search",
+          "sections": {
+            "ride-search": {
+              "type": "collection-product-list",
+              "settings": {
+                "title": "Search products"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          }
+        }
+      ],
+      "templates": [
+        {
+          "key": "index",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 5,
+          "identities": 8,
+          "stableGroupIds": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "product",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 2,
+          "identities": 5,
+          "stableGroupIds": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "collection",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "search",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "cart",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "list-collections",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "contact",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/login",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/register",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/account",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/orders",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/order",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/settings",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/wishlist",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/addresses",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "policy",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "blog",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "article",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "page",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "not_found",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "password",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        }
+      ]
+    }
+  ]
+}

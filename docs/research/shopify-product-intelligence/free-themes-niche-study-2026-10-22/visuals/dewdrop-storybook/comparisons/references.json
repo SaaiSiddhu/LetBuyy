@@ -1,0 +1,82 @@
+[
+  {
+    "reference": "Sense",
+    "url": "https://theme-sense-demo.myshopify.com/",
+    "state": "Home, anonymous, no transaction",
+    "referenceImage": "../../../evidence/sense-home-desktop.jpg",
+    "scene": "01-home-top",
+    "problem": "Reach a relevant care product without inferring a clinical need.",
+    "retained": "Visible navigation, product imagery and education.",
+    "difference": "Dewdrop leads into three explicit routine steps and independently priced SKUs; no treatment quiz or efficacy claims.",
+    "contract": "C: typed routine stage + safe public facts. A: product/category navigation.",
+    "date": "2026-10-22",
+    "proposalCaptureDate": "2026-10-23",
+    "viewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "evidence": "Saved primary-source rendered screenshot and corresponding JSON in research evidence; current web text refresh for Sense home and Pitch collection/PDP; no fresh remote screenshot taken by Dewdrop.",
+    "evidenceLimits": "No completed cart/payment, comprehensive filters, accessibility, conversion or performance claim. Screenshots are visual evidence; text refresh is separately scoped."
+  },
+  {
+    "reference": "Sense",
+    "url": "https://theme-sense-demo.myshopify.com/products/algae-peel-off-mask-soothing",
+    "state": "PDP, style choice sampled in saved research",
+    "referenceImage": "../../../evidence/sense-product-desktop.jpg",
+    "scene": "04-product-selection",
+    "problem": "Distinguish choices without relying on colour alone.",
+    "retained": "Labelled options beside a product gallery and price.",
+    "difference": "Dewdrop shows two same-colour shades as separate named radios with codes and real fixture identities; directions/ingredients remain beside purchase.",
+    "contract": "A/B: canonical variants. C: shade facts/hydration. Keyboard equality test in stress-audit.json.",
+    "date": "2026-10-22",
+    "proposalCaptureDate": "2026-10-23",
+    "viewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "evidence": "Saved primary-source rendered screenshot and corresponding JSON in research evidence; current web text refresh for Sense home and Pitch collection/PDP; no fresh remote screenshot taken by Dewdrop.",
+    "evidenceLimits": "No completed cart/payment, comprehensive filters, accessibility, conversion or performance claim. Screenshots are visual evidence; text refresh is separately scoped."
+  },
+  {
+    "reference": "Pitch",
+    "url": "https://theme-pitch-demo.myshopify.com/collections/skincare",
+    "state": "Collection, unfiltered, anonymous",
+    "referenceImage": "../../../evidence/pitch-collection-desktop.jpg",
+    "scene": "03-collection",
+    "problem": "Browse care by use rather than read a generic merchandise grid.",
+    "retained": "Search, facets, sorting, prices and paginated results.",
+    "difference": "Numbered routine shelves group independent products. Product type, net quantity and missing facts appear in row context.",
+    "contract": "C: real stage/format/shade query filters and result count; suppress unsupported controls before launch.",
+    "date": "2026-10-22",
+    "proposalCaptureDate": "2026-10-23",
+    "viewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "evidence": "Saved primary-source rendered screenshot and corresponding JSON in research evidence; current web text refresh for Sense home and Pitch collection/PDP; no fresh remote screenshot taken by Dewdrop.",
+    "evidenceLimits": "No completed cart/payment, comprehensive filters, accessibility, conversion or performance claim. Screenshots are visual evidence; text refresh is separately scoped."
+  },
+  {
+    "reference": "Pitch",
+    "url": "https://theme-pitch-demo.myshopify.com/products/soft-cleanse?variant=49913031360807",
+    "state": "PDP, selected cleanser; read-only",
+    "referenceImage": "../../../evidence/pitch-product-desktop.jpg",
+    "scene": "05-product-facts",
+    "problem": "Read the product information needed before purchase.",
+    "retained": "Product media and ingredient/use education.",
+    "difference": "Dewdrop lists exact supplied ingredients and directions, then explicitly labels missing warnings/ingredients. No borrowed benefit or certification claim.",
+    "contract": "C: product-specific ingredient/directions schema. D: claim approval only if later proposed; no health claim is included.",
+    "date": "2026-10-22",
+    "proposalCaptureDate": "2026-10-23",
+    "viewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "evidence": "Saved primary-source rendered screenshot and corresponding JSON in research evidence; current web text refresh for Sense home and Pitch collection/PDP; no fresh remote screenshot taken by Dewdrop.",
+    "evidenceLimits": "No completed cart/payment, comprehensive filters, accessibility, conversion or performance claim. Screenshots are visual evidence; text refresh is separately scoped."
+  }
+]

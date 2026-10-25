@@ -1,0 +1,34 @@
+{
+  "recordedAt": "2026-10-23T18:16:28.487246+00:00",
+  "status": "MAIN_ONLY_CANONICAL_RETURN_TO_REPAIR_VERIFIED_RUNTIME_PENDING",
+  "files": [
+    {
+      "path": "apps/platform/identity/src/lib/auth/return-to.ts",
+      "bytes": 1548,
+      "sha256": "93dee983286c667e2ed190cf4c8dd4f4123ff2cdaadb41f12fd52d45aca6bc17"
+    },
+    {
+      "path": "apps/platform/identity/src/__tests__/marketplace-return-to.test.ts",
+      "bytes": 3219,
+      "sha256": "5e35f915770f1d66a3b396d87b44b8bc82b3a6e1b0ec507731469ee7d82b944a"
+    }
+  ],
+  "diff": {
+    "path": "docs/implementation/theme-marketplace-2026-10-23/evidence/marketplace-return-to-source.patch",
+    "sha256": "d7dd58369c2ebe2c53a439abc6ad89c9fec4ac5fa27d54f945b1b174e69a97c7"
+  },
+  "validation": {
+    "identityUnitPass": 51,
+    "authSsoContractPass": 10,
+    "fail": 0,
+    "skip": 0,
+    "identityNoEmitExit": 0,
+    "targetedLintExit": 0
+  },
+  "behavior": "Preserve exact configured marketplace/admin return origins; local HTTP permitted only for those exact configured loopback or .localhost origins; wrong host/port/scheme/credentials rejected; prior HTTPS platform rule preserved.",
+  "runtimeChanges": false,
+  "candidateChanges": false,
+  "databaseChanges": false,
+  "browserChanges": false,
+  "next": "Root chooses safe current runtime/config/update plan, then serialized real browser Add to library."
+}

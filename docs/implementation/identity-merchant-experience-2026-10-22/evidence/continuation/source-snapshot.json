@@ -1,0 +1,85 @@
+{
+  "head": "85aac99043d8dc10469e12cbb810609a3b6f1b0d",
+  "date": "2026-10-22",
+  "scope": "Continuation touched files. Whole-file hashes include preserved concurrent source; authorship is limited to the hunks described in 09_IMPLEMENTATION_RESULTS.md.",
+  "files": [
+    {
+      "path": ".gitignore",
+      "sha256": "9bb6e45dfafa4989216d212664935ec9ec0564e3de22a0957805fd03c3d9bb63",
+      "bytes": 5295,
+      "matchesValidatedClone": true
+    },
+    {
+      "path": "config/tailwind/letbuyy-tokens.css",
+      "sha256": "86440b349ce22b9b58f916309f145fdeb494bebeaf67929d190ae7891dca5a52",
+      "bytes": 2325,
+      "matchesValidatedClone": true
+    },
+    {
+      "path": "config/governance/secret-scan-exceptions.json",
+      "sha256": "fd17646586d67846f7dbf98673c9cbcb17660a5d03e2c0e77088d24ec7ea186a",
+      "bytes": 83422,
+      "matchesValidatedClone": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/layout.tsx",
+      "sha256": "a4b2b464387f77fa923ab373146062db601763f38cad308ad0d747c31bff4da2",
+      "bytes": 2324,
+      "matchesValidatedClone": true
+    },
+    {
+      "path": "apps/merchant/web/src/lib/auth/session.ts",
+      "sha256": "d971e963b6249145ae102b5832c84a9b48abd6a5504abd3994e84e926e198cf4",
+      "bytes": 6568,
+      "matchesValidatedClone": true
+    },
+    {
+      "path": "apps/merchant/web/src/lib/public-urls.ts",
+      "sha256": "7a84940f6ce6837f304763d159f32f773c4e9231b6f9f22afdb6be02bf9ca2a9",
+      "bytes": 2779,
+      "matchesValidatedClone": true
+    },
+    {
+      "path": "apps/merchant/web/src/proxy.ts",
+      "sha256": "faecfb0fa26c588fa710e337929b0ea7f2eea17afd91d1110f0e30aef4fd80cb",
+      "bytes": 1646,
+      "matchesValidatedClone": true
+    },
+    {
+      "path": "apps/merchant/web/tests/merchant-read-performance.test.mjs",
+      "sha256": "699f88209077e378cf5a6f2318be0a9d63d23ff84372ca2b805b38f5d1e64fbd",
+      "bytes": 34424,
+      "matchesValidatedClone": true
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/ApparelFactsEditor.tsx",
+      "sha256": "4c1b151de0031c77b6bad1abd905a03c3afcd9f0ce37a62e21817ce5358980ba",
+      "bytes": 3862,
+      "matchesValidatedClone": true
+    },
+    {
+      "path": "scripts/liquid-parity/build-threadline-catalog.mjs",
+      "sha256": "8d1942f3c16059e7d8af880de05e7b501949e99344be025040ef12d8c1c30360",
+      "bytes": 5259,
+      "matchesValidatedClone": true
+    },
+    {
+      "path": "database/supabase/migrations/382_threadline_catalog_v2.sql",
+      "sha256": "475717e0f7afd78327ce89b55768e0a13347394a98a2bfcf8bfad19ed088b9dc",
+      "bytes": 166123,
+      "matchesValidatedClone": true
+    },
+    {
+      "path": "tests/migrations/migration-safety.test.mjs",
+      "sha256": "dd5241cc1bff3a5dfa76546f6dc26cc11e9d682ed7874cfd9b1178973c4a86f3",
+      "bytes": 10753,
+      "matchesValidatedClone": true
+    },
+    {
+      "path": "packages/typescript/ui/snapshots/token-aliases.json",
+      "sha256": "40e2537696f48e47d08482bcf0ce02e32bbfe6ea7edde5508746e34b33b98fd3",
+      "bytes": 36228,
+      "matchesValidatedClone": true
+    }
+  ]
+}

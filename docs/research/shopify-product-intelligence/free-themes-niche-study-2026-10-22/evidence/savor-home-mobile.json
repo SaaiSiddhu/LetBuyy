@@ -1,0 +1,469 @@
+{
+  "body": {
+    "background": "rgb(255, 255, 255)",
+    "color": "rgb(0, 0, 0)",
+    "font": "Inter, sans-serif",
+    "fontSize": "14px"
+  },
+  "controls": [
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Menu",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Cart",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Load video: ",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "SHOP",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "ASK",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "CONNECT",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Email address",
+      "tag": "INPUT",
+      "type": "email"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Sign up",
+      "tag": "BUTTON",
+      "type": "submit"
+    }
+  ],
+  "headings": [
+    {
+      "font": "\"Barlow Condensed\", sans-serif",
+      "height": 1,
+      "line": "52.8px",
+      "size": "48px",
+      "tag": "H1",
+      "text": "SAVOR",
+      "weight": "600",
+      "width": 1,
+      "x": -1,
+      "y": -1
+    },
+    {
+      "font": "\"Barlow Condensed\", sans-serif",
+      "height": 52.796875,
+      "line": "26.4px",
+      "size": "24px",
+      "tag": "H3",
+      "text": "A FAMILY TRADITION OF BOLD, FRESH FLAVOR",
+      "weight": "600",
+      "width": 334,
+      "x": 28,
+      "y": 3609.0625
+    },
+    {
+      "font": "\"Barlow Condensed\", sans-serif",
+      "height": 26.3984375,
+      "line": "26.4px",
+      "size": "24px",
+      "tag": "H3",
+      "text": "WE SEND TASTY EMAILS",
+      "weight": "600",
+      "width": 358,
+      "x": 16,
+      "y": 4305.3203125
+    }
+  ],
+  "links": [
+    {
+      "text": "Skip to content",
+      "url": "https://savor-theme-demo.myshopify.com/#MainContent"
+    },
+    {
+      "text": "",
+      "url": "https://savor-theme-demo.myshopify.com/collections/all-products"
+    },
+    {
+      "text": "",
+      "url": "https://savor-theme-demo.myshopify.com/collections/barbecue-sauces"
+    },
+    {
+      "text": "",
+      "url": "https://savor-theme-demo.myshopify.com/collections/dipping-sauces"
+    },
+    {
+      "text": "",
+      "url": "https://savor-theme-demo.myshopify.com/collections/gifts"
+    },
+    {
+      "text": "",
+      "url": "https://savor-theme-demo.myshopify.com/collections/merch"
+    },
+    {
+      "text": "",
+      "url": "https://savor-theme-demo.myshopify.com/pages/about-us"
+    },
+    {
+      "text": "",
+      "url": "https://savor-theme-demo.myshopify.com/blogs/news"
+    },
+    {
+      "text": "",
+      "url": "https://savor-theme-demo.myshopify.com/collections/all-products"
+    },
+    {
+      "text": "",
+      "url": "https://savor-theme-demo.myshopify.com/"
+    },
+    {
+      "text": "SAVOR EVERY. LAST. BITE.",
+      "url": "https://savor-theme-demo.myshopify.com/collections/dipping-sauces"
+    },
+    {
+      "text": "Shop sauces →",
+      "url": "https://savor-theme-demo.myshopify.com/collections/dipping-sauces"
+    },
+    {
+      "text": "The Original",
+      "url": "https://savor-theme-demo.myshopify.com/products/the-original-japanese-barbecue-sauce?variant=43258165428275"
+    },
+    {
+      "text": "Sweet Pineapple",
+      "url": "https://savor-theme-demo.myshopify.com/products/sweet-pineapple?variant=43258130333747"
+    },
+    {
+      "text": "Roasted Garlic",
+      "url": "https://savor-theme-demo.myshopify.com/products/roasted-garlic?variant=43258129580083"
+    },
+    {
+      "text": "Hella Hot",
+      "url": "https://savor-theme-demo.myshopify.com/products/hella-hot?variant=43258135248947"
+    },
+    {
+      "text": "Original",
+      "url": "https://savor-theme-demo.myshopify.com/products/original-dipping?variant=43258133741619"
+    },
+    {
+      "text": "Sweet & Spicy",
+      "url": "https://savor-theme-demo.myshopify.com/products/sweet-spicy-dipping?variant=43258133413939"
+    },
+    {
+      "text": "Barbecue",
+      "url": "https://savor-theme-demo.myshopify.com/collections/barbecue-sauces"
+    },
+    {
+      "text": "Dipping",
+      "url": "https://savor-theme-demo.myshopify.com/collections/dipping-sauces"
+    },
+    {
+      "text": "Gifts",
+      "url": "https://savor-theme-demo.myshopify.com/collections/gifts"
+    },
+    {
+      "text": "Merch",
+      "url": "https://savor-theme-demo.myshopify.com/collections/merch"
+    },
+    {
+      "text": "Shipping",
+      "url": "https://savor-theme-demo.myshopify.com/pages/shipping-policy"
+    },
+    {
+      "text": "Returns",
+      "url": "https://savor-theme-demo.myshopify.com/pages/return-policy"
+    },
+    {
+      "text": "FAQ",
+      "url": "https://savor-theme-demo.myshopify.com/pages/faq"
+    },
+    {
+      "text": "About us",
+      "url": "https://savor-theme-demo.myshopify.com/pages/about-us"
+    },
+    {
+      "text": "Contact us",
+      "url": "https://savor-theme-demo.myshopify.com/pages/contact"
+    },
+    {
+      "text": "Savor",
+      "url": "https://savor-theme-demo.myshopify.com/"
+    }
+  ],
+  "sections": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--18561684275251__hero_RkimKJ",
+      "rect": {
+        "height": 400,
+        "width": 390,
+        "x": 0,
+        "y": 0
+      },
+      "tag": "SECTION",
+      "text": "SAVOR EVERY. LAST. BITE.\n\nShop sauces →"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--18561684275251__product_list_X8Q7bi",
+      "rect": {
+        "height": 2914.90625,
+        "width": 390,
+        "x": 0,
+        "y": 400
+      },
+      "tag": "DIV",
+      "text": "The Original\n\nTHE ORIGINAL\n\n$9.49 CAD\n\nBold, fresh and filled with umami flavor\n\nSweet Pineapple\n\nSWEET PINEAPPLE\n\n$9.49 CAD\n\nThe perfect hit of tropical brightness\n\nRoasted Garlic"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--18561684275251__section_RhpYRt",
+      "rect": {
+        "height": 484.921875,
+        "width": 390,
+        "x": 0,
+        "y": 3314.90625
+      },
+      "tag": "DIV",
+      "text": "PLAY VIDEO\nA FAMILY TRADITION OF BOLD, FRESH FLAVOR\n\nFood has the power to connect generations – whether it’s learning grandma’s recipes and trying to make them just like her or th"
+    }
+  ],
+  "title": "Savor",
+  "url": "https://savor-theme-demo.myshopify.com/",
+  "viewport": {
+    "dpr": 1,
+    "height": 844,
+    "width": 390
+  },
+  "formGroups": [],
+  "grids": [
+    {
+      "className": "hero__media-grid",
+      "columns": "390px",
+      "display": "grid",
+      "gap": "normal",
+      "height": 400,
+      "tag": "DIV",
+      "width": 390
+    },
+    {
+      "className": "\n    resource-list\n    \n    \n    resource-list--grid\n  ",
+      "columns": "390px",
+      "display": "grid",
+      "gap": "1px",
+      "height": 2914.90625,
+      "tag": "DIV",
+      "width": 390
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n       color-scheme-2\n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 484.984375,
+      "tag": "DIV",
+      "width": 390
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n       color-scheme-2\n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 484.984375,
+      "tag": "DIV",
+      "width": 390
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n       color-scheme-2\n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 484.984375,
+      "tag": "DIV",
+      "width": 390
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n       color-scheme-2\n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 484.984375,
+      "tag": "DIV",
+      "width": 390
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n       color-scheme-2\n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 484.984375,
+      "tag": "DIV",
+      "width": 390
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n       color-scheme-2\n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 484.984375,
+      "tag": "DIV",
+      "width": 390
+    }
+  ],
+  "images": [
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 390,
+      "rect": {
+        "height": 400,
+        "width": 390
+      }
+    },
+    {
+      "alt": "The Original",
+      "complete": true,
+      "naturalWidth": 389,
+      "rect": {
+        "height": 390,
+        "width": 390
+      }
+    },
+    {
+      "alt": "The Original",
+      "complete": true,
+      "naturalWidth": 389,
+      "rect": {
+        "height": 390,
+        "width": 390
+      }
+    },
+    {
+      "alt": "The Original",
+      "complete": true,
+      "naturalWidth": 389,
+      "rect": {
+        "height": 390,
+        "width": 390
+      }
+    },
+    {
+      "alt": "The Original",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 390,
+        "width": 390
+      }
+    },
+    {
+      "alt": "The Original",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 390,
+        "width": 390
+      }
+    },
+    {
+      "alt": "Sweet Pineapple",
+      "complete": true,
+      "naturalWidth": 390,
+      "rect": {
+        "height": 390,
+        "width": 390
+      }
+    },
+    {
+      "alt": "Sweet Pineapple",
+      "complete": true,
+      "naturalWidth": 389,
+      "rect": {
+        "height": 390,
+        "width": 390
+      }
+    },
+    {
+      "alt": "Sweet Pineapple",
+      "complete": true,
+      "naturalWidth": 389,
+      "rect": {
+        "height": 390,
+        "width": 390
+      }
+    },
+    {
+      "alt": "Roasted Garlic",
+      "complete": true,
+      "naturalWidth": 389,
+      "rect": {
+        "height": 390,
+        "width": 390
+      }
+    },
+    {
+      "alt": "Roasted Garlic",
+      "complete": true,
+      "naturalWidth": 389,
+      "rect": {
+        "height": 390,
+        "width": 390
+      }
+    },
+    {
+      "alt": "Roasted Garlic",
+      "complete": true,
+      "naturalWidth": 389,
+      "rect": {
+        "height": 390,
+        "width": 390
+      }
+    }
+  ],
+  "bodyText": "Skip to content\nSAVOR\nTotal items in cart: 0\n\nSAVOR EVERY. LAST. BITE.\n\nShop sauces →\nThe Original\n\nTHE ORIGINAL\n\n$9.49 CAD\n\nBold, fresh and filled with umami flavor\n\nSweet Pineapple\n\nSWEET PINEAPPLE\n\n$9.49 CAD\n\nThe perfect hit of tropical brightness\n\nRoasted Garlic\n\nROASTED GARLIC\n\n$9.49 CAD\n\nMade for the garlic obsessed\n\nHella Hot\n\nHELLA HOT\n\n$9.49 CAD\n\nYour tastebuds will rejoice—they will also cry\n\nOriginal\n\nORIGINAL\n\n$9.99 CAD\n\nCreamy, Savory, and Umami Flavor\n\nSweet & Spicy\n\nSWEET & SPICY\n\n$9.99 CAD\n\nCreamy, Savory, and Umami with a Kick\n\nPLAY VIDEO\nA FAMILY TRADITION OF BOLD, FRESH FLAVOR\n\nFood has the power to connect generations – whether it’s learning grandma’s recipes and trying to make them just like her or the intense memories triggered by the flavors and aromas of our childhood.\n\nSHOP\nBarbecue\nDipping\nGifts\nMerch\nASK\nShipping\nReturns\nFAQ\nAbout us\nCONNECT\nContact us\nInstagram\nYouTube\nTikTok\nWE SEND TASTY EMAILS\nEmail\n© 2026 Savor, Powered by Shopify"
+}

@@ -1,0 +1,65 @@
+{
+  "recordedAt": "2026-10-24T06:09:58.305376+00:00",
+  "status": "PRIVATE_CANDIDATE_REVIEW_READY_NO_MAIN_EDITS",
+  "scope": "Closed ACL IN metadata recognition in canonical migration-safety validator; source-only, no SQL execution or runtime resource actions.",
+  "candidateRoot": "/private/tmp/trailmark-acl-in-55m799_x",
+  "mainFilesUnchangedVerified": true,
+  "baseSha256": {
+    "scripts/validators/migration-safety-validator.mjs": "b8813cbde0d95ab8f0ff23e4e13b1698c3f0a041243d7d3cf561be36778616b2",
+    "tests/migrations/migration-safety.test.mjs": "dd5241cc1bff3a5dfa76546f6dc26cc11e9d682ed7874cfd9b1178973c4a86f3",
+    "database/supabase/migrations/388_cart_order_fact_snapshots.sql": "9de7c35b68684cd5d3c752166e5c6ae0b33c64c6b1ea8ac353a82bcac936d2c3"
+  },
+  "candidateSha256": {
+    "scripts/validators/migration-safety-validator.mjs": "6f9c2adf384b3e820dfbbc84f65f56a69b806824dd805fcc030510688e6ac1d3",
+    "tests/migrations/migration-safety.test.mjs": "9561c572b9ce7a9cf0776fd0d3d7d723370b4c9319d43b0fc2a7ebdba8571c60"
+  },
+  "patch": "/private/tmp/trailmark-acl-in-55m799_x-evidence/candidate.patch",
+  "patchSha256": "3b1566c78a9eb5919048a234478aeeda8ca9ef51ea45b6887fefaaa4c650a6fb",
+  "change": "Two validator lines: one complete IN matcher reusing existing aclColumn/privileges and one aclRead replacement. Qualified388 SQL unchanged. Existing regression file reused.",
+  "red": {
+    "validatorExit": 1,
+    "reason": "Actual388 closed privilege IN guard falsely classified as destructive TRUNCATE.",
+    "testExit": 1,
+    "testFailureBoundary": "Validator import stopped suite before test bodies; no claimed test-case RED counts.",
+    "logs": [
+      "red-validator.log",
+      "red-regression.log"
+    ]
+  },
+  "green": {
+    "validatorExit": 0,
+    "regressionTests": 11,
+    "pass": 11,
+    "fail": 0,
+    "skip": 0,
+    "logs": [
+      "green-validator.log",
+      "green-regression.log"
+    ],
+    "additionalForbiddenControls": 8,
+    "commentLiquidBaselineControl": true
+  },
+  "coverage": [
+    "Actual388 bytes accepted through helper and actual CLI including existing untracked temporary Git fixture.",
+    "Plain/before-after adjacent/PLpgSQL/dynamic quoted-dollar-format TRUNCATE remains rejected by actual CLI.",
+    "Helper also retains dynamic array-concatenation detection.",
+    "Unknown privilege/expression/nonclosed list stays visible and rejected.",
+    "All eight other forbidden pattern classes independently rejected with adjacent recognized guard.",
+    "Existing313/319/357/361 protections and382 Liquid-payload behavior preserved."
+  ],
+  "limits": [
+    "Private36-file minimal source fixture plus existing nested regression fixture, not full repository source-gate admission.",
+    "No main edits, qualifiedSQL edits, DB/build/browser/API/provider actions, migration application, deployment or release.",
+    "Root review and next serialized source batch required before main application.",
+    "Trailmark12 lifecycle stages and17 discovery recipes remain NOT_RUN; no Trailmark UI lease."
+  ],
+  "artifacts": {
+    "candidate.patch": "3b1566c78a9eb5919048a234478aeeda8ca9ef51ea45b6887fefaaa4c650a6fb",
+    "green-regression.log": "ce382f1b500acfad183d75783ec95eabde3722753c2e724cecf8723275654573",
+    "green-validator.log": "e9152c45556a0930cc1e0b20a46226c8c09431476acc238c946bd82f703c6d2d",
+    "other-forbidden-controls.json": "8e7a8742b2d64e33786d3f1d1f0ac6a316f872e188460c0950c65279572fde72",
+    "red-regression.log": "8defa7ce3783210c90ca300f8d517589efb6ed6e472cb7800842f80a71288c41",
+    "red-validator.log": "ea871229d1fbb9cd2557ea954e549546faf0f4ad23800dd52573f481b83d0d53",
+    "source-inputs.json": "ed93bec4ba007520e570810d63df3812e589d5477783d9f06adc7a8a0137076f"
+  }
+}

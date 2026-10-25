@@ -1,0 +1,58 @@
+{
+  "recordedAt": "2026-10-25T04:21:14.507008+00:00",
+  "status": "ACCEPT_COMBINED_THREE_PATH_LAUNCHER_AND_LOCAL_ROLE_SUPPLEMENT_FOR_CONTROLLED_CANDIDATE",
+  "handoff": {
+    "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/preserved-runtime07-harness02/HANDOFF_LAUNCHER_ROLE04.json",
+    "sha256": "6d68395261a4beb348362ef12193f3b1323e307a51c50e75d4a61a5dd0b57bb2"
+  },
+  "sourcePaths": [
+    {
+      "path": "scripts/governance/owned-database-provision.mjs",
+      "beforeSha256": "2960af9b57479eb9365ad3962239a44c406ab7d216d1e0f99d6357542f023f34",
+      "beforeArchive": "/Volumes/Projects/LetBuyy/docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/preserved-runtime07-harness02/before-local-role04/scripts/governance/owned-database-provision.mjs",
+      "afterSha256": "59a1ca8dd37d76c99b8b8724dbaa3d53b11a34d0eb875d437274b386ce0de1d7",
+      "privatePath": "/private/tmp/letbuyy-preserved-runtime07-prep-20261025-02/scripts/governance/owned-database-provision.mjs"
+    },
+    {
+      "path": "scripts/governance/run-executable-suites.mjs",
+      "beforeSha256": "313e71fee08a772d3a15cb58db636c37ad501aedca0d15ed57ff4d4548f46662",
+      "beforeArchive": "/Volumes/Projects/LetBuyy/docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/preserved-runtime07-harness02/before-launcher03/scripts/governance/run-executable-suites.mjs",
+      "afterSha256": "9bee1039e32cef1d36cf43b879307f48a38511873c770a8ba45da443e6539c2f",
+      "privatePath": "/private/tmp/letbuyy-preserved-runtime07-prep-20261025-02/scripts/governance/run-executable-suites.mjs"
+    },
+    {
+      "path": "tests/governance/owned-preserved-runtime.test.mjs",
+      "beforeSha256": "bf5e6594e7c2d96a52748e2a2651ddc7a3da1028ef2677a66e9b5dd88f6a1540",
+      "beforeArchive": "/Volumes/Projects/LetBuyy/docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/preserved-runtime07-harness02/before-launcher03/tests/governance/owned-preserved-runtime.test.mjs",
+      "afterSha256": "54a4a0ee923dee0058c33958742315c6aa85b2f561a78f5832543df225bcb287",
+      "privatePath": "/private/tmp/letbuyy-preserved-runtime07-prep-20261025-02/tests/governance/owned-preserved-runtime.test.mjs"
+    }
+  ],
+  "independentPhysicalChecks": {
+    "sourceAfterPins": 3,
+    "beforeArchives": 3,
+    "otherFrozenContext": 7,
+    "baseEvidenceArtifacts": 15,
+    "issueCount": 0
+  },
+  "sourceReview": "Provisionerdelta exactlyremoves mandatorysupabase_admin fromminimum six-rolelist; nootherprovisionerbytechanges. Existingall20profile/attributes/password/settings/membership/witness enforcement andsuperuserallowlist exact. Focusedtestonlyappends3cases toacceptedlauncher03test; actualrunner9bee1039 reusesindependentacceptedlauncher03review.",
+  "evidence": [
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/preserved-runtime07-harness02/launcher03-focused.tap",
+      "sha256": "c5d68eb9c331e0372184259be0bbd630d4f18916c5804bab3168802e46bdcd50",
+      "summary": " 4\n# suites 0\n# pass 4\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 85.924542\n"
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/preserved-runtime07-harness02/localrole04-launcher-combined.tap",
+      "sha256": "bc248c3a549735e261c32be9459a96700600f254286dd8f28e6105964a74fbe5",
+      "summary": " 7\n# suites 0\n# pass 7\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 80.506417\n"
+    }
+  ],
+  "validation": "Owner7focusedPASS/0fail/0skip (4launcher+3role; sixmissingrequired-role mutants recomputevalidprofiledigest; positives20roles8memberships withoutadmin andoptionalactualadmin; profiletamper/superuserrefusal). Prior11runtime/5reaper/types notrerun/recounted.",
+  "scope": "Localnativefixture versusmanagedprovideradministrationrole only; no productionidentityauthoritychange, roleinvention oractualprivateroleprofile mutation. Rootoriginal20rolesmustremainexact inactualrestorewitness.",
+  "RootIntegrationDisposition": "Rootsolecandidatewriter may nowcopyexactfinal3pins, updatefinalsourceManifest/capsulebinding andperformauthorizedprivatepreflight. Sourceassemblyonly, noadditionalresourcepermission. Finalcandidateoriginal21037catalogue/defaults remainunchanged, 211/apparelproducer/perf excluded.",
+  "remaining": "ActualcandidateCLIversion/smoke andcapsuleloader checks; independentlyreviewedconcrete600smonitor/command+newactualhumanexecutionpermissionbeforeonefreshrestore. Currentold3budgetexhausted.",
+  "actualNativeOrRestore": "NOT_RUN_NOT_GRANTED",
+  "MainOrActualRuntimeActionsByThemes": 0,
+  "fullThemeCertificates": 0
+}

@@ -1,0 +1,21 @@
+{
+  "recordedAt": "2026-10-25T00:04:55.290276+00:00",
+  "status": "PROPOSED_TEST_ONLY_WITNESS_AMENDMENT_NOT_NATIVE_ACCEPTED",
+  "oldImmutableTest": {
+    "path": "/private/tmp/letbuyy-hosted-capture-proof-prep-20261025-01/services/api-gateway/src/__tests__/owned-db/hosted-checkout-buyer-ownership.postgres.test.ts",
+    "sha256": "49f705c56b157e42d7c89a03e1eb92654d612bd26f8036e09db5372aec873ced"
+  },
+  "proposedTest": {
+    "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/hosted-capture-native-preparation01/buyer-ownership-witness02.proposed.ts",
+    "sha256": "4a7d1a5dfc21b3cd326a0fcb7a82fd778c20b313e383d8282a97f77077a8cf76"
+  },
+  "patch": {
+    "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/hosted-capture-native-preparation01/causal-witness02.proposed.patch",
+    "sha256": "d55bbf9f32bb618ab0a191f07c46859860bff34ae7edf8c33d791dda7087faf2"
+  },
+  "effect": "Only inserts retained readonly canonical order/capture/original-key/exact amount/currency/balanced entries/hosted flag witness and precondition assertions immediately before the unchanged metadata assertion. RED requires preconditions-pass marker +actual false flag +that assertion failing; earlier/setup failures are not accepted.",
+  "businessSourceChanged": false,
+  "originalTestAndWrapperUntouched": true,
+  "nativeExecuted": false,
+  "stagingPolicy": "Both new source materializations will identify this proposed witness as an explicit additional test-only overlay requiring Themes acceptance before standalone preflight/native activation."
+}

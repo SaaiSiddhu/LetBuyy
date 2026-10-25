@@ -1,0 +1,10 @@
+{
+  "recordedAt": "2026-10-23T15:48:04.064148+00:00",
+  "runId": "9cd50e893016",
+  "request": "Unauthenticated public GET, no cookies or Authorization header",
+  "status": 200,
+  "bodySha256": "903d48b049022d1584080e463c49c9925789b8d7b80b58609100e8076388a56d",
+  "publishedBPresent": true,
+  "unpublishedSecondTabPresent": false,
+  "staleDraftPresent": false
+}

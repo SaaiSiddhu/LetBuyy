@@ -1,0 +1,18 @@
+{
+  "recordedAt": "2026-10-24T23:54:55.355649+00:00",
+  "status": "SEND_MESSAGE_TO_ROOT_SUCCEEDED",
+  "destinationThread": "01a16ce5-e5ba-7191-ab2c-a1b76947d2b5",
+  "authorization": "Direct human in this MadeYours chat answered Allow Root coordination; later direct human Root resume and confirmation were independently verified.",
+  "toolResult": {
+    "threadId": "01a16ce5-e5ba-7191-ab2c-a1b76947d2b5",
+    "isError": false
+  },
+  "payloadReferences": [
+    "RESUME02_SOURCE_AND_BROWSER_HANDOFF.json",
+    "NEXT_PRODUCT_CART_RECIPE_RESUME02.json",
+    "hosted-capture-proof-private01/HANDOFF.json"
+  ],
+  "noOtherRecipientMessaged": true,
+  "original23CaseCredit": 0,
+  "noBrowserNativeBuildDatabaseProviderActions": true
+}

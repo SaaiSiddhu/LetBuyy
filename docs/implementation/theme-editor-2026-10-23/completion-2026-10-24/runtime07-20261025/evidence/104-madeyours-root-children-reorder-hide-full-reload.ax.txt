@@ -1,0 +1,188 @@
+Browser tab: 173052882, Title: "LetBuyy Admin", URL: "http://admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes/letbuyy-nova/editor".
+1 AXWebArea LetBuyy Admin, URL: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes/letbuyy-nova/editor
+	2 container
+		3 link Description: Back to themes, Value: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes
+		4 checkbox Description: Toggle navigation panel, Value: 1
+		5 button Sections
+		6 button Theme settings
+		7 button Theme styles
+		8 button Versions
+		9 text MadeYours Draft theme
+		10 text Saved
+		11 container Template
+			12 pop up button (collapsed, settable) Description: Template, Value: MadeYours home, Secondary Actions: Expand
+				13 menu
+					14 (selected) MadeYours home
+					15 LetBuyy Core product
+					16 LetBuyy Core collection
+					17 Page
+					18 LetBuyy Core cart
+					19 Blog
+					20 Article
+					21 Policy page
+					22 LetBuyy Core search
+					23 Contact
+					24 Password
+					25 404 Not Found
+					26 Login
+					27 Order detail
+					28 Order history
+					29 All collections
+					30 Account
+					31 Register
+					32 Account settings
+					33 Wishlist
+					34 Addresses
+		35 button (disabled) Undo
+		36 button (disabled) Redo
+		37 button (disabled) Save
+		38 button Publish
+		39 container Theme editor navigation
+			40 heading MadeYours home, Value: 2
+				41 text MadeYours home
+			42 text v5
+			43 outline Theme sections
+				44 container
+					45 text HEADER
+					46 button Announcement Bar
+					47 button Header
+				48 container
+					49 text TEMPLATE
+					50 container Template sections
+						51 row (selectable) Personalization workspace introduction
+							52 button Personalization workspace introduction
+						53 row (selectable) Choose, specify, review, 3 blocks
+							54 button Choose, specify, review, 3 blocks
+							55 container
+								56 row (selectable) Step Toggle Step block visibility Move Step block up Move Step block down Remove Step block Add child block: Badge
+									57 button Step
+									58 container
+										59 checkbox Description: Toggle Step block visibility, Value: 1
+										60 button (disabled) Move Step block up
+										61 button Move Step block down
+										62 button Remove Step block
+									63 button Add child block: Badge
+								64 row (selectable) Step Toggle Step block visibility Move Step block up Move Step block down Remove Step block Add child block: Badge
+									65 button Step
+									66 container
+										67 checkbox Description: Toggle Step block visibility, Value: 1
+										68 button Move Step block up
+										69 button Move Step block down
+										70 button Remove Step block
+									71 button Add child block: Badge
+								72 row (selectable) Step Toggle Step block visibility Move Step block up Move Step block down Remove Step block Add child block: Badge
+									73 button Step
+									74 container
+										75 checkbox Description: Toggle Step block visibility, Value: 1
+										76 button Move Step block up
+										77 button (disabled) Move Step block down
+										78 button Remove Step block
+									79 button Add child block: Badge
+						80 row (selectable) Personalizable base catalog
+							81 button Personalizable base catalog
+						82 row (selectable) Base collections
+							83 button Base collections
+						84 row (selectable) The details before you buy
+							85 button The details before you buy
+						86 row (selected) Trust Badges, 1 block
+							87 button Trust Badges, 1 block
+							88 row (selectable, expanded) Secondary Actions: Collapse, Badge Toggle Badge block visibility Move Badge block up Move Badge block down Remove Badge block Add child block: Badge
+								89 button Badge
+								90 container
+									91 checkbox Description: Toggle Badge block visibility, Value: 1
+									92 button (disabled) Move Badge block up
+									93 button (disabled) Move Badge block down
+									94 button Remove Badge block
+								95 button Add child block: Badge
+								96 container
+									97 row (selectable) Badge Toggle Badge block visibility Move child block up Move child block down Remove child block Add child block: Badge
+										98 button Badge
+										99 container
+											100 checkbox Description: Toggle Badge block visibility, Value: 1
+											101 button (disabled) Move child block up
+											102 button Move child block down
+											103 button Remove child block
+										104 button Add child block: Badge
+									105 row (selected) Badge Toggle Badge block visibility Move child block up Move child block down Remove child block Add child block: Badge
+										106 button Badge
+										107 container
+											108 checkbox Description: Toggle Badge block visibility, Value: 0
+											109 button Move child block up
+											110 button (disabled) Move child block down
+											111 button Remove child block
+										112 button Add child block: Badge
+					113 pop up button (collapsed, settable) Value: Marquee, Secondary Actions: Expand
+						114 menu
+							115 (selected) Marquee
+							116 404 Not Found
+							117 Spotlight
+							118 Search
+							119 Video Hero
+							120 Call to Action
+							121 Personalization workspace introduction
+							122 Blog Listing
+							123 Cart
+							124 Contact Form
+							125 Page Content
+							126 Personalizable base catalog
+							127 Rich Content
+							128 Testimonials
+							129 Trust Badges
+							130 The details before you buy
+							131 Brand Marquee
+							132 Base collections
+							133 FAQ Accordion
+							134 Password Gate
+							135 Services Grid
+							136 App Block Slot
+							137 Customer Login
+							138 Policy Content
+							139 Portfolio Grid
+							140 Product Detail
+							141 Skills Section
+							142 Article Content
+							143 Banner Carousel
+							144 Order History
+							145 Announcement Bar
+							146 Customer Account
+							147 Collection Banner
+							148 Base discovery
+							149 Customer Register
+							150 Account Settings
+							151 Wishlist
+							152 Selected bases
+							153 Newsletter Signup
+							154 Addresses
+							155 Choose, specify, review
+							156 Order Detail
+							157 Base collection products
+					158 button Add
+				159 container
+					160 text FOOTER
+					161 button Footer
+		162 container Live theme preview
+			163 text Live preview
+			164 text syn-threadline-ui-ae3f0477 . localhost  -  1440 px
+			165 container Preview device
+				166 checkbox Desktop, Value: 1
+				167 checkbox Tablet, Value: 0
+				168 checkbox Mobile, Value: 0
+			169 container
+				170 text syn-threadline-ui-ae3f0477 . localhost
+				171 checkbox Description: Inspect preview, Value: 1
+				172 container syn-threadline-ui-ae3f0477 storefront preview
+					173 AXWebArea about:blank
+		174 container Theme properties
+			175 text Selected block
+			176 heading Badge, Value: 2
+				177 text Badge
+			178 button Back to section
+			179 container Smart defaults
+				180 button (collapsed) Smart defaults, Secondary Actions: Expand
+					181 text Smart defaults
+			182 container
+				183 text Label
+				184 text field (settable) Label, Value: MadeYours temporary child A
+				185 button Remove block
+
+The focused UI element is 106 button Badge

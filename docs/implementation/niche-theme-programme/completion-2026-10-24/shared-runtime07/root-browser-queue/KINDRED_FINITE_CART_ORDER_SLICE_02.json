@@ -1,0 +1,26 @@
+{
+  "recordedAt": "2026-10-25T00:10:11.586858+00:00",
+  "status": "ROOT_FINITE_OWNED_KINDRED_UI_CART_COD_THEN_TEST_SLICE",
+  "controller": "01a16ce5-e5ba-7191-ab2c-a1b76947d2b5",
+  "runId": "49ada80bc494",
+  "siteId": "02049de4-41c3-4b10-b5b2-a60a6b5e82bf",
+  "slug": "letbuyy-summit",
+  "version": "2.1.0",
+  "productId": "c2936536-9d8e-4e4b-825a-f83335e9ffe9",
+  "quantityPerOrder": 1,
+  "variantId": null,
+  "expectedUnitINR": 1100,
+  "expectedStockBefore": 8,
+  "stockAuthority": "Actual public/current canonical inventory readback; no refill",
+  "orderBudget": {
+    "originalSeparateCod": 1,
+    "actualRazorpayTest": 1,
+    "live": 0
+  },
+  "currentStep": "Normal local COD caseG12 permitted first whilepubliccallbackoffline; Test purchase may begin onlyafterpublicrenewalapproval+healthyHMAC/TLSreceipt",
+  "facts": "ExistingknownMug300ml/Handwash/Notebook/Pen +suppliedopen/closedphotos. No giftmessage/personalization/variant invented; no factsedit",
+  "quote": "Actualserverquoteownstax/shipping/discount/grandtotal; expected1100+20notforced",
+  "history": "Bothbuyerandmerchantacceptedline/savedgiftfacts/care/image/total beforeanyfuturecatalogueedit",
+  "preserve": "Allpreviousorders/drafts/products/stockidentities; nouserapp/providercredentials/sourcechanges",
+  "sameKeyReplay": "Separate ownednativecase; donotreclickPlaceOrdertofakeidempotency"
+}

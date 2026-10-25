@@ -1,0 +1,83 @@
+{
+  "recordedAt": "2026-10-24T00:36:58.335030+00:00",
+  "classification": "FINAL_26_RECONCILED_FIXTURE_CLOSED_WITH_EXPLICIT_GAPS",
+  "priorGateReport": {
+    "path": "gate-progress-report-run9cd-diagnostics.json",
+    "sha256": "e51349d9d57c232867efb0d4f272851a82792f42851d60047fbc18b0f139bb02",
+    "runId": "9cd50e893016"
+  },
+  "runId": "f6074d90e894",
+  "candidate": "/private/tmp/theme-editor-candidate-20261023-latest392-manualtls01",
+  "sourceManifestSha256": "3875d08aab8f5cc335287f3fa6b31c9dd9c9c940e458e512332429404ccb1203",
+  "runtimeAllocated": true,
+  "allThreeAppsReady": true,
+  "schemaThrough": 392,
+  "sourceGates": {
+    "LATEST392": "Root independently admitted19/19 native checks, no skips; not browser acceptance",
+    "origin": "Actual normalUI save/fullreload in f607 positive",
+    "previewAndSharedHeader": "Actual original merchant/commerce route rendering/select/save/reload positive",
+    "trustedCheckout": "Normal approved exact-leaf HTTPS reaches delivery form, no bypass; no Habitat order yet",
+    "broaderCartCOD": "Direct human approved local fixture only; no production/provider scope",
+    "firstFinishAxis": "Root-source107 and productionclient admitted; actual normalfirstNaturalSave/fullreload sameoldUUID/facts/commercial/inventory/cart positive. Fullcohort pending.",
+    "cartRecovery": "Actual backend4/UI5 evenfullreload; separate canonical recovery diagnosis/repair assigned",
+    "stockIntent": "Owner released124PASS/noEmit/lintnoincrease; Root admission/rebuild/liveHI16pending"
+  },
+  "HabitatCases": {
+    "PASS": 23,
+    "FAIL": 0,
+    "PARTIAL": 2,
+    "NOT_RUN": 1
+  },
+  "executorTotals": {
+    "PASS": 23,
+    "PARTIAL": 2,
+    "FAIL": 0,
+    "BLOCKED": 0,
+    "NOT_RUN": 1
+  },
+  "all26CasesAccountedFor": true,
+  "all26CasesExecuted": false,
+  "installedAccepted": false,
+  "reportedEvidence": [
+    "installed-execution-report.md",
+    "installed-execution-tracking.json",
+    "corrected-execution-checkpoint-audit.json",
+    "corrected-probe-and-publication-audit.json",
+    "corrected-cart-checkpoint-audit.json"
+  ],
+  "sourceFreezeEvidence": [
+    "corrected-execution-freeze-checkpoint.json",
+    "supplemental-merchant-habitat-freeze-verification.json"
+  ],
+  "remaining": {
+    "remainingMatrixGaps": [
+      "HI11 legacy absent-capability runtime branch not assigned/exercised",
+      "HI14 exact frozen HTTP409/INSUFFICIENT_INVENTORY criterion unobserved",
+      "HI17 conditional missing/malformed historical snapshot record not assigned"
+    ],
+    "outsideMatrixNotRun": [
+      "Final two-Pink semantic baseline restoration interrupted by fixture timeout/database cleanup"
+    ],
+    "runtimeAccessPermitted": false
+  },
+  "preservation": "Old9cd failures, originalf607 first-axis failure/tab21, original Width UUIDs, and cart recovery failure remain retained. New source epochs require actual retest.",
+  "activeRuntimeAllocated": false,
+  "runtimeClosure": {
+    "path": "docs/implementation/niche-theme-programme/editor-f607-timeout-cleanup-receipt.json",
+    "sha256": "20aa5fc405780b6f33c212ad903e871151ffb880777fb4f7f8f0ed62ce5ec056",
+    "reason": "Configured runner timeout; code124, not an application test failure count",
+    "databaseRemoved": true,
+    "allBrowserNetworkDataLeases": "CLOSED",
+    "allBindingsHistoricalOnly": true,
+    "cleanupFailures": 0,
+    "cleanupRemaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    },
+    "reaped": [],
+    "twoPinkBaseline": "NOT_RESTORED_BEFORE_INTERRUPTION",
+    "oldExecutorNextSuperseded": "Do not restore/restart/adopt this fixture or resurrect/copy its data/credentials; any future fixture requires genuinely fresh normal-auth bindings."
+  },
+  "finalAudit": "installed-execution-evidence-audit-final.json"
+}

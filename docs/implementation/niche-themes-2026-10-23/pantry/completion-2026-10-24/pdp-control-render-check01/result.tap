@@ -1,0 +1,63 @@
+TAP version 13
+# Subtest: PDPCTRL01: actual frozen200 manifest exposes all four controls with unchanged stable product section
+ok 1 - PDPCTRL01: actual frozen200 manifest exposes all four controls with unchanged stable product section
+  ---
+  duration_ms: 0.341334
+  type: 'test'
+  ...
+# Subtest: PDPCTRL02: gallery true/false changes real gallery output; missing media is honest; food warnings stay visible
+ok 2 - PDPCTRL02: gallery true/false changes real gallery output; missing media is honest; food warnings stay visible
+  ---
+  duration_ms: 190.469917
+  type: 'test'
+  ...
+# Subtest: PDPCTRL03: description false/true renders supplied content; clearing it does not leave an empty accordion
+not ok 3 - PDPCTRL03: description false/true renders supplied content; clearing it does not leave an empty accordion
+  ---
+  duration_ms: 105.871625
+  type: 'test'
+  location: '/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/pantry/completion-2026-10-24/pdp-control-render-check01/pdp-controls.test.mts:1:6458'
+  failureType: 'testCodeFailure'
+  error: |-
+    A cleared description must not expose an empty disclosure
+    + actual - expected
+    
+    + HTMLDetailsElement {}
+    - undefined
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  actual:
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/pantry/completion-2026-10-24/pdp-control-render-check01/pdp-controls.test.mts:81:18)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: PDPCTRL04: nutrition true/false only toggles supplied text; absent text remains absent and safety facts survive
+ok 4 - PDPCTRL04: nutrition true/false only toggles supplied text; absent text remains absent and safety facts survive
+  ---
+  duration_ms: 105.036209
+  type: 'test'
+  ...
+# Subtest: PDPCTRL05: reviews control governs supplied review list/form; review and nutrition text cannot inject active markup
+ok 5 - PDPCTRL05: reviews control governs supplied review list/form; review and nutrition text cannot inject active markup
+  ---
+  duration_ms: 67.510084
+  type: 'test'
+  ...
+# Subtest: PDPCTRL06: hiding all optional PDP regions preserves purchase identity, price, net facts and allergen warning
+ok 6 - PDPCTRL06: hiding all optional PDP regions preserves purchase identity, price, net facts and allergen warning
+  ---
+  duration_ms: 55.49225
+  type: 'test'
+  ...
+1..6
+# tests 6
+# suites 0
+# pass 5
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1385.367666

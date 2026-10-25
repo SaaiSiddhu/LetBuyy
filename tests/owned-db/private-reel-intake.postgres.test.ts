@@ -103,9 +103,11 @@ test('private-original canonical native intake and conservative reverse retireme
  await t.test('empty359 blocks345; only reverse empty retirement and paired reapplication succeeds',()=>{
   assert.equal(owned.psql('SELECT count(*) FROM reel_upload_intents;'),'0');
   const before=conserved();assert.match(owned.psqlExpectError(oldRetirement),/REEL_ROLLBACK_UNKNOWN_FUNCTION_FAMILY/);assert.equal(conserved(),before);
-  owned.script(retirement);assert.equal(owned.psql("SELECT to_regclass('reel_upload_intents') IS NULL;"),'t');
-  assert.match(owned.psqlExpectError(retirement),/does not exist/);
-  owned.script(oldRetirement);owned.script(oldForward);owned.script(forward);
+  const strip=(sql:string)=>sql.replace(/^BEGIN;$/m,'').replace(/^COMMIT;$/m,'');
+  assert.match(owned.psqlExpectError('BEGIN;'+strip(retirement)+strip(retirement)+'ROLLBACK;'),/does not exist/);
+  // Keep the complete native reverse/reapply chain in one transaction so
+  // PostgREST cannot race a schema reload between two committed retirements.
+  owned.script('BEGIN;'+strip(retirement)+`DO $empty$ BEGIN IF to_regclass('public.reel_upload_intents') IS NOT NULL THEN RAISE EXCEPTION 'retirement did not remove own empty family';END IF;END $empty$;`+strip(oldRetirement)+strip(oldForward)+strip(forward)+'COMMIT;');
   assert.equal(snapshot(),JSON.parse(before)[0]);
  });
  await t.test('empty359 refuses ABI/body/owner/ACL/schema/policy/trigger/dependency drift and preserves catalogs',()=>{
@@ -116,7 +118,7 @@ test('private-original canonical native intake and conservative reverse retireme
    `CREATE VIEW public.synthetic_intake_dependency AS SELECT id FROM reel_upload_intents;`,`CREATE FUNCTION public.reel_future_v99() RETURNS boolean LANGUAGE sql AS $$SELECT true$$;`,
    `COMMENT ON TABLE reel_upload_intents IS 'synthetic retained annotation';`,`SET LOCAL session_replication_role=replica;`,`SET LOCAL TRANSACTION ISOLATION LEVEL REPEATABLE READ;`])
     refuse(setup,/REEL_.*ROLLBACK_/);
-  for(const role of ['anon','authenticated','app_tenant','service_role'])refuse(`SET LOCAL ROLE ${role};`,/permission denied|UNSAFE/);
+  for(const role of ['anon','authenticated','app_tenant','service_role'])refuse(`DO $fixture_role$ BEGIN IF NOT EXISTS(SELECT 1 FROM pg_roles WHERE rolname='supabase_admin') THEN CREATE ROLE supabase_admin NOLOGIN;END IF;END $fixture_role$;SET LOCAL ROLE ${role};`,/permission denied|UNSAFE|LETBUYY_PROVIDER_ADMIN_CATALOG_FENCE_REQUIRED/);
  });
  await t.test('mandatory DROP fault aborts eligible retirement before any source family is lost',()=>{
   owned.psql(`CREATE FUNCTION public.synthetic_intake_drop_fault() RETURNS event_trigger LANGUAGE plpgsql AS $$BEGIN RAISE EXCEPTION 'SYNTHETIC_INTAKE_DROP_FAULT';END$$;CREATE EVENT TRIGGER synthetic_intake_drop_fault ON sql_drop EXECUTE FUNCTION public.synthetic_intake_drop_fault();`);

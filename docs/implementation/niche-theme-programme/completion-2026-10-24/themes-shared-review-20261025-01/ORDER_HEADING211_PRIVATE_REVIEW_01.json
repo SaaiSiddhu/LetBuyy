@@ -1,0 +1,42 @@
+{
+  "recordedAt": "2026-10-24T23:58:07.529565+00:00",
+  "reviewer": "Themes /01a164a4-a342-76d3-ab33-65e021ed57db",
+  "authority": "RESUME_AUTHORITY_20261025_02.json",
+  "nativeDatabaseBrowserProviderMainBuildActions": 0,
+  "fullThemeCertificate": false,
+  "status": "RENDERER_AND_VERSION_SOURCE_ACCEPTABLE_TWO_NATIVE_ROLLBACK_PREPARATION_FIXES_REQUIRED",
+  "handoff": {
+    "path": "docs/implementation/niche-themes-2026-10-23/habitat/completion-2026-10-24/private-heading211-20261025-01/HANDOFF.json",
+    "sha256": "61f3548688a32d5162d172c0c620d5b40ab2d36455daef1d2dbb97304a236176"
+  },
+  "hashVerification": "PRIVATE_PROPOSAL_HASH_REVIEW_20261025_02.json#/heading",
+  "accepted": [
+    "Canonical helper BEFORE existing child packaging; exact four version211/6, slug+version references, exact installed definitions; zero changes to prior captures/helper/renderer.",
+    "37 retained raw fingerprints and92 default HTML/layout comparisons within61 source executions (22new/39retained). No native/UI grant from counts.",
+    "Append-only four captures, exact prior210 checks, populated role controls, full-public SQL witness and installed210/211 positive source cases are sound starting points."
+  ],
+  "findings": [
+    {
+      "id": "HEADING211-R01",
+      "path": "generate-order-heading211-proposal.ts",
+      "line": 61,
+      "finding": "Checkpoint guard binds prior version/default document/config but not every deterministic prior managed field copied by DOWN. Mutating saved previous.name, previous.section_schemas or previous.schema_version passes all checkpoint predicates while DOWN restores forged fields.",
+      "evidence": "ORDER_HEADING211_CHECKPOINT_COUNTEREXAMPLE_01.json",
+      "evidenceClass": "PURE_EXACT_PREDICATE_MODEL_NOT_EXECUTED_SQL",
+      "required": "Bind all captured deterministic prior managed fields to exact previousDocument/previousPersistence/listing values and strict expected shape, preserve original valid config. Add actual prepared transactional refusals for checkpoint field corruption on replay and DOWN; no new checkpoint store or rewritten old proposal."
+    },
+    {
+      "id": "HEADING211-R02",
+      "path": "services/api-gateway/src/__tests__/owned-db/first-party-order-heading211-qualification.manual.ts",
+      "line": 136,
+      "finding": "After four actual Editor GET readbacks, assert.deepEqual(tables(),restored) counts normal runtime telemetry writes as forbidden mutation. Current observability middleware always schedules letbuyy.runtime.request metrics; authenticated reads may log.",
+      "sourceEvidence": [
+        "services/api-gateway/src/middleware/observability.ts:223",
+        "services/api-gateway/src/middleware/observability.ts:279",
+        "services/api-gateway/src/__tests__/owned-db/gateway-harness.ts:154"
+      ],
+      "required": "Retain full-public conservation around SQL only. Attribute and bound exact readback request/trace telemetry rows and preserve all preexisting operational/business rows; no blanket table exemptions, sampling changes, middleware bypass or disabled telemetry. Treat subsequent SQL comparisons against settled post-readback witness."
+    }
+  ],
+  "native": "NOT_RUN_NOT_ADMITTED"
+}

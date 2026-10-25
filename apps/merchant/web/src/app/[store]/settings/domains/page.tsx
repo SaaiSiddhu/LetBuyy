@@ -6,6 +6,8 @@ import { getStorefrontRootDomain } from '@/lib/public-urls'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
 import {
+    Section,
+    Card,
     Badge,
     Banner,
     Button,
@@ -123,7 +125,7 @@ export default function DomainCenterPage() {
     // ── Connect view ──
     if (view.kind === 'connect') {
         return (
-            <SettingsPane title="Connect a domain" description="Use your own brand address for your storefront." store={store}>
+            <SettingsPane navigationKey="domains" title="Connect a domain" description="Use your own brand address for your storefront." store={store}>
                 <ConnectDomainWizard
                     store={store}
                     onClose={() => { setView({ kind: 'overview' }); void loadData({ quiet: true }) }}
@@ -155,13 +157,13 @@ export default function DomainCenterPage() {
     // ── Overview ──
     if (loading) {
         return (
-            <SettingsPane title="Domains" description="Connect and manage the addresses shoppers use to reach your store." store={store}>
+            <SettingsPane navigationKey="domains" title="Domains" description="Connect and manage the addresses shoppers use to reach your store." store={store}>
                 <div className="settings-general-stack">
                     {[1, 2].map((i) => (
-                        <div key={i} className="settings-home-card">
-                            <div className="settings-home-section-label"><Skeleton variant="text" lines={1} /></div>
+                        <Card key={i}>
+                            <Section><Skeleton variant="text" lines={1} /></Section>
                             <div className="settings-form-body"><Skeleton variant="text" lines={3} /></div>
-                        </div>
+                        </Card>
                     ))}
                 </div>
             </SettingsPane>
@@ -170,6 +172,7 @@ export default function DomainCenterPage() {
 
     return (
         <SettingsPane
+                navigationKey="domains"
             title="Domains"
             description="Connect and manage the addresses shoppers use to reach your store."
             store={store}
@@ -190,9 +193,8 @@ export default function DomainCenterPage() {
             </Banner>
 
             {/* Your domains */}
-            <div className="settings-home-card">
-                <div className="settings-home-section-label">Your domains</div>
-                <div className="settings-form-body">
+            <Section variant="grouped" title="Your domains" >
+
                     {/* LetBuyy default address — always live */}
                     <div className="domains-row">
                         <div className="domains-row-top">
@@ -229,13 +231,13 @@ export default function DomainCenterPage() {
                     <div className="domains-row-add">
                         <Button variant="secondary" onClick={() => setView({ kind: 'connect' })}><Plus className="letbuyy-icon" aria-hidden="true" /> Connect existing domain</Button>
                     </div>
-                </div>
-            </div>
+
+            </Section>
 
             {/* Buy a domain */}
-            <div className="settings-home-card">
+            <Card >
                 <Button unstyled type="button" className="domains-buy-toggle" onClick={() => setShowBuy((v) => !v)} aria-expanded={showBuy}>
-                    <span className="settings-home-section-label domains-buy-label">Buy a new domain</span>
+                    <span className="domains-buy-label">Buy a new domain</span>
                     <ChevronRight className={`letbuyy-icon domains-buy-chevron${showBuy ? ' is-open' : ''}`} aria-hidden="true" />
                 </Button>
                 {showBuy && (
@@ -262,7 +264,7 @@ export default function DomainCenterPage() {
                         </div>
                     </div>
                 )}
-            </div>
+            </Card>
         </SettingsPane>
     )
 }

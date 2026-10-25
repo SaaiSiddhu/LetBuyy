@@ -1,0 +1,44 @@
+{
+  "recordedAt": "2026-10-25T00:48:23.734916+00:00",
+  "command": "NATIVE_PREFLIGHT_PLAN.json#/sourcePreflight",
+  "exitCode": 0,
+  "result": {
+    "status": "SOURCE_PREFLIGHT_PASS_RESOURCES_NOT_CHECKED",
+    "inventorySha256": "a07bef5ab2640f0cad71686091f6c31fce28228ad7ab71f23d2804d9e56fe005",
+    "files": 7936,
+    "packages": 99,
+    "workspaceLinks": 178,
+    "toolDylibEdges": 76,
+    "negativeInventoryControls": [
+      "missingVendor",
+      "corruptTool",
+      "missingNodeDylib",
+      "foreignWorkspaceLink",
+      "missingExportEdge",
+      "changedPackage",
+      "missingWorkspace",
+      "changedMigrationOrder",
+      "excludedDependency",
+      "absentHostBinary"
+    ],
+    "migrations": {
+      "count": 322,
+      "maximum": 393,
+      "ceiling": null,
+      "orderedSha256": "cc775ccb284bef5dd61a1fd0e9c1b4a79656ec8181bdf6fef1e77d6d9b190092"
+    },
+    "nativeAdmissionAbsent": true,
+    "applicationModulesEvaluated": false,
+    "childProcesses": 0,
+    "nativeExecuted": false,
+    "resourcesChecked": false
+  },
+  "resourcePreflight": "NOT_RUN_NOT_GRANTED",
+  "resourceAndParentPlanSyntaxChecks": {
+    "resourceExit": 0,
+    "parentExit": 0,
+    "meaning": "Syntax parse only; neither plan evaluated/executed"
+  },
+  "original31And61CasesRerun": false,
+  "typecheckRerun": false
+}

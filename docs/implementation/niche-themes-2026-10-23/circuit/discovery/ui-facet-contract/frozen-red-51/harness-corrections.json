@@ -1,0 +1,20 @@
+{
+  "baselinePreservedAt": "baseline-red/",
+  "corrections": [
+    {
+      "reason": "Normalized facet values are transport; retained labels are presentation.",
+      "change": "Actual admitted facet.value is selected/submitted and its corresponding displayed facet.label is checked. Selected choice fixtures now use the supplied normalized value. No canonical key/value validity assertion removed."
+    },
+    {
+      "reason": "386 supplies no max furniture thresholds or sports physical length/unit facets.",
+      "change": "Real386-shaped cases record explicit capability gaps instead of requiring visible physical controls. Active query retention and canonical independent clearing remain mandatory. Separately labelled synthetic capability cases render physical controls through the actual shared projection and submit canonical numeric/unit pairs; these are not SQL proof."
+    },
+    {
+      "reason": "Book bibliography and stationery ruling are disjoint canonical leaves.",
+      "change": "Book fields remain in book cases; exact ruling choices are required in separate actual stationery renders. No field assertion suppressed."
+    }
+  ],
+  "plannedTests": 55,
+  "plannedActualRenders": 24,
+  "resources": "In-process only; no DB/build/browser/network."
+}

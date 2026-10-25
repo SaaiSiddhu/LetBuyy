@@ -262,7 +262,8 @@ export default function CommentsPage() {
     if (loading) {
         return (
             <Page>
-                <PageHeader
+                <PageHeader identity="content"
+                    recipe="index"
                     title="Comments"
                     description="Moderate blog comments before they appear on your site."
                     breadcrumbs={[{ label: 'Content' }, { label: 'Comments' }]}
@@ -278,7 +279,8 @@ export default function CommentsPage() {
 
     return (
         <Page>
-            <PageHeader
+            <PageHeader identity="content"
+                recipe="index"
                 title="Comments"
                 description="Moderate blog comments before they appear on your site."
                 breadcrumbs={[{ label: 'Content' }, { label: 'Comments' }]}

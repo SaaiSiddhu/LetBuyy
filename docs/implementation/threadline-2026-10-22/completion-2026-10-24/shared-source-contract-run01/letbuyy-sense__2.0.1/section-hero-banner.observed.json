@@ -1,0 +1,102 @@
+{
+  "id": "section-hero-banner",
+  "status": "PASS_SOURCE_DATA_CONTRACT",
+  "observed": {
+    "type": "hero-banner",
+    "group": "template",
+    "firstId": "section-865dd0e2-a20b-4249-8cd9-95779a02b29a",
+    "finalId": "section-16a5cd62-9384-43e2-a6d5-b9b0bc313927",
+    "phases": [
+      {
+        "phase": "edited",
+        "data": {
+          "type": "hero-banner",
+          "settings": {
+            "eyebrow": "Source fixture eyebrow",
+            "heading": "Source fixture heading",
+            "subheading": "Source fixture subheading",
+            "ctaText": "Source fixture ctaText",
+            "ctaLink": "https://example.invalid/theme-source/ctaLink.webp",
+            "secondaryText": "Source fixture secondaryText",
+            "secondaryLink": "https://example.invalid/theme-source/secondaryLink.webp",
+            "image": "https://example.invalid/theme-source/image.webp",
+            "secondImage": "https://example.invalid/theme-source/secondImage.webp",
+            "imageFocus": "top"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      {
+        "phase": "hidden-reordered",
+        "data": {
+          "type": "hero-banner",
+          "settings": {
+            "eyebrow": "Source fixture eyebrow",
+            "heading": "Source fixture heading",
+            "subheading": "Source fixture subheading",
+            "ctaText": "Source fixture ctaText",
+            "ctaLink": "https://example.invalid/theme-source/ctaLink.webp",
+            "secondaryText": "Source fixture secondaryText",
+            "secondaryLink": "https://example.invalid/theme-source/secondaryLink.webp",
+            "image": "https://example.invalid/theme-source/image.webp",
+            "secondImage": "https://example.invalid/theme-source/secondImage.webp",
+            "imageFocus": "top"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": true
+        }
+      },
+      {
+        "phase": "shown",
+        "data": {
+          "type": "hero-banner",
+          "settings": {
+            "eyebrow": "Source fixture eyebrow",
+            "heading": "Source fixture heading",
+            "subheading": "Source fixture subheading",
+            "ctaText": "Source fixture ctaText",
+            "ctaLink": "https://example.invalid/theme-source/ctaLink.webp",
+            "secondaryText": "Source fixture secondaryText",
+            "secondaryLink": "https://example.invalid/theme-source/secondaryLink.webp",
+            "image": "https://example.invalid/theme-source/image.webp",
+            "secondImage": "https://example.invalid/theme-source/secondImage.webp",
+            "imageFocus": "top"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      {
+        "phase": "removed",
+        "pinnedGroupSectionRetained": false
+      },
+      {
+        "phase": "readded",
+        "data": {
+          "type": "hero-banner",
+          "settings": {
+            "eyebrow": "Source fixture eyebrow",
+            "heading": "Source fixture heading",
+            "subheading": "Source fixture subheading",
+            "ctaText": "Source fixture ctaText",
+            "ctaLink": "https://example.invalid/theme-source/ctaLink.webp",
+            "secondaryText": "Source fixture secondaryText",
+            "secondaryLink": "https://example.invalid/theme-source/secondaryLink.webp",
+            "image": "https://example.invalid/theme-source/image.webp",
+            "secondImage": "https://example.invalid/theme-source/secondImage.webp",
+            "imageFocus": "top"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      }
+    ],
+    "actualUICallbacksExecuted": false,
+    "resourceAuthorityProved": false
+  }
+}

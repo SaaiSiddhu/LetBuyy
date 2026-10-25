@@ -1,0 +1,48 @@
+Browser tab: 173052885, Title: "Secure Checkout", URL: "https://checkout.localhost:64597/checkout?[redacted query]
+0 AXWebArea Secure Checkout, URL: checkout.localhost:64597/checkout?[redacted query]
+	1 container
+		2 link Description: Threadline, Value: syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477
+		3 text Secure checkout
+	4 link Description: Back to Cart, Value: syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477/cart
+	6 text Address
+	7 text 2
+	8 text Payment
+	81 heading Delivering to, Value: 3
+		82 text Delivering to
+	83 button Change
+	84 text Threadline Buyer A
+	85 text 1 Synthetic Test Road
+	86 container
+		87 text Bengaluru ,  Karnataka  -  560001
+	88 container
+		89 text 9000000000  •  [synthetic email]
+	90 heading Items (1), Value: 3
+		91 text Items ( 1 )
+	92 image The Everyday Linen Shirt
+	93 text The Everyday Linen Shirt
+	94 container
+		95 text Qty:  1
+	96 container
+		97 text ₹ 2,490
+	98 heading Payment Method, Value: 3
+		99 text Payment Method
+	100 container
+		101 radio button (settable, integer) Description: Pay Online (Razorpay) UPI, Cards, Net Banking, Value: 1
+		102 text Pay Online (Razorpay) UPI, Cards, Net Banking
+	103 container
+		104 radio button (settable, integer) Description: Cash on Delivery (COD) Pay cash when the courier delivers. Keep the exact order amount ready., Value: 0
+		105 text Cash on Delivery (COD) Pay cash when the courier delivers. Keep the exact order amount ready.
+	106 button Pay ₹2,510
+		107 text Pay ₹
+		108 text 2,510
+	109 text Secured by Razorpay
+	73 container
+		74 heading Order Summary, Value: 2
+			75 text Order Summary
+		76 text Subtotal ( 1  items) ₹ 2,490 Delivery ₹20 Total ₹ 2,510
+		77 text field (settable)
+		78 button Apply
+		79 text Secure Fast Safe
+		80 image Razorpay
+
+The focused UI element is 0 AXWebArea Secure Checkout, URL: checkout.localhost:64597/checkout?[redacted query]

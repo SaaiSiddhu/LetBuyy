@@ -1,0 +1,25 @@
+{
+  "recordedAt": "2026-10-24T12:50:23.648658+00:00",
+  "files": [
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/resume-04-grant-recovery/ACTUAL_PIN_RECONCILIATION.json",
+      "sha256": "c52714b1a099a64b3d969e74f2039347b378b0390c7b228e075898c2ae71859d",
+      "bytes": 2581
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/resume-04-grant-recovery/HANDOFF.md",
+      "sha256": "e5c37d373010c9b271ccaa391a1398a1ef9f59afe1a3572f8b022d57fcf53e36",
+      "bytes": 909
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/resume-04-grant-recovery/PROPOSED_GRANT.json",
+      "sha256": "8de0d739c96e24785b1f0a9877f6005815d4336cdd83248e38fc4e309953f83e",
+      "bytes": 1390
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/resume-04-grant-recovery/PROPOSED_INPUT_WRAPPER.json",
+      "sha256": "67b47b19873897a1d5b9c763ae547f81f7f533e23df17b3e38dafc17c7c9e2f5",
+      "bytes": 33080
+    }
+  ]
+}

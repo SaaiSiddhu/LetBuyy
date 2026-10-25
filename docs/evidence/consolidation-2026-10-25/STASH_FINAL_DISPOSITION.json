@@ -1,0 +1,407 @@
+{
+  "scope": "all 50 stash-only files present at mapped accepted paths; 102 tracked paths are reconciled in STASH_RECONCILIATION.json; complete original stash retained in verified private Git bundle",
+  "tracked_reconciliations": 102,
+  "stash_only_files": [
+    {
+      "stash_path": "database/supabase/migrations/365_merchant_daily_revenue_history.sql",
+      "candidate_path": "database/supabase/migrations/394_merchant_daily_revenue_history.sql",
+      "stash_sha256": "2926cdea0bda093e012d342fd8e5df5d4f4c70f88072630c7a5561e83393fd9e",
+      "accepted_sha256": "2926cdea0bda093e012d342fd8e5df5d4f4c70f88072630c7a5561e83393fd9e",
+      "disposition": "RETAINED_BYTE_IDENTICAL",
+      "original_retained_in": "all-refs-before.bundle and stashed-untracked-files private backup"
+    },
+    {
+      "stash_path": "database/supabase/rollback/365_merchant_daily_revenue_history.rollback.sql",
+      "candidate_path": "database/supabase/rollback/394_merchant_daily_revenue_history.rollback.sql",
+      "stash_sha256": "cf468c23490c897ed167ee0439c18cec9067158a38ed4c8e3a845d466363a87b",
+      "accepted_sha256": "cf468c23490c897ed167ee0439c18cec9067158a38ed4c8e3a845d466363a87b",
+      "disposition": "RETAINED_BYTE_IDENTICAL",
+      "original_retained_in": "all-refs-before.bundle and stashed-untracked-files private backup"
+    },
+    {
+      "stash_path": "tests/contracts/api-client-fresh-headers.test.ts",
+      "candidate_path": "tests/contracts/api-client-fresh-headers.test.ts",
+      "stash_sha256": "db0cdf5fd76c97533d28ee27d223981f0ee7f67977cb266fd805ae4c521617c6",
+      "accepted_sha256": "db0cdf5fd76c97533d28ee27d223981f0ee7f67977cb266fd805ae4c521617c6",
+      "disposition": "RETAINED_BYTE_IDENTICAL",
+      "original_retained_in": "all-refs-before.bundle and stashed-untracked-files private backup"
+    },
+    {
+      "stash_path": "tests/owned-db/merchant-push-preferences.postgres.test.ts",
+      "candidate_path": "tests/owned-db/merchant-push-preferences.postgres.test.ts",
+      "stash_sha256": "b38f827580f302eef12f3117f8b7fc73cd49cd2083ca64dc262d757a764bd540",
+      "accepted_sha256": "b38f827580f302eef12f3117f8b7fc73cd49cd2083ca64dc262d757a764bd540",
+      "disposition": "RETAINED_BYTE_IDENTICAL",
+      "original_retained_in": "all-refs-before.bundle and stashed-untracked-files private backup"
+    },
+    {
+      "stash_path": "docs/design/marketing-reference-2026-10-20/resource-category-desktop-before.png",
+      "candidate_path": "docs/design/marketing-reference-2026-10-20/resource-category-desktop-before.png",
+      "stash_sha256": "a3ecd4190a72835f246e6064e00e12df850e58334d25b8dbb46b4c2297656346",
+      "accepted_sha256": "a3ecd4190a72835f246e6064e00e12df850e58334d25b8dbb46b4c2297656346",
+      "disposition": "RETAINED_BYTE_IDENTICAL",
+      "original_retained_in": "all-refs-before.bundle and stashed-untracked-files private backup"
+    },
+    {
+      "stash_path": "docs/design/marketing-reference-2026-10-20/demo-mobile-before.png",
+      "candidate_path": "docs/design/marketing-reference-2026-10-20/demo-mobile-before.png",
+      "stash_sha256": "123f9bd88ed4a6ac741034f42afe85b1fd251e1d7c3606093c62fdef49491238",
+      "accepted_sha256": "123f9bd88ed4a6ac741034f42afe85b1fd251e1d7c3606093c62fdef49491238",
+      "disposition": "RETAINED_BYTE_IDENTICAL",
+      "original_retained_in": "all-refs-before.bundle and stashed-untracked-files private backup"
+    },
+    {
+      "stash_path": "docs/design/marketing-reference-2026-10-20/home-mobile-before.png",
+      "candidate_path": "docs/design/marketing-reference-2026-10-20/home-mobile-before.png",
+      "stash_sha256": "31a18042806af6f57b4783434561d744f6d0d2069cd2dee126dab5d0ba668f14",
+      "accepted_sha256": "31a18042806af6f57b4783434561d744f6d0d2069cd2dee126dab5d0ba668f14",
+      "disposition": "RETAINED_BYTE_IDENTICAL",
+      "original_retained_in": "all-refs-before.bundle and stashed-untracked-files private backup"
+    },
+    {
+      "stash_path": "docs/design/marketing-reference-2026-10-20/contact-mobile-before.png",
+      "candidate_path": "docs/design/marketing-reference-2026-10-20/contact-mobile-before.png",
+      "stash_sha256": "7b14d16e651a27299ddb7223e83c0a76703cefe76d5da4fc9426ab5bc68a09d2",
+      "accepted_sha256": "7b14d16e651a27299ddb7223e83c0a76703cefe76d5da4fc9426ab5bc68a09d2",
+      "disposition": "RETAINED_BYTE_IDENTICAL",
+      "original_retained_in": "all-refs-before.bundle and stashed-untracked-files private backup"
+    },
+    {
+      "stash_path": "docs/design/marketing-reference-2026-10-20/demo-desktop-before.png",
+      "candidate_path": "docs/design/marketing-reference-2026-10-20/demo-desktop-before.png",
+      "stash_sha256": "2cc06c7f41562fb8829f091a58578e142872782e117bee32859f83aee39823ca",
+      "accepted_sha256": "2cc06c7f41562fb8829f091a58578e142872782e117bee32859f83aee39823ca",
+      "disposition": "RETAINED_BYTE_IDENTICAL",
+      "original_retained_in": "all-refs-before.bundle and stashed-untracked-files private backup"
+    },
+    {
+      "stash_path": "docs/design/marketing-reference-2026-10-20/resources-desktop-before.png",
+      "candidate_path": "docs/design/marketing-reference-2026-10-20/resources-desktop-before.png",
+      "stash_sha256": "a7635e2afefc72fdd5c339844703505f2104557de3750fed79eefb6183937e93",
+      "accepted_sha256": "a7635e2afefc72fdd5c339844703505f2104557de3750fed79eefb6183937e93",
+      "disposition": "RETAINED_BYTE_IDENTICAL",
+      "original_retained_in": "all-refs-before.bundle and stashed-untracked-files private backup"
+    },
+    {
+      "stash_path": "docs/design/marketing-reference-2026-10-20/resource-article-desktop-before.png",
+      "candidate_path": "docs/design/marketing-reference-2026-10-20/resource-article-desktop-before.png",
+      "stash_sha256": "cd9c82401295e637b7c3aef855f2fdc766a4166a717a9ff3c261a747ee49b3b3",
+      "accepted_sha256": "cd9c82401295e637b7c3aef855f2fdc766a4166a717a9ff3c261a747ee49b3b3",
+      "disposition": "RETAINED_BYTE_IDENTICAL",
+      "original_retained_in": "all-refs-before.bundle and stashed-untracked-files private backup"
+    },
+    {
+      "stash_path": "docs/design/marketing-reference-2026-10-20/contact-desktop-before.png",
+      "candidate_path": "docs/design/marketing-reference-2026-10-20/contact-desktop-before.png",
+      "stash_sha256": "e861937f76278e7c0a4b117aa7cccc5b40a1c8d79634318a65bc59653d341dc4",
+      "accepted_sha256": "e861937f76278e7c0a4b117aa7cccc5b40a1c8d79634318a65bc59653d341dc4",
+      "disposition": "RETAINED_BYTE_IDENTICAL",
+      "original_retained_in": "all-refs-before.bundle and stashed-untracked-files private backup"
+    },
+    {
+      "stash_path": "docs/design/marketing-reference-2026-10-20/sitemap-desktop-before.png",
+      "candidate_path": "docs/design/marketing-reference-2026-10-20/sitemap-desktop-before.png",
+      "stash_sha256": "6564dc8c737cefdbc23f27b47a66093cd2f631a67f39a784183e859864342667",
+      "accepted_sha256": "6564dc8c737cefdbc23f27b47a66093cd2f631a67f39a784183e859864342667",
+      "disposition": "RETAINED_BYTE_IDENTICAL",
+      "original_retained_in": "all-refs-before.bundle and stashed-untracked-files private backup"
+    },
+    {
+      "stash_path": "docs/design/marketing-reference-2026-10-20/resource-search-desktop-before.png",
+      "candidate_path": "docs/design/marketing-reference-2026-10-20/resource-search-desktop-before.png",
+      "stash_sha256": "6a857e67a8114bc11dc791a6cad5db491b8231c5abcb8e5f4e3d13d05f5786a1",
+      "accepted_sha256": "6a857e67a8114bc11dc791a6cad5db491b8231c5abcb8e5f4e3d13d05f5786a1",
+      "disposition": "RETAINED_BYTE_IDENTICAL",
+      "original_retained_in": "all-refs-before.bundle and stashed-untracked-files private backup"
+    },
+    {
+      "stash_path": "docs/design/marketing-reference-2026-10-20/proposed-palette.svg",
+      "candidate_path": "docs/design/marketing-reference-2026-10-20/proposed-palette.svg",
+      "stash_sha256": "a57a1efa72e6508918f4ee249a56fbaeb9c83581a95b7ab8978121ae48d536aa",
+      "accepted_sha256": "a57a1efa72e6508918f4ee249a56fbaeb9c83581a95b7ab8978121ae48d536aa",
+      "disposition": "RETAINED_BYTE_IDENTICAL",
+      "original_retained_in": "all-refs-before.bundle and stashed-untracked-files private backup"
+    },
+    {
+      "stash_path": "docs/design/marketing-reference-2026-10-20/releases-desktop-before.png",
+      "candidate_path": "docs/design/marketing-reference-2026-10-20/releases-desktop-before.png",
+      "stash_sha256": "1ab75e2a80c06a8e3366874005458a63903f7b8f8536f663069c2917cd2d6306",
+      "accepted_sha256": "1ab75e2a80c06a8e3366874005458a63903f7b8f8536f663069c2917cd2d6306",
+      "disposition": "RETAINED_BYTE_IDENTICAL",
+      "original_retained_in": "all-refs-before.bundle and stashed-untracked-files private backup"
+    },
+    {
+      "stash_path": "docs/design/marketing-reference-2026-10-20/pricing-desktop-before.png",
+      "candidate_path": "docs/design/marketing-reference-2026-10-20/pricing-desktop-before.png",
+      "stash_sha256": "1a8d968ef0cfbf2f0e0e6f6bb25220dc865187c979a38251c1e6d7c3fe74fcdf",
+      "accepted_sha256": "1a8d968ef0cfbf2f0e0e6f6bb25220dc865187c979a38251c1e6d7c3fe74fcdf",
+      "disposition": "RETAINED_BYTE_IDENTICAL",
+      "original_retained_in": "all-refs-before.bundle and stashed-untracked-files private backup"
+    },
+    {
+      "stash_path": "docs/design/marketing-reference-2026-10-20/manifest.json",
+      "candidate_path": "docs/design/marketing-reference-2026-10-20/manifest.json",
+      "stash_sha256": "c0cebd6f5c5287f4468ee0b6ea05ec707b1a33ecc02baa6c6e50198de8b3e541",
+      "accepted_sha256": "c0cebd6f5c5287f4468ee0b6ea05ec707b1a33ecc02baa6c6e50198de8b3e541",
+      "disposition": "RETAINED_BYTE_IDENTICAL",
+      "original_retained_in": "all-refs-before.bundle and stashed-untracked-files private backup"
+    },
+    {
+      "stash_path": "docs/design/marketing-reference-2026-10-20/legal-desktop-before.png",
+      "candidate_path": "docs/design/marketing-reference-2026-10-20/legal-desktop-before.png",
+      "stash_sha256": "7a3199ac34bccd75a8fb0bf8526cce009bfcff1de33cbe247aed6d30b838e98a",
+      "accepted_sha256": "7a3199ac34bccd75a8fb0bf8526cce009bfcff1de33cbe247aed6d30b838e98a",
+      "disposition": "RETAINED_BYTE_IDENTICAL",
+      "original_retained_in": "all-refs-before.bundle and stashed-untracked-files private backup"
+    },
+    {
+      "stash_path": "docs/design/marketing-reference-2026-10-20/legal-privacy-desktop-before.png",
+      "candidate_path": "docs/design/marketing-reference-2026-10-20/legal-privacy-desktop-before.png",
+      "stash_sha256": "b05f41ad1ad1fcbf8ef8c63b765eefecac75995d0d7e83be5e9a6cc35d15903a",
+      "accepted_sha256": "b05f41ad1ad1fcbf8ef8c63b765eefecac75995d0d7e83be5e9a6cc35d15903a",
+      "disposition": "RETAINED_BYTE_IDENTICAL",
+      "original_retained_in": "all-refs-before.bundle and stashed-untracked-files private backup"
+    },
+    {
+      "stash_path": "docs/design/marketing-reference-2026-10-20/create-desktop-before.png",
+      "candidate_path": "docs/design/marketing-reference-2026-10-20/create-desktop-before.png",
+      "stash_sha256": "10055401940c21b492a94d581870de82a07572a9735980a1ec68ca9640cd99ad",
+      "accepted_sha256": "10055401940c21b492a94d581870de82a07572a9735980a1ec68ca9640cd99ad",
+      "disposition": "RETAINED_BYTE_IDENTICAL",
+      "original_retained_in": "all-refs-before.bundle and stashed-untracked-files private backup"
+    },
+    {
+      "stash_path": "docs/design/marketing-reference-2026-10-20/resources-mobile-before.png",
+      "candidate_path": "docs/design/marketing-reference-2026-10-20/resources-mobile-before.png",
+      "stash_sha256": "9bafce6d07ef687cc7052796ed7cde2e393bb91533a7536ed41fad602d009b59",
+      "accepted_sha256": "9bafce6d07ef687cc7052796ed7cde2e393bb91533a7536ed41fad602d009b59",
+      "disposition": "RETAINED_BYTE_IDENTICAL",
+      "original_retained_in": "all-refs-before.bundle and stashed-untracked-files private backup"
+    },
+    {
+      "stash_path": "docs/design/marketing-reference-2026-10-20/marketing-before-redesign.tar.gz",
+      "candidate_path": "docs/design/marketing-reference-2026-10-20/marketing-before-redesign.tar.gz",
+      "stash_sha256": "58e4cc60660f94a4565f119776f56e907886fc9005a55e112865a2438499a2ab",
+      "accepted_sha256": "58e4cc60660f94a4565f119776f56e907886fc9005a55e112865a2438499a2ab",
+      "disposition": "RETAINED_BYTE_IDENTICAL",
+      "original_retained_in": "all-refs-before.bundle and stashed-untracked-files private backup"
+    },
+    {
+      "stash_path": "docs/design/marketing-reference-2026-10-20/analysis-and-direction.json",
+      "candidate_path": "docs/design/marketing-reference-2026-10-20/analysis-and-direction.json",
+      "stash_sha256": "474024bfb58f6c01e60245950620aa9611bfff15e55007c6059973c6e965f4eb",
+      "accepted_sha256": "474024bfb58f6c01e60245950620aa9611bfff15e55007c6059973c6e965f4eb",
+      "disposition": "RETAINED_BYTE_IDENTICAL",
+      "original_retained_in": "all-refs-before.bundle and stashed-untracked-files private backup"
+    },
+    {
+      "stash_path": "docs/design/marketing-reference-2026-10-20/home-desktop-before.png",
+      "candidate_path": "docs/design/marketing-reference-2026-10-20/home-desktop-before.png",
+      "stash_sha256": "213b380ab4ce27930e782f746229a77f12590f1b7bdaae41f45558e3457440df",
+      "accepted_sha256": "213b380ab4ce27930e782f746229a77f12590f1b7bdaae41f45558e3457440df",
+      "disposition": "RETAINED_BYTE_IDENTICAL",
+      "original_retained_in": "all-refs-before.bundle and stashed-untracked-files private backup"
+    },
+    {
+      "stash_path": "docs/design/marketing-reference-2026-10-20/changelog-desktop-before.png",
+      "candidate_path": "docs/design/marketing-reference-2026-10-20/changelog-desktop-before.png",
+      "stash_sha256": "9ce566005cf8b3d1a24a0699bf8553d08443899029749491244fdfbc15c37388",
+      "accepted_sha256": "9ce566005cf8b3d1a24a0699bf8553d08443899029749491244fdfbc15c37388",
+      "disposition": "RETAINED_BYTE_IDENTICAL",
+      "original_retained_in": "all-refs-before.bundle and stashed-untracked-files private backup"
+    },
+    {
+      "stash_path": "packages/shared-types/tests/app-store-uuid.test.mjs",
+      "candidate_path": "packages/shared-types/tests/app-store-uuid.test.mjs",
+      "stash_sha256": "d6847663eee5ee9ffe9d09d8b2fd8e078bbbe0ea8de38860aa81e32168f9b546",
+      "accepted_sha256": "d6847663eee5ee9ffe9d09d8b2fd8e078bbbe0ea8de38860aa81e32168f9b546",
+      "disposition": "RETAINED_BYTE_IDENTICAL",
+      "original_retained_in": "all-refs-before.bundle and stashed-untracked-files private backup"
+    },
+    {
+      "stash_path": "packages/dart/api_client/test/merchant_export_test.dart",
+      "candidate_path": "packages/dart/api_client/test/merchant_export_test.dart",
+      "stash_sha256": "18f64b9f31f37b0ba5c41473a978c3f3187067a94d3e73f88b9fe98b97f3ca45",
+      "accepted_sha256": "18f64b9f31f37b0ba5c41473a978c3f3187067a94d3e73f88b9fe98b97f3ca45",
+      "disposition": "RETAINED_BYTE_IDENTICAL",
+      "original_retained_in": "all-refs-before.bundle and stashed-untracked-files private backup"
+    },
+    {
+      "stash_path": "packages/dart/models/test/store_portable_template_test.dart",
+      "candidate_path": "packages/dart/models/test/store_portable_template_test.dart",
+      "stash_sha256": "68038f968b5546ed14676291a7558da8493529c44fd0007180c8ea855742afaf",
+      "accepted_sha256": "68038f968b5546ed14676291a7558da8493529c44fd0007180c8ea855742afaf",
+      "disposition": "RETAINED_BYTE_IDENTICAL",
+      "original_retained_in": "all-refs-before.bundle and stashed-untracked-files private backup"
+    },
+    {
+      "stash_path": "apps/merchant/mobile/test_driver/local_screen_audit.dart",
+      "candidate_path": "apps/merchant/mobile/test_driver/local_screen_audit.dart",
+      "stash_sha256": "828ab1d18289f531233409efee2e5f6fe449f71b1acda453fc67de3ea8d037ec",
+      "accepted_sha256": "828ab1d18289f531233409efee2e5f6fe449f71b1acda453fc67de3ea8d037ec",
+      "disposition": "RETAINED_BYTE_IDENTICAL",
+      "original_retained_in": "all-refs-before.bundle and stashed-untracked-files private backup"
+    },
+    {
+      "stash_path": "apps/merchant/mobile/integration_test/merchant_local_screen_audit_test.dart",
+      "candidate_path": "apps/merchant/mobile/integration_test/merchant_local_screen_audit_test.dart",
+      "stash_sha256": "7d56d43a231667b9581ad99b1e8885b1b79f6cfe48cda13674c7ce37e7bd95fc",
+      "accepted_sha256": "7d56d43a231667b9581ad99b1e8885b1b79f6cfe48cda13674c7ce37e7bd95fc",
+      "disposition": "RETAINED_BYTE_IDENTICAL",
+      "original_retained_in": "all-refs-before.bundle and stashed-untracked-files private backup"
+    },
+    {
+      "stash_path": "apps/merchant/mobile/integration_test/merchant_native_flows_test.dart",
+      "candidate_path": "apps/merchant/mobile/integration_test/merchant_native_flows_test.dart",
+      "stash_sha256": "e356576061cb1c8f25f50209c5173fbb13d5ed76bd98333e09e2c963e6c0702e",
+      "accepted_sha256": "e356576061cb1c8f25f50209c5173fbb13d5ed76bd98333e09e2c963e6c0702e",
+      "disposition": "RETAINED_BYTE_IDENTICAL",
+      "original_retained_in": "all-refs-before.bundle and stashed-untracked-files private backup"
+    },
+    {
+      "stash_path": "apps/merchant/mobile/integration_test/merchant_local_actions_test.dart",
+      "candidate_path": "apps/merchant/mobile/integration_test/merchant_local_actions_test.dart",
+      "stash_sha256": "7eaa2ba8b12636dc8a1f985c63448b4001dbcdc1d15ff0c3f6fecec95f0eb67a",
+      "accepted_sha256": "7eaa2ba8b12636dc8a1f985c63448b4001dbcdc1d15ff0c3f6fecec95f0eb67a",
+      "disposition": "RETAINED_BYTE_IDENTICAL",
+      "original_retained_in": "all-refs-before.bundle and stashed-untracked-files private backup"
+    },
+    {
+      "stash_path": "apps/merchant/mobile/test/revenue_history_push_test.dart",
+      "candidate_path": "apps/merchant/mobile/test/revenue_history_push_test.dart",
+      "stash_sha256": "fc33b4b472a92f41b2e6146709cda6edcf0d69d5e56d345af438d5bdce834c1a",
+      "accepted_sha256": "fc33b4b472a92f41b2e6146709cda6edcf0d69d5e56d345af438d5bdce834c1a",
+      "disposition": "RETAINED_BYTE_IDENTICAL",
+      "original_retained_in": "all-refs-before.bundle and stashed-untracked-files private backup"
+    },
+    {
+      "stash_path": "apps/merchant/mobile/test/live_preview_unavailable_test.dart",
+      "candidate_path": "apps/merchant/mobile/test/live_preview_unavailable_test.dart",
+      "stash_sha256": "280656b16d6b83e193a57cfa8d1f941ab56f004255a60c3f1a692b5ca58dfa34",
+      "accepted_sha256": "280656b16d6b83e193a57cfa8d1f941ab56f004255a60c3f1a692b5ca58dfa34",
+      "disposition": "RETAINED_BYTE_IDENTICAL",
+      "original_retained_in": "all-refs-before.bundle and stashed-untracked-files private backup"
+    },
+    {
+      "stash_path": "apps/merchant/mobile/test/merchant_media_picker_test.dart",
+      "candidate_path": "apps/merchant/mobile/test/merchant_media_picker_test.dart",
+      "stash_sha256": "0cc9cbfeb120b34b84aedbc55e281e89d4a57421ffc335c21be19d4260692988",
+      "accepted_sha256": "0cc9cbfeb120b34b84aedbc55e281e89d4a57421ffc335c21be19d4260692988",
+      "disposition": "RETAINED_BYTE_IDENTICAL",
+      "original_retained_in": "all-refs-before.bundle and stashed-untracked-files private backup"
+    },
+    {
+      "stash_path": "apps/merchant/mobile/test/help_screen_test.dart",
+      "candidate_path": "apps/merchant/mobile/test/help_screen_test.dart",
+      "stash_sha256": "0d0be047e1ff5c73f9943b9dc76ceb44d2522cbba9241a2fb83b3474385c5932",
+      "accepted_sha256": "0d0be047e1ff5c73f9943b9dc76ceb44d2522cbba9241a2fb83b3474385c5932",
+      "disposition": "RETAINED_BYTE_IDENTICAL",
+      "original_retained_in": "all-refs-before.bundle and stashed-untracked-files private backup"
+    },
+    {
+      "stash_path": "apps/merchant/mobile/android/app/src/main/res/drawable/ic_merchant_notification.xml",
+      "candidate_path": "apps/merchant/mobile/android/app/src/main/res/drawable/ic_merchant_notification.xml",
+      "stash_sha256": "f041c7812038c02f9445b21abb779ed0578f99763375ba236a9aa78223f34e89",
+      "accepted_sha256": "f041c7812038c02f9445b21abb779ed0578f99763375ba236a9aa78223f34e89",
+      "disposition": "RETAINED_BYTE_IDENTICAL",
+      "original_retained_in": "all-refs-before.bundle and stashed-untracked-files private backup"
+    },
+    {
+      "stash_path": "apps/merchant/mobile/lib/services/native_push_service.dart",
+      "candidate_path": "apps/merchant/mobile/lib/services/native_push_service.dart",
+      "stash_sha256": "884aedc639ae0d67214d03dbe8765e6bf8ee0060928221f17d4f3e204e60e697",
+      "accepted_sha256": "884aedc639ae0d67214d03dbe8765e6bf8ee0060928221f17d4f3e204e60e697",
+      "disposition": "RETAINED_BYTE_IDENTICAL",
+      "original_retained_in": "all-refs-before.bundle and stashed-untracked-files private backup"
+    },
+    {
+      "stash_path": "apps/merchant/mobile/lib/widgets/shared/merchant_export_share.dart",
+      "candidate_path": "apps/merchant/mobile/lib/widgets/shared/merchant_export_share.dart",
+      "stash_sha256": "6ae1d331003642718c83f638916fcec37cce5b117d17838b596a10439762b210",
+      "accepted_sha256": "6ae1d331003642718c83f638916fcec37cce5b117d17838b596a10439762b210",
+      "disposition": "RETAINED_BYTE_IDENTICAL",
+      "original_retained_in": "all-refs-before.bundle and stashed-untracked-files private backup"
+    },
+    {
+      "stash_path": "apps/merchant/mobile/lib/widgets/shared/merchant_media_picker.dart",
+      "candidate_path": "apps/merchant/mobile/lib/widgets/shared/merchant_media_picker.dart",
+      "stash_sha256": "dd701f9070bd19f5cb2c9f36010fd0e0bf4f7e00f0bf82e6e161411c5fb31d81",
+      "accepted_sha256": "dd701f9070bd19f5cb2c9f36010fd0e0bf4f7e00f0bf82e6e161411c5fb31d81",
+      "disposition": "RETAINED_BYTE_IDENTICAL",
+      "original_retained_in": "all-refs-before.bundle and stashed-untracked-files private backup"
+    },
+    {
+      "stash_path": "apps/merchant/mobile/lib/widgets/shared/merchant_search_sheet.dart",
+      "candidate_path": "apps/merchant/mobile/lib/widgets/shared/merchant_search_sheet.dart",
+      "stash_sha256": "7973657a3b5053b2f0c316c53df7082364ab7a602f8a061fbe9bbd013d299298",
+      "accepted_sha256": "7973657a3b5053b2f0c316c53df7082364ab7a602f8a061fbe9bbd013d299298",
+      "disposition": "RETAINED_BYTE_IDENTICAL",
+      "original_retained_in": "all-refs-before.bundle and stashed-untracked-files private backup"
+    },
+    {
+      "stash_path": "services/api-gateway/src/__tests__/request-scoped-sql.test.ts",
+      "candidate_path": "services/api-gateway/src/__tests__/request-scoped-sql.test.ts",
+      "stash_sha256": "e1139986033a5286f01f8f2e3a9c49608f86204b3f1b44efb978ae9db1843af2",
+      "accepted_sha256": "eddfa160c355cd6c2f34e86a542bfae4fe56eca410fafd7bc2c7271bf1f40417",
+      "disposition": "RECONCILED_CURRENT_SUCCESSOR",
+      "original_retained_in": "all-refs-before.bundle and stashed-untracked-files private backup"
+    },
+    {
+      "stash_path": "services/api-gateway/src/__tests__/export-storage.test.ts",
+      "candidate_path": "services/api-gateway/src/__tests__/export-storage.test.ts",
+      "stash_sha256": "101c3ace91705b08331bb8b55c3acdf8e4aea35f2e85bf40e53edf24f102d2fc",
+      "accepted_sha256": "633b0a326ebe8f1b9c4549abccac43086b4ed4c54dc567ecbe89d1a97da685f6",
+      "disposition": "RECONCILED_CURRENT_SUCCESSOR",
+      "original_retained_in": "all-refs-before.bundle and stashed-untracked-files private backup"
+    },
+    {
+      "stash_path": "services/api-gateway/src/__tests__/owned-db/marketplace-installation.postgres.test.ts",
+      "candidate_path": "services/api-gateway/src/__tests__/owned-db/marketplace-installation.postgres.test.ts",
+      "stash_sha256": "8467c003496a7215b772b78e9afa6d796c2883e8fa76989bf476a8cc1ec32412",
+      "accepted_sha256": "d4db2ea2f1467415937417e96b5b8778d3a1532b2445103a20e5a2251578ed05",
+      "disposition": "RECONCILED_CURRENT_SUCCESSOR",
+      "original_retained_in": "all-refs-before.bundle and stashed-untracked-files private backup"
+    },
+    {
+      "stash_path": "services/api-gateway/src/__tests__/owned-db/merchant-mobile-screen-reads.postgres.test.ts",
+      "candidate_path": "services/api-gateway/src/__tests__/owned-db/merchant-mobile-screen-reads.postgres.test.ts",
+      "stash_sha256": "0a72569783023c14f3baecd2de7a46a5f1923f0b85caac7c8d6586bed65da467",
+      "accepted_sha256": "0a72569783023c14f3baecd2de7a46a5f1923f0b85caac7c8d6586bed65da467",
+      "disposition": "RETAINED_BYTE_IDENTICAL",
+      "original_retained_in": "all-refs-before.bundle and stashed-untracked-files private backup"
+    },
+    {
+      "stash_path": "services/api-gateway/src/__tests__/owned-db/merchant-mobile-actions.postgres.test.ts",
+      "candidate_path": "services/api-gateway/src/__tests__/owned-db/merchant-mobile-actions.postgres.test.ts",
+      "stash_sha256": "5be2bc42185682f727b1608d163af9773f371d5ecd53f70628d60c7f057dcd31",
+      "accepted_sha256": "f7e0f7e8fb931dff1c2b224328e51ad49437ae70c10daeb72f5504d2b67acf8d",
+      "disposition": "RECONCILED_CURRENT_SUCCESSOR",
+      "original_retained_in": "all-refs-before.bundle and stashed-untracked-files private backup"
+    },
+    {
+      "stash_path": "services/api-gateway/src/__tests__/owned-db/merchant-revenue-history.postgres.test.ts",
+      "candidate_path": "services/api-gateway/src/__tests__/owned-db/merchant-revenue-history.postgres.test.ts",
+      "stash_sha256": "b1e940c75733fe365a337e87da50e8eaf788c6dfd0b0a1127cb64bc3b2d30a25",
+      "accepted_sha256": "53e747a4d631c3f07dc97a5fa77e4465d351283862ee98af98397bba9d04c162",
+      "disposition": "RECONCILED_CURRENT_SUCCESSOR",
+      "original_retained_in": "all-refs-before.bundle and stashed-untracked-files private backup"
+    },
+    {
+      "stash_path": "services/api-gateway/src/execution/navigation-mutation.adapter.ts",
+      "candidate_path": "services/api-gateway/src/execution/navigation-mutation.adapter.ts",
+      "stash_sha256": "e87f580ea7f6fd04eb69035e8b133fd584311e3c522ccaf8ec672de4bc2921de",
+      "accepted_sha256": "e87f580ea7f6fd04eb69035e8b133fd584311e3c522ccaf8ec672de4bc2921de",
+      "disposition": "RETAINED_BYTE_IDENTICAL",
+      "original_retained_in": "all-refs-before.bundle and stashed-untracked-files private backup"
+    },
+    {
+      "stash_path": "services/api-gateway/src/execution/page-mutation.adapter.ts",
+      "candidate_path": "services/api-gateway/src/execution/page-mutation.adapter.ts",
+      "stash_sha256": "1c5c0da34146663d5bed14fdf9385ff91332d832cd66e654dc3e5395f98a377b",
+      "accepted_sha256": "1c5c0da34146663d5bed14fdf9385ff91332d832cd66e654dc3e5395f98a377b",
+      "disposition": "RETAINED_BYTE_IDENTICAL",
+      "original_retained_in": "all-refs-before.bundle and stashed-untracked-files private backup"
+    }
+  ],
+  "unaccounted": 0
+}

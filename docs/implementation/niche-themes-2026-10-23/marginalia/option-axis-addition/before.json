@@ -1,0 +1,37 @@
+{
+  "recordedAt": "2026-10-23T19:02:58.841074+00:00",
+  "files": [
+    {
+      "path": "apps/merchant/web/src/lib/product-form-state.ts",
+      "sha256": "23ff59003b3297384a8de416ea08edfb5923cf95dfbd6fa7ab93e0b0455ec120"
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/products/new/page.tsx",
+      "sha256": "1a99ded9a1e0dbf98fdf520af6c3685ad9ee3d46d2137a9e0d38e5b1e12c0b20"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/product-conflict.test.tsx",
+      "sha256": "b95d0d9be33bbca45467084766369ed9a0a4f616469733a463e2802e1b50e8e6"
+    },
+    {
+      "path": "apps/merchant/web/src/lib/product-facts-draft.ts",
+      "sha256": "a4833276eb2647dca6ad6ab5e9b30e0f68f235ac7188516c98aea5f8c8b4288d"
+    },
+    {
+      "path": "apps/merchant/web/src/lib/product-facts-draft.test.ts",
+      "sha256": "fa4501f2fb40731df8b7a91dfa2c8353e2bb14dbb22bd98b87f67bdeefab3127"
+    },
+    {
+      "path": "apps/merchant/web/src/lib/variant-facts-draft.ts",
+      "sha256": "bb737af30a311b34128fb7d0d1d2b522e73898e889830d360c4d372c6b2af5e3"
+    },
+    {
+      "path": "apps/merchant/web/src/lib/product-form-state.option-rename.test.ts",
+      "sha256": "5b5879811f895d35f6b371159b7dbf282451b6fa2becfd31dccf2dfaa0b5df9e"
+    },
+    {
+      "path": "apps/merchant/web/src/lib/api/request-origin.ts",
+      "sha256": "4e1671afcb62bba3dc1d93a3e588b92e58d0d9ba7a3c081e8df4ee6ddb174f96"
+    }
+  ]
+}

@@ -55,8 +55,8 @@ test('mobile order and customer screens share real CSV exports without placehold
     assert.match(customerServiceSource, /_api\.exports\.customers/);
     assert.match(ordersScreenSource, /Order CSV export ready to share/);
     assert.match(customersScreenSource, /Customer CSV export ready to share/);
-    assert.match(ordersScreenSource, /Share\.share/);
-    assert.match(customersScreenSource, /Share\.share/);
+    assert.match(ordersScreenSource, /shareMerchantExport/);
+    assert.match(customersScreenSource, /shareMerchantExport/);
     assert.doesNotMatch(ordersScreenSource, /Export to \$format coming soon/);
     assert.doesNotMatch(customersScreenSource, /coming soon/i);
 });

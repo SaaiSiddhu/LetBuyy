@@ -1,0 +1,22 @@
+import assert from 'node:assert/strict';
+import test from 'node:test';
+import { writeFileSync, readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { createHabitatTheme } from '../../../../../../packages/theme-engine/src/habitat-theme.ts';
+import { createLetbuyyCoreLiquidThemeBundleFixture } from '../../../../../../packages/theme-engine/src/theme-bundle-core.ts';
+import { LiquidRenderer } from '../../../../../../packages/theme-engine/src/theme-renderer.ts';
+import { DEFAULT_THEME_SETTINGS } from '../../../../../../packages/theme-engine/src/theme-settings.ts';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+const here=dirname(fileURLToPath(import.meta.url));
+const hash=x=>createHash('sha256').update(x).digest('hex');
+test('Habitat permitted reusable badge children have an actual rendered field effect',async()=>{
+ const bundle=createHabitatTheme(createLetbuyyCoreLiquidThemeBundleFixture()),frozenDigest=hash(JSON.stringify(bundle));
+ const copy=structuredClone(bundle);
+ copy.templates.index.sections['hab-nested-probe']={type:'spotlight',settings:{title:'Nested source probe'},blocks:{'hab-parent':{type:'badge',settings:{label:'HAB_PARENT_SENTINEL'},disabled:false,blocks:{'hab-child':{type:'badge',settings:{label:'HAB_CHILD_SENTINEL'},disabled:false,blocks:{'hab-grandchild':{type:'badge',settings:{label:'HAB_GRANDCHILD_SENTINEL'},disabled:false,blocks:{},block_order:[]}},block_order:['hab-grandchild']}},block_order:['hab-child']}},block_order:['hab-parent'],disabled:false};
+ copy.templates.index.order.push('hab-nested-probe');
+ const result=await new LiquidRenderer().render({context:{storeId:'11111111-1111-4111-8111-111111111111',subdomain:'habitat-source-only',path:'/',previewMode:false,locale:'en-IN'},storeTemplate:{themeId:'letbuyy-craft',themeSettings:DEFAULT_THEME_SETTINGS,sections:[]},routeTemplate:{id:'index',type:'index',layoutKey:'theme',sections:[]},liquidBundle:copy,liquidTemplateKey:'index',liquidContext:{shop:{name:'Habitat source-only'},collections:[]}});
+ const html=result.liquid?.contentForLayout??'';writeFileSync(resolve(here,'actual.html'),html);writeFileSync(resolve(here,'actual-badge.liquid'),bundle.blocks.badge.source);
+ const observed={recordedAt:new Date().toISOString(),classification:'ACTUAL_SOURCE_RENDER_ONLY_NOT_MOUNTED_UI_OR_DB',frozenFactorySha256:frozenDigest,sourceBadgeSha256:hash(bundle.blocks.badge.source),rootHostPositive:html.includes('HAB_PARENT_SENTINEL'),childVisible:html.includes('HAB_CHILD_SENTINEL'),grandchildVisible:html.includes('HAB_GRANDCHILD_SENTINEL'),rendererStatus:result.status,warnings:result.warnings??[],sourceUnmutated:hash(JSON.stringify(bundle))===frozenDigest,providerCalls:0,browserActions:0,databaseActions:0};writeFileSync(resolve(here,'OBSERVED.json'),JSON.stringify(observed,null,2)+'\n');
+ assert.equal(observed.rootHostPositive,true,'existing spotlight root badge must render first');assert.equal(observed.childVisible,true,'permitted child label must reach actual rendered output');assert.equal(observed.grandchildVisible,true,'permitted grandchild label must reach actual rendered output');
+});

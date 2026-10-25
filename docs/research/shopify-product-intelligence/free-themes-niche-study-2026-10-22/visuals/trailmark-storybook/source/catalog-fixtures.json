@@ -1,0 +1,57 @@
+{
+  "products": [
+    {
+      "name": "Rally 68 badminton racket",
+      "image": "racket",
+      "type": "BADMINTON / RACKET",
+      "facts": [
+        "68 cm length",
+        "88 g unstrung"
+      ],
+      "price": "\u20b92,490"
+    },
+    {
+      "name": "Court Nylon 3 shuttles",
+      "image": "shuttles",
+      "type": "BADMINTON / SHUTTLES",
+      "facts": [
+        "3 pieces / tube",
+        "Nylon skirt"
+      ],
+      "price": "\u20b9490"
+    },
+    {
+      "name": "Court single-racket sleeve",
+      "image": "sleeve",
+      "type": "BADMINTON / STORAGE",
+      "facts": [
+        "72 \u00d7 24 cm exterior",
+        "Single compartment"
+      ],
+      "price": "\u20b9690"
+    }
+  ],
+  "cart": {
+    "lines": [
+      {
+        "sku": "TM-R68-F84",
+        "quantity": 1,
+        "unitPriceMinor": 249000,
+        "variant": "Forest / Grip 84 mm"
+      },
+      {
+        "sku": "TM-N3-W",
+        "quantity": 2,
+        "unitPriceMinor": 49000,
+        "variant": "White / 3 per tube"
+      }
+    ],
+    "subtotalMinor": 347000,
+    "shippingMinor": 9000,
+    "totalMinor": 356000,
+    "currency": "INR"
+  },
+  "buyer": "demo.buyer@example.test",
+  "site": "trailmark.example.test",
+  "order": "TM-1042"
+}

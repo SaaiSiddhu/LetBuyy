@@ -1,0 +1,17 @@
+{
+  "recordedAt": "2026-10-23T09:39:05.920317+00:00",
+  "scope": "Owned source checkpoint after canonical per-axis measurement consumer; source frozen; prior receipts retain historical inputs",
+  "sha256": {
+    "packages/theme-engine/src/habitat-theme.ts": "0144fdf830ab3c5ddf42ebfcb86258b99e74ed8a8d724469012479705352e8c3",
+    "packages/theme-engine/src/habitat-styles.ts": "e4b89a41c526cc9a96e0e3106e084124717eb56d9837bcf09214045d7fa817e6",
+    "packages/theme-engine/src/habitat-discovery.ts": "342843da57a6eef8488d906218d4225338f9f3c0afe2bbcc49073f3f34a1f873",
+    "packages/theme-engine/test/habitat.test.ts": "fd1fa3d30be0841e41f00e4226fde5d23880ef31232d5c57c83ececdc3124bfc",
+    "packages/commerce-core/src/habitat-facts.ts": "a77bd48835b094b3136b12a055b38485ce55b461c6cf743f6f54f8323ced0a36",
+    "packages/commerce-core/test/habitat-facts.test.ts": "96672adf296af231862723968efafcee1a72de45fed9b5ef193b568d6d665595",
+    "apps/commerce/web/src/lib/demo/habitat-demo.ts": "13daf6160eddea811e2fac7fbc30478c96147df0ff9753c3b63078fc530d8468",
+    "apps/merchant/web/src/components/products/niche-facts/habitat-facts-editor.tsx": "e4a0aa7b2150d1aaa9404c009d7e57a00ec1b10ee0c47b5b6ad16c8fc752c589",
+    "apps/merchant/web/src/components/products/niche-facts/habitat-facts-editor.test.tsx": "7bd6fb34533ca8d025288e2f06eb48bb952e6a38a39c1358ef444c4106f6c6a3",
+    "apps/merchant/web/src/components/products/niche-facts/habitat-variant-facts-editor.tsx": "505f37568af597ba0a1d87df9135dbb5377982fb3c7d9af3b3f719cd8aaa59fb",
+    "apps/merchant/web/src/components/products/niche-facts/habitat-variant-facts-editor.test.tsx": "adcd99e9fdd9b79cb5eb2eddb4e8cfe9db2e4cc9d978038d1143d72eda65dcea"
+  }
+}

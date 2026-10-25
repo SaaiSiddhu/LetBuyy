@@ -1,0 +1,999 @@
+{
+  "runId": "786c7515c57a",
+  "operation": "browse",
+  "value": {
+    "siteId": "9e19c664-ae28-4b5e-b9e1-3ebb3c1071ae",
+    "query": {
+      "page": 1,
+      "limit": 20,
+      "search": "Maker",
+      "sort": "price-asc",
+      "compatibility_evidence": "unconfirmed"
+    },
+    "raw": {
+      "data": [
+        {
+          "id": "03443195-776c-4be5-a6f3-bd8fb4ac7b75",
+          "name": "Maker 9",
+          "slug": "syn-03443195-776c-4be5-a6f3-bd8fb4ac7b75",
+          "tags": [],
+          "price": 100,
+          "stock": 8,
+          "images": [],
+          "category": "Circuit facets",
+          "metadata": {
+            "electronics": {
+              "kind": "other",
+              "manufacturer": "Maker 9"
+            }
+          },
+          "store_id": "9e19c664-ae28-4b5e-b9e1-3ebb3c1071ae",
+          "variants": [],
+          "is_active": true,
+          "seo_title": null,
+          "created_at": "2026-10-24T15:53:08.761062+00:00",
+          "updated_at": "2026-10-24T15:53:08.761062+00:00",
+          "description": null,
+          "is_featured": false,
+          "product_type": null,
+          "compare_price": null,
+          "seo_description": null,
+          "track_inventory": true,
+          "importer_details": null,
+          "country_of_origin": "India"
+        },
+        {
+          "id": "05154b96-2010-41b9-a8d9-128cab5426c2",
+          "name": "Maker 25",
+          "slug": "syn-05154b96-2010-41b9-a8d9-128cab5426c2",
+          "tags": [],
+          "price": 100,
+          "stock": 8,
+          "images": [],
+          "category": "Circuit facets",
+          "metadata": {
+            "electronics": {
+              "kind": "other",
+              "manufacturer": "Maker 25"
+            }
+          },
+          "store_id": "9e19c664-ae28-4b5e-b9e1-3ebb3c1071ae",
+          "variants": [],
+          "is_active": true,
+          "seo_title": null,
+          "created_at": "2026-10-24T15:53:09.403299+00:00",
+          "updated_at": "2026-10-24T15:53:09.403299+00:00",
+          "description": null,
+          "is_featured": false,
+          "product_type": null,
+          "compare_price": null,
+          "seo_description": null,
+          "track_inventory": true,
+          "importer_details": null,
+          "country_of_origin": "India"
+        },
+        {
+          "id": "05bfa98f-8c37-44cd-b5ce-3e23bd117cd8",
+          "name": "Maker 23",
+          "slug": "syn-05bfa98f-8c37-44cd-b5ce-3e23bd117cd8",
+          "tags": [],
+          "price": 100,
+          "stock": 8,
+          "images": [],
+          "category": "Circuit facets",
+          "metadata": {
+            "electronics": {
+              "kind": "other",
+              "manufacturer": "Maker 23"
+            }
+          },
+          "store_id": "9e19c664-ae28-4b5e-b9e1-3ebb3c1071ae",
+          "variants": [],
+          "is_active": true,
+          "seo_title": null,
+          "created_at": "2026-10-24T15:53:09.333771+00:00",
+          "updated_at": "2026-10-24T15:53:09.333771+00:00",
+          "description": null,
+          "is_featured": false,
+          "product_type": null,
+          "compare_price": null,
+          "seo_description": null,
+          "track_inventory": true,
+          "importer_details": null,
+          "country_of_origin": "India"
+        },
+        {
+          "id": "13171e88-6fac-4f8e-839f-bf208fe6fec0",
+          "name": "Maker 2",
+          "slug": "syn-13171e88-6fac-4f8e-839f-bf208fe6fec0",
+          "tags": [],
+          "price": 100,
+          "stock": 8,
+          "images": [],
+          "category": "Circuit facets",
+          "metadata": {
+            "electronics": {
+              "kind": "other",
+              "manufacturer": "Maker 2"
+            }
+          },
+          "store_id": "9e19c664-ae28-4b5e-b9e1-3ebb3c1071ae",
+          "variants": [],
+          "is_active": true,
+          "seo_title": null,
+          "created_at": "2026-10-24T15:53:08.524866+00:00",
+          "updated_at": "2026-10-24T15:53:08.524866+00:00",
+          "description": null,
+          "is_featured": false,
+          "product_type": null,
+          "compare_price": null,
+          "seo_description": null,
+          "track_inventory": true,
+          "importer_details": null,
+          "country_of_origin": "India"
+        },
+        {
+          "id": "2aa713a9-89ed-474d-a6ea-4bc385949a44",
+          "name": "Maker 14",
+          "slug": "syn-2aa713a9-89ed-474d-a6ea-4bc385949a44",
+          "tags": [],
+          "price": 100,
+          "stock": 8,
+          "images": [],
+          "category": "Circuit facets",
+          "metadata": {
+            "electronics": {
+              "kind": "other",
+              "manufacturer": "Maker 14"
+            }
+          },
+          "store_id": "9e19c664-ae28-4b5e-b9e1-3ebb3c1071ae",
+          "variants": [],
+          "is_active": true,
+          "seo_title": null,
+          "created_at": "2026-10-24T15:53:08.933038+00:00",
+          "updated_at": "2026-10-24T15:53:08.933038+00:00",
+          "description": null,
+          "is_featured": false,
+          "product_type": null,
+          "compare_price": null,
+          "seo_description": null,
+          "track_inventory": true,
+          "importer_details": null,
+          "country_of_origin": "India"
+        },
+        {
+          "id": "2cbe9240-7904-474b-aad5-e81106b23fb0",
+          "name": "Maker 7",
+          "slug": "syn-2cbe9240-7904-474b-aad5-e81106b23fb0",
+          "tags": [],
+          "price": 100,
+          "stock": 8,
+          "images": [],
+          "category": "Circuit facets",
+          "metadata": {
+            "electronics": {
+              "kind": "other",
+              "manufacturer": "Maker 7"
+            }
+          },
+          "store_id": "9e19c664-ae28-4b5e-b9e1-3ebb3c1071ae",
+          "variants": [],
+          "is_active": true,
+          "seo_title": null,
+          "created_at": "2026-10-24T15:53:08.693703+00:00",
+          "updated_at": "2026-10-24T15:53:08.693703+00:00",
+          "description": null,
+          "is_featured": false,
+          "product_type": null,
+          "compare_price": null,
+          "seo_description": null,
+          "track_inventory": true,
+          "importer_details": null,
+          "country_of_origin": "India"
+        },
+        {
+          "id": "477be94b-5302-4e6b-a63b-6731cc496ec9",
+          "name": "Maker 30",
+          "slug": "syn-477be94b-5302-4e6b-a63b-6731cc496ec9",
+          "tags": [],
+          "price": 100,
+          "stock": 8,
+          "images": [],
+          "category": "Circuit facets",
+          "metadata": {
+            "electronics": {
+              "kind": "other",
+              "manufacturer": "Maker 30"
+            }
+          },
+          "store_id": "9e19c664-ae28-4b5e-b9e1-3ebb3c1071ae",
+          "variants": [],
+          "is_active": true,
+          "seo_title": null,
+          "created_at": "2026-10-24T15:53:09.586733+00:00",
+          "updated_at": "2026-10-24T15:53:09.586733+00:00",
+          "description": null,
+          "is_featured": false,
+          "product_type": null,
+          "compare_price": null,
+          "seo_description": null,
+          "track_inventory": true,
+          "importer_details": null,
+          "country_of_origin": "India"
+        },
+        {
+          "id": "495ab803-76bd-4579-b59d-3530a5924122",
+          "name": "Maker 34",
+          "slug": "syn-495ab803-76bd-4579-b59d-3530a5924122",
+          "tags": [],
+          "price": 100,
+          "stock": 8,
+          "images": [],
+          "category": "Circuit facets",
+          "metadata": {
+            "electronics": {
+              "kind": "other",
+              "manufacturer": "Maker 34"
+            }
+          },
+          "store_id": "9e19c664-ae28-4b5e-b9e1-3ebb3c1071ae",
+          "variants": [],
+          "is_active": true,
+          "seo_title": null,
+          "created_at": "2026-10-24T15:53:09.725966+00:00",
+          "updated_at": "2026-10-24T15:53:09.725966+00:00",
+          "description": null,
+          "is_featured": false,
+          "product_type": null,
+          "compare_price": null,
+          "seo_description": null,
+          "track_inventory": true,
+          "importer_details": null,
+          "country_of_origin": "India"
+        },
+        {
+          "id": "4b2b7601-8340-4b1e-a592-e4c814db252b",
+          "name": "Maker 15",
+          "slug": "syn-4b2b7601-8340-4b1e-a592-e4c814db252b",
+          "tags": [],
+          "price": 100,
+          "stock": 8,
+          "images": [],
+          "category": "Circuit facets",
+          "metadata": {
+            "electronics": {
+              "kind": "other",
+              "manufacturer": "Maker 15"
+            }
+          },
+          "store_id": "9e19c664-ae28-4b5e-b9e1-3ebb3c1071ae",
+          "variants": [],
+          "is_active": true,
+          "seo_title": null,
+          "created_at": "2026-10-24T15:53:09.037052+00:00",
+          "updated_at": "2026-10-24T15:53:09.037052+00:00",
+          "description": null,
+          "is_featured": false,
+          "product_type": null,
+          "compare_price": null,
+          "seo_description": null,
+          "track_inventory": true,
+          "importer_details": null,
+          "country_of_origin": "India"
+        },
+        {
+          "id": "4bd43c29-a424-4a42-8dfe-8b16ada1e80d",
+          "name": "Maker 4",
+          "slug": "syn-4bd43c29-a424-4a42-8dfe-8b16ada1e80d",
+          "tags": [],
+          "price": 100,
+          "stock": 8,
+          "images": [],
+          "category": "Circuit facets",
+          "metadata": {
+            "electronics": {
+              "kind": "other",
+              "manufacturer": "Maker 4"
+            }
+          },
+          "store_id": "9e19c664-ae28-4b5e-b9e1-3ebb3c1071ae",
+          "variants": [],
+          "is_active": true,
+          "seo_title": null,
+          "created_at": "2026-10-24T15:53:08.592846+00:00",
+          "updated_at": "2026-10-24T15:53:08.592846+00:00",
+          "description": null,
+          "is_featured": false,
+          "product_type": null,
+          "compare_price": null,
+          "seo_description": null,
+          "track_inventory": true,
+          "importer_details": null,
+          "country_of_origin": "India"
+        },
+        {
+          "id": "5093655a-c2bd-4aa6-9ab4-840272aeb1f3",
+          "name": "Maker 1",
+          "slug": "syn-5093655a-c2bd-4aa6-9ab4-840272aeb1f3",
+          "tags": [],
+          "price": 100,
+          "stock": 8,
+          "images": [],
+          "category": "Circuit facets",
+          "metadata": {
+            "electronics": {
+              "kind": "other",
+              "manufacturer": "Maker 1"
+            }
+          },
+          "store_id": "9e19c664-ae28-4b5e-b9e1-3ebb3c1071ae",
+          "variants": [],
+          "is_active": true,
+          "seo_title": null,
+          "created_at": "2026-10-24T15:53:08.49133+00:00",
+          "updated_at": "2026-10-24T15:53:08.49133+00:00",
+          "description": null,
+          "is_featured": false,
+          "product_type": null,
+          "compare_price": null,
+          "seo_description": null,
+          "track_inventory": true,
+          "importer_details": null,
+          "country_of_origin": "India"
+        },
+        {
+          "id": "5653b67b-026e-4d98-8557-00af49059ef2",
+          "name": "Maker 16",
+          "slug": "syn-5653b67b-026e-4d98-8557-00af49059ef2",
+          "tags": [],
+          "price": 100,
+          "stock": 8,
+          "images": [],
+          "category": "Circuit facets",
+          "metadata": {
+            "electronics": {
+              "kind": "other",
+              "manufacturer": "Maker 16"
+            }
+          },
+          "store_id": "9e19c664-ae28-4b5e-b9e1-3ebb3c1071ae",
+          "variants": [],
+          "is_active": true,
+          "seo_title": null,
+          "created_at": "2026-10-24T15:53:09.076013+00:00",
+          "updated_at": "2026-10-24T15:53:09.076013+00:00",
+          "description": null,
+          "is_featured": false,
+          "product_type": null,
+          "compare_price": null,
+          "seo_description": null,
+          "track_inventory": true,
+          "importer_details": null,
+          "country_of_origin": "India"
+        },
+        {
+          "id": "59130bb3-18b5-4b3d-b648-211fdd72cea9",
+          "name": "Maker 37",
+          "slug": "syn-59130bb3-18b5-4b3d-b648-211fdd72cea9",
+          "tags": [],
+          "price": 100,
+          "stock": 8,
+          "images": [],
+          "category": "Circuit facets",
+          "metadata": {
+            "electronics": {
+              "kind": "other",
+              "manufacturer": "Maker 37"
+            }
+          },
+          "store_id": "9e19c664-ae28-4b5e-b9e1-3ebb3c1071ae",
+          "variants": [],
+          "is_active": true,
+          "seo_title": null,
+          "created_at": "2026-10-24T15:53:09.829356+00:00",
+          "updated_at": "2026-10-24T15:53:09.829356+00:00",
+          "description": null,
+          "is_featured": false,
+          "product_type": null,
+          "compare_price": null,
+          "seo_description": null,
+          "track_inventory": true,
+          "importer_details": null,
+          "country_of_origin": "India"
+        },
+        {
+          "id": "5dfefc38-ad8a-4e13-8448-ff56f7e0e627",
+          "name": "Maker 32",
+          "slug": "syn-5dfefc38-ad8a-4e13-8448-ff56f7e0e627",
+          "tags": [],
+          "price": 100,
+          "stock": 8,
+          "images": [],
+          "category": "Circuit facets",
+          "metadata": {
+            "electronics": {
+              "kind": "other",
+              "manufacturer": "Maker 32"
+            }
+          },
+          "store_id": "9e19c664-ae28-4b5e-b9e1-3ebb3c1071ae",
+          "variants": [],
+          "is_active": true,
+          "seo_title": null,
+          "created_at": "2026-10-24T15:53:09.656751+00:00",
+          "updated_at": "2026-10-24T15:53:09.656751+00:00",
+          "description": null,
+          "is_featured": false,
+          "product_type": null,
+          "compare_price": null,
+          "seo_description": null,
+          "track_inventory": true,
+          "importer_details": null,
+          "country_of_origin": "India"
+        },
+        {
+          "id": "703d975d-e079-4af6-abbd-8f649b7ce4b9",
+          "name": "Maker 39",
+          "slug": "syn-703d975d-e079-4af6-abbd-8f649b7ce4b9",
+          "tags": [],
+          "price": 100,
+          "stock": 8,
+          "images": [],
+          "category": "Circuit facets",
+          "metadata": {
+            "electronics": {
+              "kind": "other",
+              "manufacturer": "Maker 39"
+            }
+          },
+          "store_id": "9e19c664-ae28-4b5e-b9e1-3ebb3c1071ae",
+          "variants": [],
+          "is_active": true,
+          "seo_title": null,
+          "created_at": "2026-10-24T15:53:09.898316+00:00",
+          "updated_at": "2026-10-24T15:53:09.898316+00:00",
+          "description": null,
+          "is_featured": false,
+          "product_type": null,
+          "compare_price": null,
+          "seo_description": null,
+          "track_inventory": true,
+          "importer_details": null,
+          "country_of_origin": "India"
+        },
+        {
+          "id": "736577f3-8d1f-4989-8c3d-c712e979dc6b",
+          "name": "Maker 10",
+          "slug": "syn-736577f3-8d1f-4989-8c3d-c712e979dc6b",
+          "tags": [],
+          "price": 100,
+          "stock": 8,
+          "images": [],
+          "category": "Circuit facets",
+          "metadata": {
+            "electronics": {
+              "kind": "other",
+              "manufacturer": "Maker 10"
+            }
+          },
+          "store_id": "9e19c664-ae28-4b5e-b9e1-3ebb3c1071ae",
+          "variants": [],
+          "is_active": true,
+          "seo_title": null,
+          "created_at": "2026-10-24T15:53:08.795411+00:00",
+          "updated_at": "2026-10-24T15:53:08.795411+00:00",
+          "description": null,
+          "is_featured": false,
+          "product_type": null,
+          "compare_price": null,
+          "seo_description": null,
+          "track_inventory": true,
+          "importer_details": null,
+          "country_of_origin": "India"
+        },
+        {
+          "id": "7386e00e-6d70-4fa2-9fe7-04fad5afb747",
+          "name": "Maker 38",
+          "slug": "syn-7386e00e-6d70-4fa2-9fe7-04fad5afb747",
+          "tags": [],
+          "price": 100,
+          "stock": 8,
+          "images": [],
+          "category": "Circuit facets",
+          "metadata": {
+            "electronics": {
+              "kind": "other",
+              "manufacturer": "Maker 38"
+            }
+          },
+          "store_id": "9e19c664-ae28-4b5e-b9e1-3ebb3c1071ae",
+          "variants": [],
+          "is_active": true,
+          "seo_title": null,
+          "created_at": "2026-10-24T15:53:09.863544+00:00",
+          "updated_at": "2026-10-24T15:53:09.863544+00:00",
+          "description": null,
+          "is_featured": false,
+          "product_type": null,
+          "compare_price": null,
+          "seo_description": null,
+          "track_inventory": true,
+          "importer_details": null,
+          "country_of_origin": "India"
+        },
+        {
+          "id": "755efec7-6094-4697-9619-ae9d686d9276",
+          "name": "Maker 12",
+          "slug": "syn-755efec7-6094-4697-9619-ae9d686d9276",
+          "tags": [],
+          "price": 100,
+          "stock": 8,
+          "images": [],
+          "category": "Circuit facets",
+          "metadata": {
+            "electronics": {
+              "kind": "other",
+              "manufacturer": "Maker 12"
+            }
+          },
+          "store_id": "9e19c664-ae28-4b5e-b9e1-3ebb3c1071ae",
+          "variants": [],
+          "is_active": true,
+          "seo_title": null,
+          "created_at": "2026-10-24T15:53:08.864817+00:00",
+          "updated_at": "2026-10-24T15:53:08.864817+00:00",
+          "description": null,
+          "is_featured": false,
+          "product_type": null,
+          "compare_price": null,
+          "seo_description": null,
+          "track_inventory": true,
+          "importer_details": null,
+          "country_of_origin": "India"
+        },
+        {
+          "id": "758b101f-1a73-4b5a-a026-4f468af75a93",
+          "name": "Maker 0",
+          "slug": "syn-758b101f-1a73-4b5a-a026-4f468af75a93",
+          "tags": [],
+          "price": 100,
+          "stock": 8,
+          "images": [],
+          "category": "Circuit facets",
+          "metadata": {
+            "electronics": {
+              "kind": "other",
+              "manufacturer": "Maker 0"
+            }
+          },
+          "store_id": "9e19c664-ae28-4b5e-b9e1-3ebb3c1071ae",
+          "variants": [],
+          "is_active": true,
+          "seo_title": null,
+          "created_at": "2026-10-24T15:53:08.458172+00:00",
+          "updated_at": "2026-10-24T15:53:08.458172+00:00",
+          "description": null,
+          "is_featured": false,
+          "product_type": null,
+          "compare_price": null,
+          "seo_description": null,
+          "track_inventory": true,
+          "importer_details": null,
+          "country_of_origin": "India"
+        },
+        {
+          "id": "7bec4e35-105c-4990-bbc2-f30459ef1a02",
+          "name": "Maker 28",
+          "slug": "syn-7bec4e35-105c-4990-bbc2-f30459ef1a02",
+          "tags": [],
+          "price": 100,
+          "stock": 8,
+          "images": [],
+          "category": "Circuit facets",
+          "metadata": {
+            "electronics": {
+              "kind": "other",
+              "manufacturer": "Maker 28"
+            }
+          },
+          "store_id": "9e19c664-ae28-4b5e-b9e1-3ebb3c1071ae",
+          "variants": [],
+          "is_active": true,
+          "seo_title": null,
+          "created_at": "2026-10-24T15:53:09.509911+00:00",
+          "updated_at": "2026-10-24T15:53:09.509911+00:00",
+          "description": null,
+          "is_featured": false,
+          "product_type": null,
+          "compare_price": null,
+          "seo_description": null,
+          "track_inventory": true,
+          "importer_details": null,
+          "country_of_origin": "India"
+        }
+      ],
+      "count": 42,
+      "facets": [
+        {
+          "key": "category",
+          "count": 42,
+          "label": "Circuit facets",
+          "value": "Circuit facets"
+        },
+        {
+          "key": "compatibility_evidence",
+          "count": 42,
+          "label": "unconfirmed",
+          "value": "unconfirmed"
+        },
+        {
+          "key": "country_of_origin",
+          "count": 42,
+          "label": "India",
+          "value": "india"
+        },
+        {
+          "key": "electronics_kind",
+          "count": 42,
+          "label": "other",
+          "value": "other"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 0",
+          "value": "maker 0"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 1",
+          "value": "maker 1"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 10",
+          "value": "maker 10"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 11",
+          "value": "maker 11"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 12",
+          "value": "maker 12"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 13",
+          "value": "maker 13"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 14",
+          "value": "maker 14"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 15",
+          "value": "maker 15"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 16",
+          "value": "maker 16"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 17",
+          "value": "maker 17"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 18",
+          "value": "maker 18"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 19",
+          "value": "maker 19"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 2",
+          "value": "maker 2"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 20",
+          "value": "maker 20"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 21",
+          "value": "maker 21"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 22",
+          "value": "maker 22"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 23",
+          "value": "maker 23"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 24",
+          "value": "maker 24"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 25",
+          "value": "maker 25"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 26",
+          "value": "maker 26"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 27",
+          "value": "maker 27"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 28",
+          "value": "maker 28"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 29",
+          "value": "maker 29"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 3",
+          "value": "maker 3"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 30",
+          "value": "maker 30"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 31",
+          "value": "maker 31"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 32",
+          "value": "maker 32"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 33",
+          "value": "maker 33"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 34",
+          "value": "maker 34"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 35",
+          "value": "maker 35"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 36",
+          "value": "maker 36"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 37",
+          "value": "maker 37"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 38",
+          "value": "maker 38"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 39",
+          "value": "maker 39"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 4",
+          "value": "maker 4"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 40",
+          "value": "maker 40"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 41",
+          "value": "maker 41"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 5",
+          "value": "maker 5"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 6",
+          "value": "maker 6"
+        },
+        {
+          "key": "electronics_manufacturer",
+          "count": 1,
+          "label": "Maker 7",
+          "value": "maker 7"
+        }
+      ],
+      "matches": [
+        {
+          "price": 100,
+          "product_id": "03443195-776c-4be5-a6f3-bd8fb4ac7b75",
+          "variant_ids": []
+        },
+        {
+          "price": 100,
+          "product_id": "05154b96-2010-41b9-a8d9-128cab5426c2",
+          "variant_ids": []
+        },
+        {
+          "price": 100,
+          "product_id": "05bfa98f-8c37-44cd-b5ce-3e23bd117cd8",
+          "variant_ids": []
+        },
+        {
+          "price": 100,
+          "product_id": "13171e88-6fac-4f8e-839f-bf208fe6fec0",
+          "variant_ids": []
+        },
+        {
+          "price": 100,
+          "product_id": "2aa713a9-89ed-474d-a6ea-4bc385949a44",
+          "variant_ids": []
+        },
+        {
+          "price": 100,
+          "product_id": "2cbe9240-7904-474b-aad5-e81106b23fb0",
+          "variant_ids": []
+        },
+        {
+          "price": 100,
+          "product_id": "477be94b-5302-4e6b-a63b-6731cc496ec9",
+          "variant_ids": []
+        },
+        {
+          "price": 100,
+          "product_id": "495ab803-76bd-4579-b59d-3530a5924122",
+          "variant_ids": []
+        },
+        {
+          "price": 100,
+          "product_id": "4b2b7601-8340-4b1e-a592-e4c814db252b",
+          "variant_ids": []
+        },
+        {
+          "price": 100,
+          "product_id": "4bd43c29-a424-4a42-8dfe-8b16ada1e80d",
+          "variant_ids": []
+        },
+        {
+          "price": 100,
+          "product_id": "5093655a-c2bd-4aa6-9ab4-840272aeb1f3",
+          "variant_ids": []
+        },
+        {
+          "price": 100,
+          "product_id": "5653b67b-026e-4d98-8557-00af49059ef2",
+          "variant_ids": []
+        },
+        {
+          "price": 100,
+          "product_id": "59130bb3-18b5-4b3d-b648-211fdd72cea9",
+          "variant_ids": []
+        },
+        {
+          "price": 100,
+          "product_id": "5dfefc38-ad8a-4e13-8448-ff56f7e0e627",
+          "variant_ids": []
+        },
+        {
+          "price": 100,
+          "product_id": "703d975d-e079-4af6-abbd-8f649b7ce4b9",
+          "variant_ids": []
+        },
+        {
+          "price": 100,
+          "product_id": "736577f3-8d1f-4989-8c3d-c712e979dc6b",
+          "variant_ids": []
+        },
+        {
+          "price": 100,
+          "product_id": "7386e00e-6d70-4fa2-9fe7-04fad5afb747",
+          "variant_ids": []
+        },
+        {
+          "price": 100,
+          "product_id": "755efec7-6094-4697-9619-ae9d686d9276",
+          "variant_ids": []
+        },
+        {
+          "price": 100,
+          "product_id": "758b101f-1a73-4b5a-a026-4f468af75a93",
+          "variant_ids": []
+        },
+        {
+          "price": 100,
+          "product_id": "7bec4e35-105c-4990-bbc2-f30459ef1a02",
+          "variant_ids": []
+        }
+      ],
+      "measurement_capabilities": {
+        "max_depth_cm": {
+          "available": false
+        },
+        "max_width_cm": {
+          "available": false
+        },
+        "equipment_length": {
+          "available": false,
+          "allowed_units": []
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,154 @@
+{
+  "recordedAt": "2026-10-24T07:31:46.158801+00:00",
+  "allTenAccepted": false,
+  "mockupMilestone": {
+    "PNGs": 405,
+    "boards": 135,
+    "status": "PASSED"
+  },
+  "sourceMigrationMaximum": 393,
+  "active936MigrationMaximum": 392,
+  "currentWorkAllocation": {
+    "recordedAt": "2026-10-24T07:31:46.158801+00:00",
+    "editorSoleController": true,
+    "runId": "936e5f577646",
+    "current": "Kindred allocated G01-G08 nonorder subset/G19 checkpoint; no cart, checkout or identity changes. Marginalia finite nonorder audit complete9PASS/7NOT_RUN.",
+    "dewdrop": {
+      "PASS": 26,
+      "FAIL": 1,
+      "BLOCKED": 3,
+      "wholeThemeAccepted": false,
+      "audit": "../niche-themes-2026-10-23/dewdrop/remaining-controls-final-audit-936e5f577646.json",
+      "currentM05RuntimePreFix": true
+    },
+    "habitat": {
+      "PASS": 21,
+      "PARTIAL": 1,
+      "NOT_RUN": 4,
+      "fullTableInvariant": "19 of22 exact; only declared inventory_adjustments/inventory_levels/outbox setup changes",
+      "audit": "../niche-themes-2026-10-23/habitat/run936-final-addenda-audit.json",
+      "cartAndPurchaseQueued": true
+    },
+    "pantry": {
+      "PASS": 9,
+      "FAIL": 1,
+      "NOT_RUN": 3,
+      "orderCreated": false,
+      "preservedCart": "6284 / Lentils q2 / INR360 / accepted17",
+      "heldCheckoutTab": 53,
+      "sourceDiagnosis": "Session payment_intent/COD/unconfirmed. Browser re-enters contact; current planner rejects backwards step. Exact failed HTTP step was unobserved.",
+      "retryBudget": "Two normal attempts done; no further retry/cart/session workaround before qualified runtime."
+    },
+    "sourceWork": {
+      "Threadline": "Six exact catalog394 candidates materialized, not canonical emitted. Attempt2af stopped after failed runtime inventory preflight; no qualification. Root verified owned cleanup empty/source1089 exact; private runtime.mjs+declaration inventory correction underway. Checkout source/native is next slot.",
+      "Circuit": "Count02 Root qualified:1TAP/all8mandatory stages,37proofs/current1076/322 migration SHAs verified; current936 still pre-fix and M05 UI retest pending.",
+      "MadeYours": "Private root02 behavior11files reviewed/14 Root tests; fix pending native success oracle to allow exactly canonical one pending COD payment row. No Main/native grant. Two proposed owned suites7new+15existing/localRazorpay; all unrun.",
+      "Trailmark": "Controller finite nonorder3PASS/2PARTIAL/7unallocated;34publicGET+34UI and12recovery checks. Owner read-only audit requested; no full-lifecycle credit.",
+      "Root": "Dependency classifier6PASS/fullvalidator0 and Marketplace dark-toggle validator5 independentPASS/fullDS0 source admitted; no runtime changes."
+    },
+    "jointNative": {
+      "runId": "999176baae6b",
+      "status": "PUBLISHER8PASS_COUNT_PARENT_FAILED_FINAL_HTTP_TELEMETRY_ASSERTION",
+      "tests": 9,
+      "pass": 8,
+      "fail": 1,
+      "skip": 0,
+      "resultSHA": "2a66ee2427570c63db9a1934e829c8a750d3f8e5c65316cb1f2a6117ec2844ca",
+      "resultPath": "/private/tmp/circuit-count-native-candidate-20261024-v1/native-runs/01/result.json",
+      "cleanupEmpty": true,
+      "sourceMigrationMaximum": 393,
+      "sourceMigrationCount": 322,
+      "sourceMigrationCeiling": null,
+      "failure": "The expected503 request emitted one request metric plus one canonical sev2 error-alert metric. The assertion allowed only one metric. Strict test-helper correction proposed privately; no production logging/count/ACL change or rerun allocated.",
+      "countFullAcceptance": false
+    },
+    "allTenAccepted": false,
+    "safeWorkingCutoffUtc": "2026-10-24T08:50:00Z",
+    "originalBuyerAndCheckout": "50494/50497 unchanged; supplemental clients58090/58091 active.",
+    "circuit": {
+      "independentCounts": {
+        "PASS": 10,
+        "PARTIAL": 5,
+        "NOT_RUN": 10
+      },
+      "controllerOriginalCounts": {
+        "PASS": 11,
+        "PARTIAL": 4,
+        "NOT_RUN": 10
+      },
+      "audit": "../niche-themes-2026-10-23/habitat/circuit-run936-independent-audit.json",
+      "auditSHA": "d171cabc9d6b8f1dbb453ce51b66e9e626ea62efa689918ab1a76a4525e70bdc",
+      "CL13": "Known-empty/unbound denial observed. Unbound operand was an order UUID, not a positively bound real foreign collection; whole case partial. No security defect inferred.",
+      "correctedClassification": "../theme-editor-2026-10-23/evidence/stable936-circuit-finite-nonorder-classification-addendum.json",
+      "discovery": {
+        "GET": 18,
+        "PASS": 18
+      },
+      "B00": {
+        "checks": 7,
+        "pass": 7
+      },
+      "fullTableInvariant": "19/22 exact; declared inventory setup and outbox changes only; carts/checkouts/two orders exact."
+    },
+    "nextNonorder": {
+      "marginalia": {
+        "status": "CONDITIONAL_EDITOR_GRANT_AFTER_TRAILMARK_CLEAN_CHECKPOINT",
+        "packet": "../niche-themes-2026-10-23/marginalia/stable936-nonorder-editor-packet.md",
+        "sha256": "fb71b940d3967974999714c836ffa067a7537b354899a43fb0ccc70a867fea1f",
+        "noCartOrPurchase": true
+      },
+      "kindred": {
+        "status": "EDITOR_CONDITIONAL_TRANSITION_REACHED_ACTIVE_NONORDER",
+        "KQA01": "OPEN P2/source-artifact human freeze unchanged"
+      }
+    },
+    "sourceReview": "collection-count-native/http-alert-v2-root-source-review.json",
+    "marginalia": {
+      "independentCounts": {
+        "PASS": 9,
+        "NOT_RUN": 7
+      },
+      "scope": "OOS purchase/no-effect clause and six cart/purchase/history/edit cases remain unallocated.",
+      "lineage": {
+        "path": "marginalia-installed-package-lineage-root-readonly-936.json",
+        "sha256": "b8080c6e1e83018278daa600cc37b72cd94f8ce9bf84a045523fa89ad20f1a22"
+      },
+      "actualPublicGETs": 32,
+      "actualBothRouteUIObservations": 32,
+      "B00": "Completed after one acknowledged recovery retake; original timing/early captures preserved.",
+      "conservation": "20/22 exact; only declared new OOS inventory level and outbox changed. Cart/checkout/orders/history exact."
+    },
+    "trailmark": {
+      "controllerCounts": {
+        "PASS": 3,
+        "PARTIAL": 2,
+        "NOT_RUN": 7
+      },
+      "independentAudit": "pending",
+      "scope": "L00/M01/M02/P01/P02 only; seven cart/purchase/history stages unallocated",
+      "publicGETs": 34,
+      "UIAgreements": 34,
+      "nativeRecoveryChecks": 12,
+      "conservation": "19/22 exact; declared new-product inventory setup/outbox changes only.",
+      "receipt": "../theme-editor-2026-10-23/evidence/stable936-trailmark-finite-nonorder-boundary.json"
+    },
+    "countQualification": {
+      "path": "collection-count-native/native-runs/02/root-qualification.json",
+      "sha256": "b99237b975a1fc7cf82ba81b6e508af7751f086d80dcef784e5563afcbfe7d1a",
+      "runId": "5d023114b98b",
+      "nativeCountQualified": true,
+      "M05UIRetested": false
+    },
+    "catalog394Interruption": {
+      "path": "release-playfield201/catalog394-qualification/native-runs/01/root-interruption-review.json",
+      "sha256": "e799f314d95cfcd7d3339972b3430224cbcafd091f509a08568f160b60478fe9",
+      "runId": "2af9d642a95f",
+      "qualified": false,
+      "canonical394Emitted": false,
+      "cleanupEmptyIndependentlyVerified": true,
+      "freezeReleased": true
+    }
+  },
+  "persistentMarketplace": "http://themes.letbuyy-local.localhost:9015/themes",
+  "standingBoundaries": "No merge/push/deploy, realPSP/fulfillment, global reaping or backup deletion. Kindred human source/artifact freeze and KQA01P2 remain."
+}

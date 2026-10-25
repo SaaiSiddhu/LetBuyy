@@ -9,6 +9,7 @@ import '../../models/store_model.dart';
 import '../../services/store_service.dart';
 import '../shared/cached_merchant_image.dart';
 import '../shared/image_source_sheet.dart';
+import '../shared/merchant_media_picker.dart';
 
 /// Header Editor Bottom Sheet - Full Featured
 class HeaderEditorSheet extends StatefulWidget {
@@ -120,13 +121,12 @@ class _HeaderEditorSheetState extends State<HeaderEditorSheet> {
     final source = await showImageSourceSheet(context, title: 'Logo source');
     if (source == null) return;
 
-    final pickedFile = await picker.pickImage(source: source, maxWidth: 512);
-
-    if (pickedFile == null) return;
-
+    if (!mounted || _isUploadingLogo) return;
     setState(() => _isUploadingLogo = true);
-
     try {
+      final pickedFile = await pickMerchantMedia(context, source: source,
+          pick: () => picker.pickImage(source: source, maxWidth: 512));
+      if (!mounted || pickedFile == null) return;
       final file = File(pickedFile.path);
       final storeService = context.read<StoreService>();
       final downloadUrl = await storeService.uploadImage(
@@ -134,6 +134,7 @@ class _HeaderEditorSheetState extends State<HeaderEditorSheet> {
         folder: 'stores/${widget.store.id}',
       );
 
+      if (!mounted) return;
       setState(() {
         _logoUrl = downloadUrl;
         _settings['logoUrl'] = downloadUrl;
@@ -147,7 +148,7 @@ class _HeaderEditorSheetState extends State<HeaderEditorSheet> {
         ).showSnackBar(SnackBar(content: Text('Error uploading logo: $e')));
       }
     } finally {
-      setState(() => _isUploadingLogo = false);
+      if (mounted) setState(() => _isUploadingLogo = false);
     }
   }
 

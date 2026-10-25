@@ -1,0 +1,122 @@
+[
+  {
+    "id": "01-home-top",
+    "title": "Home · room discovery",
+    "description": "Room index beside panoramic context; measurement guide before shopping.",
+    "source": "source/01-home-top.html",
+    "productionRouteRole": "One homepage, opening segment",
+    "version": "habitat-design-1.0"
+  },
+  {
+    "id": "02-home-bottom",
+    "title": "Home · objects & understanding",
+    "description": "Two furniture objects, material education, measurement advice, delivery information and footer.",
+    "source": "source/02-home-bottom.html",
+    "productionRouteRole": "Same homepage, continuation segment",
+    "version": "habitat-design-1.0"
+  },
+  {
+    "id": "03-collection",
+    "title": "Living room · collection",
+    "description": "Large two-up cards, dimensions, material/finish query concepts, real small-catalog pagination state.",
+    "source": "source/03-collection.html",
+    "productionRouteRole": "Canonical paginated collection/search",
+    "version": "habitat-design-1.0"
+  },
+  {
+    "id": "04-product-main",
+    "title": "Aara chair · selection",
+    "description": "Panoramic room, object image, actual finish identities, common dimensions, price/availability and purchase action.",
+    "source": "source/04-product-main.html",
+    "productionRouteRole": "One PDP, selection segment",
+    "version": "habitat-design-1.0"
+  },
+  {
+    "id": "05-product-dimensions",
+    "title": "Aara chair · room fit & facts",
+    "description": "Accessible dimension schematic, assembled/package distinction, variant updates and material/assembly information.",
+    "source": "source/05-product-dimensions.html",
+    "productionRouteRole": "Same PDP, decision-support segment",
+    "version": "habitat-design-1.0"
+  },
+  {
+    "id": "06-product-continuation",
+    "title": "Aara chair · living with it",
+    "description": "Care, actual delivery constraints, honest missing date and independent related table.",
+    "source": "source/06-product-continuation.html",
+    "productionRouteRole": "Same chair PDP, supporting policy/related content; table has own production PDP",
+    "version": "habitat-design-1.0"
+  },
+  {
+    "id": "07-cart",
+    "title": "Your cart",
+    "description": "Selected natural finishes, exact dimensions, quantity/removal, arithmetic and checkout recovery.",
+    "source": "source/07-cart.html",
+    "productionRouteRole": "Canonical server cart",
+    "version": "habitat-design-1.0"
+  },
+  {
+    "id": "08-checkout-address",
+    "title": "Checkout · address",
+    "description": "Canonical shared checkout, contact, destination, eligible shipping sample and complete summary.",
+    "source": "source/08-checkout-address.html",
+    "productionRouteRole": "Canonical hosted checkout, address step",
+    "version": "habitat-design-1.0"
+  },
+  {
+    "id": "09-checkout-review",
+    "title": "Checkout · review & pay",
+    "description": "Complete reviewed items/totals, eligible payment fixture and recoverable payment initiation error.",
+    "source": "source/09-checkout-review.html",
+    "productionRouteRole": "Same canonical hosted checkout, review/pay step",
+    "version": "habitat-design-1.0"
+  },
+  {
+    "id": "10-sign-in",
+    "title": "LetBuyy · sign in for Habitat",
+    "description": "Canonical credential branding, explicit destination, error/recovery and store-return consent context.",
+    "source": "source/10-sign-in.html",
+    "productionRouteRole": "Canonical identity-platform credential page",
+    "version": "habitat-design-1.0"
+  },
+  {
+    "id": "11-sign-up",
+    "title": "LetBuyy · create & verify",
+    "description": "Canonical registration, explicit signed-in Continue state, and separately explained optional email ownership verification.",
+    "source": "source/11-sign-up.html",
+    "productionRouteRole": "Canonical registration, with explicit signed-in Continue state; separate optional email ownership action",
+    "version": "habitat-design-1.0"
+  },
+  {
+    "id": "12-profile",
+    "title": "Your Habitat profile",
+    "description": "Store-scoped account shell, supported editing, verification, addresses and owned orders.",
+    "source": "source/12-profile.html",
+    "productionRouteRole": "Canonical store account overview",
+    "version": "habitat-design-1.0"
+  },
+  {
+    "id": "13-orders",
+    "title": "Your Habitat orders",
+    "description": "Owned store order history with consistent ID/totals/status and precise direct-detail entry.",
+    "source": "source/13-orders.html",
+    "productionRouteRole": "Canonical authenticated store order history",
+    "version": "habitat-design-1.0"
+  },
+  {
+    "id": "14-order-detail",
+    "title": "Habitat order HB-1042",
+    "description": "Owned order snapshot, exact variants/dimensions/totals, honest fulfillment and support context.",
+    "source": "source/14-order-detail.html",
+    "productionRouteRole": "Canonical directly addressable owned-order detail",
+    "version": "habitat-design-1.0"
+  },
+  {
+    "id": "15-addresses",
+    "title": "Your saved addresses",
+    "description": "Default address plus representative edit, invalid pincode recovery, cancel/save and explicit scope.",
+    "source": "source/15-addresses.html",
+    "productionRouteRole": "Canonical buyer address lifecycle",
+    "version": "habitat-design-1.0"
+  }
+]

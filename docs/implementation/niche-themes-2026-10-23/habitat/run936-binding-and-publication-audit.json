@@ -1,0 +1,101 @@
+{
+  "recordedAt": "2026-10-24T05:35:28.007073+00:00",
+  "runId": "936e5f577646",
+  "status": "PASS_FRESH_BINDING_SCOPE_AND_WHOLE_HI04_PUBLICATION_RECOVERY",
+  "instance": {
+    "slug": "letbuyy-craft",
+    "status": "installed",
+    "version": "2.0.0",
+    "packageId": "807b2c76-ae1a-4a94-850f-fe774a742279",
+    "instanceId": "019c6520-f027-49bd-86c0-4ca5e6108a86",
+    "bundleVersion": "2.0.0",
+    "draftRevision": 1,
+    "currentDraftId": "8c883734-37f8-4b74-b895-6a063ff159fe",
+    "activeReleaseId": null,
+    "catalogChecksum": null,
+    "packageVersionId": "d924bbd6-a1b6-4b76-8fa6-b7548bb94aaf",
+    "installedConfigSqlSha256": "b85da2d8a4a6baafd3382253b3b08ea3b4bcb6ef5fda188479c3e2acfba4fa06",
+    "packageManifestSqlSha256": "47dc29c26dc3c7fc4d02c3a44c01443941991658015356a96a9c3e3f965a5384"
+  },
+  "siteId": "2f958a36-71bf-4e8f-89fd-d3363f4fe42c",
+  "A": {
+    "releaseId": "2a450ba2-c5a1-40b4-b928-532a5f2f54fd",
+    "configSqlSha256": "23b52e1f3b0450bc0a6a6c1ffa98a7fb8489681b0bfb28adccbd6e08dcd2bb1c"
+  },
+  "B": {
+    "releaseId": "77eefc4f-5dfb-40e6-a9fa-0b3c14c35c51",
+    "configSqlSha256": "6768cc3d17a904c26155d665a07ed3f27f107d995299807f75517b80fa9085a8"
+  },
+  "restoredA": "ea675d73-cd2d-490d-8eb6-7f9296bdb73d",
+  "reappliedB": "0a590f99-b38d-4f59-ba9f-b593e3a8f834",
+  "checks": {
+    "actualInstallAbsentThenPresent": true,
+    "actualFreshPackageVersionInstanceBindings": true,
+    "publicAWhenBStillDraft": true,
+    "AExactHashRestored": true,
+    "BActiveDraftPreservedAfterRestore": true,
+    "BExactHashReapplied": true,
+    "bothPublicHeadingHeaderFooterMarkers": true,
+    "ordersCount2AndProducts18UnchangedThroughPublication": true
+  },
+  "scopeLimits": [
+    "No full cart/inventory/order-row conservation claim from these count-only publication receipts. Await lifecycle before/after snapshots.",
+    "Binding hashes use SQLjsonb::text; catalogchecksumSQLNULL preserved. No JS/source/hash equality inferred.",
+    "HI01 complete session/ownership coverage awaits final actualcaseledger; binding component positive.",
+    "HI14-HI17 explicitlyunallocatedNOT_RUN; no f607 outcome promoted."
+  ],
+  "evidence": [
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-habitat-before-install-readback.json",
+      "sha256": "fe35fa13b1b30b07e09bbd1817123770f7102abc5b9d782c7ee98d8acbfb274f"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-habitat-installed-readback.json",
+      "sha256": "71377b19faf57d3088673c5be0ed1167c24d7790d3f0150bb7a00900ada1dec1"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-habitat-a-published-readback.json",
+      "sha256": "0f7173c3238aeff09c8e7de0c955cd4c0335366402b09db6116f3b8a0f73c3d5"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-habitat-b-saved-readback.json",
+      "sha256": "ba1c8cfbae801e516282f2b949f3a717184871145587c0cabc6432364b5fde6e"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-habitat-b-published-readback.json",
+      "sha256": "0e6c8c96bc492a3a9bc3299b864720827c49728c1b6968646f7d6d2da7c9ea30"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-habitat-a-restored-readback.json",
+      "sha256": "d22894ff7f0ef2e9c4a4b607758d9a98f41496de87bba46a6f5c407e10c6f7b9"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-habitat-b-reapplied-readback.json",
+      "sha256": "812b5358b5238bc7bac2ce364a0daa85e8174bc77eaabffc06e0323749466543"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-habitat-HI04-A-public.ax.txt",
+      "sha256": "5e45ced224100a7b3dc0744a59a91af6de64c66f68cc8e6444afe6f92a04afb2"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-habitat-HI04-A-public-B-private.ax.txt",
+      "sha256": "5e45ced224100a7b3dc0744a59a91af6de64c66f68cc8e6444afe6f92a04afb2"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-habitat-HI04-B-public.ax.txt",
+      "sha256": "10e3042bac154324df4aaf08c43dc1acdafbaf16105d7e508bd15f15feebb932"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-habitat-HI04-A-restored-public.ax.txt",
+      "sha256": "5e45ced224100a7b3dc0744a59a91af6de64c66f68cc8e6444afe6f92a04afb2"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-habitat-HI04-B-reapplied-public.ax.txt",
+      "sha256": "10e3042bac154324df4aaf08c43dc1acdafbaf16105d7e508bd15f15feebb932"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-habitat-HI04-B-retained.ax.txt",
+      "sha256": "ccbf3c46909bdf7b525aeb0e10025b0da46b474d2dbfe24f07c785ee76136baf"
+    }
+  ]
+}

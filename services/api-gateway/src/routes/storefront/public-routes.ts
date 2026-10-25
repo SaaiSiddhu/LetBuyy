@@ -1,3 +1,5 @@
+import type { StorefrontDiscoveryQuery, StorefrontDiscoveryMetadata } from '@letbuyy/commerce-core';
+import { parseStorefrontDiscoveryRequest } from '../../lib/storefront-discovery';
 import {authorizeVisitor,authorizeVisitorSite,type VisitorSite} from '../../lib/storefront-visitor-access';
 import { resolveLiquidBundleArtifact } from '../../lib/theme-release-bundle';
 import { Hono, type Context } from 'hono';
@@ -6,6 +8,7 @@ import { sha256Hex } from '../../lib/crypto';
 import { dbFailureBody, getSupabaseAdmin, paginated, success } from '../../lib/supabase';
 import { cachedJson, storefrontRequestCacheKey, STOREFRONT_CACHE_SWR_SECONDS, STOREFRONT_CACHE_TTL_SECONDS } from '../../lib/storefront-cache';
 import { registerStorefrontBlogRoutes } from './storefront-blog-routes';
+import { readThemePreviewContent, readThemePreviewCollection } from './theme-preview-content';
 import { PUBLIC_PRODUCT_SELECT, PUBLIC_PRODUCT_SELECT_RELATIONAL, toPublicProduct } from '../../lib/public-product-view';
 import { validate } from '../../middleware/validation';
 import { StorefrontProductReviewsQuery } from '../../schemas/review.schema';
@@ -163,12 +166,14 @@ type PublicProductQueryOptions = {
     search?: string;
     countryOfOrigin?: string;
     ids?: string[];
+    discovery?: StorefrontDiscoveryQuery;
 };
 
 type PublicProductQueryResult = {
     data: PublicProductRow[];
     count: number;
     error: unknown;
+    discovery?: StorefrontDiscoveryMetadata;
 };
 
 type ThemePreviewSessionRow = {
@@ -483,10 +488,11 @@ export function registerStorefrontPublicRoutes(
 
         if (!store) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
 
-        const limit = Math.min(parseInt(c.req.query('limit') || '100'), 100);
-        const { data, error } = await queryPublicProducts(c, storeId, { limit });
+        const filters = parseStorefrontDiscoveryRequest(c.req.url);
+        if (!filters.success) return c.json({ success: false, error: { code: 'VALIDATION', message: 'Invalid product filters or pagination.' } }, 400);
+        const { data, count, discovery, error } = await queryPublicProducts(c, storeId, { limit: filters.data.limit, page: filters.data.page, discovery: filters.data });
         if (error) return c.json(dbFailureBody(), 500);
-        return c.json(success(data || []));
+        return c.json({ ...paginated(data.map(product => toPublicProduct(product)), count, filters.data.page, filters.data.limit), discovery });
     });
 
     // GET /storefront/store/:storeId/coupons/validate — Public checkout coupon validation by store ID
@@ -647,10 +653,19 @@ export function registerStorefrontPublicRoutes(
         }
 
         const resource = c.req.query('resource');
+        if (resource === 'page' || resource === 'article' || resource === 'blog') {
+            const result = await readThemePreviewContent(db, store.id, c.req.query());
+            return c.json(result.body, result.status);
+        }
         if (resource && resource !== 'products' && resource !== 'collections') {
             return c.json({ success: false, error: { code: 'VALIDATION', message: 'Unknown preview resource' } }, 400);
         }
         if (resource === 'collections') {
+            const collectionId = c.req.query('collection_id');
+            if (collectionId !== undefined) {
+                const result = await readThemePreviewCollection(db, store.id, collectionId);
+                return c.json(result.body, result.status);
+            }
             const browse = collectionBrowseQuery(c);
             if (!browse) return c.json({ success: false, error: { code: 'VALIDATION', message: 'Invalid collection cursor' } }, 400);
             const { data, error } = await loadCollectionSummaries(c, store.id, browse);
@@ -664,9 +679,20 @@ export function registerStorefrontPublicRoutes(
                 return c.json({ success: false, error: { code: 'VALIDATION', message: 'Invalid preview product IDs' } }, 400);
             }
             if (ids && !ids.length) return c.json(success([]));
-            const { data, error } = await queryPublicProducts(c, store.id, { page: 1, limit: 100, paginated: true, ids });
+            const collectionId = c.req.query('collection_id');
+            if (collectionId && !/^[0-9a-f-]{36}$/i.test(collectionId)) return c.json({ success: false, error: { code: 'VALIDATION', message: 'Invalid collection binding.' } }, 400);
+            if (collectionId) {
+                const collection = await db.from('collections').select('id').eq('id', collectionId).eq('store_id', store.id).eq('is_active', true).is('deleted_at', null).maybeSingle();
+                if (collection.error) return c.json(dbFailureBody(), 500);
+                if (!collection.data) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Collection unavailable.' } }, 404);
+            }
+            const filters = parseStorefrontDiscoveryRequest(c.req.url, { transportKeys: ['token', 'resource', 'pagination', 'ids'], overrides: c.req.query('pagination') === '1' ? {} : { limit: 100 } });
+            if (!filters.success) return c.json({ success: false, error: { code: 'VALIDATION', message: 'Invalid preview filters.' } }, 400);
+            const { data, count, discovery, error } = await queryPublicProducts(c, store.id, { page: filters.data.page, limit: filters.data.limit, paginated: true, ids,
+                discovery: filters.data });
             if (error) return c.json(dbFailureBody(), 500);
-            return c.json(success((data || []).map((product) => toPublicProduct(product))));
+            const publicProducts = (data || []).map(product => toPublicProduct(product));
+            return c.json({ ...(c.req.query('pagination') === '1' ? paginated(publicProducts, count, filters.data.page, filters.data.limit) : success(publicProducts)), discovery });
         }
 
         const liveRelease = await loadCurrentThemeRelease(c, store.id);
@@ -913,12 +939,9 @@ export function registerStorefrontPublicRoutes(
 
     // GET /storefront/:subdomain/products — Public product listing
     router.get('/:subdomain/products', async (c) => {
-        const page = parseInt(c.req.query('page') || '1');
-        const limit = Math.min(parseInt(c.req.query('limit') || '20'), 100);
-        const countryOfOrigin = c.req.query('country_of_origin')?.trim() || undefined;
-        if (countryOfOrigin && countryOfOrigin.length > 100) {
-            return c.json({ success: false, error: { code: 'VALIDATION', message: 'Country of origin must be at most 100 characters' } }, 400);
-        }
+        const filters = parseStorefrontDiscoveryRequest(c.req.url);
+        if (!filters.success) return c.json({ success: false, error: { code: 'VALIDATION', message: 'Invalid product filters or pagination.' } }, 400);
+        const { page, limit } = filters.data;
         const handle = normalizeStorefrontHandle(c.req.param('subdomain')) || c.req.param('subdomain');
         return cachedJson(c, await storefrontRequestCacheKey(c, 'products', handle), STOREFRONT_CACHE_TTL_SECONDS, STOREFRONT_CACHE_SWR_SECONDS, async () => {
             const store = await loadPublishedStore(c, c.req.param('subdomain'));
@@ -928,17 +951,15 @@ export function registerStorefrontPublicRoutes(
                     body: { success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } },
                 };
             }
-            const { data, count, error } = await queryPublicProducts(c, store.id, {
+            const { data, count, discovery, error } = await queryPublicProducts(c, store.id, {
                 page,
                 limit,
                 paginated: true,
-                category: c.req.query('category') || undefined,
-                search: c.req.query('search') || undefined,
-                countryOfOrigin,
+                discovery: filters.data,
             });
             if (error) return { status: 500, body: dbFailureBody() };
             return {
-                body: paginated((data || []).map((product) => toPublicProduct(product)), count || 0, page, limit),
+                body: { ...paginated((data || []).map((product) => toPublicProduct(product)), count || 0, page, limit), discovery },
                 tags: storefrontCacheTags(store.id, handle, 'storefront:products'),
             };
         });
@@ -946,16 +967,14 @@ export function registerStorefrontPublicRoutes(
 
     // GET /storefront/:subdomain/products/by-ids?ids=a,b — Public product subset scoped by store
     router.get('/:subdomain/products/by-ids', async (c) => {
-        const countryOfOrigin = c.req.query('country_of_origin')?.trim() || undefined;
-        if (countryOfOrigin && countryOfOrigin.length > 100) {
-            return c.json({ success: false, error: { code: 'VALIDATION', message: 'Country of origin must be at most 100 characters' } }, 400);
-        }
+        const filters = parseStorefrontDiscoveryRequest(c.req.url, { transportKeys: ['ids'], overrides: { limit: 100 } });
+        if (!filters.success) return c.json({ success: false, error: { code: 'VALIDATION', message: 'Invalid product filters or pagination.' } }, 400);
         const ids = (c.req.query('ids') || '')
             .split(',')
             .map((id) => id.trim())
-            .filter((id) => /^[0-9a-f-]{36}$/i.test(id))
-            .slice(0, 100);
-        const page = Math.max(1, parseInt(c.req.query('page') || '1', 10) || 1);
+            .filter(Boolean);
+        if (ids.length > 100 || ids.some(id => !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id))) return c.json({ success: false, error: { code: 'VALIDATION', message: 'Invalid product IDs.' } }, 400);
+        const page = filters.data.page;
 
         if (!ids.length) return c.json(success([]));
 
@@ -974,9 +993,7 @@ export function registerStorefrontPublicRoutes(
                 page,
                 paginated: true,
                 ids,
-                category: c.req.query('category') || undefined,
-                search: c.req.query('search') || undefined,
-                countryOfOrigin,
+                discovery: filters.data,
             });
             if (error) return { status: 500, body: dbFailureBody() };
             return {
@@ -1133,7 +1150,7 @@ export function registerStorefrontPublicRoutes(
     // The route accepts either a UUID (canonical) or any token and resolves by id.
     router.get('/:subdomain/collections/:slug', async (c) => {
         const identifier = c.req.param('slug');
-        if (!identifier || identifier.length > 120 || !/^[a-z0-9_-]+$/i.test(identifier)) {
+        if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(identifier)) {
             return c.json({ success: false, error: { code: 'VALIDATION', message: 'Invalid collection identifier' } }, 400);
         }
         const countryOfOrigin = c.req.query('country_of_origin')?.trim() || undefined;
@@ -1178,38 +1195,13 @@ export function registerStorefrontPublicRoutes(
 
             const collectionRow = collection as SqlRecord;
 
-            // Load assigned product IDs from junction table
-            const { data: assignments, error: assignError } = await db
-                .from('collection_products')
-                .select('product_id')
-                .eq('collection_id', identifier)
-                .order('position', { ascending: true });
-
-            if (assignError) {
-                return { status: 500, body: dbFailureBody() };
-            }
-
-            const productIds = (assignments || [])
-                .map((row) => (row as SqlRecord).product_id as string)
-                .filter(Boolean);
-
-            let products: PublicProductRow[] = [];
-            let total = 0;
-            if (productIds.length > 0) {
-                const { data: productData, count, error: productError } = await queryPublicProducts(c, store.id, {
-                    limit: Math.min(productIds.length, 100),
-                    page: Math.max(1, parseInt(c.req.query('page') || '1', 10) || 1),
-                    paginated: true,
-                    ids: productIds,
-                    category: c.req.query('category') || undefined,
-                    search: c.req.query('search') || undefined,
-                    countryOfOrigin,
-                });
-                if (productError) return { status: 500, body: dbFailureBody() };
-                const hydratedProducts = await hydratePublicProductVariants(c, productData || []);
-                products = hydratedProducts;
-                total = count;
-            }
+            const parsedFilters = parseStorefrontDiscoveryRequest(c.req.url, { overrides: { collection_id: identifier } });
+            if (!parsedFilters.success) return { status: 400, body: { success: false, error: { code: 'VALIDATION', message: 'Invalid collection filters or pagination.' } } };
+            const { data: products, count: total, discovery, error: productError } = await queryPublicProducts(c, store.id, {
+                limit: parsedFilters.data.limit, page: parsedFilters.data.page, paginated: true,
+                discovery: parsedFilters.data,
+            });
+            if (productError) return { status: 500, body: dbFailureBody() };
 
             return {
                 body: success({
@@ -1219,8 +1211,9 @@ export function registerStorefrontPublicRoutes(
                         description: collectionRow.description || null,
                         image_url: collectionRow.image_url || null,
                     },
-                    products,
+                    products: products.map(product => toPublicProduct(product)),
                     total,
+                    discovery,
                 }),
                 tags: storefrontCacheTags(store.id, handle, 'storefront:collections', `storefront:collection:${identifier}`),
             };

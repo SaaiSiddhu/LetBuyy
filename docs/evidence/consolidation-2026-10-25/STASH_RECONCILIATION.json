@@ -1,0 +1,748 @@
+{
+  "scope": "ISOLATED_CANDIDATE_ONLY_NOT_PRIMARY_OR_DEVELOP",
+  "tracked_paths": [
+    {
+      "path": "apps/commerce/web/__tests__/customer-session-runtime-smoke.fixture.mjs",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "apps/frozen/app-store/next.config.ts",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "apps/frozen/app-store/src/app/(auth)/my-apps/page.tsx",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "apps/frozen/app-store/src/app/(store)/apps/[slug]/page.tsx",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "apps/frozen/app-store/src/app/api/apps/[id]/install/route.ts",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "apps/frozen/app-store/src/components/AppInstallConsentPanel.tsx",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "apps/frozen/app-store/src/components/ExtensionConfigPanel.tsx",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "apps/frozen/app-store/src/components/InstalledAppsGrid.tsx",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "apps/frozen/app-store/src/lib/api/client.ts",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "apps/frozen/app-store/src/lib/app-service.ts",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "apps/frozen/app-store/src/lib/site-url.ts",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "apps/frozen/theme-store/src/app/dashboard/installations/page.tsx",
+      "status": "CONFLICT_REQUIRES_REVIEW",
+      "conflict_regions": 1,
+      "resolution": "CANDIDATE_ONLY_MANUAL_RECONCILIATION"
+    },
+    {
+      "path": "apps/frozen/theme-store/src/app/globals.css",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "apps/frozen/theme-store/src/app/header.css",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "apps/frozen/theme-store/src/lib/api/client.ts",
+      "status": "CONFLICT_REQUIRES_REVIEW",
+      "conflict_regions": 4,
+      "resolution": "SUPERSEDED_BY_CURRENT_IMPLEMENTATION",
+      "reason": "Current authenticated fetch signs each request and pins authority/base path, exceeding older getHeaders fix."
+    },
+    {
+      "path": "apps/frozen/theme-store/src/lib/public-urls.ts",
+      "status": "CONFLICT_REQUIRES_REVIEW",
+      "conflict_regions": 2,
+      "resolution": "CANDIDATE_ONLY_MANUAL_RECONCILIATION"
+    },
+    {
+      "path": "apps/merchant/mobile/android/app/src/main/AndroidManifest.xml",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "apps/merchant/mobile/lib/app/app.dart",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "apps/merchant/mobile/lib/config/app_config.dart",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "apps/merchant/mobile/lib/main.dart",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "apps/merchant/mobile/lib/screens/analytics/analytics_screen.dart",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "apps/merchant/mobile/lib/screens/auth/login_screen.dart",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "apps/merchant/mobile/lib/screens/content/media_library_screen.dart",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "apps/merchant/mobile/lib/screens/customers/customers_screen.dart",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "apps/merchant/mobile/lib/screens/dashboard/home_screen.dart",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "apps/merchant/mobile/lib/screens/discounts/coupon_form_screen.dart",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "apps/merchant/mobile/lib/screens/main/store_main_screen.dart",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "apps/merchant/mobile/lib/screens/money/money_screen.dart",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "apps/merchant/mobile/lib/screens/orders/orders_screen.dart",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "apps/merchant/mobile/lib/screens/premium/upgrade_screen.dart",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "apps/merchant/mobile/lib/screens/preview/live_preview_screen.dart",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "apps/merchant/mobile/lib/screens/products/product_form_screen.dart",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "apps/merchant/mobile/lib/screens/products/products_screen.dart",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "apps/merchant/mobile/lib/screens/settings/help_screen.dart",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "apps/merchant/mobile/lib/screens/settings/notifications_screen.dart",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "apps/merchant/mobile/lib/screens/settings/store_details_screen.dart",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "apps/merchant/mobile/lib/services/cms_service.dart",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "apps/merchant/mobile/lib/services/coupon_service.dart",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "apps/merchant/mobile/lib/services/inventory_service.dart",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "apps/merchant/mobile/lib/services/media_service.dart",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "apps/merchant/mobile/lib/services/product_service.dart",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "apps/merchant/mobile/lib/services/push_service.dart",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "apps/merchant/mobile/lib/services/store_auth_service.dart",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "apps/merchant/mobile/lib/theme/store_theme.dart",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "apps/merchant/mobile/lib/widgets/dashboard/animated_revenue_chart.dart",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "apps/merchant/mobile/lib/widgets/dashboard/hero_store_card.dart",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "apps/merchant/mobile/lib/widgets/dashboard/stats_row.dart",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "apps/merchant/mobile/lib/widgets/editor/header_editor_sheet.dart",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "apps/merchant/mobile/lib/widgets/shared/barcode_scanner_sheet.dart",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "apps/merchant/mobile/lib/widgets/shared/image_picker_widget.dart",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "apps/merchant/mobile/pubspec.yaml",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "apps/merchant/mobile/test/mobile_services_test.dart",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "apps/platform/identity/src/app/onboarding/page.tsx",
+      "status": "CLEAN_THREE_WAY_RECONCILIATION",
+      "conflict_regions": 0,
+      "resolution": "CANDIDATE_ONLY_THREE_WAY"
+    },
+    {
+      "path": "config/security/next-security-headers.ts",
+      "status": "CLEAN_THREE_WAY_RECONCILIATION",
+      "conflict_regions": 0,
+      "resolution": "CANDIDATE_ONLY_THREE_WAY"
+    },
+    {
+      "path": "docs/runbooks/app-marketplace-catalog.md",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "packages/checkout-core/src/index.ts",
+      "status": "CLEAN_THREE_WAY_RECONCILIATION",
+      "conflict_regions": 0,
+      "resolution": "CANDIDATE_ONLY_THREE_WAY"
+    },
+    {
+      "path": "packages/dart/api_client/lib/src/api_client.dart",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "packages/dart/models/lib/src/merchant_app/store_model.dart",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "packages/event-core/src/index.ts",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "packages/event-core/test/event-core.test.ts",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "packages/infrastructure/pooled-sql-adapter/index.ts",
+      "status": "CONFLICT_REQUIRES_REVIEW",
+      "conflict_regions": 3,
+      "resolution": "SUPERSEDED_BY_CURRENT_IMPLEMENTATION",
+      "reason": "Newer invocation-scoped lifecycle replaces per-call uncached clients and preserves prepared Hyperdrive handling."
+    },
+    {
+      "path": "packages/shared-types/src/app-platform.ts",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "packages/typescript/api-client/src/index.ts",
+      "status": "CLEAN_THREE_WAY_RECONCILIATION",
+      "conflict_regions": 0,
+      "resolution": "CANDIDATE_ONLY_THREE_WAY"
+    },
+    {
+      "path": "pubspec.lock",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "scripts/governance/run-executable-suites.mjs",
+      "status": "CONFLICT_REQUIRES_REVIEW",
+      "conflict_regions": 1,
+      "resolution": "CANDIDATE_ONLY_MANUAL_RECONCILIATION"
+    },
+    {
+      "path": "scripts/governance/test-suite-catalog.mjs",
+      "status": "CONFLICT_REQUIRES_REVIEW",
+      "conflict_regions": 1,
+      "resolution": "CANDIDATE_ONLY_MANUAL_RECONCILIATION"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/analytics-comparison.test.ts",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/mobile-export.test.ts",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/owned-db-support.ts",
+      "status": "CLEAN_THREE_WAY_RECONCILIATION",
+      "conflict_regions": 0,
+      "resolution": "CANDIDATE_ONLY_THREE_WAY"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/storefront-customer-profile.postgres.test.ts",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/reviews.test.ts",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/tenant-isolation.test.ts",
+      "status": "CLEAN_THREE_WAY_RECONCILIATION",
+      "conflict_regions": 0,
+      "resolution": "CANDIDATE_ONLY_THREE_WAY"
+    },
+    {
+      "path": "services/api-gateway/src/lib/auth-user.ts",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "services/api-gateway/src/lib/tenant-context.ts",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "services/api-gateway/src/lib/tenant-transaction.ts",
+      "status": "CLEAN_THREE_WAY_RECONCILIATION",
+      "conflict_regions": 0,
+      "resolution": "SUPERSEDED_BY_CURRENT_INVOCATION_LIFECYCLE",
+      "reason": "Retain current publication transaction frames and invocation-owned cleanup; recovered lifetime tests assert cross-invocation isolation."
+    },
+    {
+      "path": "services/api-gateway/src/middleware/idempotency.ts",
+      "status": "CLEAN_THREE_WAY_RECONCILIATION",
+      "conflict_regions": 0,
+      "resolution": "CANDIDATE_ONLY_THREE_WAY"
+    },
+    {
+      "path": "services/api-gateway/src/routes/ai.ts",
+      "status": "CONFLICT_REQUIRES_REVIEW",
+      "conflict_regions": 4,
+      "resolution": "CURRENT_SANITIZATION_PLUS_RECOVERED_HISTORICAL_TIMESTAMP",
+      "reason": "Retain null future reset and sanitized failures; select/return actual last_reset_at. Owned screen reads:3/3 pass."
+    },
+    {
+      "path": "services/api-gateway/src/routes/analytics.ts",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "services/api-gateway/src/routes/app-store.ts",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "services/api-gateway/src/routes/app-store/app-lifecycle-routes.ts",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "services/api-gateway/src/routes/app-store/billing-oauth-routes.ts",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "services/api-gateway/src/routes/app-store/extension-routes.ts",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "services/api-gateway/src/routes/app-store/install-lifecycle-routes.ts",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "services/api-gateway/src/routes/app-store/shared.ts",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "services/api-gateway/src/routes/blog.ts",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "services/api-gateway/src/routes/coupons.ts",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "services/api-gateway/src/routes/customers.ts",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "services/api-gateway/src/routes/export.ts",
+      "status": "CONFLICT_REQUIRES_REVIEW",
+      "conflict_regions": 2,
+      "resolution": "SUPERSEDED_BY_CURRENT_IMPLEMENTATION",
+      "reason": "Current bounded multipart implementation includes part cap, null-write handling and cleanup beyond older fix."
+    },
+    {
+      "path": "services/api-gateway/src/routes/form-submissions.ts",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "services/api-gateway/src/routes/inventory.ts",
+      "status": "CLEAN_THREE_WAY_RECONCILIATION",
+      "conflict_regions": 0,
+      "resolution": "CANDIDATE_ONLY_THREE_WAY"
+    },
+    {
+      "path": "services/api-gateway/src/routes/media.ts",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "services/api-gateway/src/routes/notifications.ts",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "services/api-gateway/src/routes/pages.ts",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "services/api-gateway/src/routes/products.ts",
+      "status": "CONFLICT_REQUIRES_REVIEW",
+      "conflict_regions": 1,
+      "resolution": "CANDIDATE_ONLY_MANUAL_RECONCILIATION"
+    },
+    {
+      "path": "services/api-gateway/src/routes/reviews.ts",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "services/api-gateway/src/routes/shipping-tax.ts",
+      "status": "CONFLICT_REQUIRES_REVIEW",
+      "conflict_regions": 14,
+      "resolution": "CURRENT_TENANT_FENCES_PLUS_RECOVERED_PERCENTAGE_SERIALIZATION",
+      "reason": "Keep newer resource-scope checks and restore canonical merchant percentage serialization. Owned native action suite:13/13 pass."
+    },
+    {
+      "path": "services/api-gateway/src/routes/upload.ts",
+      "status": "CLEAN_THREE_WAY_RECONCILIATION",
+      "conflict_regions": 0,
+      "resolution": "CANDIDATE_ONLY_THREE_WAY"
+    },
+    {
+      "path": "services/queue-workers/src/platform-queue-consumer.ts",
+      "status": "CLEAN_THREE_WAY_RECONCILIATION",
+      "conflict_regions": 0,
+      "resolution": "CANDIDATE_ONLY_THREE_WAY"
+    },
+    {
+      "path": "services/queue-workers/src/push-dispatcher.ts",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "services/queue-workers/test/push-dispatcher.test.mjs",
+      "status": "UNCHANGED_SINCE_BASE_CAN_RESTORE",
+      "resolution": "CANDIDATE_ONLY_RESTORED"
+    },
+    {
+      "path": "tests/contracts/security-headers.test.ts",
+      "status": "CLEAN_THREE_WAY_RECONCILIATION",
+      "conflict_regions": 0,
+      "resolution": "CANDIDATE_ONLY_THREE_WAY"
+    },
+    {
+      "path": "tests/governance/gateway-db-lane.test.mjs",
+      "status": "CONFLICT_REQUIRES_REVIEW",
+      "conflict_regions": 2,
+      "resolution": "CANDIDATE_ONLY_MANUAL_RECONCILIATION"
+    }
+  ],
+  "stash_only_files": [
+    {
+      "stash_path": "database/supabase/migrations/365_merchant_daily_revenue_history.sql",
+      "candidate_path": "database/supabase/migrations/394_merchant_daily_revenue_history.sql"
+    },
+    {
+      "stash_path": "database/supabase/rollback/365_merchant_daily_revenue_history.rollback.sql",
+      "candidate_path": "database/supabase/rollback/394_merchant_daily_revenue_history.rollback.sql"
+    },
+    {
+      "stash_path": "tests/contracts/api-client-fresh-headers.test.ts",
+      "candidate_path": "tests/contracts/api-client-fresh-headers.test.ts"
+    },
+    {
+      "stash_path": "tests/owned-db/merchant-push-preferences.postgres.test.ts",
+      "candidate_path": "tests/owned-db/merchant-push-preferences.postgres.test.ts"
+    },
+    {
+      "stash_path": "docs/design/marketing-reference-2026-10-20/resource-category-desktop-before.png",
+      "candidate_path": "docs/design/marketing-reference-2026-10-20/resource-category-desktop-before.png"
+    },
+    {
+      "stash_path": "docs/design/marketing-reference-2026-10-20/demo-mobile-before.png",
+      "candidate_path": "docs/design/marketing-reference-2026-10-20/demo-mobile-before.png"
+    },
+    {
+      "stash_path": "docs/design/marketing-reference-2026-10-20/home-mobile-before.png",
+      "candidate_path": "docs/design/marketing-reference-2026-10-20/home-mobile-before.png"
+    },
+    {
+      "stash_path": "docs/design/marketing-reference-2026-10-20/contact-mobile-before.png",
+      "candidate_path": "docs/design/marketing-reference-2026-10-20/contact-mobile-before.png"
+    },
+    {
+      "stash_path": "docs/design/marketing-reference-2026-10-20/demo-desktop-before.png",
+      "candidate_path": "docs/design/marketing-reference-2026-10-20/demo-desktop-before.png"
+    },
+    {
+      "stash_path": "docs/design/marketing-reference-2026-10-20/resources-desktop-before.png",
+      "candidate_path": "docs/design/marketing-reference-2026-10-20/resources-desktop-before.png"
+    },
+    {
+      "stash_path": "docs/design/marketing-reference-2026-10-20/resource-article-desktop-before.png",
+      "candidate_path": "docs/design/marketing-reference-2026-10-20/resource-article-desktop-before.png"
+    },
+    {
+      "stash_path": "docs/design/marketing-reference-2026-10-20/contact-desktop-before.png",
+      "candidate_path": "docs/design/marketing-reference-2026-10-20/contact-desktop-before.png"
+    },
+    {
+      "stash_path": "docs/design/marketing-reference-2026-10-20/sitemap-desktop-before.png",
+      "candidate_path": "docs/design/marketing-reference-2026-10-20/sitemap-desktop-before.png"
+    },
+    {
+      "stash_path": "docs/design/marketing-reference-2026-10-20/resource-search-desktop-before.png",
+      "candidate_path": "docs/design/marketing-reference-2026-10-20/resource-search-desktop-before.png"
+    },
+    {
+      "stash_path": "docs/design/marketing-reference-2026-10-20/proposed-palette.svg",
+      "candidate_path": "docs/design/marketing-reference-2026-10-20/proposed-palette.svg"
+    },
+    {
+      "stash_path": "docs/design/marketing-reference-2026-10-20/releases-desktop-before.png",
+      "candidate_path": "docs/design/marketing-reference-2026-10-20/releases-desktop-before.png"
+    },
+    {
+      "stash_path": "docs/design/marketing-reference-2026-10-20/pricing-desktop-before.png",
+      "candidate_path": "docs/design/marketing-reference-2026-10-20/pricing-desktop-before.png"
+    },
+    {
+      "stash_path": "docs/design/marketing-reference-2026-10-20/manifest.json",
+      "candidate_path": "docs/design/marketing-reference-2026-10-20/manifest.json"
+    },
+    {
+      "stash_path": "docs/design/marketing-reference-2026-10-20/legal-desktop-before.png",
+      "candidate_path": "docs/design/marketing-reference-2026-10-20/legal-desktop-before.png"
+    },
+    {
+      "stash_path": "docs/design/marketing-reference-2026-10-20/legal-privacy-desktop-before.png",
+      "candidate_path": "docs/design/marketing-reference-2026-10-20/legal-privacy-desktop-before.png"
+    },
+    {
+      "stash_path": "docs/design/marketing-reference-2026-10-20/create-desktop-before.png",
+      "candidate_path": "docs/design/marketing-reference-2026-10-20/create-desktop-before.png"
+    },
+    {
+      "stash_path": "docs/design/marketing-reference-2026-10-20/resources-mobile-before.png",
+      "candidate_path": "docs/design/marketing-reference-2026-10-20/resources-mobile-before.png"
+    },
+    {
+      "stash_path": "docs/design/marketing-reference-2026-10-20/marketing-before-redesign.tar.gz",
+      "candidate_path": "docs/design/marketing-reference-2026-10-20/marketing-before-redesign.tar.gz"
+    },
+    {
+      "stash_path": "docs/design/marketing-reference-2026-10-20/analysis-and-direction.json",
+      "candidate_path": "docs/design/marketing-reference-2026-10-20/analysis-and-direction.json"
+    },
+    {
+      "stash_path": "docs/design/marketing-reference-2026-10-20/home-desktop-before.png",
+      "candidate_path": "docs/design/marketing-reference-2026-10-20/home-desktop-before.png"
+    },
+    {
+      "stash_path": "docs/design/marketing-reference-2026-10-20/changelog-desktop-before.png",
+      "candidate_path": "docs/design/marketing-reference-2026-10-20/changelog-desktop-before.png"
+    },
+    {
+      "stash_path": "packages/shared-types/tests/app-store-uuid.test.mjs",
+      "candidate_path": "packages/shared-types/tests/app-store-uuid.test.mjs"
+    },
+    {
+      "stash_path": "packages/dart/api_client/test/merchant_export_test.dart",
+      "candidate_path": "packages/dart/api_client/test/merchant_export_test.dart"
+    },
+    {
+      "stash_path": "packages/dart/models/test/store_portable_template_test.dart",
+      "candidate_path": "packages/dart/models/test/store_portable_template_test.dart"
+    },
+    {
+      "stash_path": "apps/merchant/mobile/test_driver/local_screen_audit.dart",
+      "candidate_path": "apps/merchant/mobile/test_driver/local_screen_audit.dart"
+    },
+    {
+      "stash_path": "apps/merchant/mobile/integration_test/merchant_local_screen_audit_test.dart",
+      "candidate_path": "apps/merchant/mobile/integration_test/merchant_local_screen_audit_test.dart"
+    },
+    {
+      "stash_path": "apps/merchant/mobile/integration_test/merchant_native_flows_test.dart",
+      "candidate_path": "apps/merchant/mobile/integration_test/merchant_native_flows_test.dart"
+    },
+    {
+      "stash_path": "apps/merchant/mobile/integration_test/merchant_local_actions_test.dart",
+      "candidate_path": "apps/merchant/mobile/integration_test/merchant_local_actions_test.dart"
+    },
+    {
+      "stash_path": "apps/merchant/mobile/test/revenue_history_push_test.dart",
+      "candidate_path": "apps/merchant/mobile/test/revenue_history_push_test.dart"
+    },
+    {
+      "stash_path": "apps/merchant/mobile/test/live_preview_unavailable_test.dart",
+      "candidate_path": "apps/merchant/mobile/test/live_preview_unavailable_test.dart"
+    },
+    {
+      "stash_path": "apps/merchant/mobile/test/merchant_media_picker_test.dart",
+      "candidate_path": "apps/merchant/mobile/test/merchant_media_picker_test.dart"
+    },
+    {
+      "stash_path": "apps/merchant/mobile/test/help_screen_test.dart",
+      "candidate_path": "apps/merchant/mobile/test/help_screen_test.dart"
+    },
+    {
+      "stash_path": "apps/merchant/mobile/android/app/src/main/res/drawable/ic_merchant_notification.xml",
+      "candidate_path": "apps/merchant/mobile/android/app/src/main/res/drawable/ic_merchant_notification.xml"
+    },
+    {
+      "stash_path": "apps/merchant/mobile/lib/services/native_push_service.dart",
+      "candidate_path": "apps/merchant/mobile/lib/services/native_push_service.dart"
+    },
+    {
+      "stash_path": "apps/merchant/mobile/lib/widgets/shared/merchant_export_share.dart",
+      "candidate_path": "apps/merchant/mobile/lib/widgets/shared/merchant_export_share.dart"
+    },
+    {
+      "stash_path": "apps/merchant/mobile/lib/widgets/shared/merchant_media_picker.dart",
+      "candidate_path": "apps/merchant/mobile/lib/widgets/shared/merchant_media_picker.dart"
+    },
+    {
+      "stash_path": "apps/merchant/mobile/lib/widgets/shared/merchant_search_sheet.dart",
+      "candidate_path": "apps/merchant/mobile/lib/widgets/shared/merchant_search_sheet.dart"
+    },
+    {
+      "stash_path": "services/api-gateway/src/__tests__/request-scoped-sql.test.ts",
+      "candidate_path": "services/api-gateway/src/__tests__/request-scoped-sql.test.ts"
+    },
+    {
+      "stash_path": "services/api-gateway/src/__tests__/export-storage.test.ts",
+      "candidate_path": "services/api-gateway/src/__tests__/export-storage.test.ts"
+    },
+    {
+      "stash_path": "services/api-gateway/src/__tests__/owned-db/marketplace-installation.postgres.test.ts",
+      "candidate_path": "services/api-gateway/src/__tests__/owned-db/marketplace-installation.postgres.test.ts"
+    },
+    {
+      "stash_path": "services/api-gateway/src/__tests__/owned-db/merchant-mobile-screen-reads.postgres.test.ts",
+      "candidate_path": "services/api-gateway/src/__tests__/owned-db/merchant-mobile-screen-reads.postgres.test.ts"
+    },
+    {
+      "stash_path": "services/api-gateway/src/__tests__/owned-db/merchant-mobile-actions.postgres.test.ts",
+      "candidate_path": "services/api-gateway/src/__tests__/owned-db/merchant-mobile-actions.postgres.test.ts"
+    },
+    {
+      "stash_path": "services/api-gateway/src/__tests__/owned-db/merchant-revenue-history.postgres.test.ts",
+      "candidate_path": "services/api-gateway/src/__tests__/owned-db/merchant-revenue-history.postgres.test.ts"
+    },
+    {
+      "stash_path": "services/api-gateway/src/execution/navigation-mutation.adapter.ts",
+      "candidate_path": "services/api-gateway/src/execution/navigation-mutation.adapter.ts"
+    },
+    {
+      "stash_path": "services/api-gateway/src/execution/page-mutation.adapter.ts",
+      "candidate_path": "services/api-gateway/src/execution/page-mutation.adapter.ts"
+    }
+  ],
+  "marketing_behavior": "Owner-rejected redesign remains reverted; only reference artifacts recovered.",
+  "migration": "Candidate-only paired revenue migration renumbered 365 -> 394; primary remains through 393."
+}

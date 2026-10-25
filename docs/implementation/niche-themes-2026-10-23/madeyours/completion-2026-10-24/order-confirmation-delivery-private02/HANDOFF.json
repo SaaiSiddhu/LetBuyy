@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "sealedAt": "2026-10-25T00:18:24.413919+00:00",
+  "classification": "SEALED_EXACT4_PRIVATE_ORDER_CONFIRMATION_TRANSPORT_SOURCE_ONLY",
+  "allocation": {
+    "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/order-confirmation-delivery-private02/ALLOCATION_AT_SEAL.json",
+    "sha256": "a751fce4396a65cd02794569af49cd9c1b7335dec3d279795f332d1a48773f57"
+  },
+  "firstSealEndsThisAllocation": true,
+  "privateRoot": "/private/tmp/letbuyy-order-confirmation-delivery-prep-20261025-02",
+  "files": [
+    {
+      "path": "services/api-gateway/src/lib/order-confirmation-email.ts",
+      "beforeSha256": "59bfd999c331463c66ec2feaaa2b9c47b989b79558cc8f9e6c4aaec7be5e744f",
+      "why": "Canonical queue producer/direct fallback; preserve stable job identity and retry after uncertain send.",
+      "afterSha256": "41d3766da122d0cf3c7d80a1e6ee4c66f82ecb5548a653540fbad15eac0c0fe2",
+      "privatePath": "/private/tmp/letbuyy-order-confirmation-delivery-prep-20261025-02/services/api-gateway/src/lib/order-confirmation-email.ts"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/order-confirmation-email.test.ts",
+      "beforeSha256": "77d17d104739c2736cabaab9c7f039f41f7569d3eebf9e1621d4398fe3b39e32",
+      "why": "Actual producer/fallback failure, retry, lost-ack and immutable key coverage.",
+      "afterSha256": "7569c7cc0df001c14c7922c5b39f72e23437a37f6dfb4b1ee448edcafb9197ea",
+      "privatePath": "/private/tmp/letbuyy-order-confirmation-delivery-prep-20261025-02/services/api-gateway/src/__tests__/order-confirmation-email.test.ts"
+    },
+    {
+      "path": "services/queue-workers/src/index.ts",
+      "beforeSha256": "734a6fe215264dba05a401455970a9fbaac208727ce2a8897beb37b3f6bed19a",
+      "why": "Existing consumer dispatch path; demonstrate duplicate-delivery/ack-loss handling using existing provider idempotency support.",
+      "afterSha256": "5424472221652f95b3dc73071c3cc09cc0d3c48077ee8e263c89e19321473362",
+      "privatePath": "/private/tmp/letbuyy-order-confirmation-delivery-prep-20261025-02/services/queue-workers/src/index.ts"
+    },
+    {
+      "path": "services/queue-workers/test/order-confirmation-delivery.test.mjs",
+      "beforeSha256": null,
+      "why": "New focused same-owner test for existing consumer; no external sends or runtime start under preparation.",
+      "afterSha256": "c8cd0438b3dc5429003f36ed6fccca7ac03a4fa4e4d6216545916a7170b170e0",
+      "privatePath": "/private/tmp/letbuyy-order-confirmation-delivery-prep-20261025-02/services/queue-workers/test/order-confirmation-delivery.test.mjs"
+    }
+  ],
+  "patch": {
+    "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/order-confirmation-delivery-private02/proposal.patch",
+    "sha256": "5c0850b1ad86364d761d3502ceca620aaab85d8e27b3a7b5316dfad2d93a6b41"
+  },
+  "change": "Existing producer direct fallback and existing confirmation consumer forward the same site+order provider idempotency key already present on the signed queue job. Unsuccessful direct adapter returns now throw. Confirmation projection/payload/key bindings fail closed; missing confirmation provider configuration is retryable. All other jobs and tenant envelope/queue entry ack/retry logic are unchanged.",
+  "pureTests": {
+    "passed": 31,
+    "failed": 0,
+    "skipped": 0,
+    "evidence": {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/order-confirmation-delivery-private02/pure-transport-attempt01.tap",
+      "sha256": "154608475e0846f21d0f2e2a414e74934210ee7f54e7a99bb99d339f8c7ae025"
+    },
+    "method": "Actual private producer/read-only canonical adapter with intercepted synthetic SDK; exact private worker named functions evaluated in denied-runtime VM, no Worker/queue entry invocation. Positive/negative signed tenant envelope checks execute original functions.",
+    "scope": "Fake transport attempt/acceptance maps test forwarded keys/unchanged bodies and retry contracts only; not actual provider dedupe/inbox delivery or durable scheduler acceptance."
+  },
+  "types": {
+    "apiBaseline": 0,
+    "apiProposal": 0,
+    "workerBaseline": 0,
+    "workerProposal": 0,
+    "introduced": 0,
+    "evidence": {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/order-confirmation-delivery-private02/SEMANTIC_RESULTS.json",
+      "sha256": "80b830c456b815b045f1992a40caa9339ed1c28721a7d9da03315acaa647c541"
+    }
+  },
+  "readOnlyTestContext": {
+    "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/order-confirmation-delivery-private02/READ_ONLY_TEST_CONTEXT.json",
+    "sha256": "d623ccb6a939a8529acaf5d6e331215a7bcaba90467259a140bbf6f2f2668842"
+  },
+  "preservation": {
+    "mainBasesExact": true,
+    "currentCandidateUnchanged": true,
+    "captureProof01SealExact": true,
+    "otherLifecycleProducerBytesUnchanged": true,
+    "workerOutsideDispatchBytesUnchangedVerifiedByPureTest": true,
+    "credentialAccess": false,
+    "providerEmailDatabaseDockerNativeBrowserBuildActions": 0
+  },
+  "limits": [
+    "No native or real external email/provider delivery execution. Existing adapter support is verified from exact local code and intercepted SDK calls; no universal provider delivery guarantee.",
+    "Producer/queue consumer forward a stable key; underlying provider retention/conflict behavior and accepted external outcome remain unproven.",
+    "Outer paid-event helper catches notification failures; autonomous durable scheduling/reconciliation is unchanged and not newly certified by repeated function invocation.",
+    "Guarded worker function tests prove normalization/dispatch contracts, not full queue entry/database persistence or runtime-role tenancy."
+  ],
+  "retainedAttempts": [
+    "All31 pure contracts passed first execution. Semantic notification baseline/proposal both0; the combined witness graph initially refused2 missing readonly registered-test helpers, preserved separately then corrected in the distinct native preparation."
+  ],
+  "next": "Themes independently reviews this exact private4path patch. No Main/native/build/runtime permission is inferred; any further implementation or integration needs a new exact scope. Actual intended theme purchases remain independent."
+}

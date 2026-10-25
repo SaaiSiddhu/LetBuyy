@@ -1,0 +1,11 @@
+{
+  "command": [
+    "node",
+    "--test",
+    "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/source-contract.test.mjs"
+  ],
+  "exitCode": 0,
+  "durationSeconds": 0.184,
+  "nativeExecuted": false,
+  "nativeSuiteSha256": "46521c9926ed5f34d6b63071e6ef0e38e199075d842e8b9e85b36c54e58820b0"
+}

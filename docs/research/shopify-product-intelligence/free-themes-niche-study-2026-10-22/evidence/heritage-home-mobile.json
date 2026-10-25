@@ -1,0 +1,615 @@
+{
+  "body": {
+    "background": "rgb(32, 34, 25)",
+    "color": "rgb(246, 237, 221)",
+    "font": "\"Instrument Sans\", sans-serif",
+    "fontSize": "14px"
+  },
+  "controls": [
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Menu",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Cart",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Slate",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Goldmine",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Black",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Sand",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Timber",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Sandstone",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Gold",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Wilderness",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Storm",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Pacific",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Black-White",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Blue-White",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Spruce",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Oceano",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Shop",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Support",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Our story",
+      "tag": "SUMMARY",
+      "type": ""
+    }
+  ],
+  "headings": [
+    {
+      "font": "\"Instrument Sans\", sans-serif",
+      "height": 1,
+      "line": "52.8px",
+      "size": "48px",
+      "tag": "H1",
+      "text": "Heritage",
+      "weight": "400",
+      "width": 1,
+      "x": -1,
+      "y": -1
+    },
+    {
+      "font": "\"Instrument Sans\", sans-serif",
+      "height": 35.1953125,
+      "line": "35.2px",
+      "size": "32px",
+      "tag": "H2",
+      "text": "The Wool Blanket",
+      "weight": "400",
+      "width": 259.109375,
+      "x": 16,
+      "y": 1969.671875
+    },
+    {
+      "font": "\"Instrument Sans\", sans-serif",
+      "height": 35.1953125,
+      "line": "35.2px",
+      "size": "32px",
+      "tag": "H3",
+      "text": "Our bestsellers",
+      "weight": "400",
+      "width": 220.6796875,
+      "x": 16,
+      "y": 2354.0546875
+    }
+  ],
+  "links": [
+    {
+      "text": "Skip to content",
+      "url": "https://theme-heritage-demo.myshopify.com/#MainContent"
+    },
+    {
+      "text": "",
+      "url": "https://theme-heritage-demo.myshopify.com/collections/shop-mens"
+    },
+    {
+      "text": "",
+      "url": "https://theme-heritage-demo.myshopify.com/collections/mens-apparel"
+    },
+    {
+      "text": "",
+      "url": "https://theme-heritage-demo.myshopify.com/collections/mens-outerwear"
+    },
+    {
+      "text": "",
+      "url": "https://theme-heritage-demo.myshopify.com/collections/mens-shirts-woven"
+    },
+    {
+      "text": "",
+      "url": "https://theme-heritage-demo.myshopify.com/collections/mens-tees-jersey"
+    },
+    {
+      "text": "",
+      "url": "https://theme-heritage-demo.myshopify.com/collections/headwear"
+    },
+    {
+      "text": "",
+      "url": "https://theme-heritage-demo.myshopify.com/collections/shop-womens"
+    },
+    {
+      "text": "",
+      "url": "https://theme-heritage-demo.myshopify.com/collections/womens-apparel"
+    },
+    {
+      "text": "",
+      "url": "https://theme-heritage-demo.myshopify.com/collections/womens-outerwear"
+    },
+    {
+      "text": "",
+      "url": "https://theme-heritage-demo.myshopify.com/collections/womens-shirts-woven"
+    },
+    {
+      "text": "",
+      "url": "https://theme-heritage-demo.myshopify.com/collections/womens-tees-jersey"
+    },
+    {
+      "text": "",
+      "url": "https://theme-heritage-demo.myshopify.com/collections/headwear"
+    },
+    {
+      "text": "",
+      "url": "https://theme-heritage-demo.myshopify.com/collections/accessories"
+    },
+    {
+      "text": "",
+      "url": "https://theme-heritage-demo.myshopify.com/"
+    },
+    {
+      "text": "Shop Men",
+      "url": "https://theme-heritage-demo.myshopify.com/collections/shop-mens"
+    },
+    {
+      "text": "Shop Women",
+      "url": "https://theme-heritage-demo.myshopify.com/collections/shop-womens"
+    },
+    {
+      "text": "Latest",
+      "url": "https://theme-heritage-demo.myshopify.com/collections/latest"
+    },
+    {
+      "text": "Shop now",
+      "url": "https://theme-heritage-demo.myshopify.com/products/mof-melton-wool-blanket"
+    },
+    {
+      "text": "Explore the collection",
+      "url": "https://theme-heritage-demo.myshopify.com/collections/blankets"
+    },
+    {
+      "text": "The Berlino Wool",
+      "url": "https://theme-heritage-demo.myshopify.com/products/mens-berlino-wool?variant=43667254870070"
+    },
+    {
+      "text": "",
+      "url": "https://theme-heritage-demo.myshopify.com/products/mof-twill-overshirt?variant=43667207487542"
+    },
+    {
+      "text": "",
+      "url": "https://theme-heritage-demo.myshopify.com/products/the-britannia-coat?variant=43667224789046"
+    },
+    {
+      "text": "",
+      "url": "https://theme-heritage-demo.myshopify.com/products/the-buffalo-plaid?variant=43667269550134"
+    },
+    {
+      "text": "",
+      "url": "https://theme-heritage-demo.myshopify.com/products/mof-recycled-cashmere-toque?variant=43667203063862"
+    },
+    {
+      "text": "",
+      "url": "https://theme-heritage-demo.myshopify.com/products/mof-classic-wool-camp-socks?variant=43667203260470"
+    },
+    {
+      "text": "Shop now",
+      "url": "https://theme-heritage-demo.myshopify.com/products/recyled-cashmere"
+    },
+    {
+      "text": "Explore the collection",
+      "url": "https://theme-heritage-demo.myshopify.com/collections/headwear"
+    },
+    {
+      "text": "Bestsellers",
+      "url": "https://theme-heritage-demo.myshopify.com/collections/our-bestsellers"
+    },
+    {
+      "text": "Men",
+      "url": "https://theme-heritage-demo.myshopify.com/collections/shop-mens"
+    },
+    {
+      "text": "Women",
+      "url": "https://theme-heritage-demo.myshopify.com/collections/shop-womens"
+    },
+    {
+      "text": "Accessories",
+      "url": "https://theme-heritage-demo.myshopify.com/collections/accessories"
+    },
+    {
+      "text": "FAQ",
+      "url": "https://theme-heritage-demo.myshopify.com/pages/faq"
+    },
+    {
+      "text": "Contact",
+      "url": "https://theme-heritage-demo.myshopify.com/pages/contact"
+    },
+    {
+      "text": "Fit guide",
+      "url": "https://theme-heritage-demo.myshopify.com/pages/fit-guide"
+    },
+    {
+      "text": "Garment care",
+      "url": "https://theme-heritage-demo.myshopify.com/pages/garment-care"
+    },
+    {
+      "text": "About us",
+      "url": "https://theme-heritage-demo.myshopify.com/pages/about-us"
+    },
+    {
+      "text": "Field notes",
+      "url": "https://theme-heritage-demo.myshopify.com/blogs/news"
+    },
+    {
+      "text": "Heritage",
+      "url": "https://theme-heritage-demo.myshopify.com/"
+    }
+  ],
+  "sections": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--20430036729910__section_jW4eNe",
+      "rect": {
+        "height": 262.375,
+        "width": 390,
+        "x": 0,
+        "y": 60
+      },
+      "tag": "DIV",
+      "text": "High-quality textiles, transformed into heirloom-quality garments."
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--20430036729910__collection_list_Ge6pfb",
+      "rect": {
+        "height": 982.90625,
+        "width": 390,
+        "x": 0,
+        "y": 322.375
+      },
+      "tag": "DIV",
+      "text": "Shop Men\n\nShop Men\n\nShop Women\n\nShop Women\n\nLatest\n\nLatest"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--20430036729910__media_with_content_CwFqjm",
+      "rect": {
+        "height": 978.7734375,
+        "width": 390,
+        "x": 0,
+        "y": 1305.28125
+      },
+      "tag": "DIV",
+      "text": "Accessories\n\nThe Wool Blanket\n\nProduced in Canada using post-consumer recycled wool, we've selected a thick, sturdy weave that offers impressive warmth and water resistance. Genero"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--20430036729910__product_list_4HyKBg",
+      "rect": {
+        "height": 596.6875,
+        "width": 390,
+        "x": 0,
+        "y": 2284.0546875
+      },
+      "tag": "DIV",
+      "text": "Our bestsellers\nThe Berlino Wool\nSale\nThe Berlino Wool\nSale price \n$99.00 CAD \nRegular price \n$198.00 CAD"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--20430036729910__media_with_content_xUctDh",
+      "rect": {
+        "height": 956.375,
+        "width": 390,
+        "x": 0,
+        "y": 2880.7421875
+      },
+      "tag": "DIV",
+      "text": "Accessories\n\nThe Cozy Beanie\n\nDependable and cozy, this is an essential item for every season. Designed for year-round comfort and breathability, this popular piece keeps you warm "
+    }
+  ],
+  "title": "Heritage",
+  "url": "https://theme-heritage-demo.myshopify.com/",
+  "viewport": {
+    "dpr": 1,
+    "height": 844,
+    "width": 390
+  },
+  "formGroups": [
+    "",
+    "",
+    "",
+    "",
+    ""
+  ],
+  "grids": [
+    {
+      "className": "editorial-collection__grid",
+      "columns": "repeat(12, 1fr)",
+      "display": "flex",
+      "gap": "32px",
+      "height": 879.3125,
+      "tag": "DIV",
+      "width": 358
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "8px",
+      "height": 397.4921875,
+      "tag": "DIV",
+      "width": 234
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "8px",
+      "height": 397.4921875,
+      "tag": "DIV",
+      "width": 234
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "8px",
+      "height": 397.4921875,
+      "tag": "DIV",
+      "width": 234
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "8px",
+      "height": 397.4921875,
+      "tag": "DIV",
+      "width": 234
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "8px",
+      "height": 397.4921875,
+      "tag": "DIV",
+      "width": 234
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "8px",
+      "height": 397.4921875,
+      "tag": "DIV",
+      "width": 234
+    }
+  ],
+  "images": [
+    {
+      "alt": "Shop Men",
+      "complete": true,
+      "naturalWidth": 235,
+      "rect": {
+        "height": 257.7421875,
+        "width": 236.2734375
+      }
+    },
+    {
+      "alt": "Shop Women",
+      "complete": true,
+      "naturalWidth": 297,
+      "rect": {
+        "height": 259.5390625,
+        "width": 297.1328125
+      }
+    },
+    {
+      "alt": "Latest",
+      "complete": true,
+      "naturalWidth": 297,
+      "rect": {
+        "height": 185.25,
+        "width": 297.1328125
+      }
+    },
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 1280,
+      "rect": {
+        "height": 590.796875,
+        "width": 390
+      }
+    },
+    {
+      "alt": "#color_slate",
+      "complete": true,
+      "naturalWidth": 389,
+      "rect": {
+        "height": 292.5,
+        "width": 234
+      }
+    },
+    {
+      "alt": "#color_slate",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 292.5,
+        "width": 234
+      }
+    },
+    {
+      "alt": "#color_slate",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 292.5,
+        "width": 234
+      }
+    },
+    {
+      "alt": "#color_slate",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 292.5,
+        "width": 234
+      }
+    },
+    {
+      "alt": "#color_slate",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 292.5,
+        "width": 234
+      }
+    },
+    {
+      "alt": "#color_black",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 0,
+        "width": 0
+      }
+    },
+    {
+      "alt": "#color_goldmine",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 0,
+        "width": 0
+      }
+    },
+    {
+      "alt": "Sand",
+      "complete": true,
+      "naturalWidth": 389,
+      "rect": {
+        "height": 292.5,
+        "width": 234
+      }
+    }
+  ],
+  "bodyText": "Skip to content\nHeritage\nTotal items in cart: 0\n\nHigh-quality textiles, transformed into heirloom-quality garments.\n\nShop Men\n\nShop Men\n\nShop Women\n\nShop Women\n\nLatest\n\nLatest\n\nAccessories\n\nThe Wool Blanket\n\nProduced in Canada using post-consumer recycled wool, we've selected a thick, sturdy weave that offers impressive warmth and water resistance. Generously sized for outdoor gatherings, camping excursions, or cozy nights under the open sky, the blanket effortlessly repels dirt and is machine washable when needed.\n\nShop now\nExplore the collection\nOur bestsellers\nThe Berlino Wool\nSale\nThe Berlino Wool\nSale price \n$99.00 CAD \nRegular price \n$198.00 CAD\n\nAccessories\n\nThe Cozy Beanie\n\nDependable and cozy, this is an essential item for every season. Designed for year-round comfort and breathability, this popular piece keeps you warm in chilly conditions and regulated in those shoulder-season adventures. Versatility, performance and style in one practical package.\n\nShop now\nExplore the collection\n\nAbout us\n\nOur passion is sustainable, natural textiles. We create garments that can be enjoyed for generations to come.\n\nShop\nBestsellers\nMen\nWomen\nAccessories\nSupport\nFAQ\nContact\nFit guide\nGarment care\nOur story\nAbout us\nField notes\n© 2026 Heritage, Powered by Shopify"
+}

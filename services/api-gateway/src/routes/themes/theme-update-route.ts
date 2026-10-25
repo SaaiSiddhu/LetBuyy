@@ -21,10 +21,10 @@
 //   REJECTED with UpdateVersionRejectedError → 422 UNPROCESSABLE_ENTITY.
 //   Downgrades are REJECTED with UpdateDowngradeError → 422.
 //
-// TENANCY (identical to media-library.ts):
-//   1. resolveCustomUser — rejects customer HS256 tokens (no users_custom row → 403)
-//   2. verifySiteOwnership — rejects cross-tenant access (403)
-//   3. All DB reads are scoped by the verified storeId, never a caller-supplied value.
+// TENANCY:
+//   1. The mounted auth middleware verifies the merchant session.
+//   2. resolveOwnedStoreScope verifies its store binding and current ownership.
+//   3. The adapter uses that resolved scope in canonical app_tenant transactions.
 //
 // READ-ONLY preview. POST writes exclusively via publish_theme_release RPC (via
 // ThemeExecutionAdapter — specifically the publishVersionUpdate adapter method). No direct money table writes.
@@ -33,9 +33,8 @@
 import { Hono } from 'hono';
 import { z } from 'zod';
 import type { Env } from '../../index';
-import { resolveCustomUser, verifySiteOwnership } from '../../lib/auth-user';
+import { resolveOwnedStoreScope } from '../../lib/tenant-context';
 import { sha256Hex } from '../../lib/crypto';
-import { getSupabaseAdmin } from '../../lib/supabase';
 import { ThemeExecutionAdapter } from '../../execution/theme-execution.adapter';
 import { ConflictError, NotFoundError, ValidationError } from '../../lib/errors';
 import {
@@ -56,7 +55,7 @@ const UpdatePreviewQuerySchema = z.object({
 const UpdatePostBodySchema = z.object({
     store_id: z.string().uuid(),
     target_package_version_id: z.string().uuid(),
-    /** SHA-256 hex digest of JSON.stringify(diff) returned by GET /update-preview. */
+    /** Opaque confirmation binds the reviewed diff, current release and selected target. */
     confirm_diff_hash: z
         .string()
         .length(64)
@@ -65,6 +64,9 @@ const UpdatePostBodySchema = z.object({
     make_store_live: z.boolean().default(false),
     publish_message: z.string().trim().max(500).optional(),
 });
+
+export const themeUpdateConfirmationHash = (diff: unknown, currentReleaseId: string, targetPackageVersionId: string) =>
+    sha256Hex(JSON.stringify({ diff, current_release_id: currentReleaseId, target_package_version_id: targetPackageVersionId }));
 
 // ── Error response helpers ─────────────────────────────────────────────────────
 
@@ -98,7 +100,6 @@ export function mountThemeUpdateRoutes(router: Hono<{ Bindings: Env }>): void {
     // Returns diff + diff_hash so the merchant can review the change before committing.
     // The caller must pass this exact diff_hash back to POST /update as confirm_diff_hash.
     router.get('/:slug/update-preview', async (c) => {
-        const auth = c.get('auth');
         const slug = c.req.param('slug');
 
         const parsed = UpdatePreviewQuerySchema.safeParse({
@@ -123,39 +124,18 @@ export function mountThemeUpdateRoutes(router: Hono<{ Bindings: Env }>): void {
         }
 
         const { store_id: storeId, target_package_version_id: targetPkgVersionId } = parsed.data;
-        const db = getSupabaseAdmin(c);
-
-        // TENANCY CHECK 1: Merchant gate.
-        // resolveCustomUser queries users_custom (merchant table).
-        // Customer HS256 tokens have no row → null → 403.
-        const customUser = await resolveCustomUser(db, auth.user);
-        if (!customUser) {
-            return c.json(
-                { error: { code: 'FORBIDDEN', message: 'User profile not found' } },
-                403,
-            );
-        }
-
-        // TENANCY CHECK 2: Site ownership — cross-tenant access rejected.
-        const ownsStore = await verifySiteOwnership(db, storeId, customUser.id, auth.user.storeId);
-        if (!ownsStore) {
-            return c.json(
-                { error: { code: 'FORBIDDEN', message: 'Not authorized' } },
-                403,
-            );
-        }
-
-        const adapter = new ThemeExecutionAdapter(db);
+        const scope = await resolveOwnedStoreScope(c,storeId);
+        const adapter = new ThemeExecutionAdapter(scope.db,scope.authUser.storeId,c.env);
 
         try {
             // Load current bundle (DB-scoped by storeId + themeSlug)
-            const { currentDocument } = await adapter.loadCurrentReleaseBundle(storeId, slug);
-            // Load target bundle (global catalog row; G4 gate inside parseLiquidThemePackageBundle)
-            const nextBundle = await adapter.loadTargetPackageVersionBundle(targetPkgVersionId);
+            const { currentDocument, currentReleaseId } = await adapter.loadCurrentReleaseBundle(scope, slug);
+            // Load target through the resolved tenant's actual catalog policies and G4 gate.
+            const nextBundle = await adapter.loadTargetPackageVersionBundle(targetPkgVersionId,scope,slug);
             // Compute diff — pure, no I/O, G4 + direction checks inside
             const diff = computeThemeUpdateDiff(currentDocument, nextBundle);
             // CAS token: the POST route verifies this hash against the applied diff
-            const diffHash = await sha256Hex(JSON.stringify(diff));
+            const diffHash = await themeUpdateConfirmationHash(diff, currentReleaseId, targetPkgVersionId);
 
             return c.json({
                 slug,
@@ -190,19 +170,17 @@ export function mountThemeUpdateRoutes(router: Hono<{ Bindings: Env }>): void {
     // Apply the safe update and publish a new release.
     //
     // Flow:
-    //   1. Auth guards (resolveCustomUser + verifySiteOwnership) — BEFORE any DB write.
+    //   1. Canonical resolveOwnedStoreScope — BEFORE any DB write.
     //   2. Load current release bundle → ThemeDocument.
     //   3. Load target package version bundle (G4 gate).
     //   4. planThemeSafeUpdate — pure merge (G4 + direction + downgrade inside).
-    //   5. CAS guard — confirm_diff_hash must match sha256(JSON.stringify(result.diff)).
+    //   5. CAS guard — confirmation binds this diff, current release and selected target.
     //   6. fromThemeDocumentV2 — convert merged ThemeDocument back to LiquidThemePackageBundle.
-    //   7. Publish — adapter handles idempotency pre-check → publishReleaseSnapshot → post-enrich.
+    //   7. Publish — adapter repeats guards/receipt under the site lock and calls the existing publisher atomically.
     //
-    // TOCTOU RESIDUAL: the CAS guard is TS-level only. Two concurrent POSTs with the
-    // same hash both pass step 5. Full closure requires a DB-level lock inside the
-    // publish_theme_release RPC (ARB-gated follow-up). This is a known accepted limitation.
+    // The adapter rechecks ownership, target availability, current release and retry
+    // receipt under the site lock, then calls the existing publisher in that transaction.
     router.post('/:slug/update', async (c) => {
-        const auth = c.get('auth');
         const slug = c.req.param('slug');
 
         let body: unknown;
@@ -241,47 +219,32 @@ export function mountThemeUpdateRoutes(router: Hono<{ Bindings: Env }>): void {
             publish_message: publishMessage,
         } = parsed.data;
 
-        const requestId =
-            c.res.headers.get('X-Request-ID') ||
-            c.req.header('X-Request-ID') ||
-            crypto.randomUUID();
-        const db = getSupabaseAdmin(c);
-
-        // TENANCY CHECK 1: Merchant gate — BEFORE any write.
-        const customUser = await resolveCustomUser(db, auth.user);
-        if (!customUser) {
-            return c.json(
-                { error: { code: 'FORBIDDEN', message: 'User profile not found' } },
-                403,
-            );
-        }
-
-        // TENANCY CHECK 2: Site ownership — cross-tenant access rejected BEFORE any DB write.
-        const ownsStore = await verifySiteOwnership(db, storeId, customUser.id, auth.user.storeId);
-        if (!ownsStore) {
-            return c.json(
-                { error: { code: 'FORBIDDEN', message: 'Not authorized' } },
-                403,
-            );
-        }
-
-        const adapter = new ThemeExecutionAdapter(db);
+        const scope = await resolveOwnedStoreScope(c,storeId);
+        const adapter = new ThemeExecutionAdapter(scope.db,scope.authUser.storeId,c.env);
 
         try {
-            // Step 1: Load current bundle (DB-scoped by storeId + themeSlug)
-            const { currentDocument, currentReleaseConfig } =
-                await adapter.loadCurrentReleaseBundle(storeId, slug);
-
-            // Step 2: Load target bundle (G4 gate inside)
-            const nextBundle = await adapter.loadTargetPackageVersionBundle(targetPkgVersionId);
+            const nextBundle = await adapter.loadTargetPackageVersionBundle(targetPkgVersionId,scope,slug);
+            const requestHash = await sha256Hex(JSON.stringify({storeId:scope.siteId,slug,targetPkgVersionId,confirmDiffHash,makeStoreLive,publishMessage:publishMessage||null}));
+            // Exact response-loss retry survives its own committed baseline change.
+            // Changed intent/key pairs conflict; current auth and availability were checked first.
+            const replay = await adapter.findVersionUpdateReplay(scope,slug,idempotencyKey,requestHash);
+            if (replay) return c.json({slug,target_package_version_id:targetPkgVersionId,release_id:replay.release_id,
+                release_version:replay.release_version,published_at:replay.published_at,idempotent:true,
+                diff:replay.diff,requires_confirmation:replay.requiresConfirmation});
+            const { currentDocument, currentReleaseConfig, currentReleaseId } = await adapter.loadCurrentReleaseBundle(scope, slug);
 
             // Step 3: Pure merge — G4 + direction + downgrade guards fire here
             const result = planThemeSafeUpdate({ currentDocument, nextBundle });
 
             // Step 4: CAS guard — the caller's hash must match this diff exactly.
-            // (TOCTOU residual: TS-level only; concurrent POSTs both pass — accepted limitation.)
-            const computedHash = await sha256Hex(JSON.stringify(result.diff));
+            const computedHash = await themeUpdateConfirmationHash(result.diff, currentReleaseId, targetPkgVersionId);
             if (computedHash !== confirmDiffHash) {
+                // A same-key publication may commit after the first receipt read,
+                // before this baseline read. Return that exact intent's receipt.
+                const concurrentReplay = await adapter.findVersionUpdateReplay(scope,slug,idempotencyKey,requestHash);
+                if (concurrentReplay) return c.json({slug,target_package_version_id:targetPkgVersionId,release_id:concurrentReplay.release_id,
+                    release_version:concurrentReplay.release_version,published_at:concurrentReplay.published_at,idempotent:true,
+                    diff:concurrentReplay.diff,requires_confirmation:concurrentReplay.requiresConfirmation});
                 throw new ConflictError(
                     'confirm_diff_hash does not match the current diff — ' +
                         're-fetch /update-preview and confirm the latest diff',
@@ -291,17 +254,21 @@ export function mountThemeUpdateRoutes(router: Hono<{ Bindings: Env }>): void {
             // Step 5: Convert merged ThemeDocument → LiquidThemePackageBundle for publishing
             const mergedBundle = fromThemeDocumentV2(result.updatedDoc);
 
-            // Step 6: Publish (idempotency pre-check → publishReleaseSnapshot → post-enrich)
+            // Step 6: Commit the selected version, existing publisher and exact receipt together.
             const release = await adapter.publishVersionUpdateRelease({
-                storeId,
+                scope,
                 themeSlug: slug,
+                targetPackageVersionId:targetPkgVersionId,
+                currentReleaseId,
+                requestHash,
+                confirmedDiffHash:confirmDiffHash,
+                diff:result.diff,
+                requiresConfirmation:result.requiresConfirmation,
                 mergedBundle,
                 currentReleaseConfig,
-                userId: customUser.id,
                 idempotencyKey,
                 publishMessage: publishMessage || null,
                 makeStoreLive,
-                requestId,
             });
 
             return c.json({
@@ -311,8 +278,8 @@ export function mountThemeUpdateRoutes(router: Hono<{ Bindings: Env }>): void {
                 release_version: release.release_version,
                 published_at: release.published_at,
                 idempotent: release.idempotent,
-                diff: result.diff,
-                requires_confirmation: result.requiresConfirmation,
+                diff: release.diff,
+                requires_confirmation: release.requiresConfirmation,
             });
         } catch (err) {
             if (err instanceof UpdateVersionRejectedError) {

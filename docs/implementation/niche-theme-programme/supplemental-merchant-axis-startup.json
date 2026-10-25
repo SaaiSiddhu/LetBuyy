@@ -1,0 +1,32 @@
+{
+  "recordedAt": "2026-10-23T19:32:57.698Z",
+  "status": "OWNED_SUPPLEMENTAL_PRODUCTION_MERCHANT_HTTP_READY_NORMAL_SESSION_AND_SAVE_PENDING",
+  "runId": "f6074d90e894",
+  "candidate": "/private/tmp/theme-editor-merchant-axis-20261024-01",
+  "origin": "http://admin.threadline-f6074d90e894.localhost:54183",
+  "port": 54183,
+  "parentPid": 58307,
+  "supervisorPid": 58471,
+  "healthStatus": 307,
+  "sourceCopy": {
+    "path": "/private/tmp/theme-editor-merchant-axis-20261024-01/supplemental-merchant-source-proof.json",
+    "sha256": "697fb57a0f1cd2e1434e30e50dfee45af26c0a6d2d94d0a53ec4ce8e5b35b178"
+  },
+  "sourceFiles": 17235,
+  "originalFixtureGuardVerified": true,
+  "originalAnnouncementSource": "Exact original owned supervisor3913; named per-run environment whitelist only, privately reused unchanged",
+  "before": {
+    "orders": 0,
+    "siteId": "f83e5e3d-1474-4378-b99b-55f8f4475b9f",
+    "ownerId": "b18d7bd0-2f1a-4e34-81e9-db7d06658dc5",
+    "products": 19,
+    "cartScopeMd5": "b52d962c163e5761809baebc68d5c71e"
+  },
+  "oldMerchantOrigin": "http://admin.threadline-f6074d90e894.localhost:62075",
+  "oldProcessesStopped": false,
+  "databaseMutationPerformed": false,
+  "scope": "Normal product authoring only; original merchant remains theme-editor/preview origin. Natural host cookie only. No new issuer or identity runtime.",
+  "sessionAndUiProof": "NOT_RUN",
+  "priorPreflightCorrection": "First read-only preflight parser rejected psql BEGIN/COMMIT command tags before any client start; parse only the actual JSON row. No helper/DB/source change.",
+  "logPath": "/private/tmp/theme-editor-merchant-axis-f607-01.log"
+}

@@ -1,0 +1,236 @@
+[
+  {
+    "recordedAt": "2026-10-24T19:55:50.808Z",
+    "runId": "49ada80bc494",
+    "label": "threadline-install-210",
+    "tabId": "173052882",
+    "url": "http://admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes",
+    "ax": "evidence/001-threadline-install-210.ax.txt",
+    "screenshot": "evidence/001-threadline-install-210.png"
+  },
+  {
+    "recordedAt": "2026-10-24T19:56:06.668Z",
+    "runId": "49ada80bc494",
+    "label": "threadline-installed-editor",
+    "tabId": "173052882",
+    "url": "http://admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes",
+    "ax": "evidence/002-threadline-installed-editor.ax.txt",
+    "screenshot": "evidence/002-threadline-installed-editor.png"
+  },
+  {
+    "recordedAt": "2026-10-24T19:56:48.357Z",
+    "runId": "49ada80bc494",
+    "label": "threadline-save-fullreload-A",
+    "tabId": "173052882",
+    "url": "http://admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes/letbuyy-sense/editor",
+    "ax": "evidence/003-threadline-save-fullreload-A.ax.txt",
+    "screenshot": "evidence/003-threadline-save-fullreload-A.png"
+  },
+  {
+    "recordedAt": "2026-10-24T19:57:17.956Z",
+    "runId": "49ada80bc494",
+    "label": "threadline-reload-A-confirmed",
+    "tabId": "173052882",
+    "url": "http://admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes/letbuyy-sense/editor",
+    "ax": "evidence/002-threadline-reload-A-confirmed.ax.txt",
+    "screenshot": "evidence/002-threadline-reload-A-confirmed.png"
+  },
+  {
+    "recordedAt": "2026-10-24T19:57:36.184Z",
+    "runId": "49ada80bc494",
+    "label": "threadline-publish-A-acknowledged",
+    "tabId": "173052882",
+    "url": "http://admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes/letbuyy-sense/editor",
+    "ax": "evidence/003-threadline-publish-A-acknowledged.ax.txt",
+    "screenshot": "evidence/003-threadline-publish-A-acknowledged.png"
+  },
+  {
+    "recordedAt": "2026-10-24T19:58:30.265Z",
+    "runId": "49ada80bc494",
+    "label": "threadline-public-A-readback",
+    "tabId": "173052885",
+    "url": "http://syn-threadline-ui-ae3f0477.localhost:64595/",
+    "ax": "evidence/004-threadline-public-A-readback.ax.txt",
+    "screenshot": "evidence/004-threadline-public-A-readback.png"
+  },
+  {
+    "recordedAt": "2026-10-24T20:00:37.282Z",
+    "runId": "49ada80bc494",
+    "label": "threadline-normal-signup-consent",
+    "tabId": "173052885",
+    "url": "http://accounts.threadline-49ada80bc494.localhost:64593/buyer/authorize?[redacted query]",
+    "ax": "evidence/005-threadline-normal-signup-consent.ax.txt",
+    "screenshot": "evidence/005-threadline-normal-signup-consent.png"
+  },
+  {
+    "recordedAt": "2026-10-24T20:00:38.099Z",
+    "runId": "49ada80bc494",
+    "label": "threadline-buyer-callback",
+    "tabId": "173052885",
+    "url": "http://syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477/account",
+    "ax": "evidence/006-threadline-buyer-callback.ax.txt",
+    "screenshot": "evidence/006-threadline-buyer-callback.png"
+  },
+  {
+    "recordedAt": "2026-10-24T20:01:00.283Z",
+    "runId": "49ada80bc494",
+    "label": "threadline-buyer-account-reload",
+    "tabId": "173052885",
+    "url": "http://syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477/account",
+    "ax": "evidence/007-threadline-buyer-account-reload.ax.txt",
+    "screenshot": "evidence/007-threadline-buyer-account-reload.png"
+  },
+  {
+    "recordedAt": "2026-10-24T20:01:11.548Z",
+    "runId": "49ada80bc494",
+    "label": "threadline-linen-search",
+    "tabId": "173052885",
+    "url": "http://syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477/search?[redacted query]",
+    "ax": "evidence/008-threadline-linen-search.ax.txt",
+    "screenshot": "evidence/008-threadline-linen-search.png"
+  },
+  {
+    "recordedAt": "2026-10-24T20:01:16.834Z",
+    "runId": "49ada80bc494",
+    "label": "threadline-apparel-pdp",
+    "tabId": "173052885",
+    "url": "http://syn-threadline-ui-ae3f0477.localhost:64595/product/b2814421-b6ca-44d6-8eae-139d9fa0cfe1",
+    "ax": "evidence/009-threadline-apparel-pdp.ax.txt",
+    "screenshot": "evidence/009-threadline-apparel-pdp.png"
+  },
+  {
+    "recordedAt": "2026-10-24T20:02:02.663Z",
+    "runId": "49ada80bc494",
+    "label": "threadline-XL-unavailable-refusal",
+    "tabId": "173052885",
+    "url": "http://syn-threadline-ui-ae3f0477.localhost:64595/product/b2814421-b6ca-44d6-8eae-139d9fa0cfe1?[redacted query]",
+    "ax": "evidence/010-threadline-XL-unavailable-refusal.ax.txt",
+    "screenshot": "evidence/010-threadline-XL-unavailable-refusal.png"
+  },
+  {
+    "recordedAt": "2026-10-24T20:02:02.858Z",
+    "runId": "49ada80bc494",
+    "label": "threadline-Oat-M-available",
+    "tabId": "173052885",
+    "url": "http://syn-threadline-ui-ae3f0477.localhost:64595/product/b2814421-b6ca-44d6-8eae-139d9fa0cfe1?[redacted query]",
+    "ax": "evidence/011-threadline-Oat-M-available.ax.txt",
+    "screenshot": "evidence/011-threadline-Oat-M-available.png"
+  },
+  {
+    "recordedAt": "2026-10-24T20:02:07.156Z",
+    "runId": "49ada80bc494",
+    "label": "threadline-add-acknowledged",
+    "tabId": "173052885",
+    "url": "http://syn-threadline-ui-ae3f0477.localhost:64595/product/b2814421-b6ca-44d6-8eae-139d9fa0cfe1?[redacted query]",
+    "ax": "evidence/012-threadline-add-acknowledged.ax.txt",
+    "screenshot": "evidence/012-threadline-add-acknowledged.png"
+  },
+  {
+    "recordedAt": "2026-10-24T20:02:25.157Z",
+    "runId": "49ada80bc494",
+    "label": "threadline-cart-drawer-Oat-M-q1",
+    "tabId": "173052885",
+    "url": "http://syn-threadline-ui-ae3f0477.localhost:64595/product/b2814421-b6ca-44d6-8eae-139d9fa0cfe1?[redacted query]",
+    "ax": "evidence/013-threadline-cart-drawer-Oat-M-q1.ax.txt",
+    "screenshot": "evidence/013-threadline-cart-drawer-Oat-M-q1.png"
+  },
+  {
+    "recordedAt": "2026-10-24T20:02:25.887Z",
+    "runId": "49ada80bc494",
+    "label": "threadline-cart-fullreload",
+    "tabId": "173052885",
+    "url": "http://syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477/cart",
+    "ax": "evidence/014-threadline-cart-fullreload.ax.txt",
+    "screenshot": "evidence/014-threadline-cart-fullreload.png"
+  },
+  {
+    "recordedAt": "2026-10-24T20:07:58.026Z",
+    "runId": "49ada80bc494",
+    "label": "threadline-cart-recovery-needed",
+    "tabId": "173052885",
+    "url": "http://syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477/cart",
+    "ax": "evidence/015-threadline-cart-recovery-needed.ax.txt",
+    "screenshot": "evidence/015-threadline-cart-recovery-needed.png"
+  },
+  {
+    "recordedAt": "2026-10-24T20:08:01.203Z",
+    "runId": "49ada80bc494",
+    "label": "threadline-cart-recovered-ready",
+    "tabId": "173052885",
+    "url": "http://syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477/cart",
+    "ax": "evidence/016-threadline-cart-recovered-ready.ax.txt",
+    "screenshot": "evidence/016-threadline-cart-recovered-ready.png"
+  },
+  {
+    "recordedAt": "2026-10-24T20:09:06.084Z",
+    "runId": "49ada80bc494",
+    "label": "threadline-test-payment-review-2510",
+    "tabId": "173052885",
+    "url": "https://checkout.localhost:64597/checkout?[redacted query]",
+    "ax": "evidence/017-threadline-test-payment-review-2510.ax.txt",
+    "screenshot": "evidence/017-threadline-test-payment-review-2510.png"
+  },
+  {
+    "recordedAt": "2026-10-24T20:09:17.714Z",
+    "runId": "49ada80bc494",
+    "label": "threadline-razorpay-test-mode-sdk",
+    "tabId": "173052885",
+    "url": "https://checkout.localhost:64597/checkout?[redacted query]",
+    "ax": "evidence/018-threadline-razorpay-test-mode-sdk.ax.txt",
+    "screenshot": "evidence/018-threadline-razorpay-test-mode-sdk.png"
+  },
+  {
+    "recordedAt": "2026-10-24T20:09:48.544Z",
+    "runId": "49ada80bc494",
+    "label": "threadline-demo-bank-before-success",
+    "tabId": "173052888",
+    "url": "https://api.razorpay.com/v1/gateway/mocksharp/payment?[redacted query]",
+    "ax": "evidence/019-threadline-demo-bank-before-success.ax.txt",
+    "screenshot": "evidence/019-threadline-demo-bank-before-success.png"
+  },
+  {
+    "recordedAt": "2026-10-24T20:10:10.208Z",
+    "runId": "49ada80bc494",
+    "label": "threadline-test-order-confirmed-10001",
+    "tabId": "173052885",
+    "url": "https://checkout.localhost:64597/checkout?[redacted query]",
+    "ax": "evidence/020-threadline-test-order-confirmed-10001.ax.txt",
+    "screenshot": "evidence/020-threadline-test-order-confirmed-10001.png"
+  },
+  {
+    "recordedAt": "2026-10-24T20:10:14.821Z",
+    "runId": "49ada80bc494",
+    "label": "threadline-buyer-orders-10001",
+    "tabId": "173052885",
+    "url": "http://syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477/account/orders",
+    "ax": "evidence/021-threadline-buyer-orders-10001.ax.txt",
+    "screenshot": "evidence/021-threadline-buyer-orders-10001.png"
+  },
+  {
+    "recordedAt": "2026-10-24T20:10:31.671Z",
+    "runId": "49ada80bc494",
+    "label": "threadline-buyer-order-detail-before-edit-10001",
+    "tabId": "173052885",
+    "url": "http://syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477/account/orders/422fb669-9db5-4da6-bffc-7fcea4c31f8d",
+    "ax": "evidence/022-threadline-buyer-order-detail-before-edit-10001.ax.txt",
+    "screenshot": "evidence/022-threadline-buyer-order-detail-before-edit-10001.png"
+  },
+  {
+    "recordedAt": "2026-10-24T20:10:44.819Z",
+    "runId": "49ada80bc494",
+    "label": "threadline-merchant-orders-paid-10001",
+    "tabId": "173052882",
+    "url": "http://admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/orders",
+    "ax": "evidence/023-threadline-merchant-orders-paid-10001.ax.txt",
+    "screenshot": "evidence/023-threadline-merchant-orders-paid-10001.png"
+  },
+  {
+    "recordedAt": "2026-10-24T20:11:17.137Z",
+    "runId": "49ada80bc494",
+    "label": "threadline-merchant-order-facts-before-edit-10001",
+    "tabId": "173052882",
+    "url": "http://admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/orders/422fb669-9db5-4da6-bffc-7fcea4c31f8d",
+    "ax": "evidence/024-threadline-merchant-order-facts-before-edit-10001.ax.txt",
+    "screenshot": "evidence/024-threadline-merchant-order-facts-before-edit-10001.png"
+  }
+]

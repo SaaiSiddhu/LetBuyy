@@ -1,0 +1,31 @@
+{
+  "recordedAt": "2026-10-25T01:21:53.822171+00:00",
+  "status": "OWNED_QA_MAINTENANCE_STOPPED_FOR_DATA_PRESERVATION",
+  "purpose": "Suspend only the exact original QA cleanup owners at the saved browser fence to preserve database and drafts before six-hour destructive fixture expiry.",
+  "humanAuthority": "HUMAN_RESUME_20261025_02.json; preserve all apps, drafts and data; supersedes earlier project pause",
+  "backupReceipt": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/FINAL_DATA_BACKUP_FINAL_PREMAINTENANCE_20261025_01.json",
+  "sourceReview": "themes-shared-review-20261025-01/RUNTIME07_TEMPORARY_STOP_SOURCE_REVIEW_01.json",
+  "beforeStates": {
+    "54685": "Ss",
+    "55109": "S"
+  },
+  "signalsSent": [
+    {
+      "pid": 54685,
+      "signal": "SIGSTOP"
+    },
+    {
+      "pid": 55109,
+      "signal": "SIGSTOP"
+    }
+  ],
+  "ordinaryGuardChanged": false,
+  "otherProcessOrGroupSignals": false,
+  "projectPaused": false,
+  "automaticContinuationAllowed": false,
+  "restriction": "Do not SIGCONT after expiry: due cleanup timers may execute immediately. API, checkout and parent-hosted REST are unavailable during maintenance. Requires qualified preserved-runtime recovery.",
+  "afterStates": {
+    "54685": "Ts",
+    "55109": "T"
+  }
+}

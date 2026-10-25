@@ -1,0 +1,99 @@
+{
+  "recordedAt": "2026-10-23T20:25:30.431942+00:00",
+  "runId": "f6074d90e894",
+  "status": "PASS_ACTUAL_COD_ORDER_EXACT_RETRY_PREEDIT_WITNESSES_SCOPE",
+  "order": {
+    "id": "c5a7d7a4-dabc-4a3b-a7ea-0c8f61285891",
+    "number": "ORD-20261023-10000",
+    "currency": "INR",
+    "status": "pending_cod",
+    "paymentMethod": "cod",
+    "paymentStatus": "pending",
+    "subtotal": 17800,
+    "shipping": 20,
+    "tax": 0,
+    "discount": 0,
+    "total": 17820
+  },
+  "actualLine": {
+    "id": "b80fabaf-67a0-4a6c-9bfc-a87b73748729",
+    "productId": "54301d6f-f54e-4209-95a0-4fbc32bcf8e6",
+    "variantId": "07d32ed4-62ca-43dc-a605-b11f97c0a791",
+    "quantity": 2,
+    "unitPrice": 8900,
+    "total": 17800,
+    "frozenFactsExactlyA": true,
+    "snapshotSha256": "436431a4e61c70fd6cd1dd5a650f9bfe5d2f1f3f5bbbcaa1caecbb1d50665cb9"
+  },
+  "exactRetry": {
+    "sameOrder": true,
+    "commandSha256": "c124cad665231bfb09e9c1bceccb171993dcb381df39d4d13f592135dd6fec86",
+    "originalAndReplayStatus200": true,
+    "allExistingEffectProofBeforeAfterEqual": true,
+    "siteOrderCount": 1,
+    "inventoryEventCount": 1,
+    "inventoryAdjustmentCount": 7,
+    "limit": "Ledger/outbox/reservation invariance outside existing observer hash/count scope",
+    "responseHashDiagnostic": {
+      "originalResponseSha256": "009da83d4f0f56f22b7f0ff65aad5a11814647d38a97e00c712845d4878aca28",
+      "replayResponseSha256": "1f83d069b6ac37a07ed498aaad1afbc50d02d84aaba76c282fe73562a929ba56",
+      "equal": false,
+      "reasonForDifference": "Not determined from sanitized hash-only receipt",
+      "initialAuditFailure": "An extra response-byte equality assertion failed before artifact creation; the premature notice was immediately withdrawn. HI15 requires same order/exact command and unchanged effects, not identical response bytes.",
+      "responseByteIdentityClaimed": false
+    }
+  },
+  "actualPostOrderStockA": 2,
+  "separateAcceptedPreeditCart": {
+    "id": "3877932f-b20c-437d-91d7-524cbba72011",
+    "quantity": 1,
+    "unitPrice": 8900,
+    "total": 8900,
+    "variantId": "07d32ed4-62ca-43dc-a605-b11f97c0a791",
+    "productVersion": 31,
+    "snapshotFingerprint": "7ce55c10aed62f082841288066219392dd5ffed2a8560348eb8e23fa7b18523c",
+    "factsExactlyOldA": true,
+    "distinctFromConvertedOrderCart": true
+  },
+  "histories": [
+    {
+      "viewer": "buyer",
+      "actualReloadedOrderAndFacts": true,
+      "AXSha256": "73393439a3b5896c31bf5dbb99565f768f34c4edf0a81e5776093f949f2ea463"
+    },
+    {
+      "viewer": "merchant",
+      "actualReloadedOrderAndFacts": true,
+      "AXSha256": "1443e59d3098c5ad1ebd4151eaa9c6c5460bbc64cf18514df44741b653012380"
+    }
+  ],
+  "preservedDiagnosticLimits": [
+    "Earlier COD-actual-proof orderId was null; exactID binding now supplied by actual observer, bound orderreadback and exactretry receipt.",
+    "Order diagnostic buyerId is null; normal BuyerA checkout/history was observed. No low-level buyer FK claim inferred from that diagnostic alias.",
+    "Raw SQL snapshot/order hashes and canonical snapshotFingerprint have different scopes; none recomputed or forced equal.",
+    "No ledger/outbox/reservation invariance claim beyond current observer effect scope.",
+    "Later metadata edit and postedit history comparison not yet performed."
+  ],
+  "evidence": [
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-habitat-order-before-edit-readback.json",
+      "sha256": "cb7b279bc38e183548ae2ed19ccbdf99403157d4bb25a2fe1d7b73d3d6f76529"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-habitat-COD-exact-confirm-retry.json",
+      "sha256": "d7c3a94cb5a63b942084df7f6cdc6ab182fa45c050f24d2267b651eeb77411b0"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-habitat-COD-confirm-observer.json",
+      "sha256": "99c2fb04ff349724064dc74f409a2d148a2bf337cf3a0ee9c0df9dabe944bccd"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-habitat-axis-post-order-readback.json",
+      "sha256": "216a66114e2b4975d6621fbace1b4457ce47882cd667f56325893823f4c6af70"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-cart-habitat-cart-4.json",
+      "sha256": "a46a561c36a4d1a898a8cd974bf4f781b61d4e939b94341037eb8504a07d669f"
+    }
+  ]
+}

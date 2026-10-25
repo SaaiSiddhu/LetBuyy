@@ -1,0 +1,28 @@
+{
+  "recordedAt": "2026-10-24T19:50:01.620384+00:00",
+  "status": "PASS_FOR_CONTROLLED_THEME_EXECUTION",
+  "runId": "49ada80bc494",
+  "currentReceipt": "shared-runtime07/SHARED_READINESS_GATE.json",
+  "fullThemeCertificates": 0,
+  "independentReview": {
+    "status": "ACCEPT_SHARED_GATES_FOR_CONTROLLED_THEME_EXECUTION",
+    "receipt": "themes-shared-review-20261025-01/INDEPENDENT_SHARED_GATE_REVIEW.json",
+    "sha256": "884a02ba094cda7c022cb94e573a5dbdfe5fdeae35e5bf0438bdaa190f06f5e8"
+  },
+  "currentRemaining": {
+    "perThemeMatrices": "REQUIRED",
+    "perThemeRazorpay": "REQUIRED_IN_PROGRESS",
+    "indexedDiscoveryPerformance": "NOT_PROVEN_REQUIRES_BOUNDED_QUALIFICATION",
+    "orderHeadingSuccessor": {
+      "affectedSlugs": [
+        "letbuyy-craft",
+        "letbuyy-dawn",
+        "letbuyy-nova",
+        "letbuyy-summit"
+      ],
+      "receipt": "themes-shared-review-20261025-01/ORDER_HEADING_ALL10_SOURCE_REVIEW.json",
+      "scope": "Four heading-field descendants only; unaffected original/purchase cases continue"
+    },
+    "fullThemeCertificates": 0
+  }
+}

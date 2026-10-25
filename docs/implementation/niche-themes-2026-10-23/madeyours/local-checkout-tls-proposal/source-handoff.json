@@ -1,0 +1,64 @@
+{
+  "classification": "SOURCE_ADMITTED_QUALIFIED_AND_FROZEN_OS_TRUSTED_BROWSER_ACCEPTANCE_PENDING",
+  "recordedAt": "2026-10-23T16:11:51.290008+00:00",
+  "sourceLease": "Root exactV2 helper optionalmanual/imports/privatefilehelpers + existingEditor optin +focusedtests",
+  "sourceFiles": [
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/owned-db-support.ts",
+      "sha256": "bd87cee74313edf0842c275a944814c6f63b2a6e90353d5428fbef30c8301f12"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/threadline-browser-fixture.ts",
+      "sha256": "3cd5e06a69fe97d6094a0b5dda168b7a67908ba975166008f9638b1e42eae445"
+    }
+  ],
+  "gatewayNoEmit": {
+    "exitCode": 0,
+    "evidence": "gateway-noemit.log"
+  },
+  "tests": {
+    "owned-guard-lane-contracts.tap": {
+      "tests": 33,
+      "pass": 33,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    "existing-fixture-unit-contracts.tap": {
+      "tests": 17,
+      "pass": 17,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    "proposal-control-test-results.json": {
+      "passed": 8,
+      "failed": 0,
+      "classification": "V2_ADMITTED_SOURCE_CONTRACT_ONLY_NO_CRYPTO_OS_BROWSER_EXECUTION"
+    },
+    "proposal-real-leaf-test-results.json": {
+      "passed": 24,
+      "failed": 0,
+      "classification": "V2_ACTUAL_DISPOSABLE_NON_CA_LEAF_CRYPTO_FILES_AND_OS_DENIAL_NO_TRUST_INSTALL"
+    }
+  },
+  "defaultNativeAndBindingProof": "native-and-guard-byte-proof.json",
+  "v1StubArchive": "revisions/issuance-v1/proposal-control-test-results.json",
+  "v1StubChecksRecredited": 0,
+  "osTrustedPositive": "NOT_RUN_HUMAN_SETUP_PENDING",
+  "ownedNativeDatabaseIntegration": "NOT_RUN_THREADLINE391_RESERVED_FIRST",
+  "browserAndCod": "NOT_RUN_NO_ALLOCATION",
+  "trustChanges": 0,
+  "signingCaKeyReads": 0,
+  "caGeneration": 0,
+  "sharedRunningResourcesChanged": [],
+  "sourceReleasedBackToRoot": true,
+  "preservedInitialFailure": {
+    "evidence": "owned-guard-lane-contracts-sandbox-refusal.tap",
+    "passed": 32,
+    "failed": 1,
+    "reason": "tsx CLI ephemeral IPC socket refused bysandbox before processprobe assertions; sameassertions/source rerun IPCenabled33/33"
+  }
+}

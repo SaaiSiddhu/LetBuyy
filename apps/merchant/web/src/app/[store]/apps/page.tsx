@@ -33,7 +33,8 @@ export default async function AppsPage({ params }: AppsPageProps) {
 
     return (
         <Page>
-            <PageHeader
+            <PageHeader identity="apps"
+                recipe="index"
                 breadcrumbs={[
                     { label: 'Home', href: `/${store}/dashboard` },
                     { label: 'Apps' },

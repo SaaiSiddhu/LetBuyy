@@ -1,0 +1,19 @@
+{
+  "recordedAt": "2026-10-23T19:58:47.896830+00:00",
+  "runId": "f6074d90e894",
+  "proof": {
+    "packageVersion": "2.0.0",
+    "releaseId": "3a3356f7-5a77-4dd4-84a5-bdbcdf4a3810",
+    "sourceDraftVersion": 10,
+    "releaseSha256": "9a9b7f850699462088fc2f928169ab6faf700f09e923c6485aeff4b303cfc50b",
+    "orders": 0,
+    "installed": 3,
+    "editorObservations": {
+      "captureFailures": 0,
+      "records": []
+    }
+  },
+  "anonymousStatus": 200,
+  "headingBFound": true,
+  "exactPriorBHash": true
+}

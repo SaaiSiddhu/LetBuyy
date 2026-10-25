@@ -1,0 +1,797 @@
+{
+  "body": {
+    "background": "rgb(223, 223, 216)",
+    "color": "rgba(17, 21, 28, 0.75)",
+    "font": "system_ui, -apple-system, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"Noto Sans\", \"Liberation Sans\", Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+    "fontSize": "16px"
+  },
+  "controls": [
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Search",
+      "tag": "INPUT",
+      "type": "search"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Add to cart",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Buy it now",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Share",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Email",
+      "tag": "INPUT",
+      "type": "email"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Subscribe",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    }
+  ],
+  "headings": [
+    {
+      "font": "Platypi, serif",
+      "height": 34.796875,
+      "line": "34.8px",
+      "size": "27.6px",
+      "tag": "H2",
+      "text": "",
+      "weight": "500",
+      "width": 369,
+      "x": 1456,
+      "y": 444.1015625
+    },
+    {
+      "font": "Platypi, serif",
+      "height": 90,
+      "line": "0px",
+      "size": "46px",
+      "tag": "H1",
+      "text": "",
+      "weight": "500",
+      "width": 175,
+      "x": 632.5,
+      "y": 75.8515625
+    },
+    {
+      "font": "Platypi, serif",
+      "height": 34.796875,
+      "line": "34.8px",
+      "size": "27.6px",
+      "tag": "H2",
+      "text": "2Unfold Bag",
+      "weight": "500",
+      "width": 355,
+      "x": 845,
+      "y": 309.8515625
+    },
+    {
+      "font": "Platypi, serif",
+      "height": 89.890625,
+      "line": "89.9px",
+      "size": "71.3px",
+      "tag": "H2",
+      "text": "A bag with a fan club",
+      "weight": "500",
+      "width": 780,
+      "x": 330,
+      "y": 2660.9609375
+    },
+    {
+      "font": "Platypi, serif",
+      "height": 29.703125,
+      "line": "29.7px",
+      "size": "20.7px",
+      "tag": "H3",
+      "text": "So soft",
+      "weight": "500",
+      "width": 309.9609375,
+      "x": 185,
+      "y": 2806.8515625
+    },
+    {
+      "font": "Platypi, serif",
+      "height": 29.703125,
+      "line": "29.7px",
+      "size": "20.7px",
+      "tag": "H3",
+      "text": "Wicked smart",
+      "weight": "500",
+      "width": 309.9609375,
+      "x": 564.9609375,
+      "y": 2806.8515625
+    },
+    {
+      "font": "Platypi, serif",
+      "height": 29.703125,
+      "line": "29.7px",
+      "size": "20.7px",
+      "tag": "H3",
+      "text": "Really elegant",
+      "weight": "500",
+      "width": 309.9609375,
+      "x": 944.921875,
+      "y": 2806.8515625
+    },
+    {
+      "font": "Platypi, serif",
+      "height": 29.703125,
+      "line": "29.7px",
+      "size": "20.7px",
+      "tag": "H3",
+      "text": "An investment",
+      "weight": "500",
+      "width": 309.9609375,
+      "x": 564.9609375,
+      "y": 2997.9453125
+    },
+    {
+      "font": "Platypi, serif",
+      "height": 29.703125,
+      "line": "29.7px",
+      "size": "20.7px",
+      "tag": "H3",
+      "text": "My favorite",
+      "weight": "500",
+      "width": 309.9609375,
+      "x": 944.921875,
+      "y": 2997.9453125
+    },
+    {
+      "font": "Platypi, serif",
+      "height": 89.890625,
+      "line": "89.9px",
+      "size": "71.3px",
+      "tag": "H2",
+      "text": "Our process",
+      "weight": "500",
+      "width": 780,
+      "x": 330,
+      "y": 3322.6328125
+    },
+    {
+      "font": "Platypi, serif",
+      "height": 34.796875,
+      "line": "34.8px",
+      "size": "27.6px",
+      "tag": "H3",
+      "text": "Only for the brave",
+      "weight": "500",
+      "width": 530,
+      "x": 170,
+      "y": 3796.796875
+    },
+    {
+      "font": "Platypi, serif",
+      "height": 34.796875,
+      "line": "34.8px",
+      "size": "27.6px",
+      "tag": "H3",
+      "text": "Back to blue",
+      "weight": "500",
+      "width": 530,
+      "x": 740,
+      "y": 3796.796875
+    },
+    {
+      "font": "Platypi, serif",
+      "height": 34.796875,
+      "line": "34.8px",
+      "size": "27.6px",
+      "tag": "H3",
+      "text": "Made in our studio",
+      "weight": "500",
+      "width": 530,
+      "x": 170,
+      "y": 4314.4609375
+    },
+    {
+      "font": "Platypi, serif",
+      "height": 34.796875,
+      "line": "34.8px",
+      "size": "27.6px",
+      "tag": "H3",
+      "text": "Two's company",
+      "weight": "500",
+      "width": 530,
+      "x": 740,
+      "y": 4314.4609375
+    },
+    {
+      "font": "Platypi, serif",
+      "height": 75.390625,
+      "line": "75.4px",
+      "size": "59.8px",
+      "tag": "H2",
+      "text": "Exceptional goods",
+      "weight": "500",
+      "width": 780,
+      "x": 330,
+      "y": 4588.6484375
+    },
+    {
+      "font": "Platypi, serif",
+      "height": 29.703125,
+      "line": "29.7px",
+      "size": "20.7px",
+      "tag": "H3",
+      "text": "Uniquely good design",
+      "weight": "500",
+      "width": 500,
+      "x": 185,
+      "y": 5176.0390625
+    },
+    {
+      "font": "Platypi, serif",
+      "height": 29.703125,
+      "line": "29.7px",
+      "size": "20.7px",
+      "tag": "H3",
+      "text": "Hand crafted quality",
+      "weight": "500",
+      "width": 500,
+      "x": 755,
+      "y": 5176.0390625
+    },
+    {
+      "font": "Platypi, serif",
+      "height": 29.703125,
+      "line": "29.7px",
+      "size": "20.7px",
+      "tag": "H3",
+      "text": "Made by us to bring you joy",
+      "weight": "500",
+      "width": 309.9609375,
+      "x": 185,
+      "y": 5367.1328125
+    },
+    {
+      "font": "Platypi, serif",
+      "height": 75.390625,
+      "line": "75.4px",
+      "size": "59.8px",
+      "tag": "H2",
+      "text": "Stay in the know",
+      "weight": "500",
+      "width": 1260,
+      "x": 90,
+      "y": 5834.9765625
+    }
+  ],
+  "links": [
+    {
+      "text": "Skip to content",
+      "url": "https://theme-origin-demo.myshopify.com/#MainContent"
+    },
+    {
+      "text": "",
+      "url": "https://theme-origin-demo.myshopify.com/collections/all"
+    },
+    {
+      "text": "",
+      "url": "https://theme-origin-demo.myshopify.com/"
+    },
+    {
+      "text": "Cart",
+      "url": "https://theme-origin-demo.myshopify.com/cart"
+    },
+    {
+      "text": "Skip to product information",
+      "url": "https://theme-origin-demo.myshopify.com/#ProductInfo-template--22715923529750__featured-product"
+    },
+    {
+      "text": "View full details",
+      "url": "https://theme-origin-demo.myshopify.com/products/2unfold-bag-copy"
+    },
+    {
+      "text": "Only for the brave",
+      "url": "https://theme-origin-demo.myshopify.com/blogs/news/only-for-the-brave"
+    },
+    {
+      "text": "Back to blue",
+      "url": "https://theme-origin-demo.myshopify.com/blogs/news/back-to-blue"
+    },
+    {
+      "text": "Made in our studio",
+      "url": "https://theme-origin-demo.myshopify.com/blogs/news/made-in-italy"
+    },
+    {
+      "text": "Two's company",
+      "url": "https://theme-origin-demo.myshopify.com/blogs/news/twos-company"
+    },
+    {
+      "text": "Shop",
+      "url": "https://theme-origin-demo.myshopify.com/"
+    },
+    {
+      "text": "Journal",
+      "url": "https://theme-origin-demo.myshopify.com/blogs/news"
+    },
+    {
+      "text": "Contact",
+      "url": "https://theme-origin-demo.myshopify.com/pages/about"
+    },
+    {
+      "text": "Shipping",
+      "url": "https://theme-origin-demo.myshopify.com/pages/shipping-and-returns"
+    },
+    {
+      "text": "theme-origin-demo",
+      "url": "https://theme-origin-demo.myshopify.com/"
+    }
+  ],
+  "sections": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715923529750__rich-text",
+      "rect": {
+        "height": 100,
+        "width": 1440,
+        "x": 0,
+        "y": 177.8515625
+      },
+      "tag": "SECTION",
+      "text": ""
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715923529750__featured-product",
+      "rect": {
+        "height": 894.3125,
+        "width": 1440,
+        "x": 0,
+        "y": 277.8515625
+      },
+      "tag": "SECTION",
+      "text": "Skip to product information\nOpen media 1 in modal\n2Unfold Bag\nRegular price\n$995.00 CAD\n\nWe've crafted this multi-use leather laptop bag to be as versatile as possible, which is a "
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715923529750__image-banner",
+      "rect": {
+        "height": 420,
+        "width": 1440,
+        "x": 0,
+        "y": 1172.1640625
+      },
+      "tag": "SECTION",
+      "text": ""
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715923529750__image_banner_hqw89f",
+      "rect": {
+        "height": 560,
+        "width": 1440,
+        "x": 0,
+        "y": 1592.1640625
+      },
+      "tag": "SECTION",
+      "text": ""
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715923529750__image_banner_pwaDjJ",
+      "rect": {
+        "height": 420,
+        "width": 1440,
+        "x": 0,
+        "y": 2152.1640625
+      },
+      "tag": "SECTION",
+      "text": ""
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715923529750__rich-text-1",
+      "rect": {
+        "height": 198.6875,
+        "width": 1440,
+        "x": 0,
+        "y": 2572.1640625
+      },
+      "tag": "SECTION",
+      "text": "THE REVIEWS\n\nA bag with a fan club"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715923529750__multicolumn",
+      "rect": {
+        "height": 442.984375,
+        "width": 1440,
+        "x": 0,
+        "y": 2770.8515625
+      },
+      "tag": "SECTION",
+      "text": "So soft\n\n“I really love how soft the leather is. It feels and smells like quality.”\n— Torben S.\n\nWicked smart\n\n\"The bag is great. The way it adapts is so clever. I can't live witho"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715923529750__rich_text_nPGAtW",
+      "rect": {
+        "height": 198.6875,
+        "width": 1440,
+        "x": 0,
+        "y": 3213.8359375
+      },
+      "tag": "SECTION",
+      "text": "THE JOURNAL\n\nOur process"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715923529750__featured_blog_kCircH",
+      "rect": {
+        "height": 1067.328125,
+        "width": 1440,
+        "x": 0,
+        "y": 3412.5234375
+      },
+      "tag": "SECTION",
+      "text": "Only for the brave\n\nThe premium leather will soften and age over time, developing a one of a kind patina. \n\nBack to blue\n\nWe're bringing back our customer favorite premium Italian "
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715923529750__rich_text_CRceih",
+      "rect": {
+        "height": 220.1875,
+        "width": 1440,
+        "x": 0,
+        "y": 4479.8515625
+      },
+      "tag": "SECTION",
+      "text": "THE STORY\n\nExceptional goods"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715923529750__collage_ytefR8",
+      "rect": {
+        "height": 476,
+        "width": 1440,
+        "x": 0,
+        "y": 4700.0390625
+      },
+      "tag": "SECTION",
+      "text": ""
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715923529750__multicolumn_6jnAyE",
+      "rect": {
+        "height": 191.09375,
+        "width": 1440,
+        "x": 0,
+        "y": 5176.0390625
+      },
+      "tag": "SECTION",
+      "text": "Uniquely good design\n\nFrom the initial idea to the design and construction, we always push ourselves to try new things, find new solutions, and explore uncommon approaches.\n\nHand c"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715923529750__multicolumn_zePfd8",
+      "rect": {
+        "height": 395.046875,
+        "width": 1440,
+        "x": 0,
+        "y": 5367.1328125
+      },
+      "tag": "SECTION",
+      "text": "Made by us to bring you joy\n\nSomeone once said about their bag: “It’s funny how something so practical can make me so happy.”\n\n\nThis is a demonstration store. You can purchase prod"
+    }
+  ],
+  "title": "theme-origin-demo",
+  "url": "https://theme-origin-demo.myshopify.com/",
+  "viewport": {
+    "dpr": 1,
+    "height": 1000,
+    "width": 1440
+  },
+  "formGroups": [
+    "Color: Brown\nBrown\nGray\nChestnut"
+  ],
+  "grids": [
+    {
+      "className": "featured-product product product--medium grid grid--1-col gradient color-background-1 product--left isolate grid--2-col-tablet",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 814.3125,
+      "tag": "DIV",
+      "width": 1100
+    },
+    {
+      "className": "product__media-list contains-media grid grid--peek list-unstyled slider slider--mobile",
+      "columns": "none",
+      "display": "flex",
+      "gap": "40px",
+      "height": 814.3125,
+      "tag": "UL",
+      "width": 605
+    },
+    {
+      "className": "multicolumn-list contains-content-container grid grid--1-col-tablet-down grid--3-col-desktop",
+      "columns": "none",
+      "display": "flex",
+      "gap": "40px",
+      "height": 370.984375,
+      "tag": "UL",
+      "width": 1100
+    },
+    {
+      "className": "blog__posts articles-wrapper contains-card contains-card--article contains-card--standard grid grid--peek grid--2-col-tablet grid--2-col-desktop slider slider--tablet",
+      "columns": "none",
+      "display": "flex",
+      "gap": "40px",
+      "height": 995.328125,
+      "tag": "UL",
+      "width": 1100
+    },
+    {
+      "className": "blog__post grid__item article slider__slide slider__slide--full-width",
+      "columns": "none",
+      "display": "flex",
+      "gap": "normal",
+      "height": 477.6640625,
+      "tag": "LI",
+      "width": 530
+    },
+    {
+      "className": "blog__post grid__item article slider__slide slider__slide--full-width",
+      "columns": "none",
+      "display": "flex",
+      "gap": "normal",
+      "height": 477.6640625,
+      "tag": "LI",
+      "width": 530
+    },
+    {
+      "className": "blog__post grid__item article slider__slide slider__slide--full-width",
+      "columns": "none",
+      "display": "flex",
+      "gap": "normal",
+      "height": 477.6640625,
+      "tag": "LI",
+      "width": 530
+    },
+    {
+      "className": "blog__post grid__item article slider__slide slider__slide--full-width",
+      "columns": "none",
+      "display": "flex",
+      "gap": "normal",
+      "height": 477.6640625,
+      "tag": "LI",
+      "width": 530
+    },
+    {
+      "className": "multicolumn-list contains-content-container grid grid--1-col-tablet-down grid--2-col-desktop",
+      "columns": "none",
+      "display": "flex",
+      "gap": "40px",
+      "height": 191.09375,
+      "tag": "UL",
+      "width": 1100
+    },
+    {
+      "className": "multicolumn-list contains-content-container grid grid--1-col-tablet-down grid--3-col-desktop",
+      "columns": "none",
+      "display": "flex",
+      "gap": "40px",
+      "height": 359.046875,
+      "tag": "UL",
+      "width": 1100
+    }
+  ],
+  "images": [
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 605,
+      "rect": {
+        "height": 810.3125,
+        "width": 605
+      }
+    },
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 720,
+      "rect": {
+        "height": 420,
+        "width": 720
+      }
+    },
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 720,
+      "rect": {
+        "height": 420,
+        "width": 720
+      }
+    },
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 1440,
+      "rect": {
+        "height": 560,
+        "width": 1440
+      }
+    },
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 720,
+      "rect": {
+        "height": 420,
+        "width": 720
+      }
+    },
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 720,
+      "rect": {
+        "height": 420,
+        "width": 720
+      }
+    },
+    {
+      "alt": "",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 173.796875,
+        "width": 169.96875
+      }
+    },
+    {
+      "alt": "A black and white photo of a 2Unfold leather bag",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 319.2734375,
+        "width": 530
+      }
+    },
+    {
+      "alt": "A strip of navy blue veg tan Italian leather",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 319.2734375,
+        "width": 530
+      }
+    },
+    {
+      "alt": "A leather good with HARDGRAFT and MADE IN ITALY embossed on its surface",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 319.2734375,
+        "width": 530
+      }
+    },
+    {
+      "alt": "A double exposure film photo of a couple taking a selfie in front of reflective glass with plants and showing the interior of a modern home",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 319.2734375,
+        "width": 530
+      }
+    },
+    {
+      "alt": "",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 440,
+        "width": 1100
+      }
+    }
+  ],
+  "bodyText": "Skip to content\n\nSale on now — use \"OriginSale\" at checkout.\n\nCart\nSkip to product information\nOpen media 1 in modal\n2Unfold Bag\nRegular price\n$995.00 CAD\n\nWe've crafted this multi-use leather laptop bag to be as versatile as possible, which is a good thing because you'll never want to be without it. Carry up to a 17” laptop and accessories as a vertical briefcase, shoulder bag, or the most stylish backpack you've ever had.\n\nColor: Brown\nBrown\nGray\nChestnut\nAdd to cart\nBuy it now\nShare\nView full details\n\nTHE REVIEWS\n\nA bag with a fan club\nSo soft\n\n“I really love how soft the leather is. It feels and smells like quality.”\n— Torben S.\n\nWicked smart\n\n\"The bag is great. The way it adapts is so clever. I can't live without it.”\n\n— Emily-Ann K.\n\nReally elegant\n\n“Premium quality, as always. I adore the elegant yet simplistic design.”\n\n— Annemart P.\n\nAn investment\n\n\"It's the most practical bag I've ever owned. I couldn't be happier with it.\"\n\n— Darcy T.\n\nMy favorite\n\n\"The first time I held this bag, I knew it was going to be a firm favorite amongst my collection.\"\n\n— Ali O.\n\nTHE JOURNAL\n\nOur process\nOnly for the brave\n\nThe premium leather will soften and age over time, developing a one of a kind patina. \n\nBack to blue\n\nWe're bringing back our customer favorite premium Italian leather in a deep Ocean Blue color.\n\nMade in our studio\n\nWe have been working with our hands for over 10 years now, and we're proud of where we are today.\n\nTwo's company\n\nWe’re monie.ka and James. We’re the two person team behind every product we sell.\n\nTHE STORY\n\nExceptional goods\nUniquely good design\n\nFrom the initial idea to the design and construction, we always push ourselves to try new things, find new solutions, and explore uncommon approaches.\n\nHand crafted quality\n\nEvery one of our products is crafted by hand in our studio, with the utmost care and attention. We're proud to offer unbeatable quality and service.\n\nMade by us to bring you joy\n\nSomeone once said about their bag: “It’s funny how something so practical can make me so happy.”\n\n\nThis is a demonstration store. You can purchase products like this from Hardgraft.\n\nTHE UPDATES\n\nStay in the know\nEmail\nShop Journal Contact Shipping\nFacebook\nInstagram\nYouTube\nTikTok\nX (Twitter)\nSnapchat\nPayment methods\n© 2026, theme-origin-demo Powered by Shopify"
+}

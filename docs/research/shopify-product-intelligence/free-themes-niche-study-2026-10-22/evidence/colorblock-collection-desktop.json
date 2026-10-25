@@ -1,0 +1,508 @@
+{
+  "body": {
+    "background": "rgb(255, 255, 255)",
+    "color": "rgba(0, 0, 255, 0.75)",
+    "font": "Jost, sans-serif",
+    "fontSize": "20.8px"
+  },
+  "controls": [
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Search",
+      "tag": "INPUT",
+      "type": "search"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Shop",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Featured\nMost relevant\nBest selling\nAlphabetically, A-Z\nAlphabetically, Z-A\nPrice, low to ",
+      "tag": "SELECT",
+      "type": "select-one"
+    },
+    {
+      "disabled": false,
+      "expanded": "true",
+      "label": "Availability (0 selected)",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "INPUT",
+      "type": "checkbox"
+    },
+    {
+      "disabled": true,
+      "expanded": null,
+      "label": "",
+      "tag": "INPUT",
+      "type": "checkbox"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Price",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "0",
+      "tag": "INPUT",
+      "type": "number"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "295.00",
+      "tag": "INPUT",
+      "type": "number"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Style (0 selected)",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "INPUT",
+      "type": "checkbox"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "INPUT",
+      "type": "checkbox"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "INPUT",
+      "type": "checkbox"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Size (0 selected)",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "INPUT",
+      "type": "checkbox"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "INPUT",
+      "type": "checkbox"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "INPUT",
+      "type": "checkbox"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "INPUT",
+      "type": "checkbox"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Email",
+      "tag": "INPUT",
+      "type": "email"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Subscribe",
+      "tag": "BUTTON",
+      "type": "submit"
+    }
+  ],
+  "headings": [
+    {
+      "font": "Jost, sans-serif",
+      "height": 23.390625,
+      "line": "23.4px",
+      "size": "16.9px",
+      "tag": "H2",
+      "text": "",
+      "weight": "400",
+      "width": 367.203125,
+      "x": 886.1015625,
+      "y": 71.90625
+    },
+    {
+      "font": "Jost, sans-serif",
+      "height": 67.59375,
+      "line": "67.6px",
+      "size": "52px",
+      "tag": "H1",
+      "text": "Collection:\nSpring lookbook",
+      "weight": "400",
+      "width": 1170,
+      "x": 135,
+      "y": 284.1953125
+    },
+    {
+      "font": "Jost, sans-serif",
+      "height": 25.203125,
+      "line": "25.2px",
+      "size": "18.2px",
+      "tag": "H2",
+      "text": "Sort by:",
+      "weight": "400",
+      "width": 63.7109375,
+      "x": 903.1796875,
+      "y": 384.2890625
+    },
+    {
+      "font": "Jost, sans-serif",
+      "height": 25.203125,
+      "line": "25.2px",
+      "size": "18.2px",
+      "tag": "H2",
+      "text": "6 products",
+      "weight": "400",
+      "width": 90.359375,
+      "x": 1214.640625,
+      "y": 384.2890625
+    },
+    {
+      "font": "Jost, sans-serif",
+      "height": 27,
+      "line": "27px",
+      "size": "19.5px",
+      "tag": "H2",
+      "text": "Filter:",
+      "weight": "400",
+      "width": 50.2109375,
+      "x": 135,
+      "y": 422.4921875
+    },
+    {
+      "font": "Jost, sans-serif",
+      "height": 21.9609375,
+      "line": "21.97px",
+      "size": "16.9px",
+      "tag": "H3",
+      "text": "Patchwork Cardi",
+      "weight": "400",
+      "width": 253.6328125,
+      "x": 512,
+      "y": 769.421875
+    },
+    {
+      "font": "Jost, sans-serif",
+      "height": 21.9609375,
+      "line": "21.97px",
+      "size": "16.9px",
+      "tag": "H3",
+      "text": "Patchwork Cable Crew",
+      "weight": "400",
+      "width": 253.6328125,
+      "x": 781.6328125,
+      "y": 769.421875
+    },
+    {
+      "font": "Jost, sans-serif",
+      "height": 21.9609375,
+      "line": "21.97px",
+      "size": "16.9px",
+      "tag": "H3",
+      "text": "Pocket Cardi",
+      "weight": "400",
+      "width": 253.6328125,
+      "x": 1051.265625,
+      "y": 769.421875
+    },
+    {
+      "font": "Jost, sans-serif",
+      "height": 21.9609375,
+      "line": "21.97px",
+      "size": "16.9px",
+      "tag": "H3",
+      "text": "Lambswool Cardigan",
+      "weight": "400",
+      "width": 253.6328125,
+      "x": 512,
+      "y": 1206.4921875
+    },
+    {
+      "font": "Jost, sans-serif",
+      "height": 21.9609375,
+      "line": "21.97px",
+      "size": "16.9px",
+      "tag": "H3",
+      "text": "Contrast rib lambswool hat",
+      "weight": "400",
+      "width": 253.6328125,
+      "x": 781.6328125,
+      "y": 1206.4921875
+    },
+    {
+      "font": "Jost, sans-serif",
+      "height": 21.9609375,
+      "line": "21.97px",
+      "size": "16.9px",
+      "tag": "H3",
+      "text": "Tri-Stripe Lambswool Hat",
+      "weight": "400",
+      "width": 253.6328125,
+      "x": 1051.265625,
+      "y": 1206.4921875
+    },
+    {
+      "font": "Jost, sans-serif",
+      "height": 40.5625,
+      "line": "40.56px",
+      "size": "31.2px",
+      "tag": "H2",
+      "text": "Stay in the know",
+      "weight": "400",
+      "width": 1206,
+      "x": 117,
+      "y": 1412.4296875
+    }
+  ],
+  "links": [
+    {
+      "text": "Skip to content",
+      "url": "https://theme-colorblock-demo.myshopify.com/collections/spring-lookbook#MainContent"
+    },
+    {
+      "text": "",
+      "url": "https://theme-colorblock-demo.myshopify.com/"
+    },
+    {
+      "text": "Magazine",
+      "url": "https://theme-colorblock-demo.myshopify.com/blogs/news"
+    },
+    {
+      "text": "About",
+      "url": "https://theme-colorblock-demo.myshopify.com/pages/about-us"
+    },
+    {
+      "text": "Cart",
+      "url": "https://theme-colorblock-demo.myshopify.com/cart"
+    },
+    {
+      "text": "Patchwork Cardi",
+      "url": "https://theme-colorblock-demo.myshopify.com/products/purple-patchwork-cardi"
+    },
+    {
+      "text": "Patchwork Cable Crew",
+      "url": "https://theme-colorblock-demo.myshopify.com/products/patchwork-cable-crew-red-navy-grey"
+    },
+    {
+      "text": "Pocket Cardi",
+      "url": "https://theme-colorblock-demo.myshopify.com/products/pocket-cardi-purple"
+    },
+    {
+      "text": "Lambswool Cardigan",
+      "url": "https://theme-colorblock-demo.myshopify.com/products/cardigan-lambswool-blue"
+    },
+    {
+      "text": "Contrast rib lambswool hat",
+      "url": "https://theme-colorblock-demo.myshopify.com/products/contrast-rib-lambswool-hat-green"
+    },
+    {
+      "text": "Tri-Stripe Lambswool Hat",
+      "url": "https://theme-colorblock-demo.myshopify.com/products/tri-stripe-lambswool-hat-yellow"
+    }
+  ],
+  "sections": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715895185430__banner",
+      "rect": {
+        "height": 132.59375,
+        "width": 1440,
+        "x": 0,
+        "y": 251.6953125
+      },
+      "tag": "DIV",
+      "text": "Collection:\nSpring lookbook"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715895185430__product-grid",
+      "rect": {
+        "height": 984.140625,
+        "width": 1440,
+        "x": 0,
+        "y": 384.2890625
+      },
+      "tag": "DIV",
+      "text": "Sort by:\nFeatured\nMost relevant\nBest selling\nAlphabetically, A-Z\nAlphabetically, Z-A\nPrice, low to high\nPrice, high to low\nDate, old to new\nDate, new to old\n6 products\nFilter:\nAvai"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715895185430__16431251959f93aba7",
+      "rect": {
+        "height": 238.65625,
+        "width": 1440,
+        "x": 0,
+        "y": 1368.4296875
+      },
+      "tag": "SECTION",
+      "text": "Stay in the know\nEmail\n\nFollow us on social media"
+    }
+  ],
+  "title": "Spring lookbook – theme-colorblock-demo",
+  "url": "https://theme-colorblock-demo.myshopify.com/collections/spring-lookbook",
+  "viewport": {
+    "dpr": 1,
+    "height": 1000,
+    "width": 1440
+  },
+  "formGroups": [
+    "Availability\nIn stock (6)\nIn stock (6 products)\nOut of stock (0)\nOut of stock (0 products)",
+    "",
+    ""
+  ],
+  "grids": [
+    {
+      "className": "\n              grid product-grid grid--1-col-tablet-down\n              grid--3-col-desktop",
+      "columns": "none",
+      "display": "flex",
+      "gap": "16px",
+      "height": 858.140625,
+      "tag": "UL",
+      "width": 793
+    }
+  ],
+  "images": [
+    {
+      "alt": "Patchwork Cardi",
+      "complete": true,
+      "naturalWidth": 217,
+      "rect": {
+        "height": 317.0390625,
+        "width": 253.6328125
+      }
+    },
+    {
+      "alt": "Patchwork Cable Crew",
+      "complete": true,
+      "naturalWidth": 217,
+      "rect": {
+        "height": 317.0390625,
+        "width": 253.6328125
+      }
+    },
+    {
+      "alt": "Pocket Cardi",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 317.0390625,
+        "width": 253.6328125
+      }
+    },
+    {
+      "alt": "Lambswool Cardigan",
+      "complete": true,
+      "naturalWidth": 217,
+      "rect": {
+        "height": 317.0390625,
+        "width": 253.6328125
+      }
+    },
+    {
+      "alt": "Contrast rib lambswool hat",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 317.0390625,
+        "width": 253.6328125
+      }
+    },
+    {
+      "alt": "Tri-Stripe Lambswool Hat",
+      "complete": true,
+      "naturalWidth": 217,
+      "rect": {
+        "height": 317.0390625,
+        "width": 253.6328125
+      }
+    }
+  ],
+  "bodyText": "Skip to content\n\nFree shipping on orders $150+\n\nShop\nMagazine\nAbout\nCart\nCollection:\nSpring lookbook\nSort by:\nFeatured\nMost relevant\nBest selling\nAlphabetically, A-Z\nAlphabetically, Z-A\nPrice, low to high\nPrice, high to low\nDate, old to new\nDate, new to old\n6 products\nFilter:\nAvailability\nAvailability\nIn stock (6)\nIn stock (6 products)\nOut of stock (0)\nOut of stock (0 products)\nPrice\nStyle\nSize\nPatchwork Cardi\nRegular price\n$295.00 CAD\nPatchwork Cable Crew\nRegular price\n$255.00 CAD\nPocket Cardi\nRegular price\n$245.00 CAD\nLambswool Cardigan\nRegular price\n$215.00 CAD\nContrast rib lambswool hat\nRegular price\n$55.00 CAD\nTri-Stripe Lambswool Hat\nRegular price\n$55.00 CAD\nStay in the know\nEmail\n\nFollow us on social media\n\nTwitter\nFacebook\nInstagram\nTikTok\nYouTube\nThis is a demonstration store. You can purchase products like this from Country of Origin. © 2026 Powered by Shopify"
+}

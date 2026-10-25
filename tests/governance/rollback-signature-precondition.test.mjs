@@ -35,6 +35,7 @@ const GUARDED = [
 // Rollbacks written after this phase are held to the forward rule below. Earlier files are covered
 // by the explicit list above; raising this number is not a fix.
 const RATCHET_FROM_EXCLUSIVE = 245;
+const PROFILE_GUARDED = ['388_cart_order_fact_snapshots.rollback.sql'];
 
 const CANDIDATE_GUARDED = [280,285,288,291,293,294,296,303,305];
 
@@ -60,7 +61,7 @@ test('every rollback that restores create_checkout_order carries a signature pre
 
 test('the guarded list is complete — no other rollback restores create_checkout_order unguarded', () => {
     const unguarded = rollbackFiles().filter((name) =>
-        createdFunctions(read(name)).includes('create_checkout_order') && !GUARDED.includes(name));
+        createdFunctions(read(name)).includes('create_checkout_order') && !GUARDED.includes(name) && !PROFILE_GUARDED.includes(name));
     assert.deepEqual(unguarded, [], 'add the signature precondition and list the file in GUARDED');
 });
 
@@ -827,4 +828,19 @@ test('metadata rollback requires every reviewed profile, overload and private AC
   ['LOCK TABLE pg_catalog.pg_proc IN SHARE ROW EXCLUSIVE MODE;',''],
   ['RAISE EXCEPTION','RAISE WARNING']
  ]) {assert.ok(sql.includes(before));assert.deepEqual(guardedRestorations(sql.replace(before,after)),[],before);}
+});
+
+test('current cart snapshot rollback retains four complete ABI proofs and refuses forged predicates',()=>{
+ const original=read(PROFILE_GUARDED[0]);
+ assert.equal(guardedRestorations(original).length,4);
+ for(const [before,after] of [
+  ['live.proargnames IS DISTINCT FROM expected.input_names','false'],
+  ["pg_catalog.has_function_privilege('anon',live.oid,'EXECUTE')",'false'],
+  ["(SELECT count(*) FROM pg_catalog.pg_proc other WHERE other.pronamespace=live.pronamespace AND other.proname=live.proname)<>1",'false'],
+  ["RAISE EXCEPTION '388 rollback refuses changed typed ABI or API role authority'","RAISE WARNING '388 rollback refuses changed typed ABI or API role authority'"],
+  ["j.object_definition_hash IS DISTINCT FROM encode(sha256(convert_to(pg_get_functiondef(p.oid),'UTF8')),'hex')",'false'],
+ ]) {
+  assert.ok(original.includes(before),before);
+  assert.deepEqual(guardedRestorations(original.replace(before,after)),[],before);
+ }
 });

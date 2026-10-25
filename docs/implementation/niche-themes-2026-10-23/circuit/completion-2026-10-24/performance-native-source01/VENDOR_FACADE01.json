@@ -1,0 +1,3299 @@
+{
+  "classification": "CONTAINED_TYPESCRIPT_WILDCARD_AND_VENDOR_RESOLUTION_LAYOUT",
+  "originalStore": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm",
+  "forwardStoreEntries": [
+    {
+      "path": "node_modules/.pnpm/@adobe+css-tools@4.5.0",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/@adobe+css-tools@4.5.0",
+      "kind": "READ_ONLY_VENDOR_STORE_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/@alloc+quick-lru@5.2.0",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/@alloc+quick-lru@5.2.0",
+      "kind": "READ_ONLY_VENDOR_STORE_FACADE"
+    }
+  ],
+  "vendorResolutionLinks": [
+    {
+      "path": "node_modules/.pnpm/node_modules/.bin",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/.bin",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@adobe",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/@adobe",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@alloc",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/@alloc",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@asamuzakjp",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/@asamuzakjp",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@babel",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/@babel",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@bramus",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/@bramus",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@cacheable",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/@cacheable",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@cloudflare",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/@cloudflare",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@cspotcode",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/@cspotcode",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@csstools",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/@csstools",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@esbuild",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/@esbuild",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@eslint",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/@eslint",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@eslint-community",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/@eslint-community",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@exodus",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/@exodus",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@gsap",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/@gsap",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@hono",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/@hono",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@humanfs",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/@humanfs",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@humanwhocodes",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/@humanwhocodes",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@img",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/@img",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@isaacs",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/@isaacs",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@jest",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/@jest",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@joshwooding",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/@joshwooding",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@jridgewell",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/@jridgewell",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@keyv",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/@keyv",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@modelcontextprotocol",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/@modelcontextprotocol",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@next",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/@next",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@nodelib",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/@nodelib",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@nolyfill",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/@nolyfill",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@oxc-parser",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/@oxc-parser",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@oxc-project",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/@oxc-project",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@oxc-resolver",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/@oxc-resolver",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@poppinss",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/@poppinss",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@react-email",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/@react-email",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@rolldown",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/@rolldown",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@rollup",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/@rollup",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@rtsao",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/@rtsao",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@selderee",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/@selderee",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@sinclair",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/@sinclair",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@sindresorhus",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/@sindresorhus",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@socket.io",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/@socket.io",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@speed-highlight",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/@speed-highlight",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@stablelib",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/@stablelib",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@standard-schema",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/@standard-schema",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@storybook",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/@storybook",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@supabase",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/@supabase",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@swc",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/@swc",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@tailwindcss",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/@tailwindcss",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@testing-library",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/@testing-library",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@types",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/@types",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@typescript-eslint",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/@typescript-eslint",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@unrs",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/@unrs",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@upstash",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/@upstash",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@vercel",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/@vercel",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@vitest",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/@vitest",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@webcontainer",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/@webcontainer",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/accepts",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/accepts",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/acorn",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/acorn",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/acorn-jsx",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/acorn-jsx",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/ajv",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/ajv",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/ajv-formats",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/ajv-formats",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/ansi-regex",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/ansi-regex",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/ansi-styles",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/ansi-styles",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/argparse",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/argparse",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/aria-query",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/aria-query",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/array-buffer-byte-length",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/array-buffer-byte-length",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/array-includes",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/array-includes",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/array.prototype.findlast",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/array.prototype.findlast",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/array.prototype.findlastindex",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/array.prototype.findlastindex",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/array.prototype.flat",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/array.prototype.flat",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/array.prototype.flatmap",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/array.prototype.flatmap",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/array.prototype.tosorted",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/array.prototype.tosorted",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/arraybuffer.prototype.slice",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/arraybuffer.prototype.slice",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/assertion-error",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/assertion-error",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/ast-types",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/ast-types",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/ast-types-flow",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/ast-types-flow",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/astral-regex",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/astral-regex",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/async-function",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/async-function",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/atomically",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/atomically",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/available-typed-arrays",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/available-typed-arrays",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/axe-core",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/axe-core",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/axobject-query",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/axobject-query",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/balanced-match",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/balanced-match",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/base64id",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/base64id",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/baseline-browser-mapping",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/baseline-browser-mapping",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/bcryptjs",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/bcryptjs",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/bidi-js",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/bidi-js",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/blake3-wasm",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/blake3-wasm",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/body-parser",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/body-parser",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/brace-expansion",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/brace-expansion",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/braces",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/braces",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/browserslist",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/browserslist",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/bundle-name",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/bundle-name",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/bytes",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/bytes",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/cacheable",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/cacheable",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/call-bind",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/call-bind",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/call-bind-apply-helpers",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/call-bind-apply-helpers",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/call-bound",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/call-bound",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/callsites",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/callsites",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/caniuse-lite",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/caniuse-lite",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/chai",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/chai",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/chalk",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/chalk",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/check-error",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/check-error",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/chokidar",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/chokidar",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/ci-info",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/ci-info",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/citty",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/citty",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/cli-cursor",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/cli-cursor",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/cli-spinners",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/cli-spinners",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/client-only",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/client-only",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/clsx",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/clsx",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/color-convert",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/color-convert",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/color-name",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/color-name",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/colord",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/colord",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/commander",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/commander",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/concat-map",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/concat-map",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/conf",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/conf",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/confbox",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/confbox",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/consola",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/consola",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/content-disposition",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/content-disposition",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/content-type",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/content-type",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/convert-source-map",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/convert-source-map",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/cookie",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/cookie",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/cookie-signature",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/cookie-signature",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/cors",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/cors",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/cosmiconfig",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/cosmiconfig",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/cross-spawn",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/cross-spawn",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/css-functions-list",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/css-functions-list",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/css-tree",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/css-tree",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/css.escape",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/css.escape",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/cssesc",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/cssesc",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/csstype",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/csstype",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/damerau-levenshtein",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/damerau-levenshtein",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/data-urls",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/data-urls",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/data-view-buffer",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/data-view-buffer",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/data-view-byte-length",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/data-view-byte-length",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/data-view-byte-offset",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/data-view-byte-offset",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/debounce",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/debounce",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/debounce-fn",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/debounce-fn",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/debug",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/debug",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/decimal.js",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/decimal.js",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/deep-eql",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/deep-eql",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/deep-is",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/deep-is",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/deepmerge",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/deepmerge",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/default-browser",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/default-browser",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/default-browser-id",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/default-browser-id",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/define-data-property",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/define-data-property",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/define-lazy-prop",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/define-lazy-prop",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/define-properties",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/define-properties",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/depd",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/depd",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/dequal",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/dequal",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/detect-libc",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/detect-libc",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/diff-sequences",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/diff-sequences",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/doctrine",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/doctrine",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/dom-accessibility-api",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/dom-accessibility-api",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/dom-serializer",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/dom-serializer",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/domelementtype",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/domelementtype",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/domhandler",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/domhandler",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/dompurify",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/dompurify",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/domutils",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/domutils",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/dot-prop",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/dot-prop",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/dunder-proto",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/dunder-proto",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/ee-first",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/ee-first",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/electron-to-chromium",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/electron-to-chromium",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/emoji-regex",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/emoji-regex",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/empathic",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/empathic",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/encodeurl",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/encodeurl",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/engine.io",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/engine.io",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/engine.io-parser",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/engine.io-parser",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/enhanced-resolve",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/enhanced-resolve",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/entities",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/entities",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/env-paths",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/env-paths",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/error-ex",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/error-ex",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/error-stack-parser-es",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/error-stack-parser-es",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/es-abstract",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/es-abstract",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/es-define-property",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/es-define-property",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/es-errors",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/es-errors",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/es-iterator-helpers",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/es-iterator-helpers",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/es-module-lexer",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/es-module-lexer",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/es-object-atoms",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/es-object-atoms",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/es-set-tostringtag",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/es-set-tostringtag",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/es-shim-unscopables",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/es-shim-unscopables",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/es-to-primitive",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/es-to-primitive",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/esbuild",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/esbuild",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/escalade",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/escalade",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/escape-html",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/escape-html",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/escape-string-regexp",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/escape-string-regexp",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/eslint-config-next",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/eslint-config-next",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/eslint-import-resolver-node",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/eslint-import-resolver-node",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/eslint-import-resolver-typescript",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/eslint-import-resolver-typescript",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/eslint-module-utils",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/eslint-module-utils",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/eslint-plugin-import",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/eslint-plugin-import",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/eslint-plugin-jsx-a11y",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/eslint-plugin-jsx-a11y",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/eslint-plugin-react",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/eslint-plugin-react",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/eslint-plugin-react-hooks",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/eslint-plugin-react-hooks",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/eslint-scope",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/eslint-scope",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/eslint-visitor-keys",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/eslint-visitor-keys",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/espree",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/espree",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/esprima",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/esprima",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/esquery",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/esquery",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/esrecurse",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/esrecurse",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/estraverse",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/estraverse",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/estree-walker",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/estree-walker",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/esutils",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/esutils",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/etag",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/etag",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/eventsource",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/eventsource",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/eventsource-parser",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/eventsource-parser",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/expect",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/expect",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/expect-type",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/expect-type",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/express",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/express",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/express-rate-limit",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/express-rate-limit",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/exsolve",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/exsolve",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/fast-deep-equal",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/fast-deep-equal",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/fast-glob",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/fast-glob",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/fast-json-stable-stringify",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/fast-json-stable-stringify",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/fast-levenshtein",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/fast-levenshtein",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/fast-sha256",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/fast-sha256",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/fast-uri",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/fast-uri",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/fastest-levenshtein",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/fastest-levenshtein",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/fastq",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/fastq",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/fdir",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/fdir",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/file-entry-cache",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/file-entry-cache",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/fill-range",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/fill-range",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/finalhandler",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/finalhandler",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/find-up",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/find-up",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/flat-cache",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/flat-cache",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/flatted",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/flatted",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/for-each",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/for-each",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/foreground-child",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/foreground-child",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/forwarded",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/forwarded",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/framer-motion",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/framer-motion",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/fresh",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/fresh",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/fsevents",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/fsevents",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/function-bind",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/function-bind",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/function.prototype.name",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/function.prototype.name",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/functions-have-names",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/functions-have-names",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/generator-function",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/generator-function",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/gensync",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/gensync",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/get-east-asian-width",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/get-east-asian-width",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/get-intrinsic",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/get-intrinsic",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/get-proto",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/get-proto",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/get-symbol-description",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/get-symbol-description",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/get-tsconfig",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/get-tsconfig",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/glob",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/glob",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/glob-parent",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/glob-parent",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/global-modules",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/global-modules",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/global-prefix",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/global-prefix",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/globals",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/globals",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/globalthis",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/globalthis",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/globby",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/globby",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/globjoin",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/globjoin",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/gopd",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/gopd",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/graceful-fs",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/graceful-fs",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/gsap",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/gsap",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/has-bigints",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/has-bigints",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/has-flag",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/has-flag",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/has-property-descriptors",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/has-property-descriptors",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/has-proto",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/has-proto",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/has-symbols",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/has-symbols",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/has-tostringtag",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/has-tostringtag",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/hash-wasm",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/hash-wasm",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/hashery",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/hashery",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/hasown",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/hasown",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/hermes-estree",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/hermes-estree",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/hermes-parser",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/hermes-parser",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/hookified",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/hookified",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/html-encoding-sniffer",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/html-encoding-sniffer",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/html-tags",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/html-tags",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/html-to-text",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/html-to-text",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/htmlparser2",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/htmlparser2",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/http-errors",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/http-errors",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/iceberg-js",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/iceberg-js",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/iconv-lite",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/iconv-lite",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/ignore",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/ignore",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/import-fresh",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/import-fresh",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/import-meta-resolve",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/import-meta-resolve",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/imurmurhash",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/imurmurhash",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/indent-string",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/indent-string",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/inherits",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/inherits",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/ini",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/ini",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/internal-slot",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/internal-slot",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/ip-address",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/ip-address",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/ipaddr.js",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/ipaddr.js",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-array-buffer",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-array-buffer",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-arrayish",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-arrayish",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-async-function",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-async-function",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-bigint",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-bigint",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-boolean-object",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-boolean-object",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-bun-module",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-bun-module",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-callable",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-callable",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-core-module",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-core-module",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-data-view",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-data-view",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-date-object",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-date-object",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-docker",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-docker",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-extglob",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-extglob",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-finalizationregistry",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-finalizationregistry",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-fullwidth-code-point",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-fullwidth-code-point",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-generator-function",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-generator-function",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-glob",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-glob",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-inside-container",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-inside-container",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-interactive",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-interactive",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-map",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-map",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-negative-zero",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-negative-zero",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-number",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-number",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-number-object",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-number-object",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-path-inside",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-path-inside",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-potential-custom-element-name",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-potential-custom-element-name",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-promise",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-promise",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-regex",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-regex",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-set",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-set",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-shared-array-buffer",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-shared-array-buffer",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-string",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-string",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-symbol",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-symbol",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-typed-array",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-typed-array",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-unicode-supported",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-unicode-supported",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-weakmap",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-weakmap",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-weakref",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-weakref",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-weakset",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-weakset",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/is-wsl",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/is-wsl",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/isarray",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/isarray",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/isexe",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/isexe",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/iterator.prototype",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/iterator.prototype",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/jackspeak",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/jackspeak",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/jest-axe",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/jest-axe",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/jest-diff",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/jest-diff",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/jest-get-type",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/jest-get-type",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/jest-matcher-utils",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/jest-matcher-utils",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/jest-message-util",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/jest-message-util",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/jest-mock",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/jest-mock",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/jest-regex-util",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/jest-regex-util",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/jest-util",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/jest-util",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/jiti",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/jiti",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/js-tokens",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/js-tokens",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/js-yaml",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/js-yaml",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/jsdom",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/jsdom",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/jsesc",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/jsesc",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/json-buffer",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/json-buffer",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/json-parse-even-better-errors",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/json-parse-even-better-errors",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/json-schema-traverse",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/json-schema-traverse",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/json-schema-typed",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/json-schema-typed",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/json-stable-stringify-without-jsonify",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/json-stable-stringify-without-jsonify",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/json5",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/json5",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/jsx-ast-utils",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/jsx-ast-utils",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/keyv",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/keyv",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/kind-of",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/kind-of",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/kleur",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/kleur",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/language-subtag-registry",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/language-subtag-registry",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/language-tags",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/language-tags",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/leac",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/leac",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/lenis",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/lenis",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/levn",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/levn",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/lightningcss",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/lightningcss",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/lightningcss-darwin-arm64",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/lightningcss-darwin-arm64",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/lilconfig",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/lilconfig",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/lines-and-columns",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/lines-and-columns",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/liquidjs",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/liquidjs",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/locate-path",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/locate-path",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/lodash.merge",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/lodash.merge",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/lodash.truncate",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/lodash.truncate",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/log-symbols",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/log-symbols",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/loose-envify",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/loose-envify",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/loupe",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/loupe",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/lru-cache",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/lru-cache",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/lucide-react",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/lucide-react",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/lz-string",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/lz-string",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/magic-string",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/magic-string",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/marked",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/marked",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/math-intrinsics",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/math-intrinsics",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/mathml-tag-names",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/mathml-tag-names",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/mdn-data",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/mdn-data",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/media-typer",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/media-typer",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/meow",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/meow",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/merge-descriptors",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/merge-descriptors",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/merge2",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/merge2",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/micromatch",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/micromatch",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/mime-db",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/mime-db",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/mime-types",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/mime-types",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/mimic-function",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/mimic-function",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/min-indent",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/min-indent",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/minimatch",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/minimatch",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/minimist",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/minimist",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/minipass",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/minipass",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/motion-dom",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/motion-dom",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/motion-utils",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/motion-utils",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/ms",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/ms",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/nanoid",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/nanoid",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/napi-postinstall",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/napi-postinstall",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/natural-compare",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/natural-compare",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/negotiator",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/negotiator",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/next",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/next",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/node-releases",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/node-releases",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/normalize-path",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/normalize-path",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/nypm",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/nypm",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/object-assign",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/object-assign",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/object-inspect",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/object-inspect",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/object-keys",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/object-keys",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/object.assign",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/object.assign",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/object.entries",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/object.entries",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/object.fromentries",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/object.fromentries",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/object.groupby",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/object.groupby",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/object.values",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/object.values",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/obug",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/obug",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/on-finished",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/on-finished",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/once",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/once",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/onetime",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/onetime",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/open",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/open",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/optionator",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/optionator",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/ora",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/ora",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/own-keys",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/own-keys",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/oxc-parser",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/oxc-parser",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/oxc-resolver",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/oxc-resolver",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/p-limit",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/p-limit",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/p-locate",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/p-locate",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/package-json-from-dist",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/package-json-from-dist",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/parent-module",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/parent-module",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/parse-json",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/parse-json",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/parse5",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/parse5",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/parseley",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/parseley",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/parseurl",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/parseurl",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/path-exists",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/path-exists",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/path-key",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/path-key",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/path-parse",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/path-parse",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/path-scurry",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/path-scurry",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/path-to-regexp",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/path-to-regexp",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/pathe",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/pathe",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/pathval",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/pathval",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/peberminta",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/peberminta",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/picocolors",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/picocolors",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/picomatch",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/picomatch",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/pkce-challenge",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/pkce-challenge",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/pkg-types",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/pkg-types",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/playwright",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/playwright",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/playwright-core",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/playwright-core",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/possible-typed-array-names",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/possible-typed-array-names",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/postal-mime",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/postal-mime",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/postcss",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/postcss",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/postcss-load-config",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/postcss-load-config",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/postcss-safe-parser",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/postcss-safe-parser",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/postcss-selector-parser",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/postcss-selector-parser",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/postcss-value-parser",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/postcss-value-parser",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/postgres",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/postgres",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/prelude-ls",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/prelude-ls",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/prettier",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/prettier",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/pretty-format",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/pretty-format",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/prismjs",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/prismjs",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/prompts",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/prompts",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/prop-types",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/prop-types",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/proxy-addr",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/proxy-addr",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/punycode",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/punycode",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/qified",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/qified",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/qs",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/qs",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/queue-microtask",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/queue-microtask",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/range-parser",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/range-parser",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/raw-body",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/raw-body",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/react",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/react",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/react-docgen",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/react-docgen",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/react-docgen-typescript",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/react-docgen-typescript",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/react-dom",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/react-dom",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/react-email",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/react-email",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/react-is",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/react-is",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/react-is-18",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/react-is-18",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/react-is-19",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/react-is-19",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/readdirp",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/readdirp",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/recast",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/recast",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/redent",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/redent",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/reflect.getprototypeof",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/reflect.getprototypeof",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/regexp.prototype.flags",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/regexp.prototype.flags",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/require-from-string",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/require-from-string",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/resend",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/resend",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/resolve",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/resolve",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/resolve-from",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/resolve-from",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/resolve-pkg-maps",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/resolve-pkg-maps",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/restore-cursor",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/restore-cursor",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/reusify",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/reusify",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/rolldown",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/rolldown",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/router",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/router",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/run-applescript",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/run-applescript",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/run-parallel",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/run-parallel",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/safe-array-concat",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/safe-array-concat",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/safe-push-apply",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/safe-push-apply",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/safe-regex-test",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/safe-regex-test",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/safer-buffer",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/safer-buffer",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/saxes",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/saxes",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/scheduler",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/scheduler",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/selderee",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/selderee",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/semver",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/semver",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/send",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/send",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/serve-static",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/serve-static",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/server-only",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/server-only",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/set-function-length",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/set-function-length",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/set-function-name",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/set-function-name",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/set-proto",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/set-proto",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/setprototypeof",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/setprototypeof",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/sharp",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/sharp",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/shebang-command",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/shebang-command",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/shebang-regex",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/shebang-regex",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/side-channel",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/side-channel",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/side-channel-list",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/side-channel-list",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/side-channel-map",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/side-channel-map",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/side-channel-weakmap",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/side-channel-weakmap",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/siginfo",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/siginfo",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/signal-exit",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/signal-exit",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/sisteransi",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/sisteransi",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/slash",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/slash",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/slice-ansi",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/slice-ansi",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/socket.io",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/socket.io",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/socket.io-adapter",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/socket.io-adapter",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/socket.io-parser",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/socket.io-parser",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/source-map",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/source-map",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/source-map-js",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/source-map-js",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/stable-hash",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/stable-hash",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/stack-utils",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/stack-utils",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/stackback",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/stackback",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/standardwebhooks",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/standardwebhooks",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/statuses",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/statuses",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/std-env",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/std-env",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/stdin-discarder",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/stdin-discarder",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/stop-iteration-iterator",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/stop-iteration-iterator",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/storybook",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/storybook",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/string-width",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/string-width",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/string.prototype.includes",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/string.prototype.includes",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/string.prototype.matchall",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/string.prototype.matchall",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/string.prototype.repeat",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/string.prototype.repeat",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/string.prototype.trim",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/string.prototype.trim",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/string.prototype.trimend",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/string.prototype.trimend",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/string.prototype.trimstart",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/string.prototype.trimstart",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/strip-ansi",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/strip-ansi",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/strip-bom",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/strip-bom",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/strip-indent",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/strip-indent",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/strip-json-comments",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/strip-json-comments",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/stubborn-fs",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/stubborn-fs",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/stubborn-utils",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/stubborn-utils",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/styled-jsx",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/styled-jsx",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/stylelint-config-recommended",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/stylelint-config-recommended",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/supports-color",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/supports-color",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/supports-hyperlinks",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/supports-hyperlinks",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/supports-preserve-symlinks-flag",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/supports-preserve-symlinks-flag",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/svg-tags",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/svg-tags",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/svix",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/svix",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/symbol-tree",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/symbol-tree",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/table",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/table",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/tagged-tag",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/tagged-tag",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/tailwind-merge",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/tailwind-merge",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/tailwindcss",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/tailwindcss",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/tapable",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/tapable",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/tiny-invariant",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/tiny-invariant",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/tinybench",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/tinybench",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/tinyexec",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/tinyexec",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/tinyglobby",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/tinyglobby",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/tinyrainbow",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/tinyrainbow",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/tinyspy",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/tinyspy",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/tldts",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/tldts",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/tldts-core",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/tldts-core",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/to-regex-range",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/to-regex-range",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/toidentifier",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/toidentifier",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/tough-cookie",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/tough-cookie",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/tr46",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/tr46",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/ts-api-utils",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/ts-api-utils",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/ts-dedent",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/ts-dedent",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/tsconfig-paths",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/tsconfig-paths",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/tslib",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/tslib",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/turbo-darwin-arm64",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/turbo-darwin-arm64",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/type-check",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/type-check",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/type-fest",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/type-fest",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/type-is",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/type-is",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/typed-array-buffer",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/typed-array-buffer",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/typed-array-byte-length",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/typed-array-byte-length",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/typed-array-byte-offset",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/typed-array-byte-offset",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/typed-array-length",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/typed-array-length",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/typescript-eslint",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/typescript-eslint",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/uint8array-extras",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/uint8array-extras",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/unbox-primitive",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/unbox-primitive",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/uncrypto",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/uncrypto",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/undici",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/undici",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/undici-types",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/undici-types",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/unenv",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/unenv",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/unicorn-magic",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/unicorn-magic",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/unpipe",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/unpipe",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/unplugin",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/unplugin",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/unrs-resolver",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/unrs-resolver",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/update-browserslist-db",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/update-browserslist-db",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/uri-js",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/uri-js",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/use-sync-external-store",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/use-sync-external-store",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/util-deprecate",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/util-deprecate",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/uuid",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/uuid",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/vary",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/vary",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/vite",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/vite",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/vitest",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/vitest",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/w3c-xmlserializer",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/w3c-xmlserializer",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/webidl-conversions",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/webidl-conversions",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/webpack-virtual-modules",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/webpack-virtual-modules",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/whatwg-mimetype",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/whatwg-mimetype",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/whatwg-url",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/whatwg-url",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/when-exit",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/when-exit",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/which",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/which",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/which-boxed-primitive",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/which-boxed-primitive",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/which-builtin-type",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/which-builtin-type",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/which-collection",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/which-collection",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/which-typed-array",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/which-typed-array",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/why-is-node-running",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/why-is-node-running",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/word-wrap",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/word-wrap",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/workerd",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/workerd",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/wrangler",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/wrangler",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/wrappy",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/wrappy",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/write-file-atomic",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/write-file-atomic",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/ws",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/ws",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/wsl-utils",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/wsl-utils",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/xml-name-validator",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/xml-name-validator",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/xmlchars",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/xmlchars",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/yallist",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/yallist",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/yocto-queue",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/yocto-queue",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/yoctocolors",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/yoctocolors",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/youch",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/youch",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/youch-core",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/youch-core",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/zod",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/zod",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/zod-to-json-schema",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/zod-to-json-schema",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/zod-validation-error",
+      "target": "/private/tmp/letbuyy-shared-completion-20261024-06/node_modules/.pnpm/node_modules/zod-validation-error",
+      "kind": "READ_ONLY_VENDOR_RESOLUTION_FACADE"
+    }
+  ],
+  "workspaceAliases": [
+    {
+      "path": "node_modules/.pnpm/node_modules/@letbuyy/api-client",
+      "target": "/private/tmp/letbuyy-circuit-performance-native-source-20261025-01/packages/typescript/api-client",
+      "kind": "CONTAINED_WORKSPACE_EXPORT"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@letbuyy/api-types",
+      "target": "/private/tmp/letbuyy-circuit-performance-native-source-20261025-01/packages/typescript/api-types",
+      "kind": "CONTAINED_WORKSPACE_EXPORT"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@letbuyy/audit-core",
+      "target": "/private/tmp/letbuyy-circuit-performance-native-source-20261025-01/packages/audit-core",
+      "kind": "CONTAINED_WORKSPACE_EXPORT"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@letbuyy/auth-core",
+      "target": "/private/tmp/letbuyy-circuit-performance-native-source-20261025-01/packages/auth-core",
+      "kind": "CONTAINED_WORKSPACE_EXPORT"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@letbuyy/billing-core",
+      "target": "/private/tmp/letbuyy-circuit-performance-native-source-20261025-01/packages/billing-core",
+      "kind": "CONTAINED_WORKSPACE_EXPORT"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@letbuyy/checkout-core",
+      "target": "/private/tmp/letbuyy-circuit-performance-native-source-20261025-01/packages/checkout-core",
+      "kind": "CONTAINED_WORKSPACE_EXPORT"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@letbuyy/cms-core",
+      "target": "/private/tmp/letbuyy-circuit-performance-native-source-20261025-01/packages/cms-core",
+      "kind": "CONTAINED_WORKSPACE_EXPORT"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@letbuyy/commerce-core",
+      "target": "/private/tmp/letbuyy-circuit-performance-native-source-20261025-01/packages/commerce-core",
+      "kind": "CONTAINED_WORKSPACE_EXPORT"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@letbuyy/event-core",
+      "target": "/private/tmp/letbuyy-circuit-performance-native-source-20261025-01/packages/event-core",
+      "kind": "CONTAINED_WORKSPACE_EXPORT"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@letbuyy/identity-core",
+      "target": "/private/tmp/letbuyy-circuit-performance-native-source-20261025-01/packages/identity-core",
+      "kind": "CONTAINED_WORKSPACE_EXPORT"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@letbuyy/infrastructure",
+      "target": "/private/tmp/letbuyy-circuit-performance-native-source-20261025-01/packages/infrastructure",
+      "kind": "CONTAINED_WORKSPACE_EXPORT"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@letbuyy/lcis-adapters",
+      "target": "/private/tmp/letbuyy-circuit-performance-native-source-20261025-01/packages/lcis-adapters",
+      "kind": "CONTAINED_WORKSPACE_EXPORT"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@letbuyy/lcis-business",
+      "target": "/private/tmp/letbuyy-circuit-performance-native-source-20261025-01/packages/lcis-business",
+      "kind": "CONTAINED_WORKSPACE_EXPORT"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@letbuyy/lcis-cli",
+      "target": "/private/tmp/letbuyy-circuit-performance-native-source-20261025-01/packages/lcis-cli",
+      "kind": "CONTAINED_WORKSPACE_EXPORT"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@letbuyy/lcis-core",
+      "target": "/private/tmp/letbuyy-circuit-performance-native-source-20261025-01/packages/lcis-core",
+      "kind": "CONTAINED_WORKSPACE_EXPORT"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@letbuyy/lcis-decision",
+      "target": "/private/tmp/letbuyy-circuit-performance-native-source-20261025-01/packages/lcis-decision",
+      "kind": "CONTAINED_WORKSPACE_EXPORT"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@letbuyy/lcis-engineering",
+      "target": "/private/tmp/letbuyy-circuit-performance-native-source-20261025-01/packages/lcis-engineering",
+      "kind": "CONTAINED_WORKSPACE_EXPORT"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@letbuyy/lcis-execution",
+      "target": "/private/tmp/letbuyy-circuit-performance-native-source-20261025-01/packages/lcis-execution",
+      "kind": "CONTAINED_WORKSPACE_EXPORT"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@letbuyy/lcis-governance",
+      "target": "/private/tmp/letbuyy-circuit-performance-native-source-20261025-01/packages/lcis-governance",
+      "kind": "CONTAINED_WORKSPACE_EXPORT"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@letbuyy/lcis-live",
+      "target": "/private/tmp/letbuyy-circuit-performance-native-source-20261025-01/packages/lcis-live",
+      "kind": "CONTAINED_WORKSPACE_EXPORT"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@letbuyy/lcis-mcp",
+      "target": "/private/tmp/letbuyy-circuit-performance-native-source-20261025-01/packages/lcis-mcp",
+      "kind": "CONTAINED_WORKSPACE_EXPORT"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@letbuyy/lcis-operations",
+      "target": "/private/tmp/letbuyy-circuit-performance-native-source-20261025-01/packages/lcis-operations",
+      "kind": "CONTAINED_WORKSPACE_EXPORT"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@letbuyy/lcis-orchestration",
+      "target": "/private/tmp/letbuyy-circuit-performance-native-source-20261025-01/packages/lcis-orchestration",
+      "kind": "CONTAINED_WORKSPACE_EXPORT"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@letbuyy/lcis-performance",
+      "target": "/private/tmp/letbuyy-circuit-performance-native-source-20261025-01/packages/lcis-performance",
+      "kind": "CONTAINED_WORKSPACE_EXPORT"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@letbuyy/lcis-pr-check",
+      "target": "/private/tmp/letbuyy-circuit-performance-native-source-20261025-01/packages/lcis-pr-check",
+      "kind": "CONTAINED_WORKSPACE_EXPORT"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@letbuyy/lcis-quality",
+      "target": "/private/tmp/letbuyy-circuit-performance-native-source-20261025-01/packages/lcis-quality",
+      "kind": "CONTAINED_WORKSPACE_EXPORT"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@letbuyy/lcis-rootcause",
+      "target": "/private/tmp/letbuyy-circuit-performance-native-source-20261025-01/packages/lcis-rootcause",
+      "kind": "CONTAINED_WORKSPACE_EXPORT"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@letbuyy/lcis-security",
+      "target": "/private/tmp/letbuyy-circuit-performance-native-source-20261025-01/packages/lcis-security",
+      "kind": "CONTAINED_WORKSPACE_EXPORT"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@letbuyy/lcis-tracking",
+      "target": "/private/tmp/letbuyy-circuit-performance-native-source-20261025-01/packages/lcis-tracking",
+      "kind": "CONTAINED_WORKSPACE_EXPORT"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@letbuyy/lcis-twin",
+      "target": "/private/tmp/letbuyy-circuit-performance-native-source-20261025-01/packages/lcis-twin",
+      "kind": "CONTAINED_WORKSPACE_EXPORT"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@letbuyy/notification-core",
+      "target": "/private/tmp/letbuyy-circuit-performance-native-source-20261025-01/packages/notification-core",
+      "kind": "CONTAINED_WORKSPACE_EXPORT"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@letbuyy/organization-core",
+      "target": "/private/tmp/letbuyy-circuit-performance-native-source-20261025-01/packages/organization-core",
+      "kind": "CONTAINED_WORKSPACE_EXPORT"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@letbuyy/payments",
+      "target": "/private/tmp/letbuyy-circuit-performance-native-source-20261025-01/packages/payments",
+      "kind": "CONTAINED_WORKSPACE_EXPORT"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@letbuyy/permission-core",
+      "target": "/private/tmp/letbuyy-circuit-performance-native-source-20261025-01/packages/permission-core",
+      "kind": "CONTAINED_WORKSPACE_EXPORT"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@letbuyy/session-core",
+      "target": "/private/tmp/letbuyy-circuit-performance-native-source-20261025-01/packages/session-core",
+      "kind": "CONTAINED_WORKSPACE_EXPORT"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@letbuyy/shared-types",
+      "target": "/private/tmp/letbuyy-circuit-performance-native-source-20261025-01/packages/shared-types",
+      "kind": "CONTAINED_WORKSPACE_EXPORT"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@letbuyy/tenant-core",
+      "target": "/private/tmp/letbuyy-circuit-performance-native-source-20261025-01/packages/tenant-core",
+      "kind": "CONTAINED_WORKSPACE_EXPORT"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@letbuyy/theme-engine",
+      "target": "/private/tmp/letbuyy-circuit-performance-native-source-20261025-01/packages/theme-engine",
+      "kind": "CONTAINED_WORKSPACE_EXPORT"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@letbuyy/token-core",
+      "target": "/private/tmp/letbuyy-circuit-performance-native-source-20261025-01/packages/token-core",
+      "kind": "CONTAINED_WORKSPACE_EXPORT"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/@letbuyy/ui",
+      "target": "/private/tmp/letbuyy-circuit-performance-native-source-20261025-01/packages/typescript/ui",
+      "kind": "CONTAINED_WORKSPACE_EXPORT"
+    }
+  ],
+  "pinnedSourceChanges": 0,
+  "globalOrPriorCandidateChanges": false,
+  "nativeExecuted": false,
+  "initialPartialAttempt": "Facade directory creation encountered existing empty node_modules; raw attempt preserved in tool record. Completion used existing owned empty directory without deleting data."
+}

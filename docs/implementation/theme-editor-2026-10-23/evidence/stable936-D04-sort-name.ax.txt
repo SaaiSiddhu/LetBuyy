@@ -1,0 +1,83 @@
+Browser tab: 53, Title: "Search results for \"Fixture\" | Threadline", URL: "http://syn-threadline-ui-6815276b.localhost:50494/search?search=Fixture&routine_stage=&format=&shade=&sort=name&limit=1&category=Care&country_of_origin=India".
+1 AXWebArea Search results for "Fixture" | Threadline, URL: syn-threadline-ui-6815276b.localhost:50494/search?search=Fixture&routine_stage=&format=&shade=&sort=name&limit=1&category=Care&country_of_origin=India
+	2 container
+		3 text Dewdrop 936 B — saved recovery draft.
+		4 link syn-threadline-ui-6815276b.localhost:50494/search?search=Fixture&routine_stage=&format=&shade=&sort=name&limit=1&category=Care&country_of_origin=India
+		5 container Description: Primary, ID: lb-nav-panel-header-default
+		6 link Description: Threadline, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b
+		7 button (collapsed) Description: Search, Secondary Actions: Expand
+		8 link Description: Log in, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/customers/login
+		9 link Description: Cart ( 1 ), Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/cart
+		10 container Filter products by country of origin
+			11 container
+				12 text Country of origin
+				13 text field (settable) Country of origin, Value: India, ID: lb-product-origin-filter
+				14 button Apply filter
+				15 link Description: Clear origin filter, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/search?limit=1&search=Fixture&category=Care&sort=name
+		16 text THE ROUTINE SHELF
+		17 heading Search products, Value: 1
+			18 text Search products
+		19 text Browse by use. Each product is sold independently.
+		20 container
+			21 text Search care products
+			22 search text field (settable) Search care products, Value: Fixture
+			23 text Routine stage
+			24 pop up button (collapsed, settable) Routine stage, Value: All stages, Secondary Actions: Expand
+				25 menu
+					26 (selected) All stages
+					27 care
+					28 cleanse
+					29 colour
+			30 text Format
+			31 pop up button (collapsed, settable) Format, Value: All formats, Secondary Actions: Expand
+				32 menu
+					33 (selected) All formats
+					34 Face cream
+					35 Gel cleanser
+					36 Lip tint
+			37 text Shade name
+			38 pop up button (collapsed, settable) Shade name, Value: All named shades, Secondary Actions: Expand
+				39 menu
+					40 (selected) All named shades
+					41 Pink Clay
+					42 Rosewater
+			43 text Sort
+			44 pop up button (collapsed, settable) Sort, Value: Name, Secondary Actions: Expand
+				45 menu
+					46 Featured
+					47 Price: low to high
+					48 Price: high to low
+					49 Newest
+					50 (selected) Name
+			51 button Apply filters
+		52 container Applied filters
+			53 link Description: Remove Category: Care, Value: syn-threadline-ui-6815276b.localhost:50494/search?limit=1&search=Fixture&country_of_origin=India&sort=name
+			54 link Description: Remove Country of origin: India, Value: syn-threadline-ui-6815276b.localhost:50494/search?limit=1&search=Fixture&category=Care&sort=name
+		55 link Description: Clear filters, Value: syn-threadline-ui-6815276b.localhost:50494/search?limit=1&search=Fixture&sort=name
+		56 text 4 products
+		57 heading Search results, Value: 2
+			58 text Search results
+		59 container Cleanse products
+			60 text 01
+			61 heading Cleanse, Value: 2
+				62 text Cleanse
+			63 container
+				64 link Description: Fixture Cloud Rinse, Value: syn-threadline-ui-6815276b.localhost:50494/product/1d743654-5039-41e9-931f-08bb4530dfc5
+				65 text GEL CLEANSER
+				66 heading Fixture Cloud Rinse, Value: 3
+					67 link Description: Fixture Cloud Rinse, Value: syn-threadline-ui-6815276b.localhost:50494/product/1d743654-5039-41e9-931f-08bb4530dfc5
+				68 text INR 640.00 150 ml
+				69 link Description: View product →, Value: syn-threadline-ui-6815276b.localhost:50494/product/1d743654-5039-41e9-931f-08bb4530dfc5
+		70 container Product pages
+			71 text Page 1
+			72 link Description: Next →, Value: syn-threadline-ui-6815276b.localhost:50494/search?page=2&limit=1&search=Fixture&category=Care&country_of_origin=India&sort=name
+		73 heading Threadline, Value: 3
+			74 text Threadline
+		75 text Dewdrop 936 B footer saved
+		76 heading CONTACT, Value: 4
+			77 text CONTACT
+		78 link Description: Contact us, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/contact
+		79 text © Threadline. All rights reserved.
+		80 link Description: Powered by LetBuyy, Value: letbuyy.com/
+
+The focused UI element is 1 AXWebArea Search results for "Fixture" | Threadline, URL: syn-threadline-ui-6815276b.localhost:50494/search?search=Fixture&routine_stage=&format=&shade=&sort=name&limit=1&category=Care&country_of_origin=India

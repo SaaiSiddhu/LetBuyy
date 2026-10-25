@@ -1,4 +1,5 @@
 import { createMiddleware } from 'hono/factory';
+import { z } from 'zod';
 import type { Context } from 'hono';
 import type { Env } from '../index';
 import { IdempotencyExecutionAdapter } from '../execution/idempotency-execution.adapter';
@@ -60,6 +61,10 @@ const BOOTSTRAP_CREATION_PATHS = new Set(['/stores']);
 
 function isProtectedMutationPath(path: string, method?: string): boolean {
     const normalized = normalizePath(path);
+    // Device registration is actor-bound, including before store selection.
+    // Upsert(user_id,token) and DELETE(user_id,token) are intrinsically idempotent;
+    // the site-scoped response cache must never replay registration after logout.
+    if (normalized === '/notifications/device-tokens' && (method === 'POST' || method === 'DELETE')) return false;
     // The pre-store web draft is account-bound and has no site_id yet. Its
     // SECURITY DEFINER RPC takes a per-user advisory lock and upserts one row,
     // so the site-scoped idempotency table cannot represent this operation.
@@ -216,6 +221,11 @@ export const protectedMutationIdempotency = createMiddleware<{ Bindings: Env }>(
                 message: 'A store context is required for this mutation.',
             },
         }, 400);
+    }
+
+    if (!z.string().uuid().safeParse(siteId).success) {
+        return c.json({ error: { code: 'IDEMPOTENCY_SITE_INVALID',
+            message: 'A valid store context is required for this mutation.' } }, 400);
     }
 
     // Product creation still owns its existing HTTP receipt and mandatory key.

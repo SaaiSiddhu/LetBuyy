@@ -1,0 +1,44 @@
+{
+  "recordedAt": "2026-10-24T23:56:47.892764+00:00",
+  "status": "SAME_RUNTIME07_LOCAL_APPS_DATABASE_AND_DRAFTS_PRESERVED_READY_PUBLIC_CALLBACK_OFFLINE",
+  "runId": "49ada80bc494",
+  "candidate": "/private/tmp/letbuyy-shared-completion-20261024-06",
+  "siteId": "02049de4-41c3-4b10-b5b2-a60a6b5e82bf",
+  "subdomain": "syn-threadline-ui-ae3f0477",
+  "outerRunnerPid54685": "ALIVE_VERIFIED_UNSANDBOXED_READONLY",
+  "actualRuntimePid": 55109,
+  "liveAppPids": {
+    "identity": 55491,
+    "merchant": 55676,
+    "commerce": 55853
+  },
+  "ports": {
+    "identity": 64593,
+    "merchant": 64594,
+    "commerce": 64595,
+    "checkoutTls": 64597,
+    "gateway": 64598,
+    "canonicalReceiver": 65314
+  },
+  "database": {
+    "container": "letbuyy-exec-54685-mvmssydy-fe81e9",
+    "status": "running",
+    "volume": "letbuyy-exec-49ada80bc494-1-data"
+  },
+  "checks": {
+    "sameBookProductPublicGET": 200,
+    "identityGET": 200,
+    "normalBrowserCartCount": 0,
+    "bookPageSameUUID": true,
+    "merchantMarginaliaMarkerSavedPublished": true
+  },
+  "newRuntimeOrDatabaseCreated": false,
+  "sourceBuildRestartResetOrFixtureReseed": false,
+  "providerActions": "HELD_PENDING_PUBLIC_CALLBACK_RENEWAL_APPROVAL",
+  "fixedOldExposureEnd": "2026-10-24T22:20:00Z",
+  "newProposedExposureEnd": "2026-10-25T04:30:00Z",
+  "browserController": "01a16ce5-e5ba-7191-ab2c-a1b76947d2b5",
+  "browserScope": "Normal UI only on owned site: Marginalia/Kindred/MadeYours/Playfield existing intended products; no repeat of sixpaidorders; no providerattempt untilpublicreceipt ready; Marginalia factclearing requires specificapproval",
+  "earlierLivenessErrorCorrection": "RUNNER_LIVENESS_CORRECTION_03.json",
+  "correctedAt": "2026-10-25T00:33:10.858710+00:00"
+}

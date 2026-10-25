@@ -1,0 +1,12 @@
+{
+  "runId": "fd5df14cfa1d",
+  "markerVerified": true,
+  "matchingSyntheticProducts": 3,
+  "before": 0,
+  "after": 3,
+  "planner": "packages/event-core/src/queue-projection-plans.ts",
+  "plannerSha256": "d0cbbe4b067d20f7ea11b0b342c0373f7b2c32a45b4581c6c551d3f120ffdc21",
+  "suggestStatus": 200,
+  "suggestionCount": 1,
+  "boundary": "Fixture-only search read-document setup from the existing canonical planner; direct SQL products did not emit queue work. This does not prove queue indexing, a projection rebuild, or production coverage."
+}

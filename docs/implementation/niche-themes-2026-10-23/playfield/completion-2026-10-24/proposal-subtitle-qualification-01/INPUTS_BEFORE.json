@@ -1,0 +1,84 @@
+{
+  "recordedAt": "2026-10-24T08:49:41.687164+00:00",
+  "classification": "PRIVATE_FOCUSED_SOURCE_RENDER_PROPOSAL_NOT_RELEASE_OR_RUNTIME_QUALIFICATION",
+  "previousGoalTurn": "PROGRESS: inventory, coverage, concrete findings and unapplied private proposal created.",
+  "currentAllocation": "ABSENT; no shared writer or runtime/controller grant",
+  "unitScope": "One finite canonical Liquid source-render cohort only; no app server, build, DB, browser, catalogue export, migration or provider.",
+  "inputs": [
+    {
+      "path": "packages/theme-engine/src/playfield-theme-v201.ts",
+      "sha256": "f2d428503df3630bcb79141488d109e10284412a2a523fa8ad77343aa47ae132",
+      "bytes": 5882
+    },
+    {
+      "path": "packages/theme-engine/src/playfield-theme.ts",
+      "sha256": "00493cb361c8fc796941524d9673ee4c1bfa3a12785017e2397e408b924edb63",
+      "bytes": 18284
+    },
+    {
+      "path": "packages/theme-engine/src/playfield-discovery.ts",
+      "sha256": "876769a92360a5cc8cd89ab69a436c12c1eda6df32eb4466bdda10111ef297a8",
+      "bytes": 6937
+    },
+    {
+      "path": "packages/theme-engine/src/playfield-styles.ts",
+      "sha256": "7cb3da13790ec83dcb4bcf6a837abc68e53ebf9a8a49f44b5582af55b1d59243",
+      "bytes": 14097
+    },
+    {
+      "path": "packages/theme-engine/src/theme-bundle.ts",
+      "sha256": "cdbad4b28277431a3ab06e56ed0ce16539e04837bb107f5f951a3df39a92ed76",
+      "bytes": 213170
+    },
+    {
+      "path": "packages/theme-engine/src/theme-bundle-core.ts",
+      "sha256": "0e1650a4d71ef358792c0f877f4ae678794fb6d2cfdebbb30d79563e4a2f452f",
+      "bytes": 5963
+    },
+    {
+      "path": "packages/theme-engine/src/theme-renderer.ts",
+      "sha256": "794cbc6ff9ae71f995560f302e1b0d5f0d4ff4da59fa31191585851b1e822164",
+      "bytes": 107646
+    },
+    {
+      "path": "packages/theme-engine/src/theme-settings.ts",
+      "sha256": "3ac7b069b156f89d8f412103cbe6003775524fe4660f47c16a82b13c6a1a2e00",
+      "bytes": 843
+    },
+    {
+      "path": "packages/theme-engine/package.json",
+      "sha256": "8eec1e66946b79412200297e8755d67f6769fe49beec86c5d7eeb2ccf013b763",
+      "bytes": 1076
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "sha256": "15fd89109bbc17e0624e29d5a1b56db07e19f1f880c44d9a9abf847b52b6d09a",
+      "bytes": 380811
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/private-proposals/playfield-theme-v201.ts.proposed",
+      "sha256": "990d9c6736649a0c30dc3cd9ae8880d56a15b6fe361f27c221f5358effd6798e",
+      "bytes": 6522
+    }
+  ],
+  "factoryImportRelocation": {
+    "rewrites": {
+      "from './theme-bundle'": "from '/Volumes/Projects/LetBuyy/packages/theme-engine/src/theme-bundle'",
+      "from './playfield-theme'": "from '/Volumes/Projects/LetBuyy/packages/theme-engine/src/playfield-theme'"
+    },
+    "otherBytesChanged": false,
+    "purpose": "Resolve the two existing canonical package imports from the owned test directory without editing shared source.",
+    "relocatedFile": {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/proposal-subtitle-qualification-01/factory-under-test.ts",
+      "sha256": "b2d826d2487fb5f652b757b180d03c3c38e4031ad1998633fcb4f18b72e56bed",
+      "bytes": 6622
+    }
+  },
+  "notClaimed": [
+    "Complete transitive source/runtime qualification",
+    "Actual installed-case execution",
+    "Independent acceptance",
+    "Semantic TypeScript typecheck",
+    "All twenty older builders rerun"
+  ]
+}

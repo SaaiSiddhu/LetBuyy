@@ -1,0 +1,16 @@
+{
+  "componentUnderTest": "Complete allocated CenterPanel module compiled by existing TypeScript and mounted with real ReactDOM/createRoot; no hook stubs, source extraction or source-string assertions for lifecycle verdict.",
+  "actualDependencies": "Existing React, ReactDOM, Button, Lucide, PreviewInspectorOverlay, fitPreviewViewport and canonical bridge protocol are read-only existing modules.",
+  "controlledBoundaries": [
+    "Synthetic URL configuration stub; no actual env/token/key/archive/private state read",
+    "jsdom subresources disabled; global fetch rejects. No actual iframe HTML/navigation or browser engine",
+    "ResizeObserver and DOM geometry controlled;20stimer controlled; iframe load/window MessageEvents deliberate",
+    "Parent ignores inbound viewport message class including invalid values. Existing child validator is unchanged; prior10source checks cover it, not a new mounted child verdict."
+  ],
+  "notEstablished": [
+    "Actual browser paint/layout/accessibility/performance",
+    "Exact cause of recorded v23aboutblank navigation stall",
+    "Actual initial-navigation/Retry/provider or fulltheme certification",
+    "Runtime integration of independent Root gateway revision guard"
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "recordedAt": "2026-10-25T00:24:51.882171+00:00",
+  "status": "SEALED_PRIVATE03_NATIVE_CASE_SOURCE_PREPARATION_NOT_EXECUTION_ADMISSION",
+  "mutableOverlayCount": 1,
+  "readOnlyOverlays": 7,
+  "SQLPairByteExact": true,
+  "originalSourceUniverse": 6547,
+  "copiedBaseFiles": 6541,
+  "excludedEnvTemplates": 6,
+  "readOnlyBaseFilesRechecked": 6536,
+  "completeNativeSourceFiles": 1120,
+  "runtimeOrTypeModulesResolvedNotImported": 478,
+  "importExportEdges": 3749,
+  "vendorToolFilePins": 5411,
+  "migrations": 322,
+  "maxMigration": 393,
+  "ceiling": null,
+  "pureMetadataCasesPass": 13,
+  "pureMetadataCasesFail": 0,
+  "overlapRerun": "The earlier13-case metadata pass is retained but not added to unique coverage; final13 match final inputs.",
+  "typecheck": {
+    "ownedIntroduced": 0,
+    "baselineDiagnostics": 5,
+    "proposedOtherDiagnostics": 5,
+    "exactBaselineEquality": true,
+    "inputStableAcrossCompiler": true,
+    "businessLeaks": 0
+  },
+  "retained02SuitesNotRerun": {
+    "focused": 16,
+    "regressionExecutions": 45,
+    "frozenSenseOverlap": 1
+  },
+  "discoveredAppModuleEvaluationNativeDbDockerBuildBrowserProviderActions": 0,
+  "NativeExpectedTests": 4,
+  "fullThemeCertificate": false
+}

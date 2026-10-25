@@ -1,0 +1,26 @@
+{
+  "recordedAt": "2026-10-23T19:31:24.010286+00:00",
+  "finalReview": {
+    "path": "docs/implementation/niche-theme-programme/release-playfield201/order-presentation-source-repair/final-review.json",
+    "sha256": "82c2d8fa1ff511031764b6a84f18288b7566397b4e0958a973428526d7a21d9f"
+  },
+  "sourceFiles": [
+    {
+      "path": "packages/theme-engine/src/niche-order-presentation.ts",
+      "sha256": "6c5f89356bab085cc8a3a359c5caad4503dc8442176df0b8a1558b849d651ac3",
+      "bytes": 2585
+    },
+    {
+      "path": "packages/theme-engine/test/niche-order-presentation.test.ts",
+      "sha256": "20cef99b2deea24bb02b0c08ecfe7224eb3e8fe90b2a30c09c06afc88502eb19",
+      "bytes": 8701
+    }
+  ],
+  "sourceLeaseReleased": true,
+  "newSourceEpochRootAdmittedAtHandoff": false,
+  "revisedRawFactorySha256": "91dd7e6239aefa6a341dfc04ba5d8cc79d8136f1c4d46b48fda66799ecbbe9d7",
+  "priorUrlReceipt": {
+    "path": "docs/implementation/niche-themes-2026-10-23/playfield/variant-url-owner-transition-2026-10-24/SOURCE_RELEASE.json",
+    "sha256": "7411084578fa7ffa556592cea8dbfd857e7c5991dfd339735367810266693ab9"
+  }
+}

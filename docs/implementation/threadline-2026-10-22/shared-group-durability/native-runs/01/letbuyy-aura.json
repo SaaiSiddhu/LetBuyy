@@ -1,0 +1,71 @@
+{
+  "version": 9,
+  "fields": {
+    "header": {
+      "template": "header",
+      "section": "announcement-default",
+      "key": "text"
+    },
+    "footer": {
+      "template": "footer",
+      "section": "footer-default",
+      "key": "storeName"
+    },
+    "local": {
+      "template": "index",
+      "section": "aura-care-introduction",
+      "key": "heading"
+    }
+  },
+  "markers": {
+    "header": "Native391 header letbuyy-aura",
+    "footer": "Native391 footer letbuyy-aura",
+    "local": "Native391 local letbuyy-aura omitted-header omitted-footer omitted-header-footer"
+  },
+  "packageId": "a6b03d7b-2b01-46a8-8df3-c38aa9c789aa",
+  "packageVersionId": "29b6413a-b20a-43b2-b13e-6e4092916d1a",
+  "releaseId": "0bd06ae5-55bc-4911-96de-d71965e8a813",
+  "rootSha256": "5dfa5b8189435c86c4f0352389272483e933508a756868ac6d4226172d9a5f3c",
+  "immutableBaseSha256": "f33a757208ed0928199bf09a7f38de189369d1bb0dc5b204a9d9b7af7e6b32a1",
+  "projectedSha256": "eff7df100d671c6a81904cf4f058c8bb20bad6ffa114e741cceb98a3f1eefe5b",
+  "publicStatus": 200,
+  "omissionProofs": [
+    {
+      "omitted": [
+        "header"
+      ],
+      "acknowledgedVersion": 7,
+      "reloadedVersion": 7,
+      "header": "Native391 header letbuyy-aura",
+      "footer": "Native391 footer letbuyy-aura",
+      "selectedLocal": "Native391 local letbuyy-aura omitted-header"
+    },
+    {
+      "omitted": [
+        "footer"
+      ],
+      "acknowledgedVersion": 8,
+      "reloadedVersion": 8,
+      "header": "Native391 header letbuyy-aura",
+      "footer": "Native391 footer letbuyy-aura",
+      "selectedLocal": "Native391 local letbuyy-aura omitted-header omitted-footer"
+    },
+    {
+      "omitted": [
+        "header",
+        "footer"
+      ],
+      "acknowledgedVersion": 9,
+      "reloadedVersion": 9,
+      "header": "Native391 header letbuyy-aura",
+      "footer": "Native391 footer letbuyy-aura",
+      "selectedLocal": "Native391 local letbuyy-aura omitted-header omitted-footer omitted-header-footer"
+    }
+  ],
+  "protectedCatalog": {
+    "rowSha256": "7d64e71202a7d86ae8997fbc5cba46b0fbf43ca35762d8ae01d26dc7d1c69b38",
+    "activeCount": 0,
+    "lastInstallUpdate": null,
+    "protectedContentSha256": "8718b19bf74f15e49853eccdaf82b3172f0bb3ab154e58eec8ce4bc7d8a3765d"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "classification": "UNCHANGED_READONLY_RECURSIVE_DEPENDENCY_SUPPLEMENT",
+  "files": [
+    {
+      "path": "docs/implementation/niche-theme-programme/collection-count-native/http-attribution-v2/http-request-delta.ts",
+      "sha256": "9c60b61ba9e360538bc5c4db7d5b4e4b82d43081248305e67ab44d8f45fd6427",
+      "bytes": 13427,
+      "reason": "Actual full API semantic closure refused missing registered test helper. Same unchanged source copied into both; never replaced a test or omitted env dependency."
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/http-attribution-repair/http-request-delta.ts",
+      "sha256": "beafe37a31e458bb1fd5a5557195cd6f062c821db2a3c962054be307e15f885e",
+      "bytes": 10760,
+      "reason": "Actual full API semantic closure refused missing registered test helper. Same unchanged source copied into both; never replaced a test or omitted env dependency."
+    }
+  ],
+  "MainSourceModified": false,
+  "originalEnvExclusionsRetained": true
+}

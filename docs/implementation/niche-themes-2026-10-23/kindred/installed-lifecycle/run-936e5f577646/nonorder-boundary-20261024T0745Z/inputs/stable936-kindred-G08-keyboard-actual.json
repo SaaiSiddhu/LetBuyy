@@ -1,0 +1,37 @@
+{
+  "runId": "936e5f577646",
+  "viewport": {
+    "width": 1280,
+    "height": 720
+  },
+  "actual": [
+    {
+      "action": "Tab from occasion",
+      "actual": {
+        "activeName": "recipient",
+        "activeTag": "SELECT",
+        "activeText": "Anyonecolleaguefriend"
+      }
+    },
+    {
+      "action": "Next Tab",
+      "actual": {
+        "activeName": "min_price",
+        "activeTag": "INPUT"
+      }
+    },
+    {
+      "action": "Return activates hydrated header Search",
+      "actual": {
+        "activeName": "search",
+        "activeTag": "INPUT",
+        "dialogs": [
+          {
+            "label": "Shopping cart",
+            "text": "CloseCartYour bag is empty.View cartCheckout"
+          }
+        ]
+      }
+    }
+  ]
+}

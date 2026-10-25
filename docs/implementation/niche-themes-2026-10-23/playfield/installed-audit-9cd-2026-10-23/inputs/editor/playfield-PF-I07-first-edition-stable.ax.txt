@@ -1,0 +1,35 @@
+Browser tab: 11, Title: "Playfield lifecycle activity kit | Threadline", URL: "http://syn-threadline-ui-d11a8917.localhost:57226/product/db9fdd4f-da77-4d74-806b-759edce71270".
+1 AXWebArea Playfield lifecycle activity kit | Threadline, URL: syn-threadline-ui-d11a8917.localhost:57226/product/db9fdd4f-da77-4d74-806b-759edce71270
+	2 container Shopping cart
+		3 button Close cart
+		4 heading Cart, Value: 2
+			5 text Cart
+		6 text Playfield lifecycle activity kit
+		7 text Edition: Inherited
+		8 text Saved options
+Edition: Inherited
+
+Toy details
+Age statement: 6–8 years
+Supplied age bands: 6–8
+Interests: art
+Contents: 12 × tiles
+2 × idea cards
+1 × tray
+Contents statement: Merchant marked the listed contents complete.
+Dimensions: Length 24 cm · Width 19 cm · Height 1.5 cm
+Each tile: Length 5 cm · Width 5 cm · Height 0.6 cm
+Materials: Wood
+Finish: Sample blue finish
+Warnings: Read the sample kit information.
+Source: Fictional integration fixture
+		9 text x1
+		10 button Remove Playfield lifecycle activity kit, Edition: Inherited
+		11 text Subtotal
+		12 text ₹480
+		13 text Total
+		14 text ₹480
+		15 link Description: View cart, Value: syn-threadline-ui-d11a8917.localhost:57226/store/syn-threadline-ui-d11a8917/cart
+		16 link Description: Checkout, Value: syn-threadline-ui-d11a8917.localhost:57226/store/syn-threadline-ui-d11a8917/checkout
+
+The focused UI element is 3 button Close cart

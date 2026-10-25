@@ -1,0 +1,1558 @@
+{
+  "recordedAt": "2026-10-23T17:28:47.640309+00:00",
+  "scope": "Fresh owned local fixture only; real normal login, editor saves, local publication and recovery",
+  "sourceCheckpoint": {
+    "path": "docs/implementation/theme-editor-2026-10-23/evidence/v2-editor-source-roundtrip-passing-checkpoint-04.json",
+    "sha256": "4a7488b2b361d84c7bc89119cf714e116697dc0b52bf66bb19f5310cae1359bf"
+  },
+  "fixture": {
+    "runId": "9cd50e893016",
+    "candidate": "/private/tmp/theme-editor-candidate-20261023-final02",
+    "sessionId": 1337,
+    "identityOrigin": "http://accounts.threadline-9cd50e893016.localhost:57224",
+    "merchantOrigin": "http://admin.threadline-9cd50e893016.localhost:57225",
+    "commerceOrigin": "http://syn-threadline-ui-d11a8917.localhost:57226",
+    "checkoutOrigin": "https://checkout.localhost:57228",
+    "siteId": "7dfc2cb7-b06e-411c-9b2a-0b44882705be",
+    "subdomain": "syn-threadline-ui-d11a8917",
+    "privateStateReference": "/private/tmp/threadline-9cd50e893016-state.json",
+    "productionAppsReady": 3,
+    "normalMerchantLogin": "PASS",
+    "initialProducts": 17,
+    "setupProductCreatesAndReadbacks": 14,
+    "setupCollectionCreatesAndMembershipReadbacks": 13,
+    "localTestEntitlement": {
+      "plan": "enterprise",
+      "noPayment": true,
+      "directHumanApproval": "call_ea71a031d95b4a14a5fcf4d377d1ef06 reply Approve local test subscription",
+      "receipt": "owned-theme-library-precondition-postcommit-readback.json"
+    }
+  },
+  "browserAccepted": false,
+  "themes": [
+    {
+      "slug": "letbuyy-forge",
+      "name": "Circuit",
+      "expectedCatalogVersion": "2.0.0",
+      "sourceBundleSha256": "cadab65d5351e1d5f8506d3620df481700ff38ae7e23c19f7282d1f31be79b46",
+      "sourceTemplatesPassed": 21,
+      "installedVersion": "2.0.0",
+      "editorLoad": "PASS",
+      "saveAndReload": "PASS_TEMPLATE_LOCAL_HEADING",
+      "preview": "FAIL_PARENT_CSP_ORIGIN_MISMATCH",
+      "localPublishA": "PASS",
+      "anonymousReadbackA": "PASS",
+      "localPublishB": "PASS",
+      "restoreA": "PASS",
+      "draftBPreserved": "PASS",
+      "reapplyB": "PASS",
+      "evidence": [
+        "circuit-heading-A-reload.ax.txt",
+        "circuit-publication-A-proof.json",
+        "circuit-public-A-readback.json",
+        "circuit-publication-B-proof.json",
+        "circuit-public-B-readback.json",
+        "circuit-restore-A-proof.json",
+        "circuit-restored-A-public-readback.json",
+        "circuit-draft-B-preserved.ax.txt",
+        "circuit-reapply-B-proof.json",
+        "circuit-reapplied-B-public-readback.json",
+        "installed-bindings-first-four.json",
+        "circuit-merchant-origin-failure.ax.txt",
+        "circuit-hub-PDP.ax.txt",
+        "circuit-actual-name-model-search.json",
+        "circuit-CL12-baseline-sort-clear.json",
+        "circuit-CL12-baseline-scalar-any.json",
+        "circuit-demo-linked-route-observation.json",
+        "../../niche-themes-2026-10-23/circuit/installed-lifecycle/current-circuit-query-witness-9cd50e893016/release.json"
+      ],
+      "anonymousReadbackB": "PASS",
+      "releaseA": {
+        "packageVersion": "2.0.0",
+        "releaseId": "cdb4e85f-a2a0-4490-98d7-480f35818d4a",
+        "sourceDraftVersion": 2,
+        "releaseSha256": "8f9185d6c05933d10ea230a3509a4659e9c8d511ab41b380a645dc5dd83916d1",
+        "orders": 0,
+        "installed": 4,
+        "editorObservations": {
+          "captureFailures": 0,
+          "records": []
+        }
+      },
+      "releaseB": {
+        "packageVersion": "2.0.0",
+        "releaseId": "8e841047-d7a1-4d39-8728-322684b8cd03",
+        "sourceDraftVersion": 5,
+        "releaseSha256": "b52ef20ab5f2cf3d40a0c5bc8b125eed4b2ec296a3f6b23a3cebd740a44bd1fc",
+        "orders": 0,
+        "installed": 4,
+        "editorObservations": {
+          "captureFailures": 0,
+          "records": []
+        }
+      },
+      "restoredReleaseA": {
+        "packageVersion": "2.0.0",
+        "releaseId": "c396338a-3260-4067-8878-cb5beeb22ebd",
+        "sourceDraftVersion": null,
+        "releaseSha256": "8f9185d6c05933d10ea230a3509a4659e9c8d511ab41b380a645dc5dd83916d1",
+        "orders": 0,
+        "installed": 4,
+        "editorObservations": {
+          "captureFailures": 0,
+          "records": []
+        }
+      },
+      "reappliedReleaseB": {
+        "packageVersion": "2.0.0",
+        "releaseId": "d60b507c-2b9a-47ec-b971-8131e1bd18be",
+        "sourceDraftVersion": 7,
+        "releaseSha256": "b52ef20ab5f2cf3d40a0c5bc8b125eed4b2ec296a3f6b23a3cebd740a44bd1fc",
+        "orders": 0,
+        "installed": 4,
+        "editorObservations": {
+          "captureFailures": 0,
+          "records": []
+        }
+      },
+      "actualInstalledBinding": {
+        "slug": "letbuyy-forge",
+        "status": "active",
+        "version": "2.0.0",
+        "packageId": "d6043fca-9a5d-4145-8415-692f67929179",
+        "instanceId": "7010ab3d-cef5-4492-83f5-ddd10409d361",
+        "draftRevision": 9,
+        "currentDraftId": "026fc98c-ba38-4a5f-a780-f9956d63b921",
+        "activeReleaseId": "d60b507c-2b9a-47ec-b971-8131e1bd18be",
+        "catalogChecksum": null,
+        "packageVersionId": "ab2136b7-5294-4c53-99e9-0d0cf8bbea8a",
+        "installedBundleVersion": "2.0.0",
+        "installedConfigSqlSha256": "1240a255950240a20087f7b23511f58a5c0b7d543fb43616b9a4c6e0121d3ab9",
+        "capturedPackageManifestSqlSha256": "58ce61efc27ee3f174ee8fd06c3d39fd20d5d0af2d632aff5c8743f1ad5b89bd"
+      }
+    },
+    {
+      "slug": "letbuyy-sense",
+      "name": "Threadline",
+      "expectedCatalogVersion": "2.0.0",
+      "sourceBundleSha256": "61082be647eadae9b6e42002be241a82ba6c3627427568f6e64e2cf961c3742e",
+      "sourceTemplatesPassed": 21,
+      "installedVersion": null,
+      "editorLoad": "pending",
+      "saveAndReload": "pending",
+      "preview": "pending",
+      "localPublishA": "pending",
+      "anonymousReadbackA": "pending",
+      "localPublishB": "pending",
+      "restoreA": "pending",
+      "draftBPreserved": "pending",
+      "reapplyB": "pending",
+      "evidence": []
+    },
+    {
+      "slug": "letbuyy-aura",
+      "name": "Dewdrop",
+      "expectedCatalogVersion": "2.0.0",
+      "sourceBundleSha256": "e1f8ee24971241d472ec34e50b855fdb94cea769cdde777bd119ba3c1d17619c",
+      "sourceTemplatesPassed": 21,
+      "installedVersion": "2.0.0",
+      "editorLoad": "PASS",
+      "saveAndReload": "PARTIAL_TEMPLATE_HEADING_PASS_SHARED_HEADER_FAIL",
+      "preview": "FAIL_PARENT_CSP_ORIGIN_MISMATCH",
+      "localPublishA": "PASS",
+      "anonymousReadbackA": "PASS",
+      "localPublishB": "PASS",
+      "restoreA": "PASS",
+      "draftBPreserved": "PASS",
+      "reapplyB": "PASS",
+      "evidence": [
+        "dewdrop-publication-A-proof.json",
+        "dewdrop-public-A.jpg",
+        "dewdrop-publication-B-proof.json",
+        "dewdrop-restore-A-proof.json",
+        "dewdrop-reapply-B-proof.json",
+        "installed-bindings-first-three.json"
+      ],
+      "releaseA": {
+        "packageVersion": "2.0.0",
+        "releaseId": "fe043753-14ae-44e7-92dc-f80a46561d08",
+        "sourceDraftVersion": 4,
+        "releaseSha256": "69dac587fd59c2345964ac058f54a698a6d73759b4a5d793e548831607da713e",
+        "orders": 0,
+        "installed": 1,
+        "editorObservations": {
+          "captureFailures": 0,
+          "records": []
+        }
+      },
+      "actualMarkerA": "Dewdrop saved heading A 9cd50e893016",
+      "anonymousReadbackB": "PASS",
+      "actualMarkerB": "Dewdrop saved heading B 9cd50e893016",
+      "releaseB": {
+        "packageVersion": "2.0.0",
+        "releaseId": "db4cda3c-f3f5-4510-9e15-dcd2dd0bfcd8",
+        "sourceDraftVersion": 7,
+        "releaseSha256": "edcf38e81eda876fd62e8382a0c900c2ddcb7b3764351889d988c4276141ef6e",
+        "orders": 0,
+        "installed": 1,
+        "editorObservations": {
+          "captureFailures": 0,
+          "records": []
+        }
+      },
+      "restoredReleaseA": {
+        "packageVersion": "2.0.0",
+        "releaseId": "07fed55c-4688-4cc4-a4f2-a3b6d3aea10e",
+        "sourceDraftVersion": null,
+        "releaseSha256": "69dac587fd59c2345964ac058f54a698a6d73759b4a5d793e548831607da713e",
+        "orders": 0,
+        "installed": 1,
+        "editorObservations": {
+          "captureFailures": 0,
+          "records": []
+        }
+      },
+      "reappliedReleaseB": {
+        "packageVersion": "2.0.0",
+        "releaseId": "57b0d5eb-335e-4955-9af2-74034def3f10",
+        "sourceDraftVersion": 9,
+        "releaseSha256": "edcf38e81eda876fd62e8382a0c900c2ddcb7b3764351889d988c4276141ef6e",
+        "orders": 0,
+        "installed": 1,
+        "editorObservations": {
+          "captureFailures": 0,
+          "records": []
+        }
+      },
+      "actualInstalledBinding": {
+        "slug": "letbuyy-aura",
+        "status": "inactive",
+        "version": "2.0.0",
+        "packageId": "683e9c05-17da-4c07-852b-0768d80f9457",
+        "instanceId": "140afd1a-506b-4204-9938-ca978b579f9b",
+        "draftRevision": 15,
+        "currentDraftId": "fb6a789c-8a8e-46f9-bd1d-395697744a85",
+        "activeReleaseId": "57b0d5eb-335e-4955-9af2-74034def3f10",
+        "catalogChecksum": null,
+        "packageVersionId": "4898a498-b428-4a9e-a2f3-578da987edf0",
+        "installedBundleVersion": "2.0.0",
+        "installedConfigSqlSha256": "a82030f4c29c5d8c43b8e534610fa6698cb2056bc677f1ff7f7633cf76177706",
+        "capturedPackageManifestSqlSha256": "d0c6e2e26452d82adb03b28f467502c2ca6ca6a2e50f7c93d7d8798ec356c2b9"
+      }
+    },
+    {
+      "slug": "letbuyy-craft",
+      "name": "Habitat",
+      "expectedCatalogVersion": "2.0.0",
+      "sourceBundleSha256": "4e068c69808b5cb82b8caaabbb9197580c425c1edc43b298fb667959ab050497",
+      "sourceTemplatesPassed": 21,
+      "installedVersion": "2.0.0",
+      "editorLoad": "PASS",
+      "saveAndReload": "PASS_TEMPLATE_LOCAL_HEADING",
+      "preview": "FAIL_PARENT_CSP_ORIGIN_MISMATCH",
+      "localPublishA": "PASS",
+      "anonymousReadbackA": "PASS",
+      "localPublishB": "PASS",
+      "restoreA": "PASS",
+      "draftBPreserved": "PASS",
+      "reapplyB": "PASS",
+      "evidence": [
+        "habitat-merchant-initial.ax.txt",
+        "habitat-merchant-origin-failure.ax.txt",
+        "habitat-merchant-origin-banner.jpg",
+        "../../niche-themes-2026-10-23/habitat/installed-product-save-rejection-readback.json",
+        "habitat-heading-A-reload.ax.txt",
+        "habitat-publication-A-proof.json",
+        "habitat-public-A-readback.json",
+        "habitat-publication-B-proof.json",
+        "habitat-public-B-readback.json",
+        "habitat-restore-A-proof.json",
+        "habitat-restored-A-public-readback.json",
+        "habitat-draft-B-preserved.ax.txt",
+        "habitat-reapply-B-proof.json",
+        "habitat-baseline-unselected-PDP.ax.txt",
+        "habitat-baseline-48in-PDP.json",
+        "habitat-baseline-common-size.ax.txt",
+        "installed-bindings-first-three.json"
+      ],
+      "anonymousReadbackB": "PASS",
+      "releaseA": {
+        "packageVersion": "2.0.0",
+        "releaseId": "9a48e3be-61da-4bbe-8a5f-2f1f24cd9e4b",
+        "sourceDraftVersion": 2,
+        "releaseSha256": "47545d0cb23a86b44dc657924404ab2901ab7fcbed49e15e184bcb5b6c592e3f",
+        "orders": 0,
+        "installed": 3,
+        "editorObservations": {
+          "captureFailures": 0,
+          "records": []
+        }
+      },
+      "releaseB": {
+        "packageVersion": "2.0.0",
+        "releaseId": "cbd23438-f650-44d2-aee8-daa6ccb79d37",
+        "sourceDraftVersion": 5,
+        "releaseSha256": "4338ba0beffc2d724274cb16e8b0225b6ec0785d4cc54ef55ba6454379e812dd",
+        "orders": 0,
+        "installed": 3,
+        "editorObservations": {
+          "captureFailures": 0,
+          "records": []
+        }
+      },
+      "restoredReleaseA": {
+        "packageVersion": "2.0.0",
+        "releaseId": "3f2d1bc3-3dbe-4e70-b029-05b3d86cbac8",
+        "sourceDraftVersion": null,
+        "releaseSha256": "47545d0cb23a86b44dc657924404ab2901ab7fcbed49e15e184bcb5b6c592e3f",
+        "orders": 0,
+        "installed": 3,
+        "editorObservations": {
+          "captureFailures": 0,
+          "records": []
+        }
+      },
+      "reappliedReleaseB": {
+        "packageVersion": "2.0.0",
+        "releaseId": "b5bcba43-2bcb-48cc-bba4-7b4c11bb6a03",
+        "sourceDraftVersion": 7,
+        "releaseSha256": "4338ba0beffc2d724274cb16e8b0225b6ec0785d4cc54ef55ba6454379e812dd",
+        "orders": 0,
+        "installed": 3,
+        "editorObservations": {
+          "captureFailures": 0,
+          "records": []
+        }
+      },
+      "actualInstalledBinding": {
+        "slug": "letbuyy-craft",
+        "status": "active",
+        "version": "2.0.0",
+        "packageId": "fcce393b-10c4-4bde-a552-4f304a3c6f14",
+        "instanceId": "f043270c-8b2f-4a3f-a865-234956e22173",
+        "draftRevision": 9,
+        "currentDraftId": "2a6c848a-7f45-42ef-9b7b-30315b6c2647",
+        "activeReleaseId": "b5bcba43-2bcb-48cc-bba4-7b4c11bb6a03",
+        "catalogChecksum": null,
+        "packageVersionId": "eb37fa9d-73a0-4912-a77d-16e03c22b265",
+        "installedBundleVersion": "2.0.0",
+        "installedConfigSqlSha256": "b85da2d8a4a6baafd3382253b3b08ea3b4bcb6ef5fda188479c3e2acfba4fa06",
+        "capturedPackageManifestSqlSha256": "47dc29c26dc3c7fc4d02c3a44c01443941991658015356a96a9c3e3f965a5384"
+      }
+    },
+    {
+      "slug": "letbuyy-refresh",
+      "name": "Pantry",
+      "expectedCatalogVersion": "2.0.0",
+      "sourceBundleSha256": "6b05ab842f55dd6fcc7b99991a5e5160a5214e4417aedd46c343e94a3041a718",
+      "sourceTemplatesPassed": 21,
+      "installedVersion": "2.0.0",
+      "editorLoad": "PASS",
+      "saveAndReload": "PASS_TEMPLATE_LOCAL_HEADING",
+      "preview": "FAIL_PARENT_CSP_ORIGIN_MISMATCH",
+      "localPublishA": "PASS",
+      "anonymousReadbackA": "PASS",
+      "localPublishB": "PASS",
+      "restoreA": "PASS",
+      "draftBPreserved": "PASS",
+      "reapplyB": "PASS",
+      "evidence": [
+        "pantry-heading-A-reload.ax.txt",
+        "pantry-publication-A-proof.json",
+        "pantry-public-A-readback.json",
+        "pantry-publication-B-proof.json",
+        "pantry-public-B-readback.json",
+        "pantry-restore-A-proof.json",
+        "pantry-draft-B-preserved.ax.txt",
+        "pantry-reapply-B-proof.json",
+        "installed-bindings-first-three.json"
+      ],
+      "anonymousReadbackB": "PASS",
+      "releaseA": {
+        "packageVersion": "2.0.0",
+        "releaseId": "dee7f527-3b2b-43f3-aa88-18ee86599faa",
+        "sourceDraftVersion": 2,
+        "releaseSha256": "0fff3985e633a547007aee9cbf9ef119e3f632d9094141ad813de7c84ad1e1be",
+        "orders": 0,
+        "installed": 2,
+        "editorObservations": {
+          "captureFailures": 0,
+          "records": []
+        }
+      },
+      "releaseB": {
+        "packageVersion": "2.0.0",
+        "releaseId": "6921c562-df86-47fa-9390-1e96af20bb2a",
+        "sourceDraftVersion": 5,
+        "releaseSha256": "3f56115df6b75dd6d88b49a71fd696ae0b7b4dbef80819990a7dea2e753c3164",
+        "orders": 0,
+        "installed": 2,
+        "editorObservations": {
+          "captureFailures": 0,
+          "records": []
+        }
+      },
+      "restoredReleaseA": {
+        "packageVersion": "2.0.0",
+        "releaseId": "e6cf252a-ca33-4809-8bff-29d676abeb5e",
+        "sourceDraftVersion": null,
+        "releaseSha256": "0fff3985e633a547007aee9cbf9ef119e3f632d9094141ad813de7c84ad1e1be",
+        "orders": 0,
+        "installed": 2,
+        "editorObservations": {
+          "captureFailures": 0,
+          "records": []
+        }
+      },
+      "reappliedReleaseB": {
+        "packageVersion": "2.0.0",
+        "releaseId": "263caa5a-e0a9-4e77-afe3-84f933edd031",
+        "sourceDraftVersion": 7,
+        "releaseSha256": "3f56115df6b75dd6d88b49a71fd696ae0b7b4dbef80819990a7dea2e753c3164",
+        "orders": 0,
+        "installed": 2,
+        "editorObservations": {
+          "captureFailures": 0,
+          "records": []
+        }
+      },
+      "actualInstalledBinding": {
+        "slug": "letbuyy-refresh",
+        "status": "inactive",
+        "version": "2.0.0",
+        "packageId": "38f4145e-6bd5-43e7-bbb2-a8be5ce0dce3",
+        "instanceId": "01d8fd5a-6e44-4f80-8a31-f4fcd3c85525",
+        "draftRevision": 9,
+        "currentDraftId": "85866c95-9fae-41c9-90d4-60ef241e8521",
+        "activeReleaseId": "263caa5a-e0a9-4e77-afe3-84f933edd031",
+        "catalogChecksum": null,
+        "packageVersionId": "dcbdb373-4e88-46e0-93b8-b544fe2425dc",
+        "installedBundleVersion": "2.0.0",
+        "installedConfigSqlSha256": "20e24ce9a60a3584b71b16f482460d81cd0dc8c4af7339744401c84e98c8cc12",
+        "capturedPackageManifestSqlSha256": "4b752db87450b34d47b2df1590346337ab15dfc4bc54b84133cb45ab986bdae7"
+      }
+    },
+    {
+      "slug": "letbuyy-ride",
+      "name": "Trailmark",
+      "expectedCatalogVersion": "2.0.0",
+      "sourceBundleSha256": "127a261320b208ec845277abe51c176921767934988f98a2ce73188bfa95c224",
+      "sourceTemplatesPassed": 21,
+      "installedVersion": null,
+      "editorLoad": "pending",
+      "saveAndReload": "pending",
+      "preview": "pending",
+      "localPublishA": "pending",
+      "anonymousReadbackA": "pending",
+      "localPublishB": "pending",
+      "restoreA": "pending",
+      "draftBPreserved": "pending",
+      "reapplyB": "pending",
+      "evidence": []
+    },
+    {
+      "slug": "letbuyy-dawn",
+      "name": "Marginalia",
+      "expectedCatalogVersion": "2.0.0",
+      "sourceBundleSha256": "d98a0388e3775d4f00dec8c992316af74d8255fd993cc08fc47032b7b4a8aee0",
+      "sourceTemplatesPassed": 21,
+      "installedVersion": null,
+      "editorLoad": "pending",
+      "saveAndReload": "pending",
+      "preview": "pending",
+      "localPublishA": "pending",
+      "anonymousReadbackA": "pending",
+      "localPublishB": "pending",
+      "restoreA": "pending",
+      "draftBPreserved": "pending",
+      "reapplyB": "pending",
+      "evidence": []
+    },
+    {
+      "slug": "letbuyy-bloom",
+      "name": "Playfield",
+      "expectedCatalogVersion": "2.0.0",
+      "sourceBundleSha256": "eb21c6b0e48b40cb11b5f3ba1e45f6f2ec8c50667175e82c8edb6bbe36299efc",
+      "sourceTemplatesPassed": 21,
+      "installedVersion": "2.0.0",
+      "editorLoad": "PASS",
+      "saveAndReload": "PASS_TEMPLATE_LOCAL_HEADING",
+      "preview": "FAIL_PARENT_CSP_ORIGIN_MISMATCH",
+      "localPublishA": "PASS",
+      "anonymousReadbackA": "PASS",
+      "localPublishB": "PASS",
+      "restoreA": "PASS",
+      "draftBPreserved": "PASS",
+      "reapplyB": "PASS",
+      "evidence": [
+        "playfield-PF-I03-age-interest-positive.ax.txt",
+        "playfield-PF-I03-clear-age.ax.txt",
+        "playfield-PF-I03-clear-interest.ax.txt",
+        "playfield-PF-I03-query-reload.ax.txt",
+        "playfield-PF-I03-sort-state.ax.txt",
+        "playfield-PF-I05-inherited.ax.txt",
+        "playfield-PF-I05-paper.ax.txt",
+        "playfield-PF-I05-reload.ax.txt",
+        "playfield-PF-I05-selected-bindings.json",
+        "playfield-PF-I05-unknown.ax.txt",
+        "playfield-PF-I05-unselected-PDP.ax.txt",
+        "playfield-PF-I06-clear-materials-save.ax.txt",
+        "playfield-PF-I07-first-edition-stable.ax.txt",
+        "playfield-PF-I07-first-edition.ax.txt",
+        "playfield-PF-I07-two-editions-drawer.ax.txt",
+        "playfield-PF-I07-two-editions-reload.ax.txt",
+        "playfield-PF-I08-above-stock-rejection.ax.txt",
+        "playfield-after-overstock-proof.json",
+        "playfield-cart-original-restored.ax.txt",
+        "playfield-cart-transition-and-restoration.json",
+        "playfield-heading-A-reload.ax.txt",
+        "playfield-heading-B-reload-stable.ax.txt",
+        "playfield-heading-B-reload.ax.txt",
+        "playfield-merchant-initial.ax.txt",
+        "playfield-public-A-readback.json",
+        "playfield-public-B-readback.json",
+        "playfield-public-reapplied-B-readback.json",
+        "playfield-public-restored-A-readback.json",
+        "playfield-publication-A-proof.json",
+        "playfield-publication-B-proof.json",
+        "playfield-publication-reapplied-B-proof.json",
+        "playfield-publication-restored-A-proof.json",
+        "playfield-retained-B-after-restore-A.ax.txt"
+      ],
+      "anonymousReadbackB": "PASS",
+      "releaseA": {
+        "packageVersion": "2.0.0",
+        "releaseId": "74a1a318-a6a9-4799-9e4e-8a842a389935",
+        "sourceDraftVersion": 2,
+        "releaseSha256": "3619a54d82b1511231dff3f31cc187f3e6c0b1d6ea262423ee13b191bc7d15d8",
+        "orders": 0,
+        "installed": 5,
+        "editorObservations": {
+          "captureFailures": 0,
+          "records": []
+        }
+      },
+      "releaseB": {
+        "packageVersion": "2.0.0",
+        "releaseId": "1c0ddb2a-3b86-4fb6-8d54-d8c164a2a353",
+        "sourceDraftVersion": 5,
+        "releaseSha256": "be1609745ae75caa643586a4568d13bb61af42bef31acb885d9b64e96713c664",
+        "orders": 0,
+        "installed": 5,
+        "editorObservations": {
+          "captureFailures": 0,
+          "records": []
+        }
+      },
+      "restoredReleaseA": {
+        "packageVersion": "2.0.0",
+        "releaseId": "fd023cff-941c-4cff-b17f-5a87e32189aa",
+        "sourceDraftVersion": null,
+        "releaseSha256": "3619a54d82b1511231dff3f31cc187f3e6c0b1d6ea262423ee13b191bc7d15d8",
+        "orders": 0,
+        "installed": 5,
+        "editorObservations": {
+          "captureFailures": 0,
+          "records": []
+        }
+      },
+      "reappliedReleaseB": {
+        "packageVersion": "2.0.0",
+        "releaseId": "f79dc4e5-1253-4fce-9f9d-a42561165a11",
+        "sourceDraftVersion": 7,
+        "releaseSha256": "be1609745ae75caa643586a4568d13bb61af42bef31acb885d9b64e96713c664",
+        "orders": 0,
+        "installed": 5,
+        "editorObservations": {
+          "captureFailures": 0,
+          "records": []
+        }
+      }
+    },
+    {
+      "slug": "letbuyy-nova",
+      "name": "MadeYours",
+      "expectedCatalogVersion": "2.0.0",
+      "sourceBundleSha256": "a06efcb494f2d8b47d901b57388743de7a1bece20afe818255e8c03ae60597f8",
+      "sourceTemplatesPassed": 21,
+      "installedVersion": null,
+      "editorLoad": "pending",
+      "saveAndReload": "pending",
+      "preview": "pending",
+      "localPublishA": "pending",
+      "anonymousReadbackA": "pending",
+      "localPublishB": "pending",
+      "restoreA": "pending",
+      "draftBPreserved": "pending",
+      "reapplyB": "pending",
+      "evidence": []
+    },
+    {
+      "slug": "letbuyy-summit",
+      "name": "Kindred",
+      "expectedCatalogVersion": "2.0.0",
+      "sourceBundleSha256": "4702e911bbc5d90b9ec46b9ff3d902249d7411b699e0a0c81283a713f91c1655",
+      "sourceTemplatesPassed": 21,
+      "installedVersion": "2.0.0",
+      "editorLoad": "PASS",
+      "saveAndReload": "PASS_TEMPLATE_LOCAL_HEADING",
+      "preview": "FAIL_PARENT_CSP_ORIGIN_MISMATCH_SHARED_BASELINE",
+      "localPublishA": "PASS",
+      "anonymousReadbackA": "PASS",
+      "localPublishB": "PASS",
+      "restoreA": "PASS",
+      "draftBPreserved": "PASS",
+      "reapplyB": "PASS",
+      "evidence": [
+        "kindred-G03-product-save.ax.txt",
+        "kindred-G07-PDP.ax.txt",
+        "kindred-G09-cart-drawer.ax.txt",
+        "kindred-G09-cart-reload-stable.ax.txt",
+        "kindred-G09-cart-reload.ax.txt",
+        "kindred-above-stock-rejection.ax.txt",
+        "kindred-cart-original-restored.ax.txt",
+        "kindred-cart-transition-and-restoration.json",
+        "kindred-heading-A-reload.ax.txt",
+        "kindred-heading-B-reload.ax.txt",
+        "kindred-publication-A-proof.json",
+        "kindred-publication-B-proof.json",
+        "kindred-publication-reapplied-B-proof.json",
+        "kindred-publication-restored-A-proof.json",
+        "kindred-retained-B-after-restore-A.ax.txt"
+      ],
+      "anonymousReadbackB": "PASS",
+      "releaseA": {
+        "packageVersion": "2.0.0",
+        "releaseId": "b7bde293-2e75-4661-81b4-c44d06ec58b9",
+        "sourceDraftVersion": 2,
+        "releaseSha256": "3f5884d1048ad42f9bd94ed77f8aec27cb8dffb14723c1351f25eceef1cd06d4",
+        "orders": 0,
+        "installed": 6,
+        "editorObservations": {
+          "captureFailures": 0,
+          "records": []
+        }
+      },
+      "releaseB": {
+        "packageVersion": "2.0.0",
+        "releaseId": "af3dd2c1-4a3c-4752-9daf-193d7ad49091",
+        "sourceDraftVersion": 5,
+        "releaseSha256": "5f5f4a8afe2cf2e62cc8b9c91c100244381be490937d0eb8843336a617e0f155",
+        "orders": 0,
+        "installed": 6,
+        "editorObservations": {
+          "captureFailures": 0,
+          "records": []
+        }
+      },
+      "restoredReleaseA": {
+        "packageVersion": "2.0.0",
+        "releaseId": "29bcb587-d12a-4427-9133-a690f5dd6306",
+        "sourceDraftVersion": null,
+        "releaseSha256": "3f5884d1048ad42f9bd94ed77f8aec27cb8dffb14723c1351f25eceef1cd06d4",
+        "orders": 0,
+        "installed": 6,
+        "editorObservations": {
+          "captureFailures": 0,
+          "records": []
+        }
+      },
+      "reappliedReleaseB": {
+        "packageVersion": "2.0.0",
+        "releaseId": "425aecc3-df7e-4df4-80db-ab5d45759482",
+        "sourceDraftVersion": 7,
+        "releaseSha256": "5f5f4a8afe2cf2e62cc8b9c91c100244381be490937d0eb8843336a617e0f155",
+        "orders": 0,
+        "installed": 6,
+        "editorObservations": {
+          "captureFailures": 0,
+          "records": []
+        }
+      }
+    }
+  ],
+  "commonChecks": [
+    "Fresh source and workspace resolution proof",
+    "Normal identity login and reload",
+    "New-store preview and View store tenant origin",
+    "Complete header/footer and exact nested selection",
+    "Typed fields, resource binding, preview retry",
+    "Native text undo versus document undo",
+    "Concurrent-tab draft conflict review and recovery",
+    "No draft text in anonymous storefront before publish",
+    "Saved draft survives publication and rollback",
+    "Measured responsive viewport and keyboard focus"
+  ],
+  "pantryLifecycle": {
+    "matrix": "docs/implementation/niche-themes-2026-10-23/pantry/installed-buyer-lifecycle-matrix.md",
+    "requiredCases": [
+      {
+        "id": "P00",
+        "status": "PASS",
+        "observations": [
+          "New Enterprise baseline normal Add acknowledges Pantry2.0.0; headingA savedv2/fullreload exact; normalPublish release dee7f527-3b2b-43f3-aa88-18ee86599faa/hash0fff3985e633a547007aee9cbf9ef119e3f632d9094141ad813de7c84ad1e1be. Unauth publicGET200 exactA/PantryCSS/noDewdropmarker. Earlier Free refusal retained as historical prerequisite. No responsive/preview pass from this row."
+        ]
+      },
+      {
+        "id": "P01",
+        "status": "FAIL",
+        "observations": [
+          "Actual existing lentils normal merchant form displayed approved common facts/unknown allergens. Changed only preparation to Rinse before cooking. UI save checkpoint.; Save product rejected This change must originate from this merchant app. Failed draft retained/frozen; no successful write/reload or negative-validation proof."
+        ]
+      },
+      {
+        "id": "P02",
+        "status": "PARTIAL",
+        "observations": [
+          "Actual merchant baseline shows Pack250g/500g/750glabelonly,250g explicit quantity/unit and unknown pack blank quantity/unit. Save/clear/rename roundtrip deferred after P01 actual origin rejection."
+        ]
+      },
+      {
+        "id": "P03",
+        "status": "PARTIAL",
+        "observations": [
+          "Actual unselected PDP blocks Add; choose250g/count2 ->250g per pack/72 per100g/500g total. Fraction1.5 removes total and shows whole-count guidance. Exact canonical accepted cart variant dec5643b-ae0c-4db2-a654-07d314ac01f2 confirmed later. Blank-count subcase deferred."
+        ]
+      },
+      {
+        "id": "P04",
+        "status": "PASS",
+        "observations": [
+          "Actual500g ->340/unavailable/500g per pack/68 per100g/disabledAdd. Actual750glabelonly ->210/netnot supplied/no unit or net total. Returning250g restores only250g facts."
+        ]
+      },
+      {
+        "id": "P05",
+        "status": "PASS",
+        "observations": [
+          "Actual rice220/common1000g ->quantity2/2000g/22 per100g. Returnlentilsrequiresownoptions and blocks Add; no rice facts carried. OwnerpublicGET independently rice no variants/stock4/common1000g."
+        ]
+      },
+      {
+        "id": "P06",
+        "status": "PASS",
+        "observations": [
+          "Actual pulses collection onlylentils; rice collection onlyrice. Supplied250g pack filter nativeApply+Newest ->1lentils and retainscollectionID. Owner canonicalGET200 total1/exactproduct witness. Actual search zero cohort with repeatedusb-c/hdmi retains search/country/category/limit/pack throughsort, resets page; independent removals preserve unrelated values and recover1lentils. Clearpack/country/category and clearall eachpreserve search/sort/limit. Currentvalidselectedpack absentchoices preserved as removablechip/noinventedoption."
+        ]
+      },
+      {
+        "id": "P07",
+        "status": "PARTIAL",
+        "observations": [
+          "Actual normalUI temporarycarttransition approved: preservedtwoPink baseline; removedPink viaUI, selected250g/count2 Add acknowledged, fullcart/reload correct360/savedfoodfacts. GuardedownedDB confirms exactline/variant/qty2/unit180/foodnet250gperitem. RemovedPantry andrestoredexact2Pinknormally; whitelistedbeforeafterequalitytrue/order0. UnknownlineAdd was auto-review rejected before execution; directhumanbatchapprovalpending, no workaround."
+        ]
+      },
+      {
+        "id": "P08",
+        "status": "NOT_RUN",
+        "observations": [
+          "Overstock/recovery subcase deferred pending direct human cart-test authorization after auto-review narrow-boundary rejection; originaltwoPinkcartrestored."
+        ]
+      },
+      {
+        "id": "P09",
+        "status": "NOT_RUN",
+        "observations": [
+          "Pantrycheckout notattempted: common hostedTLSblocked from actualDewdropH01; localCODauthorizationalso pending. No order fabricated."
+        ]
+      },
+      {
+        "id": "P10",
+        "status": "NOT_RUN",
+        "observations": [
+          "No Pantry order exists; order/history positive controls not reached."
+        ]
+      },
+      {
+        "id": "P11",
+        "status": "NOT_RUN",
+        "observations": [
+          "Later product edit requires completed P09/P10 and additional active250g cart. Preconditions absent; original data preserved."
+        ]
+      },
+      {
+        "id": "P12",
+        "status": "NOT_RUN",
+        "observations": [
+          "Required stale active-cart case deferred. No P10 primary order, no additional active250g cart, and no P11 later edit; no API order/seed workaround."
+        ]
+      }
+    ],
+    "authorization": "Direct human Pantry request verified in turn01a16843-1e95-7e80-a9c2-4b51d81857e9; P12 is required, superseding optional plan wording.",
+    "status": "ACTUAL_DIAGNOSTIC_FIRST_PASS_ACCEPTANCE_OPEN",
+    "evidence": "pantry-browser-diagnostics.json"
+  },
+  "dewdropLifecycle": {
+    "matrix": "docs/implementation/niche-themes-2026-10-23/dewdrop/installed-beauty-lifecycle-matrix.md",
+    "status": "ACTUAL_DIAGNOSTIC_FIRST_PASS_ACCEPTANCE_OPEN",
+    "requiredCaseCount": 30,
+    "allocation": "Coordinator routes into this one future owned fixture",
+    "evidence": "dewdrop-browser-diagnostics.json",
+    "requiredCases": [
+      {
+        "id": "B00",
+        "status": "PARTIAL",
+        "observations": [
+          "NormalownerUIlogin, actualAddDewdrop2.0, editor21templates, templateheading save/reload, A/Bpublish/anonymousreadback/restoreA/exacthashA/draftBpreserved/reapplyB exacthashB PASS.",
+          "Sharedannouncement save/reload FAIL; previewparentCSP FAIL; fullthemeacceptanceOPEN."
+        ]
+      },
+      {
+        "id": "M01",
+        "status": "FAIL",
+        "observations": [
+          "ActualCloudRinse normalUI Directions edit\u2192Saveproduct rejects This change must originate from this merchant app; unsaved draft kept and controls frozen.",
+          "Independent readonly publicGET confirms unchanged originalfacts/stock12; no successfulsave/restore claimed."
+        ]
+      },
+      {
+        "id": "M02",
+        "status": "BLOCKED",
+        "observations": [
+          "Merchantauthoringroundtrip depends on observed origin guard repair; no alternate APIwrite used."
+        ]
+      },
+      {
+        "id": "M03",
+        "status": "NOT_RUN",
+        "observations": []
+      },
+      {
+        "id": "M04",
+        "status": "BLOCKED",
+        "observations": [
+          "No authenticated mutation/stale-version UI roundtrip after actual merchantorigin rejection."
+        ]
+      },
+      {
+        "id": "M05",
+        "status": "PARTIAL",
+        "observations": [
+          "All13fixturecollectioncreates+membershipreadbacks passed as SETUP ONLY; actualmerchantcollection/editorresourcesauthoring NOT_RUN."
+        ]
+      },
+      {
+        "id": "D01",
+        "status": "PASS",
+        "observations": [
+          "Actualpublic/products displays17catalogitems includingall4beauty. Cloud/DailyVeil/Tintcorrectroutinegroups; PalmWashunknown underMoreproducts withmissingimage/ingredients guidance."
+        ]
+      },
+      {
+        "id": "D02",
+        "status": "PARTIAL",
+        "observations": [
+          "Native Routine/Format/Shade controls used from supplied metadata. Actual unknown Palm Wash cohort shows only Search and Sort, no niche chooser, with honest missing-facts guidance. Malformed-response branch deferred; no interception."
+        ]
+      },
+      {
+        "id": "D03",
+        "status": "PASS",
+        "observations": [
+          "ActualColourcollectionefac19f5\u2192colour/Liptint/PinkClayApply returns1Tint andretainscollectionID.",
+          "Actual/search?search=Fixture\u2192samecontrols returns1Tint andpreservessearchroute/query.",
+          "Ownerreadonlysame-response witness price560 andexactPinkUUID7f840c26-0e46-4b6a-a753-1f95190e2693."
+        ]
+      },
+      {
+        "id": "D04",
+        "status": "PASS",
+        "observations": [
+          "Actual five native sort choices preserve search=Fixture, limit=1, country_of_origin=India and category=Care while resetting page to1. Next page2 and Previous page1 preserve carriers."
+        ]
+      },
+      {
+        "id": "D05",
+        "status": "PASS",
+        "observations": [
+          "Actual repeated connector=usb-c and connector=hdmi survive sort; removing usb-c retains hdmi and other carriers; removing hdmi restores4 Care results/page1."
+        ]
+      },
+      {
+        "id": "D06",
+        "status": "PASS",
+        "observations": [
+          "Actual retired format and named shade yield zero results without invented offered choices. Sort preserves both; clear format preserves shade and zero results."
+        ]
+      },
+      {
+        "id": "D07",
+        "status": "PASS",
+        "observations": [
+          "Actual harmless closing-form/script search probe renders literal escaped title, empty niche search input and no executable probe script. Scoped SSR confirms hidden global filter carrier retains properly escaped query; payload is not absent from every input. This is the observed sanitizer case only."
+        ]
+      },
+      {
+        "id": "P01",
+        "status": "PASS",
+        "observations": [
+          "ActualRosewater520\u2192PinkClay560/PC02/exactingredientsCI77492/common6ml, exactpack\u090f\u0915\u0907\u0915\u093e\u0908selected.",
+          "KeyboardEnter switchesRose\u2192Pink; sameRGB remains distinctownerreadonlyUUIDs."
+        ]
+      },
+      {
+        "id": "P02",
+        "status": "PARTIAL",
+        "observations": [
+          "Actual Terracotta590/unavailable/disabled purchase; canonical anonymous cart POST409 INSUFFICIENT_INVENTORY. Owner before/after public stock/facts match4/4/0; owned proof site orders0/product order lines0. No pre-negative full inventory hash or cart/reservation row-count proof invented."
+        ]
+      },
+      {
+        "id": "P03",
+        "status": "PARTIAL",
+        "observations": [
+          "Actual canonical cart API omitted variant409 VARIANT_REQUIRED and unknown variant400 VARIANT_NOT_FOUND. Foreign-site cart-token test deferred; no valid foreign positive control."
+        ]
+      },
+      {
+        "id": "C01",
+        "status": "PARTIAL",
+        "observations": [
+          "Actual Pink Clay, exact Hindi pack, quantity2 Add acknowledgement; drawer and full cart show2x560=1120 and approved saved details. Normal reload retains exact visible cart. Canonical cart GET persistence proof deferred; no token extracted from hidden browser state."
+        ]
+      },
+      {
+        "id": "C02",
+        "status": "PARTIAL",
+        "observations": [
+          "Actual canonical anonymous cart commands reject client price/niche_snapshot/product_snapshot fields400 VALIDATION_ERROR. Properties shade-spoof subcase deferred."
+        ]
+      },
+      {
+        "id": "C03",
+        "status": "NOT_RUN",
+        "observations": [
+          "Deferred until primary purchase succeeds and a separate valid stale cart can be preserved before later product edit."
+        ]
+      },
+      {
+        "id": "A01",
+        "status": "PASS",
+        "observations": [
+          "Normal buyer registration, issuer consent and callback completed; account positive control and reload passed. Visible token-free session reports expected buyer ID90214344-8291-4937-be43-4a1db9753ced; emailVerified=false."
+        ]
+      },
+      {
+        "id": "H01",
+        "status": "BLOCKED",
+        "observations": [
+          "Actual normal Checkout navigation fails ERR_CERT_AUTHORITY_INVALID at https://checkout.localhost:57228 before hosted contact/delivery UI. Primary2-Pink cart preserved. No order created and no TLS bypass."
+        ]
+      },
+      {
+        "id": "H02",
+        "status": "NOT_RUN",
+        "observations": [
+          "Depends on actual original hosted UI confirm; none reached because H01 TLS blocked. No arbitrary confirm/API-order substitute."
+        ]
+      },
+      {
+        "id": "O01",
+        "status": "NOT_RUN",
+        "observations": [
+          "Depends on actual primary order, absent after H01 TLS block."
+        ]
+      },
+      {
+        "id": "O02",
+        "status": "NOT_RUN",
+        "observations": [
+          "Depends on actual primary order positive control, absent after H01 TLS block."
+        ]
+      },
+      {
+        "id": "O03",
+        "status": "NOT_RUN",
+        "observations": [
+          "Later product edit deferred until primary order and additional active stale-cart positive controls exist; normal merchant save also failed M01."
+        ]
+      },
+      {
+        "id": "O04",
+        "status": "NOT_RUN",
+        "observations": [
+          "Historical comparison depends on actual primary order and later successful edit; neither exists."
+        ]
+      },
+      {
+        "id": "O05",
+        "status": "NOT_RUN",
+        "observations": [
+          "Depends on order/history preconditions and relevant later edit; deferred."
+        ]
+      },
+      {
+        "id": "S01",
+        "status": "NOT_RUN",
+        "observations": [
+          "Hostile merchant-facts case deferred after normal merchant save failed M01. Search D07 is separate evidence."
+        ]
+      },
+      {
+        "id": "S02",
+        "status": "NOT_RUN",
+        "observations": [
+          "No deliberate owned legacy order fixture allocated; no synthetic API purchase substituted."
+        ]
+      },
+      {
+        "id": "R01",
+        "status": "IN_PROGRESS",
+        "observations": [
+          "Run9cd50e893016, original cart, failed merchant draft and all evidence retained for remaining ten-theme checks and corrected/trusted baseline. Cleanup not requested."
+        ]
+      }
+    ]
+  },
+  "habitatLifecycle": {
+    "matrix": "docs/implementation/niche-themes-2026-10-23/habitat/installed-lifecycle-matrix.md",
+    "plan": "docs/implementation/niche-themes-2026-10-23/habitat/installed-fixture-matrix.plan.json",
+    "requiredCases": [
+      {
+        "id": "HI-01",
+        "status": "PARTIAL",
+        "observations": [
+          "Normal merchant session, actual Habitat2.0 install3 and serving release/candidate/site binding established. Current buyer order ownership not exercised."
+        ]
+      },
+      {
+        "id": "HI-02",
+        "status": "PARTIAL",
+        "observations": [
+          "Read existing primary furniture IDc44adb98-ed66-4ac4-a51e-3c1cc7f4d62d in normal UI: Width48in/Commonsize only, noFinish; common120x60x75cm/package130x65x20cm/Wood/Natural/careWipedry. Proposed four-variant cohort/probes not created after actual HI03 save rejection."
+        ]
+      },
+      {
+        "id": "HI-03",
+        "status": "FAIL",
+        "observations": [
+          "Actual normal common Care edit Wipe dry. UI save checkpoint. then Save product rejects This change must originate from this merchant app; draft retained/frozen. No successful valid save, incomplete-measurement negative or variant expansion claimed.",
+          "Independent canonical public GET200 after failed save retains original care Wipe dry., exact two existing variants/stocks4 and3/base8. Public DTO exposes no version; version-unchanged not claimed."
+        ]
+      },
+      {
+        "id": "HI-04",
+        "status": "PARTIAL",
+        "observations": [
+          "Actual template HeadingA savev2/fullreload, normal PublishA, HeadingB/PublishB, normal reviewed rollbackA, retaineddraftB/fullreload/reapplyB all pass with exactsnapshotA/B/public markers. Existing parent preview remains blocked; responsive viewport0x0 unaccepted."
+        ]
+      },
+      {
+        "id": "HI-05",
+        "status": "NOT_RUN",
+        "observations": [
+          "Habitat is now actually installed/published. Required expanded same-product A/B/C/D cohort or dimensional probes remain unprepared after actual normal merchant save failure HI03. Baseline Width-only data cannot certify these planned witnesses; specific buyer case deferred."
+        ]
+      },
+      {
+        "id": "HI-06",
+        "status": "PARTIAL",
+        "observations": [
+          "Actual original Width-only unselectedPDP shows common120x60x75cm/package130x65x20cm and disabledAdd. No Finish axis exists, so planned incompleteFinish/unmatchedtwoaxis cases not run."
+        ]
+      },
+      {
+        "id": "HI-07",
+        "status": "PARTIAL",
+        "observations": [
+          "Actual existing48in variant58d8de66-2f33-4595-9433-c7ef9909b751 carrierselected, assembled48Win,package50Wx25Din,Addenabled. This is originalwidth-onlybaseline, not plannedfull A48x30x29.5in cohort; no plannedA pass."
+        ]
+      },
+      {
+        "id": "HI-08",
+        "status": "PARTIAL",
+        "observations": [
+          "Actual baseline48in->CommonSize switches currentwholegroups to120x60x75cm/package130x65x20cm with ownfacts. PlannedMetalB/Black/Dfourvariantsequence unavailable after HI03 setup failure."
+        ]
+      },
+      {
+        "id": "HI-09",
+        "status": "NOT_RUN",
+        "observations": [
+          "Habitat is now actually installed/published. Required expanded same-product A/B/C/D cohort or dimensional probes remain unprepared after actual normal merchant save failure HI03. Baseline Width-only data cannot certify these planned witnesses; specific buyer case deferred."
+        ]
+      },
+      {
+        "id": "HI-10",
+        "status": "NOT_RUN",
+        "observations": [
+          "Habitat is now actually installed/published. Required expanded same-product A/B/C/D cohort or dimensional probes remain unprepared after actual normal merchant save failure HI03. Baseline Width-only data cannot certify these planned witnesses; specific buyer case deferred."
+        ]
+      },
+      {
+        "id": "HI-11",
+        "status": "NOT_RUN",
+        "observations": [
+          "Habitat is now actually installed/published. Required expanded same-product A/B/C/D cohort or dimensional probes remain unprepared after actual normal merchant save failure HI03. Baseline Width-only data cannot certify these planned witnesses; specific buyer case deferred."
+        ]
+      },
+      {
+        "id": "HI-12",
+        "status": "PARTIAL",
+        "observations": [
+          "Actual original48in baseline has distinctassembled48Win/package50Wx25Din with no inheritedcmdepth/height; commonreference separately labeledcommon/not-to-scale. PlannedfullAandHQ05comparison notrun."
+        ]
+      },
+      {
+        "id": "HI-13",
+        "status": "NOT_RUN",
+        "observations": [
+          "Habitat is now actually installed/published. Required expanded same-product A/B/C/D cohort or dimensional probes remain unprepared after actual normal merchant save failure HI03. Baseline Width-only data cannot certify these planned witnesses; specific buyer case deferred."
+        ]
+      },
+      {
+        "id": "HI-14",
+        "status": "NOT_RUN",
+        "observations": [
+          "Habitat is now actually installed/published. Required expanded same-product A/B/C/D cohort or dimensional probes remain unprepared after actual normal merchant save failure HI03. Baseline Width-only data cannot certify these planned witnesses; specific buyer case deferred."
+        ]
+      },
+      {
+        "id": "HI-15",
+        "status": "NOT_RUN",
+        "observations": [
+          "Habitat is now installed/published; required expanded A cohort and accepted primary Habitat cart are absent, broader cart/COD human authorization pending, and actual common hostedTLS block remains. Habitat checkout not attempted."
+        ]
+      },
+      {
+        "id": "HI-16",
+        "status": "NOT_RUN",
+        "observations": [
+          "Actual new Habitat order absent, so later edit/history comparison deferred and original product retained."
+        ]
+      },
+      {
+        "id": "HI-17",
+        "status": "NOT_RUN",
+        "observations": [
+          "No assigned legacy malformed-snapshot historical record; no history fixture manufactured."
+        ]
+      },
+      {
+        "id": "HQ-01",
+        "status": "NOT_RUN",
+        "observations": [
+          "Exact expanded A/B/C/D cohort or dimensional probe not created because actual normal merchant save failed HI03; no baseline query response substituted for required witnesses."
+        ]
+      },
+      {
+        "id": "HQ-02",
+        "status": "NOT_RUN",
+        "observations": [
+          "Exact expanded A/B/C/D cohort or dimensional probe not created because actual normal merchant save failed HI03; no baseline query response substituted for required witnesses."
+        ]
+      },
+      {
+        "id": "HQ-03",
+        "status": "NOT_RUN",
+        "observations": [
+          "Exact expanded A/B/C/D cohort or dimensional probe not created because actual normal merchant save failed HI03; no baseline query response substituted for required witnesses."
+        ]
+      },
+      {
+        "id": "HQ-04",
+        "status": "NOT_RUN",
+        "observations": [
+          "Exact expanded A/B/C/D cohort or dimensional probe not created because actual normal merchant save failed HI03; no baseline query response substituted for required witnesses."
+        ]
+      },
+      {
+        "id": "HQ-05",
+        "status": "NOT_RUN",
+        "observations": [
+          "Exact expanded A/B/C/D cohort or dimensional probe not created because actual normal merchant save failed HI03; no baseline query response substituted for required witnesses."
+        ]
+      },
+      {
+        "id": "HQ-06",
+        "status": "NOT_RUN",
+        "observations": [
+          "Exact expanded A/B/C/D cohort or dimensional probe not created because actual normal merchant save failed HI03; no baseline query response substituted for required witnesses."
+        ]
+      },
+      {
+        "id": "HQ-07",
+        "status": "NOT_RUN",
+        "observations": [
+          "Exact expanded A/B/C/D cohort or dimensional probe not created because actual normal merchant save failed HI03; no baseline query response substituted for required witnesses."
+        ]
+      },
+      {
+        "id": "HQ-08",
+        "status": "NOT_RUN",
+        "observations": [
+          "Exact expanded A/B/C/D cohort or dimensional probe not created because actual normal merchant save failed HI03; no baseline query response substituted for required witnesses."
+        ]
+      },
+      {
+        "id": "HQ-09",
+        "status": "NOT_RUN",
+        "observations": [
+          "Exact expanded A/B/C/D cohort or dimensional probe not created because actual normal merchant save failed HI03; no baseline query response substituted for required witnesses."
+        ]
+      }
+    ],
+    "authorization": "Direct human Habitat request verified in turn01a168d5-4c1f-7d53-8e9d-c19f384f4ad4",
+    "prerequisites": "No runtime grant. Exact main furniture recipe update needs coordinator writer continuation;2 dimensional probes through normal UI in actual run.",
+    "status": "ACTUAL_DIAGNOSTIC_FIRST_PASS_ACCEPTANCE_OPEN",
+    "evidence": "habitat-browser-diagnostics.json"
+  },
+  "madeyoursLifecycle": {
+    "plan": "docs/implementation/niche-themes-2026-10-23/madeyours/installed-buyer-fixture.plan.json",
+    "requiredCases": [
+      {
+        "id": "MY-00",
+        "status": "NOT_RUN"
+      },
+      {
+        "id": "MY-01",
+        "status": "NOT_RUN"
+      },
+      {
+        "id": "MY-02",
+        "status": "NOT_RUN"
+      },
+      {
+        "id": "MY-03",
+        "status": "NOT_RUN"
+      },
+      {
+        "id": "MY-04",
+        "status": "NOT_RUN"
+      },
+      {
+        "id": "MY-05",
+        "status": "NOT_RUN"
+      },
+      {
+        "id": "MY-06",
+        "status": "NOT_RUN"
+      },
+      {
+        "id": "MY-07",
+        "status": "NOT_RUN"
+      },
+      {
+        "id": "MY-08",
+        "status": "NOT_RUN"
+      },
+      {
+        "id": "MY-09",
+        "status": "NOT_RUN"
+      },
+      {
+        "id": "MY-10",
+        "status": "NOT_RUN"
+      },
+      {
+        "id": "MY-11",
+        "status": "NOT_RUN"
+      },
+      {
+        "id": "MY-12",
+        "status": "NOT_RUN"
+      },
+      {
+        "id": "MY-13",
+        "status": "NOT_RUN"
+      },
+      {
+        "id": "MY-14",
+        "status": "NOT_RUN"
+      },
+      {
+        "id": "MY-15",
+        "status": "NOT_RUN"
+      },
+      {
+        "id": "MY-16",
+        "status": "NOT_RUN"
+      },
+      {
+        "id": "MY-17",
+        "status": "NOT_RUN"
+      },
+      {
+        "id": "MY-18",
+        "status": "NOT_RUN"
+      },
+      {
+        "id": "MY-19",
+        "status": "NOT_RUN"
+      },
+      {
+        "id": "MY-20",
+        "status": "NOT_RUN"
+      },
+      {
+        "id": "MY-21",
+        "status": "NOT_RUN"
+      },
+      {
+        "id": "MY-22",
+        "status": "NOT_RUN"
+      }
+    ],
+    "authorization": "Direct human MadeYours request verified turn01a168dd-dfab-76a0-be8f-986ffdabe4c4",
+    "runtimeAllocated": false
+  },
+  "fixturePreparationReceipt": "docs/implementation/theme-editor-2026-10-23/evidence/fixture-preparation-source-release-14-products.json",
+  "ownerRefinementHandling": "Coordinator latest instruction cancels seed expansions. Exact own diff preserved; all3 current source files+data plan byte-identical to released14 baseline. Expand existing furniture and personalization choices through actual merchant UI after allocation.",
+  "commonObservedFailures": [
+    {
+      "scope": "shared-header-persistence",
+      "actual": "Acknowledged revision3 announcement edit reloads original text; template-local heading revision4 persists",
+      "rootCause": "384merge old working_manifest.templates over input then overwrite only selected template key; shared header/footer edits lost",
+      "status": "FAIL"
+    },
+    {
+      "scope": "preview",
+      "actual": "Actual browser frameblocked; parent frame-src includes initialtenantorigin while iframe uses canonicalplatformroot",
+      "status": "FAIL"
+    },
+    {
+      "scope": "merchant-product-origin",
+      "status": "FAIL",
+      "actual": "Normal beauty/food/furniture product saves each reject same merchant origin; failed drafts retained. Source fix not live."
+    },
+    {
+      "scope": "local-checkout-tls",
+      "status": "BLOCKED",
+      "actual": "Normal Dewdrop checkout navigation ERR_CERT_AUTHORITY_INVALID before hosted steps, no order."
+    },
+    {
+      "scope": "fixture-theme-library-quota",
+      "status": "RESOLVED_LOCAL_TEST_PRECONDITION_ORIGINAL_FREE_REFUSAL_PRESERVED",
+      "actual": "Actual Add Pantry refused at Free theme limit1 with only current Dewdrop installed; no alternative archive/plan/APIoverride used.",
+      "policyCorrect": true
+    }
+  ],
+  "commonEditorEvidence": [
+    "common-editor-conflict-recovery.json",
+    "common-collection-picker-roundtrip.json"
+  ],
+  "circuitLifecycle": {
+    "matrix": "docs/implementation/niche-themes-2026-10-23/circuit/installed-lifecycle/installed-lifecycle-matrix.json",
+    "status": "ACTUAL_FINITE_FIRST_PASS_ACCEPTANCE_OPEN",
+    "requiredCases": [
+      {
+        "id": "CL-01",
+        "title": "Bind the ONE Editor fixture and exact installed release",
+        "status": "PARTIAL",
+        "observations": [
+          "Actual normal AddCircuit4; installed2.0/editor21/source-manifest/site/origins/canonicalinstance-packagecapture IDs bound. Existinghub reused. Actual normal A/Bsave/fullreload/pub/restoreA/draftB/reapplyB exactsnapshot/publicmarkers pass. Buyer order ownership and current integer product version not established in this slice."
+        ]
+      },
+      {
+        "id": "CL-02",
+        "title": "Create only supplemental records and exact memberships through merchant UI",
+        "status": "BLOCKED",
+        "observations": [
+          "Positive prerequisite normal existinghub Description-only Save product actually rejected This change must originate from this merchant app; retainedfrozen drafttab12. Supplemental charger/cable/unknown and4-product/emptycollection setup deferred, never API/seed substituted. Actual attempted edit is separate from unattempted creates."
+        ]
+      },
+      {
+        "id": "CL-03",
+        "title": "Installed baseline hub PDP facts and missing information",
+        "status": "PASS",
+        "observations": [
+          "Actual installedhubPDP shows independent65Winput/45Woutput/60Wpass; rows power-input1xusb-c/power-output2xusb-c/data1xusb-a andHub1; no variant picker or invented image/length/protocol/warranty. Compatibility remains unconfirmed and hostrequirements not supplied. Functional/AT scope; no responsive screenshot claim at0x0."
+        ]
+      },
+      {
+        "id": "CL-04",
+        "title": "Available/OOS native charger selection",
+        "status": "NOT_RUN",
+        "observations": [
+          "Required exact supplemental charger/cable/unknown and4-product cohort remain uncreated after actual normal merchant save rejection. Planned availability/negative override/OR/across-product scalar/unit witness case deferred; baseline hub facts are separate observed evidence."
+        ]
+      },
+      {
+        "id": "CL-05",
+        "title": "Unsupported electronics variant overrides stay unsupported",
+        "status": "NOT_RUN",
+        "observations": [
+          "Required exact supplemental charger/cable/unknown and4-product cohort remain uncreated after actual normal merchant save rejection. Planned availability/negative override/OR/across-product scalar/unit witness case deferred; baseline hub facts are separate observed evidence."
+        ]
+      },
+      {
+        "id": "CL-06",
+        "title": "Cable capacity/length vs output, and wholly unknown facts",
+        "status": "NOT_RUN",
+        "observations": [
+          "Required exact supplemental charger/cable/unknown and4-product cohort remain uncreated after actual normal merchant save rejection. Planned availability/negative override/OR/across-product scalar/unit witness case deferred; baseline hub facts are separate observed evidence."
+        ]
+      },
+      {
+        "id": "CL-07",
+        "title": "Roles are display facts; connector choices are kind OR",
+        "status": "NOT_RUN",
+        "observations": [
+          "Required exact supplemental charger/cable/unknown and4-product cohort remain uncreated after actual normal merchant save rejection. Planned availability/negative override/OR/across-product scalar/unit witness case deferred; baseline hub facts are separate observed evidence."
+        ]
+      },
+      {
+        "id": "CL-08",
+        "title": "Scalar power predicates remain distinct and conjunctive",
+        "status": "NOT_RUN",
+        "observations": [
+          "Required exact supplemental charger/cable/unknown and4-product cohort remain uncreated after actual normal merchant save rejection. Planned availability/negative override/OR/across-product scalar/unit witness case deferred; baseline hub facts are separate observed evidence."
+        ]
+      },
+      {
+        "id": "CL-09",
+        "title": "Canonical units and matching-variant price",
+        "status": "NOT_RUN",
+        "observations": [
+          "Required exact supplemental charger/cable/unknown and4-product cohort remain uncreated after actual normal merchant save rejection. Planned availability/negative override/OR/across-product scalar/unit witness case deferred; baseline hub facts are separate observed evidence."
+        ]
+      },
+      {
+        "id": "CL-10",
+        "title": "Product-name search remains scoped to selected collection",
+        "status": "PARTIAL",
+        "observations": [
+          "Actual name search via native main collection form preserves original one-hub collection/category/country/limit and returns1knownhub; independentcanonicalHTTP200 agrees. FullplannedCircuitAll4/unmatched-string recovery not executed."
+        ]
+      },
+      {
+        "id": "CL-11",
+        "title": "Actual sort/page metadata is stable and server-counted",
+        "status": "NOT_RUN",
+        "observations": [
+          "Required planned4-product cohort and expected400/600/1200/1900 ordering absent. Originalone-hub cohort cannot prove planned two-page/four-row order."
+        ]
+      },
+      {
+        "id": "CL-12",
+        "title": "Independent clear/sort preserves remaining scope and resets page",
+        "status": "PARTIAL",
+        "observations": [
+          "Actual originalone-hubscope atpage2 withac-plug+usb-a/max2000/searchCircuit/category/country/limit1: normalNewestSort preservesbotharrays/scopeandresetspage; removeusb-a retainsac-plug+othersandzeroresults. ScalarHubserializesonevalue;Anyserializesoneemptyvalue(noduplicate), otherfilters/repeatedconnectorsretained. Planned4-productcohort semantics remain unrun."
+        ]
+      },
+      {
+        "id": "CL-13",
+        "title": "Known-empty and foreign collection recovery",
+        "status": "NOT_RUN",
+        "observations": [
+          "Intentionalempty/other-sitecollection setup and positiveboundforeign controls absent after normal setup-save blocker; no guessed foreignidentity test or all-catalog fallback credited."
+        ]
+      },
+      {
+        "id": "CL-14",
+        "title": "Hub native add and client-authority refusal",
+        "status": "NOT_RUN",
+        "observations": [
+          "Direct human broader synthetic cart/COD authorization remains pending after actual Pantry unknown-line Add auto-review rejection. No Circuit cart/overstock/foreign capability test performed; originaltwoPinkcart restoredandpreserved."
+        ]
+      },
+      {
+        "id": "CL-15",
+        "title": "Cart reload retains exact accepted line/snapshot",
+        "status": "NOT_RUN",
+        "observations": [
+          "Direct human broader synthetic cart/COD authorization remains pending after actual Pantry unknown-line Add auto-review rejection. No Circuit cart/overstock/foreign capability test performed; originaltwoPinkcart restoredandpreserved."
+        ]
+      },
+      {
+        "id": "CL-16",
+        "title": "Stock rejection is visible and recoverable",
+        "status": "NOT_RUN",
+        "observations": [
+          "Direct human broader synthetic cart/COD authorization remains pending after actual Pantry unknown-line Add auto-review rejection. No Circuit cart/overstock/foreign capability test performed; originaltwoPinkcart restoredandpreserved."
+        ]
+      },
+      {
+        "id": "CL-17",
+        "title": "Buyer/site capability boundaries",
+        "status": "NOT_RUN",
+        "observations": [
+          "Direct human broader synthetic cart/COD authorization remains pending after actual Pantry unknown-line Add auto-review rejection. No Circuit cart/overstock/foreign capability test performed; originaltwoPinkcart restoredandpreserved."
+        ]
+      },
+      {
+        "id": "CL-18",
+        "title": "Hosted localCOD contact/delivery/quote",
+        "status": "NOT_RUN",
+        "observations": [
+          "Circuit accepted-cart prerequisite absent, directhuman syntheticCOD approval pending, and actual common hostedTLS ERR_CERT_AUTHORITY_INVALID unresolved. No Circuit checkout/confirm/replay performed."
+        ]
+      },
+      {
+        "id": "CL-19",
+        "title": "COD intent and strict confirm idempotency",
+        "status": "NOT_RUN",
+        "observations": [
+          "Circuit accepted-cart prerequisite absent, directhuman syntheticCOD approval pending, and actual common hostedTLS ERR_CERT_AUTHORITY_INVALID unresolved. No Circuit checkout/confirm/replay performed."
+        ]
+      },
+      {
+        "id": "CL-20",
+        "title": "Confirm stock/ledger effects reconcile once",
+        "status": "NOT_RUN",
+        "observations": [
+          "No actual Circuit order or confirmation exists, so inventory/order/journal/history assertions deferred; no empty-result pass or precreatedorder substituted."
+        ]
+      },
+      {
+        "id": "CL-21",
+        "title": "Buyer/merchant/Liquid saved history before mutation",
+        "status": "NOT_RUN",
+        "observations": [
+          "No actual Circuit order or confirmation exists, so inventory/order/journal/history assertions deferred; no empty-result pass or precreatedorder substituted."
+        ]
+      },
+      {
+        "id": "CL-22",
+        "title": "Later product edits do not rewrite immutable order history",
+        "status": "NOT_RUN",
+        "observations": [
+          "No preceding actualCircuitorder/historypositive control; later realcatalogedit deferred. NormalmerchantSave also actuallyrejectsorigin. No historicalsnapshot mutation."
+        ]
+      },
+      {
+        "id": "CL-23",
+        "title": "Stale active cart/quote refuses changed facts safely",
+        "status": "NOT_RUN",
+        "observations": [
+          "Required separateactivecartbeforeCL22 plusactualprimaryorder/lateredit missing; no stalequote acceptance test performed."
+        ]
+      },
+      {
+        "id": "CL-24",
+        "title": "Trusted catalogue demo never becomes a mutation environment",
+        "status": "BLOCKED",
+        "observations": [
+          "NormalPreviewCircuit modal advertises exactinteractiveURL tenantorigin/theme-preview/letbuyy-forge. Openedexactlink ->PageNotFound; independentunauthGET404. InertAdd/variant/cart/forgedcontext subcases notrun because trustedpreview didnotload. No alternateURLguess or securitybypass."
+        ]
+      },
+      {
+        "id": "CL-25",
+        "title": "Model-only search copy diagnostic",
+        "status": "FAIL",
+        "observations": [
+          "Actual publishedCircuitcopy advertises models. Native mainform exactknownproductname returns1hub, while suppliedmodelSyntheticH1 sameexplicitonehubscope returns0/visibleempty. Independentexactcanonical2GETs200/200 confirmtotal1v0; fullplanned4-productcohortnotcreated, intrinsicbaseline modelsearchdefectobserved. Native392GREEN is separatefuturefix, notlive in9cd."
+        ]
+      }
+    ],
+    "evidence": "circuit-browser-diagnostics.json"
+  },
+  "playfieldLifecycle": {
+    "status": "OPEN",
+    "ledger": "playfield-browser-diagnostics.json",
+    "cartApproval": "DIRECT_HUMAN_APPROVED_ALL10_SYNTHETIC",
+    "cartRestoration": "PASS_EXACT_WHITELISTED_EQUALITY",
+    "remainingGates": [
+      "live corrected merchant save",
+      "outer selected-edition fact leakage",
+      "trusted HTTPS/source-fresh fixture",
+      "remaining14-case obligations"
+    ]
+  },
+  "kindredLifecycle": {
+    "status": "OPEN",
+    "ledger": "kindred-browser-diagnostics.json",
+    "cartRestoration": "PASS_EXACT_WHITELISTED_EQUALITY"
+  }
+}

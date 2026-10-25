@@ -25,6 +25,9 @@
     --breakpoint-lg: 1024px;
     --breakpoint-xl: 1280px;
 
+    /* Named radius utility; preserves the canonical radius without arbitrary values. */
+    --radius-lb-md: var(--lb-radius-md);
+
     /* Surfaces (theme-aware) */
     --color-surface: var(--lb-color-surface);
     --color-surface-raised: var(--lb-color-surface-raised);

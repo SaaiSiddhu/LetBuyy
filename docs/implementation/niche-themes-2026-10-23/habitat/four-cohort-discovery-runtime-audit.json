@@ -1,0 +1,436 @@
+{
+  "recordedAt": "2026-10-23T20:05:54.331273+00:00",
+  "runId": "f6074d90e894",
+  "productVersion": 30,
+  "releaseId": "3a3356f7-5a77-4dd4-84a5-bdbcdf4a3810",
+  "status": "PASS_18_SERVER_RESPONSES_AND_14_FORMS_SCOPE",
+  "responseChecks": [
+    {
+      "scope": "search",
+      "id": "HQ-01",
+      "requestId": "d3be4d67-ff89-40fe-974d-399e56aed747",
+      "sha256": "3a4c79d82652d82086f25ce7e78015387a23c76e2fb08dad0c2c98fac8aab3bb",
+      "rawBodyHashExact": true,
+      "exactCanonicalQuery": true,
+      "actualVariantIds": [
+        "07d32ed4-62ca-43dc-a605-b11f97c0a791",
+        "b1c16f63-5d1c-4ab0-995c-552b45f11fab"
+      ],
+      "expectedAliases": [
+        "A",
+        "D"
+      ],
+      "actualTotal": 1,
+      "basePrice8900MatchingB9300Preserved": true,
+      "wholeCapabilityTupleExact": true
+    },
+    {
+      "scope": "search",
+      "id": "HQ-02",
+      "requestId": "edd4281c-2fcc-43ef-aef8-b7fa7d9272cd",
+      "sha256": "71d7e812027134435308a51b7d2edd08394f5d6754f681b8a41174820eefecba",
+      "rawBodyHashExact": true,
+      "exactCanonicalQuery": true,
+      "actualVariantIds": [
+        "50982c60-e567-42b4-85e4-2b893b234a4a"
+      ],
+      "expectedAliases": [
+        "B"
+      ],
+      "actualTotal": 1,
+      "basePrice8900MatchingB9300Preserved": true,
+      "wholeCapabilityTupleExact": true
+    },
+    {
+      "scope": "search",
+      "id": "HQ-03",
+      "requestId": "cee1b44c-383e-420d-839e-4ff26baa14a1",
+      "sha256": "97b2e67244c865c7e332b25e5c2cef951d2b59f5f841a764ad59a92e1b43a171",
+      "rawBodyHashExact": true,
+      "exactCanonicalQuery": true,
+      "actualVariantIds": [],
+      "expectedAliases": [],
+      "actualTotal": 0,
+      "basePrice8900MatchingB9300Preserved": true,
+      "wholeCapabilityTupleExact": true
+    },
+    {
+      "scope": "search",
+      "id": "HQ-04",
+      "requestId": "d4a1aedd-4743-4a6d-8a69-d39a150f52f4",
+      "sha256": "4b54a4c148b789e598e6be97839531782b35b58779684c8780491ff2366acc14",
+      "rawBodyHashExact": true,
+      "exactCanonicalQuery": true,
+      "actualVariantIds": [],
+      "expectedAliases": [],
+      "actualTotal": 0,
+      "basePrice8900MatchingB9300Preserved": true,
+      "wholeCapabilityTupleExact": true
+    },
+    {
+      "scope": "search",
+      "id": "HQ-05",
+      "requestId": "0670da28-4130-4c45-92fc-79ea4e64d944",
+      "sha256": "7de6ff4e2573879a6b302950ed8bd2ea373c4a995a61370805be618f2dfe246f",
+      "rawBodyHashExact": true,
+      "exactCanonicalQuery": true,
+      "actualVariantIds": [
+        "07d32ed4-62ca-43dc-a605-b11f97c0a791"
+      ],
+      "expectedAliases": [
+        "A"
+      ],
+      "actualTotal": 1,
+      "basePrice8900MatchingB9300Preserved": true,
+      "wholeCapabilityTupleExact": true
+    },
+    {
+      "scope": "search",
+      "id": "HQ-06",
+      "requestId": "a8139e14-44c8-4b96-a712-25b69989aa98",
+      "sha256": "7ec45078381228f9d0f6b986ac32fc9adc5dca4240b938ef2016b89755f36f8e",
+      "rawBodyHashExact": true,
+      "exactCanonicalQuery": true,
+      "actualVariantIds": [
+        "07d32ed4-62ca-43dc-a605-b11f97c0a791"
+      ],
+      "expectedAliases": [
+        "A"
+      ],
+      "actualTotal": 1,
+      "basePrice8900MatchingB9300Preserved": true,
+      "wholeCapabilityTupleExact": true
+    },
+    {
+      "scope": "search",
+      "id": "HQ-07",
+      "requestId": "887b5264-f707-4e4e-b698-16064839990f",
+      "sha256": "46ce201a3a7d2280e4c68574ef45bebbf32bd51f12d5c4140c945f99c00bd93f",
+      "rawBodyHashExact": true,
+      "exactCanonicalQuery": true,
+      "actualVariantIds": [],
+      "expectedAliases": [],
+      "actualTotal": 0,
+      "basePrice8900MatchingB9300Preserved": true,
+      "wholeCapabilityTupleExact": true
+    },
+    {
+      "scope": "search",
+      "id": "HQ-04-clear-max_width_cm",
+      "requestId": "f149960b-40a8-4c8c-89f6-6ac65d829a99",
+      "sha256": "d71999d7fc6ea0488d2034a5c06a51a211a97ce78ddbbb650de06c57496e2b50",
+      "rawBodyHashExact": true,
+      "exactCanonicalQuery": true,
+      "actualVariantIds": [
+        "50982c60-e567-42b4-85e4-2b893b234a4a"
+      ],
+      "expectedAliases": [
+        "B"
+      ],
+      "actualTotal": 1,
+      "basePrice8900MatchingB9300Preserved": true,
+      "wholeCapabilityTupleExact": true
+    },
+    {
+      "scope": "search",
+      "id": "HQ-04-clear-max_depth_cm",
+      "requestId": "ce73f80c-3e47-4db6-a225-f95dad4f0966",
+      "sha256": "d3bb1c4c5d68f98f261de1937c1e0095a6741201795e7660733a658d59157295",
+      "rawBodyHashExact": true,
+      "exactCanonicalQuery": true,
+      "actualVariantIds": [
+        "07d32ed4-62ca-43dc-a605-b11f97c0a791",
+        "b1c16f63-5d1c-4ab0-995c-552b45f11fab"
+      ],
+      "expectedAliases": [
+        "A",
+        "D"
+      ],
+      "actualTotal": 1,
+      "basePrice8900MatchingB9300Preserved": true,
+      "wholeCapabilityTupleExact": true
+    },
+    {
+      "scope": "collection",
+      "id": "HQ-01",
+      "requestId": "7883218f-b9ff-4bcc-9940-0af28fb00c7a",
+      "sha256": "a517ecfa755f3610811d53914d96340f300ec9b4cbda80276446ac3d668143fe",
+      "rawBodyHashExact": true,
+      "exactCanonicalQuery": true,
+      "actualVariantIds": [
+        "07d32ed4-62ca-43dc-a605-b11f97c0a791",
+        "b1c16f63-5d1c-4ab0-995c-552b45f11fab"
+      ],
+      "expectedAliases": [
+        "A",
+        "D"
+      ],
+      "actualTotal": 1,
+      "basePrice8900MatchingB9300Preserved": true,
+      "wholeCapabilityTupleExact": true
+    },
+    {
+      "scope": "collection",
+      "id": "HQ-02",
+      "requestId": "e96815d2-be64-4064-9dfc-b3dc965f3e01",
+      "sha256": "666fdd7953ce75430e11ed762bbe1feaefabf67a4c4fa87ce4a8b5760fe1dd6d",
+      "rawBodyHashExact": true,
+      "exactCanonicalQuery": true,
+      "actualVariantIds": [
+        "50982c60-e567-42b4-85e4-2b893b234a4a"
+      ],
+      "expectedAliases": [
+        "B"
+      ],
+      "actualTotal": 1,
+      "basePrice8900MatchingB9300Preserved": true,
+      "wholeCapabilityTupleExact": true
+    },
+    {
+      "scope": "collection",
+      "id": "HQ-03",
+      "requestId": "e55cde74-e35a-42b0-9730-30606df1eec9",
+      "sha256": "1fa52e369e5817a7d329e780d1b906aa1e07d5bf629ead1a72deea0088c8ce50",
+      "rawBodyHashExact": true,
+      "exactCanonicalQuery": true,
+      "actualVariantIds": [],
+      "expectedAliases": [],
+      "actualTotal": 0,
+      "basePrice8900MatchingB9300Preserved": true,
+      "wholeCapabilityTupleExact": true
+    },
+    {
+      "scope": "collection",
+      "id": "HQ-04",
+      "requestId": "686eadaf-9dea-433a-a322-e7204984a329",
+      "sha256": "648db6d4321617bfc600b7f08241c80dd038fc8775192a562923756f9fa70b15",
+      "rawBodyHashExact": true,
+      "exactCanonicalQuery": true,
+      "actualVariantIds": [],
+      "expectedAliases": [],
+      "actualTotal": 0,
+      "basePrice8900MatchingB9300Preserved": true,
+      "wholeCapabilityTupleExact": true
+    },
+    {
+      "scope": "collection",
+      "id": "HQ-05",
+      "requestId": "a1e79bd3-176e-4322-911b-c3a9013e3139",
+      "sha256": "d83e755751d4a74a4b362747944778416d6a5af8048bec11a291cc57c9229dab",
+      "rawBodyHashExact": true,
+      "exactCanonicalQuery": true,
+      "actualVariantIds": [
+        "07d32ed4-62ca-43dc-a605-b11f97c0a791"
+      ],
+      "expectedAliases": [
+        "A"
+      ],
+      "actualTotal": 1,
+      "basePrice8900MatchingB9300Preserved": true,
+      "wholeCapabilityTupleExact": true
+    },
+    {
+      "scope": "collection",
+      "id": "HQ-06",
+      "requestId": "a59f9919-e575-4748-80c4-9a6599fe4ed0",
+      "sha256": "0d26a081e97bac28932fdc27608e5c9571425bf1cd704a1dbeb45d387dc1ac45",
+      "rawBodyHashExact": true,
+      "exactCanonicalQuery": true,
+      "actualVariantIds": [
+        "07d32ed4-62ca-43dc-a605-b11f97c0a791"
+      ],
+      "expectedAliases": [
+        "A"
+      ],
+      "actualTotal": 1,
+      "basePrice8900MatchingB9300Preserved": true,
+      "wholeCapabilityTupleExact": true
+    },
+    {
+      "scope": "collection",
+      "id": "HQ-07",
+      "requestId": "8aac93bf-5a9c-42bb-af1c-6f18a68ecf5d",
+      "sha256": "7bcb522f2c4040082ce627d256ff740e9d49d1f56d0857446a904da4dda076b6",
+      "rawBodyHashExact": true,
+      "exactCanonicalQuery": true,
+      "actualVariantIds": [],
+      "expectedAliases": [],
+      "actualTotal": 0,
+      "basePrice8900MatchingB9300Preserved": true,
+      "wholeCapabilityTupleExact": true
+    },
+    {
+      "scope": "collection",
+      "id": "HQ-04-clear-max_width_cm",
+      "requestId": "92b2cb9f-e378-43a4-bdd2-7fedbaaee778",
+      "sha256": "c19d920a904de566f29c62b01ea2de15b68984cf655a518c7313879f326acb92",
+      "rawBodyHashExact": true,
+      "exactCanonicalQuery": true,
+      "actualVariantIds": [
+        "50982c60-e567-42b4-85e4-2b893b234a4a"
+      ],
+      "expectedAliases": [
+        "B"
+      ],
+      "actualTotal": 1,
+      "basePrice8900MatchingB9300Preserved": true,
+      "wholeCapabilityTupleExact": true
+    },
+    {
+      "scope": "collection",
+      "id": "HQ-04-clear-max_depth_cm",
+      "requestId": "2c6137f5-e92b-4fff-bd37-eca15c771ed9",
+      "sha256": "e7a129985d6b8e2036991aecf1dd04296734cde7a2720c246ecb5c12a9b44d9c",
+      "rawBodyHashExact": true,
+      "exactCanonicalQuery": true,
+      "actualVariantIds": [
+        "07d32ed4-62ca-43dc-a605-b11f97c0a791",
+        "b1c16f63-5d1c-4ab0-995c-552b45f11fab"
+      ],
+      "expectedAliases": [
+        "A",
+        "D"
+      ],
+      "actualTotal": 1,
+      "basePrice8900MatchingB9300Preserved": true,
+      "wholeCapabilityTupleExact": true
+    }
+  ],
+  "formChecks": [
+    {
+      "scope": "search",
+      "id": "HQ-01",
+      "actualQueryScopeAndValuesExact": true,
+      "visibleCountExact": true,
+      "widthControl": true,
+      "depthControl": true,
+      "rawAXSha256": "cd2aa7f4044892c9458b9fe7aaa1e0d9711beb98e0327b0bdd0fd0a82e11342e"
+    },
+    {
+      "scope": "search",
+      "id": "HQ-02",
+      "actualQueryScopeAndValuesExact": true,
+      "visibleCountExact": true,
+      "widthControl": true,
+      "depthControl": true,
+      "rawAXSha256": "86da59dd343e2eb3da60d51cba0afafa7e62c82d15a48e28a79135eb8d5612b5"
+    },
+    {
+      "scope": "search",
+      "id": "HQ-03",
+      "actualQueryScopeAndValuesExact": true,
+      "visibleCountExact": true,
+      "widthControl": false,
+      "depthControl": false,
+      "rawAXSha256": "57d79c2d1502bcb3b2abf5394073f8b83e42528dc744b62735238d1335ab937c"
+    },
+    {
+      "scope": "search",
+      "id": "HQ-04",
+      "actualQueryScopeAndValuesExact": true,
+      "visibleCountExact": true,
+      "widthControl": false,
+      "depthControl": false,
+      "rawAXSha256": "e621755aa5ecfaa1406966b5a44f9e8407e924008bb6c7c0b86dea97f561ea75"
+    },
+    {
+      "scope": "search",
+      "id": "HQ-05",
+      "actualQueryScopeAndValuesExact": true,
+      "visibleCountExact": true,
+      "widthControl": true,
+      "depthControl": true,
+      "rawAXSha256": "517fd664113cb13d054d3c51f3ceb65bf96e7c85db96ec24dbc858a64a54e468"
+    },
+    {
+      "scope": "search",
+      "id": "HQ-06",
+      "actualQueryScopeAndValuesExact": true,
+      "visibleCountExact": true,
+      "widthControl": true,
+      "depthControl": true,
+      "rawAXSha256": "ebaf5660d88998f490ddc404b8313dec61eb132c2729de9a84cb035c7e094039"
+    },
+    {
+      "scope": "search",
+      "id": "HQ-07",
+      "actualQueryScopeAndValuesExact": true,
+      "visibleCountExact": true,
+      "widthControl": false,
+      "depthControl": false,
+      "rawAXSha256": "991ec72d1734bc46dce8427beb90dd7be00ff531e46de50d4045c8ddda3717b7"
+    },
+    {
+      "scope": "collection",
+      "id": "HQ-01",
+      "actualQueryScopeAndValuesExact": true,
+      "visibleCountExact": true,
+      "widthControl": true,
+      "depthControl": true,
+      "rawAXSha256": "333c971e627bc02522661820a7b7caac95f1e4203fbd20f8a6886f5f996b6567"
+    },
+    {
+      "scope": "collection",
+      "id": "HQ-02",
+      "actualQueryScopeAndValuesExact": true,
+      "visibleCountExact": true,
+      "widthControl": true,
+      "depthControl": true,
+      "rawAXSha256": "494874c3008815cd2dba7d721d6149359505c94e43170b33da6267f467be16cc"
+    },
+    {
+      "scope": "collection",
+      "id": "HQ-03",
+      "actualQueryScopeAndValuesExact": true,
+      "visibleCountExact": true,
+      "widthControl": false,
+      "depthControl": false,
+      "rawAXSha256": "37e1d16ecdaae369d5e2f9b607b62afac3a5fe1cdba958cef7fdbb6d380947e8"
+    },
+    {
+      "scope": "collection",
+      "id": "HQ-04",
+      "actualQueryScopeAndValuesExact": true,
+      "visibleCountExact": true,
+      "widthControl": false,
+      "depthControl": false,
+      "rawAXSha256": "ad0c073dd7bcb7e661b8e1ecf72923c3469cca615010e4bf8386133cc8f75f13"
+    },
+    {
+      "scope": "collection",
+      "id": "HQ-05",
+      "actualQueryScopeAndValuesExact": true,
+      "visibleCountExact": true,
+      "widthControl": true,
+      "depthControl": true,
+      "rawAXSha256": "6805407e4a7f15b5136a543f89a83f8fb2bacbc3e755e1facafdfb42fbb52f25"
+    },
+    {
+      "scope": "collection",
+      "id": "HQ-06",
+      "actualQueryScopeAndValuesExact": true,
+      "visibleCountExact": true,
+      "widthControl": true,
+      "depthControl": true,
+      "rawAXSha256": "34bb996c286cd75fd099bf7ed297b1f98e4dd3a7599e5a75d1a3e4899f1c8f39"
+    },
+    {
+      "scope": "collection",
+      "id": "HQ-07",
+      "actualQueryScopeAndValuesExact": true,
+      "visibleCountExact": true,
+      "widthControl": false,
+      "depthControl": false,
+      "rawAXSha256": "83731839ea4632ed9cad68bd80c8e85bdb42401d45e11ee5fec366b1b41b388a"
+    }
+  ],
+  "rawResponseCount": 18,
+  "formCount": 14,
+  "knownDerivedDiagnosticCorrection": "Original collection-control booleans forHQ05/HQ06 were false from a literal (settable) string matcher; rawAX includes numeric qualifiers and both actual inputs. Addendum retained; no product defect inferred.",
+  "whole26Accepted": false,
+  "remaining": "Actual independent width/depth Clear link and sort/apply recovery, PDP selections/OOS, accepted fullA cart/COD/retry/history; HQ08/HQ09 earlier independent audits retained.",
+  "sourceFile": {
+    "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-habitat-four-cohort-query-results.json",
+    "sha256": "50bd1c1eb951bbddf6b3d57f604813f67de224ee99fee1970beb5ab1e4db7420"
+  }
+}

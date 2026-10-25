@@ -1,0 +1,197 @@
+{
+  "runId": "fff117a317a5",
+  "count": 19,
+  "originalAndCopyHashesVerified": true,
+  "files": [
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-publisher-acl393-fff117a317a5-TzcUBW/001-entry-full-profile-before-assertions.json",
+      "copied": {
+        "path": "docs/implementation/niche-theme-programme/publisher-acl393/native-runs/03/provenance/001-entry-full-profile-before-assertions.json",
+        "sha256": "76619b36a8dde6ab47c8c2b4216aaaf7c35412ee919687ec01342103081a0eba",
+        "bytes": 378897
+      },
+      "sequence": 1,
+      "name": "entry-full-profile-before-assertions"
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-publisher-acl393-fff117a317a5-TzcUBW/002-before-phase.json",
+      "copied": {
+        "path": "docs/implementation/niche-theme-programme/publisher-acl393/native-runs/03/provenance/002-before-phase.json",
+        "sha256": "fc4a29833c14cb7a9efdab2be95ba4ef69946000ca46249dafa8032fa50c71e0",
+        "bytes": 408870
+      },
+      "sequence": 2,
+      "name": "before-phase"
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-publisher-acl393-fff117a317a5-TzcUBW/003-mounted-api.json",
+      "copied": {
+        "path": "docs/implementation/niche-theme-programme/publisher-acl393/native-runs/03/provenance/003-mounted-api.json",
+        "sha256": "42611bd117dea4784e30dd6e220b7ff0e8d7aab65ad00e9b1115959cbacd4d4d",
+        "bytes": 86370
+      },
+      "sequence": 3,
+      "name": "mounted-api"
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-publisher-acl393-fff117a317a5-TzcUBW/004-mounted-api.json",
+      "copied": {
+        "path": "docs/implementation/niche-theme-programme/publisher-acl393/native-runs/03/provenance/004-mounted-api.json",
+        "sha256": "27966a1e7c337eff6109f67fc4d2c93a467fd4f8df21250cb6ef6acb3edcf6a7",
+        "bytes": 1201
+      },
+      "sequence": 4,
+      "name": "mounted-api"
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-publisher-acl393-fff117a317a5-TzcUBW/005-mounted-api.json",
+      "copied": {
+        "path": "docs/implementation/niche-theme-programme/publisher-acl393/native-runs/03/provenance/005-mounted-api.json",
+        "sha256": "a8c6a18f6228dc3cb373cab13aaf2b63ccb34f23263f34d5521da10bc7ff2351",
+        "bytes": 292361
+      },
+      "sequence": 5,
+      "name": "mounted-api"
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-publisher-acl393-fff117a317a5-TzcUBW/006-before-phase.json",
+      "copied": {
+        "path": "docs/implementation/niche-theme-programme/publisher-acl393/native-runs/03/provenance/006-before-phase.json",
+        "sha256": "30933688c356e0244500300ded4233da246671206369166e1e4fe8291dedc6e9",
+        "bytes": 408868
+      },
+      "sequence": 6,
+      "name": "before-phase"
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-publisher-acl393-fff117a317a5-TzcUBW/007-pre-up-full-profile.json",
+      "copied": {
+        "path": "docs/implementation/niche-theme-programme/publisher-acl393/native-runs/03/provenance/007-pre-up-full-profile.json",
+        "sha256": "0382f43fedc9fa30954888d86b2222f9800c243ac5309ca3b66d1578d9a80aac",
+        "bytes": 378880
+      },
+      "sequence": 7,
+      "name": "pre-up-full-profile"
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-publisher-acl393-fff117a317a5-TzcUBW/008-post-up-full-profile.json",
+      "copied": {
+        "path": "docs/implementation/niche-theme-programme/publisher-acl393/native-runs/03/provenance/008-post-up-full-profile.json",
+        "sha256": "7cef8b41c08c3e818f8fc9231f5dadb43b59833bec7d42fa050ca3fcb499a06e",
+        "bytes": 378477
+      },
+      "sequence": 8,
+      "name": "post-up-full-profile"
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-publisher-acl393-fff117a317a5-TzcUBW/009-up-replay-full-profile.json",
+      "copied": {
+        "path": "docs/implementation/niche-theme-programme/publisher-acl393/native-runs/03/provenance/009-up-replay-full-profile.json",
+        "sha256": "1c32d982972c89c66a91fc4bbb8f1ec8e60225b039117c7ff2dbcdb358636536",
+        "bytes": 378479
+      },
+      "sequence": 9,
+      "name": "up-replay-full-profile"
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-publisher-acl393-fff117a317a5-TzcUBW/010-before-phase.json",
+      "copied": {
+        "path": "docs/implementation/niche-theme-programme/publisher-acl393/native-runs/03/provenance/010-before-phase.json",
+        "sha256": "e77c000c34b455e8a5799dc7bda4ac16e02f066f392d7e441bd4a9b4676b0e4e",
+        "bytes": 408455
+      },
+      "sequence": 10,
+      "name": "before-phase"
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-publisher-acl393-fff117a317a5-TzcUBW/011-tenant-direct-denial.json",
+      "copied": {
+        "path": "docs/implementation/niche-theme-programme/publisher-acl393/native-runs/03/provenance/011-tenant-direct-denial.json",
+        "sha256": "b81e6e8d25b25feaa50f78a34d2f1fa6857f27a04ed1514b2a678137bfbaf599",
+        "bytes": 13677
+      },
+      "sequence": 11,
+      "name": "tenant-direct-denial"
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-publisher-acl393-fff117a317a5-TzcUBW/012-tenant-direct-denial.json",
+      "copied": {
+        "path": "docs/implementation/niche-theme-programme/publisher-acl393/native-runs/03/provenance/012-tenant-direct-denial.json",
+        "sha256": "2aa3c0a460fb6145090e3acfab359027b1b1f505077c8ff5db4593cbd428bd22",
+        "bytes": 13681
+      },
+      "sequence": 12,
+      "name": "tenant-direct-denial"
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-publisher-acl393-fff117a317a5-TzcUBW/013-tenant-direct-denial.json",
+      "copied": {
+        "path": "docs/implementation/niche-theme-programme/publisher-acl393/native-runs/03/provenance/013-tenant-direct-denial.json",
+        "sha256": "7fca7cdaaf640a54cbedcc4089d6c02aa96ef4cba8788bd632c1077c1028500a",
+        "bytes": 13679
+      },
+      "sequence": 13,
+      "name": "tenant-direct-denial"
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-publisher-acl393-fff117a317a5-TzcUBW/014-public-direct-denial.json",
+      "copied": {
+        "path": "docs/implementation/niche-theme-programme/publisher-acl393/native-runs/03/provenance/014-public-direct-denial.json",
+        "sha256": "4360bae194df43a3e4979437cc860e5824f9a4a7cf3d3dace9a4548a3d74fade",
+        "bytes": 330
+      },
+      "sequence": 14,
+      "name": "public-direct-denial"
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-publisher-acl393-fff117a317a5-TzcUBW/015-public-direct-denial.json",
+      "copied": {
+        "path": "docs/implementation/niche-theme-programme/publisher-acl393/native-runs/03/provenance/015-public-direct-denial.json",
+        "sha256": "eda5d7c74484bbdcbb11b856eaec9b486c6a5379ab46790405f5ef98e714f2ca",
+        "bytes": 339
+      },
+      "sequence": 15,
+      "name": "public-direct-denial"
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-publisher-acl393-fff117a317a5-TzcUBW/016-before-phase.json",
+      "copied": {
+        "path": "docs/implementation/niche-theme-programme/publisher-acl393/native-runs/03/provenance/016-before-phase.json",
+        "sha256": "189ace7ef51fe32336e6f58e9c750b84b85d93932796755316a286d5d5115e76",
+        "bytes": 408462
+      },
+      "sequence": 16,
+      "name": "before-phase"
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-publisher-acl393-fff117a317a5-TzcUBW/017-mounted-api.json",
+      "copied": {
+        "path": "docs/implementation/niche-theme-programme/publisher-acl393/native-runs/03/provenance/017-mounted-api.json",
+        "sha256": "d125e019e1205813dde873206c24de95a17483e1f186c23d42790819663f6b08",
+        "bytes": 292362
+      },
+      "sequence": 17,
+      "name": "mounted-api"
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-publisher-acl393-fff117a317a5-TzcUBW/018-mounted-api.json",
+      "copied": {
+        "path": "docs/implementation/niche-theme-programme/publisher-acl393/native-runs/03/provenance/018-mounted-api.json",
+        "sha256": "9b4ab777e3c85ec176bf3733f04d1abcd20c156b1c2b4c0b4d883fdb1eec8945",
+        "bytes": 669
+      },
+      "sequence": 18,
+      "name": "mounted-api"
+    },
+    {
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-publisher-acl393-fff117a317a5-TzcUBW/019-mounted-api.json",
+      "copied": {
+        "path": "docs/implementation/niche-theme-programme/publisher-acl393/native-runs/03/provenance/019-mounted-api.json",
+        "sha256": "fdbb1b519a420185ea998054f2e2d4ff7111c6164d6ebe2af149201a7b8842a0",
+        "bytes": 668
+      },
+      "sequence": 19,
+      "name": "mounted-api"
+    }
+  ]
+}

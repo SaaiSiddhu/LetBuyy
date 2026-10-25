@@ -1,0 +1,124 @@
+{
+  "status": "PRIVATE_SOURCE_ONLY_NO_G1_GRANT",
+  "mutableProductionPath": {
+    "path": "packages/theme-engine/src/first-party-theme-catalog.ts",
+    "MainBeforeSha256": "2a1775243185e982f19f511738167c280d237fc6d15ed2dd72844e425dc62488",
+    "parentSha256": "8e07a42c1dbad8e64e1b16a008a403a201e7207214d44a0e63313b666da10086",
+    "privateSha256": "0ba796998bef64d70742f6d77f146c70ae7e28e2c6d34db5ea7590414bca112a",
+    "overlay": "overlay/packages/theme-engine/src/first-party-theme-catalog.ts",
+    "diff": "diffs/packages__theme-engine__src__first-party-theme-catalog.ts.diff"
+  },
+  "readOnlyDependency": {
+    "path": "packages/theme-engine/src/niche-order-presentation.ts",
+    "from": "/private/tmp/letbuyy-apparel-provenance-prep-20261025-04/packages/theme-engine/src/niche-order-presentation.ts",
+    "sha256": "63e5a3836f9602a843df27bc61be28572ab8c5491a2ae4f60d38e04acd5d686b",
+    "mutable": false
+  },
+  "newTestAddition": {
+    "path": "packages/theme-engine/test/first-party-five-theme-v211.test.ts",
+    "MainBeforeSha256": null,
+    "parentSha256": null,
+    "privateSha256": "2636f9b7632e6ea8d0e5a1eba5204dbf745c9d70bd48854a818755203746206e",
+    "overlay": "overlay/packages/theme-engine/test/first-party-five-theme-v211.test.ts",
+    "diff": "diffs/packages__theme-engine__test__first-party-five-theme-v211.test.ts.diff"
+  },
+  "newSenseGenerator": {
+    "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/five-theme211-integration01/generate-sense211-proposal.ts",
+    "MainBeforeSha256": null,
+    "parentSha256": null,
+    "privateSha256": "867c128b6b887ba7e255db902ccc5bfdb24296416df2759915fb70b3799ae35a",
+    "overlay": "overlay/docs/implementation/niche-theme-programme/completion-2026-10-24/five-theme211-integration01/generate-sense211-proposal.ts",
+    "diff": "diffs/docs__implementation__niche-theme-programme__completion-2026-10-24__five-theme211-integration01__generate-sense211-proposal.ts.diff"
+  },
+  "order": [
+    "qualified393/full322",
+    "existing qualified201 captures",
+    "qualified child210 capture",
+    "immutable four-heading211 payload",
+    "new Sense-only211 payload"
+  ],
+  "immutableHeadingPayloadReference": {
+    "path": "../order-heading211-integration01/DISTRIBUTION_PROPOSAL.json",
+    "sha256": "54856b0d11e824ba97c058290041fa776f14435dc0183859ca90ab899c57a32d",
+    "payloadSha256": "da476dc47ce16d55cd3a7ee05170e9618860febd844c7fcb83aaf349d00806b9",
+    "artifacts": [
+      {
+        "id": "7b669c70-0000-4000-8000-000000000004",
+        "slug": "letbuyy-craft",
+        "version": "2.1.1",
+        "prior": "2.1.0",
+        "bundleSha256": "69aaa1eb1216cc8566c655c664755d034863a7bcbec6dd9606811bb1457de038",
+        "previousBundleSha256": "95fd3f0fbfa026183a63a1fa111fa34fbf07b9492550752c96dd907a83785313"
+      },
+      {
+        "id": "7b669c70-0000-4000-8000-000000000007",
+        "slug": "letbuyy-dawn",
+        "version": "2.1.1",
+        "prior": "2.1.0",
+        "bundleSha256": "c0ff68be44608f192dbbefc77adb48fefc475dd2742ae6c52bcb4199b892649c",
+        "previousBundleSha256": "7b71abe8023049bc62e9229b68ac9d81e6c973225ac32291e06092b02fcfdf37"
+      },
+      {
+        "id": "7b669c70-0000-4000-8000-000000000009",
+        "slug": "letbuyy-nova",
+        "version": "2.1.1",
+        "prior": "2.1.0",
+        "bundleSha256": "1c65162929a55eca8714fba1c6142b675503fdfa1eb7ff9b1536ad3fb665fca0",
+        "previousBundleSha256": "03595a3edf8eab4389ff9a62968633b9a51b04eb867d971dd909e7a7716f1e7a"
+      },
+      {
+        "id": "7b669c70-0000-4000-8000-000000000010",
+        "slug": "letbuyy-summit",
+        "version": "2.1.1",
+        "prior": "2.1.0",
+        "bundleSha256": "e9abc22e1add95f65aecf178ceb1fbacee0f937d9e97c76d9aa0865a1379ed49",
+        "previousBundleSha256": "1ae69b1ffb425510cd4e5e075bc6ef99be592066bdc6df014e4237e211acdbd4"
+      }
+    ],
+    "files": [
+      {
+        "path": "heading211.up.proposal.sql",
+        "sha256": "4a85c78213c099bc99d3535afe3dc5784f37eb78f171ced68432a03f670a9cf7",
+        "bytes": 5303796
+      },
+      {
+        "path": "heading211.down.proposal.sql",
+        "sha256": "9ffd060bad1bcba960128107d9f7a4140c29d3fcdc0543049da85da102014025",
+        "bytes": 5301523
+      }
+    ]
+  },
+  "newSensePayloadReference": {
+    "path": "SENSE211_DISTRIBUTION_PROPOSAL.json",
+    "payloadSha256": "644acaf43df7aa48c251260218d9738c73ef7e595034545b981bbf57098bbb56",
+    "files": [
+      {
+        "path": "UNNUMBERED_sense211.up.proposal.sql",
+        "sha256": "ea893a48c2487ad57d7d48c0d3be0bed6b3e9b34d3b182b096c1a0f40ec8ac8e"
+      },
+      {
+        "path": "UNNUMBERED_sense211.down.proposal.sql",
+        "sha256": "4a999c52034d5d8b83d3017a628f41866fc4ae8ceec22dfcb775d8cde16be618"
+      }
+    ],
+    "artifacts": [
+      {
+        "id": "7b669c70-0000-4000-8000-000000000002",
+        "slug": "letbuyy-sense",
+        "bundleSha256": "51fc92e650ffd460c50e5f22d2407ddd09450ce40e541c2ca9bf469a390ac1dc",
+        "previousBundleSha256": "bc754655eed2f5ee76a10a0d9e0dee0d449c6ef3efaf51b79f986ebf47b9f1a6"
+      }
+    ]
+  },
+  "remaining": [
+    "Independent source review of catalogue/helper composition, test and guarded Sense proposal",
+    "Review exact new five-theme source/dependency closure against qualified isolated lanes; no old native report relabelled",
+    "Separately admitted native/combined five211 installation/draft/release/history/guard/rollback/readback proof",
+    "Root exact production/test/source paths and migration handling review before any G1 integration",
+    "Root preserved-state runtime admission and Editor-only original26 data-effect slot; current backup fence respected"
+  ],
+  "testDiscoverySelection": "Use first-party-five-theme-v211.test.ts as the new combined caller contract; historical first-party-order-heading-v211.test.ts is the previous four-only proposal, not a second addition in G1.",
+  "MainNativeDatabaseDockerBuildBrowserProviderBackupPrivateStateSecretActions": 0,
+  "sourceGrantEnds": "First sealed handoff",
+  "fullThemeCertificate": false
+}

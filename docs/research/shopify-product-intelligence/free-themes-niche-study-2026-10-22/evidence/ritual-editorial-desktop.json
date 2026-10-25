@@ -1,0 +1,268 @@
+{
+  "body": {
+    "background": "rgb(255, 255, 255)",
+    "color": "rgb(0, 0, 0)",
+    "font": "Geist, sans-serif",
+    "fontSize": "14px"
+  },
+  "controls": [
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Cart",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "SHOP",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "BRAND",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "CONNECT",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Email address",
+      "tag": "INPUT",
+      "type": "email"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "OK",
+      "tag": "BUTTON",
+      "type": "submit"
+    }
+  ],
+  "headings": [],
+  "links": [
+    {
+      "text": "Skip to content",
+      "url": "https://theme-ritual-demo.myshopify.com/pages/about-us#MainContent"
+    },
+    {
+      "text": "NEW",
+      "url": "https://theme-ritual-demo.myshopify.com/collections/new"
+    },
+    {
+      "text": "TOPS",
+      "url": "https://theme-ritual-demo.myshopify.com/collections/tops"
+    },
+    {
+      "text": "BOTTOMS",
+      "url": "https://theme-ritual-demo.myshopify.com/collections/bottoms"
+    },
+    {
+      "text": "",
+      "url": "https://theme-ritual-demo.myshopify.com/"
+    },
+    {
+      "text": "Shop now",
+      "url": "https://theme-ritual-demo.myshopify.com/collections/all"
+    },
+    {
+      "text": "New",
+      "url": "https://theme-ritual-demo.myshopify.com/collections/new"
+    },
+    {
+      "text": "Bestsellers",
+      "url": "https://theme-ritual-demo.myshopify.com/collections/bestsellers"
+    },
+    {
+      "text": "Latest arrivals",
+      "url": "https://theme-ritual-demo.myshopify.com/collections/latest-arrivals"
+    },
+    {
+      "text": "Shop all",
+      "url": "https://theme-ritual-demo.myshopify.com/collections/all"
+    },
+    {
+      "text": "Bestsellers",
+      "url": "https://theme-ritual-demo.myshopify.com/collections/bestsellers"
+    },
+    {
+      "text": "New arrivals",
+      "url": "https://theme-ritual-demo.myshopify.com/collections/new"
+    },
+    {
+      "text": "About us",
+      "url": "https://theme-ritual-demo.myshopify.com/pages/about-us"
+    },
+    {
+      "text": "Blog",
+      "url": "https://theme-ritual-demo.myshopify.com/blogs/news"
+    },
+    {
+      "text": "Shipping & Returns",
+      "url": "https://theme-ritual-demo.myshopify.com/pages/shipping-returns"
+    },
+    {
+      "text": "Fit guide",
+      "url": "https://theme-ritual-demo.myshopify.com/pages/fit-guide"
+    },
+    {
+      "text": "Contact us",
+      "url": "https://theme-ritual-demo.myshopify.com/pages/contact"
+    },
+    {
+      "text": "Ritual",
+      "url": "https://theme-ritual-demo.myshopify.com/"
+    }
+  ],
+  "sections": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--20531864109245__section_Pizpmm",
+      "rect": {
+        "height": 500,
+        "width": 1440,
+        "x": 0,
+        "y": 66.390625
+      },
+      "tag": "DIV",
+      "text": "REDEFINING THE FAMILIAR\n\nWith bold designs that challenge conventions, we're redefining luxury. Each piece is crafted for those who dare to express their individuality and make a s"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--20531864109245__hero_qw6KTp",
+      "rect": {
+        "height": 650,
+        "width": 1440,
+        "x": 0,
+        "y": 566.390625
+      },
+      "tag": "SECTION",
+      "text": ""
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--20531864109245__section_waGXhk",
+      "rect": {
+        "height": 345.984375,
+        "width": 1440,
+        "x": 0,
+        "y": 1216.390625
+      },
+      "tag": "DIV",
+      "text": "DECONSTRUCTING THE FRAGMENTS OF THE PAST AND REASSEMBLING THEM IN A QUEST FOR FRESH PERSPECTIVES.\n\nShop now"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--20531864109245__collection_list_aGq4Pm",
+      "rect": {
+        "height": 612.6640625,
+        "width": 1440,
+        "x": 0,
+        "y": 1562.375
+      },
+      "tag": "DIV",
+      "text": "New\nBestsellers\nLatest arrivals"
+    }
+  ],
+  "title": "About us – Ritual",
+  "url": "https://theme-ritual-demo.myshopify.com/pages/about-us",
+  "viewport": {
+    "dpr": 1,
+    "height": 1000,
+    "width": 1440
+  },
+  "formGroups": [],
+  "grids": [
+    {
+      "className": "hero__media-grid",
+      "columns": "720px 720px",
+      "display": "grid",
+      "gap": "normal",
+      "height": 650,
+      "tag": "DIV",
+      "width": 1440
+    },
+    {
+      "className": "\n    resource-list\n    \n    \n    resource-list--grid\n  ",
+      "columns": "445.328px 445.336px 445.336px",
+      "display": "grid",
+      "gap": "12px",
+      "height": 556.6640625,
+      "tag": "DIV",
+      "width": 1360
+    }
+  ],
+  "images": [
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 720,
+      "rect": {
+        "height": 650,
+        "width": 720
+      }
+    },
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 720,
+      "rect": {
+        "height": 650,
+        "width": 720
+      }
+    },
+    {
+      "alt": "New",
+      "complete": true,
+      "naturalWidth": 475,
+      "rect": {
+        "height": 556.6640625,
+        "width": 445.328125
+      }
+    },
+    {
+      "alt": "Bestsellers",
+      "complete": true,
+      "naturalWidth": 475,
+      "rect": {
+        "height": 556.6640625,
+        "width": 445.3359375
+      }
+    },
+    {
+      "alt": "Latest arrivals",
+      "complete": true,
+      "naturalWidth": 475,
+      "rect": {
+        "height": 556.6640625,
+        "width": 445.3359375
+      }
+    }
+  ],
+  "bodyText": "Skip to content\nNEW\nTOPS\nBOTTOMS\nTotal items in cart: 0\n\nREDEFINING THE FAMILIAR\n\nWith bold designs that challenge conventions, we're redefining luxury. Each piece is crafted for those who dare to express their individuality and make a statement.\n\nDECONSTRUCTING THE FRAGMENTS OF THE PAST AND REASSEMBLING THEM IN A QUEST FOR FRESH PERSPECTIVES.\n\nShop now\nNew\nBestsellers\nLatest arrivals\nSHOP\nShop all\nBestsellers\nNew arrivals\nBRAND\nAbout us\nBlog\nShipping & Returns\nFit guide\nCONNECT\nInstagram\nTikTok\nFacebook\nContact us\n\nGET ON THE LIST\n\nEmail\nOK\nRitual\nRITUAL\n© 2026 Ritual, Powered by Shopify"
+}

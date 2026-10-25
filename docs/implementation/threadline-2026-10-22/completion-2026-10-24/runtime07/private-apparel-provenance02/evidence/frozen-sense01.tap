@@ -1,0 +1,16 @@
+TAP version 13
+# Subtest: Sense200/201/210 and wrong successor pairs retain identical bytes and object identity
+ok 1 - Sense200/201/210 and wrong successor pairs retain identical bytes and object identity
+  ---
+  duration_ms: 118.4
+  type: 'test'
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 1
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 785.451375

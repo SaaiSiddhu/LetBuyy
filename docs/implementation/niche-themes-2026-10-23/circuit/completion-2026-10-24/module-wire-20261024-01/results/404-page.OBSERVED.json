@@ -1,0 +1,54 @@
+{
+  "classification": "SOURCE_STATE_SERIALIZATION_ONLY_NOT_ACTUAL_UI_OPERATIONS",
+  "type": "404-page",
+  "group": "template",
+  "originalId": "section-4a4908e8-235f-4c25-b809-f640b5ea8afc",
+  "finalId": "section-689e9d7c-134e-4e74-91a3-4d8c9858d64a",
+  "sectionFieldsExercised": [],
+  "effectiveBlockFieldsExercised": [],
+  "phases": [
+    {
+      "phase": "edited",
+      "observed": {
+        "settings": {},
+        "disabled": false,
+        "block_order": [],
+        "blocks": {}
+      }
+    },
+    {
+      "phase": "hidden-reordered",
+      "observed": {
+        "settings": {},
+        "disabled": true,
+        "block_order": [],
+        "blocks": {}
+      }
+    },
+    {
+      "phase": "shown",
+      "observed": {
+        "settings": {},
+        "disabled": false,
+        "block_order": [],
+        "blocks": {}
+      }
+    },
+    {
+      "phase": "removed",
+      "originalSectionAbsent": true,
+      "protectedGroupIdentityRetained": false
+    },
+    {
+      "phase": "readded",
+      "observed": {
+        "settings": {},
+        "disabled": false,
+        "block_order": [],
+        "blocks": {}
+      }
+    }
+  ],
+  "resourceAuthorityProved": false,
+  "actualUiCallbacksExecuted": false
+}

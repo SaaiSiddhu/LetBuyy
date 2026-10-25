@@ -1,0 +1,48 @@
+{
+  "recordedAt": "2026-10-24T16:14:13.448817+00:00",
+  "authority": "Latest direct human shared-blocker-first completion mandate; existing root shared allocation/peer reviewed guarded renderer reused",
+  "status": "SOURCE_INTEGRATION_AUTHORIZED_NOT_BROWSER_OR_RELEASE_CREDIT",
+  "canonicalRules": [
+    "WIN-R3",
+    "WIN-R4",
+    "WIN-R6",
+    "TEST-R6",
+    "CODE-R10"
+  ],
+  "explicitDistributionRevision": {
+    "option": "customizationVersion",
+    "version": "2.1.0",
+    "versionNumber": 5,
+    "defaultVersionChanged": false,
+    "priorVersionsRewritten": false,
+    "persistedCatalogNotYetEmitted": true
+  },
+  "implementation": [
+    "Integrate exact guarded existing renderer private candidate; no alternate renderer.",
+    "Compose latest existing explicit201/202 source through existing first-party catalog. Add child outlets to existing declared block loops and badge. Add the same reusable badge as an optional root host in existing trust-badges where absent.",
+    "Qualify inline child eligibility by exact installed section+reusable definitions against the canonical explicit successor builder; never version or substring alone.",
+    "Preserve undefined/empty/allowlist reusable semantics, depth3/count/identity limits, app/unknown refusal, root/nested schema collisions.",
+    "Keep every zero-child/default HTML byte-identical and all prior bundle factories unchanged."
+  ],
+  "before": [
+    {
+      "path": "packages/theme-engine/src/theme-renderer.ts",
+      "sha256": "794cbc6ff9ae71f995560f302e1b0d5f0d4ff4da59fa31191585851b1e822164"
+    },
+    {
+      "path": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "sha256": "c240566161f45b1875caf65b68b9d7eae9be38bf9ec0b8390ead3eadb6d21757"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/editor-block-actions.ts",
+      "sha256": "b287ef171ab4ae6df11683b5068e8ae787aa78e063d19c081adb21da142aef0f"
+    }
+  ],
+  "requiredEvidence": [
+    "all10 package parse/default HTML parity",
+    "each declared root/child/grandchild output,order/visibility/removal and hostile escaping",
+    "frozen/foreign/forged/missing/moved outlet eligibility refusal",
+    "actual editor action/compiler/reload cases",
+    "fresh coherent browser UI cycle and independent peer review before installed/release credit"
+  ]
+}

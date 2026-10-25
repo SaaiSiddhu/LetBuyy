@@ -1,0 +1,31 @@
+{
+  "createdAt": "2026-10-23T09:28:56.692341+00:00",
+  "contractSourceHashes": {
+    "packages/commerce-core/src/storefront-discovery.ts": "c8de3871a998df011de12791db90c868139903b5c84afb211d9e9de3a1997ff1",
+    "packages/commerce-core/test/storefront-discovery.test.ts": "21e36c3e88b80400907d492ea449ebcdd0d49d4390d9dbcd12de454ea9cb0f63",
+    "services/api-gateway/src/lib/storefront-discovery.ts": "fa47b2c867e916ab082e5c420eed18751e4c313f98dd1ae2b19ec26de00afa37",
+    "services/api-gateway/src/__tests__/storefront-discovery.test.ts": "fe138aed7ca8e8b924b569366c9d187d702b131e904e6e1fb3429418bd514b82"
+  },
+  "files": [
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/storefront-discovery.ts",
+      "sha256": "de99c9a108fcc26e0d621d056a62f7d8438eceb032fbcbf61e400684a2e15863"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/storefront-discovery-frontend.test.tsx",
+      "sha256": "9dc59daa7073b5ba2dd2a72a10971387ff6a6636e03f1db904160a97231622ba"
+    },
+    {
+      "path": "packages/theme-engine/src/trailmark-discovery.ts",
+      "sha256": "1c32fd22424a209556694e1f34748ab49b9f95875dcd34389a9e512c4638e14d"
+    },
+    {
+      "path": "packages/theme-engine/test/trailmark.test.ts",
+      "sha256": "6e4c8d4dbe813ea00637c2059e3595f80ca93162337353c9ff56c316001a0477"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/trailmark/shopping-form/forms.test.ts",
+      "sha256": "ce730c621dcd576211c27c4ed2d454ef33db26b395164dcc2800ab568e45ca1f"
+    }
+  ]
+}

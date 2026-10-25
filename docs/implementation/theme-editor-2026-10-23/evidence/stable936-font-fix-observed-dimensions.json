@@ -1,0 +1,36 @@
+{
+  "runId": "936e5f577646",
+  "merchantOrigin": "http://admin.threadline-936e5f577646.localhost:58090",
+  "publicOrigin": "http://syn-threadline-ui-6815276b.localhost:58091",
+  "source": "Root admitted proper font+axis copy",
+  "public": {
+    "fontsStatus": "loaded",
+    "headings": [
+      {
+        "fontFamily": "\"Cormorant Garamond\", Georgia, \"Times New Roman\", serif, system-ui, sans-serif",
+        "fontSize": "61.44px",
+        "text": "Dewdrop 936 B daily care"
+      }
+    ],
+    "viewport": {
+      "height": 720,
+      "width": 1280
+    }
+  },
+  "preview": {
+    "fontsStatus": "loaded",
+    "frames": [
+      {
+        "clientWidth": 1440,
+        "scaledHeight": 564.0555419921875,
+        "scaledWidth": 572,
+        "title": "syn-threadline-ui-6815276b storefront preview"
+      }
+    ],
+    "viewport": {
+      "height": 720,
+      "width": 1280
+    }
+  },
+  "previewComputedFont": "Not available through current frame DOM interface; actual pixels retained"
+}

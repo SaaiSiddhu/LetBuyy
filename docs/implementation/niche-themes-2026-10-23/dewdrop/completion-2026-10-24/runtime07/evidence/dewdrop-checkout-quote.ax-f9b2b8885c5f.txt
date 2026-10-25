@@ -1,0 +1,49 @@
+- banner:
+  - link "Threadline":
+    - /url: http://syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477
+    - generic: Threadline
+  - text: Secure checkout
+- link "Back to Cart":
+  - /url: http://syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477/cart
+  - text: Back to Cart
+- generic: Address
+- generic: "2"
+- generic: Payment
+- heading "Delivering to" [level=3]:
+  - text: Delivering to
+- button "Change"
+- paragraph: Synthetic Dewdrop Buyer
+- paragraph: 24 Fixture Lane
+- paragraph: Bengaluru, Karnataka - 560001
+- paragraph: 9000000000 • syn-dewdrop-runtime07@example.invalid
+- heading "Items (1)" [level=3]:
+  - text: Items (1)
+- img "Fixture Soft Colour"
+- paragraph: Fixture Soft Colour
+- paragraph: "Qty: 1"
+- paragraph: ₹560
+- heading "Payment Method" [level=3]:
+  - text: Payment Method
+- radio "Pay Online (Razorpay) UPI, Cards, Net Banking" [checked]
+- paragraph: Pay Online (Razorpay)
+- paragraph: UPI, Cards, Net Banking
+- radio "Cash on Delivery (COD) Pay cash when the courier delivers. Keep the exact order amount ready."
+- paragraph: Cash on Delivery (COD)
+- paragraph: Pay cash when the courier delivers. Keep the exact order amount ready.
+- button "Pay ₹580":
+  - text: Pay ₹580
+- generic: Secured by Razorpay
+- heading "Order Summary" [level=2]
+- generic: Subtotal (1 items)
+- generic: ₹560
+- generic: Delivery
+- generic: ₹20
+- generic: Total
+- generic: ₹580
+- textbox "Coupon code"
+- button "Apply"
+- generic: Secure
+- generic: Fast
+- generic: Safe
+- img "Razorpay"
+- alert

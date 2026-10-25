@@ -1,0 +1,127 @@
+{
+  "recordedAt": "2026-10-25T00:26:50.482175+00:00",
+  "status": "CONTROLLED_INTEGRATION_AND_PRESERVING_REBIND_PLAN_FOR_ROOT_REVIEW_ONLY",
+  "authority": "Verified HUMAN_RESUME_20261025_02 and current requesting CTO plan request; no runtime action granted",
+  "runtime": {
+    "runId": "49ada80bc494",
+    "candidateBefore": "/private/tmp/letbuyy-shared-completion-20261024-06",
+    "siteId": "02049de4-41c3-4b10-b5b2-a60a6b5e82bf",
+    "database": "letbuyy_exec_theme_completion_razorpay_browser_manual_ts",
+    "volume": "letbuyy-exec-49ada80bc494-1-data",
+    "originalRunnerPid": 54685,
+    "survivingRuntimePid": 55109,
+    "ports": {
+      "identity": 64593,
+      "merchant": 64594,
+      "commerce": 64595,
+      "checkoutTls": 64597,
+      "api": 64598
+    },
+    "currentBrowserOwner": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+    "rootBrowserActions": "Stopped after explicit handoff; no CUA from this plan",
+    "data": "Preserve all sites/accounts/apps/products/stock/carts/checkouts/payment intents/orders/ledger/outbox/sessions/drafts/releases/revisions/captures. KindredCOD10007 remains pendingCOD, never relabelled paid. Six actual Test orders retained."
+  },
+  "integrationOwners": {
+    "sharedCatalogueVersionCaptureEligibility": "Habitat only",
+    "apparelCoreCartSummaryAndLiquidHelper": "Threadline sealed accepted overlays",
+    "metadataRouteAndNotifications": "MadeYours accepted isolated proposals",
+    "editorCss": "Theme Editor exact one file",
+    "performanceQualification": "Circuit, no production SQL/index repair",
+    "sourceAllocatorAndIndependentReview": "Themes",
+    "runtimeCutoverAuthority": "Requesting CTO after explicit plan/source review and Editor lease return"
+  },
+  "orderedGates": [
+    {
+      "id": "G0_QUALIFY_ISOLATED_PROPOSALS",
+      "requirements": [
+        "MadeYours sole first native lane: exactly two600s disposable RED/GREEN cohorts after complete source closure, accepted pre-failure causal witness and separate terminal0 preflight. No original Run07 resource use.",
+        "Apparel exact native assertion/full-public/profile amendment and four-heading guard/telemetry amendment must seal, pass independent source review and receive their own later serial owned native activation.",
+        "Circuit actual bundled module/log preflight and one600s cohort remain queued;36 pure tests are not indexed-plan acceptance.",
+        "Notification exact four-file pure transport/retry checks and Editor one-file CSS parse/lint/target plan must pass independently. No real sends or current CSS mutation.",
+        "Do not integrate or capture a partially qualified counterpart; retain all failures and exact source applicability."
+      ]
+    },
+    {
+      "id": "G1_COMPOSE_ONE_PRIVATE_SOURCE_CANDIDATE",
+      "candidateProposed": "/private/tmp/letbuyy-shared-completion-integration-20261025-01",
+      "requirements": [
+        "Materialize immutable source-only baseline from original6547-file receipt with explicit six env-template exclusions and all actual dependency closure pinned. Preserve candidate06 and every sealed proposal. No Main lease exists yet.",
+        "Compose only separately accepted overlays. Metadata route and CSS are distinct; notification producer/consumer are separate paths. Apparel does not edit shared catalogue.",
+        "Habitat alone prepares the additive catalogue factory/qualification merge for exactly five211/version6 themes: craft,dawn,nova,summit plus sense. Four heading themes use existing heading helper before child packaging. Sense uses the existing qualified niche-facts helper only after explicit new211/version6 packaging; retain exact old210 child definitions and normal merchant template content.",
+        "Keep all old200/201/202/210 raw factory hashes byte-exact and the four already qualified211 bundle payload hashes unchanged. Prove cache identity slug+version, exact installed section/block references, all five eligible and other five not fabricated211; reject wrong version numbers/relabelled/moved/foreign definitions.",
+        "Emit one NEW append-only Sense211 capture proposal from exact prior Sense210 using existing persistence builder and paired guard/conservation rules. Do not rewrite the sealed four-package heading capture or prior frozen artifacts. An optional new joint manifest may reference those two exact immutable payloads without replacing them.",
+        "Target nine production paths only before any separately justified integration gap: apparel4 +catalogue1 +checkout1 +CSS1 +notification producer/consumer2. Keep Circuit as qualification only. New tests/generators/manifests must be exact listed additions."
+      ]
+    },
+    {
+      "id": "G2_COMBINED_SOURCE_AND_NATIVE_APPLICABILITY",
+      "requirements": [
+        "Seal actual combined source/dependency/runner/SQL/bootstrap/package/lock/protocol provenance and exact merged factory/capture hashes. Prior isolated qualification applies only to unchanged relevant inputs; never relabel old executions as combined runs.",
+        "Run only necessary combined source/contract/Liquid sandbox/renderer/editor regression and money/auth/tenant subsets required by touched paths. No broad governance generator on Main.",
+        "Prepare a finite integrated native plan covering actual garment cart\u2192configured edit\u2192order saved facts/options, metadata red/green/retry effects, five211 installed eligibility/update/draft/release retention, guarded catalogue/SQL UP/DOWN and trace-attributed readback telemetry. Requires separate resource admission after existing reserved cohorts; no budget silently expanded.",
+        "Before any Main mutation Root must approve exact reviewed production/test/generator path hashes, rollback compatibility and prospective migration handling. No canonical migration394 or other number emitted by this plan."
+      ]
+    },
+    {
+      "id": "G3_IMPLEMENT_AND_QUALIFY_PRESERVING_HARNESS_SUPPORT",
+      "sourceReview": "RUNTIME07_REBIND_SOURCE_REVIEW_01.json",
+      "requirements": [
+        "Current source has no supported preserving rebind mode. Prepare a separate private proposal within existing test harness and canonical owned-client tooling only; no new deployable runtime, service, app or parallel auth system.",
+        "Separate serving/rebinding from all synthetic seeding and setup. Rebind mode must unconditionally forbid seedSyntheticTenant, prepareThemeEditorQaStore, newIdentityKeys, new secrets/accounts/products, new fixture DB/volume and caller-chosen origins.",
+        "Retained bounded0600 owner-controlled configuration must bind exact original run/site/DB/volume/container IDs, origins/ports, issuer/public keys, unchanged private signing/cookie credentials, provider mode and cleanup owner. Verify original credential continuity without exposing values. Do not read process memory, dump environments or invent missing bindings. If a supported original capsule/export is absent, stop before shutdown and resolve this source/owner input.",
+        "Resolve the dead original runner using a separately reviewed explicit ownership-transfer protocol in the existing canonical tooling, bound to exact original resource identities/labels/markers and the live authenticated surviving owner. Preserve regular fresh-run guard unchanged; never replace a dead PID in env, relabel existing resources, skip guards or claim app200 proves ownership. If no approved transfer can be proven, no cutover.",
+        "Prepare validated offline-build/start-prebuilt support under existing owned Next supervision. Bind build and runtime env/origins/source hashes; safely populate newly claimed PID-owned output directories from sealed prepared artifacts. Never point a new supervisor at someone else's output directory or run an unreviewed arbitrary command.",
+        "Qualify refusal cases for foreign/stale/reused PID, wrong run/DB/volume/site/source/capsule/origin/port/key, missing secret, occupied port and incomplete build. Qualify parent/child lease transfer, failed-bind rollback and preservation using pure/lifecycle fixtures; any actual rehearsal resource needs its own grant and is NOT theme certification.",
+        "Keep a proven old-source recovery artifact and retained private binding capsule ready before closing any socket. No current owner/process is stopped to discover missing configuration or compile requirements."
+      ]
+    },
+    {
+      "id": "G4_PRECUTOVER_CONSERVATION_AND_OFFLINE_STAGE",
+      "requirements": [
+        "After all qualifications and Root review, return Editor browser lease at a settled UI boundary. Retain exact current saved/published draft/release markers and old case receipts. Confirm no payment/buyer mutation is in flight; do not discard a nonempty cart.",
+        "Keep public callback closed or explicitly coordinated under its separately approved finite lease; no automatic renewal. No source owner or background test may drive the live fixture during the maintenance fence.",
+        "Root alone captures a redacted ownership/config/build/port receipt and full protected-table/function/security/immutable-capture witness on the preserved DB through approved read-only controls. Preserve any transactionally consistent backup as an additional recovery artifact; never restore over later accepted work.",
+        "Complete and hash all new Gateway/client artifacts offline before shutdown. Public origins, cookies/issuer/signing configuration, DB/volume/site/UUIDs and old source bundle remain fixed. No touch to user9001/9002/Marketplace services.",
+        "The future canonical owned-resource guard/explicit transfer, retained binding capsule and prebuilt-start tests must all be terminal PASS. Missing proof leaves current running environment intact."
+      ]
+    },
+    {
+      "id": "G5_APPLY_ONLY_NEW_ADMITTED_SQL_AND_REBIND",
+      "requirements": [
+        "After separate execution authorization, apply only new qualified apparel paired-function UP, four-heading capture UP and Sense capture UP, in reviewed dependency order. Original four Runtime07 prerequisite UPs are already present: do not rerun setup/reseed/replay them blindly.",
+        "For each SQL-only step compare full-public rows and security/profile witnesses. Allowed delta: two exact product-fact function bodies, append-only three capture tables for five versions and five exact global catalogue metadata/checkpoint rows; no orders/stock/products/carts/checkouts/payment/ledger/draft/release/history changes. Reject any other delta and retain failure.",
+        "Transfer exact owned API/client/TLS lifecycle according to the qualified preservation mechanism. Serve the prebuilt combined source at the same original ports/origins with the same secret bindings and same DB/site, never a fresh certification fixture. Do not run the old hold launcher or finish endpoint.",
+        "Root owns the one finite cutover and rollback window. Record each actual process/source/build/SQL marker and explicit cleanup ownership; no broad kill, reap, Docker cleanup, permission bypass or in-place source swap."
+      ]
+    },
+    {
+      "id": "G6_POSTCUTOVER_AND_CANONICAL_VERSION_UPDATE",
+      "requirements": [
+        "Re-read full protected business/immutable history state and exact row hashes before allowing normal mutations. New health-request telemetry must be individually attributed; do not claim every operational row unchanged. Verify normal SSO/buyer session, existing cart/checkout handoff continuity, same origins and appropriate no-write reads.",
+        "Global catalogue promotion does not modify installed work. Use the existing ThemeUpdatePanel \u2192 update-preview \u2192 explicit reviewed diff CAS \u2192 update/publish path for the five targets, with actual target package UUIDs. Preserve current published content, all private drafts/revisions/root and nested block IDs/order/resources/settings, old release and immutable package versions. No reinstall/reset or direct instance row patch as a shortcut.",
+        "Editor alone performs targeted current-version retests: apparel saved options/facts through a legitimately new cart/order when old10001 has no garment facts, four configured headings including hostile/blank text, existing nested child actions and CSS24px keyboard/pointer controls. Preserve old10001 facts{}; no catalogue fallback/backfill.",
+        "Metadata and notification native proof stays distinct from actual remaining real Test purchases, callback acceptance, local COD and per-theme original matrices. Reuse existing six actual intended Test orders and COD10007; a new test order is only for a materially new required path, never repeated evidence alone.",
+        "Reconcile case-based acceptance with immutable source/runtime/version identity and all failures. No full theme certificate solely from these integration gates."
+      ]
+    },
+    {
+      "id": "G7_ROLLBACK_COMPATIBILITY",
+      "requirements": [
+        "Before any new accepted cart/version-update business state, qualified rollback may restore exact old app configuration and paired SQL metadata while retaining all data and immutable captures, subject to actual native compatibility proof.",
+        "After new apparel cart facts or211 installed work exist, a wholesale old-code/old-SQL rollback is NOT automatically safe: old SQL intentionally refuses active apparel facts; old catalogue eligibility can reject existing211. Do not strip facts, delete captures, reset carts, restore a DB backup over new work or pretend a version rollback is lossless.",
+        "Prepare an exact forward-compatible recovery source bundle retaining the qualified apparel reader/writer/snapshot/summary and five211 eligibility for existing data. Optional CSS/descriptive metadata changes can be backed out separately only if dependency and effect proofs remain valid. Preserve all postcutover accepted work and roll forward when old code cannot read it.",
+        "If a failure occurs after the compatibility boundary, stop new affected mutations, retain exact evidence/state, use only the prequalified compatible recovery plan and obtain Root disposition. Never improvise data edits or rerun a capture to make a rollback green."
+      ]
+    }
+  ],
+  "currentDisposition": {
+    "MainWrites": false,
+    "runtimeActions": false,
+    "buildOrProbeActions": false,
+    "newResourceActions": false,
+    "secretsRead": false,
+    "readyForCutover": false,
+    "highestBlocker": "The existing harness lacks a preserving-rebind/ownership-transfer/prebuilt-start mechanism and a proven complete retained original binding capsule. Qualify this before any shutdown; individual source/native proposals are still in progress.",
+    "nextAuthorizedAction": "Independent source/pure qualification pipeline already allocated; Root reviews this concrete plan and may then issue a precise private harness-preparation lease. Current Editor local matrix continues unchanged."
+  }
+}

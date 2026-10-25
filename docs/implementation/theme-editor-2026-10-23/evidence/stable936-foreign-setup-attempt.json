@@ -1,0 +1,7 @@
+{
+  "recordedAt": "2026-10-24T03:49:31.363Z",
+  "runId": "936e5f577646",
+  "guardVerified": true,
+  "oneAttempt": true,
+  "scope": "Existing finite foreign tenant/owner/location, one canonical product/cart, ownpositive beforewrongsite negative; noorders/payment; canonicalforeignpublish separately follows only ifsupported"
+}

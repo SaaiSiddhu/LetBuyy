@@ -1,0 +1,46 @@
+{
+  "recordedAt": "2026-10-24T11:59:21.895316+00:00",
+  "id": "editor-kindred-independent-render-review02",
+  "owner": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+  "authority": "completion-resume-resource-allocation-20261024-02.json",
+  "status": "FRESH_ONE_FINITE_SOURCE_RENDER_REVIEW_PRIVATE_OUTPUT_ONLY",
+  "sealedHandoff": {
+    "path": "docs/implementation/niche-themes-2026-10-23/kindred/completion-2026-10-24/child-contract-correction-20261024/PRIVATE_CHILD_OUTPUT_HANDOFF_02.json",
+    "sha256": "b2abb902cce8760ad1057dcd87a69145873d6ae7902698126225bc2d3ee81a0f"
+  },
+  "sealedRenderer": {
+    "path": "/private/tmp/kindred-child-output-20261024-miky7gjz/src/theme-renderer.ts",
+    "sha256": "1d21dea29e120b076c911efe2ca303616c279ac3af94ad3e86adfd2f281d38c2",
+    "bytes": 107961
+  },
+  "sealedOutletHelper": {
+    "path": "docs/implementation/niche-themes-2026-10-23/kindred/completion-2026-10-24/child-contract-correction-20261024/private-proposal-guarded02/opt-in-child-outlets.mjs",
+    "sha256": "30392a52fa041d51015d2de41d6450dd320d93e12791980b35e8c5ca341db852",
+    "bytes": 2779
+  },
+  "currentMainInputs": [
+    {
+      "path": "packages/theme-engine/src/theme-renderer.ts",
+      "sha256": "794cbc6ff9ae71f995560f302e1b0d5f0d4ff4da59fa31191585851b1e822164"
+    },
+    {
+      "path": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "sha256": "ec2166ba230387d152fbd0629d12c19de6281b451c651166918adcd47c48eaf3"
+    },
+    {
+      "path": "packages/theme-engine/src/niche-order-presentation.ts",
+      "sha256": "5683e413e48bc11d6b0906dc344ec6c3b0c7413113172b11bda91c49d08cb444"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/editor-block-actions.ts",
+      "sha256": "b287ef171ab4ae6df11683b5068e8ae787aa78e063d19c081adb21da142aef0f"
+    }
+  ],
+  "scope": "One independentlyowned source-render/security/default comparison of sealedguardedKindredcandidate against actualcurrentMain/frozenKindredinput. Freshreviewoverlay mayrebind declareddependencies/currentcatalogue; preserve originalcandidate/past58/50/failures. No drift silently adopted; bindexactloadedsource graph orrefuse. Firstpartyeligible childvisibility/order/hide/depth/count/appunknownboundary/escaping/defaultbyteparity; no network. Report finite actualcontrols/sourcecoverage, notUI/installedproof.",
+  "additionalPreparation": "Provide exactcapability-qualified inlineparentEditorfollowup proposal and concretePlayfieldreusablebadgehost choices using existing approvedsections/actualrenderer. No live controls claimeduntilmatchingeditor+versionedpackage+renderer accepted. No schema/frozenpackage redesign.",
+  "mainWrites": false,
+  "browserNativeHeavyBuildDBProviderRuntime": false,
+  "sourceFreeze": "Native04 currentlyactive: no pinned Mainwrite; review is private/lightweight only",
+  "output": "Own new editor-child-render-review02 evidencefolder; one immutable sealed handoff",
+  "ends": "Firstsealedreview or onehour"
+}

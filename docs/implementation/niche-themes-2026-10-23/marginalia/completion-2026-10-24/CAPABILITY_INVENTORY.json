@@ -1,0 +1,6029 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-24T08:36:28.825553+00:00",
+  "classification": "SOURCE_DERIVED_DECLARATION_EVIDENCE_NOT_GOVERNANCE_OR_RUNTIME_ACCEPTANCE",
+  "theme": "Marginalia",
+  "preset": "dawn",
+  "version": "2.0.0",
+  "authority": "Verified latest human turn01a16cf8-99f0-7f51-852c-d0fd6ea08262/userMessage01a16cf8-9a07-7cc3-ada1-739b7457b14f in requesting chat01a16ce5-e5ba-7191-ab2c-a1b76947d2b5; current execution runbook and repository authority apply.",
+  "inventoryBasis": {
+    "artifact": "docs/implementation/niche-theme-programme/release-v2/proposals/81e91859ebc8c497a49da337d064e1885a76964839d14e39f4a0a3de2283f47f/letbuyy-dawn-2.0.0.json",
+    "knownAdmittedFileSha256": "a4e23c63a700f87294a291a1760b94a93d2ee594f9bfea55038c0ff7ab335f3c",
+    "knownBundleSha256": "5cbe36168853833fda0cf0a81dd5373d5cae013259bdbd330d3ee547f4d3726b",
+    "lineageReview": "../installed-lifecycle-readiness/48-MG-INSTALL-lineage-actual-review.json",
+    "notAReaudit": true,
+    "currentFactoryChain": [
+      "first-party-theme-catalog.ts createFirstPartyCatalogBundle",
+      "createLetbuyyCoreLiquidThemeBundleFixture",
+      "createMarginaliaTheme",
+      "withNicheOrderPresentation"
+    ],
+    "limitation": "Complete declarations of the admitted2.0.0 distribution artifact plus inspected current owner/control sources. No newly rebuilt current-source bundle or installed current completion candidate is claimed. Reconcile exact schema delta when allocator admits the next candidate."
+  },
+  "templates": [
+    {
+      "id": "template:article",
+      "templateKey": "article",
+      "name": "Article",
+      "layout": "theme",
+      "group": "template",
+      "order": [
+        "article-content-default"
+      ],
+      "instances": [
+        {
+          "instanceId": "article-content-default",
+          "block_order": [],
+          "blocks": {},
+          "disabled": false,
+          "settings": {},
+          "type": "article-content"
+        }
+      ],
+      "caseId": "MG-C-TEMPLATE-ARTICLE",
+      "status": "DECLARED_NOT_EXECUTED"
+    },
+    {
+      "id": "template:blog",
+      "templateKey": "blog",
+      "name": "Blog",
+      "layout": "theme",
+      "group": "template",
+      "order": [
+        "blog-listing-default"
+      ],
+      "instances": [
+        {
+          "instanceId": "blog-listing-default",
+          "block_order": [],
+          "blocks": {},
+          "disabled": false,
+          "settings": {
+            "heading": "Our Blog"
+          },
+          "type": "blog-listing"
+        }
+      ],
+      "caseId": "MG-C-TEMPLATE-BLOG",
+      "status": "DECLARED_NOT_EXECUTED"
+    },
+    {
+      "id": "template:cart",
+      "templateKey": "cart",
+      "name": "LetBuyy Core cart",
+      "layout": "theme",
+      "group": "template",
+      "order": [
+        "cart-summary-default"
+      ],
+      "instances": [
+        {
+          "instanceId": "cart-summary-default",
+          "block_order": [],
+          "blocks": {},
+          "disabled": false,
+          "settings": {},
+          "type": "cart-summary"
+        }
+      ],
+      "caseId": "MG-C-TEMPLATE-CART",
+      "status": "DECLARED_NOT_EXECUTED"
+    },
+    {
+      "id": "template:collection",
+      "templateKey": "collection",
+      "name": "Marginalia catalog",
+      "layout": "theme",
+      "group": "template",
+      "order": [
+        "marginalia-discovery",
+        "marginalia-catalog"
+      ],
+      "instances": [
+        {
+          "instanceId": "marginalia-catalog",
+          "block_order": [],
+          "blocks": {},
+          "disabled": false,
+          "settings": {},
+          "type": "collection-product-list"
+        },
+        {
+          "instanceId": "marginalia-discovery",
+          "block_order": [],
+          "blocks": {},
+          "disabled": false,
+          "settings": {},
+          "type": "collection-filter"
+        }
+      ],
+      "caseId": "MG-C-TEMPLATE-COLLECTION",
+      "status": "DECLARED_NOT_EXECUTED"
+    },
+    {
+      "id": "template:contact",
+      "templateKey": "contact",
+      "name": "Contact",
+      "layout": "theme",
+      "group": "template",
+      "order": [
+        "contact-form-default"
+      ],
+      "instances": [
+        {
+          "instanceId": "contact-form-default",
+          "block_order": [],
+          "blocks": {},
+          "disabled": false,
+          "settings": {
+            "showPhone": true,
+            "title": "Contact us"
+          },
+          "type": "contact-form"
+        }
+      ],
+      "caseId": "MG-C-TEMPLATE-CONTACT",
+      "status": "DECLARED_NOT_EXECUTED"
+    },
+    {
+      "id": "template:customers/account",
+      "templateKey": "customers/account",
+      "name": "Account",
+      "layout": "theme",
+      "group": "template",
+      "order": [
+        "customer-account-default"
+      ],
+      "instances": [
+        {
+          "instanceId": "customer-account-default",
+          "block_order": [],
+          "blocks": {},
+          "disabled": false,
+          "settings": {},
+          "type": "customer-account"
+        }
+      ],
+      "caseId": "MG-C-TEMPLATE-CUSTOMERS-ACCOUNT",
+      "status": "DECLARED_NOT_EXECUTED"
+    },
+    {
+      "id": "template:customers/addresses",
+      "templateKey": "customers/addresses",
+      "name": "Addresses",
+      "layout": "theme",
+      "group": "template",
+      "order": [
+        "customer-addresses-default"
+      ],
+      "instances": [
+        {
+          "instanceId": "customer-addresses-default",
+          "block_order": [],
+          "blocks": {},
+          "disabled": false,
+          "settings": {},
+          "type": "customer-addresses"
+        }
+      ],
+      "caseId": "MG-C-TEMPLATE-CUSTOMERS-ADDRESSES",
+      "status": "DECLARED_NOT_EXECUTED"
+    },
+    {
+      "id": "template:customers/login",
+      "templateKey": "customers/login",
+      "name": "Login",
+      "layout": "theme",
+      "group": "template",
+      "order": [
+        "customer-login-default"
+      ],
+      "instances": [
+        {
+          "instanceId": "customer-login-default",
+          "block_order": [],
+          "blocks": {},
+          "disabled": false,
+          "settings": {},
+          "type": "customer-login"
+        }
+      ],
+      "caseId": "MG-C-TEMPLATE-CUSTOMERS-LOGIN",
+      "status": "DECLARED_NOT_EXECUTED"
+    },
+    {
+      "id": "template:customers/order",
+      "templateKey": "customers/order",
+      "name": "Order detail",
+      "layout": "theme",
+      "group": "template",
+      "order": [
+        "customer-order-detail-default"
+      ],
+      "instances": [
+        {
+          "instanceId": "customer-order-detail-default",
+          "block_order": [],
+          "blocks": {},
+          "disabled": false,
+          "settings": {},
+          "type": "customer-order-detail"
+        }
+      ],
+      "caseId": "MG-C-TEMPLATE-CUSTOMERS-ORDER",
+      "status": "DECLARED_NOT_EXECUTED"
+    },
+    {
+      "id": "template:customers/orders",
+      "templateKey": "customers/orders",
+      "name": "Order history",
+      "layout": "theme",
+      "group": "template",
+      "order": [
+        "customer-orders-default"
+      ],
+      "instances": [
+        {
+          "instanceId": "customer-orders-default",
+          "block_order": [],
+          "blocks": {},
+          "disabled": false,
+          "settings": {},
+          "type": "customer-orders"
+        }
+      ],
+      "caseId": "MG-C-TEMPLATE-CUSTOMERS-ORDERS",
+      "status": "DECLARED_NOT_EXECUTED"
+    },
+    {
+      "id": "template:customers/register",
+      "templateKey": "customers/register",
+      "name": "Register",
+      "layout": "theme",
+      "group": "template",
+      "order": [
+        "customer-register-default"
+      ],
+      "instances": [
+        {
+          "instanceId": "customer-register-default",
+          "block_order": [],
+          "blocks": {},
+          "disabled": false,
+          "settings": {},
+          "type": "customer-register"
+        }
+      ],
+      "caseId": "MG-C-TEMPLATE-CUSTOMERS-REGISTER",
+      "status": "DECLARED_NOT_EXECUTED"
+    },
+    {
+      "id": "template:customers/settings",
+      "templateKey": "customers/settings",
+      "name": "Account settings",
+      "layout": "theme",
+      "group": "template",
+      "order": [
+        "customer-settings-default"
+      ],
+      "instances": [
+        {
+          "instanceId": "customer-settings-default",
+          "block_order": [],
+          "blocks": {},
+          "disabled": false,
+          "settings": {},
+          "type": "customer-settings"
+        }
+      ],
+      "caseId": "MG-C-TEMPLATE-CUSTOMERS-SETTINGS",
+      "status": "DECLARED_NOT_EXECUTED"
+    },
+    {
+      "id": "template:customers/wishlist",
+      "templateKey": "customers/wishlist",
+      "name": "Wishlist",
+      "layout": "theme",
+      "group": "template",
+      "order": [
+        "customer-wishlist-default"
+      ],
+      "instances": [
+        {
+          "instanceId": "customer-wishlist-default",
+          "block_order": [],
+          "blocks": {},
+          "disabled": false,
+          "settings": {},
+          "type": "customer-wishlist"
+        }
+      ],
+      "caseId": "MG-C-TEMPLATE-CUSTOMERS-WISHLIST",
+      "status": "DECLARED_NOT_EXECUTED"
+    },
+    {
+      "id": "template:footer",
+      "templateKey": "footer",
+      "name": "LetBuyy Core footer",
+      "layout": "theme",
+      "group": "footer",
+      "order": [
+        "footer-default"
+      ],
+      "instances": [
+        {
+          "instanceId": "footer-default",
+          "block_order": [],
+          "blocks": {},
+          "disabled": false,
+          "settings": {},
+          "type": "footer"
+        }
+      ],
+      "caseId": "MG-C-TEMPLATE-FOOTER",
+      "status": "DECLARED_NOT_EXECUTED"
+    },
+    {
+      "id": "template:header",
+      "templateKey": "header",
+      "name": "LetBuyy Core header",
+      "layout": "theme",
+      "group": "header",
+      "order": [
+        "header-default"
+      ],
+      "instances": [
+        {
+          "instanceId": "header-default",
+          "block_order": [],
+          "blocks": {},
+          "disabled": false,
+          "settings": {
+            "behavior": "sticky",
+            "showCart": true,
+            "showSearch": true
+          },
+          "type": "header"
+        }
+      ],
+      "caseId": "MG-C-TEMPLATE-HEADER",
+      "status": "DECLARED_NOT_EXECUTED"
+    },
+    {
+      "id": "template:index",
+      "templateKey": "index",
+      "name": "Marginalia bookshop",
+      "layout": "theme",
+      "group": "template",
+      "order": [
+        "marginalia-opening",
+        "marginalia-index",
+        "marginalia-reading",
+        "marginalia-paper"
+      ],
+      "instances": [
+        {
+          "instanceId": "marginalia-index",
+          "block_order": [],
+          "blocks": {},
+          "disabled": false,
+          "settings": {},
+          "type": "category-grid"
+        },
+        {
+          "instanceId": "marginalia-opening",
+          "block_order": [],
+          "blocks": {},
+          "disabled": false,
+          "settings": {},
+          "type": "hero-banner"
+        },
+        {
+          "instanceId": "marginalia-paper",
+          "block_order": [],
+          "blocks": {},
+          "disabled": false,
+          "settings": {},
+          "type": "about-section"
+        },
+        {
+          "instanceId": "marginalia-reading",
+          "block_order": [],
+          "blocks": {},
+          "disabled": false,
+          "settings": {
+            "columns": 3,
+            "productLimit": 6,
+            "title": "A little further along the shelf"
+          },
+          "type": "product-grid"
+        }
+      ],
+      "caseId": "MG-C-TEMPLATE-INDEX",
+      "status": "DECLARED_NOT_EXECUTED"
+    },
+    {
+      "id": "template:list-collections",
+      "templateKey": "list-collections",
+      "name": "All collections",
+      "layout": "theme",
+      "group": "template",
+      "order": [
+        "list-collections-grid"
+      ],
+      "instances": [
+        {
+          "instanceId": "list-collections-grid",
+          "block_order": [],
+          "blocks": {},
+          "disabled": false,
+          "settings": {
+            "title": "All collections"
+          },
+          "type": "category-grid"
+        }
+      ],
+      "caseId": "MG-C-TEMPLATE-LIST-COLLECTIONS",
+      "status": "DECLARED_NOT_EXECUTED"
+    },
+    {
+      "id": "template:not_found",
+      "templateKey": "not_found",
+      "name": "404 Not Found",
+      "layout": "theme",
+      "group": "template",
+      "order": [
+        "404-page-default"
+      ],
+      "instances": [
+        {
+          "instanceId": "404-page-default",
+          "block_order": [],
+          "blocks": {},
+          "disabled": false,
+          "settings": {},
+          "type": "404-page"
+        }
+      ],
+      "caseId": "MG-C-TEMPLATE-NOT-FOUND",
+      "status": "DECLARED_NOT_EXECUTED"
+    },
+    {
+      "id": "template:page",
+      "templateKey": "page",
+      "name": "Page",
+      "layout": "theme",
+      "group": "template",
+      "order": [
+        "page-content-default"
+      ],
+      "instances": [
+        {
+          "instanceId": "page-content-default",
+          "block_order": [],
+          "blocks": {},
+          "disabled": false,
+          "settings": {},
+          "type": "page-content"
+        }
+      ],
+      "caseId": "MG-C-TEMPLATE-PAGE",
+      "status": "DECLARED_NOT_EXECUTED"
+    },
+    {
+      "id": "template:password",
+      "templateKey": "password",
+      "name": "Password",
+      "layout": "theme",
+      "group": "template",
+      "order": [
+        "password-gate-default"
+      ],
+      "instances": [
+        {
+          "instanceId": "password-gate-default",
+          "block_order": [],
+          "blocks": {},
+          "disabled": false,
+          "settings": {
+            "heading": "Coming Soon"
+          },
+          "type": "password-gate"
+        }
+      ],
+      "caseId": "MG-C-TEMPLATE-PASSWORD",
+      "status": "DECLARED_NOT_EXECUTED"
+    },
+    {
+      "id": "template:policy",
+      "templateKey": "policy",
+      "name": "Policy page",
+      "layout": "theme",
+      "group": "template",
+      "order": [
+        "policy-content-default"
+      ],
+      "instances": [
+        {
+          "instanceId": "policy-content-default",
+          "block_order": [],
+          "blocks": {},
+          "disabled": false,
+          "settings": {},
+          "type": "policy-content"
+        }
+      ],
+      "caseId": "MG-C-TEMPLATE-POLICY",
+      "status": "DECLARED_NOT_EXECUTED"
+    },
+    {
+      "id": "template:product",
+      "templateKey": "product",
+      "name": "LetBuyy Core product",
+      "layout": "theme",
+      "group": "template",
+      "order": [
+        "product-detail-default",
+        "product-related"
+      ],
+      "instances": [
+        {
+          "instanceId": "product-detail-default",
+          "block_order": [],
+          "blocks": {},
+          "disabled": false,
+          "settings": {
+            "showDescription": true,
+            "showGallery": true
+          },
+          "type": "product-detail"
+        },
+        {
+          "instanceId": "product-related",
+          "block_order": [],
+          "blocks": {},
+          "disabled": false,
+          "settings": {
+            "requireSelection": true,
+            "title": "You may also like"
+          },
+          "type": "featured-products"
+        }
+      ],
+      "caseId": "MG-C-TEMPLATE-PRODUCT",
+      "status": "DECLARED_NOT_EXECUTED"
+    },
+    {
+      "id": "template:search",
+      "templateKey": "search",
+      "name": "Marginalia search",
+      "layout": "theme",
+      "group": "template",
+      "order": [
+        "marginalia-discovery",
+        "marginalia-catalog"
+      ],
+      "instances": [
+        {
+          "instanceId": "marginalia-catalog",
+          "block_order": [],
+          "blocks": {},
+          "disabled": false,
+          "settings": {},
+          "type": "collection-product-list"
+        },
+        {
+          "instanceId": "marginalia-discovery",
+          "block_order": [],
+          "blocks": {},
+          "disabled": false,
+          "settings": {},
+          "type": "collection-filter"
+        }
+      ],
+      "caseId": "MG-C-TEMPLATE-SEARCH",
+      "status": "DECLARED_NOT_EXECUTED"
+    }
+  ],
+  "sectionTypes": [
+    {
+      "id": "section:404-page",
+      "sectionType": "404-page",
+      "name": "404 Not Found",
+      "sourcePathInBundle": "sections/404-page.liquid",
+      "schema": {
+        "blocks": [],
+        "disabled_on": {
+          "templates": []
+        },
+        "enabled_on": {
+          "templates": [
+            "*"
+          ]
+        },
+        "name": "404 Not Found",
+        "presets": [
+          {
+            "blocks": [],
+            "name": "404 Not Found",
+            "settings": {}
+          }
+        ],
+        "settings": [],
+        "tag": "section"
+      },
+      "caseId": "MG-C-SECTION-404-PAGE",
+      "status": "DECLARED_NOT_EXECUTED",
+      "currentEditorAvailability": "Requires admitted package schema/browser acknowledgement; declaration is not an addability guarantee."
+    },
+    {
+      "id": "section:about-section",
+      "sectionType": "about-section",
+      "name": "Paper and bookshop editorial",
+      "sourcePathInBundle": "sections/about-section.liquid",
+      "schema": {
+        "blocks": [],
+        "disabled_on": {
+          "templates": []
+        },
+        "enabled_on": {
+          "templates": [
+            "*"
+          ]
+        },
+        "name": "Paper and bookshop editorial",
+        "presets": [
+          {
+            "blocks": [],
+            "name": "Paper and bookshop editorial",
+            "settings": {}
+          }
+        ],
+        "settings": [
+          {
+            "default": "ROOM FOR YOUR OWN WORDS",
+            "id": "eyebrow",
+            "label": "Eyebrow",
+            "type": "text"
+          },
+          {
+            "default": "Good paper. Fresh possibilities.",
+            "id": "title",
+            "label": "Heading",
+            "type": "text"
+          },
+          {
+            "default": "",
+            "id": "content",
+            "label": "Merchant editorial text",
+            "type": "textarea"
+          },
+          {
+            "id": "image",
+            "label": "Editorial image",
+            "type": "image"
+          },
+          {
+            "default": "",
+            "id": "imageAlt",
+            "label": "Image description",
+            "type": "text"
+          },
+          {
+            "default": "",
+            "id": "linkLabel",
+            "label": "Link label",
+            "type": "text"
+          },
+          {
+            "default": "",
+            "id": "linkUrl",
+            "label": "Link destination",
+            "type": "url"
+          }
+        ],
+        "tag": "section"
+      },
+      "caseId": "MG-C-SECTION-ABOUT-SECTION",
+      "status": "DECLARED_NOT_EXECUTED",
+      "currentEditorAvailability": "Requires admitted package schema/browser acknowledgement; declaration is not an addability guarantee."
+    },
+    {
+      "id": "section:announcement-bar",
+      "sectionType": "announcement-bar",
+      "name": "Announcement Bar",
+      "sourcePathInBundle": "sections/announcement-bar.liquid",
+      "schema": {
+        "blocks": [],
+        "disabled_on": {
+          "templates": []
+        },
+        "enabled_on": {
+          "templates": [
+            "*"
+          ]
+        },
+        "name": "Announcement Bar",
+        "presets": [
+          {
+            "blocks": [],
+            "name": "Announcement Bar",
+            "settings": {}
+          }
+        ],
+        "settings": [
+          {
+            "default": "Discover our latest products.",
+            "id": "text",
+            "label": "Message",
+            "type": "text"
+          },
+          {
+            "default": "Shop now",
+            "id": "linkLabel",
+            "label": "Link label",
+            "type": "text"
+          },
+          {
+            "default": "/products",
+            "id": "linkHref",
+            "label": "Link URL",
+            "type": "url"
+          }
+        ],
+        "tag": "section"
+      },
+      "caseId": "MG-C-SECTION-ANNOUNCEMENT-BAR",
+      "status": "DECLARED_NOT_EXECUTED",
+      "currentEditorAvailability": "Requires admitted package schema/browser acknowledgement; declaration is not an addability guarantee."
+    },
+    {
+      "id": "section:app-block-slot",
+      "sectionType": "app-block-slot",
+      "name": "App Block Slot",
+      "sourcePathInBundle": "sections/app-block-slot.liquid",
+      "schema": {
+        "blocks": [
+          {
+            "name": "App block",
+            "settings": [],
+            "type": "@app"
+          }
+        ],
+        "disabled_on": {
+          "templates": []
+        },
+        "enabled_on": {
+          "templates": [
+            "*"
+          ]
+        },
+        "name": "App Block Slot",
+        "presets": [
+          {
+            "blocks": [],
+            "name": "App Block Slot",
+            "settings": {}
+          }
+        ],
+        "settings": [
+          {
+            "id": "title",
+            "label": "Title",
+            "type": "text"
+          },
+          {
+            "default": "storefront.home.after-hero",
+            "id": "slot",
+            "label": "Slot",
+            "type": "text"
+          }
+        ],
+        "tag": "section"
+      },
+      "caseId": "MG-C-SECTION-APP-BLOCK-SLOT",
+      "status": "DECLARED_NOT_EXECUTED",
+      "currentEditorAvailability": "Requires admitted package schema/browser acknowledgement; declaration is not an addability guarantee.",
+      "restriction": "Frozen third-party execution seam: prove guard/advertisement behavior with allocator; never activate an extension runtime."
+    },
+    {
+      "id": "section:article-content",
+      "sectionType": "article-content",
+      "name": "Article Content",
+      "sourcePathInBundle": "sections/article-content.liquid",
+      "schema": {
+        "blocks": [],
+        "disabled_on": {
+          "templates": []
+        },
+        "enabled_on": {
+          "templates": [
+            "*"
+          ]
+        },
+        "name": "Article Content",
+        "presets": [
+          {
+            "blocks": [],
+            "name": "Article Content",
+            "settings": {}
+          }
+        ],
+        "settings": [],
+        "tag": "section"
+      },
+      "caseId": "MG-C-SECTION-ARTICLE-CONTENT",
+      "status": "DECLARED_NOT_EXECUTED",
+      "currentEditorAvailability": "Requires admitted package schema/browser acknowledgement; declaration is not an addability guarantee."
+    },
+    {
+      "id": "section:banner-carousel",
+      "sectionType": "banner-carousel",
+      "name": "Banner Carousel",
+      "sourcePathInBundle": "sections/banner-carousel.liquid",
+      "schema": {
+        "blocks": [
+          {
+            "name": "Slide",
+            "settings": [
+              {
+                "id": "heading",
+                "label": "Heading",
+                "type": "text"
+              },
+              {
+                "id": "image",
+                "label": "Image",
+                "type": "image"
+              },
+              {
+                "id": "link",
+                "label": "Link",
+                "type": "url"
+              }
+            ],
+            "type": "slide"
+          }
+        ],
+        "disabled_on": {
+          "templates": []
+        },
+        "enabled_on": {
+          "templates": [
+            "*"
+          ]
+        },
+        "name": "Banner Carousel",
+        "presets": [
+          {
+            "blocks": [],
+            "name": "Banner Carousel",
+            "settings": {}
+          }
+        ],
+        "settings": [
+          {
+            "id": "title",
+            "label": "Title",
+            "type": "text"
+          },
+          {
+            "default": true,
+            "id": "autoplay",
+            "label": "Autoplay",
+            "type": "toggle"
+          }
+        ],
+        "tag": "section"
+      },
+      "caseId": "MG-C-SECTION-BANNER-CAROUSEL",
+      "status": "DECLARED_NOT_EXECUTED",
+      "currentEditorAvailability": "Requires admitted package schema/browser acknowledgement; declaration is not an addability guarantee."
+    },
+    {
+      "id": "section:blog-listing",
+      "sectionType": "blog-listing",
+      "name": "Blog Listing",
+      "sourcePathInBundle": "sections/blog-listing.liquid",
+      "schema": {
+        "blocks": [],
+        "disabled_on": {
+          "templates": []
+        },
+        "enabled_on": {
+          "templates": [
+            "*"
+          ]
+        },
+        "name": "Blog Listing",
+        "presets": [
+          {
+            "blocks": [],
+            "name": "Blog Listing",
+            "settings": {}
+          }
+        ],
+        "settings": [
+          {
+            "default": "Our Blog",
+            "id": "heading",
+            "label": "Heading",
+            "type": "text"
+          }
+        ],
+        "tag": "section"
+      },
+      "caseId": "MG-C-SECTION-BLOG-LISTING",
+      "status": "DECLARED_NOT_EXECUTED",
+      "currentEditorAvailability": "Requires admitted package schema/browser acknowledgement; declaration is not an addability guarantee."
+    },
+    {
+      "id": "section:brand-marquee",
+      "sectionType": "brand-marquee",
+      "name": "Brand Marquee",
+      "sourcePathInBundle": "sections/brand-marquee.liquid",
+      "schema": {
+        "blocks": [
+          {
+            "name": "Brand",
+            "settings": [
+              {
+                "id": "name",
+                "label": "Name",
+                "type": "text"
+              }
+            ],
+            "type": "brand"
+          }
+        ],
+        "disabled_on": {
+          "templates": []
+        },
+        "enabled_on": {
+          "templates": [
+            "*"
+          ]
+        },
+        "name": "Brand Marquee",
+        "presets": [
+          {
+            "blocks": [],
+            "name": "Brand Marquee",
+            "settings": {}
+          }
+        ],
+        "settings": [
+          {
+            "default": "Featured brands",
+            "id": "title",
+            "label": "Title",
+            "type": "text"
+          }
+        ],
+        "tag": "section"
+      },
+      "caseId": "MG-C-SECTION-BRAND-MARQUEE",
+      "status": "DECLARED_NOT_EXECUTED",
+      "currentEditorAvailability": "Requires admitted package schema/browser acknowledgement; declaration is not an addability guarantee."
+    },
+    {
+      "id": "section:cart-summary",
+      "sectionType": "cart-summary",
+      "name": "Cart",
+      "sourcePathInBundle": "sections/cart-summary.liquid",
+      "schema": {
+        "blocks": [],
+        "disabled_on": {
+          "templates": []
+        },
+        "enabled_on": {
+          "templates": [
+            "*"
+          ]
+        },
+        "name": "Cart",
+        "presets": [
+          {
+            "blocks": [],
+            "name": "Cart",
+            "settings": {}
+          }
+        ],
+        "settings": [
+          {
+            "default": "Your cart",
+            "id": "heading",
+            "label": "Heading",
+            "type": "text"
+          }
+        ],
+        "tag": "section"
+      },
+      "caseId": "MG-C-SECTION-CART-SUMMARY",
+      "status": "DECLARED_NOT_EXECUTED",
+      "currentEditorAvailability": "Requires admitted package schema/browser acknowledgement; declaration is not an addability guarantee."
+    },
+    {
+      "id": "section:category-grid",
+      "sectionType": "category-grid",
+      "name": "Subject index and reading pick",
+      "sourcePathInBundle": "sections/category-grid.liquid",
+      "schema": {
+        "blocks": [
+          {
+            "limit": 12,
+            "name": "Subject link",
+            "settings": [
+              {
+                "default": "",
+                "id": "label",
+                "label": "Subject label",
+                "type": "text"
+              },
+              {
+                "default": "",
+                "id": "href",
+                "label": "Subject destination",
+                "type": "url"
+              }
+            ],
+            "type": "subject"
+          }
+        ],
+        "disabled_on": {
+          "templates": []
+        },
+        "enabled_on": {
+          "templates": [
+            "*"
+          ]
+        },
+        "name": "Subject index and reading pick",
+        "presets": [
+          {
+            "blocks": [],
+            "name": "Subject index and reading pick",
+            "settings": {}
+          }
+        ],
+        "settings": [
+          {
+            "default": "Browse the shelves",
+            "id": "title",
+            "label": "Subject index heading",
+            "type": "text"
+          },
+          {
+            "default": "ON THE READING TABLE",
+            "id": "eyebrow",
+            "label": "Featured product label",
+            "type": "text"
+          },
+          {
+            "id": "product1",
+            "label": "Featured book or stationery",
+            "type": "product"
+          },
+          {
+            "default": true,
+            "id": "requireSelection",
+            "label": "Only show selected products",
+            "type": "toggle"
+          },
+          {
+            "default": "Select a product to introduce it here.",
+            "id": "emptyText",
+            "label": "Empty featured shelf",
+            "type": "text"
+          },
+          {
+            "default": "View details",
+            "id": "linkLabel",
+            "label": "Product link",
+            "type": "text"
+          }
+        ],
+        "tag": "section"
+      },
+      "caseId": "MG-C-SECTION-CATEGORY-GRID",
+      "status": "DECLARED_NOT_EXECUTED",
+      "currentEditorAvailability": "Requires admitted package schema/browser acknowledgement; declaration is not an addability guarantee."
+    },
+    {
+      "id": "section:collection-banner",
+      "sectionType": "collection-banner",
+      "name": "Collection Banner",
+      "sourcePathInBundle": "sections/collection-banner.liquid",
+      "schema": {
+        "blocks": [],
+        "disabled_on": {
+          "templates": []
+        },
+        "enabled_on": {
+          "templates": [
+            "*"
+          ]
+        },
+        "name": "Collection Banner",
+        "presets": [
+          {
+            "blocks": [],
+            "name": "Collection Banner",
+            "settings": {}
+          }
+        ],
+        "settings": [
+          {
+            "default": true,
+            "id": "showDescription",
+            "label": "Show description",
+            "type": "toggle"
+          }
+        ],
+        "tag": "section"
+      },
+      "caseId": "MG-C-SECTION-COLLECTION-BANNER",
+      "status": "DECLARED_NOT_EXECUTED",
+      "currentEditorAvailability": "Requires admitted package schema/browser acknowledgement; declaration is not an addability guarantee."
+    },
+    {
+      "id": "section:collection-filter",
+      "sectionType": "collection-filter",
+      "name": "Book and paper discovery",
+      "sourcePathInBundle": "sections/collection-filter.liquid",
+      "schema": {
+        "blocks": [],
+        "disabled_on": {
+          "templates": []
+        },
+        "enabled_on": {
+          "templates": [
+            "*"
+          ]
+        },
+        "name": "Book and paper discovery",
+        "presets": [
+          {
+            "blocks": [],
+            "name": "Book and paper discovery",
+            "settings": {}
+          }
+        ],
+        "settings": [],
+        "tag": "section"
+      },
+      "caseId": "MG-C-SECTION-COLLECTION-FILTER",
+      "status": "DECLARED_NOT_EXECUTED",
+      "currentEditorAvailability": "Requires admitted package schema/browser acknowledgement; declaration is not an addability guarantee."
+    },
+    {
+      "id": "section:collection-product-list",
+      "sectionType": "collection-product-list",
+      "name": "Bibliography product list",
+      "sourcePathInBundle": "sections/collection-product-list.liquid",
+      "schema": {
+        "blocks": [],
+        "disabled_on": {
+          "templates": []
+        },
+        "enabled_on": {
+          "templates": [
+            "*"
+          ]
+        },
+        "name": "Bibliography product list",
+        "presets": [
+          {
+            "blocks": [],
+            "name": "Bibliography product list",
+            "settings": {}
+          }
+        ],
+        "settings": [
+          {
+            "default": "Books and paper",
+            "id": "title",
+            "label": "Fallback heading",
+            "type": "text"
+          }
+        ],
+        "tag": "section"
+      },
+      "caseId": "MG-C-SECTION-COLLECTION-PRODUCT-LIST",
+      "status": "DECLARED_NOT_EXECUTED",
+      "currentEditorAvailability": "Requires admitted package schema/browser acknowledgement; declaration is not an addability guarantee."
+    },
+    {
+      "id": "section:contact-form",
+      "sectionType": "contact-form",
+      "name": "Contact Form",
+      "sourcePathInBundle": "sections/contact-form.liquid",
+      "schema": {
+        "blocks": [],
+        "disabled_on": {
+          "templates": []
+        },
+        "enabled_on": {
+          "templates": [
+            "*"
+          ]
+        },
+        "name": "Contact Form",
+        "presets": [
+          {
+            "blocks": [],
+            "name": "Contact Form",
+            "settings": {}
+          }
+        ],
+        "settings": [
+          {
+            "default": "Contact us",
+            "id": "title",
+            "label": "Title",
+            "type": "text"
+          },
+          {
+            "id": "subtitle",
+            "label": "Subtitle",
+            "type": "text"
+          },
+          {
+            "default": true,
+            "id": "showPhone",
+            "label": "Show phone field",
+            "type": "toggle"
+          }
+        ],
+        "tag": "section"
+      },
+      "caseId": "MG-C-SECTION-CONTACT-FORM",
+      "status": "DECLARED_NOT_EXECUTED",
+      "currentEditorAvailability": "Requires admitted package schema/browser acknowledgement; declaration is not an addability guarantee."
+    },
+    {
+      "id": "section:cta-section",
+      "sectionType": "cta-section",
+      "name": "Call to Action",
+      "sourcePathInBundle": "sections/cta-section.liquid",
+      "schema": {
+        "blocks": [],
+        "disabled_on": {
+          "templates": []
+        },
+        "enabled_on": {
+          "templates": [
+            "*"
+          ]
+        },
+        "name": "Call to Action",
+        "presets": [
+          {
+            "blocks": [],
+            "name": "Call to Action",
+            "settings": {}
+          }
+        ],
+        "settings": [
+          {
+            "default": "Ready to get started?",
+            "id": "heading",
+            "label": "Heading",
+            "type": "text"
+          },
+          {
+            "id": "subheading",
+            "label": "Subheading",
+            "type": "text"
+          },
+          {
+            "default": "Shop now",
+            "id": "ctaText",
+            "label": "Button text",
+            "type": "text"
+          },
+          {
+            "default": "/products",
+            "id": "ctaLink",
+            "label": "Button link",
+            "type": "url"
+          }
+        ],
+        "tag": "section"
+      },
+      "caseId": "MG-C-SECTION-CTA-SECTION",
+      "status": "DECLARED_NOT_EXECUTED",
+      "currentEditorAvailability": "Requires admitted package schema/browser acknowledgement; declaration is not an addability guarantee."
+    },
+    {
+      "id": "section:customer-account",
+      "sectionType": "customer-account",
+      "name": "Customer Account",
+      "sourcePathInBundle": "sections/customer-account.liquid",
+      "schema": {
+        "blocks": [],
+        "disabled_on": {
+          "templates": []
+        },
+        "enabled_on": {
+          "templates": [
+            "*"
+          ]
+        },
+        "name": "Customer Account",
+        "presets": [
+          {
+            "blocks": [],
+            "name": "Customer Account",
+            "settings": {}
+          }
+        ],
+        "settings": [
+          {
+            "default": "Your account",
+            "id": "heading",
+            "label": "Heading",
+            "type": "text"
+          }
+        ],
+        "tag": "section"
+      },
+      "caseId": "MG-C-SECTION-CUSTOMER-ACCOUNT",
+      "status": "DECLARED_NOT_EXECUTED",
+      "currentEditorAvailability": "Requires admitted package schema/browser acknowledgement; declaration is not an addability guarantee."
+    },
+    {
+      "id": "section:customer-addresses",
+      "sectionType": "customer-addresses",
+      "name": "Addresses",
+      "sourcePathInBundle": "sections/customer-addresses.liquid",
+      "schema": {
+        "blocks": [],
+        "disabled_on": {
+          "templates": []
+        },
+        "enabled_on": {
+          "templates": [
+            "*"
+          ]
+        },
+        "name": "Addresses",
+        "presets": [
+          {
+            "blocks": [],
+            "name": "Addresses",
+            "settings": {}
+          }
+        ],
+        "settings": [
+          {
+            "default": "Your addresses",
+            "id": "heading",
+            "label": "Heading",
+            "type": "text"
+          }
+        ],
+        "tag": "section"
+      },
+      "caseId": "MG-C-SECTION-CUSTOMER-ADDRESSES",
+      "status": "DECLARED_NOT_EXECUTED",
+      "currentEditorAvailability": "Requires admitted package schema/browser acknowledgement; declaration is not an addability guarantee."
+    },
+    {
+      "id": "section:customer-login",
+      "sectionType": "customer-login",
+      "name": "Customer Login",
+      "sourcePathInBundle": "sections/customer-login.liquid",
+      "schema": {
+        "blocks": [],
+        "disabled_on": {
+          "templates": []
+        },
+        "enabled_on": {
+          "templates": [
+            "*"
+          ]
+        },
+        "name": "Customer Login",
+        "presets": [
+          {
+            "blocks": [],
+            "name": "Customer Login",
+            "settings": {}
+          }
+        ],
+        "settings": [
+          {
+            "default": "Sign in",
+            "id": "heading",
+            "label": "Heading",
+            "type": "text"
+          }
+        ],
+        "tag": "section"
+      },
+      "caseId": "MG-C-SECTION-CUSTOMER-LOGIN",
+      "status": "DECLARED_NOT_EXECUTED",
+      "currentEditorAvailability": "Requires admitted package schema/browser acknowledgement; declaration is not an addability guarantee."
+    },
+    {
+      "id": "section:customer-order-detail",
+      "sectionType": "customer-order-detail",
+      "name": "Order Detail",
+      "sourcePathInBundle": "sections/customer-order-detail.liquid",
+      "schema": {
+        "blocks": [],
+        "disabled_on": {
+          "templates": []
+        },
+        "enabled_on": {
+          "templates": [
+            "*"
+          ]
+        },
+        "name": "Order Detail",
+        "presets": [
+          {
+            "blocks": [],
+            "name": "Order Detail",
+            "settings": {}
+          }
+        ],
+        "settings": [
+          {
+            "default": "Order",
+            "id": "heading",
+            "label": "Heading",
+            "type": "text"
+          }
+        ],
+        "tag": "section"
+      },
+      "caseId": "MG-C-SECTION-CUSTOMER-ORDER-DETAIL",
+      "status": "DECLARED_NOT_EXECUTED",
+      "currentEditorAvailability": "Requires admitted package schema/browser acknowledgement; declaration is not an addability guarantee."
+    },
+    {
+      "id": "section:customer-orders",
+      "sectionType": "customer-orders",
+      "name": "Order History",
+      "sourcePathInBundle": "sections/customer-orders.liquid",
+      "schema": {
+        "blocks": [],
+        "disabled_on": {
+          "templates": []
+        },
+        "enabled_on": {
+          "templates": [
+            "*"
+          ]
+        },
+        "name": "Order History",
+        "presets": [
+          {
+            "blocks": [],
+            "name": "Order History",
+            "settings": {}
+          }
+        ],
+        "settings": [
+          {
+            "default": "Your orders",
+            "id": "heading",
+            "label": "Heading",
+            "type": "text"
+          }
+        ],
+        "tag": "section"
+      },
+      "caseId": "MG-C-SECTION-CUSTOMER-ORDERS",
+      "status": "DECLARED_NOT_EXECUTED",
+      "currentEditorAvailability": "Requires admitted package schema/browser acknowledgement; declaration is not an addability guarantee."
+    },
+    {
+      "id": "section:customer-register",
+      "sectionType": "customer-register",
+      "name": "Customer Register",
+      "sourcePathInBundle": "sections/customer-register.liquid",
+      "schema": {
+        "blocks": [],
+        "disabled_on": {
+          "templates": []
+        },
+        "enabled_on": {
+          "templates": [
+            "*"
+          ]
+        },
+        "name": "Customer Register",
+        "presets": [
+          {
+            "blocks": [],
+            "name": "Customer Register",
+            "settings": {}
+          }
+        ],
+        "settings": [
+          {
+            "default": "Create account",
+            "id": "heading",
+            "label": "Heading",
+            "type": "text"
+          }
+        ],
+        "tag": "section"
+      },
+      "caseId": "MG-C-SECTION-CUSTOMER-REGISTER",
+      "status": "DECLARED_NOT_EXECUTED",
+      "currentEditorAvailability": "Requires admitted package schema/browser acknowledgement; declaration is not an addability guarantee."
+    },
+    {
+      "id": "section:customer-settings",
+      "sectionType": "customer-settings",
+      "name": "Account Settings",
+      "sourcePathInBundle": "sections/customer-settings.liquid",
+      "schema": {
+        "blocks": [],
+        "disabled_on": {
+          "templates": []
+        },
+        "enabled_on": {
+          "templates": [
+            "*"
+          ]
+        },
+        "name": "Account Settings",
+        "presets": [
+          {
+            "blocks": [],
+            "name": "Account Settings",
+            "settings": {}
+          }
+        ],
+        "settings": [
+          {
+            "default": "Account settings",
+            "id": "heading",
+            "label": "Heading",
+            "type": "text"
+          }
+        ],
+        "tag": "section"
+      },
+      "caseId": "MG-C-SECTION-CUSTOMER-SETTINGS",
+      "status": "DECLARED_NOT_EXECUTED",
+      "currentEditorAvailability": "Requires admitted package schema/browser acknowledgement; declaration is not an addability guarantee."
+    },
+    {
+      "id": "section:customer-wishlist",
+      "sectionType": "customer-wishlist",
+      "name": "Wishlist",
+      "sourcePathInBundle": "sections/customer-wishlist.liquid",
+      "schema": {
+        "blocks": [],
+        "disabled_on": {
+          "templates": []
+        },
+        "enabled_on": {
+          "templates": [
+            "*"
+          ]
+        },
+        "name": "Wishlist",
+        "presets": [
+          {
+            "blocks": [],
+            "name": "Wishlist",
+            "settings": {}
+          }
+        ],
+        "settings": [
+          {
+            "default": "Your wishlist",
+            "id": "heading",
+            "label": "Heading",
+            "type": "text"
+          }
+        ],
+        "tag": "section"
+      },
+      "caseId": "MG-C-SECTION-CUSTOMER-WISHLIST",
+      "status": "DECLARED_NOT_EXECUTED",
+      "currentEditorAvailability": "Requires admitted package schema/browser acknowledgement; declaration is not an addability guarantee."
+    },
+    {
+      "id": "section:experience-timeline",
+      "sectionType": "experience-timeline",
+      "name": "Experience Timeline",
+      "sourcePathInBundle": "sections/experience-timeline.liquid",
+      "schema": {
+        "blocks": [
+          {
+            "name": "Experience",
+            "settings": [
+              {
+                "id": "title",
+                "label": "Title",
+                "type": "text"
+              },
+              {
+                "id": "company",
+                "label": "Company",
+                "type": "text"
+              },
+              {
+                "id": "period",
+                "label": "Period",
+                "type": "text"
+              }
+            ],
+            "type": "experience"
+          }
+        ],
+        "disabled_on": {
+          "templates": []
+        },
+        "enabled_on": {
+          "templates": [
+            "*"
+          ]
+        },
+        "name": "Experience Timeline",
+        "presets": [
+          {
+            "blocks": [],
+            "name": "Experience Timeline",
+            "settings": {}
+          }
+        ],
+        "settings": [
+          {
+            "default": "Experience",
+            "id": "title",
+            "label": "Title",
+            "type": "text"
+          }
+        ],
+        "tag": "section"
+      },
+      "caseId": "MG-C-SECTION-EXPERIENCE-TIMELINE",
+      "status": "DECLARED_NOT_EXECUTED",
+      "currentEditorAvailability": "Requires admitted package schema/browser acknowledgement; declaration is not an addability guarantee."
+    },
+    {
+      "id": "section:faq-accordion",
+      "sectionType": "faq-accordion",
+      "name": "FAQ Accordion",
+      "sourcePathInBundle": "sections/faq-accordion.liquid",
+      "schema": {
+        "blocks": [
+          {
+            "name": "FAQ item",
+            "settings": [
+              {
+                "id": "question",
+                "label": "Question",
+                "type": "text"
+              },
+              {
+                "id": "answer",
+                "label": "Answer",
+                "type": "richtext"
+              }
+            ],
+            "type": "faq-item"
+          }
+        ],
+        "disabled_on": {
+          "templates": []
+        },
+        "enabled_on": {
+          "templates": [
+            "*"
+          ]
+        },
+        "name": "FAQ Accordion",
+        "presets": [
+          {
+            "blocks": [],
+            "name": "FAQ Accordion",
+            "settings": {}
+          }
+        ],
+        "settings": [
+          {
+            "default": "Frequently asked questions",
+            "id": "title",
+            "label": "Title",
+            "type": "text"
+          },
+          {
+            "default": false,
+            "id": "allowMultipleOpen",
+            "label": "Allow multiple open",
+            "type": "toggle"
+          }
+        ],
+        "tag": "section"
+      },
+      "caseId": "MG-C-SECTION-FAQ-ACCORDION",
+      "status": "DECLARED_NOT_EXECUTED",
+      "currentEditorAvailability": "Requires admitted package schema/browser acknowledgement; declaration is not an addability guarantee."
+    },
+    {
+      "id": "section:featured-products",
+      "sectionType": "featured-products",
+      "name": "Selected reading shelf",
+      "sourcePathInBundle": "sections/featured-products.liquid",
+      "schema": {
+        "blocks": [],
+        "disabled_on": {
+          "templates": []
+        },
+        "enabled_on": {
+          "templates": [
+            "*"
+          ]
+        },
+        "name": "Selected reading shelf",
+        "presets": [
+          {
+            "blocks": [],
+            "name": "Selected reading shelf",
+            "settings": {}
+          }
+        ],
+        "settings": [
+          {
+            "default": "A little further along the shelf",
+            "id": "title",
+            "label": "Heading",
+            "type": "text"
+          },
+          {
+            "default": "",
+            "id": "subtitle",
+            "label": "Description",
+            "type": "text"
+          },
+          {
+            "default": 3,
+            "id": "columns",
+            "label": "Desktop columns",
+            "max": 4,
+            "min": 2,
+            "step": 1,
+            "type": "range"
+          },
+          {
+            "default": 6,
+            "id": "productLimit",
+            "label": "Products to show",
+            "max": 24,
+            "min": 1,
+            "step": 1,
+            "type": "range"
+          },
+          {
+            "id": "collectionId",
+            "label": "Collection",
+            "type": "collection"
+          },
+          {
+            "id": "product1",
+            "label": "First selected product",
+            "type": "product"
+          },
+          {
+            "id": "product2",
+            "label": "Second selected product",
+            "type": "product"
+          },
+          {
+            "id": "product3",
+            "label": "Third selected product",
+            "type": "product"
+          },
+          {
+            "default": true,
+            "id": "requireSelection",
+            "label": "Only show selected products",
+            "type": "toggle"
+          }
+        ],
+        "tag": "section"
+      },
+      "caseId": "MG-C-SECTION-FEATURED-PRODUCTS",
+      "status": "DECLARED_NOT_EXECUTED",
+      "currentEditorAvailability": "Requires admitted package schema/browser acknowledgement; declaration is not an addability guarantee."
+    },
+    {
+      "id": "section:footer",
+      "sectionType": "footer",
+      "name": "Footer",
+      "sourcePathInBundle": "sections/footer.liquid",
+      "schema": {
+        "blocks": [
+          {
+            "name": "Link",
+            "settings": [
+              {
+                "id": "label",
+                "label": "Label",
+                "type": "text"
+              },
+              {
+                "id": "href",
+                "label": "URL",
+                "type": "url"
+              }
+            ],
+            "type": "link"
+          }
+        ],
+        "disabled_on": {
+          "templates": []
+        },
+        "enabled_on": {
+          "templates": [
+            "*"
+          ]
+        },
+        "name": "Footer",
+        "presets": [
+          {
+            "blocks": [],
+            "name": "Footer",
+            "settings": {}
+          }
+        ],
+        "settings": [
+          {
+            "id": "storeName",
+            "label": "Store name",
+            "type": "text"
+          },
+          {
+            "id": "tagline",
+            "label": "Tagline",
+            "type": "text"
+          },
+          {
+            "id": "contactEmail",
+            "label": "Contact email",
+            "type": "text"
+          },
+          {
+            "id": "contactPhone",
+            "label": "Contact phone",
+            "type": "text"
+          },
+          {
+            "id": "instagramUrl",
+            "label": "Instagram URL",
+            "type": "url"
+          },
+          {
+            "id": "facebookUrl",
+            "label": "Facebook URL",
+            "type": "url"
+          },
+          {
+            "id": "twitterUrl",
+            "label": "Twitter/X URL",
+            "type": "url"
+          }
+        ],
+        "tag": "section"
+      },
+      "caseId": "MG-C-SECTION-FOOTER",
+      "status": "DECLARED_NOT_EXECUTED",
+      "currentEditorAvailability": "Requires admitted package schema/browser acknowledgement; declaration is not an addability guarantee."
+    },
+    {
+      "id": "section:header",
+      "sectionType": "header",
+      "name": "Header",
+      "sourcePathInBundle": "sections/header.liquid",
+      "schema": {
+        "blocks": [
+          {
+            "name": "Link",
+            "settings": [
+              {
+                "id": "label",
+                "label": "Label",
+                "type": "text"
+              },
+              {
+                "id": "href",
+                "label": "URL",
+                "type": "url"
+              }
+            ],
+            "type": "link"
+          }
+        ],
+        "disabled_on": {
+          "templates": []
+        },
+        "enabled_on": {
+          "templates": [
+            "*"
+          ]
+        },
+        "name": "Header",
+        "presets": [
+          {
+            "blocks": [],
+            "name": "Header",
+            "settings": {}
+          }
+        ],
+        "settings": [
+          {
+            "id": "storeName",
+            "label": "Store name",
+            "type": "text"
+          },
+          {
+            "default": true,
+            "id": "showSearch",
+            "label": "Show search",
+            "type": "toggle"
+          },
+          {
+            "default": true,
+            "id": "showCart",
+            "label": "Show cart",
+            "type": "toggle"
+          },
+          {
+            "default": "sticky",
+            "id": "behavior",
+            "label": "Header behavior",
+            "options": [
+              "static",
+              "sticky"
+            ],
+            "type": "select"
+          },
+          {
+            "default": "main_menu",
+            "id": "menu",
+            "label": "Menu",
+            "options": [
+              "main_menu",
+              "footer_menu",
+              "policy_menu"
+            ],
+            "type": "select"
+          },
+          {
+            "default": "inline",
+            "id": "layout",
+            "label": "Layout",
+            "options": [
+              "inline",
+              "centered"
+            ],
+            "type": "select"
+          }
+        ],
+        "tag": "section"
+      },
+      "caseId": "MG-C-SECTION-HEADER",
+      "status": "DECLARED_NOT_EXECUTED",
+      "currentEditorAvailability": "Requires admitted package schema/browser acknowledgement; declaration is not an addability guarantee."
+    },
+    {
+      "id": "section:hero-banner",
+      "sectionType": "hero-banner",
+      "name": "Bookshop opening and search",
+      "sourcePathInBundle": "sections/hero-banner.liquid",
+      "schema": {
+        "blocks": [],
+        "disabled_on": {
+          "templates": []
+        },
+        "enabled_on": {
+          "templates": [
+            "*"
+          ]
+        },
+        "name": "Bookshop opening and search",
+        "presets": [
+          {
+            "blocks": [],
+            "name": "Bookshop opening and search",
+            "settings": {}
+          }
+        ],
+        "settings": [
+          {
+            "default": "BOOKS & PAPER",
+            "id": "eyebrow",
+            "label": "Eyebrow",
+            "type": "text"
+          },
+          {
+            "default": "Find your next good read.",
+            "id": "heading",
+            "label": "Heading",
+            "type": "text"
+          },
+          {
+            "default": "Books to spend time with. Paper for what comes next.",
+            "id": "subheading",
+            "label": "Description",
+            "type": "text"
+          },
+          {
+            "default": "What would you like to read?",
+            "id": "searchLabel",
+            "label": "Search label",
+            "type": "text"
+          },
+          {
+            "default": "Title, author or keyword",
+            "id": "searchPlaceholder",
+            "label": "Search placeholder",
+            "type": "text"
+          },
+          {
+            "default": "Search",
+            "id": "searchButton",
+            "label": "Search button",
+            "type": "text"
+          },
+          {
+            "default": "Browse the subject index, or search the catalog.",
+            "id": "searchHint",
+            "label": "Search help",
+            "type": "text"
+          }
+        ],
+        "tag": "section"
+      },
+      "caseId": "MG-C-SECTION-HERO-BANNER",
+      "status": "DECLARED_NOT_EXECUTED",
+      "currentEditorAvailability": "Requires admitted package schema/browser acknowledgement; declaration is not an addability guarantee."
+    },
+    {
+      "id": "section:marquee",
+      "sectionType": "marquee",
+      "name": "Marquee",
+      "sourcePathInBundle": "sections/marquee.liquid",
+      "schema": {
+        "blocks": [],
+        "disabled_on": {
+          "templates": []
+        },
+        "enabled_on": {
+          "templates": [
+            "*"
+          ]
+        },
+        "name": "Marquee",
+        "presets": [
+          {
+            "blocks": [],
+            "name": "Marquee",
+            "settings": {}
+          }
+        ],
+        "settings": [
+          {
+            "default": "Featured announcement",
+            "id": "text",
+            "label": "Text",
+            "type": "text"
+          }
+        ],
+        "tag": "section"
+      },
+      "caseId": "MG-C-SECTION-MARQUEE",
+      "status": "DECLARED_NOT_EXECUTED",
+      "currentEditorAvailability": "Requires admitted package schema/browser acknowledgement; declaration is not an addability guarantee."
+    },
+    {
+      "id": "section:newsletter-signup",
+      "sectionType": "newsletter-signup",
+      "name": "Newsletter Signup",
+      "sourcePathInBundle": "sections/newsletter-signup.liquid",
+      "schema": {
+        "blocks": [],
+        "disabled_on": {
+          "templates": []
+        },
+        "enabled_on": {
+          "templates": [
+            "*"
+          ]
+        },
+        "name": "Newsletter Signup",
+        "presets": [
+          {
+            "blocks": [],
+            "name": "Newsletter Signup",
+            "settings": {}
+          }
+        ],
+        "settings": [
+          {
+            "default": "Get first access",
+            "id": "title",
+            "label": "Heading",
+            "type": "text"
+          },
+          {
+            "id": "subtitle",
+            "label": "Subheading",
+            "type": "text"
+          },
+          {
+            "default": "Sign up",
+            "id": "buttonLabel",
+            "label": "Button label",
+            "type": "text"
+          }
+        ],
+        "tag": "section"
+      },
+      "caseId": "MG-C-SECTION-NEWSLETTER-SIGNUP",
+      "status": "DECLARED_NOT_EXECUTED",
+      "currentEditorAvailability": "Requires admitted package schema/browser acknowledgement; declaration is not an addability guarantee."
+    },
+    {
+      "id": "section:page-content",
+      "sectionType": "page-content",
+      "name": "Page Content",
+      "sourcePathInBundle": "sections/page-content.liquid",
+      "schema": {
+        "blocks": [],
+        "disabled_on": {
+          "templates": []
+        },
+        "enabled_on": {
+          "templates": [
+            "*"
+          ]
+        },
+        "name": "Page Content",
+        "presets": [
+          {
+            "blocks": [],
+            "name": "Page Content",
+            "settings": {}
+          }
+        ],
+        "settings": [],
+        "tag": "section"
+      },
+      "caseId": "MG-C-SECTION-PAGE-CONTENT",
+      "status": "DECLARED_NOT_EXECUTED",
+      "currentEditorAvailability": "Requires admitted package schema/browser acknowledgement; declaration is not an addability guarantee."
+    },
+    {
+      "id": "section:password-gate",
+      "sectionType": "password-gate",
+      "name": "Password Gate",
+      "sourcePathInBundle": "sections/password-gate.liquid",
+      "schema": {
+        "blocks": [],
+        "disabled_on": {
+          "templates": []
+        },
+        "enabled_on": {
+          "templates": [
+            "*"
+          ]
+        },
+        "name": "Password Gate",
+        "presets": [
+          {
+            "blocks": [],
+            "name": "Password Gate",
+            "settings": {}
+          }
+        ],
+        "settings": [
+          {
+            "default": "Coming Soon",
+            "id": "heading",
+            "label": "Heading",
+            "type": "text"
+          }
+        ],
+        "tag": "section"
+      },
+      "caseId": "MG-C-SECTION-PASSWORD-GATE",
+      "status": "DECLARED_NOT_EXECUTED",
+      "currentEditorAvailability": "Requires admitted package schema/browser acknowledgement; declaration is not an addability guarantee."
+    },
+    {
+      "id": "section:policy-content",
+      "sectionType": "policy-content",
+      "name": "Policy Content",
+      "sourcePathInBundle": "sections/policy-content.liquid",
+      "schema": {
+        "blocks": [],
+        "disabled_on": {
+          "templates": []
+        },
+        "enabled_on": {
+          "templates": [
+            "*"
+          ]
+        },
+        "name": "Policy Content",
+        "presets": [
+          {
+            "blocks": [],
+            "name": "Policy Content",
+            "settings": {}
+          }
+        ],
+        "settings": [],
+        "tag": "section"
+      },
+      "caseId": "MG-C-SECTION-POLICY-CONTENT",
+      "status": "DECLARED_NOT_EXECUTED",
+      "currentEditorAvailability": "Requires admitted package schema/browser acknowledgement; declaration is not an addability guarantee."
+    },
+    {
+      "id": "section:portfolio-grid",
+      "sectionType": "portfolio-grid",
+      "name": "Portfolio Grid",
+      "sourcePathInBundle": "sections/portfolio-grid.liquid",
+      "schema": {
+        "blocks": [
+          {
+            "name": "Project",
+            "settings": [
+              {
+                "id": "title",
+                "label": "Title",
+                "type": "text"
+              },
+              {
+                "id": "summary",
+                "label": "Summary",
+                "type": "textarea"
+              },
+              {
+                "id": "link",
+                "label": "Link",
+                "type": "url"
+              }
+            ],
+            "type": "project"
+          }
+        ],
+        "disabled_on": {
+          "templates": []
+        },
+        "enabled_on": {
+          "templates": [
+            "*"
+          ]
+        },
+        "name": "Portfolio Grid",
+        "presets": [
+          {
+            "blocks": [],
+            "name": "Portfolio Grid",
+            "settings": {}
+          }
+        ],
+        "settings": [
+          {
+            "default": "Portfolio",
+            "id": "title",
+            "label": "Title",
+            "type": "text"
+          }
+        ],
+        "tag": "section"
+      },
+      "caseId": "MG-C-SECTION-PORTFOLIO-GRID",
+      "status": "DECLARED_NOT_EXECUTED",
+      "currentEditorAvailability": "Requires admitted package schema/browser acknowledgement; declaration is not an addability guarantee."
+    },
+    {
+      "id": "section:product-detail",
+      "sectionType": "product-detail",
+      "name": "Product Detail",
+      "sourcePathInBundle": "sections/product-detail.liquid",
+      "schema": {
+        "blocks": [],
+        "disabled_on": {
+          "templates": []
+        },
+        "enabled_on": {
+          "templates": [
+            "*"
+          ]
+        },
+        "name": "Product Detail",
+        "presets": [
+          {
+            "blocks": [],
+            "name": "Product Detail",
+            "settings": {}
+          }
+        ],
+        "settings": [
+          {
+            "default": true,
+            "id": "showGallery",
+            "label": "Show gallery",
+            "type": "toggle"
+          },
+          {
+            "default": true,
+            "id": "showDescription",
+            "label": "Show description",
+            "type": "toggle"
+          },
+          {
+            "default": true,
+            "id": "showReviews",
+            "label": "Show reviews",
+            "type": "toggle"
+          },
+          {
+            "default": true,
+            "id": "showBookFacts",
+            "label": "Show book and paper facts",
+            "type": "toggle"
+          },
+          {
+            "default": true,
+            "id": "showExcerpt",
+            "label": "Show permitted reading sample",
+            "type": "toggle"
+          }
+        ],
+        "tag": "section"
+      },
+      "caseId": "MG-C-SECTION-PRODUCT-DETAIL",
+      "status": "DECLARED_NOT_EXECUTED",
+      "currentEditorAvailability": "Requires admitted package schema/browser acknowledgement; declaration is not an addability guarantee."
+    },
+    {
+      "id": "section:product-grid",
+      "sectionType": "product-grid",
+      "name": "Reading shelf",
+      "sourcePathInBundle": "sections/product-grid.liquid",
+      "schema": {
+        "blocks": [],
+        "disabled_on": {
+          "templates": []
+        },
+        "enabled_on": {
+          "templates": [
+            "*"
+          ]
+        },
+        "name": "Reading shelf",
+        "presets": [
+          {
+            "blocks": [],
+            "name": "Reading shelf",
+            "settings": {}
+          }
+        ],
+        "settings": [
+          {
+            "default": "A little further along the shelf",
+            "id": "title",
+            "label": "Heading",
+            "type": "text"
+          },
+          {
+            "default": "",
+            "id": "subtitle",
+            "label": "Description",
+            "type": "text"
+          },
+          {
+            "default": 3,
+            "id": "columns",
+            "label": "Desktop columns",
+            "max": 4,
+            "min": 2,
+            "step": 1,
+            "type": "range"
+          },
+          {
+            "default": 6,
+            "id": "productLimit",
+            "label": "Products to show",
+            "max": 24,
+            "min": 1,
+            "step": 1,
+            "type": "range"
+          },
+          {
+            "id": "collectionId",
+            "label": "Collection",
+            "type": "collection"
+          }
+        ],
+        "tag": "section"
+      },
+      "caseId": "MG-C-SECTION-PRODUCT-GRID",
+      "status": "DECLARED_NOT_EXECUTED",
+      "currentEditorAvailability": "Requires admitted package schema/browser acknowledgement; declaration is not an addability guarantee."
+    },
+    {
+      "id": "section:rich-content",
+      "sectionType": "rich-content",
+      "name": "Rich Content",
+      "sourcePathInBundle": "sections/rich-content.liquid",
+      "schema": {
+        "blocks": [],
+        "disabled_on": {
+          "templates": []
+        },
+        "enabled_on": {
+          "templates": [
+            "*"
+          ]
+        },
+        "name": "Rich Content",
+        "presets": [
+          {
+            "blocks": [],
+            "name": "Rich Content",
+            "settings": {}
+          }
+        ],
+        "settings": [
+          {
+            "id": "title",
+            "label": "Title",
+            "type": "text"
+          },
+          {
+            "id": "body",
+            "label": "Body",
+            "type": "richtext"
+          }
+        ],
+        "tag": "section"
+      },
+      "caseId": "MG-C-SECTION-RICH-CONTENT",
+      "status": "DECLARED_NOT_EXECUTED",
+      "currentEditorAvailability": "Requires admitted package schema/browser acknowledgement; declaration is not an addability guarantee."
+    },
+    {
+      "id": "section:search-box",
+      "sectionType": "search-box",
+      "name": "Search",
+      "sourcePathInBundle": "sections/search-box.liquid",
+      "schema": {
+        "blocks": [],
+        "disabled_on": {
+          "templates": []
+        },
+        "enabled_on": {
+          "templates": [
+            "*"
+          ]
+        },
+        "name": "Search",
+        "presets": [
+          {
+            "blocks": [],
+            "name": "Search",
+            "settings": {}
+          }
+        ],
+        "settings": [
+          {
+            "default": "Search products",
+            "id": "placeholder",
+            "label": "Placeholder",
+            "type": "text"
+          }
+        ],
+        "tag": "section"
+      },
+      "caseId": "MG-C-SECTION-SEARCH-BOX",
+      "status": "DECLARED_NOT_EXECUTED",
+      "currentEditorAvailability": "Requires admitted package schema/browser acknowledgement; declaration is not an addability guarantee."
+    },
+    {
+      "id": "section:services-grid",
+      "sectionType": "services-grid",
+      "name": "Services Grid",
+      "sourcePathInBundle": "sections/services-grid.liquid",
+      "schema": {
+        "blocks": [
+          {
+            "name": "Service",
+            "settings": [
+              {
+                "id": "title",
+                "label": "Title",
+                "type": "text"
+              },
+              {
+                "id": "description",
+                "label": "Description",
+                "type": "textarea"
+              },
+              {
+                "id": "link",
+                "label": "Link",
+                "type": "url"
+              }
+            ],
+            "type": "service"
+          }
+        ],
+        "disabled_on": {
+          "templates": []
+        },
+        "enabled_on": {
+          "templates": [
+            "*"
+          ]
+        },
+        "name": "Services Grid",
+        "presets": [
+          {
+            "blocks": [],
+            "name": "Services Grid",
+            "settings": {}
+          }
+        ],
+        "settings": [
+          {
+            "default": "Services",
+            "id": "title",
+            "label": "Title",
+            "type": "text"
+          }
+        ],
+        "tag": "section"
+      },
+      "caseId": "MG-C-SECTION-SERVICES-GRID",
+      "status": "DECLARED_NOT_EXECUTED",
+      "currentEditorAvailability": "Requires admitted package schema/browser acknowledgement; declaration is not an addability guarantee."
+    },
+    {
+      "id": "section:skills-section",
+      "sectionType": "skills-section",
+      "name": "Skills Section",
+      "sourcePathInBundle": "sections/skills-section.liquid",
+      "schema": {
+        "blocks": [
+          {
+            "name": "Skill",
+            "settings": [
+              {
+                "id": "name",
+                "label": "Skill",
+                "type": "text"
+              },
+              {
+                "id": "level",
+                "label": "Level",
+                "max": 100,
+                "min": 0,
+                "step": 5,
+                "type": "range"
+              }
+            ],
+            "type": "skill"
+          }
+        ],
+        "disabled_on": {
+          "templates": []
+        },
+        "enabled_on": {
+          "templates": [
+            "*"
+          ]
+        },
+        "name": "Skills Section",
+        "presets": [
+          {
+            "blocks": [],
+            "name": "Skills Section",
+            "settings": {}
+          }
+        ],
+        "settings": [
+          {
+            "default": "Skills",
+            "id": "title",
+            "label": "Title",
+            "type": "text"
+          }
+        ],
+        "tag": "section"
+      },
+      "caseId": "MG-C-SECTION-SKILLS-SECTION",
+      "status": "DECLARED_NOT_EXECUTED",
+      "currentEditorAvailability": "Requires admitted package schema/browser acknowledgement; declaration is not an addability guarantee."
+    },
+    {
+      "id": "section:spotlight",
+      "sectionType": "spotlight",
+      "name": "Spotlight",
+      "sourcePathInBundle": "sections/spotlight.liquid",
+      "schema": {
+        "blocks": [
+          {
+            "name": "Badge",
+            "settings": [],
+            "type": "badge"
+          },
+          {
+            "name": "App block",
+            "settings": [],
+            "type": "@app"
+          }
+        ],
+        "disabled_on": {
+          "templates": []
+        },
+        "enabled_on": {
+          "templates": [
+            "*"
+          ]
+        },
+        "name": "Spotlight",
+        "presets": [
+          {
+            "blocks": [],
+            "name": "Spotlight",
+            "settings": {}
+          }
+        ],
+        "settings": [
+          {
+            "default": "Made for daily buyers",
+            "id": "heading",
+            "label": "Heading",
+            "type": "text"
+          },
+          {
+            "id": "subheading",
+            "label": "Subheading",
+            "type": "text"
+          }
+        ],
+        "tag": "section"
+      },
+      "caseId": "MG-C-SECTION-SPOTLIGHT",
+      "status": "DECLARED_NOT_EXECUTED",
+      "currentEditorAvailability": "Requires admitted package schema/browser acknowledgement; declaration is not an addability guarantee."
+    },
+    {
+      "id": "section:testimonials",
+      "sectionType": "testimonials",
+      "name": "Testimonials",
+      "sourcePathInBundle": "sections/testimonials.liquid",
+      "schema": {
+        "blocks": [
+          {
+            "name": "Testimonial",
+            "settings": [
+              {
+                "id": "quote",
+                "label": "Quote",
+                "type": "textarea"
+              },
+              {
+                "id": "author",
+                "label": "Author",
+                "type": "text"
+              }
+            ],
+            "type": "testimonial"
+          }
+        ],
+        "disabled_on": {
+          "templates": []
+        },
+        "enabled_on": {
+          "templates": [
+            "*"
+          ]
+        },
+        "name": "Testimonials",
+        "presets": [
+          {
+            "blocks": [],
+            "name": "Testimonials",
+            "settings": {}
+          }
+        ],
+        "settings": [
+          {
+            "default": "What customers say",
+            "id": "title",
+            "label": "Title",
+            "type": "text"
+          }
+        ],
+        "tag": "section"
+      },
+      "caseId": "MG-C-SECTION-TESTIMONIALS",
+      "status": "DECLARED_NOT_EXECUTED",
+      "currentEditorAvailability": "Requires admitted package schema/browser acknowledgement; declaration is not an addability guarantee."
+    },
+    {
+      "id": "section:trust-badges",
+      "sectionType": "trust-badges",
+      "name": "Trust Badges",
+      "sourcePathInBundle": "sections/trust-badges.liquid",
+      "schema": {
+        "blocks": [
+          {
+            "name": "Badge",
+            "settings": [
+              {
+                "id": "label",
+                "label": "Label",
+                "type": "text"
+              },
+              {
+                "id": "description",
+                "label": "Description",
+                "type": "text"
+              }
+            ],
+            "type": "badge"
+          }
+        ],
+        "disabled_on": {
+          "templates": []
+        },
+        "enabled_on": {
+          "templates": [
+            "*"
+          ]
+        },
+        "name": "Trust Badges",
+        "presets": [
+          {
+            "blocks": [],
+            "name": "Trust Badges",
+            "settings": {}
+          }
+        ],
+        "settings": [
+          {
+            "id": "title",
+            "label": "Title",
+            "type": "text"
+          }
+        ],
+        "tag": "section"
+      },
+      "caseId": "MG-C-SECTION-TRUST-BADGES",
+      "status": "DECLARED_NOT_EXECUTED",
+      "currentEditorAvailability": "Requires admitted package schema/browser acknowledgement; declaration is not an addability guarantee."
+    },
+    {
+      "id": "section:video-hero",
+      "sectionType": "video-hero",
+      "name": "Video Hero",
+      "sourcePathInBundle": "sections/video-hero.liquid",
+      "schema": {
+        "blocks": [],
+        "disabled_on": {
+          "templates": []
+        },
+        "enabled_on": {
+          "templates": [
+            "*"
+          ]
+        },
+        "name": "Video Hero",
+        "presets": [
+          {
+            "blocks": [],
+            "name": "Video Hero",
+            "settings": {}
+          }
+        ],
+        "settings": [
+          {
+            "default": "See the fit in motion",
+            "id": "heading",
+            "label": "Heading",
+            "type": "text"
+          },
+          {
+            "default": "A quick look at how each drop moves, from the box to your feet.",
+            "id": "subheading",
+            "label": "Subheading",
+            "type": "textarea"
+          },
+          {
+            "id": "videoUrl",
+            "info": "A YouTube or Vimeo embed URL (for example https://www.youtube.com/embed/VIDEO_ID). Leave blank to hide the video.",
+            "label": "Video embed URL",
+            "type": "url"
+          }
+        ],
+        "tag": "section"
+      },
+      "caseId": "MG-C-SECTION-VIDEO-HERO",
+      "status": "DECLARED_NOT_EXECUTED",
+      "currentEditorAvailability": "Requires admitted package schema/browser acknowledgement; declaration is not an addability guarantee."
+    }
+  ],
+  "sectionScopedBlocks": [
+    {
+      "id": "section:app-block-slot/block:@app",
+      "sectionType": "app-block-slot",
+      "blockType": "@app",
+      "descriptor": {
+        "name": "App block",
+        "settings": [],
+        "type": "@app"
+      },
+      "caseId": "MG-C-BLOCK-APP-BLOCK-SLOT-APP",
+      "currentStatus": "NOT_RUN",
+      "operationGap": "Current main editor omits nested-child callbacks; top-level block reorder/hide controls require canonical-owner reconciliation.",
+      "restriction": "Frozen extension seam. No third-party execution. Required guard/advertisement review is open, not silently N/A."
+    },
+    {
+      "id": "section:banner-carousel/block:slide",
+      "sectionType": "banner-carousel",
+      "blockType": "slide",
+      "descriptor": {
+        "name": "Slide",
+        "settings": [
+          {
+            "id": "heading",
+            "label": "Heading",
+            "type": "text"
+          },
+          {
+            "id": "image",
+            "label": "Image",
+            "type": "image"
+          },
+          {
+            "id": "link",
+            "label": "Link",
+            "type": "url"
+          }
+        ],
+        "type": "slide"
+      },
+      "caseId": "MG-C-BLOCK-BANNER-CAROUSEL-SLIDE",
+      "currentStatus": "NOT_RUN",
+      "operationGap": "Current main editor omits nested-child callbacks; top-level block reorder/hide controls require canonical-owner reconciliation."
+    },
+    {
+      "id": "section:brand-marquee/block:brand",
+      "sectionType": "brand-marquee",
+      "blockType": "brand",
+      "descriptor": {
+        "name": "Brand",
+        "settings": [
+          {
+            "id": "name",
+            "label": "Name",
+            "type": "text"
+          }
+        ],
+        "type": "brand"
+      },
+      "caseId": "MG-C-BLOCK-BRAND-MARQUEE-BRAND",
+      "currentStatus": "NOT_RUN",
+      "operationGap": "Current main editor omits nested-child callbacks; top-level block reorder/hide controls require canonical-owner reconciliation."
+    },
+    {
+      "id": "section:category-grid/block:subject",
+      "sectionType": "category-grid",
+      "blockType": "subject",
+      "descriptor": {
+        "limit": 12,
+        "name": "Subject link",
+        "settings": [
+          {
+            "default": "",
+            "id": "label",
+            "label": "Subject label",
+            "type": "text"
+          },
+          {
+            "default": "",
+            "id": "href",
+            "label": "Subject destination",
+            "type": "url"
+          }
+        ],
+        "type": "subject"
+      },
+      "caseId": "MG-C-BLOCK-CATEGORY-GRID-SUBJECT",
+      "currentStatus": "NOT_RUN",
+      "operationGap": "Current main editor omits nested-child callbacks; top-level block reorder/hide controls require canonical-owner reconciliation."
+    },
+    {
+      "id": "section:experience-timeline/block:experience",
+      "sectionType": "experience-timeline",
+      "blockType": "experience",
+      "descriptor": {
+        "name": "Experience",
+        "settings": [
+          {
+            "id": "title",
+            "label": "Title",
+            "type": "text"
+          },
+          {
+            "id": "company",
+            "label": "Company",
+            "type": "text"
+          },
+          {
+            "id": "period",
+            "label": "Period",
+            "type": "text"
+          }
+        ],
+        "type": "experience"
+      },
+      "caseId": "MG-C-BLOCK-EXPERIENCE-TIMELINE-EXPERIENCE",
+      "currentStatus": "NOT_RUN",
+      "operationGap": "Current main editor omits nested-child callbacks; top-level block reorder/hide controls require canonical-owner reconciliation."
+    },
+    {
+      "id": "section:faq-accordion/block:faq-item",
+      "sectionType": "faq-accordion",
+      "blockType": "faq-item",
+      "descriptor": {
+        "name": "FAQ item",
+        "settings": [
+          {
+            "id": "question",
+            "label": "Question",
+            "type": "text"
+          },
+          {
+            "id": "answer",
+            "label": "Answer",
+            "type": "richtext"
+          }
+        ],
+        "type": "faq-item"
+      },
+      "caseId": "MG-C-BLOCK-FAQ-ACCORDION-FAQ-ITEM",
+      "currentStatus": "NOT_RUN",
+      "operationGap": "Current main editor omits nested-child callbacks; top-level block reorder/hide controls require canonical-owner reconciliation."
+    },
+    {
+      "id": "section:footer/block:link",
+      "sectionType": "footer",
+      "blockType": "link",
+      "descriptor": {
+        "name": "Link",
+        "settings": [
+          {
+            "id": "label",
+            "label": "Label",
+            "type": "text"
+          },
+          {
+            "id": "href",
+            "label": "URL",
+            "type": "url"
+          }
+        ],
+        "type": "link"
+      },
+      "caseId": "MG-C-BLOCK-FOOTER-LINK",
+      "currentStatus": "NOT_RUN",
+      "operationGap": "Current main editor omits nested-child callbacks; top-level block reorder/hide controls require canonical-owner reconciliation."
+    },
+    {
+      "id": "section:header/block:link",
+      "sectionType": "header",
+      "blockType": "link",
+      "descriptor": {
+        "name": "Link",
+        "settings": [
+          {
+            "id": "label",
+            "label": "Label",
+            "type": "text"
+          },
+          {
+            "id": "href",
+            "label": "URL",
+            "type": "url"
+          }
+        ],
+        "type": "link"
+      },
+      "caseId": "MG-C-BLOCK-HEADER-LINK",
+      "currentStatus": "NOT_RUN",
+      "operationGap": "Current main editor omits nested-child callbacks; top-level block reorder/hide controls require canonical-owner reconciliation."
+    },
+    {
+      "id": "section:portfolio-grid/block:project",
+      "sectionType": "portfolio-grid",
+      "blockType": "project",
+      "descriptor": {
+        "name": "Project",
+        "settings": [
+          {
+            "id": "title",
+            "label": "Title",
+            "type": "text"
+          },
+          {
+            "id": "summary",
+            "label": "Summary",
+            "type": "textarea"
+          },
+          {
+            "id": "link",
+            "label": "Link",
+            "type": "url"
+          }
+        ],
+        "type": "project"
+      },
+      "caseId": "MG-C-BLOCK-PORTFOLIO-GRID-PROJECT",
+      "currentStatus": "NOT_RUN",
+      "operationGap": "Current main editor omits nested-child callbacks; top-level block reorder/hide controls require canonical-owner reconciliation."
+    },
+    {
+      "id": "section:services-grid/block:service",
+      "sectionType": "services-grid",
+      "blockType": "service",
+      "descriptor": {
+        "name": "Service",
+        "settings": [
+          {
+            "id": "title",
+            "label": "Title",
+            "type": "text"
+          },
+          {
+            "id": "description",
+            "label": "Description",
+            "type": "textarea"
+          },
+          {
+            "id": "link",
+            "label": "Link",
+            "type": "url"
+          }
+        ],
+        "type": "service"
+      },
+      "caseId": "MG-C-BLOCK-SERVICES-GRID-SERVICE",
+      "currentStatus": "NOT_RUN",
+      "operationGap": "Current main editor omits nested-child callbacks; top-level block reorder/hide controls require canonical-owner reconciliation."
+    },
+    {
+      "id": "section:skills-section/block:skill",
+      "sectionType": "skills-section",
+      "blockType": "skill",
+      "descriptor": {
+        "name": "Skill",
+        "settings": [
+          {
+            "id": "name",
+            "label": "Skill",
+            "type": "text"
+          },
+          {
+            "id": "level",
+            "label": "Level",
+            "max": 100,
+            "min": 0,
+            "step": 5,
+            "type": "range"
+          }
+        ],
+        "type": "skill"
+      },
+      "caseId": "MG-C-BLOCK-SKILLS-SECTION-SKILL",
+      "currentStatus": "NOT_RUN",
+      "operationGap": "Current main editor omits nested-child callbacks; top-level block reorder/hide controls require canonical-owner reconciliation."
+    },
+    {
+      "id": "section:spotlight/block:badge",
+      "sectionType": "spotlight",
+      "blockType": "badge",
+      "descriptor": {
+        "name": "Badge",
+        "settings": [],
+        "type": "badge"
+      },
+      "caseId": "MG-C-BLOCK-SPOTLIGHT-BADGE",
+      "currentStatus": "NOT_RUN",
+      "operationGap": "Current main editor omits nested-child callbacks; top-level block reorder/hide controls require canonical-owner reconciliation."
+    },
+    {
+      "id": "section:spotlight/block:@app",
+      "sectionType": "spotlight",
+      "blockType": "@app",
+      "descriptor": {
+        "name": "App block",
+        "settings": [],
+        "type": "@app"
+      },
+      "caseId": "MG-C-BLOCK-SPOTLIGHT-APP",
+      "currentStatus": "NOT_RUN",
+      "operationGap": "Current main editor omits nested-child callbacks; top-level block reorder/hide controls require canonical-owner reconciliation.",
+      "restriction": "Frozen extension seam. No third-party execution. Required guard/advertisement review is open, not silently N/A."
+    },
+    {
+      "id": "section:testimonials/block:testimonial",
+      "sectionType": "testimonials",
+      "blockType": "testimonial",
+      "descriptor": {
+        "name": "Testimonial",
+        "settings": [
+          {
+            "id": "quote",
+            "label": "Quote",
+            "type": "textarea"
+          },
+          {
+            "id": "author",
+            "label": "Author",
+            "type": "text"
+          }
+        ],
+        "type": "testimonial"
+      },
+      "caseId": "MG-C-BLOCK-TESTIMONIALS-TESTIMONIAL",
+      "currentStatus": "NOT_RUN",
+      "operationGap": "Current main editor omits nested-child callbacks; top-level block reorder/hide controls require canonical-owner reconciliation."
+    },
+    {
+      "id": "section:trust-badges/block:badge",
+      "sectionType": "trust-badges",
+      "blockType": "badge",
+      "descriptor": {
+        "name": "Badge",
+        "settings": [
+          {
+            "id": "label",
+            "label": "Label",
+            "type": "text"
+          },
+          {
+            "id": "description",
+            "label": "Description",
+            "type": "text"
+          }
+        ],
+        "type": "badge"
+      },
+      "caseId": "MG-C-BLOCK-TRUST-BADGES-BADGE",
+      "currentStatus": "NOT_RUN",
+      "operationGap": "Current main editor omits nested-child callbacks; top-level block reorder/hide controls require canonical-owner reconciliation."
+    }
+  ],
+  "globalBlocks": [
+    {
+      "id": "global_block:badge",
+      "blockType": "badge",
+      "path": "blocks/badge.liquid",
+      "schema": {
+        "name": "Badge",
+        "presets": [],
+        "settings": [
+          {
+            "default": "New",
+            "id": "label",
+            "label": "Label",
+            "type": "text"
+          }
+        ]
+      },
+      "caseId": "MG-C-GLOBAL-BLOCK-BADGE",
+      "status": "NOT_RUN"
+    }
+  ],
+  "settingDescriptors": [
+    {
+      "id": "section:about-section/field:eyebrow",
+      "owner": "section:about-section",
+      "descriptor": {
+        "default": "ROOM FOR YOUR OWN WORDS",
+        "id": "eyebrow",
+        "label": "Eyebrow",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-ABOUT-SECTION-EYEBROW",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:about-section/field:title",
+      "owner": "section:about-section",
+      "descriptor": {
+        "default": "Good paper. Fresh possibilities.",
+        "id": "title",
+        "label": "Heading",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-ABOUT-SECTION-TITLE",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:about-section/field:content",
+      "owner": "section:about-section",
+      "descriptor": {
+        "default": "",
+        "id": "content",
+        "label": "Merchant editorial text",
+        "type": "textarea"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-ABOUT-SECTION-CONTENT",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:about-section/field:image",
+      "owner": "section:about-section",
+      "descriptor": {
+        "id": "image",
+        "label": "Editorial image",
+        "type": "image"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-ABOUT-SECTION-IMAGE",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:about-section/field:imageAlt",
+      "owner": "section:about-section",
+      "descriptor": {
+        "default": "",
+        "id": "imageAlt",
+        "label": "Image description",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-ABOUT-SECTION-IMAGEALT",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:about-section/field:linkLabel",
+      "owner": "section:about-section",
+      "descriptor": {
+        "default": "",
+        "id": "linkLabel",
+        "label": "Link label",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-ABOUT-SECTION-LINKLABEL",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:about-section/field:linkUrl",
+      "owner": "section:about-section",
+      "descriptor": {
+        "default": "",
+        "id": "linkUrl",
+        "label": "Link destination",
+        "type": "url"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-ABOUT-SECTION-LINKURL",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:announcement-bar/field:text",
+      "owner": "section:announcement-bar",
+      "descriptor": {
+        "default": "Discover our latest products.",
+        "id": "text",
+        "label": "Message",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-ANNOUNCEMENT-BAR-TEXT",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:announcement-bar/field:linkLabel",
+      "owner": "section:announcement-bar",
+      "descriptor": {
+        "default": "Shop now",
+        "id": "linkLabel",
+        "label": "Link label",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-ANNOUNCEMENT-BAR-LINKLABEL",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:announcement-bar/field:linkHref",
+      "owner": "section:announcement-bar",
+      "descriptor": {
+        "default": "/products",
+        "id": "linkHref",
+        "label": "Link URL",
+        "type": "url"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-ANNOUNCEMENT-BAR-LINKHREF",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:app-block-slot/field:title",
+      "owner": "section:app-block-slot",
+      "descriptor": {
+        "id": "title",
+        "label": "Title",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-APP-BLOCK-SLOT-TITLE",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:app-block-slot/field:slot",
+      "owner": "section:app-block-slot",
+      "descriptor": {
+        "default": "storefront.home.after-hero",
+        "id": "slot",
+        "label": "Slot",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-APP-BLOCK-SLOT-SLOT",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:banner-carousel/field:title",
+      "owner": "section:banner-carousel",
+      "descriptor": {
+        "id": "title",
+        "label": "Title",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-BANNER-CAROUSEL-TITLE",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:banner-carousel/field:autoplay",
+      "owner": "section:banner-carousel",
+      "descriptor": {
+        "default": true,
+        "id": "autoplay",
+        "label": "Autoplay",
+        "type": "toggle"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-BANNER-CAROUSEL-AUTOPLAY",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:banner-carousel/block:slide/field:heading",
+      "owner": "section:banner-carousel/block:slide",
+      "descriptor": {
+        "id": "heading",
+        "label": "Heading",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-BLOCK-FIELD-BANNER-CAROUSEL-SLIDE-HEADING",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:banner-carousel/block:slide/field:image",
+      "owner": "section:banner-carousel/block:slide",
+      "descriptor": {
+        "id": "image",
+        "label": "Image",
+        "type": "image"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-BLOCK-FIELD-BANNER-CAROUSEL-SLIDE-IMAGE",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:banner-carousel/block:slide/field:link",
+      "owner": "section:banner-carousel/block:slide",
+      "descriptor": {
+        "id": "link",
+        "label": "Link",
+        "type": "url"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-BLOCK-FIELD-BANNER-CAROUSEL-SLIDE-LINK",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:blog-listing/field:heading",
+      "owner": "section:blog-listing",
+      "descriptor": {
+        "default": "Our Blog",
+        "id": "heading",
+        "label": "Heading",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-BLOG-LISTING-HEADING",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:brand-marquee/field:title",
+      "owner": "section:brand-marquee",
+      "descriptor": {
+        "default": "Featured brands",
+        "id": "title",
+        "label": "Title",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-BRAND-MARQUEE-TITLE",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:brand-marquee/block:brand/field:name",
+      "owner": "section:brand-marquee/block:brand",
+      "descriptor": {
+        "id": "name",
+        "label": "Name",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-BLOCK-FIELD-BRAND-MARQUEE-BRAND-NAME",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:cart-summary/field:heading",
+      "owner": "section:cart-summary",
+      "descriptor": {
+        "default": "Your cart",
+        "id": "heading",
+        "label": "Heading",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-CART-SUMMARY-HEADING",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:category-grid/field:title",
+      "owner": "section:category-grid",
+      "descriptor": {
+        "default": "Browse the shelves",
+        "id": "title",
+        "label": "Subject index heading",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-CATEGORY-GRID-TITLE",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:category-grid/field:eyebrow",
+      "owner": "section:category-grid",
+      "descriptor": {
+        "default": "ON THE READING TABLE",
+        "id": "eyebrow",
+        "label": "Featured product label",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-CATEGORY-GRID-EYEBROW",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:category-grid/field:product1",
+      "owner": "section:category-grid",
+      "descriptor": {
+        "id": "product1",
+        "label": "Featured book or stationery",
+        "type": "product"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-CATEGORY-GRID-PRODUCT1",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:category-grid/field:requireSelection",
+      "owner": "section:category-grid",
+      "descriptor": {
+        "default": true,
+        "id": "requireSelection",
+        "label": "Only show selected products",
+        "type": "toggle"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-CATEGORY-GRID-REQUIRESELECTION",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:category-grid/field:emptyText",
+      "owner": "section:category-grid",
+      "descriptor": {
+        "default": "Select a product to introduce it here.",
+        "id": "emptyText",
+        "label": "Empty featured shelf",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-CATEGORY-GRID-EMPTYTEXT",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:category-grid/field:linkLabel",
+      "owner": "section:category-grid",
+      "descriptor": {
+        "default": "View details",
+        "id": "linkLabel",
+        "label": "Product link",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-CATEGORY-GRID-LINKLABEL",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:category-grid/block:subject/field:label",
+      "owner": "section:category-grid/block:subject",
+      "descriptor": {
+        "default": "",
+        "id": "label",
+        "label": "Subject label",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-BLOCK-FIELD-CATEGORY-GRID-SUBJECT-LABEL",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:category-grid/block:subject/field:href",
+      "owner": "section:category-grid/block:subject",
+      "descriptor": {
+        "default": "",
+        "id": "href",
+        "label": "Subject destination",
+        "type": "url"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-BLOCK-FIELD-CATEGORY-GRID-SUBJECT-HREF",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:collection-banner/field:showDescription",
+      "owner": "section:collection-banner",
+      "descriptor": {
+        "default": true,
+        "id": "showDescription",
+        "label": "Show description",
+        "type": "toggle"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-COLLECTION-BANNER-SHOWDESCRIPTION",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:collection-product-list/field:title",
+      "owner": "section:collection-product-list",
+      "descriptor": {
+        "default": "Books and paper",
+        "id": "title",
+        "label": "Fallback heading",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-COLLECTION-PRODUCT-LIST-TITLE",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:contact-form/field:title",
+      "owner": "section:contact-form",
+      "descriptor": {
+        "default": "Contact us",
+        "id": "title",
+        "label": "Title",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-CONTACT-FORM-TITLE",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:contact-form/field:subtitle",
+      "owner": "section:contact-form",
+      "descriptor": {
+        "id": "subtitle",
+        "label": "Subtitle",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-CONTACT-FORM-SUBTITLE",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:contact-form/field:showPhone",
+      "owner": "section:contact-form",
+      "descriptor": {
+        "default": true,
+        "id": "showPhone",
+        "label": "Show phone field",
+        "type": "toggle"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-CONTACT-FORM-SHOWPHONE",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:cta-section/field:heading",
+      "owner": "section:cta-section",
+      "descriptor": {
+        "default": "Ready to get started?",
+        "id": "heading",
+        "label": "Heading",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-CTA-SECTION-HEADING",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:cta-section/field:subheading",
+      "owner": "section:cta-section",
+      "descriptor": {
+        "id": "subheading",
+        "label": "Subheading",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-CTA-SECTION-SUBHEADING",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:cta-section/field:ctaText",
+      "owner": "section:cta-section",
+      "descriptor": {
+        "default": "Shop now",
+        "id": "ctaText",
+        "label": "Button text",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-CTA-SECTION-CTATEXT",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:cta-section/field:ctaLink",
+      "owner": "section:cta-section",
+      "descriptor": {
+        "default": "/products",
+        "id": "ctaLink",
+        "label": "Button link",
+        "type": "url"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-CTA-SECTION-CTALINK",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:customer-account/field:heading",
+      "owner": "section:customer-account",
+      "descriptor": {
+        "default": "Your account",
+        "id": "heading",
+        "label": "Heading",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-CUSTOMER-ACCOUNT-HEADING",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:customer-addresses/field:heading",
+      "owner": "section:customer-addresses",
+      "descriptor": {
+        "default": "Your addresses",
+        "id": "heading",
+        "label": "Heading",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-CUSTOMER-ADDRESSES-HEADING",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:customer-login/field:heading",
+      "owner": "section:customer-login",
+      "descriptor": {
+        "default": "Sign in",
+        "id": "heading",
+        "label": "Heading",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-CUSTOMER-LOGIN-HEADING",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:customer-order-detail/field:heading",
+      "owner": "section:customer-order-detail",
+      "descriptor": {
+        "default": "Order",
+        "id": "heading",
+        "label": "Heading",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-CUSTOMER-ORDER-DETAIL-HEADING",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:customer-orders/field:heading",
+      "owner": "section:customer-orders",
+      "descriptor": {
+        "default": "Your orders",
+        "id": "heading",
+        "label": "Heading",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-CUSTOMER-ORDERS-HEADING",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:customer-register/field:heading",
+      "owner": "section:customer-register",
+      "descriptor": {
+        "default": "Create account",
+        "id": "heading",
+        "label": "Heading",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-CUSTOMER-REGISTER-HEADING",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:customer-settings/field:heading",
+      "owner": "section:customer-settings",
+      "descriptor": {
+        "default": "Account settings",
+        "id": "heading",
+        "label": "Heading",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-CUSTOMER-SETTINGS-HEADING",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:customer-wishlist/field:heading",
+      "owner": "section:customer-wishlist",
+      "descriptor": {
+        "default": "Your wishlist",
+        "id": "heading",
+        "label": "Heading",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-CUSTOMER-WISHLIST-HEADING",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:experience-timeline/field:title",
+      "owner": "section:experience-timeline",
+      "descriptor": {
+        "default": "Experience",
+        "id": "title",
+        "label": "Title",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-EXPERIENCE-TIMELINE-TITLE",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:experience-timeline/block:experience/field:title",
+      "owner": "section:experience-timeline/block:experience",
+      "descriptor": {
+        "id": "title",
+        "label": "Title",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-BLOCK-FIELD-EXPERIENCE-TIMELINE-EXPERIENCE-TITLE",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:experience-timeline/block:experience/field:company",
+      "owner": "section:experience-timeline/block:experience",
+      "descriptor": {
+        "id": "company",
+        "label": "Company",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-BLOCK-FIELD-EXPERIENCE-TIMELINE-EXPERIENCE-COMPANY",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:experience-timeline/block:experience/field:period",
+      "owner": "section:experience-timeline/block:experience",
+      "descriptor": {
+        "id": "period",
+        "label": "Period",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-BLOCK-FIELD-EXPERIENCE-TIMELINE-EXPERIENCE-PERIOD",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:faq-accordion/field:title",
+      "owner": "section:faq-accordion",
+      "descriptor": {
+        "default": "Frequently asked questions",
+        "id": "title",
+        "label": "Title",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-FAQ-ACCORDION-TITLE",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:faq-accordion/field:allowMultipleOpen",
+      "owner": "section:faq-accordion",
+      "descriptor": {
+        "default": false,
+        "id": "allowMultipleOpen",
+        "label": "Allow multiple open",
+        "type": "toggle"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-FAQ-ACCORDION-ALLOWMULTIPLEOPEN",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:faq-accordion/block:faq-item/field:question",
+      "owner": "section:faq-accordion/block:faq-item",
+      "descriptor": {
+        "id": "question",
+        "label": "Question",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-BLOCK-FIELD-FAQ-ACCORDION-FAQ-ITEM-QUESTION",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:faq-accordion/block:faq-item/field:answer",
+      "owner": "section:faq-accordion/block:faq-item",
+      "descriptor": {
+        "id": "answer",
+        "label": "Answer",
+        "type": "richtext"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-BLOCK-FIELD-FAQ-ACCORDION-FAQ-ITEM-ANSWER",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:featured-products/field:title",
+      "owner": "section:featured-products",
+      "descriptor": {
+        "default": "A little further along the shelf",
+        "id": "title",
+        "label": "Heading",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-FEATURED-PRODUCTS-TITLE",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:featured-products/field:subtitle",
+      "owner": "section:featured-products",
+      "descriptor": {
+        "default": "",
+        "id": "subtitle",
+        "label": "Description",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-FEATURED-PRODUCTS-SUBTITLE",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:featured-products/field:columns",
+      "owner": "section:featured-products",
+      "descriptor": {
+        "default": 3,
+        "id": "columns",
+        "label": "Desktop columns",
+        "max": 4,
+        "min": 2,
+        "step": 1,
+        "type": "range"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-FEATURED-PRODUCTS-COLUMNS",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:featured-products/field:productLimit",
+      "owner": "section:featured-products",
+      "descriptor": {
+        "default": 6,
+        "id": "productLimit",
+        "label": "Products to show",
+        "max": 24,
+        "min": 1,
+        "step": 1,
+        "type": "range"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-FEATURED-PRODUCTS-PRODUCTLIMIT",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:featured-products/field:collectionId",
+      "owner": "section:featured-products",
+      "descriptor": {
+        "id": "collectionId",
+        "label": "Collection",
+        "type": "collection"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-FEATURED-PRODUCTS-COLLECTIONID",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:featured-products/field:product1",
+      "owner": "section:featured-products",
+      "descriptor": {
+        "id": "product1",
+        "label": "First selected product",
+        "type": "product"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-FEATURED-PRODUCTS-PRODUCT1",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:featured-products/field:product2",
+      "owner": "section:featured-products",
+      "descriptor": {
+        "id": "product2",
+        "label": "Second selected product",
+        "type": "product"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-FEATURED-PRODUCTS-PRODUCT2",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:featured-products/field:product3",
+      "owner": "section:featured-products",
+      "descriptor": {
+        "id": "product3",
+        "label": "Third selected product",
+        "type": "product"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-FEATURED-PRODUCTS-PRODUCT3",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:featured-products/field:requireSelection",
+      "owner": "section:featured-products",
+      "descriptor": {
+        "default": true,
+        "id": "requireSelection",
+        "label": "Only show selected products",
+        "type": "toggle"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-FEATURED-PRODUCTS-REQUIRESELECTION",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:footer/field:storeName",
+      "owner": "section:footer",
+      "descriptor": {
+        "id": "storeName",
+        "label": "Store name",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-FOOTER-STORENAME",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:footer/field:tagline",
+      "owner": "section:footer",
+      "descriptor": {
+        "id": "tagline",
+        "label": "Tagline",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-FOOTER-TAGLINE",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:footer/field:contactEmail",
+      "owner": "section:footer",
+      "descriptor": {
+        "id": "contactEmail",
+        "label": "Contact email",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-FOOTER-CONTACTEMAIL",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:footer/field:contactPhone",
+      "owner": "section:footer",
+      "descriptor": {
+        "id": "contactPhone",
+        "label": "Contact phone",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-FOOTER-CONTACTPHONE",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:footer/field:instagramUrl",
+      "owner": "section:footer",
+      "descriptor": {
+        "id": "instagramUrl",
+        "label": "Instagram URL",
+        "type": "url"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-FOOTER-INSTAGRAMURL",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:footer/field:facebookUrl",
+      "owner": "section:footer",
+      "descriptor": {
+        "id": "facebookUrl",
+        "label": "Facebook URL",
+        "type": "url"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-FOOTER-FACEBOOKURL",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:footer/field:twitterUrl",
+      "owner": "section:footer",
+      "descriptor": {
+        "id": "twitterUrl",
+        "label": "Twitter/X URL",
+        "type": "url"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-FOOTER-TWITTERURL",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:footer/block:link/field:label",
+      "owner": "section:footer/block:link",
+      "descriptor": {
+        "id": "label",
+        "label": "Label",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-BLOCK-FIELD-FOOTER-LINK-LABEL",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:footer/block:link/field:href",
+      "owner": "section:footer/block:link",
+      "descriptor": {
+        "id": "href",
+        "label": "URL",
+        "type": "url"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-BLOCK-FIELD-FOOTER-LINK-HREF",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:header/field:storeName",
+      "owner": "section:header",
+      "descriptor": {
+        "id": "storeName",
+        "label": "Store name",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-HEADER-STORENAME",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:header/field:showSearch",
+      "owner": "section:header",
+      "descriptor": {
+        "default": true,
+        "id": "showSearch",
+        "label": "Show search",
+        "type": "toggle"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-HEADER-SHOWSEARCH",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:header/field:showCart",
+      "owner": "section:header",
+      "descriptor": {
+        "default": true,
+        "id": "showCart",
+        "label": "Show cart",
+        "type": "toggle"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-HEADER-SHOWCART",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:header/field:behavior",
+      "owner": "section:header",
+      "descriptor": {
+        "default": "sticky",
+        "id": "behavior",
+        "label": "Header behavior",
+        "options": [
+          "static",
+          "sticky"
+        ],
+        "type": "select"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-HEADER-BEHAVIOR",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:header/field:menu",
+      "owner": "section:header",
+      "descriptor": {
+        "default": "main_menu",
+        "id": "menu",
+        "label": "Menu",
+        "options": [
+          "main_menu",
+          "footer_menu",
+          "policy_menu"
+        ],
+        "type": "select"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-HEADER-MENU",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:header/field:layout",
+      "owner": "section:header",
+      "descriptor": {
+        "default": "inline",
+        "id": "layout",
+        "label": "Layout",
+        "options": [
+          "inline",
+          "centered"
+        ],
+        "type": "select"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-HEADER-LAYOUT",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:header/block:link/field:label",
+      "owner": "section:header/block:link",
+      "descriptor": {
+        "id": "label",
+        "label": "Label",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-BLOCK-FIELD-HEADER-LINK-LABEL",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:header/block:link/field:href",
+      "owner": "section:header/block:link",
+      "descriptor": {
+        "id": "href",
+        "label": "URL",
+        "type": "url"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-BLOCK-FIELD-HEADER-LINK-HREF",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:hero-banner/field:eyebrow",
+      "owner": "section:hero-banner",
+      "descriptor": {
+        "default": "BOOKS & PAPER",
+        "id": "eyebrow",
+        "label": "Eyebrow",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-HERO-BANNER-EYEBROW",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:hero-banner/field:heading",
+      "owner": "section:hero-banner",
+      "descriptor": {
+        "default": "Find your next good read.",
+        "id": "heading",
+        "label": "Heading",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-HERO-BANNER-HEADING",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:hero-banner/field:subheading",
+      "owner": "section:hero-banner",
+      "descriptor": {
+        "default": "Books to spend time with. Paper for what comes next.",
+        "id": "subheading",
+        "label": "Description",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-HERO-BANNER-SUBHEADING",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:hero-banner/field:searchLabel",
+      "owner": "section:hero-banner",
+      "descriptor": {
+        "default": "What would you like to read?",
+        "id": "searchLabel",
+        "label": "Search label",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-HERO-BANNER-SEARCHLABEL",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:hero-banner/field:searchPlaceholder",
+      "owner": "section:hero-banner",
+      "descriptor": {
+        "default": "Title, author or keyword",
+        "id": "searchPlaceholder",
+        "label": "Search placeholder",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-HERO-BANNER-SEARCHPLACEHOLDER",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:hero-banner/field:searchButton",
+      "owner": "section:hero-banner",
+      "descriptor": {
+        "default": "Search",
+        "id": "searchButton",
+        "label": "Search button",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-HERO-BANNER-SEARCHBUTTON",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:hero-banner/field:searchHint",
+      "owner": "section:hero-banner",
+      "descriptor": {
+        "default": "Browse the subject index, or search the catalog.",
+        "id": "searchHint",
+        "label": "Search help",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-HERO-BANNER-SEARCHHINT",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:marquee/field:text",
+      "owner": "section:marquee",
+      "descriptor": {
+        "default": "Featured announcement",
+        "id": "text",
+        "label": "Text",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-MARQUEE-TEXT",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:newsletter-signup/field:title",
+      "owner": "section:newsletter-signup",
+      "descriptor": {
+        "default": "Get first access",
+        "id": "title",
+        "label": "Heading",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-NEWSLETTER-SIGNUP-TITLE",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:newsletter-signup/field:subtitle",
+      "owner": "section:newsletter-signup",
+      "descriptor": {
+        "id": "subtitle",
+        "label": "Subheading",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-NEWSLETTER-SIGNUP-SUBTITLE",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:newsletter-signup/field:buttonLabel",
+      "owner": "section:newsletter-signup",
+      "descriptor": {
+        "default": "Sign up",
+        "id": "buttonLabel",
+        "label": "Button label",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-NEWSLETTER-SIGNUP-BUTTONLABEL",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:password-gate/field:heading",
+      "owner": "section:password-gate",
+      "descriptor": {
+        "default": "Coming Soon",
+        "id": "heading",
+        "label": "Heading",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-PASSWORD-GATE-HEADING",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:portfolio-grid/field:title",
+      "owner": "section:portfolio-grid",
+      "descriptor": {
+        "default": "Portfolio",
+        "id": "title",
+        "label": "Title",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-PORTFOLIO-GRID-TITLE",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:portfolio-grid/block:project/field:title",
+      "owner": "section:portfolio-grid/block:project",
+      "descriptor": {
+        "id": "title",
+        "label": "Title",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-BLOCK-FIELD-PORTFOLIO-GRID-PROJECT-TITLE",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:portfolio-grid/block:project/field:summary",
+      "owner": "section:portfolio-grid/block:project",
+      "descriptor": {
+        "id": "summary",
+        "label": "Summary",
+        "type": "textarea"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-BLOCK-FIELD-PORTFOLIO-GRID-PROJECT-SUMMARY",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:portfolio-grid/block:project/field:link",
+      "owner": "section:portfolio-grid/block:project",
+      "descriptor": {
+        "id": "link",
+        "label": "Link",
+        "type": "url"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-BLOCK-FIELD-PORTFOLIO-GRID-PROJECT-LINK",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:product-detail/field:showGallery",
+      "owner": "section:product-detail",
+      "descriptor": {
+        "default": true,
+        "id": "showGallery",
+        "label": "Show gallery",
+        "type": "toggle"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-PRODUCT-DETAIL-SHOWGALLERY",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:product-detail/field:showDescription",
+      "owner": "section:product-detail",
+      "descriptor": {
+        "default": true,
+        "id": "showDescription",
+        "label": "Show description",
+        "type": "toggle"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-PRODUCT-DETAIL-SHOWDESCRIPTION",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:product-detail/field:showReviews",
+      "owner": "section:product-detail",
+      "descriptor": {
+        "default": true,
+        "id": "showReviews",
+        "label": "Show reviews",
+        "type": "toggle"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-PRODUCT-DETAIL-SHOWREVIEWS",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:product-detail/field:showBookFacts",
+      "owner": "section:product-detail",
+      "descriptor": {
+        "default": true,
+        "id": "showBookFacts",
+        "label": "Show book and paper facts",
+        "type": "toggle"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-PRODUCT-DETAIL-SHOWBOOKFACTS",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:product-detail/field:showExcerpt",
+      "owner": "section:product-detail",
+      "descriptor": {
+        "default": true,
+        "id": "showExcerpt",
+        "label": "Show permitted reading sample",
+        "type": "toggle"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-PRODUCT-DETAIL-SHOWEXCERPT",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:product-grid/field:title",
+      "owner": "section:product-grid",
+      "descriptor": {
+        "default": "A little further along the shelf",
+        "id": "title",
+        "label": "Heading",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-PRODUCT-GRID-TITLE",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:product-grid/field:subtitle",
+      "owner": "section:product-grid",
+      "descriptor": {
+        "default": "",
+        "id": "subtitle",
+        "label": "Description",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-PRODUCT-GRID-SUBTITLE",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:product-grid/field:columns",
+      "owner": "section:product-grid",
+      "descriptor": {
+        "default": 3,
+        "id": "columns",
+        "label": "Desktop columns",
+        "max": 4,
+        "min": 2,
+        "step": 1,
+        "type": "range"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-PRODUCT-GRID-COLUMNS",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:product-grid/field:productLimit",
+      "owner": "section:product-grid",
+      "descriptor": {
+        "default": 6,
+        "id": "productLimit",
+        "label": "Products to show",
+        "max": 24,
+        "min": 1,
+        "step": 1,
+        "type": "range"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-PRODUCT-GRID-PRODUCTLIMIT",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:product-grid/field:collectionId",
+      "owner": "section:product-grid",
+      "descriptor": {
+        "id": "collectionId",
+        "label": "Collection",
+        "type": "collection"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-PRODUCT-GRID-COLLECTIONID",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:rich-content/field:title",
+      "owner": "section:rich-content",
+      "descriptor": {
+        "id": "title",
+        "label": "Title",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-RICH-CONTENT-TITLE",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:rich-content/field:body",
+      "owner": "section:rich-content",
+      "descriptor": {
+        "id": "body",
+        "label": "Body",
+        "type": "richtext"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-RICH-CONTENT-BODY",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:search-box/field:placeholder",
+      "owner": "section:search-box",
+      "descriptor": {
+        "default": "Search products",
+        "id": "placeholder",
+        "label": "Placeholder",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-SEARCH-BOX-PLACEHOLDER",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:services-grid/field:title",
+      "owner": "section:services-grid",
+      "descriptor": {
+        "default": "Services",
+        "id": "title",
+        "label": "Title",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-SERVICES-GRID-TITLE",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:services-grid/block:service/field:title",
+      "owner": "section:services-grid/block:service",
+      "descriptor": {
+        "id": "title",
+        "label": "Title",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-BLOCK-FIELD-SERVICES-GRID-SERVICE-TITLE",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:services-grid/block:service/field:description",
+      "owner": "section:services-grid/block:service",
+      "descriptor": {
+        "id": "description",
+        "label": "Description",
+        "type": "textarea"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-BLOCK-FIELD-SERVICES-GRID-SERVICE-DESCRIPTION",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:services-grid/block:service/field:link",
+      "owner": "section:services-grid/block:service",
+      "descriptor": {
+        "id": "link",
+        "label": "Link",
+        "type": "url"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-BLOCK-FIELD-SERVICES-GRID-SERVICE-LINK",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:skills-section/field:title",
+      "owner": "section:skills-section",
+      "descriptor": {
+        "default": "Skills",
+        "id": "title",
+        "label": "Title",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-SKILLS-SECTION-TITLE",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:skills-section/block:skill/field:name",
+      "owner": "section:skills-section/block:skill",
+      "descriptor": {
+        "id": "name",
+        "label": "Skill",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-BLOCK-FIELD-SKILLS-SECTION-SKILL-NAME",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:skills-section/block:skill/field:level",
+      "owner": "section:skills-section/block:skill",
+      "descriptor": {
+        "id": "level",
+        "label": "Level",
+        "max": 100,
+        "min": 0,
+        "step": 5,
+        "type": "range"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-BLOCK-FIELD-SKILLS-SECTION-SKILL-LEVEL",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:spotlight/field:heading",
+      "owner": "section:spotlight",
+      "descriptor": {
+        "default": "Made for daily buyers",
+        "id": "heading",
+        "label": "Heading",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-SPOTLIGHT-HEADING",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:spotlight/field:subheading",
+      "owner": "section:spotlight",
+      "descriptor": {
+        "id": "subheading",
+        "label": "Subheading",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-SPOTLIGHT-SUBHEADING",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:testimonials/field:title",
+      "owner": "section:testimonials",
+      "descriptor": {
+        "default": "What customers say",
+        "id": "title",
+        "label": "Title",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-TESTIMONIALS-TITLE",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:testimonials/block:testimonial/field:quote",
+      "owner": "section:testimonials/block:testimonial",
+      "descriptor": {
+        "id": "quote",
+        "label": "Quote",
+        "type": "textarea"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-BLOCK-FIELD-TESTIMONIALS-TESTIMONIAL-QUOTE",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:testimonials/block:testimonial/field:author",
+      "owner": "section:testimonials/block:testimonial",
+      "descriptor": {
+        "id": "author",
+        "label": "Author",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-BLOCK-FIELD-TESTIMONIALS-TESTIMONIAL-AUTHOR",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:trust-badges/field:title",
+      "owner": "section:trust-badges",
+      "descriptor": {
+        "id": "title",
+        "label": "Title",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-TRUST-BADGES-TITLE",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:trust-badges/block:badge/field:label",
+      "owner": "section:trust-badges/block:badge",
+      "descriptor": {
+        "id": "label",
+        "label": "Label",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-BLOCK-FIELD-TRUST-BADGES-BADGE-LABEL",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:trust-badges/block:badge/field:description",
+      "owner": "section:trust-badges/block:badge",
+      "descriptor": {
+        "id": "description",
+        "label": "Description",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-BLOCK-FIELD-TRUST-BADGES-BADGE-DESCRIPTION",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:video-hero/field:heading",
+      "owner": "section:video-hero",
+      "descriptor": {
+        "default": "See the fit in motion",
+        "id": "heading",
+        "label": "Heading",
+        "type": "text"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-VIDEO-HERO-HEADING",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:video-hero/field:subheading",
+      "owner": "section:video-hero",
+      "descriptor": {
+        "default": "A quick look at how each drop moves, from the box to your feet.",
+        "id": "subheading",
+        "label": "Subheading",
+        "type": "textarea"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-VIDEO-HERO-SUBHEADING",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "section:video-hero/field:videoUrl",
+      "owner": "section:video-hero",
+      "descriptor": {
+        "id": "videoUrl",
+        "info": "A YouTube or Vimeo embed URL (for example https://www.youtube.com/embed/VIDEO_ID). Leave blank to hide the video.",
+        "label": "Video embed URL",
+        "type": "url"
+      },
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "caseId": "MG-C-FIELD-VIDEO-HERO-VIDEOURL",
+      "browserStatus": "NOT_RUN"
+    },
+    {
+      "id": "global_block:badge/field:label",
+      "owner": "global_block:badge",
+      "descriptor": {
+        "default": "New",
+        "id": "label",
+        "label": "Label",
+        "type": "text"
+      },
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "caseId": "MG-C-GLOBAL-BLOCK-FIELD-BADGE-LABEL",
+      "browserStatus": "NOT_RUN"
+    }
+  ],
+  "themeSettings": [
+    {
+      "id": "theme_setting:appearance/borderRadius",
+      "group": "appearance",
+      "groupLabel": "Appearance",
+      "field": "borderRadius",
+      "descriptor": {
+        "default": 12,
+        "label": "Corner radius",
+        "type": "number"
+      },
+      "actualDeclaredInitialValue": 3,
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "caseId": "MG-C-THEME-SETTING-APPEARANCE-BORDERRADIUS",
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "theme_setting:colors/accentColor",
+      "group": "colors",
+      "groupLabel": "Colors",
+      "field": "accentColor",
+      "descriptor": {
+        "default": "#F59E0B",
+        "label": "Accent color",
+        "type": "color"
+      },
+      "actualDeclaredInitialValue": "#005FCC",
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "caseId": "MG-C-THEME-SETTING-COLORS-ACCENTCOLOR",
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "theme_setting:colors/backgroundColor",
+      "group": "colors",
+      "groupLabel": "Colors",
+      "field": "backgroundColor",
+      "descriptor": {
+        "default": "#FFFFFF",
+        "label": "Background color",
+        "type": "color"
+      },
+      "actualDeclaredInitialValue": "#FAF6EA",
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "caseId": "MG-C-THEME-SETTING-COLORS-BACKGROUNDCOLOR",
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "theme_setting:colors/primaryColor",
+      "group": "colors",
+      "groupLabel": "Colors",
+      "field": "primaryColor",
+      "descriptor": {
+        "default": "#8B5CF6",
+        "label": "Primary color",
+        "type": "color"
+      },
+      "actualDeclaredInitialValue": "#744A26",
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "caseId": "MG-C-THEME-SETTING-COLORS-PRIMARYCOLOR",
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "theme_setting:colors/secondaryColor",
+      "group": "colors",
+      "groupLabel": "Colors",
+      "field": "secondaryColor",
+      "descriptor": {
+        "default": "#3B82F6",
+        "label": "Secondary color",
+        "type": "color"
+      },
+      "actualDeclaredInitialValue": "#6B5C45",
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "caseId": "MG-C-THEME-SETTING-COLORS-SECONDARYCOLOR",
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "theme_setting:colors/surfaceColor",
+      "group": "colors",
+      "groupLabel": "Colors",
+      "field": "surfaceColor",
+      "descriptor": {
+        "default": "#F8FAFC",
+        "label": "Surface color",
+        "type": "color"
+      },
+      "actualDeclaredInitialValue": "#EDE5D1",
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "caseId": "MG-C-THEME-SETTING-COLORS-SURFACECOLOR",
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "theme_setting:colors/textColor",
+      "group": "colors",
+      "groupLabel": "Colors",
+      "field": "textColor",
+      "descriptor": {
+        "default": "#1F2937",
+        "label": "Text color",
+        "type": "color"
+      },
+      "actualDeclaredInitialValue": "#30291E",
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "caseId": "MG-C-THEME-SETTING-COLORS-TEXTCOLOR",
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "theme_setting:seo/faviconUrl",
+      "group": "seo",
+      "groupLabel": "SEO and social",
+      "field": "faviconUrl",
+      "descriptor": {
+        "default": "",
+        "info": "Rendered as <link rel=\"icon\">. Left empty until the merchant uploads one.",
+        "label": "Favicon URL",
+        "type": "url"
+      },
+      "actualDeclaredInitialValue": "",
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "caseId": "MG-C-THEME-SETTING-SEO-FAVICONURL",
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "theme_setting:seo/metaDescription",
+      "group": "seo",
+      "groupLabel": "SEO and social",
+      "field": "metaDescription",
+      "descriptor": {
+        "default": "",
+        "info": "Falls back to the shop description. Truncated to 160 characters on output.",
+        "label": "Meta description",
+        "maxLength": 160,
+        "type": "textarea"
+      },
+      "actualDeclaredInitialValue": "",
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "caseId": "MG-C-THEME-SETTING-SEO-METADESCRIPTION",
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "theme_setting:seo/socialImageUrl",
+      "group": "seo",
+      "groupLabel": "SEO and social",
+      "field": "socialImageUrl",
+      "descriptor": {
+        "default": "",
+        "info": "Used for og:image and twitter:image. Left empty until the merchant uploads one.",
+        "label": "Social share image URL",
+        "type": "url"
+      },
+      "actualDeclaredInitialValue": "",
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "caseId": "MG-C-THEME-SETTING-SEO-SOCIALIMAGEURL",
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "theme_setting:typography/bodyFontFamily",
+      "group": "typography",
+      "groupLabel": "Typography",
+      "field": "bodyFontFamily",
+      "descriptor": {
+        "default": "Inter",
+        "label": "Body font",
+        "type": "text"
+      },
+      "actualDeclaredInitialValue": "Source Sans 3",
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "caseId": "MG-C-THEME-SETTING-TYPOGRAPHY-BODYFONTFAMILY",
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "theme_setting:typography/headingFontFamily",
+      "group": "typography",
+      "groupLabel": "Typography",
+      "field": "headingFontFamily",
+      "descriptor": {
+        "default": "Inter",
+        "label": "Heading font",
+        "type": "text"
+      },
+      "actualDeclaredInitialValue": "Libre Baskerville",
+      "controlSource": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "controlTypeDeclaredInCurrentRenderer": true,
+      "caseId": "MG-C-THEME-SETTING-TYPOGRAPHY-HEADINGFONTFAMILY",
+      "status": "NOT_RUN"
+    }
+  ],
+  "catalogueFacts": [
+    {
+      "id": "catalogue:common_product/book/authors",
+      "kind": "book",
+      "field": "authors",
+      "owner": "common_product",
+      "schemaSource": "packages/commerce-core/src/marginalia-facts.ts",
+      "controlSource": "apps/merchant/web/src/components/products/niche-facts/marginalia-facts-editor.tsx",
+      "themeSetting": false,
+      "caseId": "MG-C-FACT-COMMON-PRODUCT-BOOK-AUTHORS",
+      "status": "NOT_RUN",
+      "semanticConstraintsFromCanonicalSource": {
+        "items": [
+          1,
+          8
+        ],
+        "itemTextMax": 200
+      }
+    },
+    {
+      "id": "catalogue:common_product/book/subjects",
+      "kind": "book",
+      "field": "subjects",
+      "owner": "common_product",
+      "schemaSource": "packages/commerce-core/src/marginalia-facts.ts",
+      "controlSource": "apps/merchant/web/src/components/products/niche-facts/marginalia-facts-editor.tsx",
+      "themeSetting": false,
+      "caseId": "MG-C-FACT-COMMON-PRODUCT-BOOK-SUBJECTS",
+      "status": "NOT_RUN",
+      "semanticConstraintsFromCanonicalSource": {
+        "items": [
+          1,
+          16
+        ],
+        "itemTextMax": 100
+      }
+    },
+    {
+      "id": "catalogue:common_product/book/language",
+      "kind": "book",
+      "field": "language",
+      "owner": "common_product",
+      "schemaSource": "packages/commerce-core/src/marginalia-facts.ts",
+      "controlSource": "apps/merchant/web/src/components/products/niche-facts/marginalia-facts-editor.tsx",
+      "themeSetting": false,
+      "caseId": "MG-C-FACT-COMMON-PRODUCT-BOOK-LANGUAGE",
+      "status": "NOT_RUN",
+      "semanticConstraintsFromCanonicalSource": {
+        "max": 80,
+        "requiredOnBookVariant": true
+      }
+    },
+    {
+      "id": "catalogue:common_product/book/format",
+      "kind": "book",
+      "field": "format",
+      "owner": "common_product",
+      "schemaSource": "packages/commerce-core/src/marginalia-facts.ts",
+      "controlSource": "apps/merchant/web/src/components/products/niche-facts/marginalia-facts-editor.tsx",
+      "themeSetting": false,
+      "caseId": "MG-C-FACT-COMMON-PRODUCT-BOOK-FORMAT",
+      "status": "NOT_RUN",
+      "semanticConstraintsFromCanonicalSource": {
+        "enum": [
+          "paperback",
+          "hardback",
+          "board-book",
+          "spiral-bound",
+          "other"
+        ],
+        "requiredOnBookVariant": true
+      }
+    },
+    {
+      "id": "catalogue:common_product/book/edition",
+      "kind": "book",
+      "field": "edition",
+      "owner": "common_product",
+      "schemaSource": "packages/commerce-core/src/marginalia-facts.ts",
+      "controlSource": "apps/merchant/web/src/components/products/niche-facts/marginalia-facts-editor.tsx",
+      "themeSetting": false,
+      "caseId": "MG-C-FACT-COMMON-PRODUCT-BOOK-EDITION",
+      "status": "NOT_RUN",
+      "semanticConstraintsFromCanonicalSource": {
+        "textMax": 200
+      }
+    },
+    {
+      "id": "catalogue:common_product/book/publisher",
+      "kind": "book",
+      "field": "publisher",
+      "owner": "common_product",
+      "schemaSource": "packages/commerce-core/src/marginalia-facts.ts",
+      "controlSource": "apps/merchant/web/src/components/products/niche-facts/marginalia-facts-editor.tsx",
+      "themeSetting": false,
+      "caseId": "MG-C-FACT-COMMON-PRODUCT-BOOK-PUBLISHER",
+      "status": "NOT_RUN",
+      "semanticConstraintsFromCanonicalSource": {
+        "textMax": 200
+      }
+    },
+    {
+      "id": "catalogue:common_product/book/publication_year",
+      "kind": "book",
+      "field": "publication_year",
+      "owner": "common_product",
+      "schemaSource": "packages/commerce-core/src/marginalia-facts.ts",
+      "controlSource": "apps/merchant/web/src/components/products/niche-facts/marginalia-facts-editor.tsx",
+      "themeSetting": false,
+      "caseId": "MG-C-FACT-COMMON-PRODUCT-BOOK-PUBLICATION-YEAR",
+      "status": "NOT_RUN",
+      "semanticConstraintsFromCanonicalSource": {
+        "integer": true,
+        "min": 1450,
+        "max": 2200
+      }
+    },
+    {
+      "id": "catalogue:common_product/book/pages",
+      "kind": "book",
+      "field": "pages",
+      "owner": "common_product",
+      "schemaSource": "packages/commerce-core/src/marginalia-facts.ts",
+      "controlSource": "apps/merchant/web/src/components/products/niche-facts/marginalia-facts-editor.tsx",
+      "themeSetting": false,
+      "caseId": "MG-C-FACT-COMMON-PRODUCT-BOOK-PAGES",
+      "status": "NOT_RUN",
+      "semanticConstraintsFromCanonicalSource": {
+        "integer": true,
+        "min": 1,
+        "max": 10000
+      }
+    },
+    {
+      "id": "catalogue:common_product/book/dimensions_mm.width",
+      "kind": "book",
+      "field": "dimensions_mm.width",
+      "owner": "common_product",
+      "schemaSource": "packages/commerce-core/src/marginalia-facts.ts",
+      "controlSource": "apps/merchant/web/src/components/products/niche-facts/marginalia-facts-editor.tsx",
+      "themeSetting": false,
+      "caseId": "MG-C-FACT-COMMON-PRODUCT-BOOK-DIMENSIONS-MM-WIDTH",
+      "status": "NOT_RUN",
+      "semanticConstraintsFromCanonicalSource": {
+        "unit": "mm",
+        "finite": true,
+        "minExclusive": 0,
+        "max": 5000,
+        "paired": "height"
+      }
+    },
+    {
+      "id": "catalogue:common_product/book/dimensions_mm.height",
+      "kind": "book",
+      "field": "dimensions_mm.height",
+      "owner": "common_product",
+      "schemaSource": "packages/commerce-core/src/marginalia-facts.ts",
+      "controlSource": "apps/merchant/web/src/components/products/niche-facts/marginalia-facts-editor.tsx",
+      "themeSetting": false,
+      "caseId": "MG-C-FACT-COMMON-PRODUCT-BOOK-DIMENSIONS-MM-HEIGHT",
+      "status": "NOT_RUN",
+      "semanticConstraintsFromCanonicalSource": {
+        "unit": "mm",
+        "finite": true,
+        "minExclusive": 0,
+        "max": 5000,
+        "paired": "width"
+      }
+    },
+    {
+      "id": "catalogue:common_product/book/isbn",
+      "kind": "book",
+      "field": "isbn",
+      "owner": "common_product",
+      "schemaSource": "packages/commerce-core/src/marginalia-facts.ts",
+      "controlSource": "apps/merchant/web/src/components/products/niche-facts/marginalia-facts-editor.tsx",
+      "themeSetting": false,
+      "caseId": "MG-C-FACT-COMMON-PRODUCT-BOOK-ISBN",
+      "status": "NOT_RUN",
+      "semanticConstraintsFromCanonicalSource": {
+        "optional": true,
+        "textMax": 32,
+        "validation": "Normalized valid ISBN10/13 checksum; never invent a value."
+      }
+    },
+    {
+      "id": "catalogue:common_product/book/excerpt.text",
+      "kind": "book",
+      "field": "excerpt.text",
+      "owner": "common_product",
+      "schemaSource": "packages/commerce-core/src/marginalia-facts.ts",
+      "controlSource": "apps/merchant/web/src/components/products/niche-facts/marginalia-facts-editor.tsx",
+      "themeSetting": false,
+      "caseId": "MG-C-FACT-COMMON-PRODUCT-BOOK-EXCERPT-TEXT",
+      "status": "NOT_RUN",
+      "semanticConstraintsFromCanonicalSource": {
+        "textMax": 12000,
+        "requiredWhenExcerptPresent": true
+      }
+    },
+    {
+      "id": "catalogue:common_product/book/excerpt.permission",
+      "kind": "book",
+      "field": "excerpt.permission",
+      "owner": "common_product",
+      "schemaSource": "packages/commerce-core/src/marginalia-facts.ts",
+      "controlSource": "apps/merchant/web/src/components/products/niche-facts/marginalia-facts-editor.tsx",
+      "themeSetting": false,
+      "caseId": "MG-C-FACT-COMMON-PRODUCT-BOOK-EXCERPT-PERMISSION",
+      "status": "NOT_RUN",
+      "semanticConstraintsFromCanonicalSource": {
+        "enum": [
+          "merchant_owned",
+          "licensed",
+          "public_domain"
+        ],
+        "explicitChoice": true
+      }
+    },
+    {
+      "id": "catalogue:common_product/book/excerpt.attribution",
+      "kind": "book",
+      "field": "excerpt.attribution",
+      "owner": "common_product",
+      "schemaSource": "packages/commerce-core/src/marginalia-facts.ts",
+      "controlSource": "apps/merchant/web/src/components/products/niche-facts/marginalia-facts-editor.tsx",
+      "themeSetting": false,
+      "caseId": "MG-C-FACT-COMMON-PRODUCT-BOOK-EXCERPT-ATTRIBUTION",
+      "status": "NOT_RUN",
+      "semanticConstraintsFromCanonicalSource": {
+        "textMax": 500,
+        "requiredWhenExcerptPresent": true
+      }
+    },
+    {
+      "id": "catalogue:common_product/stationery/paper_gsm",
+      "kind": "stationery",
+      "field": "paper_gsm",
+      "owner": "common_product",
+      "schemaSource": "packages/commerce-core/src/marginalia-facts.ts",
+      "controlSource": "apps/merchant/web/src/components/products/niche-facts/marginalia-facts-editor.tsx",
+      "themeSetting": false,
+      "caseId": "MG-C-FACT-COMMON-PRODUCT-STATIONERY-PAPER-GSM",
+      "status": "NOT_RUN",
+      "semanticConstraintsFromCanonicalSource": {
+        "unit": "gsm",
+        "min": 10,
+        "max": 1500
+      }
+    },
+    {
+      "id": "catalogue:common_product/stationery/dimensions_mm.width",
+      "kind": "stationery",
+      "field": "dimensions_mm.width",
+      "owner": "common_product",
+      "schemaSource": "packages/commerce-core/src/marginalia-facts.ts",
+      "controlSource": "apps/merchant/web/src/components/products/niche-facts/marginalia-facts-editor.tsx",
+      "themeSetting": false,
+      "caseId": "MG-C-FACT-COMMON-PRODUCT-STATIONERY-DIMENSIONS-MM-WIDTH",
+      "status": "NOT_RUN",
+      "semanticConstraintsFromCanonicalSource": {
+        "unit": "mm",
+        "finite": true,
+        "minExclusive": 0,
+        "max": 5000,
+        "paired": "height"
+      }
+    },
+    {
+      "id": "catalogue:common_product/stationery/dimensions_mm.height",
+      "kind": "stationery",
+      "field": "dimensions_mm.height",
+      "owner": "common_product",
+      "schemaSource": "packages/commerce-core/src/marginalia-facts.ts",
+      "controlSource": "apps/merchant/web/src/components/products/niche-facts/marginalia-facts-editor.tsx",
+      "themeSetting": false,
+      "caseId": "MG-C-FACT-COMMON-PRODUCT-STATIONERY-DIMENSIONS-MM-HEIGHT",
+      "status": "NOT_RUN",
+      "semanticConstraintsFromCanonicalSource": {
+        "unit": "mm",
+        "finite": true,
+        "minExclusive": 0,
+        "max": 5000,
+        "paired": "width"
+      }
+    },
+    {
+      "id": "catalogue:common_product/stationery/page_count",
+      "kind": "stationery",
+      "field": "page_count",
+      "owner": "common_product",
+      "schemaSource": "packages/commerce-core/src/marginalia-facts.ts",
+      "controlSource": "apps/merchant/web/src/components/products/niche-facts/marginalia-facts-editor.tsx",
+      "themeSetting": false,
+      "caseId": "MG-C-FACT-COMMON-PRODUCT-STATIONERY-PAGE-COUNT",
+      "status": "NOT_RUN",
+      "semanticConstraintsFromCanonicalSource": {
+        "integer": true,
+        "min": 1,
+        "max": 10000,
+        "crossField": "page_count=2*sheet_count when both supplied"
+      }
+    },
+    {
+      "id": "catalogue:common_product/stationery/sheet_count",
+      "kind": "stationery",
+      "field": "sheet_count",
+      "owner": "common_product",
+      "schemaSource": "packages/commerce-core/src/marginalia-facts.ts",
+      "controlSource": "apps/merchant/web/src/components/products/niche-facts/marginalia-facts-editor.tsx",
+      "themeSetting": false,
+      "caseId": "MG-C-FACT-COMMON-PRODUCT-STATIONERY-SHEET-COUNT",
+      "status": "NOT_RUN",
+      "semanticConstraintsFromCanonicalSource": {
+        "integer": true,
+        "min": 1,
+        "max": 10000,
+        "unit": "sheets per one notebook"
+      }
+    },
+    {
+      "id": "catalogue:common_product/stationery/ruling",
+      "kind": "stationery",
+      "field": "ruling",
+      "owner": "common_product",
+      "schemaSource": "packages/commerce-core/src/marginalia-facts.ts",
+      "controlSource": "apps/merchant/web/src/components/products/niche-facts/marginalia-facts-editor.tsx",
+      "themeSetting": false,
+      "caseId": "MG-C-FACT-COMMON-PRODUCT-STATIONERY-RULING",
+      "status": "NOT_RUN",
+      "semanticConstraintsFromCanonicalSource": {
+        "enum": [
+          "blank",
+          "lined",
+          "dotted",
+          "grid",
+          "other"
+        ]
+      }
+    },
+    {
+      "id": "catalogue:common_product/stationery/binding",
+      "kind": "stationery",
+      "field": "binding",
+      "owner": "common_product",
+      "schemaSource": "packages/commerce-core/src/marginalia-facts.ts",
+      "controlSource": "apps/merchant/web/src/components/products/niche-facts/marginalia-facts-editor.tsx",
+      "themeSetting": false,
+      "caseId": "MG-C-FACT-COMMON-PRODUCT-STATIONERY-BINDING",
+      "status": "NOT_RUN",
+      "semanticConstraintsFromCanonicalSource": {
+        "textMax": 200
+      }
+    },
+    {
+      "id": "catalogue:common_product/stationery/included",
+      "kind": "stationery",
+      "field": "included",
+      "owner": "common_product",
+      "schemaSource": "packages/commerce-core/src/marginalia-facts.ts",
+      "controlSource": "apps/merchant/web/src/components/products/niche-facts/marginalia-facts-editor.tsx",
+      "themeSetting": false,
+      "caseId": "MG-C-FACT-COMMON-PRODUCT-STATIONERY-INCLUDED",
+      "status": "NOT_RUN",
+      "semanticConstraintsFromCanonicalSource": {
+        "items": [
+          1,
+          20
+        ],
+        "itemTextMax": 300
+      }
+    },
+    {
+      "id": "catalogue:common_product/stationery/materials",
+      "kind": "stationery",
+      "field": "materials",
+      "owner": "common_product",
+      "schemaSource": "packages/commerce-core/src/marginalia-facts.ts",
+      "controlSource": "apps/merchant/web/src/components/products/niche-facts/marginalia-facts-editor.tsx",
+      "themeSetting": false,
+      "caseId": "MG-C-FACT-COMMON-PRODUCT-STATIONERY-MATERIALS",
+      "status": "NOT_RUN",
+      "semanticConstraintsFromCanonicalSource": {
+        "textMax": 1000
+      }
+    },
+    {
+      "id": "catalogue:canonical_variant_uuid/book/authors",
+      "kind": "book",
+      "field": "authors",
+      "owner": "canonical_variant_uuid",
+      "schemaSource": "packages/commerce-core/src/marginalia-facts.ts",
+      "controlSource": "apps/merchant/web/src/components/products/niche-facts/marginalia-variant-facts-editor.tsx",
+      "themeSetting": false,
+      "caseId": "MG-C-FACT-CANONICAL-VARIANT-UUID-BOOK-AUTHORS",
+      "status": "NOT_RUN",
+      "semanticConstraintsFromCanonicalSource": {
+        "items": [
+          1,
+          8
+        ],
+        "itemTextMax": 200
+      }
+    },
+    {
+      "id": "catalogue:canonical_variant_uuid/book/subjects",
+      "kind": "book",
+      "field": "subjects",
+      "owner": "canonical_variant_uuid",
+      "schemaSource": "packages/commerce-core/src/marginalia-facts.ts",
+      "controlSource": "apps/merchant/web/src/components/products/niche-facts/marginalia-variant-facts-editor.tsx",
+      "themeSetting": false,
+      "caseId": "MG-C-FACT-CANONICAL-VARIANT-UUID-BOOK-SUBJECTS",
+      "status": "NOT_RUN",
+      "semanticConstraintsFromCanonicalSource": {
+        "items": [
+          1,
+          16
+        ],
+        "itemTextMax": 100
+      }
+    },
+    {
+      "id": "catalogue:canonical_variant_uuid/book/language",
+      "kind": "book",
+      "field": "language",
+      "owner": "canonical_variant_uuid",
+      "schemaSource": "packages/commerce-core/src/marginalia-facts.ts",
+      "controlSource": "apps/merchant/web/src/components/products/niche-facts/marginalia-variant-facts-editor.tsx",
+      "themeSetting": false,
+      "caseId": "MG-C-FACT-CANONICAL-VARIANT-UUID-BOOK-LANGUAGE",
+      "status": "NOT_RUN",
+      "semanticConstraintsFromCanonicalSource": {
+        "max": 80,
+        "requiredOnBookVariant": true
+      }
+    },
+    {
+      "id": "catalogue:canonical_variant_uuid/book/format",
+      "kind": "book",
+      "field": "format",
+      "owner": "canonical_variant_uuid",
+      "schemaSource": "packages/commerce-core/src/marginalia-facts.ts",
+      "controlSource": "apps/merchant/web/src/components/products/niche-facts/marginalia-variant-facts-editor.tsx",
+      "themeSetting": false,
+      "caseId": "MG-C-FACT-CANONICAL-VARIANT-UUID-BOOK-FORMAT",
+      "status": "NOT_RUN",
+      "semanticConstraintsFromCanonicalSource": {
+        "enum": [
+          "paperback",
+          "hardback",
+          "board-book",
+          "spiral-bound",
+          "other"
+        ],
+        "requiredOnBookVariant": true
+      }
+    },
+    {
+      "id": "catalogue:canonical_variant_uuid/book/edition",
+      "kind": "book",
+      "field": "edition",
+      "owner": "canonical_variant_uuid",
+      "schemaSource": "packages/commerce-core/src/marginalia-facts.ts",
+      "controlSource": "apps/merchant/web/src/components/products/niche-facts/marginalia-variant-facts-editor.tsx",
+      "themeSetting": false,
+      "caseId": "MG-C-FACT-CANONICAL-VARIANT-UUID-BOOK-EDITION",
+      "status": "NOT_RUN",
+      "semanticConstraintsFromCanonicalSource": {
+        "textMax": 200
+      }
+    },
+    {
+      "id": "catalogue:canonical_variant_uuid/book/publisher",
+      "kind": "book",
+      "field": "publisher",
+      "owner": "canonical_variant_uuid",
+      "schemaSource": "packages/commerce-core/src/marginalia-facts.ts",
+      "controlSource": "apps/merchant/web/src/components/products/niche-facts/marginalia-variant-facts-editor.tsx",
+      "themeSetting": false,
+      "caseId": "MG-C-FACT-CANONICAL-VARIANT-UUID-BOOK-PUBLISHER",
+      "status": "NOT_RUN",
+      "semanticConstraintsFromCanonicalSource": {
+        "textMax": 200
+      }
+    },
+    {
+      "id": "catalogue:canonical_variant_uuid/book/publication_year",
+      "kind": "book",
+      "field": "publication_year",
+      "owner": "canonical_variant_uuid",
+      "schemaSource": "packages/commerce-core/src/marginalia-facts.ts",
+      "controlSource": "apps/merchant/web/src/components/products/niche-facts/marginalia-variant-facts-editor.tsx",
+      "themeSetting": false,
+      "caseId": "MG-C-FACT-CANONICAL-VARIANT-UUID-BOOK-PUBLICATION-YEAR",
+      "status": "NOT_RUN",
+      "semanticConstraintsFromCanonicalSource": {
+        "integer": true,
+        "min": 1450,
+        "max": 2200
+      }
+    },
+    {
+      "id": "catalogue:canonical_variant_uuid/book/pages",
+      "kind": "book",
+      "field": "pages",
+      "owner": "canonical_variant_uuid",
+      "schemaSource": "packages/commerce-core/src/marginalia-facts.ts",
+      "controlSource": "apps/merchant/web/src/components/products/niche-facts/marginalia-variant-facts-editor.tsx",
+      "themeSetting": false,
+      "caseId": "MG-C-FACT-CANONICAL-VARIANT-UUID-BOOK-PAGES",
+      "status": "NOT_RUN",
+      "semanticConstraintsFromCanonicalSource": {
+        "integer": true,
+        "min": 1,
+        "max": 10000
+      }
+    },
+    {
+      "id": "catalogue:canonical_variant_uuid/book/dimensions_mm.width",
+      "kind": "book",
+      "field": "dimensions_mm.width",
+      "owner": "canonical_variant_uuid",
+      "schemaSource": "packages/commerce-core/src/marginalia-facts.ts",
+      "controlSource": "apps/merchant/web/src/components/products/niche-facts/marginalia-variant-facts-editor.tsx",
+      "themeSetting": false,
+      "caseId": "MG-C-FACT-CANONICAL-VARIANT-UUID-BOOK-DIMENSIONS-MM-WIDTH",
+      "status": "NOT_RUN",
+      "semanticConstraintsFromCanonicalSource": {
+        "unit": "mm",
+        "finite": true,
+        "minExclusive": 0,
+        "max": 5000,
+        "paired": "height"
+      }
+    },
+    {
+      "id": "catalogue:canonical_variant_uuid/book/dimensions_mm.height",
+      "kind": "book",
+      "field": "dimensions_mm.height",
+      "owner": "canonical_variant_uuid",
+      "schemaSource": "packages/commerce-core/src/marginalia-facts.ts",
+      "controlSource": "apps/merchant/web/src/components/products/niche-facts/marginalia-variant-facts-editor.tsx",
+      "themeSetting": false,
+      "caseId": "MG-C-FACT-CANONICAL-VARIANT-UUID-BOOK-DIMENSIONS-MM-HEIGHT",
+      "status": "NOT_RUN",
+      "semanticConstraintsFromCanonicalSource": {
+        "unit": "mm",
+        "finite": true,
+        "minExclusive": 0,
+        "max": 5000,
+        "paired": "width"
+      }
+    },
+    {
+      "id": "catalogue:canonical_variant_uuid/book/isbn",
+      "kind": "book",
+      "field": "isbn",
+      "owner": "canonical_variant_uuid",
+      "schemaSource": "packages/commerce-core/src/marginalia-facts.ts",
+      "controlSource": "apps/merchant/web/src/components/products/niche-facts/marginalia-variant-facts-editor.tsx",
+      "themeSetting": false,
+      "caseId": "MG-C-FACT-CANONICAL-VARIANT-UUID-BOOK-ISBN",
+      "status": "NOT_RUN",
+      "semanticConstraintsFromCanonicalSource": {
+        "optional": true,
+        "textMax": 32,
+        "validation": "Normalized valid ISBN10/13 checksum; never invent a value."
+      }
+    },
+    {
+      "id": "catalogue:canonical_variant_uuid/stationery/paper_gsm",
+      "kind": "stationery",
+      "field": "paper_gsm",
+      "owner": "canonical_variant_uuid",
+      "schemaSource": "packages/commerce-core/src/marginalia-facts.ts",
+      "controlSource": "apps/merchant/web/src/components/products/niche-facts/marginalia-variant-facts-editor.tsx",
+      "themeSetting": false,
+      "caseId": "MG-C-FACT-CANONICAL-VARIANT-UUID-STATIONERY-PAPER-GSM",
+      "status": "NOT_RUN",
+      "semanticConstraintsFromCanonicalSource": {
+        "unit": "gsm",
+        "min": 10,
+        "max": 1500
+      }
+    },
+    {
+      "id": "catalogue:canonical_variant_uuid/stationery/dimensions_mm.width",
+      "kind": "stationery",
+      "field": "dimensions_mm.width",
+      "owner": "canonical_variant_uuid",
+      "schemaSource": "packages/commerce-core/src/marginalia-facts.ts",
+      "controlSource": "apps/merchant/web/src/components/products/niche-facts/marginalia-variant-facts-editor.tsx",
+      "themeSetting": false,
+      "caseId": "MG-C-FACT-CANONICAL-VARIANT-UUID-STATIONERY-DIMENSIONS-MM-WIDTH",
+      "status": "NOT_RUN",
+      "semanticConstraintsFromCanonicalSource": {
+        "unit": "mm",
+        "finite": true,
+        "minExclusive": 0,
+        "max": 5000,
+        "paired": "height"
+      }
+    },
+    {
+      "id": "catalogue:canonical_variant_uuid/stationery/dimensions_mm.height",
+      "kind": "stationery",
+      "field": "dimensions_mm.height",
+      "owner": "canonical_variant_uuid",
+      "schemaSource": "packages/commerce-core/src/marginalia-facts.ts",
+      "controlSource": "apps/merchant/web/src/components/products/niche-facts/marginalia-variant-facts-editor.tsx",
+      "themeSetting": false,
+      "caseId": "MG-C-FACT-CANONICAL-VARIANT-UUID-STATIONERY-DIMENSIONS-MM-HEIGHT",
+      "status": "NOT_RUN",
+      "semanticConstraintsFromCanonicalSource": {
+        "unit": "mm",
+        "finite": true,
+        "minExclusive": 0,
+        "max": 5000,
+        "paired": "width"
+      }
+    },
+    {
+      "id": "catalogue:canonical_variant_uuid/stationery/page_count",
+      "kind": "stationery",
+      "field": "page_count",
+      "owner": "canonical_variant_uuid",
+      "schemaSource": "packages/commerce-core/src/marginalia-facts.ts",
+      "controlSource": "apps/merchant/web/src/components/products/niche-facts/marginalia-variant-facts-editor.tsx",
+      "themeSetting": false,
+      "caseId": "MG-C-FACT-CANONICAL-VARIANT-UUID-STATIONERY-PAGE-COUNT",
+      "status": "NOT_RUN",
+      "semanticConstraintsFromCanonicalSource": {
+        "integer": true,
+        "min": 1,
+        "max": 10000,
+        "crossField": "page_count=2*sheet_count when both supplied"
+      }
+    },
+    {
+      "id": "catalogue:canonical_variant_uuid/stationery/sheet_count",
+      "kind": "stationery",
+      "field": "sheet_count",
+      "owner": "canonical_variant_uuid",
+      "schemaSource": "packages/commerce-core/src/marginalia-facts.ts",
+      "controlSource": "apps/merchant/web/src/components/products/niche-facts/marginalia-variant-facts-editor.tsx",
+      "themeSetting": false,
+      "caseId": "MG-C-FACT-CANONICAL-VARIANT-UUID-STATIONERY-SHEET-COUNT",
+      "status": "NOT_RUN",
+      "semanticConstraintsFromCanonicalSource": {
+        "integer": true,
+        "min": 1,
+        "max": 10000,
+        "unit": "sheets per one notebook"
+      }
+    },
+    {
+      "id": "catalogue:canonical_variant_uuid/stationery/ruling",
+      "kind": "stationery",
+      "field": "ruling",
+      "owner": "canonical_variant_uuid",
+      "schemaSource": "packages/commerce-core/src/marginalia-facts.ts",
+      "controlSource": "apps/merchant/web/src/components/products/niche-facts/marginalia-variant-facts-editor.tsx",
+      "themeSetting": false,
+      "caseId": "MG-C-FACT-CANONICAL-VARIANT-UUID-STATIONERY-RULING",
+      "status": "NOT_RUN",
+      "semanticConstraintsFromCanonicalSource": {
+        "enum": [
+          "blank",
+          "lined",
+          "dotted",
+          "grid",
+          "other"
+        ]
+      }
+    },
+    {
+      "id": "catalogue:canonical_variant_uuid/stationery/binding",
+      "kind": "stationery",
+      "field": "binding",
+      "owner": "canonical_variant_uuid",
+      "schemaSource": "packages/commerce-core/src/marginalia-facts.ts",
+      "controlSource": "apps/merchant/web/src/components/products/niche-facts/marginalia-variant-facts-editor.tsx",
+      "themeSetting": false,
+      "caseId": "MG-C-FACT-CANONICAL-VARIANT-UUID-STATIONERY-BINDING",
+      "status": "NOT_RUN",
+      "semanticConstraintsFromCanonicalSource": {
+        "textMax": 200
+      }
+    },
+    {
+      "id": "catalogue:canonical_variant_uuid/stationery/included",
+      "kind": "stationery",
+      "field": "included",
+      "owner": "canonical_variant_uuid",
+      "schemaSource": "packages/commerce-core/src/marginalia-facts.ts",
+      "controlSource": "apps/merchant/web/src/components/products/niche-facts/marginalia-variant-facts-editor.tsx",
+      "themeSetting": false,
+      "caseId": "MG-C-FACT-CANONICAL-VARIANT-UUID-STATIONERY-INCLUDED",
+      "status": "NOT_RUN",
+      "semanticConstraintsFromCanonicalSource": {
+        "items": [
+          1,
+          20
+        ],
+        "itemTextMax": 300
+      }
+    },
+    {
+      "id": "catalogue:canonical_variant_uuid/stationery/materials",
+      "kind": "stationery",
+      "field": "materials",
+      "owner": "canonical_variant_uuid",
+      "schemaSource": "packages/commerce-core/src/marginalia-facts.ts",
+      "controlSource": "apps/merchant/web/src/components/products/niche-facts/marginalia-variant-facts-editor.tsx",
+      "themeSetting": false,
+      "caseId": "MG-C-FACT-CANONICAL-VARIANT-UUID-STATIONERY-MATERIALS",
+      "status": "NOT_RUN",
+      "semanticConstraintsFromCanonicalSource": {
+        "textMax": 1000
+      }
+    },
+    {
+      "id": "catalogue:common_product/facts_type/kind",
+      "kind": "book_or_stationery",
+      "field": "kind",
+      "owner": "common_product",
+      "schemaSource": "packages/commerce-core/src/marginalia-facts.ts",
+      "controlSource": "apps/merchant/web/src/components/products/niche-facts/marginalia-facts-editor.tsx",
+      "themeSetting": false,
+      "caseId": "MG-C-FACT-COMMON-PRODUCT-TYPE-KIND",
+      "status": "NOT_RUN",
+      "semanticConstraintsFromCanonicalSource": {
+        "discriminant": [
+          "book",
+          "stationery"
+        ],
+        "explicitTypeSwitchClearsPreviousFacts": true
+      }
+    },
+    {
+      "id": "catalogue:canonical_variant_uuid/facts_type/kind",
+      "kind": "book_or_stationery",
+      "field": "kind",
+      "owner": "canonical_variant_uuid",
+      "schemaSource": "packages/commerce-core/src/marginalia-facts.ts",
+      "controlSource": "apps/merchant/web/src/components/products/niche-facts/marginalia-variant-facts-editor.tsx",
+      "themeSetting": false,
+      "caseId": "MG-C-FACT-CANONICAL-VARIANT-UUID-TYPE-KIND",
+      "status": "NOT_RUN",
+      "semanticConstraintsFromCanonicalSource": {
+        "discriminant": [
+          "book",
+          "stationery"
+        ],
+        "explicitTypeSwitchClearsPreviousFacts": true
+      }
+    }
+  ],
+  "controlTypesInCurrentRenderer": [
+    "blog",
+    "checkbox",
+    "collection",
+    "color",
+    "color_background",
+    "color_scheme",
+    "font_picker",
+    "header",
+    "html",
+    "image",
+    "liquid",
+    "menu",
+    "number",
+    "page",
+    "paragraph",
+    "product",
+    "radio",
+    "range",
+    "richtext",
+    "select",
+    "text",
+    "textarea",
+    "toggle",
+    "url",
+    "video",
+    "video_url"
+  ],
+  "mediaAndResourceFields": [
+    "section:about-section/field:image",
+    "section:about-section/field:linkUrl",
+    "section:announcement-bar/field:linkHref",
+    "section:banner-carousel/block:slide/field:image",
+    "section:banner-carousel/block:slide/field:link",
+    "section:category-grid/field:product1",
+    "section:category-grid/block:subject/field:href",
+    "section:cta-section/field:ctaLink",
+    "section:featured-products/field:collectionId",
+    "section:featured-products/field:product1",
+    "section:featured-products/field:product2",
+    "section:featured-products/field:product3",
+    "section:footer/field:instagramUrl",
+    "section:footer/field:facebookUrl",
+    "section:footer/field:twitterUrl",
+    "section:footer/block:link/field:href",
+    "section:header/block:link/field:href",
+    "section:portfolio-grid/block:project/field:link",
+    "section:product-grid/field:collectionId",
+    "section:services-grid/block:service/field:link",
+    "section:video-hero/field:videoUrl",
+    "theme_setting:seo/faviconUrl",
+    "theme_setting:seo/socialImageUrl"
+  ],
+  "restrictions": [
+    "No product price/stock truth in theme settings.",
+    "Third-party @app execution remains frozen; advertised seam/guard coverage stays explicit.",
+    "Header/footer are pinned groups; supported visibility/settings/blocks must be tested without inventing group delete rights.",
+    "No definition edits, oldruntime adoption, credentials or user-data mutation."
+  ],
+  "counts": {
+    "templates": 23,
+    "sectionTypes": 45,
+    "sectionInstances": 29,
+    "sectionScopedBlockTypes": 15,
+    "globalBlockDefinitions": 1,
+    "sectionAndBlockSettingDescriptors": 128,
+    "themeSettingDescriptors": 12,
+    "catalogueFactPathsByOwnerAndKind": 45
+  },
+  "appSeamApplicability": {
+    "reference": "docs/implementation/niche-theme-programme/completion-2026-10-24/PHASE0_INDEPENDENT_REVIEW.json",
+    "decision": "APP-SEAM-01",
+    "activation": "CONSTITUTIONALLY_EXCLUDED",
+    "authority": [
+      "AGENTS.md NEVER-R3",
+      "AGENTS.md AGENT-R13",
+      "LETBUYY_CONSTITUTION.md R-12"
+    ],
+    "newHumanDecisionRequired": false,
+    "safeGuardAcceptance": "NOT_RUN",
+    "allFirstPartyControlsRequired": true
+  }
+}

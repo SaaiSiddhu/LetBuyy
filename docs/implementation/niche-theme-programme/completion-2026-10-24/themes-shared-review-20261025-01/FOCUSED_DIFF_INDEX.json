@@ -1,0 +1,22 @@
+{
+  "lockfile": {
+    "beforeSha256": "15fd89109bbc17e0624e29d5a1b56db07e19f1f880c44d9a9abf847b52b6d09a",
+    "afterSha256": "c9ff37ec9c3ba0e11afc90a0bb1e29e793af80e68d56562410885aaa77fd48d0",
+    "lines": 12
+  },
+  "variant-projection": {
+    "beforeSha256": "e8a27859e28e247e4ca38e6866684aba149ff2bb866b84a0ac134a736b7b50ab",
+    "afterSha256": "950b3bf975a3eb2e9759b95a1a976dfa649567442835cc71113ba94bddc2fba3",
+    "lines": 20
+  },
+  "csp-policy": {
+    "beforeSha256": "8089e54450b0d7f4b02e93813e95afb562f04a0b5fb821d6d66a08c2b040a337",
+    "afterSha256": "9447329d2a7b469370a0927234185d90bc2636a8d2834d98a0ba2c2354040c27",
+    "lines": 21
+  },
+  "checkout-route-csp": {
+    "beforeSha256": "03ce25315ff387a90e005273139ac423b14da44a994247fe2fa18d679ccf3c00",
+    "afterSha256": "a5328218de03473804a88bf8a0f2ed4e675ffeee5b3cfac16573e569ae45a079",
+    "lines": 28
+  }
+}

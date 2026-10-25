@@ -1,0 +1,57 @@
+{
+  "recordedAt": "2026-10-24T20:05:21.596Z",
+  "classification": "NEW_RUNTIME07_RECIPE_INPUT_VALIDATION_NOT_RUNTIME_EXECUTION",
+  "requestId": "CIR-RUNTIME07-01",
+  "revision": 2,
+  "runId": "49ada80bc494",
+  "results": [
+    {
+      "key": "charger",
+      "status": "VALID_CANONICAL_CREATE_INPUT_NOT_CREATED",
+      "name": "Circuit lifecycle finish charger",
+      "variantCount": 2
+    },
+    {
+      "key": "cable",
+      "status": "VALID_CANONICAL_CREATE_INPUT_NOT_CREATED",
+      "name": "Circuit lifecycle one metre cable",
+      "variantCount": 0
+    },
+    {
+      "key": "unknown",
+      "status": "VALID_CANONICAL_CREATE_INPUT_NOT_CREATED",
+      "name": "Circuit lifecycle unknown accessory",
+      "variantCount": 0
+    }
+  ],
+  "laterEdit": {
+    "canonicalFieldsValid": true,
+    "stockOmitted": true,
+    "completeSaveCommand": false,
+    "missingActualBindings": [
+      "version",
+      "idempotency_key"
+    ],
+    "actualVersionAndIdempotencyMustComeFromController": true
+  },
+  "manufacturer": {
+    "actualUnicode": "istanbul οσ नमूना மின்னணி",
+    "expectedUnicode": "istanbul οσ नमूना மின்னணி"
+  },
+  "sourceInputs": [
+    {
+      "path": "packages/commerce-core/src/index.ts",
+      "candidateSha256": "d1b989d0e6ba07e0a5419a601becea3cef7f94fdfe01ee18d73639a9187f4239"
+    },
+    {
+      "path": "packages/commerce-core/src/circuit-facts.ts",
+      "candidateSha256": "b95d4f2bc7c27bb8ebd5041d6dfb7fa42a6a9066d29e5a218e5b6f8daea0bbe6"
+    },
+    {
+      "path": "packages/commerce-core/src/storefront-discovery.ts",
+      "candidateSha256": "3af07abe9670cd7ea973c028a28570cd3f21542b5d20d8245b3138e6eb7b1691"
+    }
+  ],
+  "newInstalledPasses": 0,
+  "noRuntimeOrProviderActions": true
+}

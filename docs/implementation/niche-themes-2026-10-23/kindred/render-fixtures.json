@@ -1,0 +1,159 @@
+{
+  "scope": "Actual explicit v2 catalog factory and dispatcher → actual app section binder → public ProductModel mapper → LiquidRenderer → canonical app assembly + unchanged storefront CSS. Static presentation evidence, without Next routing, hydration, API query, identity, DB or purchase/lifecycle claims.",
+  "context": "Only document margin/input-font reset, approved local fonts and existing app-layout CSS variable context. No repair stylesheet. Baseline gift capability remains absent; configured finder/filter scenes are explicitly presentation-only.",
+  "sources": [
+    {
+      "file": "apps/commerce/web/src/app/store/[subdomain]/liquid-theme.css",
+      "sha256": "f7f31610c85bf37430fe96fe5cbde8366d3fd9b30e0e43fe7ebfa0ecf3d2f24b"
+    },
+    {
+      "file": "packages/theme-engine/src/kindred-theme.ts",
+      "sha256": "ebc8218b0ec3b1b32ddb6f8764281ed130bfacad8a9e4218c90c356f181950ea"
+    },
+    {
+      "file": "packages/theme-engine/src/kindred-styles.ts",
+      "sha256": "15e6670f6556a7b9cfd8e56891088f0abe9a8ffa1105822be1a1902ecd7282cf"
+    },
+    {
+      "file": "packages/theme-engine/src/kindred-discovery.ts",
+      "sha256": "90bc326720b962d3a43ccd6625dcb153ab1507eecbc3151ec65698774b40eb1c"
+    },
+    {
+      "file": "packages/theme-engine/src/theme-renderer.ts",
+      "sha256": "f5ed1b555d293089f6560b42ce4a916a539feaf830d237b2adfcfaa369b375d6"
+    },
+    {
+      "file": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "sha256": "88e4189bf1703a938c9cabac6e2f5ba7bc78ddeeeafc2b45b780579becb08e14"
+    },
+    {
+      "file": "packages/commerce-core/src/kindred-facts.ts",
+      "sha256": "f227bfe56432182fffce4ccfda347785d28568f4bdd787e96ea82dd18ade58f4"
+    },
+    {
+      "file": "packages/commerce-core/src/product-fact-presentation.ts",
+      "sha256": "17f291e91a8888d943363643f2f203ec52b95d308b999865fd9df6cd91947084"
+    },
+    {
+      "file": "apps/commerce/web/src/lib/demo/kindred-demo.ts",
+      "sha256": "ec8dadf3750e18f5caac7ebc7c1478a72f1b17ef589f21054e82fa7d2f33c213"
+    },
+    {
+      "file": "apps/commerce/web/src/lib/demo/catalog-demo-dispatch.ts",
+      "sha256": "da96f8ef94d79e956a433dbe0eee17726ee99e702a3226561c3f8aeb917782a5"
+    },
+    {
+      "file": "apps/commerce/web/src/lib/theme-engine/data-binding-engine.ts",
+      "sha256": "8a2bb2a9c650704ba7c70c31d0795f435df126d28247bf287ee44f671a068975"
+    },
+    {
+      "file": "apps/commerce/web/src/lib/theme-engine/product-liquid-drop.ts",
+      "sha256": "171aee207ee79add0106c2558a344d5e69b4f4b9044b401b7d5c5383e8513bf9"
+    },
+    {
+      "file": "apps/commerce/web/src/lib/theme-engine/liquid-page-assembly.ts",
+      "sha256": "e87118f925cca189a94f7c934c7270175305842b210cbf5ea3bf5bec785ea765"
+    }
+  ],
+  "files": [
+    {
+      "scene": "home",
+      "file": "rendered/home.html",
+      "template": "index",
+      "binder": "buildSectionDataPlan",
+      "dataSource": "trusted catalog demo dispatcher",
+      "presentationOnlyCapability": false,
+      "warnings": [],
+      "bytes": 46454,
+      "sha256": "b6fdddda9ef534612cafe9bbc25226b99b684c81e80d019717a8fde0ff6585e0"
+    },
+    {
+      "scene": "collection",
+      "file": "rendered/collection.html",
+      "template": "collection",
+      "binder": "buildSectionDataPlan",
+      "dataSource": "trusted catalog demo dispatcher",
+      "presentationOnlyCapability": false,
+      "warnings": [],
+      "bytes": 43595,
+      "sha256": "a86a22845aa6b4df97610b9fa25d982445ed92a638793fc7f68bb315a7f3083f"
+    },
+    {
+      "scene": "product",
+      "file": "rendered/product.html",
+      "template": "product",
+      "binder": "buildSectionDataPlan",
+      "dataSource": "trusted catalog demo dispatcher",
+      "presentationOnlyCapability": false,
+      "warnings": [],
+      "bytes": 49273,
+      "sha256": "7ae472de2a6e669a7d6c912f318e20657ce0f13ebd264a0523eabd6f51d3355a"
+    },
+    {
+      "scene": "desk-product",
+      "file": "rendered/desk-product.html",
+      "template": "product",
+      "binder": "buildSectionDataPlan",
+      "dataSource": "trusted catalog demo dispatcher",
+      "presentationOnlyCapability": false,
+      "warnings": [],
+      "bytes": 47122,
+      "sha256": "72e73d766c8de274e4631513eb393d89672cd45a816e67be56b6d40a0ace2e9b"
+    },
+    {
+      "scene": "missing-product",
+      "file": "rendered/missing-product.html",
+      "template": "product",
+      "binder": "buildSectionDataPlan",
+      "dataSource": "explicit bounded missing/invalid preloaded fixture",
+      "presentationOnlyCapability": false,
+      "warnings": [],
+      "bytes": 45306,
+      "sha256": "e4d4e0ed9eba0fc6556854730c80cf6d191d169d7dc186d8c96f1a9c0c6cee09"
+    },
+    {
+      "scene": "invalid-media",
+      "file": "rendered/invalid-media.html",
+      "template": "product",
+      "binder": "buildSectionDataPlan",
+      "dataSource": "explicit bounded missing/invalid preloaded fixture",
+      "presentationOnlyCapability": false,
+      "warnings": [],
+      "bytes": 48678,
+      "sha256": "4b8b41aaf1a22b954b2d7cbe9a16112d5b7fb65db388927fa5d596ccfc6a31d7"
+    },
+    {
+      "scene": "empty-collection",
+      "file": "rendered/empty-collection.html",
+      "template": "collection",
+      "binder": "buildSectionDataPlan",
+      "dataSource": "explicit bounded missing/invalid preloaded fixture",
+      "presentationOnlyCapability": false,
+      "warnings": [],
+      "bytes": 42598,
+      "sha256": "7638a7849c1386b97bb6dabf20503897aeb16a4cd26998ff0dc0afabd1e31875"
+    },
+    {
+      "scene": "home-finder-presentation",
+      "file": "rendered/home-finder-presentation.html",
+      "template": "index",
+      "binder": "buildSectionDataPlan",
+      "dataSource": "trusted catalog demo dispatcher",
+      "presentationOnlyCapability": true,
+      "warnings": [],
+      "bytes": 47106,
+      "sha256": "6b0352a7df7663f60993099fa1c4f80e16ec9f57022ea75830c04ee78b8f40f0"
+    },
+    {
+      "scene": "collection-filters-presentation",
+      "file": "rendered/collection-filters-presentation.html",
+      "template": "collection",
+      "binder": "buildSectionDataPlan",
+      "dataSource": "trusted catalog demo dispatcher",
+      "presentationOnlyCapability": true,
+      "warnings": [],
+      "bytes": 45914,
+      "sha256": "02ddc603a398aca136a268bf9d497d562f03aa7855499f8d6df7511b5e4095f6"
+    }
+  ]
+}

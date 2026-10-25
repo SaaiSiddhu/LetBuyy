@@ -1,0 +1,39 @@
+{
+  "recordedAt": "2026-10-24T20:34:05.618Z",
+  "runId": "49ada80bc494",
+  "siteId": "02049de4-41c3-4b10-b5b2-a60a6b5e82bf",
+  "status": 200,
+  "productId": "5dd7adcb-50c2-4453-9602-a669139b4270",
+  "name": "Fixture Soft Colour",
+  "price": 520,
+  "stock": 8,
+  "variants": [
+    {
+      "id": "34e07db6-953f-45b3-b4cb-01d13118894c",
+      "title": "Fixture shade SKU",
+      "price": 520,
+      "inventory_qty": 4,
+      "stock": 4,
+      "option1": "Rosewater",
+      "option2": "एक इकाई"
+    },
+    {
+      "id": "3f9775d7-4563-4c5d-ad1f-708f13b52c79",
+      "title": "Fixture shade SKU",
+      "price": 560,
+      "inventory_qty": 3,
+      "stock": 3,
+      "option1": "Pink Clay",
+      "option2": "एक इकाई"
+    },
+    {
+      "id": "f50dde42-7c1d-4727-8b9d-7f468225399f",
+      "title": "Fixture shade SKU",
+      "price": 590,
+      "inventory_qty": 0,
+      "stock": 0,
+      "option1": "Terracotta",
+      "option2": "एक इकाई"
+    }
+  ]
+}

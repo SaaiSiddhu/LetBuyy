@@ -1,0 +1,80 @@
+{
+  "recordedAt": "2026-10-23T17:13:43.282942+00:00",
+  "findings": [
+    {
+      "id": "PF-INSTALLED-FACTS-001",
+      "priority": "P2",
+      "case": "PF-I05",
+      "status": "OPEN_ACTUAL_CURRENT9CD",
+      "owner": "Playfield factory PDP facts + shared selected-variant presentation; writer allocation required",
+      "selectors": [
+        ".pf-product-quick",
+        ".pf-warning",
+        "#playfield-product-facts",
+        "[data-lb-selected-variant-facts]"
+      ],
+      "sourcePointers": [
+        "packages/theme-engine/src/playfield-theme.ts:16",
+        "packages/theme-engine/src/playfield-theme.ts:17",
+        "apps/commerce/web/src/lib/theme-engine/variant-facts-controller.ts:79"
+      ],
+      "reproduction": "Select Unknown facts or Paper on the actual owned Playfield product. Compare selected carrier facts with the still-visible common age/warning/product contents/dimensions/material sections.",
+      "observed": "Paper carrier correctly says36 paper sheets/age9–12/Paper but main page still says15 common items/age6–8/Wood/common warning and tray/tile dimensions. Unknown carrier clears facts correctly, while main sections retain them.",
+      "expected": "Visible purchase facts and warning/age statements must describe the selected edition, preserving explicit empty lists/null dimensions and no stale common prose.",
+      "evidence": [
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/evidence/playfield-PF-I05-selected-bindings.json",
+          "sha256": "c30fd0f06cbeb93540c9587c8452845b0c9c8e3ac5c84f28ceb8f8042945f197"
+        },
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/evidence/playfield-PF-I05-inherited.ax.txt",
+          "sha256": "098d9966c8c1010f39598f15089f7e05a9d301a6c2d7aff32389fd19d8fa34d6"
+        },
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/evidence/playfield-PF-I05-unknown.ax.txt",
+          "sha256": "9602569dba70c3fd8a947e558aec1b32e2e69eb520c71f69079b04a11a2b733c"
+        },
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/evidence/playfield-PF-I05-paper.ax.txt",
+          "sha256": "cdee70e8ca8f0c1dfe2cd197c9771dd515c7d6c548877fe23bbad2d3c6dac1bc"
+        }
+      ]
+    },
+    {
+      "id": "PF-INSTALLED-RELOAD-001",
+      "priority": "P2",
+      "case": "PF-I05",
+      "status": "OBSERVED_REQUIREMENT_NOT_MET",
+      "owner": "Existing variant-selection URL/reload contract; scope decision/repair allocation required",
+      "selectors": [
+        "lb-variant-picker",
+        "[data-lb-selected-variant-facts]",
+        "[data-lb-add-to-cart]"
+      ],
+      "observed": "After the recorded selection cycle, plain product-page reload has no selected edition and Add to cart disabled.",
+      "expected": "The matrix requires an explicit selected-edition reload path with durable identity preserved. No assumption that bare-URL resets are independently forbidden outside this acceptance requirement.",
+      "evidence": [
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/evidence/playfield-PF-I05-reload.ax.txt",
+          "sha256": "e0b84fb3f46cd8185b946052adb3ae8e100ac1ea9e1d92f90204a2836af5b582"
+        }
+      ]
+    },
+    {
+      "id": "PF-INSTALLED-SAVE-001",
+      "priority": "P2",
+      "case": "PF-I06",
+      "status": "OPEN_BASELINE_ORIGIN_DENIAL",
+      "owner": "Merchant mutation request-origin guard;source4e167 released but not current9cd",
+      "observed": "Explicit edition material clear/save is refused with origin-denial error, unsaved draft controls frozen.",
+      "expected": "Corrected candidate acknowledges canonical versioned clear, merchant reopen and buyer readback.",
+      "evidence": [
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/evidence/playfield-PF-I06-clear-materials-save.ax.txt",
+          "sha256": "e2042dbc1a52db985b96bd43445d43f5ca80e1aa8292e6119b677b90d653d40a"
+        }
+      ]
+    }
+  ],
+  "productionEdits": false
+}

@@ -1,0 +1,26 @@
+{
+  "status": "STOPPED_UNEXPECTED_PREFLIGHT_RUNTIME_IMPORT_CLOSURE_GAP_NO_REPAIR",
+  "gapCause": "Private collector used TypeScript.resolveModuleName alone; for literal.mjs imports it selected.d.mts declarations rather than the actual runtime.mjs implementation. At least these3 runtime modules are omitted; their transitive runtime imports need independent re-discovery before any new grant.",
+  "gaps": [
+    {
+      "declaration": "scripts/governance/executable-pg-fixture.d.mts",
+      "runtime": "scripts/governance/executable-pg-fixture.mjs",
+      "runtimeSHA": "1d4d39cd88c2469d4916bd5e770b91a3ca50bc900c4572d899a8620f69f30fea",
+      "runtimePinned": false
+    },
+    {
+      "declaration": "scripts/governance/owned-next-directory.d.mts",
+      "runtime": "scripts/governance/owned-next-directory.mjs",
+      "runtimeSHA": "461eed7dcfa671e2f9bd9c1e8a854cd9afabe7a0bc66b1c7acf6e1230a902ad2",
+      "runtimePinned": false
+    },
+    {
+      "declaration": "scripts/governance/supabase-faithful-bootstrap.d.mts",
+      "runtime": "scripts/governance/supabase-faithful-bootstrap.mjs",
+      "runtimeSHA": "39c75abc670ba8907a9a48eb9be6ee9f100d23c99b175080a729d8e7fc022c87",
+      "runtimePinned": false
+    }
+  ],
+  "all1089PreviouslyBoundFilesStillExact": true,
+  "collectorOrClosureChangedAfterGrant": false
+}

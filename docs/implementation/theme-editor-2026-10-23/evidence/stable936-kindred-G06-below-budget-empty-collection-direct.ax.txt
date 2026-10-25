@@ -1,0 +1,53 @@
+Browser tab: 79, Title: "Lifecycle gifts | Threadline", URL: "http://syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/collections/749df2c0-3034-4475-8d2d-5f95a870a44a?collection_id=749df2c0-3034-4475-8d2d-5f95a870a44a&country_of_origin=India&occasion=thank-you&recipient=colleague&min_price=1000&max_price=1000".
+1 AXWebArea Lifecycle gifts | Threadline, URL: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/collections/749df2c0-3034-4475-8d2d-5f95a870a44a?collection_id=749df2c0-3034-4475-8d2d-5f95a870a44a&country_of_origin=India&occasion=thank-you&recipient=colleague&min_price=1000&max_price=1000
+	2 container
+		3 text Ready-made gifts. A little more considered.
+		4 link syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/collections/749df2c0-3034-4475-8d2d-5f95a870a44a?collection_id=749df2c0-3034-4475-8d2d-5f95a870a44a&country_of_origin=India&occasion=thank-you&recipient=colleague&min_price=1000&max_price=1000
+		5 container Description: Primary, ID: lb-nav-panel-header-default
+		6 link Description: Threadline, Value: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b
+		7 button (collapsed) Description: Search, Secondary Actions: Expand
+		8 link Description: Log in, Value: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/customers/login
+		9 link Description: Cart ( 0 ), Value: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/cart
+		10 container Filter products by country of origin
+			11 container
+				12 text Country of origin
+				13 text field (settable) Country of origin, Value: India, ID: lb-product-origin-filter
+				14 button Apply filter
+				15 link Description: Clear origin filter, Value: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/collections/749df2c0-3034-4475-8d2d-5f95a870a44a?limit=20&sort=display_order&collection_id=749df2c0-3034-4475-8d2d-5f95a870a44a&min_price=1000&max_price=1000&occasion=thank-you&recipient=colleague
+		16 text A LITTLE DIRECTION
+		17 heading Lifecycle gifts, Value: 1
+			18 text Lifecycle gifts
+		19 text 0 products
+		20 container
+			21 text Minimum budget
+			22 stepper (settable, integer) Minimum budget, Value: 1000
+			23 text Maximum budget
+			24 stepper (settable, integer) Maximum budget, Value: 1000
+			25 text Sort
+			26 pop up button (collapsed, settable) Sort, Value: Featured, Secondary Actions: Expand
+				27 menu
+					28 (selected) Featured
+					29 Price: low to high
+					30 Price: high to low
+					31 Newest
+					32 Name
+			33 button Find gifts →
+		34 link Description: Remove Country of origin: India ×, Value: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/collections/749df2c0-3034-4475-8d2d-5f95a870a44a?limit=20&sort=display_order&collection_id=749df2c0-3034-4475-8d2d-5f95a870a44a&min_price=1000&max_price=1000&occasion=thank-you&recipient=colleague
+		35 link Description: Remove Minimum price: 1000 ×, Value: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/collections/749df2c0-3034-4475-8d2d-5f95a870a44a?limit=20&country_of_origin=India&sort=display_order&collection_id=749df2c0-3034-4475-8d2d-5f95a870a44a&max_price=1000&occasion=thank-you&recipient=colleague
+		36 link Description: Remove Maximum price: 1000 ×, Value: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/collections/749df2c0-3034-4475-8d2d-5f95a870a44a?limit=20&country_of_origin=India&sort=display_order&collection_id=749df2c0-3034-4475-8d2d-5f95a870a44a&min_price=1000&occasion=thank-you&recipient=colleague
+		37 link Description: Remove Occasion: thank-you ×, Value: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/collections/749df2c0-3034-4475-8d2d-5f95a870a44a?limit=20&country_of_origin=India&sort=display_order&collection_id=749df2c0-3034-4475-8d2d-5f95a870a44a&min_price=1000&max_price=1000&recipient=colleague
+		38 link Description: Remove Recipient: colleague ×, Value: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/collections/749df2c0-3034-4475-8d2d-5f95a870a44a?limit=20&country_of_origin=India&sort=display_order&collection_id=749df2c0-3034-4475-8d2d-5f95a870a44a&min_price=1000&max_price=1000&occasion=thank-you
+		39 link Description: Clear all filters, Value: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/collections/749df2c0-3034-4475-8d2d-5f95a870a44a?limit=20&sort=display_order&collection_id=749df2c0-3034-4475-8d2d-5f95a870a44a
+		40 heading No matching products., Value: 2
+			41 text No matching products.
+		42 text Your filter choices remain available above. Remove one to widen the selection.
+		43 link Description: Browse all products →, Value: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/products
+		44 heading Threadline, Value: 3
+			45 text Threadline
+		46 heading CONTACT, Value: 4
+			47 text CONTACT
+		48 link Description: Contact us, Value: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/contact
+		49 text © Threadline. All rights reserved.
+		50 link Description: Powered by LetBuyy, Value: letbuyy.com/
+
+The focused UI element is 1 AXWebArea Lifecycle gifts | Threadline, URL: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/collections/749df2c0-3034-4475-8d2d-5f95a870a44a?collection_id=749df2c0-3034-4475-8d2d-5f95a870a44a&country_of_origin=India&occasion=thank-you&recipient=colleague&min_price=1000&max_price=1000

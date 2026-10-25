@@ -1,0 +1,111 @@
+{
+  "recordedAt": "2026-10-25T05:08:42.659282+00:00",
+  "status": "SEALED_UNAPPLIED_PRECISE_DEFAULT_SCHEMA_AND_RETAINED_FAILURE_DIAGNOSTICS_SOURCE_FIX",
+  "owner": "01a16ce5-e5ba-7191-ab2c-a1b76947d2b5",
+  "privateRoot": "/private/tmp/letbuyy-original210-restore-bootstrap-prep-20261025-01",
+  "sourcePaths": [
+    {
+      "path": "scripts/governance/owned-database-provision.mjs",
+      "beforeSha256": "59a1ca8dd37d76c99b8b8724dbaa3d53b11a34d0eb875d437274b386ce0de1d7",
+      "afterSha256": "a46b1ce3e9b61cc571853c807fe1174215a0104a80a86f6b82bf003403cc288d",
+      "bytes": 50322
+    },
+    {
+      "path": "scripts/governance/run-executable-suites.mjs",
+      "beforeSha256": "9bee1039e32cef1d36cf43b879307f48a38511873c770a8ba45da443e6539c2f",
+      "afterSha256": "0242821384d46628aed679321a97ee76bfc12952f7404fa7b9d21b5184568a9b",
+      "bytes": 44028
+    },
+    {
+      "path": "tests/governance/owned-preserved-restore-bootstrap.test.mjs",
+      "beforeSha256": null,
+      "afterSha256": "a4966ad209acdde8d193bb7f57cbe6467361d2a1f5d3c34d3d8efda878666240",
+      "bytes": 14830
+    }
+  ],
+  "scopeProof": "SCOPE_PROOF.json",
+  "sourceArchiveProof": {
+    "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/original210-recovery-candidate01/future-restore-rehearsal01/PUBLIC_SCHEMA_ARCHIVE_PROOF01.json",
+    "sha256": "f2ddda41e42f63daabef1346abd1ec05a223926acd317e976688fec53defb9da"
+  },
+  "qualification": {
+    "baseline17": {
+      "pass": 7,
+      "fail": 10
+    },
+    "private17": {
+      "pass": 17,
+      "fail": 0
+    },
+    "skipCancelTodo": 0,
+    "syntaxThreeFiles": "PASS",
+    "patchCheckExit": 0,
+    "actualFunctions": "createPreservedSuiteDatabase/validatePreservedTarget andrunner main/runGatewaySuite/diagnostic helper, recordingseamsonly",
+    "ordinaryPositive": "Disposablepositivecleanup/flatcontract remains; guardscheckforeignowner/image/sourcevolume/container/nonempty andparityfailclosed"
+  },
+  "changes": "OnlyoneDROPpublicline removed inprovisioner. Runnerpreservedonlydiagnostics/unsafe-report path retainsbothcauses andsafeoperationalphases, recordproxy/log failure withoutpreventingcheckpoint, reportwritefailstillsafe, nonJSONusesredactedrows. Ordinaryflow/guard/reaper/timeout/capsule/CLIunchangedoutside permittedfunctions.",
+  "evidencePins": [
+    {
+      "path": "ALLOCATION_AT_PREPARATION.json",
+      "sha256": "49799356f12369fbb5c12c343482bbe1cb3c0e958938c5bceaf803d4d88deecd",
+      "bytes": 5989
+    },
+    {
+      "path": "BASELINE_RED01.tap",
+      "sha256": "58a1efc4bfaa9ba1664c54a66e33bf162c25bf98244a50e36eccffb1a1ff2207",
+      "bytes": 10176
+    },
+    {
+      "path": "BASELINE_RED02.tap",
+      "sha256": "0a3ef3afe09d9ff89815b19d8c54354da88ca48b3d92e81ef00cdbe72b6f85dd",
+      "bytes": 11212
+    },
+    {
+      "path": "BASELINE_RED03.tap",
+      "sha256": "7fa9038b5d16cc2e1748400b73915e51e516a5d567ef313e00c9ef3330cf9a5c",
+      "bytes": 12198
+    },
+    {
+      "path": "EXECUTION_HISTORY.json",
+      "sha256": "f9eae5e72bca4736c9190164111b33830200df3c94e1220424a208dd6e130d7b",
+      "bytes": 1379
+    },
+    {
+      "path": "FUTURE_RETRY_REQUIREMENTS.json",
+      "sha256": "92c24d2db1015ba864472b520636d6999027cf82739229f3ad75cea3366e4a8f",
+      "bytes": 1536
+    },
+    {
+      "path": "PRIVATE_GREEN01.tap",
+      "sha256": "c37fe12fff6055d9e3d8ef6cba0b224215cfae02fba5acabc38e46bfd4430b56",
+      "bytes": 3522
+    },
+    {
+      "path": "PRIVATE_GREEN02.tap",
+      "sha256": "ac895394741383a3778c7e19f58aa5c8f0c251e78bf8aab526a4d367e4fa80ae",
+      "bytes": 3778
+    },
+    {
+      "path": "PRIVATE_GREEN03.tap",
+      "sha256": "e5f83a04c618426a3ad047ba44a9b2c757dd95973f8259b46372145982c0b21a",
+      "bytes": 3970
+    },
+    {
+      "path": "SCOPE_PROOF.json",
+      "sha256": "fa79bf48057ea534ab8ceb164345c52322bd5bf063745fde9061cb980a9ac6d6",
+      "bytes": 1424
+    },
+    {
+      "path": "UNAPPLIED.patch",
+      "sha256": "13fd7a322f38da7a4fce8d2fc223c34b5304b745876a9f3b82a25a74492e05b6",
+      "bytes": 27089
+    }
+  ],
+  "frozenCandidateMainHarnessOtherOverlayOrFailedResourceWrites": 0,
+  "actualClientBuildStageNativeDbDockerNetworkKeysProviderBrowserActions": 0,
+  "sourceScopeEnds": "FIRST_SOURCE_SEAL_NOW",
+  "newNativePermission": false,
+  "failedActualAttemptPreserved": "b76298981446 terminal71/preTAP/oneattempt05consumed; original+newprotectedresourcesuntouched.",
+  "next": "IndependentreviewthenNEWcoherentcandidate/source/capsule/commandpreparation; onefreshseparatelyapprovedretry, nevermutateorretryfailedcopy.",
+  "fullThemeCertificates": 0
+}

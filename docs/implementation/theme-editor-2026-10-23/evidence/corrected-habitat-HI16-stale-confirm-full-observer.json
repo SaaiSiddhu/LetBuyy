@@ -1,0 +1,27 @@
+{
+  "recordedAt": "2026-10-23T20:54:50.277Z",
+  "runId": "f6074d90e894",
+  "guardVerified": true,
+  "actual": {
+    "packageVersion": "2.0.0",
+    "releaseId": "c9356dc1-8369-4936-8ed1-eb2fd8ab3486",
+    "sourceDraftVersion": 12,
+    "releaseSha256": "9a9b7f850699462088fc2f928169ab6faf700f09e923c6485aeff4b303cfc50b",
+    "orders": 1,
+    "installed": 4,
+    "editorObservations": {
+      "captureFailures": 0,
+      "records": [
+        {
+          "index": 0,
+          "orderId": "c5a7d7a4-dabc-4a3b-a7ea-0c8f61285891",
+          "commandSha256": "c124cad665231bfb09e9c1bceccb171993dcb381df39d4d13f592135dd6fec86",
+          "responseSha256": "009da83d4f0f56f22b7f0ff65aad5a11814647d38a97e00c712845d4878aca28",
+          "requestId": "da365b75-37b8-4ca3-8d6b-55385224c682",
+          "status": 200,
+          "replays": 2
+        }
+      ]
+    }
+  }
+}

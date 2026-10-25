@@ -1,0 +1,22 @@
+[
+  {
+    "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-integration01/native07/provenance/admitted-up.json",
+    "sha256": "c1caf42b3391d05b1d56e61ded87eab0f101a916ee532448ce423e465ffa56ec"
+  },
+  {
+    "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-integration01/native07/provenance/schema-ready-write_storefront_cart.json",
+    "sha256": "97e5318c2bcebafc60b37b9c8eeda5e9db218ca3887f3e55f6534a7f3512eb16"
+  },
+  {
+    "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-integration01/native07/provenance/schema-ready-edit_storefront_configured_cart_line.json",
+    "sha256": "70ce9d96732553ec131355f01234b47d215470d16759bd7ccd42ecf56d896f5d"
+  },
+  {
+    "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-integration01/native07/provenance/before-paired-down.json",
+    "sha256": "441e1941b8483f448974e0e15f41959947acb5a3000d17d60e921d6aa50a2b23"
+  },
+  {
+    "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-integration01/native07/provenance/paired-down-replay-pass.json",
+    "sha256": "c0e1b473081f82c3dfb8c2d29eb8e797c412e864678259ea9a638d866eb60a0c"
+  }
+]

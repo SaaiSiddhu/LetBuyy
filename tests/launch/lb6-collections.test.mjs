@@ -60,8 +60,8 @@ test('(b) public storefront collection-by-slug endpoint exists in public-routes'
         'GET /storefront/:subdomain/collections/:slug route must exist');
     assert.match(content, /collections.*eq\('id', identifier\)|eq\('id', identifier\)/,
         'Collection lookup must query by id (slug = id fallback)');
-    assert.match(content, /collection_products/,
-        'Public route must load collection_products assignments');
+    assert.match(content, /overrides: \{ collection_id: identifier \}/,
+        'Public route must scope the canonical discovery read to this collection');
     assert.match(content, /queryPublicProducts/,
         'Public route must use queryPublicProducts for product shape/cache');
     assert.match(content, /storefrontCacheTags/,
@@ -123,8 +123,10 @@ test('(d) storefront collections/[slug]/page.tsx exists with notFound and metada
         'Collection page must export generateMetadata');
     assert.match(content, /buildStoreMetadata/,
         'Collection page must use buildStoreMetadata');
-    assert.match(content, /getCollectionWithProducts/,
-        'Collection page must fetch via getCollectionWithProducts');
+    assert.match(content, /loadNamedCollectionProductPage\(subdomain, slug, discoveryQuery, previewToken \|\| undefined\)/);
+    const loader = read('apps/commerce/web/src/lib/theme-engine/collection-discovery.ts');
+    assert.match(loader, /getCollectionWithProducts/);
+    assert.match(content, /preloadedDiscoveryPage: page, collection, previewToken/);
     assert.match(content, /StorefrontCompositionEngine/,
         'Collection page must render via StorefrontCompositionEngine');
 });

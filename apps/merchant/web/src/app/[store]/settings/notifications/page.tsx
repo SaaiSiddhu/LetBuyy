@@ -420,6 +420,7 @@ export default function NotificationsSettingsPage() {
 
     return (
         <SettingsPane
+                navigationKey="notifications"
             title="Notifications"
             description="Control which channel and category alerts are active for this store, and review past delivery evidence."
             store={store}

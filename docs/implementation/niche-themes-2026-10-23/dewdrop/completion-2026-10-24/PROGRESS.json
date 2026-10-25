@@ -1,0 +1,686 @@
+{
+  "schemaVersion": 1,
+  "theme": "Dewdrop",
+  "threadId": "01a164ba-ec9f-7073-8f2a-66878e99b008",
+  "goalStatus": "paused",
+  "phase": "PRESERVATION_MAINTENANCE_EDITOR_RECEIPT_RECONCILED",
+  "recordedAtUtc": "2026-10-25T01:31:11.865574+00:00",
+  "originalTotals": {
+    "PASS": 26,
+    "FAIL": 1,
+    "BLOCKED": 3
+  },
+  "newRequirements": {
+    "NOT_RUN": 291,
+    "operationsNotExecuted": 2396
+  },
+  "inventoryCounts": {
+    "templates": 23,
+    "declaredSectionTypes": 45,
+    "defaultSectionInstances": 32,
+    "sectionBlockAssociations": 14,
+    "uniqueInlineBlockTypes": 11,
+    "packageBlockDefinitions": 1,
+    "declaredFieldControlOccurrences": 143,
+    "fieldTypes": {
+      "text": 82,
+      "textarea": 7,
+      "image": 3,
+      "url": 16,
+      "toggle": 12,
+      "collection": 4,
+      "richtext": 2,
+      "product": 3,
+      "range": 3,
+      "select": 4,
+      "number": 1,
+      "color": 6
+    },
+    "mediaAssetsAndFonts": 7,
+    "declaredPortableFieldControlOccurrences": 139,
+    "runtimeGeneratedProtectedFieldOccurrences": 4
+  },
+  "newFinding": "DD-FIND-001 declared order Heading ignored by canonical markup; private minimal proposal only",
+  "firstExecutableSlice": "DD-R07-01 in RUNTIME07_NEXT_UI_SLICE.json; actualTestbrowserpurchase completed, correlationpending",
+  "communication": "Fresh versioned source and native/browser queue request sent to Themes under verified human authorization",
+  "helperActivationSnapshot": {
+    "themes": "ACTIVE_RESUMPTION_OBSERVED",
+    "editor": "ACTIVE_RESUMPTION_OBSERVED",
+    "marketplace": "NOT_RESUMED_PRESERVE_RUNNING_LOCAL_APP"
+  },
+  "activeBrowserLease": null,
+  "activeSharedWriter": null,
+  "requiredDependencies": [
+    "Themes independent review of actual Dewdrop10003 financial/provider receipt and open shared session metadata finding",
+    "Retained original COD/history and later sameUUID edit/archive preservation",
+    "M05correctednormalUI counts plusD02/O05/S01separateadmittedfault/networkcontrols",
+    "Original30/currentexpandeddeclaredoperations complete and independentlyreviewed",
+    "Canonicalnewsletter/consent and shelfqueryscope sourcegaps where required"
+  ],
+  "certification": {
+    "LOCAL_E2E_VERIFIED": false,
+    "RAZORPAY_TEST_VERIFIED": false,
+    "REVIEW_ACCEPTED": false,
+    "FULL_THEME_CERTIFIED": false,
+    "production": "NOT_REQUESTED"
+  },
+  "noRuntimeBuildDataProviderAction": "Owner chat none; coordinator actualbrowserTestpurchase is separatelyrecorded.",
+  "filesPreserved": true,
+  "previousGoalTurnClassification": "PROGRESS",
+  "latestEvidence": "runtime07/ORIGINAL30_EXECUTION.json /cases/0/editorCycleResume02",
+  "sourceFindingDisposition": "Badge merge already connected; do not duplicate fix. Heading proposal remains private; add4 protected generated fields.",
+  "privateSourceQualification": {
+    "current": {
+      "PASS": 2,
+      "FAIL": 3
+    },
+    "proposal": {
+      "PASS": 5,
+      "FAIL": 0
+    },
+    "scope": "Canonical Liquid engine only; no browser/API/provider acceptance",
+    "evidence": "proposals/discovery-heading/evidence/result.json"
+  },
+  "newFindings": [
+    "DD-FIND-004 heading source defect with private qualified fix",
+    "DD-FIND-005 missing page-size binding requires shared query owner",
+    "DD-FIND-006 newsletter/email-only handler mismatch",
+    "DD-FIND-007 raw DB error text in contact route"
+  ],
+  "newPASS": 2,
+  "runtimeEligibility": {
+    "runId": "49ada80bc494",
+    "status": "ADMITTED_SEALED_RUNTIME07",
+    "candidate": "/private/tmp/letbuyy-shared-completion-20261024-06",
+    "runnerPid": 54685,
+    "sourceFiles": 6547,
+    "expectedPackage": "letbuyy-aura@2.1.0",
+    "expiryUtc": "2026-10-24T22:20:00Z",
+    "extensionAuthorized": false,
+    "ownerRuntimeAdoptionOrProbe": false
+  },
+  "privateOrderFragmentQualification": {
+    "current": {
+      "PASS": 3,
+      "FAIL": 2
+    },
+    "proposal": {
+      "PASS": 5,
+      "FAIL": 0
+    },
+    "scope": "Exact heading Liquid fragment on canonical renderer+niche decorator; no shared factory compilation/browser/API/provider",
+    "evidence": "proposals/order-heading/evidence/result.json"
+  },
+  "canonicalSourcesApplied": true,
+  "liveCasesPromoted": 0,
+  "blockerAudit": "BLOCKED_AUDIT.json",
+  "helperResumePermissionMissing": false,
+  "humanWorkStatus": "RESUMED_SOURCE_EVIDENCE_ONLY_DURING_PRESERVATION_MAINTENANCE",
+  "platformGoalResumeUnavailable": true,
+  "canonicalSourceScope": "Exact two granted new opt-in successor files; frozen sources and catalogue untouched",
+  "sourceQualification": {
+    "PASS": 16,
+    "FAIL": 0,
+    "strictTypecheckDiagnostics": 0,
+    "lintErrors": 0,
+    "lintWarnings": 0
+  },
+  "sourceGrantEnded": true,
+  "rootCatalogueObservation": "ROOT_CATALOGUE_OBSERVATION_20261024.json",
+  "canonicalCatalogueSourceObservedIntegrated": true,
+  "rootComposedSourceCounts": {
+    "tests": 72,
+    "pass": 72,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "freshOriginal30": {
+    "currentTotals": {
+      "PARTIAL": 5,
+      "NOT_RUN": 25
+    },
+    "historicalTotals": {
+      "PASS": 26,
+      "FAIL": 1,
+      "BLOCKED": 3
+    },
+    "acceptedReuse": 0,
+    "executionLedger": "runtime07/ORIGINAL30_EXECUTION.json",
+    "all30Complete": false
+  },
+  "activeNativeLease": null,
+  "currentCoordination": {
+    "Root": "Sole preserved recovery owner; specific approvals remain with Root.",
+    "Editor": "Sole browser queue retained; live testing held during preservation maintenance.",
+    "Dewdrop": "Static receipt reconciliation into existing matrix only; no source, API, DB, browser or provider execution."
+  },
+  "freshFixtureAdmitted": false,
+  "mainCapacityStatus": "RECOVERY_TURN_ACTIVE_CURRENT_SETTINGS",
+  "native06CatalogueGatePassed": false,
+  "frozen200Decision": "CONDITIONALLY_ADMISSIBLE_INDEPENDENTLY_NOT_GRANTED",
+  "freshRuntime": {
+    "runId": "49ada80bc494",
+    "status": "ADMITTED_SEALED_RUNTIME07",
+    "candidate": "/private/tmp/letbuyy-shared-completion-20261024-06",
+    "runnerPid": 54685,
+    "sourceFiles": 6547,
+    "expectedPackage": "letbuyy-aura@2.1.0",
+    "expiryUtc": "2026-10-24T22:20:00Z",
+    "extensionAuthorized": false,
+    "ownerRuntimeAdoptionOrProbe": false
+  },
+  "resumeRequired": false,
+  "platformGoalStateNote": "Actual get_goal remains paused; available tools have no resume operation. New human authority resumes finite work without creating a duplicate goal.",
+  "newlyClosedIds": [
+    "DD-PAY-01",
+    "DD-PAY-02"
+  ],
+  "newlyClosedMeaning": "Shared infrastructure admission plus actual per-theme Test purchase financial/browser scope. DD-PAY-02 independent review pending and shared session metadata finding open; not original30 or full-theme acceptance.",
+  "newRequirementStatusCounts": {
+    "NOT_RUN": 292,
+    "PARTIAL": 11,
+    "PASS": 2
+  },
+  "newThemeBrowserCases": [
+    "B00 PARTIAL",
+    "P01 PARTIAL",
+    "P02 PARTIAL",
+    "O01 PARTIAL",
+    "O02 PARTIAL"
+  ],
+  "activeRuntime": {
+    "runId": "49ada80bc494",
+    "candidate": "/private/tmp/letbuyy-shared-completion-20261024-06",
+    "runnerPid": 54685,
+    "siteId": "02049de4-41c3-4b10-b5b2-a60a6b5e82bf",
+    "subdomain": "syn-threadline-ui-ae3f0477",
+    "origins": {
+      "identityOrigin": "http://accounts.threadline-49ada80bc494.localhost:64593",
+      "merchantOrigin": "http://admin.threadline-49ada80bc494.localhost:64594",
+      "commerceOrigin": "http://syn-threadline-ui-ae3f0477.localhost:64595",
+      "checkoutOrigin": "https://checkout.localhost:64597",
+      "apiOrigin": "http://127.0.0.1:64598"
+    },
+    "version": "letbuyy-aura@2.1.0",
+    "sourceFiles": 6547,
+    "candidateSealed": true,
+    "runtimeIdentity": {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/RUNTIME_READY_REDACTED.json",
+      "sha256": "135ec6e3129b2eb1fe8e4e0364f785586ab527be780ce376bc0a113e27875bf3",
+      "bytes": 1135
+    },
+    "providerExpiryUtc": "2026-10-24T22:20:00+00:00",
+    "providerExpiryIst": "25 October 2026 03:50 IST",
+    "extensionAuthorized": false,
+    "liveness": "Controller revalidates current runner/window at admission; no owner liveness probe or process adoption here."
+  },
+  "activeBrowserController": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+  "ownerHasBrowserLease": false,
+  "nextExecutableAction": "M05 normal2/1/1 collection counts and selected resource bindings, only after Root qualifies preserved recovery and Editor receives the browser allocation. No duplicate payment or public callback.",
+  "queueSubmission": "Existing dewdrop queue reservation consumes current owned COVERAGE.nextSlice/RUNBOOK; no sharedqueuefile overwritten and no outboundchatmessage.",
+  "mainWrites": 0,
+  "runtime07DeclarationDelta": "runtime07/DECLARATION_DELTA.json",
+  "currentRequirementRows": 305,
+  "currentOperationObligations": 2597,
+  "latestIndependentPreparation": "runtime07/BEAUTY_HISTORY_SOURCE_TRACE.json",
+  "DD-FIND-007Disposition": "PUBLIC_LEAK_NOT_ESTABLISHED_GLOBAL_SANITIZER_SOURCE_CONFIRMED",
+  "currentBrowserDependency": "Dewdrop actual Test purchase and immediate buyer+merchant history correlated. Sole-controller retained M05/D02/O05/S01 and original remaining clauses are next; shared session metadata defect is open.",
+  "dependencyEvidence": "runtime07/BROWSER_REVIEW_DEPENDENCY.json",
+  "browserRoutingObservation": {
+    "coordinatorThread": "01a16ce5-e5ba-7191-ab2c-a1b76947d2b5",
+    "EditorState": "Browser-idle under approvalblock; latest final says coordinator ownsbuyer tab",
+    "ownerAction": "No browser action, outgoingchatmessage or queue preemption; existing packet remains ready."
+  },
+  "actualCurrentBindings": {
+    "siteId": "02049de4-41c3-4b10-b5b2-a60a6b5e82bf",
+    "productId": "5dd7adcb-50c2-4453-9602-a669139b4270",
+    "variants": [
+      {
+        "id": "34e07db6-953f-45b3-b4cb-01d13118894c",
+        "title": "Fixture shade SKU",
+        "price": 520,
+        "inventory_qty": 4,
+        "stock": 4,
+        "option1": "Rosewater",
+        "option2": "एक इकाई"
+      },
+      {
+        "id": "3f9775d7-4563-4c5d-ad1f-708f13b52c79",
+        "title": "Fixture shade SKU",
+        "price": 560,
+        "inventory_qty": 4,
+        "stock": 4,
+        "option1": "Pink Clay",
+        "option2": "एक इकाई"
+      },
+      {
+        "id": "f50dde42-7c1d-4727-8b9d-7f468225399f",
+        "title": "Fixture shade SKU",
+        "price": 590,
+        "inventory_qty": 0,
+        "stock": 0,
+        "option1": "Terracotta",
+        "option2": "एक इकाई"
+      }
+    ],
+    "baselineRecordedAt": "2026-10-24T20:30:10.947Z",
+    "evidence": {
+      "source": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/dewdrop-before-stock.json",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/completion-2026-10-24/runtime07/evidence/dewdrop-before-stock-37738939c95a.json",
+      "sha256": "37738939c95a03804faf73f2f07c3ec4eee7076097fe97f3846b4b1180616f6b",
+      "bytes": 984,
+      "evidenceClass": "READ_ONLY_PUBLIC_API_BASELINE"
+    }
+  },
+  "currentTestQuote": {
+    "quantity": 1,
+    "goodsINR": 560,
+    "shippingINR": 20,
+    "totalINR": 580,
+    "paymentStatus": "ACTUAL_BROWSER_ORDER_CONFIRMED_10003_CORRELATION_PENDING"
+  },
+  "currentRecoverableIncident": "DD-R07-UI-001 savedcart recovery required after fullreload; normalReload savedcart restoredsameq1/facts/560; exactcause/requeststatusnotestablished.",
+  "historicalPreRuntime07Fields": {
+    "runtimeEligibility": {
+      "observedClockUtc": "2026-10-24T08:52:13Z",
+      "observedClockLocal": "2026-10-24T14:22:13+05:30",
+      "old936CutoffUtc": "2026-10-24T08:50:00Z",
+      "old936LeasePastCutoff": true,
+      "freshOwnerAdmissionRequired": true,
+      "oldProcessOrDataStateProbed": false,
+      "noStopCleanupRestartOrDeadlineExtension": true
+    },
+    "resumeRequired": "Later explicit human resume after the13:21UTC project-wide pause; old grants, queued model fallback and other-chat prompts do not suffice.",
+    "freshFixtureAdmitted": false,
+    "firstExecutableSlice": "DD-SLICE-01 in RUNBOOK.md",
+    "newPASS": 0,
+    "requiredDependencies": [
+      "helper activation",
+      "proper candidate/controller lease",
+      "count02/checkout shared integration",
+      "safe actual fault/security observation lane",
+      "verified Test Mode+webhook ingress admission",
+      "independent reviewer",
+      "versioned Dewdrop heading writer/artifact admission",
+      "canonical shelf page-size binding owner",
+      "canonical newsletter/consent handler and contact-error shared owner"
+    ],
+    "freshRuntime": null
+  },
+  "newPASSMeaning": "Shared infrastructure admission plus actual per-theme Test purchase financial/browser scope. DD-PAY-02 independent review pending and shared session metadata finding open; not original30 or full-theme acceptance.",
+  "actualCurrentTestPurchase": {
+    "schemaVersion": 1,
+    "recordedAtUtc": "2026-10-24T20:39:05.763503+00:00",
+    "classification": "ACTUAL_DEWDROP_TEST_FINANCIAL_AND_BOTH_IMMEDIATE_HISTORY_READBACKS_PASS_WITH_OPEN_METADATA_FINDING",
+    "runId": "49ada80bc494",
+    "siteId": "02049de4-41c3-4b10-b5b2-a60a6b5e82bf",
+    "orderNumber": "ORD-20261024-10003",
+    "orderId": "5b7e729e-46dd-4bfd-b040-fcd44a534e9d",
+    "providerOrderId": "order_TrsW9LtFDH9nrZ",
+    "paymentId": "pay_TrsWOjFmQm62M0",
+    "quantity": 1,
+    "goodsINR": 560,
+    "shippingINR": 20,
+    "totalINR": 580,
+    "currency": "INR",
+    "productId": "5dd7adcb-50c2-4453-9602-a669139b4270",
+    "variantId": "3f9775d7-4563-4c5d-ad1f-708f13b52c79",
+    "variantIdentityScope": "Actual baseline public read; browser selectedPinkClay/PC02. Exact purchasedorderline andproviderjoin pending.",
+    "browserConfirmation": true,
+    "actualBuyerOrderDetail": true,
+    "visibleBuyerOrderState": "confirmed",
+    "buyerCartAfterPurchase": 0,
+    "buyerFacts": [
+      "Shade name: Pink Clay",
+      "पैक आकार: एक इकाई",
+      "routine_stage colour",
+      "Lip tint",
+      "6 ml",
+      "PC02",
+      "#a36a65",
+      "Common tint v1: fixture oil and wax; see named shade ingredients.",
+      "Pink Clay v1: fixture oil, CI 77492.",
+      "Fixture directions v1: use as supplied.",
+      "Fixture warning v1: external use only."
+    ],
+    "merchantReadback": "ACTUAL_CONFIRMED_PAID_RAZORPAY_ORDER_AND_EXPANDED_SAVED_BEAUTY_DETAILS",
+    "actualProviderAndLocalCorrelation": "FINANCIAL_CORRELATION_PASS_WITH_OPEN_SESSION_METADATA_DISCREPANCY",
+    "signedProcessedCallbacks": "payment.authorized and payment.captured signatureValid/processed, both canonicalHTTP200, amount58000INRminor",
+    "singleBalancedCaptureAndStockDelta": {
+      "captureCount": 1,
+      "debitMinor": 58000,
+      "creditMinor": 58000,
+      "entries": 2,
+      "variantAvailableBefore": 4,
+      "variantAvailableAfter": 3,
+      "saleCommittedEvents": 1,
+      "quantityDelta": -1
+    },
+    "fullThemeCertification": false,
+    "retainedOriginalCOD": "Originalq2/1120+20=1140 stays separate; Testq1/580 does not replace it.",
+    "browserEvidence": [
+      {
+        "source": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/dewdrop-demo-bank.ax.txt",
+        "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/completion-2026-10-24/runtime07/evidence/dewdrop-demo-bank.ax-60497899b8d0.txt",
+        "sha256": "60497899b8d075a364c24f7f9a82cce144dad3e7af526582f621dee85137509a",
+        "bytes": 238,
+        "evidenceClass": "CONTROLLER_BROWSER_AX"
+      },
+      {
+        "source": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/dewdrop-demo-bank.png",
+        "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/completion-2026-10-24/runtime07/evidence/dewdrop-demo-bank-211d87098b3e.png",
+        "sha256": "211d87098b3e8cbc2a64509f25c07bb6b4b62c2c6ed68530689aa857e8c82b64",
+        "bytes": 18022,
+        "evidenceClass": "CONTROLLER_BROWSER_SCREENSHOT"
+      },
+      {
+        "source": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/dewdrop-order-confirmed.ax.txt",
+        "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/completion-2026-10-24/runtime07/evidence/dewdrop-order-confirmed.ax-73b4d000251a.txt",
+        "sha256": "73b4d000251abbaeb0c95affa2d2fd9df42401cfdec89dabbf30fc336b202836",
+        "bytes": 711,
+        "evidenceClass": "CONTROLLER_BROWSER_AX"
+      },
+      {
+        "source": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/dewdrop-order-confirmed.png",
+        "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/completion-2026-10-24/runtime07/evidence/dewdrop-order-confirmed-2ed30a23afb5.png",
+        "sha256": "2ed30a23afb582769bf6c37c64219d65a367ff9c66817075d4735c1690ebcecc",
+        "bytes": 33712,
+        "evidenceClass": "CONTROLLER_BROWSER_SCREENSHOT"
+      },
+      {
+        "source": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/dewdrop-buyer-beauty-details.ax.txt",
+        "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/completion-2026-10-24/runtime07/evidence/dewdrop-buyer-beauty-details.ax-c0e9f27f8d68.txt",
+        "sha256": "c0e9f27f8d681777b08cefe53507be1b7e9c8a92756e71d15deb91146ea8f8a8",
+        "bytes": 1636,
+        "evidenceClass": "CONTROLLER_BROWSER_AX"
+      },
+      {
+        "source": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/dewdrop-buyer-beauty-details.png",
+        "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/completion-2026-10-24/runtime07/evidence/dewdrop-buyer-beauty-details-c4964c278348.png",
+        "sha256": "c4964c278348ef31dc36b566a8e4913005f5b1e54b868cf9c37ac2ff5d274a1c",
+        "bytes": 64625,
+        "evidenceClass": "CONTROLLER_BROWSER_SCREENSHOT"
+      },
+      {
+        "source": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/dewdrop-merchant-beauty-details.ax.txt",
+        "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/completion-2026-10-24/runtime07/evidence/dewdrop-merchant-beauty-details.ax-f265c0f0c35a.txt",
+        "sha256": "f265c0f0c35aa93fb7427afae8d954d56de5501b8690bdd21e30e4edcadfd4c2",
+        "bytes": 5407,
+        "evidenceClass": "CONTROLLER_BROWSER_AX"
+      },
+      {
+        "source": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/dewdrop-merchant-beauty-details.png",
+        "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/completion-2026-10-24/runtime07/evidence/dewdrop-merchant-beauty-details-32809c48875d.png",
+        "sha256": "32809c48875de4aeaa3aff4f730b7bf9cfae2905b9bd6d1d5b40f449447ba77c",
+        "bytes": 85587,
+        "evidenceClass": "CONTROLLER_BROWSER_SCREENSHOT"
+      },
+      {
+        "source": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/dewdrop-buyer-fullreload-details.ax.txt",
+        "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/completion-2026-10-24/runtime07/evidence/dewdrop-buyer-fullreload-details.ax-c0e9f27f8d68.txt",
+        "sha256": "c0e9f27f8d681777b08cefe53507be1b7e9c8a92756e71d15deb91146ea8f8a8",
+        "bytes": 1636,
+        "evidenceClass": "CONTROLLER_BROWSER_AX"
+      },
+      {
+        "source": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/dewdrop-buyer-fullreload-details.png",
+        "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/completion-2026-10-24/runtime07/evidence/dewdrop-buyer-fullreload-details-c4964c278348.png",
+        "sha256": "c4964c278348ef31dc36b566a8e4913005f5b1e54b868cf9c37ac2ff5d274a1c",
+        "bytes": 64625,
+        "evidenceClass": "CONTROLLER_BROWSER_SCREENSHOT"
+      },
+      {
+        "source": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/dewdrop-after-stock.json",
+        "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/completion-2026-10-24/runtime07/evidence/dewdrop-after-stock-d8124f6fec57.json",
+        "sha256": "d8124f6fec570278507bbc01567a54c6e5282404d1d2f23fc00a3b4358b81317",
+        "bytes": 984,
+        "evidenceClass": "READ_ONLY_PUBLIC_API_AFTER_BASELINE"
+      }
+    ],
+    "failureEvidence": "runtime07/BROWSER_OBSERVATIONS.json recoverableIncidents DD-R07-UI-001",
+    "all30Complete": false,
+    "RAZORPAY_TEST_VERIFIED": false,
+    "FULL_THEME_CERTIFIED": false,
+    "actualBuyerFullReloadReadback": true,
+    "snapshotSha256": "0d5c1d2b5ba1582e79857644a4553df4bcc69eb558729ba7947801c4f56097fb",
+    "cartId": "cc88aa3d-818f-46b4-843b-ac4ff32fdec9",
+    "hostedCheckoutSessionId": "1c63b862-cd1b-495f-8cc4-2b51045ba48a",
+    "orderThemeLineage": {
+      "themeReleaseId": null,
+      "themeInstanceId": null,
+      "finding": "Both null in canonical order; installed package/release lineage still requires explicit independent reconciliation, not inference from order number or theme assets."
+    },
+    "openMetadataFinding": {
+      "storedCapturePostedToLedger": false,
+      "actualCanonicalCaptureCount": 1,
+      "matchesCanonicalLedger": false,
+      "findingId": "R07-HOSTED-CAPTURE-FLAG-01"
+    },
+    "paymentsTableRows": 0,
+    "correlationEvidence": {
+      "source": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/DEWDROP_ORDER_10003_READONLY_CORRELATION.json",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/completion-2026-10-24/runtime07/evidence/DEWDROP_ORDER_10003_READONLY_CORRELATION-07a68425321f.json",
+      "sha256": "07a68425321fbcd62a20a9d139009f9e5c3574721ae31ba3ee09dd5b3b1f0c01",
+      "bytes": 17044,
+      "evidenceClass": "ALLOCATED_READ_ONLY_CANONICAL_DB_AND_REDACTED_HMAC_CORRELATION"
+    },
+    "review": {
+      "status": "PENDING_THEMES_INDEPENDENT_REVIEW",
+      "financialReader": "Editor",
+      "browserController": "Coordinator"
+    },
+    "financialCorrelationEvidence": {
+      "source": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/DEWDROP_ORDER_10003_READONLY_CORRELATION.json",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/completion-2026-10-24/runtime07/evidence/DEWDROP_ORDER_10003_READONLY_CORRELATION-07a68425321f.json",
+      "sha256": "07a68425321fbcd62a20a9d139009f9e5c3574721ae31ba3ee09dd5b3b1f0c01",
+      "bytes": 17044,
+      "evidenceClass": "ALLOCATED_READ_ONLY_CANONICAL_DB_AND_REDACTED_HMAC_CORRELATION"
+    },
+    "scopedPurchaseResult": "PASS_WITH_OPEN_SHARED_SESSION_METADATA_FINDING"
+  },
+  "currentSharedCorrectionOwnership": {
+    "finding": "R07-HOSTED-CAPTURE-FLAG-01",
+    "state": "Themes latest compact status says an existing private correction proposal is assigned. This owner prepares no duplicate patch.",
+    "source": "Themes chat01a164a4-a342-76d3-ab33-65e021ed57db, cursor4a88ad91-a502-40c5-8554-f10ec1e43e00:135",
+    "actualMainCandidateWritesByOwner": 0
+  },
+  "ownerTurnState": "EXISTING_MATRIX_UPDATED_NO_LIVE_TESTS",
+  "fullThemeCertified": false,
+  "remainingPriorityCases": [
+    "M05",
+    "D02",
+    "O05",
+    "S01"
+  ],
+  "currentOwnerHandoff": "runtime07/ORIGINAL30_EXECUTION.json /cases/0/editorCycleResume02",
+  "latestPauseCheckpoint": "runtime07/PROJECT_PAUSE_CHECKPOINT_20261025.json",
+  "latestResume": "runtime07/RESUME02_NEXT_ACCEPTANCE.json",
+  "currentRuntimeStatus": "Parent54685 and runtime55109 SIGSTOP for preservation; no SIGCONT or automatic continuation authorized.",
+  "newlyClosedThisResume": [],
+  "maintenance": {
+    "recordedAtUtc": "2026-10-25T01:31:11.865574+00:00",
+    "status": "OWNED_QA_MAINTENANCE_STOPPED_FOR_DATA_PRESERVATION",
+    "receipt": {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/PRESERVATION_STOP_EXECUTION_20261025_01.json",
+      "sha256": "996da731d7150632928bb0c7d5f9214906f62c4f2e063a6e9e9900067710cdaf",
+      "bytes": 1313,
+      "evidenceClass": "EXISTING_ROOT_PRESERVATION_MAINTENANCE_RECEIPT"
+    },
+    "projectPaused": false,
+    "stoppedOriginalParent": 54685,
+    "stoppedRuntime": 55109,
+    "browserFence": "Root reports fully saved Playfieldv17/cart0; no Dewdrop active-theme inference.",
+    "automaticContinuationAllowed": false,
+    "restriction": "Do not SIGCONT after expiry: due cleanup timers may execute immediately. API, checkout and parent-hosted REST are unavailable during maintenance. Requires qualified preserved-runtime recovery.",
+    "recoveryOwner": "Root only; qualified preserved recovery required",
+    "browserQueueOwner": "Editor",
+    "liveApiDbBrowserProviderTestsAllowed": false,
+    "ownerRecoverySignalsOrPrivateBackupReads": 0
+  },
+  "newlyClosedOriginalCaseIds": [],
+  "newlyReconciledControllerAtomicSubcheckIds": [
+    "DEWDROP-R07-ATOMIC-FIELD_ROUNDTRIP",
+    "DEWDROP-R07-ATOMIC-ROOT_CHILD_ADD_EDIT",
+    "DEWDROP-R07-ATOMIC-REORDER_HIDE_RELOAD",
+    "DEWDROP-R07-ATOMIC-PUBLISHED_HIDDEN_LIQUID",
+    "DEWDROP-R07-ATOMIC-CHILD_SHOW_PUBLIC",
+    "DEWDROP-R07-ATOMIC-REMOVE_CANCEL",
+    "DEWDROP-R07-ATOMIC-REMOVE_CHILD_SIBLING_PRESERVED",
+    "DEWDROP-R07-ATOMIC-CHILD_READDED_PUBLIC",
+    "DEWDROP-R07-ATOMIC-OWN_ROOT_CLEANUP",
+    "DEWDROP-R07-ATOMIC-UNDO_REDO",
+    "DEWDROP-R07-ATOMIC-ORIGINAL_FIELDS_FULLRELOAD",
+    "DEWDROP-R07-ATOMIC-CLEAN_PUBLIC"
+  ],
+  "currentEditorBinding": {
+    "instance": {
+      "id": "e2a48dbe-a923-4ac3-a3b4-8ef55d6cb01a",
+      "slug": "letbuyy-aura",
+      "siteId": "02049de4-41c3-4b10-b5b2-a60a6b5e82bf",
+      "packageId": "e7156379-b950-4317-a184-277982c34e49",
+      "updatedAt": "2026-10-25T00:52:08.512432+00:00",
+      "currentDraftId": "47fbf908-f992-46ef-9578-95e5de49163e",
+      "instanceStatus": "inactive",
+      "activeReleaseId": "d396a39d-6cd9-4a1d-a48a-dc46cefc4c1e",
+      "packageVersionId": "8a596351-b950-459e-a9f5-c20c675c8e10"
+    },
+    "draft": {
+      "id": "47fbf908-f992-46ef-9578-95e5de49163e",
+      "status": "active",
+      "version": 20,
+      "updatedAt": "2026-10-25T00:51:35.963324+00:00",
+      "workingManifestSha256": "f44e5c40ba7472f0d60a833db1df5407d8eeab934be9801fc81cbaf7ac15a71b",
+      "ownedTemporaryAndHostNodes": [
+        {
+          "path": "/sections/template/4",
+          "idField": "aura-service-information-index",
+          "mapKey": null,
+          "type": "trust-badges",
+          "order": 40,
+          "visibleRaw": true,
+          "disabledRaw": null,
+          "label": null,
+          "title": null
+        },
+        {
+          "path": "/templates/index/sections/aura-service-information-index",
+          "idField": null,
+          "mapKey": "aura-service-information-index",
+          "type": "trust-badges",
+          "order": null,
+          "visibleRaw": true,
+          "disabledRaw": null,
+          "label": null,
+          "title": null
+        },
+        {
+          "path": "/templates/product/sections/aura-service-information-product",
+          "idField": null,
+          "mapKey": "aura-service-information-product",
+          "type": "trust-badges",
+          "order": null,
+          "visibleRaw": null,
+          "disabledRaw": false,
+          "label": null,
+          "title": null
+        },
+        {
+          "path": "/liquidBundle/templates/index/sections/aura-service-information-index",
+          "idField": null,
+          "mapKey": "aura-service-information-index",
+          "type": "trust-badges",
+          "order": null,
+          "visibleRaw": null,
+          "disabledRaw": false,
+          "label": null,
+          "title": null
+        },
+        {
+          "path": "/liquidBundle/templates/product/sections/aura-service-information-product",
+          "idField": null,
+          "mapKey": "aura-service-information-product",
+          "type": "trust-badges",
+          "order": null,
+          "visibleRaw": null,
+          "disabledRaw": false,
+          "label": null,
+          "title": null
+        }
+      ]
+    },
+    "release": {
+      "id": "d396a39d-6cd9-4a1d-a48a-dc46cefc4c1e",
+      "createdAt": "2026-10-25T00:51:35.815259+00:00",
+      "snapshotSha256": "f44e5c40ba7472f0d60a833db1df5407d8eeab934be9801fc81cbaf7ac15a71b",
+      "sourceDraftVersion": 18,
+      "ownedTemporaryAndHostNodes": [
+        {
+          "path": "/sections/template/4",
+          "idField": "aura-service-information-index",
+          "mapKey": null,
+          "type": "trust-badges",
+          "order": 40,
+          "visibleRaw": true,
+          "disabledRaw": null,
+          "label": null,
+          "title": null
+        },
+        {
+          "path": "/templates/index/sections/aura-service-information-index",
+          "idField": null,
+          "mapKey": "aura-service-information-index",
+          "type": "trust-badges",
+          "order": null,
+          "visibleRaw": true,
+          "disabledRaw": null,
+          "label": null,
+          "title": null
+        },
+        {
+          "path": "/templates/product/sections/aura-service-information-product",
+          "idField": null,
+          "mapKey": "aura-service-information-product",
+          "type": "trust-badges",
+          "order": null,
+          "visibleRaw": null,
+          "disabledRaw": false,
+          "label": null,
+          "title": null
+        },
+        {
+          "path": "/liquidBundle/templates/index/sections/aura-service-information-index",
+          "idField": null,
+          "mapKey": "aura-service-information-index",
+          "type": "trust-badges",
+          "order": null,
+          "visibleRaw": null,
+          "disabledRaw": false,
+          "label": null,
+          "title": null
+        },
+        {
+          "path": "/liquidBundle/templates/product/sections/aura-service-information-product",
+          "idField": null,
+          "mapKey": "aura-service-information-product",
+          "type": "trust-badges",
+          "order": null,
+          "visibleRaw": null,
+          "disabledRaw": false,
+          "label": null,
+          "title": null
+        }
+      ]
+    },
+    "siteCurrentTheme": {
+      "slug": "letbuyy-bloom",
+      "releaseId": "1a53db11-eda2-45db-8ba7-077fac56cdfa"
+    }
+  },
+  "newEditorFinding": {
+    "privatePreview": "FAIL observed; recovery not evidenced",
+    "receiptFieldKey": "title vs declared heading; clarification required",
+    "responsive": "NOT_RUN; shared Threadline device finding is not Dewdrop measurement"
+  }
+}

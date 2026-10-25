@@ -1,0 +1,884 @@
+{
+  "classification": "RUNTIME_ACCEPTANCE_QUEUED_NOT_EXECUTED",
+  "updatedAt": "2026-10-24T20:00:13.555117+00:00",
+  "requestedByHuman": true,
+  "fixtureAllocation": "RUNTIME07_49ADA80BC494_SINGLE_ADMITTED_CANDIDATE_POSITION9_RESERVATION_CASE_LEASE_PENDING",
+  "incorporation": {
+    "classification": "CURRENT_SEED_BASELINE_RESTORED_UI_TARGET_REQUIRED_NOT_EXECUTED",
+    "updatedAt": "2026-10-23T13:11:18.014716+00:00",
+    "owner": "Theme Editor \u2014 End-to-End",
+    "status": "SEED_REFINEMENT_CANCELLED_BY_COORDINATOR_AND_RESTORED_BY_EDITOR",
+    "ownerMessage": "Editor confirms baseline recipe restoration and asks choices/method/OOS setup via ordinary merchant UI after allocation. Controller remains Editor until explicit handoff.",
+    "proposalPlan": {
+      "path": "docs/implementation/niche-themes-2026-10-23/madeyours/installed-buyer-fixture.plan.json",
+      "sha256": "c3045d3295669dd9c38dea65339857ccd7fb2e63e349b611aa98b1dbad89fd3d",
+      "meaning": "Immutable expected target; not current seed or an executed command"
+    },
+    "sharedPlan": {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/fresh-fixture-data.plan.json",
+      "sha256": "eefebbda07c13ebbdf5dd1a7f40d53ecdbe98c8af23ce464ffcdc5191deb4864",
+      "personalizationMatches": "originalRecipe"
+    },
+    "historicalRefinementReceipt": {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/fixture-preparation-source-release-14-owner-refinements.json",
+      "currentRuntimeEvidence": false
+    },
+    "baselineFixtureSources": [
+      {
+        "path": "services/api-gateway/src/__tests__/owned-db/threadline-qa-fixture.ts",
+        "sha256": "bf03f1efae9b2be53e0808a8b92b22b9ae435f1c7ccd24ac08d07f1799c051dd"
+      },
+      {
+        "path": "services/api-gateway/src/__tests__/threadline-fixture-origins.test.ts",
+        "sha256": "d0be4e07406e2b29e9304acb6cb217c623a670f66edcba3d0c84643affa88d10"
+      }
+    ],
+    "runtimeFixtureAllocated": false,
+    "sourceEditedByThisChat": false,
+    "privateSentinelRequirement": "Do not inject an unexposed private_supplier field; inspect an actually persisted fixture marker only, otherwise record that subassertion unexercised."
+  },
+  "frozenSourceCheckpoint": [
+    {
+      "path": "packages/theme-engine/src/madeyours-theme.ts",
+      "sha256": "c56bdba5b9e9376c4a296cadc2d4f31a33598a033692d2f6c21daa71b3e98193"
+    },
+    {
+      "path": "packages/theme-engine/src/madeyours-styles.ts",
+      "sha256": "5253e57fcb217526d7bf46e8ddc54b921a5f64ec42f69c7c0dae177eadb5ee6e"
+    },
+    {
+      "path": "packages/theme-engine/src/madeyours-discovery.ts",
+      "sha256": "d1fc0993efd1d876e67c60f997e6cea53efd65a4fd7aba69bafe377f02803eda"
+    },
+    {
+      "path": "packages/commerce-core/src/product-fact-snapshot.ts",
+      "sha256": "0cbc6299ed4464bf7b46141ca786c98c7a01c2bea0ac93bb975caa790a1f3582"
+    },
+    {
+      "path": "packages/commerce-core/src/madeyours-facts.ts",
+      "sha256": "4428e76412e4189fe09815d18b9c2d7d8643c95f01822d783e536a6304b22813"
+    },
+    {
+      "path": "packages/commerce-core/src/index.ts",
+      "sha256": "b36af7e65c00d8b9d16fe84ffc7da522b6107c4010208cc224363fa90bdee6b9"
+    },
+    {
+      "path": "packages/checkout-core/src/index.ts",
+      "sha256": "a67fc493111683a2d839995a3a1d40e4fef419a35f5414839793dd3555f747da"
+    },
+    {
+      "path": "packages/typescript/api-client/src/index.ts",
+      "sha256": "bca9564794dc06352982fbcaa04d91bb095402d0b3f63cdeb8cfa7feab0bad47"
+    },
+    {
+      "path": "services/api-gateway/src/lib/cart-product-facts.ts",
+      "sha256": "19140df6be21304d0e5c764ad5175d55971253d45cf9255d32415c2f15d29c98"
+    },
+    {
+      "path": "services/api-gateway/src/routes/storefront/cart-routes.ts",
+      "sha256": "a92dc02137ff70c71336487b16f627ddf7b35213250a34c5cec835fd3fdf5588"
+    },
+    {
+      "path": "services/api-gateway/src/routes/checkout.ts",
+      "sha256": "2bee4e2e2d69a87e1acde3ab4e3009ee92f78f6e349b57ba8b0376d6ff47f68a"
+    },
+    {
+      "path": "services/api-gateway/src/execution/order-execution.adapter.ts",
+      "sha256": "fd2975fb31972c5e4c20952b6b48e7476ac81cf0a6bc8882d9f173bc4b719aa1"
+    },
+    {
+      "path": "services/api-gateway/src/execution/product-mutation.adapter.ts",
+      "sha256": "39a23ad08cc835d22bf0feb951c5ec44515e6c466f01be8cdd81800577d1257d"
+    },
+    {
+      "path": "database/supabase/migrations/388_cart_order_fact_snapshots.sql",
+      "sha256": "9de7c35b68684cd5d3c752166e5c6ae0b33c64c6b1ea8ac353a82bcac936d2c3"
+    },
+    {
+      "path": "database/supabase/rollback/388_cart_order_fact_snapshots.rollback.sql",
+      "sha256": "12d10a0ef5043cfa330356dfae1b31b58df3c06f393c1d0db208ee4a9513ac5b"
+    }
+  ],
+  "frozenSourceChanges": [],
+  "fixture": null,
+  "browserLease": null,
+  "executionOrder": [
+    "MY-00",
+    "MY-01",
+    "MY-02",
+    "MY-03",
+    "MY-04",
+    "MY-05",
+    "MY-06",
+    "MY-07",
+    "MY-08",
+    "MY-09",
+    "MY-10",
+    "MY-11",
+    "MY-12",
+    "MY-13",
+    "MY-14",
+    "MY-15",
+    "MY-16",
+    "MY-17",
+    "MY-18",
+    "MY-19",
+    "MY-21",
+    "MY-20",
+    "MY-22"
+  ],
+  "cases": [
+    {
+      "id": "MY-00",
+      "phase": "prerequisites",
+      "status": "NOT_RUN",
+      "observed": null,
+      "evidence": []
+    },
+    {
+      "id": "MY-01",
+      "phase": "context",
+      "status": "NOT_RUN",
+      "observed": null,
+      "evidence": []
+    },
+    {
+      "id": "MY-02",
+      "phase": "context",
+      "status": "NOT_RUN",
+      "observed": null,
+      "evidence": []
+    },
+    {
+      "id": "MY-03",
+      "phase": "context",
+      "status": "NOT_RUN",
+      "observed": null,
+      "evidence": []
+    },
+    {
+      "id": "MY-04",
+      "phase": "review",
+      "status": "NOT_RUN",
+      "observed": null,
+      "evidence": []
+    },
+    {
+      "id": "MY-05",
+      "phase": "review",
+      "status": "NOT_RUN",
+      "observed": null,
+      "evidence": []
+    },
+    {
+      "id": "MY-06",
+      "phase": "review",
+      "status": "NOT_RUN",
+      "observed": null,
+      "evidence": []
+    },
+    {
+      "id": "MY-07",
+      "phase": "review",
+      "status": "NOT_RUN",
+      "observed": null,
+      "evidence": []
+    },
+    {
+      "id": "MY-08",
+      "phase": "review",
+      "status": "NOT_RUN",
+      "observed": null,
+      "evidence": []
+    },
+    {
+      "id": "MY-09",
+      "phase": "cart",
+      "status": "NOT_RUN",
+      "observed": null,
+      "evidence": []
+    },
+    {
+      "id": "MY-10",
+      "phase": "cart",
+      "status": "NOT_RUN",
+      "observed": null,
+      "evidence": []
+    },
+    {
+      "id": "MY-11",
+      "phase": "cart",
+      "status": "NOT_RUN",
+      "observed": null,
+      "evidence": []
+    },
+    {
+      "id": "MY-12",
+      "phase": "cart",
+      "status": "NOT_RUN",
+      "observed": null,
+      "evidence": []
+    },
+    {
+      "id": "MY-13",
+      "phase": "cart",
+      "status": "NOT_RUN",
+      "observed": null,
+      "evidence": []
+    },
+    {
+      "id": "MY-14",
+      "phase": "privacy",
+      "status": "NOT_RUN",
+      "observed": null,
+      "evidence": []
+    },
+    {
+      "id": "MY-15",
+      "phase": "purchase",
+      "status": "NOT_RUN",
+      "observed": null,
+      "evidence": []
+    },
+    {
+      "id": "MY-16",
+      "phase": "purchase",
+      "status": "NOT_RUN",
+      "observed": null,
+      "evidence": []
+    },
+    {
+      "id": "MY-17",
+      "phase": "history",
+      "status": "NOT_RUN",
+      "observed": null,
+      "evidence": []
+    },
+    {
+      "id": "MY-18",
+      "phase": "stale",
+      "status": "NOT_RUN",
+      "observed": null,
+      "evidence": []
+    },
+    {
+      "id": "MY-19",
+      "phase": "history",
+      "status": "NOT_RUN",
+      "observed": null,
+      "evidence": []
+    },
+    {
+      "id": "MY-20",
+      "phase": "context",
+      "status": "NOT_RUN",
+      "observed": null,
+      "evidence": []
+    },
+    {
+      "id": "MY-21",
+      "phase": "context",
+      "status": "NOT_RUN",
+      "observed": null,
+      "evidence": []
+    },
+    {
+      "id": "MY-22",
+      "phase": "privacy",
+      "status": "NOT_RUN",
+      "observed": null,
+      "evidence": []
+    }
+  ],
+  "summary": {
+    "run": 0,
+    "passed": 0,
+    "failed": 0,
+    "notRun": 23
+  },
+  "observedPurchaseOrderIds": [],
+  "setupOrdersCountedAsPurchases": false,
+  "resourcesStartedByThisChat": [],
+  "nextAction": "Controller acknowledges NEXT_BROWSER_SLICE_RUNTIME07.json through existing queue; prioritize intended notebook Oat1 actualTestpurchase RZ02, preserve Moss for all23 retained cases. No oldproposal reapplication/newstack.",
+  "executionAmendment": "installed-buyer-ui-setup.plan.json",
+  "handoffRequestedFrom": "Theme Editor \u2014 End-to-End / 01a166eb-66bb-7042-bb47-2aaafef26f53",
+  "automaticContinuation": "Editor has been asked to send the concrete allocation to this chat when setup succeeds. Human authorization covers the23 case execution after that handoff.",
+  "frozenSourceVerifiedAt": "2026-10-23T13:16:24.492588+00:00",
+  "coordination": {
+    "recordedAt": "2026-10-23T17:21:32.329038+00:00",
+    "https": {
+      "status": "RUN936_EDITOR_NORMAL_BROWSER_SECURE_CHECKOUT_FORM_PASS",
+      "soleWriter": "Themes coordinator / 01a164a4-a342-76d3-ab33-65e021ed57db",
+      "runId": "936e5f577646",
+      "osVerificationReportedByRoot": true,
+      "browserVerified": true,
+      "observedByThisChat": false,
+      "evidence": "docs/implementation/niche-theme-programme/editor-stable392-02-runtime-admission.json",
+      "previousNormalBrowserProof": "Retired f607 record retained separately; no current-run browser credit from it",
+      "observedBy": "Editor, normal browser navigation in the fresh fixture",
+      "checkoutOrigin": "https://checkout.localhost:50497",
+      "browserObservationRecordedAt": "2026-10-24T03:17:37.013645+00:00",
+      "browserEvidenceSource": "Editor compact thread status: browser reached the HTTPS checkout normally and loaded the secure form; no source, OS or browser action by this chat",
+      "pinnedCurrentBrowserArtifact": "Not yet supplied to this chat; obtain the actual reference at the named handoff",
+      "runtimeMadeYoursCasesCredited": 0
+    },
+    "queue": {
+      "status": "RUN936_EDITOR_PANTRY_RECOVERY_INVESTIGATION_MADEYOURS_POSITION7_RESERVATION_NO_LEASE",
+      "currentController": "Theme Editor \u2014 End-to-End / 01a166eb-66bb-7042-bb47-2aaafef26f53",
+      "queuePosition": 7,
+      "currentPredecessor": "Pantry lifecycle; normal COD re-entry has a preserved failure and private source recovery proposal awaiting coordinator review",
+      "freshFixtureReceipt": "docs/implementation/niche-theme-programme/editor-stable392-02-runtime-admission.json",
+      "browserAllocation": null,
+      "executionControl": "Root will allocate the precise actual MadeYours slice after predecessor boundaries and remaining-time assessment; no browser/network/data lease or start promise yet",
+      "safeCutoffUtc": "08:50:00"
+    },
+    "sourcePolicy": "All frozen MadeYours and TLS helper source remains unchanged; no duplicate trust/tool/runtime/DB/browser action by this chat.",
+    "outgoingStatusMessageRejection": {
+      "recipient": "Root Themes coordinator",
+      "action": "Status message",
+      "reason": "Automatic approval review rejected it because the current human request explicitly authorizes Editor coordination, not the separate Root task",
+      "bypassAttempted": false,
+      "continuation": "Continue direct authorized Editor coordination; no change to test or source scope"
+    },
+    "rootDirectMessaging": {
+      "status": "EXPLICIT_HUMAN_AUTHORIZATION_RECEIVED",
+      "permissionAnswer": "Allow Root coordination",
+      "firstAuthorizedAction": "Sent completed revision03 packet and exact corrected native-source pins directly to Root. No resource or Main apply authority inferred."
+    }
+  },
+  "dependencyBlockerHistory": [
+    {
+      "source": "Editor current compact status",
+      "condition": "Fresh release files fail reload integrity due to JSON key ordering versus renderer manifest construction; coordinator/generator owner must qualify roundtrip before launch.",
+      "owner": "Editor/coordinator and release generator owner",
+      "reportedNotReproducedByThisChat": true
+    },
+    {
+      "source": "Editor direct handoff",
+      "condition": "Accepted current catalog/new389 qualification plus actual390/repaired387 gate queue precede fresh setup.",
+      "owner": "Editor/coordinator",
+      "reportedNotReproducedByThisChat": true
+    },
+    {
+      "source": "Resource boundary",
+      "condition": "No fresh run, origins, installed release or private state has been allocated; Editor remains sole fixture/browser controller until concrete handoff.",
+      "owner": "Editor/coordinator",
+      "reportedNotReproducedByThisChat": false
+    }
+  ],
+  "dependencyBlockers": [
+    {
+      "source": "Editor normal checkout failure, Root guarded state receipt and private source reproduction",
+      "condition": "Current browser HTTPS passes. Pantry normal COD confirmation is blocked; observed session is payment_intent, not failed. Private source reproduction shows backward contact refusal. Recovery must preserve closed/payment-unknown states, old receipts and atomic confirmation safety. Precise MadeYours position7 slice still unallocated.",
+      "owner": "Fixture coordinator / Editor",
+      "reportedNotReproducedByThisChat": "Native failure reported; source compatibility unit reproduced privately"
+    }
+  ],
+  "fixtureToolingPreparation": {
+    "classification": "ROOT_ADMITTED_FIXTURE_OBSERVER_SOURCE_NO_RUNTIME_CREDIT",
+    "authorization": "Root bounded two-file fixture observer lease with explicit freeze-list clarification",
+    "sourceHandoff": {
+      "path": "docs/implementation/niche-themes-2026-10-23/madeyours/confirm-retry-observer/source-handoff.json",
+      "sha256": "60d6e65a435f047518eb00e1e6f394598b24cc66b8ccf156e1debf8779b7c1db"
+    },
+    "files": [
+      {
+        "path": "services/api-gateway/src/__tests__/owned-db/theme-editor-fixture-observation.ts",
+        "beforeSha256": "8e83deb402f138bace7ed37630f4212108e9fa121f02b0b31054e1cf4a32a44f",
+        "afterSha256": "b7753b14b8706231e136d6e7d0af03a01dc8782b1316c1fb04ceb88309bb612e",
+        "bytes": 13637
+      },
+      {
+        "path": "services/api-gateway/src/__tests__/theme-editor-fixture-observation.test.ts",
+        "beforeSha256": "db98902418414fb178afe4493aaa98c3e5597fc82c9c2d7f1c6b0ec8137f4275",
+        "afterSha256": "6e25fdec57a25ba8282f0a2420b4dc19bc620c51370f3b867b33794322b3f0c2",
+        "bytes": 16838
+      }
+    ],
+    "unitChecks": {
+      "focusedUnit": {
+        "tests": 23,
+        "pass": 23,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0
+      },
+      "existingRegressions": 17,
+      "newTests": 6,
+      "gatewayNoEmit": {
+        "exitCode": 0,
+        "diagnosticBytes": 0
+      }
+    },
+    "runtimeMadeYoursCasesCredited": 0,
+    "resourcesStarted": [],
+    "frozenDomainChanges": [],
+    "rootAdmission": {
+      "path": "docs/implementation/niche-theme-programme/confirm-conflict-observer-source-admission.json",
+      "sha256": "1288838215b3e4fc0ed81034b163b0ea8487a0c4798431740a7da61a4b1a215a"
+    }
+  },
+  "protectedCurrentFixturePins": [
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/owned-db-support.ts",
+      "sha256": "bd87cee74313edf0842c275a944814c6f63b2a6e90353d5428fbef30c8301f12"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/threadline-browser-fixture.ts",
+      "sha256": "8a58c5d250239434ab52cd63540e8d9ba1160c26df75168fc5b82ba207c24910"
+    }
+  ],
+  "protectedCurrentFixturePinsNote": "The browser fixture8a58 is Editor separate admitted epoch; this chat preserved it. Original TLS handoff3cd remains historical evidence, not a claim that Editor did not modify their file.",
+  "sourceCopyAudit": {
+    "path": "docs/implementation/niche-themes-2026-10-23/madeyours/source-fresh-copy-audit.json",
+    "sha256": "63431d98ea9f7b5d2d9af95d9c92ea79346ed0049718e90a28c95c0bbc56ef50",
+    "ownPinsMatched": 19,
+    "candidateRoot": "/private/tmp/theme-editor-candidate-20261023-latest392-manualtls01",
+    "runtimeAcceptance": false
+  },
+  "availableFixture": {
+    "runId": "936e5f577646",
+    "source": "Isolated stable392",
+    "rootAdmission": {
+      "path": "docs/implementation/niche-theme-programme/editor-stable392-02-runtime-admission.json",
+      "source": "Root direct runtime-admission message; no duplicate audit by this chat"
+    },
+    "postBuildSourceFilesExactReportedByRoot": 17243,
+    "sql391And392": "Root verified correct",
+    "productionApps": "Root verified identity, merchant and storefront started",
+    "checkoutTls": "Root normal OS verification; current browser proof not yet supplied to this chat",
+    "normalBrowserHttps": "PASS_EDITOR_REPORTED_NORMAL_CURRENT_RUN_SECURE_FORM",
+    "controller": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+    "allocatedToThisChat": false,
+    "madeYoursPreciseSliceGranted": false,
+    "queuePosition": 7,
+    "reservationIsNotLeaseOrPromisedStartTime": true,
+    "fixtureExpiryUtcWindow": {
+      "earliest": "08:55:37",
+      "latest": "08:57:25",
+      "source": "Root effective bound for this run"
+    },
+    "safeCutoffUtc": "08:50:00",
+    "requiredBeforeMadeYours": "Root named precise binding slice after predecessor boundaries and remaining-time assessment; normal current-run auth and browser HTTPS receipts",
+    "checkoutOriginReportedByEditor": "https://checkout.localhost:50497"
+  },
+  "sharedFixtureObservations": [
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-habitat-COD-exact-confirm-retry.json",
+      "sha256": "d7c3a94cb5a63b942084df7f6cdc6ab182fa45c050f24d2267b651eeb77411b0",
+      "runId": "f6074d90e894",
+      "recordedAt": "2026-10-23T20:13:26.635475+00:00",
+      "status": 200,
+      "meaning": "Shared Habitat exact retry returned 200/same order; observer snapshot, inventory and order counts unchanged. No MadeYours credit.",
+      "observedByThisChat": "Pinned public receipt inspection only; no browser/API/DB action",
+      "runtimeMadeYoursCasesCredited": 0
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-habitat-COD-same-key-conflict-result.json",
+      "sha256": "9836236801e89782acf0681a7be153f13216cf8411ee136f9ba0fa45f2ada988",
+      "runId": "f6074d90e894",
+      "recordedAt": "2026-10-23T20:23:28.836Z",
+      "status": 401,
+      "meaning": "Shared Habitat conflicting retry returned 401; responseCode null; expected 409 not exercised. Protected-table invariance preserved, no retry. No MadeYours credit.",
+      "observedByThisChat": "Pinned public receipt inspection only; no browser/API/DB action",
+      "runtimeMadeYoursCasesCredited": 0
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-habitat-COD-and-preedit-cart-checkpoint.json",
+      "sha256": "dc1e13c5fa483b52213f4ede996da611734f9deb2f0063952cad9c11e9708946",
+      "runId": "f6074d90e894",
+      "recordedAt": "2026-10-23T20:18:59.910341+00:00",
+      "status": "ACTUAL_VALID_NORMAL_COD_EXACT_RETRY_BOTH_HISTORY_AND_SEPARATE_PREEDIT_CART_POSITIVE",
+      "meaning": "Shared Habitat normal COD purchase/history plus separate pre-edit cart checkpoint; catalog edit held. No MadeYours credit.",
+      "observedByThisChat": "Pinned public receipt inspection only; no browser/API/DB action",
+      "runtimeMadeYoursCasesCredited": 0
+    }
+  ],
+  "sharedLifecycleIncidents": [
+    {
+      "recordedAt": "2026-10-24T00:31:27.178423+00:00",
+      "runId": "f6074d90e894",
+      "source": "Editor and Root compact thread status readouts",
+      "condition": "Shared fixture stopped responding across gateway, issuer and both client builds before MadeYours allocation. Editor preserves evidence/cart bindings; fixture owner checks lifecycle.",
+      "observedByThisChat": "Read-only thread coordination; no network/process/DB/browser probe",
+      "madeYoursCasesRun": 0,
+      "recoveryRequired": "Actual owner disposition: same run with proved persisted data/origins, or explicit new run and newly bound IDs/normal UI baseline. No assumed token/session survival."
+    },
+    {
+      "recordedAt": "2026-10-24T00:33:06.580869+00:00",
+      "source": "Direct lifecycle update from Root Themes coordinator",
+      "runId": "f6074d90e894",
+      "actualResultCode": 124,
+      "timedOut": true,
+      "suiteSeconds": 24452.7,
+      "ownedCleanup": "Empty, no failures, no reaping",
+      "knownOriginalAndSupplementalPids": "Absent; supplemental parents completed their own cleanup",
+      "database": "Automatically removed",
+      "browserNetworkDataLeases": "CLOSED",
+      "twoPinkBaselineRestored": false,
+      "newFixtureGrant": false,
+      "madeYoursCasesRun": 0,
+      "prohibitedContinuity": "No cached UI, old credentials, residual-port use, restart/adoption of children, guard/deadline bypass, or copying old data into a fresh fixture",
+      "allowedContinuation": "Local evidence records and direct Editor coordination while Root prepares a fresh owned run; no repeat green audit/test loops"
+    }
+  ],
+  "pendingFreshFixtureStartupAttempts": [
+    {
+      "recordedAt": "2026-10-24T02:20:35.245130+00:00",
+      "source": "Root compact thread status",
+      "status": "PRE_APP_TYPESCRIPT_MODULE_LOADING_FAILURE_REPORTED_OWNER_RETRYING_SUPPORTED_LOADER",
+      "appsStarted": false,
+      "isolatedSourceAndTypechecks": "Reported passing",
+      "newRunId": "Not yet allocated to MadeYours",
+      "observedByThisChat": "Read-only thread coordination, not reproduced",
+      "madeYoursCasesCredited": 0
+    },
+    {
+      "recordedAt": "2026-10-24T02:53:37.252322+00:00",
+      "source": "Root compact thread status",
+      "status": "SECOND_ATTEMPT_PRE_APP_STATE_FILENAME_NAMESPACE_GUARD_REJECTION",
+      "appsStarted": false,
+      "causeReported": "Supplied state-file name was outside the fixture required namespace",
+      "ownerAction": "Correcting launch argument; source, ownership checks and cleanup guards intact",
+      "observedByThisChat": "Read-only thread coordination, not reproduced",
+      "madeYoursCasesCredited": 0
+    }
+  ],
+  "retiredFixtures": [
+    {
+      "runId": "f6074d90e894",
+      "candidate": "/private/tmp/theme-editor-candidate-20261023-latest392-manualtls01",
+      "startupAdmission": {
+        "path": "docs/implementation/niche-theme-programme/editor-latest392-startup-admission.json",
+        "sha256": "f88fb010e7ded3a924376ab33ef3790468aad786f6f41c0d7bf341016e8cf6ae"
+      },
+      "startupReadback": {
+        "path": "docs/implementation/niche-theme-programme/editor-latest392-startup-readback.json",
+        "sha256": "2aa553010e118cc8e2b8c49590338a5afbd2862496becf758f465737562a94fe"
+      },
+      "readbackDigestVerified": true,
+      "actualLiveDatabaseObservedBy": "Root coordinator; this chat inspected the public pinned receipt only",
+      "tlsOwnedHelperProvisioning": "ROOT_REPORTED_ACTUAL_SUCCESS",
+      "normalBrowserHttps": "PASS_EDITOR_REAL_FORM_AUDITED",
+      "controller": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+      "allocatedToThisChat": false,
+      "lastKnownLifecycle": "CLOSED_TIMEOUT_124_TIMEDOUT_TRUE_CLEANUP_EMPTY_DATABASE_AUTOMATICALLY_REMOVED",
+      "startupAndHttpsReceiptsAreHistorical": "All f607 browser/network/data leases closed. Its database was removed; old product/cart/order/session bindings cannot be reused, resurrected or silently copied. Old startup, normal HTTPS and purchase receipts remain historical evidence only.",
+      "liveBindingsValid": false,
+      "twoPinkBaselineRestoredBeforeClosure": false
+    }
+  ],
+  "retiredHttpsEvidence": [
+    {
+      "runId": "f6074d90e894",
+      "evidence": {
+        "status": "NORMAL_BROWSER_HTTPS_PASS_EXACT_LEAF_TRUST",
+        "soleWriter": "Themes coordinator / 01a164a4-a342-76d3-ab33-65e021ed57db",
+        "scopeReported": "mkcert preissued leaf and checkout.localhost SSL-only login-keychain trust",
+        "observedByThisChat": false,
+        "evidence": "Root receipt read and direct coordination; no OS or browser operation by this chat",
+        "recordedAt": "2026-10-23T17:26:08.727121+00:00",
+        "receipt": {
+          "path": "docs/implementation/niche-theme-programme/trusted-checkout-setup-receipt.json",
+          "sha256": "8658d2bf36c28abcd18a8714171530c8e2e811cf34dc2eb2a1e34caf3654b2f4"
+        },
+        "osVerifyExit": 0,
+        "trustPolicyReadback": "sslServer / checkout.localhost / one own-root entry / no allowedError",
+        "browserVerified": true,
+        "ownedFixtureProvisioning": "Actual owned helper startup and subsequent normal browser hosted-form positive were admitted by Root; this chat audited the pinned public browser receipts.",
+        "browserEvidenceAudit": {
+          "path": "docs/implementation/niche-themes-2026-10-23/madeyours/browser-https-gate-audit.json",
+          "sha256": "bab4576b682f49e95a0aa8818baad3813e176c66dc6395e5ac9f35dc60363102"
+        },
+        "rootBrowserAdmission": {
+          "path": "docs/implementation/niche-theme-programme/trusted-checkout-browser-admission.json",
+          "sha256": "965756274c5f4b12941a5014089f5b9157e64986e658d40d1d28b70dc29fd90e",
+          "allThreeReferencedDigestsVerified": true
+        }
+      }
+    }
+  ],
+  "checkoutRecoveryInvestigation": {
+    "recordedAt": "2026-10-24T05:36:22.715128+00:00",
+    "authorization": "Root finite private-source diagnosis/proposal assignment; no Main, native, runtime, SQL, network, browser or data mutation grant",
+    "status": "PRIVATE_FOLLOWUP05_TENANT_GUARD_AND_LINT_READY_FOR_MAIN_ADMISSION_NO_ALLOCATION",
+    "path": "/private/tmp/madeyours-checkout-reentry-proposal-20261024-01/diagnosis-and-proposal.json",
+    "sha256": "12f06b363e14937e2b77fa0730bd7d3a7707f4be8a40f70f7a2121ecab8054e0",
+    "actualReadback": "Session payment_intent/cod with intent present; failed_at and confirmed_at null. Initial terminal-failed hypothesis was withdrawn.",
+    "sourcePrediction": "Fresh contact command re-enters the existing session and is refused as backward; exact failed-step HTTP still unrecorded.",
+    "unitEvidence": {
+      "admittedSourceCompatibility": {
+        "controlsPass": 4,
+        "expectedRegressionFail": 1
+      },
+      "privateProposedGuard": {
+        "pass": 7,
+        "fail": 0
+      },
+      "notGatewayOrNativeProof": true
+    },
+    "routeOrDatabasePatchApplied": false,
+    "mainSourceFilesEdited": 0,
+    "runtimeMadeYoursCasesCredited": 0,
+    "pricingInquiry": "Remains cancelled; version23 price560 preceded corrective save27.",
+    "implementationHandoffPath": "/private/tmp/madeyours-checkout-reentry-proposal-20261024-05/implementation-handoff.json",
+    "implementationHandoffSha256": "1794e60692e347a5d6e88d5d9f25adb1d20af4dca65dd51aad82d11d00129025",
+    "privatePatchSha256": "d7e67d4ab094cfd2d5f8897c8c39fd466967a2203ac7210297b1ed13c1b1ccd7",
+    "privateChangedFiles": 11,
+    "sourceValidation": {
+      "focusedRouteSliceClientIdempotency": {
+        "pass": 14,
+        "fail": 0,
+        "mountedOrNative": false
+      },
+      "gatewaySourceRegressions": {
+        "pass": 30,
+        "fail": 0
+      },
+      "commerceHandlersWithGatewayFake": {
+        "pass": 16,
+        "fail": 0
+      },
+      "broadApiTypecheckAfterFaithfulRebind": "PASS",
+      "commerceTypecheck": "PASS",
+      "exactTwoNativeRootsSemanticCheck": {
+        "diagnostics": 0,
+        "nativeExecuted": false
+      },
+      "preservedFailures": [
+        "Broad private check initially had5errors from an old copied theme-update test; exact current Main bytes were copied privately with old/new SHA recorded; no foreign Main repair.",
+        "Initial standalone semantic checker lacked config-file/current-directory context for worker type libraries; config context corrected, failure log retained."
+      ],
+      "receipts": {
+        "implementation-tests.tap": {
+          "path": "/private/tmp/madeyours-checkout-reentry-proposal-20261024-02/implementation-tests.tap",
+          "sha256": "22e4e5e3d94d4d28606c5325b027de8617579e744b65b62698c09e63c08c04e1"
+        },
+        "existing-regressions-current393.tap": {
+          "path": "/private/tmp/madeyours-checkout-reentry-proposal-20261024-02/existing-regressions-current393.tap",
+          "sha256": "605cc1c1cf16455f9a398e96195e4a1085a921efc751c9ca6a7674fd2b3f46ea"
+        },
+        "commerce-boundary-tests-current393.tap": {
+          "path": "/private/tmp/madeyours-checkout-reentry-proposal-20261024-02/commerce-boundary-tests-current393.tap",
+          "sha256": "b2777c71e6321707f1f536cb78018ed9aa799c902860b5acdcbfec484731a43a"
+        },
+        "implementation-typecheck-current393.log": {
+          "path": "/private/tmp/madeyours-checkout-reentry-proposal-20261024-02/implementation-typecheck-current393.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "commerce-typecheck.log": {
+          "path": "/private/tmp/madeyours-checkout-reentry-proposal-20261024-02/commerce-typecheck.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "native-source-typecheck.log": {
+          "path": "/private/tmp/madeyours-checkout-reentry-proposal-20261024-02/native-source-typecheck.log",
+          "sha256": "edfec96c09c2069a4f245824e97a0f87c5b5fff26168616fde69ad0d53dca52b"
+        },
+        "foreign-test-current-source-rebind.json": {
+          "path": "/private/tmp/madeyours-checkout-reentry-proposal-20261024-02/foreign-test-current-source-rebind.json",
+          "sha256": "c74397c9535f72c1f263a58684a018c87eebfc71f396729c168776355da763b0"
+        },
+        "implementation-typecheck-before-faithful-rebind.log": {
+          "path": "/private/tmp/madeyours-checkout-reentry-proposal-20261024-02/implementation-typecheck-before-faithful-rebind.log",
+          "sha256": "6d0ea84d6bf3dbd0ae78f6851c0a6300ffa156798bb1207a242e86feea6d71b2"
+        },
+        "native-source-typecheck-before-config-context-fix.log": {
+          "path": "/private/tmp/madeyours-checkout-reentry-proposal-20261024-02/native-source-typecheck-before-config-context-fix.log",
+          "sha256": "30a8d4518df10be803be7f8a24e94f997b1aaaf1068c2771d209fb71ee504433"
+        },
+        "current-base-deltas.json": {
+          "path": "/private/tmp/madeyours-checkout-reentry-proposal-20261024-02/current-base-deltas.json",
+          "sha256": "65f6b23ebd012b0e6759a1485528c2320ab89422b8f483a407e49044aac57f9e"
+        },
+        "source-input-closure.json": {
+          "path": "/private/tmp/madeyours-checkout-reentry-proposal-20261024-02/source-input-closure.json",
+          "sha256": "0b5d387ffaefa239c3061db282e24c04c32ae68b2c9b30b5eb4706fc516d5fd8"
+        },
+        "literal-import-graph.json": {
+          "path": "/private/tmp/madeyours-checkout-reentry-proposal-20261024-02/literal-import-graph.json",
+          "sha256": "30563ff8fa0175e57c951f05701eb88e49cea34108b716e2fc602d0be1cc8718"
+        },
+        "capture-current393-source-inputs.mjs": {
+          "path": "/private/tmp/madeyours-checkout-reentry-proposal-20261024-02/capture-current393-source-inputs.mjs",
+          "sha256": "e7d53ad67ac12642fedd669b72ff10b606b32f48709343c53a4ee20707db3c94"
+        },
+        "check-native-types.mjs": {
+          "path": "/private/tmp/madeyours-checkout-reentry-proposal-20261024-02/check-native-types.mjs",
+          "sha256": "0ba39166cfce32c1462a81ad57ed96528d79f752dc518a8996a551a7c1af24f8"
+        }
+      }
+    },
+    "nativeTestSourceCount": 7,
+    "nativeStatus": "NOT_ALLOCATED_NOT_RUN",
+    "buyerProof": "Opaque HMAC-bound verified minting buyer continuity through existing issuance/binder; never claims a current hosted-origin cookie.",
+    "convertedCartRecovery": "Only same claim/body/key; canonical exact-order receipt, cart order binding, buyer link and saved line/fact equality; no creation RPC.",
+    "reviewEpochHistory": [
+      {
+        "path": "/private/tmp/madeyours-checkout-reentry-proposal-20261024-01/implementation-handoff.json",
+        "sha256": "fae42723f24c46ebd78ec3907a7760eed9de1c889cb75f0bb91a154b89ae738f",
+        "status": "EARLIER_PRIVATE_REVIEW_PRESERVED"
+      },
+      {
+        "path": "/private/tmp/madeyours-checkout-reentry-proposal-20261024-02/implementation-handoff.json",
+        "sha256": "940ced07ec50f1404f6925f55278306033355dd793bd7a28b7cb3f400d536cf9",
+        "status": "PRESERVED_PRE_NATIVE_ORACLE_REVIEW"
+      },
+      {
+        "path": "/private/tmp/madeyours-checkout-reentry-proposal-20261024-03/implementation-handoff.json",
+        "sha256": "1a6f66c0d6c471d9c65533fed6e4cf027f8ad7c306c0769dc46758cd9a9fc024",
+        "status": "ROOT_REVIEWED03_PRESERVED_BEFORE_SCOPE_AND_LINT_FOLLOWUP"
+      }
+    ],
+    "nativeProposalSuites": [
+      {
+        "path": "services/api-gateway/src/__tests__/owned-db/hosted-checkout-contact-reentry.postgres.test.ts",
+        "sha256": "e9b5e485a8f43ebc64e29f91c858c61d08e13ae0134e8917990fd31e5a2459fd",
+        "topLevelTests": 7
+      },
+      {
+        "path": "services/api-gateway/src/__tests__/owned-db/hosted-checkout-buyer-ownership.postgres.test.ts",
+        "sha256": "a695fc3315cee62b9ef96c8dc280948a61f357c09f5cf1ff3f1adb79040da5f1",
+        "topLevelTests": 15,
+        "existingSourceUnchanged": true,
+        "localRazorpayCaptureRetryLateCaptureRegression": true
+      }
+    ],
+    "nativeTopLevelTestsProposed": 22,
+    "literalSourceClosure": {
+      "path": "/private/tmp/madeyours-checkout-reentry-proposal-20261024-05/source-input-closure.json",
+      "sha256": "31a6c952c6e127d9a104102de952c444caab3dc8a99f6164c2579b948a128948",
+      "files": 1071,
+      "graphPath": "/private/tmp/madeyours-checkout-reentry-proposal-20261024-05/literal-import-graph.json",
+      "graphSha256": "2f9d429bbac302a4a3be8121625e99842f5f07af3dd6e4f0fc39df843d25e983",
+      "importEdges": 2019,
+      "nonliteralImports": 0,
+      "unresolvedInternalEdges": 0,
+      "appsImported": 0,
+      "currentMigrationMaximum": 393,
+      "currentMigrationCount": 322,
+      "nativeMigrationCeiling": "ROOT_TO_ALLOCATE_EXACT_CURRENT393",
+      "tenStable392DeltasMatchQualifiedCount02Base": true,
+      "foreignCountTestOrPlayfieldProposalAbsorbed": false
+    },
+    "productionBehaviorChangedSinceRootReviewedFirstEpoch": false,
+    "serialization": "Root reports one short Playfield qualifier holding1089 Main inputs; next source/native slot pending checkout review. No Main apply grant.",
+    "nativeTestOracleCorrection": "Canonical successful COD inserts one pending local payment row. Positive test now permits/proves exactly that record; refusals and exact retries/recovery still conserve full payment rows. No production behavior changed.",
+    "nativeSourceSemanticDiagnostics": 0,
+    "upstreamQualifierIncident": "Root stopped Playfield attempt after inventory omitted actual bootstrap.mjs; owned cleanup/correction belongs to its owner. Our1071 closure includes actual bootstrap.mjs and is unaffected.",
+    "sourceGuardProof": {
+      "pass": 4,
+      "fail": 0,
+      "actualOldRouteGuardDenials": 2,
+      "actualCorrectedRouteGuardAccepts": 2,
+      "notMountedOrNative": true
+    },
+    "touchedLint": {
+      "path": "/private/tmp/madeyours-checkout-reentry-proposal-20261024-05/lint-before-after.json",
+      "sha256": "09de1f7ca4f89c1f0b2d5dd780d7476be2b62486d63d8dce1452afb6838c7bbc",
+      "introducedAgainstMain": 0,
+      "introducedSince03": 0,
+      "removedUnusedWarningsSince03": 3,
+      "mainAndFinalExistingBaseline": {
+        "errors": 4,
+        "warnings": 53
+      },
+      "configuration": "Actual commerce web ESLint policy using Main logical filenames; API has no separate lint configuration. No disabled rules or baseline edits."
+    },
+    "privateFollowUp": {
+      "baseSealed03": {
+        "path": "/private/tmp/madeyours-checkout-reentry-proposal-20261024-03/implementation-handoff.json",
+        "sha256": "1a6f66c0d6c471d9c65533fed6e4cf027f8ad7c306c0769dc46758cd9a9fc024"
+      },
+      "preservedIntermediate04": "/private/tmp/madeyours-checkout-reentry-proposal-20261024-04; private import-only checkpoint, not an admission packet",
+      "patch": {
+        "path": "/private/tmp/madeyours-checkout-reentry-proposal-20261024-05/follow-up-from03.patch",
+        "sha256": "1339ee5a8aab8b5a29de97e287a145d557a50c9b96cdc63b65ff034b7fe0d433"
+      },
+      "files": [
+        {
+          "path": "services/api-gateway/src/routes/checkout.ts",
+          "before03Sha256": "9f76321d70e452d44065a5b5453146a3012b402df6f6d4e3cc2793c513c29076",
+          "after05Sha256": "d4600bb711dff02d00e3b77587a0b5d2e9c2020f22dcf065ad673171859aad9c"
+        },
+        {
+          "path": "apps/commerce/web/src/app/store/[subdomain]/checkout/checkout-client.tsx",
+          "before03Sha256": "fa93ab597c311c0c97a5eb4c859bcc9a610a4a3898230adcdc5bc2bc739613a4",
+          "after05Sha256": "4f32a47ef71ae9e51a4df644c957d6f1d53bffd217352546f7c57772abe6573b"
+        },
+        {
+          "path": "apps/commerce/web/src/lib/checkout/step-idempotency.ts",
+          "before03Sha256": "359e6d6ee83ee1b445b0c8a3f7e7640727b7996f6e825f5be95e9891f2a64cc6",
+          "after05Sha256": "a59c32b2f1244f3c0cdbb41fe598faaf917b69cadc8ee9cea2d60b2b95c4db1f"
+        }
+      ],
+      "scope": [
+        "Remove only two unused checkout-core imports in checkout.ts.",
+        "Add explicit site_id predicate to BOTH new order_items reads, retaining original parent/cart/order/item binding; actual canonical guard still default.",
+        "Remove the unused trailing key-map helper parameter and its three unused client arguments; call behavior unchanged."
+      ],
+      "authorization": "Root explicitly approved the exact tenant predicates plus requested unused-import/touched-lint cleanup; no Main/native authority inferred."
+    }
+  },
+  "frozenSourceVerificationDisclosure": {
+    "recordedAt": "2026-10-24T06:45:50.313555+00:00",
+    "mainFrozenBusinessPathsMatchingOriginal": 13,
+    "totalFrozenBusinessPaths": 15,
+    "mainDeclaredDeltas": [
+      "packages/commerce-core/src/index.ts",
+      "packages/typescript/api-client/src/index.ts"
+    ],
+    "declaredDeltaAuthority": "Incoming Root review: separately authorized Circuit count/pagination batch admitted before native999176baae6b; excluded from this private diff.",
+    "admittedStable392BusinessPathsMatchingOriginal": 15,
+    "privatePatchAffectedPathsMainMatchesBase": true,
+    "fixtureOriginalBaselineSha256": "8a58c5d250239434ab52cd63540e8d9ba1160c26df75168fc5b82ba207c24910",
+    "fixtureObservedMainAndStable392Sha256": "b17600512a50d3be39338325cc4baf83bdfd89508486a821b00328bb3d22e4b8",
+    "fixtureAttribution": "Declared before runtime startup: original enterprise startup source8a58... was superseded by stable392 copy-admission and source-gate-admission explicitly pinningb176... . No timing inference from a later comparison is needed.",
+    "sourceWritesByThisChat": "PRIVATE_PROPOSAL_ONLY_NO_MAIN_OR_ADMITTED_TREE_SOURCE_WRITES",
+    "fixtureOwnerReceipts": [
+      {
+        "path": "docs/implementation/niche-theme-programme/editor-enterprise-startup-source-admission.json",
+        "sha256": "fe80b645e9d0a42e02e3163e55818e0f520ec406b31c7f44feef4f7b519da754",
+        "recordedAt": "2026-10-23T17:30:24.852249+00:00",
+        "status": "ROOT_BOUNDED_EDITOR_ENTERPRISE_STARTUP_SOURCE_ADMITTED"
+      },
+      {
+        "path": "docs/implementation/niche-theme-programme/editor-stable392-02-copy-admission.json",
+        "sha256": "645441b778d1d190a25ec5c1db3406437986f94c00db8537b40373d75c039724",
+        "recordedAt": "2026-10-24T01:29:30.534065+00:00",
+        "status": "STABLE392_SOURCE_COPY_ONLY_ISOLATED_GATE_NEXT_NO_RUNTIME"
+      },
+      {
+        "path": "docs/implementation/niche-theme-programme/editor-stable392-02-source-gate-admission.json",
+        "sha256": "a01f0f1355444fbd8d1fe72ed639237993d6e17841cc956d7e50cb6760356d76",
+        "recordedAt": "2026-10-24T01:45:12.421663+00:00",
+        "status": "ROOT_STABLE392_02_EXACT_ISOLATED_SOURCE_GATES_PASS_ADMITTED_FOR_NEW_OWNED_FIXTURE_START"
+      }
+    ]
+  },
+  "runtimeAdmissionHistory": [
+    {
+      "recordedAt": "2026-10-24T20:00:13.555117+00:00",
+      "priorLedger": {
+        "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/runtime07-prior-installed-buyer-ledger.json",
+        "sha256": "1ad625b687b64b91ef11bd96451d13372994e3c1798c9cdfdc89b720866488b2"
+      },
+      "oldFixtureAllocation": "RUN936E5F577646_ROOT_ADMITTED_MADEYOURS_POSITION7_RESERVATION_ONLY_NO_SLICE_LEASE",
+      "oldNextAction": "Continue authorized Editor coordination for actual position-7 slice. Private checkout proposal awaits Root review/current-closure binding/native allocation; do not apply Main, mutate held936 cart, or claim runtime passes."
+    }
+  ],
+  "currentRuntimeAdmission": {
+    "runId": "49ada80bc494",
+    "candidate": "/private/tmp/letbuyy-shared-completion-20261024-06",
+    "readiness": {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/SHARED_READINESS_GATE.json",
+      "sha256": "4ade007d9b12f9694f73c540bc331c404f7474c01a0934885d38cb8895c66ffb"
+    },
+    "controller": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+    "request": {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/NEXT_BROWSER_SLICE_RUNTIME07.json",
+      "sha256": "b7f1ebb0e25839cb5d12e4853f66bc80aa86c12ccfdbd147aee1ad319b1b1add"
+    },
+    "status": "FILE_HANDOFF_REQUESTED_NOT_EXECUTED",
+    "publicReceiverCutoff": "2026-10-24T22:20:00+00:00"
+  }
+}

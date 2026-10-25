@@ -1,0 +1,865 @@
+TAP version 13
+# Subtest: explicit successor conserves original factory and Core input, and changes release identity only on the clone
+ok 1 - explicit successor conserves original factory and Core input, and changes release identity only on the clone
+  ---
+  duration_ms: 16.339917
+  type: 'test'
+  ...
+# Subtest: saved merchant settings, template structure, disabled state, styling and product content are preserved exactly
+not ok 2 - saved merchant settings, template structure, disabled state, styling and product content are preserved exactly
+  ---
+  duration_ms: 5.867458
+  type: 'test'
+  location: '/Volumes/Projects/LetBuyy/packages/theme-engine/test/dewdrop-successor.test.ts:1:3624'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+    ... Skipped lines
+    
+      {
+        'customers/account': {
+          layout: 'theme',
+          name: 'Account',
+          order: [
+    ...
+                'saved-badge': {
+    +             block_order: [],
+    +             blocks: {},
+    +             disabled: false,
+                  settings: {
+                    label: 'Saved badge',
+                    merchantUnknown: 'Retained'
+                  },
+                  type: 'badge'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    header:
+      name: 'LetBuyy Core header'
+      layout: 'theme'
+      sections:
+        announcement-default:
+          type: 'announcement-bar'
+          settings:
+            text: 'A considered routine. Your own pace.'
+            linkLabel: ''
+            linkHref: ''
+          blocks:
+          block_order:
+          disabled: false
+        header-default:
+          type: 'header'
+          settings:
+            showSearch: true
+            showCart: true
+            behavior: 'sticky'
+          blocks:
+          block_order:
+          disabled: false
+      order:
+        0: 'announcement-default'
+        1: 'header-default'
+    footer:
+      name: 'LetBuyy Core footer'
+      layout: 'theme'
+      sections:
+        footer-default:
+          type: 'footer'
+          settings:
+          blocks:
+          block_order:
+          disabled: false
+      order:
+        0: 'footer-default'
+    index:
+      name: 'Dewdrop home'
+      layout: 'theme'
+      sections:
+        aura-care-introduction:
+          type: 'hero-banner'
+          settings:
+            savedUnknownSetting: 'merchant value'
+          blocks:
+            saved-badge:
+              type: 'badge'
+              settings:
+                label: 'Saved badge'
+                merchantUnknown: 'Retained'
+          block_order:
+            0: 'saved-badge'
+          disabled: false
+        aura-routine-pathways:
+          type: 'category-grid'
+          settings:
+          blocks:
+          block_order:
+          disabled: false
+        aura-routine-shelves-index:
+          type: 'product-grid'
+          settings:
+          blocks:
+          block_order:
+          disabled: false
+        aura-care-editorial:
+          type: 'about-section'
+          settings:
+          blocks:
+          block_order:
+          disabled: false
+        aura-service-information-index:
+          type: 'trust-badges'
+          settings:
+          blocks:
+          block_order:
+          disabled: false
+      order:
+        0: 'aura-care-introduction'
+        1: 'aura-routine-pathways'
+        2: 'aura-routine-shelves-index'
+        3: 'aura-care-editorial'
+        4: 'aura-service-information-index'
+    product:
+      name: 'Dewdrop product'
+      layout: 'theme'
+      sections:
+        aura-care-product:
+          type: 'product-detail'
+          settings:
+            showGallery: true
+            showDescription: true
+            showReviews: false
+            factsHeading: 'Ingredients & directions'
+            showShadeReference: true
+            showBuyNow: false
+          blocks:
+          block_order:
+          disabled: false
+        aura-independent-products:
+          type: 'featured-products'
+          settings:
+            requireSelection: true
+            productLimit: 3
+          blocks:
+          block_order:
+          disabled: false
+        aura-service-information-product:
+          type: 'trust-badges'
+          settings:
+          blocks:
+          block_order:
+          disabled: false
+      order:
+        0: 'aura-care-product'
+        1: 'aura-independent-products'
+        2: 'aura-service-information-product'
+    collection:
+      name: 'Dewdrop collection'
+      layout: 'theme'
+      sections:
+        aura-care-discovery:
+          type: 'collection-filter'
+          settings:
+            title: 'Find your everyday.'
+          blocks:
+          block_order:
+          disabled: true
+        aura-routine-shelves-collection:
+          type: 'product-grid'
+          settings:
+            title: 'Choose your next step'
+            subtitle: ''
+            productLimit: 12
+          blocks:
+          block_order:
+          disabled: false
+      order:
+        0: 'aura-care-discovery'
+        1: 'aura-routine-shelves-collection'
+    search:
+      name: 'Dewdrop search'
+      layout: 'theme'
+      sections:
+        aura-care-search:
+          type: 'collection-filter'
+          settings:
+            title: 'Saved search heading'
+          blocks:
+          block_order:
+          disabled: false
+        aura-routine-shelves-search:
+          type: 'collection-product-list'
+          settings:
+            title: 'Search results'
+          blocks:
+          block_order:
+          disabled: false
+      order:
+        0: 'aura-care-search'
+        1: 'aura-routine-shelves-search'
+    cart:
+      name: 'LetBuyy Core cart'
+      layout: 'theme'
+      sections:
+        cart-summary-default:
+          type: 'cart-summary'
+          settings:
+          blocks:
+          block_order:
+          disabled: false
+      order:
+        0: 'cart-summary-default'
+    list-collections:
+      name: 'All collections'
+      layout: 'theme'
+      sections:
+        list-collections-grid:
+          type: 'category-grid'
+          settings:
+            title: 'All collections'
+          blocks:
+          block_order:
+          disabled: false
+      order:
+        0: 'list-collections-grid'
+    contact:
+      name: 'Contact'
+      layout: 'theme'
+      sections:
+        contact-form-default:
+          type: 'contact-form'
+          settings:
+            title: 'Contact us'
+            showPhone: true
+          blocks:
+          block_order:
+          disabled: false
+      order:
+        0: 'contact-form-default'
+    customers/login:
+      name: 'Login'
+      layout: 'theme'
+      sections:
+        customer-login-default:
+          type: 'customer-login'
+          settings:
+          blocks:
+          block_order:
+          disabled: false
+      order:
+        0: 'customer-login-default'
+    customers/register:
+      name: 'Register'
+      layout: 'theme'
+      sections:
+        customer-register-default:
+          type: 'customer-register'
+          settings:
+          blocks:
+          block_order:
+          disabled: false
+      order:
+        0: 'customer-register-default'
+    customers/account:
+      name: 'Account'
+      layout: 'theme'
+      sections:
+        customer-account-default:
+          type: 'customer-account'
+          settings:
+          blocks:
+          block_order:
+          disabled: false
+      order:
+        0: 'customer-account-default'
+    customers/orders:
+      name: 'Order history'
+      layout: 'theme'
+      sections:
+        customer-orders-default:
+          type: 'customer-orders'
+          settings:
+          blocks:
+          block_order:
+          disabled: false
+      order:
+        0: 'customer-orders-default'
+    customers/order:
+      name: 'Order detail'
+      layout: 'theme'
+      sections:
+        customer-order-detail-default:
+          type: 'customer-order-detail'
+          settings:
+            heading: 'Saved receipt'
+          blocks:
+          block_order:
+          disabled: false
+      order:
+        0: 'customer-order-detail-default'
+    customers/settings:
+      name: 'Account settings'
+      layout: 'theme'
+      sections:
+        customer-settings-default:
+          type: 'customer-settings'
+          settings:
+          blocks:
+          block_order:
+          disabled: false
+      order:
+        0: 'customer-settings-default'
+    customers/wishlist:
+      name: 'Wishlist'
+      layout: 'theme'
+      sections:
+        customer-wishlist-default:
+          type: 'customer-wishlist'
+          settings:
+          blocks:
+          block_order:
+          disabled: false
+      order:
+        0: 'customer-wishlist-default'
+    customers/addresses:
+      name: 'Addresses'
+      layout: 'theme'
+      sections:
+        customer-addresses-default:
+          type: 'customer-addresses'
+          settings:
+          blocks:
+          block_order:
+          disabled: false
+      order:
+        0: 'customer-addresses-default'
+    policy:
+      name: 'Policy page'
+      layout: 'theme'
+      sections:
+        policy-content-default:
+          type: 'policy-content'
+          settings:
+          blocks:
+          block_order:
+          disabled: false
+      order:
+        0: 'policy-content-default'
+    blog:
+      name: 'Blog'
+      layout: 'theme'
+      sections:
+        blog-listing-default:
+          type: 'blog-listing'
+          settings:
+            heading: 'Our Blog'
+          blocks:
+          block_order:
+          disabled: false
+      order:
+        0: 'blog-listing-default'
+    article:
+      name: 'Article'
+      layout: 'theme'
+      sections:
+        article-content-default:
+          type: 'article-content'
+          settings:
+          blocks:
+          block_order:
+          disabled: false
+      order:
+        0: 'article-content-default'
+    page:
+      name: 'Page'
+      layout: 'theme'
+      sections:
+        page-content-default:
+          type: 'page-content'
+          settings:
+          blocks:
+          block_order:
+          disabled: false
+      order:
+        0: 'page-content-default'
+    not_found:
+      name: '404 Not Found'
+      layout: 'theme'
+      sections:
+        404-page-default:
+          type: '404-page'
+          settings:
+          blocks:
+          block_order:
+          disabled: false
+      order:
+        0: '404-page-default'
+    password:
+      name: 'Password'
+      layout: 'theme'
+      sections:
+        password-gate-default:
+          type: 'password-gate'
+          settings:
+            heading: 'Coming Soon'
+          blocks:
+          block_order:
+          disabled: false
+      order:
+        0: 'password-gate-default'
+  actual:
+    header:
+      name: 'LetBuyy Core header'
+      layout: 'theme'
+      sections:
+        announcement-default:
+          type: 'announcement-bar'
+          settings:
+            text: 'A considered routine. Your own pace.'
+            linkLabel: ''
+            linkHref: ''
+          blocks:
+          block_order:
+          disabled: false
+        header-default:
+          type: 'header'
+          settings:
+            showSearch: true
+            showCart: true
+            behavior: 'sticky'
+          blocks:
+          block_order:
+          disabled: false
+      order:
+        0: 'announcement-default'
+        1: 'header-default'
+    footer:
+      name: 'LetBuyy Core footer'
+      layout: 'theme'
+      sections:
+        footer-default:
+          type: 'footer'
+          settings:
+          blocks:
+          block_order:
+          disabled: false
+      order:
+        0: 'footer-default'
+    index:
+      name: 'Dewdrop home'
+      layout: 'theme'
+      sections:
+        aura-care-introduction:
+          type: 'hero-banner'
+          settings:
+            savedUnknownSetting: 'merchant value'
+          blocks:
+            saved-badge:
+              type: 'badge'
+              settings:
+                label: 'Saved badge'
+                merchantUnknown: 'Retained'
+              disabled: false
+              blocks:
+              block_order:
+          block_order:
+            0: 'saved-badge'
+          disabled: false
+        aura-routine-pathways:
+          type: 'category-grid'
+          settings:
+          blocks:
+          block_order:
+          disabled: false
+        aura-routine-shelves-index:
+          type: 'product-grid'
+          settings:
+          blocks:
+          block_order:
+          disabled: false
+        aura-care-editorial:
+          type: 'about-section'
+          settings:
+          blocks:
+          block_order:
+          disabled: false
+        aura-service-information-index:
+          type: 'trust-badges'
+          settings:
+          blocks:
+          block_order:
+          disabled: false
+      order:
+        0: 'aura-care-introduction'
+        1: 'aura-routine-pathways'
+        2: 'aura-routine-shelves-index'
+        3: 'aura-care-editorial'
+        4: 'aura-service-information-index'
+    product:
+      name: 'Dewdrop product'
+      layout: 'theme'
+      sections:
+        aura-care-product:
+          type: 'product-detail'
+          settings:
+            showGallery: true
+            showDescription: true
+            showReviews: false
+            factsHeading: 'Ingredients & directions'
+            showShadeReference: true
+            showBuyNow: false
+          blocks:
+          block_order:
+          disabled: false
+        aura-independent-products:
+          type: 'featured-products'
+          settings:
+            requireSelection: true
+            productLimit: 3
+          blocks:
+          block_order:
+          disabled: false
+        aura-service-information-product:
+          type: 'trust-badges'
+          settings:
+          blocks:
+          block_order:
+          disabled: false
+      order:
+        0: 'aura-care-product'
+        1: 'aura-independent-products'
+        2: 'aura-service-information-product'
+    collection:
+      name: 'Dewdrop collection'
+      layout: 'theme'
+      sections:
+        aura-care-discovery:
+          type: 'collection-filter'
+          settings:
+            title: 'Find your everyday.'
+          blocks:
+          block_order:
+          disabled: true
+        aura-routine-shelves-collection:
+          type: 'product-grid'
+          settings:
+            title: 'Choose your next step'
+            subtitle: ''
+            productLimit: 12
+          blocks:
+          block_order:
+          disabled: false
+      order:
+        0: 'aura-care-discovery'
+        1: 'aura-routine-shelves-collection'
+    search:
+      name: 'Dewdrop search'
+      layout: 'theme'
+      sections:
+        aura-care-search:
+          type: 'collection-filter'
+          settings:
+            title: 'Saved search heading'
+          blocks:
+          block_order:
+          disabled: false
+        aura-routine-shelves-search:
+          type: 'collection-product-list'
+          settings:
+            title: 'Search results'
+          blocks:
+          block_order:
+          disabled: false
+      order:
+        0: 'aura-care-search'
+        1: 'aura-routine-shelves-search'
+    cart:
+      name: 'LetBuyy Core cart'
+      layout: 'theme'
+      sections:
+        cart-summary-default:
+          type: 'cart-summary'
+          settings:
+          blocks:
+          block_order:
+          disabled: false
+      order:
+        0: 'cart-summary-default'
+    list-collections:
+      name: 'All collections'
+      layout: 'theme'
+      sections:
+        list-collections-grid:
+          type: 'category-grid'
+          settings:
+            title: 'All collections'
+          blocks:
+          block_order:
+          disabled: false
+      order:
+        0: 'list-collections-grid'
+    contact:
+      name: 'Contact'
+      layout: 'theme'
+      sections:
+        contact-form-default:
+          type: 'contact-form'
+          settings:
+            title: 'Contact us'
+            showPhone: true
+          blocks:
+          block_order:
+          disabled: false
+      order:
+        0: 'contact-form-default'
+    customers/login:
+      name: 'Login'
+      layout: 'theme'
+      sections:
+        customer-login-default:
+          type: 'customer-login'
+          settings:
+          blocks:
+          block_order:
+          disabled: false
+      order:
+        0: 'customer-login-default'
+    customers/register:
+      name: 'Register'
+      layout: 'theme'
+      sections:
+        customer-register-default:
+          type: 'customer-register'
+          settings:
+          blocks:
+          block_order:
+          disabled: false
+      order:
+        0: 'customer-register-default'
+    customers/account:
+      name: 'Account'
+      layout: 'theme'
+      sections:
+        customer-account-default:
+          type: 'customer-account'
+          settings:
+          blocks:
+          block_order:
+          disabled: false
+      order:
+        0: 'customer-account-default'
+    customers/orders:
+      name: 'Order history'
+      layout: 'theme'
+      sections:
+        customer-orders-default:
+          type: 'customer-orders'
+          settings:
+          blocks:
+          block_order:
+          disabled: false
+      order:
+        0: 'customer-orders-default'
+    customers/order:
+      name: 'Order detail'
+      layout: 'theme'
+      sections:
+        customer-order-detail-default:
+          type: 'customer-order-detail'
+          settings:
+            heading: 'Saved receipt'
+          blocks:
+          block_order:
+          disabled: false
+      order:
+        0: 'customer-order-detail-default'
+    customers/settings:
+      name: 'Account settings'
+      layout: 'theme'
+      sections:
+        customer-settings-default:
+          type: 'customer-settings'
+          settings:
+          blocks:
+          block_order:
+          disabled: false
+      order:
+        0: 'customer-settings-default'
+    customers/wishlist:
+      name: 'Wishlist'
+      layout: 'theme'
+      sections:
+        customer-wishlist-default:
+          type: 'customer-wishlist'
+          settings:
+          blocks:
+          block_order:
+          disabled: false
+      order:
+        0: 'customer-wishlist-default'
+    customers/addresses:
+      name: 'Addresses'
+      layout: 'theme'
+      sections:
+        customer-addresses-default:
+          type: 'customer-addresses'
+          settings:
+          blocks:
+          block_order:
+          disabled: false
+      order:
+        0: 'customer-addresses-default'
+    policy:
+      name: 'Policy page'
+      layout: 'theme'
+      sections:
+        policy-content-default:
+          type: 'policy-content'
+          settings:
+          blocks:
+          block_order:
+          disabled: false
+      order:
+        0: 'policy-content-default'
+    blog:
+      name: 'Blog'
+      layout: 'theme'
+      sections:
+        blog-listing-default:
+          type: 'blog-listing'
+          settings:
+            heading: 'Our Blog'
+          blocks:
+          block_order:
+          disabled: false
+      order:
+        0: 'blog-listing-default'
+    article:
+      name: 'Article'
+      layout: 'theme'
+      sections:
+        article-content-default:
+          type: 'article-content'
+          settings:
+          blocks:
+          block_order:
+          disabled: false
+      order:
+        0: 'article-content-default'
+    page:
+      name: 'Page'
+      layout: 'theme'
+      sections:
+        page-content-default:
+          type: 'page-content'
+          settings:
+          blocks:
+          block_order:
+          disabled: false
+      order:
+        0: 'page-content-default'
+    not_found:
+      name: '404 Not Found'
+      layout: 'theme'
+      sections:
+        404-page-default:
+          type: '404-page'
+          settings:
+          blocks:
+          block_order:
+          disabled: false
+      order:
+        0: '404-page-default'
+    password:
+      name: 'Password'
+      layout: 'theme'
+      sections:
+        password-gate-default:
+          type: 'password-gate'
+          settings:
+            heading: 'Coming Soon'
+          blocks:
+          block_order:
+          disabled: false
+      order:
+        0: 'password-gate-default'
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (/Volumes/Projects/LetBuyy/packages/theme-engine/test/dewdrop-successor.test.ts:61:47)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+# Subtest: successor passes portable schema, editor-document roundtrip and runtime schema projection
+ok 3 - successor passes portable schema, editor-document roundtrip and runtime schema projection
+  ---
+  duration_ms: 16.820416
+  type: 'test'
+  ...
+# Subtest: successor re-entry is idempotent and isolated from its caller
+ok 4 - successor re-entry is idempotent and isolated from its caller
+  ---
+  duration_ms: 8.959209
+  type: 'test'
+  ...
+# Subtest: unsupported identity and drifted discovery, saved facts and configured order contracts fail closed
+ok 5 - unsupported identity and drifted discovery, saved facts and configured order contracts fail closed
+  ---
+  duration_ms: 12.890541
+  type: 'test'
+  ...
+# Subtest: fresh dynamic collection and search defaults preserve actual supplied headings
+ok 6 - fresh dynamic collection and search defaults preserve actual supplied headings
+  ---
+  duration_ms: 179.079583
+  type: 'test'
+  ...
+# Subtest: custom collection and search headings reach actual Liquid output after document serialization
+ok 7 - custom collection and search headings reach actual Liquid output after document serialization
+  ---
+  duration_ms: 66.078833
+  type: 'test'
+  ...
+# Subtest: omitted, cleared and whitespace heading recovers actual collection title
+ok 8 - omitted, cleared and whitespace heading recovers actual collection title
+  ---
+  duration_ms: 98.215833
+  type: 'test'
+  ...
+# Subtest: empty context and cleared merchant override have the original neutral care heading fallback
+ok 9 - empty context and cleared merchant override have the original neutral care heading fallback
+  ---
+  duration_ms: 26.677875
+  type: 'test'
+  ...
+# Subtest: order custom/default/cleared headings preserve canonical number, totals and saved product details
+ok 10 - order custom/default/cleared headings preserve canonical number, totals and saved product details
+  ---
+  duration_ms: 84.80225
+  type: 'test'
+  ...
+# Subtest: hostile discovery and order heading edits stay escaped inert text at canonical sanitizer boundary
+ok 11 - hostile discovery and order heading edits stay escaped inert text at canonical sanitizer boundary
+  ---
+  duration_ms: 89.09525
+  type: 'test'
+  ...
+# Subtest: guest, unavailable buyer and missing order guards hide configured heading and immutable private facts
+ok 12 - guest, unavailable buyer and missing order guards hide configured heading and immutable private facts
+  ---
+  duration_ms: 55.828709
+  type: 'test'
+  ...
+1..12
+# tests 12
+# suites 0
+# pass 11
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1137.395833

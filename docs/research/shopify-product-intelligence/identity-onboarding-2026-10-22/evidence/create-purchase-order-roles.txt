@@ -1,0 +1,40 @@
+- link "Purchase orders":
+- link "Purchase orders":
+- heading [level=1]: Create purchase order
+- heading "Create purchase order" [level=1]
+- heading "Origin and destination" [level=3]:
+- button "Select supplier":
+- button "Select destination":
+- button "Search products to add":
+- button "Import":
+- button "Use a barcode scanner to scan products"
+- heading "Cost summary" [level=2]:
+- button "Edit cost summary":
+- heading "Order details" [level=3]:
+- paragraph:
+- paragraph:
+- paragraph:
+- paragraph:
+- paragraph:
+- paragraph:
+- heading "Purchase order details" [level=2]:
+- textbox "Reference number"
+- textbox "Note to supplier"
+- button "Terms None":
+- paragraph: Terms
+- button "Currency INR ₹":
+- paragraph: Currency
+- button:
+- heading "Tags" [level=2]:
+- button "Manage tags":
+- combobox "Find or create tags"
+- status
+- status
+- status
+- paragraph
+- button "Close" [disabled]:
+- textbox "Work with Sidekick"
+- button "Add files and more":
+- button "Voice":
+- button "Open Sidekick":
+- status

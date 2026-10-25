@@ -1,0 +1,106 @@
+TAP version 13
+# Subtest: explicit successor conserves original factory and Core input, and changes release identity only on the clone
+ok 1 - explicit successor conserves original factory and Core input, and changes release identity only on the clone
+  ---
+  duration_ms: 19.160875
+  type: 'test'
+  ...
+# Subtest: saved merchant settings, template structure, disabled state, styling and product content are preserved exactly
+ok 2 - saved merchant settings, template structure, disabled state, styling and product content are preserved exactly
+  ---
+  duration_ms: 12.424208
+  type: 'test'
+  ...
+# Subtest: successor passes portable schema, editor-document roundtrip and runtime schema projection
+ok 3 - successor passes portable schema, editor-document roundtrip and runtime schema projection
+  ---
+  duration_ms: 15.4815
+  type: 'test'
+  ...
+# Subtest: successor re-entry is idempotent and isolated from its caller
+ok 4 - successor re-entry is idempotent and isolated from its caller
+  ---
+  duration_ms: 8.816084
+  type: 'test'
+  ...
+# Subtest: unsupported identity and drifted discovery, saved facts and configured order contracts fail closed
+ok 5 - unsupported identity and drifted discovery, saved facts and configured order contracts fail closed
+  ---
+  duration_ms: 14.180167
+  type: 'test'
+  ...
+# Subtest: fresh dynamic collection and search defaults preserve actual supplied headings
+ok 6 - fresh dynamic collection and search defaults preserve actual supplied headings
+  ---
+  duration_ms: 198.715792
+  type: 'test'
+  ...
+# Subtest: custom collection and search headings reach actual Liquid output after document serialization
+ok 7 - custom collection and search headings reach actual Liquid output after document serialization
+  ---
+  duration_ms: 73.282125
+  type: 'test'
+  ...
+# Subtest: omitted, cleared and whitespace heading recovers actual collection title
+ok 8 - omitted, cleared and whitespace heading recovers actual collection title
+  ---
+  duration_ms: 114.080667
+  type: 'test'
+  ...
+# Subtest: empty context and cleared merchant override have the original neutral care heading fallback
+ok 9 - empty context and cleared merchant override have the original neutral care heading fallback
+  ---
+  duration_ms: 30.720208
+  type: 'test'
+  ...
+# Subtest: order custom/default/cleared headings preserve canonical number, totals and saved product details
+ok 10 - order custom/default/cleared headings preserve canonical number, totals and saved product details
+  ---
+  duration_ms: 105.430708
+  type: 'test'
+  ...
+# Subtest: hostile discovery and order heading edits stay escaped inert text at canonical sanitizer boundary
+ok 11 - hostile discovery and order heading edits stay escaped inert text at canonical sanitizer boundary
+  ---
+  duration_ms: 103.217292
+  type: 'test'
+  ...
+# Subtest: guest, unavailable buyer and missing order guards hide configured heading and immutable private facts
+ok 12 - guest, unavailable buyer and missing order guards hide configured heading and immutable private facts
+  ---
+  duration_ms: 63.823583
+  type: 'test'
+  ...
+# Subtest: all twenty frozen catalogue fingerprints remain exact under legacy and explicit 2.0.0 selection
+ok 13 - all twenty frozen catalogue fingerprints remain exact under legacy and explicit 2.0.0 selection
+  ---
+  duration_ms: 107.772708
+  type: 'test'
+  ...
+# Subtest: all twenty-one default page, header, footer and style outputs remain exact on the successor
+ok 14 - all twenty-one default page, header, footer and style outputs remain exact on the successor
+  ---
+  duration_ms: 753.668792
+  type: 'test'
+  ...
+# Subtest: saved stock strings are explicit merchant values rather than migration sentinels
+ok 15 - saved stock strings are explicit merchant values rather than migration sentinels
+  ---
+  duration_ms: 8.710916
+  type: 'test'
+  ...
+# Subtest: saved successor edited values and nested unknown data survive canonical roundtrip and re-entry
+ok 16 - saved successor edited values and nested unknown data survive canonical roundtrip and re-entry
+  ---
+  duration_ms: 10.642417
+  type: 'test'
+  ...
+1..16
+# tests 16
+# suites 0
+# pass 16
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2239.414791

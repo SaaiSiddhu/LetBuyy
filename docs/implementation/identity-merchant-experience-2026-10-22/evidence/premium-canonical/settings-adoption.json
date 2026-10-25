@@ -1,0 +1,30 @@
+[
+  {
+    "file": "apps/merchant/web/src/app/[store]/settings/billing/page.tsx",
+    "containers": 4
+  },
+  {
+    "file": "apps/merchant/web/src/app/[store]/settings/billing/profile/page.tsx",
+    "containers": 4
+  },
+  {
+    "file": "apps/merchant/web/src/app/[store]/settings/business/page.tsx",
+    "containers": 6
+  },
+  {
+    "file": "apps/merchant/web/src/app/[store]/settings/domains/page.tsx",
+    "containers": 3
+  },
+  {
+    "file": "apps/merchant/web/src/app/[store]/settings/general/page.tsx",
+    "containers": 10
+  },
+  {
+    "file": "apps/merchant/web/src/app/[store]/settings/plan/page.tsx",
+    "containers": 4
+  },
+  {
+    "file": "apps/merchant/web/src/app/[store]/settings/users/page.tsx",
+    "containers": 4
+  }
+]

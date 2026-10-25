@@ -1,9 +1,10 @@
+import '../../services/api_client.dart';
+import '../../widgets/shared/merchant_export_share.dart';
 import 'package:flutter/material.dart';
 import 'package:letbuyy_models/letbuyy_models.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart' as mobile_tokens;
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:share_plus/share_plus.dart';
 import '../../app/store_context.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart' hide LoadingOverlay;
 import '../../services/store_service.dart';
@@ -33,6 +34,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
   int _totalSellerProducts = 0;
   bool _isLoading = true;
   bool _isSeedingSample = false;
+  String? _loadError;
 
   // Search & Filter State
   String _searchQuery = '';
@@ -65,7 +67,10 @@ class _ProductsScreenState extends State<ProductsScreen> {
   }
 
   Future<void> _loadData() async {
-    setState(() => _isLoading = true);
+    setState(() {
+      _isLoading = true;
+      _loadError = null;
+    });
     try {
       final productService = context.read<ProductService>();
 
@@ -75,6 +80,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
         // Fetch products for this store via API
         final storeProducts = await productService.fetchProducts(store.id);
 
+        if (!mounted) return;
         setState(() {
           _store = store;
           _storeProducts = storeProducts;
@@ -83,8 +89,10 @@ class _ProductsScreenState extends State<ProductsScreen> {
       }
     } catch (e) {
       debugPrint('Error loading products: $e');
+      if (mounted)
+        setState(() => _loadError = 'Products could not load. Please retry.');
     } finally {
-      setState(() => _isLoading = false);
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -438,10 +446,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
         if (status == 'completed' &&
             downloadUrl != null &&
             downloadUrl.isNotEmpty) {
-          await Share.share(
-            downloadUrl,
-            subject: latest['filename']?.toString() ?? 'products.csv',
-          );
+          await shareMerchantExport(api: context.read<ApiClient>(), job: latest);
           _showSnackBar('Product CSV export ready to share.');
         } else {
           _showSnackBar('Product CSV export $status. Try again shortly.');
@@ -574,7 +579,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
               children: [
                 _buildHeader(),
                 _buildActionToolbar(),
-                _buildStatsRow(),
+                if (_loadError == null) _buildStatsRow(),
                 _buildFilterSortBar(),
                 Expanded(child: _buildProductGrid()),
                 if (_isSelectionMode && _selectedProductIds.isNotEmpty)
@@ -756,24 +761,23 @@ class _ProductsScreenState extends State<ProductsScreen> {
   Widget _buildStatsRow() {
     return Container(
       margin: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-      child: Row(
+      child: Wrap(
+        spacing: 8,
+        runSpacing: 8,
         children: [
           _buildStatChip(
             'Total',
             '${_storeProducts.length}',
             AppColors.lavender,
           ),
-          const SizedBox(width: 8),
           _buildStatChip('Active', '$_activeCount', const Color(0xFF22C55E)),
-          const SizedBox(width: 8),
           _buildStatChip(
             'Out of Stock',
             '$_outOfStockCount',
             const Color(0xFFEF4444),
           ),
           if (_inactiveCount > 0) ...[
-            const SizedBox(width: 8),
-            _buildStatChip('Hidden', '$_inactiveCount', colors.textTertiary),
+              _buildStatChip('Hidden', '$_inactiveCount', colors.textTertiary),
           ],
         ],
       ),
@@ -983,6 +987,21 @@ class _ProductsScreenState extends State<ProductsScreen> {
   // ============================================
 
   Widget _buildProductGrid() {
+    if (_loadError != null) {
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(_loadError!),
+            FilledButton(
+              onPressed: _loadData,
+              child: const Text('Retry products'),
+            ),
+          ],
+        ),
+      );
+    }
+
     if (_storeProducts.isEmpty) {
       return _buildEmptyState();
     }
@@ -1018,9 +1037,11 @@ class _ProductsScreenState extends State<ProductsScreen> {
     return GridView.builder(
       controller: _scrollController,
       padding: EdgeInsets.fromLTRB(16, 0, 16, _isSelectionMode ? 100 : 24),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        childAspectRatio: 0.72,
+        mainAxisExtent:
+            (MediaQuery.sizeOf(context).width - 42) / 2 +
+            MediaQuery.textScalerOf(context).scale(112),
         crossAxisSpacing: 10,
         mainAxisSpacing: 10,
       ),

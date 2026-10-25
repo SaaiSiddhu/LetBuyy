@@ -1,0 +1,403 @@
+{
+  "load": "load completed",
+  "images": [
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 715
+    },
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 715
+    },
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 715
+    },
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 715
+    },
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 715
+    },
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 715
+    },
+    {
+      "alt": "",
+      "complete": false,
+      "naturalWidth": 417
+    },
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 417
+    },
+    {
+      "alt": "A colorful collection of handbags against a blue background.",
+      "complete": true,
+      "naturalWidth": 550
+    }
+  ],
+  "roles": [
+    {
+      "disabled": false,
+      "label": "Bags\nShoes\nLookbook\nLog in\nCart",
+      "rect": {
+        "height": 84,
+        "width": 1200,
+        "x": 120,
+        "y": 39
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgba(18, 18, 18, 0.75)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgba(18, 18, 18, 0.75)",
+        "fontFamily": "Assistant, sans-serif",
+        "fontSize": "16px",
+        "fontWeight": "400",
+        "gap": "normal 20px",
+        "lineHeight": "28.8px",
+        "padding": "20px 50px"
+      },
+      "tag": "HEADER"
+    },
+    {
+      "disabled": false,
+      "label": "Play video",
+      "rect": {
+        "height": 534.8828125,
+        "width": 713,
+        "x": 171,
+        "y": 1968.5
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(0, 0, 0)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(0, 0, 0)",
+        "fontFamily": "Arial",
+        "fontSize": "13.3333px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "normal",
+        "padding": "0px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": false,
+      "label": "Art Deco",
+      "rect": {
+        "height": 52,
+        "width": 345,
+        "x": 925,
+        "y": 161.24526977539062
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(18, 18, 18)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(18, 18, 18)",
+        "fontFamily": "Assistant, sans-serif",
+        "fontSize": "40px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "52px",
+        "padding": "0px"
+      },
+      "tag": "H1"
+    },
+    {
+      "disabled": false,
+      "label": "Decrease quantity for Art Deco",
+      "rect": {
+        "height": 47,
+        "width": 45,
+        "x": 926,
+        "y": 427.2452697753906
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(18, 18, 18)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(18, 18, 18)",
+        "fontFamily": "Arial",
+        "fontSize": "18px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "normal",
+        "padding": "0px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": false,
+      "label": "quantity",
+      "rect": {
+        "height": 47,
+        "width": 50,
+        "x": 971,
+        "y": 427.2452697753906
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(18, 18, 18)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(18, 18, 18)",
+        "fontFamily": "Assistant, sans-serif",
+        "fontSize": "16px",
+        "fontWeight": "500",
+        "gap": "normal",
+        "lineHeight": "normal",
+        "padding": "0px 5px"
+      },
+      "tag": "INPUT"
+    },
+    {
+      "disabled": false,
+      "label": "Increase quantity for Art Deco",
+      "rect": {
+        "height": 47,
+        "width": 45,
+        "x": 1021,
+        "y": 427.2452697753906
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(18, 18, 18)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(18, 18, 18)",
+        "fontFamily": "Arial",
+        "fontSize": "18px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "normal",
+        "padding": "0px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": false,
+      "label": "Add to cart",
+      "rect": {
+        "height": 46.999969482421875,
+        "width": 345,
+        "x": 925,
+        "y": 499.2452697753906
+      },
+      "styles": {
+        "backgroundColor": "rgb(255, 255, 255)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(18, 18, 18)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(18, 18, 18)",
+        "fontFamily": "Assistant, sans-serif",
+        "fontSize": "15px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "18px",
+        "padding": "0px 30px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": false,
+      "label": "Buy it now",
+      "rect": {
+        "height": 47,
+        "width": 345,
+        "x": 925,
+        "y": 556.2452392578125
+      },
+      "styles": {
+        "backgroundColor": "rgb(18, 18, 18)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(255, 255, 255)",
+        "borderRadius": "0px",
+        "boxShadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+        "color": "rgb(255, 255, 255)",
+        "fontFamily": "Assistant, sans-serif",
+        "fontSize": "15px",
+        "fontWeight": "500",
+        "gap": "normal",
+        "lineHeight": "18px",
+        "padding": "15px 30px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": false,
+      "label": "Materials",
+      "rect": {
+        "height": 20,
+        "width": 61.921875,
+        "x": 955,
+        "y": 1030.8077392578125
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(18, 18, 18)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(18, 18, 18)",
+        "fontFamily": "Assistant, sans-serif",
+        "fontSize": "15px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "19.5px",
+        "padding": "0px"
+      },
+      "tag": "H2"
+    },
+    {
+      "disabled": false,
+      "label": "Shipping & Returns",
+      "rect": {
+        "height": 20,
+        "width": 129.390625,
+        "x": 955,
+        "y": 1081.8077392578125
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(18, 18, 18)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(18, 18, 18)",
+        "fontFamily": "Assistant, sans-serif",
+        "fontSize": "15px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "19.5px",
+        "padding": "0px"
+      },
+      "tag": "H2"
+    },
+    {
+      "disabled": false,
+      "label": "Dimensions",
+      "rect": {
+        "height": 20,
+        "width": 79.0859375,
+        "x": 955,
+        "y": 1132.8077392578125
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(18, 18, 18)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(18, 18, 18)",
+        "fontFamily": "Assistant, sans-serif",
+        "fontSize": "15px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "19.5px",
+        "padding": "0px"
+      },
+      "tag": "H2"
+    },
+    {
+      "disabled": false,
+      "label": "Care Instructions",
+      "rect": {
+        "height": 20,
+        "width": 115.578125,
+        "x": 955,
+        "y": 1183.8077392578125
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(18, 18, 18)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(18, 18, 18)",
+        "fontFamily": "Assistant, sans-serif",
+        "fontSize": "15px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "19.5px",
+        "padding": "0px"
+      },
+      "tag": "H2"
+    },
+    {
+      "disabled": false,
+      "label": "Share",
+      "rect": {
+        "height": 44,
+        "width": 66.359375,
+        "x": 925,
+        "y": 1234.8077392578125
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(18, 18, 18)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(18, 18, 18)",
+        "fontFamily": "Arial",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "normal",
+        "padding": "1px 6px 1px 0px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": false,
+      "label": "A new kind of bag.",
+      "rect": {
+        "height": 52,
+        "width": 311.484375,
+        "x": 240,
+        "y": 2652.3828125
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(18, 18, 18)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(18, 18, 18)",
+        "fontFamily": "Assistant, sans-serif",
+        "fontSize": "40px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "52px",
+        "padding": "0px"
+      },
+      "tag": "H2"
+    }
+  ],
+  "url": "https://theme-dawn-demo.myshopify.com/products/art-deco-cyclamen"
+}

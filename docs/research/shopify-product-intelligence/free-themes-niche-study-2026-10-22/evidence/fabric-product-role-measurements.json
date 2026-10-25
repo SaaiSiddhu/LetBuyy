@@ -1,0 +1,733 @@
+{
+  "load": "load completed",
+  "images": [
+    {
+      "alt": "Francis is 5ft 9.5in, a regular size XS and wearing a S.",
+      "complete": true,
+      "naturalWidth": 120
+    },
+    {
+      "alt": "Francis is 5ft 9.5in, a regular size XS and wearing a S.",
+      "complete": true,
+      "naturalWidth": 510
+    },
+    {
+      "alt": "Women's Essential Sweatpant",
+      "complete": true,
+      "naturalWidth": 510
+    },
+    {
+      "alt": "Women's Essential Sweatpant",
+      "complete": true,
+      "naturalWidth": 510
+    },
+    {
+      "alt": "Women's Essential Sweatpant",
+      "complete": true,
+      "naturalWidth": 510
+    },
+    {
+      "alt": "Women's Essential Sweatpant",
+      "complete": true,
+      "naturalWidth": 510
+    },
+    {
+      "alt": "Francis is 5ft 9.5in, a regular size XS and wearing a S.",
+      "complete": true,
+      "naturalWidth": 510
+    },
+    {
+      "alt": "Women's Essential Sweatpant",
+      "complete": true,
+      "naturalWidth": 510
+    },
+    {
+      "alt": "Women's Essential Sweatpant",
+      "complete": true,
+      "naturalWidth": 510
+    },
+    {
+      "alt": "Women's Essential Sweatpant",
+      "complete": true,
+      "naturalWidth": 510
+    },
+    {
+      "alt": "Women's Essential Sweatpant",
+      "complete": true,
+      "naturalWidth": 510
+    },
+    {
+      "alt": "Francis is 5ft 9.5in, a regular size XS and wearing a S.",
+      "complete": false,
+      "naturalWidth": 1440
+    },
+    {
+      "alt": "Women's Essential Sweatpant",
+      "complete": false,
+      "naturalWidth": 1440
+    },
+    {
+      "alt": "Women's Essential Sweatpant",
+      "complete": false,
+      "naturalWidth": 1440
+    },
+    {
+      "alt": "Women's Essential Sweatpant",
+      "complete": false,
+      "naturalWidth": 1440
+    },
+    {
+      "alt": "Women's Essential Sweatpant",
+      "complete": false,
+      "naturalWidth": 1440
+    },
+    {
+      "alt": "Francis is 5ft 9.5in, a regular size XS and wearing a S.",
+      "complete": false,
+      "naturalWidth": 0
+    },
+    {
+      "alt": "Women's Essential Sweatpant",
+      "complete": false,
+      "naturalWidth": 0
+    },
+    {
+      "alt": "Women's Essential Sweatpant",
+      "complete": false,
+      "naturalWidth": 0
+    },
+    {
+      "alt": "Women's Essential Sweatpant",
+      "complete": false,
+      "naturalWidth": 0
+    },
+    {
+      "alt": "Women's Essential Sweatpant",
+      "complete": false,
+      "naturalWidth": 0
+    },
+    {
+      "alt": "Inari is 5ft 10in, a regular size XS, and wearing size S.",
+      "complete": true,
+      "naturalWidth": 480
+    },
+    {
+      "alt": "Women's Essential Sweatpant",
+      "complete": false,
+      "naturalWidth": 0
+    },
+    {
+      "alt": "Women's Essential Sweatpant",
+      "complete": false,
+      "naturalWidth": 0
+    },
+    {
+      "alt": "Women's Essential Sweatpant",
+      "complete": false,
+      "naturalWidth": 0
+    }
+  ],
+  "roles": [
+    {
+      "disabled": false,
+      "label": "Add to cart",
+      "rect": {
+        "height": 52,
+        "width": 144.15625,
+        "x": 864.6484375,
+        "y": 1031.1953125
+      },
+      "styles": {
+        "backgroundColor": "rgb(3, 3, 2)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(255, 255, 255)",
+        "borderRadius": "2px",
+        "boxShadow": "rgb(3, 3, 2) 0px 0px 0px 1px inset",
+        "color": "rgb(255, 255, 255)",
+        "fontFamily": "Geist, sans-serif",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "19.6px",
+        "padding": "16px 24px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": false,
+      "label": "Zoom",
+      "rect": {
+        "height": 571.25,
+        "width": 457,
+        "x": 0,
+        "y": 0
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgba(3, 3, 2, 0.76)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgba(3, 3, 2, 0.76)",
+        "fontFamily": "Geist, sans-serif",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "19.6px",
+        "padding": "0px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": false,
+      "label": "Zoom",
+      "rect": {
+        "height": 571.25,
+        "width": 457,
+        "x": 456.6640625,
+        "y": 0
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgba(3, 3, 2, 0.76)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgba(3, 3, 2, 0.76)",
+        "fontFamily": "Geist, sans-serif",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "19.6px",
+        "padding": "0px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": false,
+      "label": "Zoom",
+      "rect": {
+        "height": 571.25,
+        "width": 457,
+        "x": 0,
+        "y": 571.25
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgba(3, 3, 2, 0.76)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgba(3, 3, 2, 0.76)",
+        "fontFamily": "Geist, sans-serif",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "19.6px",
+        "padding": "0px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": false,
+      "label": "Zoom",
+      "rect": {
+        "height": 571.25,
+        "width": 457,
+        "x": 456.6640625,
+        "y": 571.25
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgba(3, 3, 2, 0.76)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgba(3, 3, 2, 0.76)",
+        "fontFamily": "Geist, sans-serif",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "19.6px",
+        "padding": "0px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": false,
+      "label": "Zoom",
+      "rect": {
+        "height": 571.25,
+        "width": 457,
+        "x": 0,
+        "y": 1142.5
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgba(3, 3, 2, 0.76)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgba(3, 3, 2, 0.76)",
+        "fontFamily": "Geist, sans-serif",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "19.6px",
+        "padding": "0px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": false,
+      "label": "Women's Essential Sweatpant",
+      "rect": {
+        "height": 35.1953125,
+        "width": 446.6640625,
+        "x": 953.328125,
+        "y": 114
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgba(3, 3, 2, 0.76)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgba(3, 3, 2, 0.76)",
+        "fontFamily": "Geist, sans-serif",
+        "fontSize": "32px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "35.2px",
+        "padding": "0px"
+      },
+      "tag": "H2"
+    },
+    {
+      "disabled": false,
+      "label": "XXS",
+      "rect": {
+        "height": 43.5,
+        "width": 52.2109375,
+        "x": 954.328125,
+        "y": 238.984375
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(0, 0, 0)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(0, 0, 0)",
+        "fontFamily": "Geist, sans-serif",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "19.6px",
+        "padding": "0px"
+      },
+      "tag": "INPUT"
+    },
+    {
+      "disabled": false,
+      "label": "XS",
+      "rect": {
+        "height": 43.5,
+        "width": 52.2109375,
+        "x": 1019.734375,
+        "y": 238.984375
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(0, 0, 0)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(0, 0, 0)",
+        "fontFamily": "Geist, sans-serif",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "19.6px",
+        "padding": "0px"
+      },
+      "tag": "INPUT"
+    },
+    {
+      "disabled": false,
+      "label": "S",
+      "rect": {
+        "height": 43.5,
+        "width": 52.2109375,
+        "x": 1085.140625,
+        "y": 238.984375
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(0, 0, 0)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(0, 0, 0)",
+        "fontFamily": "Geist, sans-serif",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "19.6px",
+        "padding": "0px"
+      },
+      "tag": "INPUT"
+    },
+    {
+      "disabled": false,
+      "label": "M",
+      "rect": {
+        "height": 43.5,
+        "width": 52.21875,
+        "x": 1150.546875,
+        "y": 238.984375
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(0, 0, 0)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(0, 0, 0)",
+        "fontFamily": "Geist, sans-serif",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "19.6px",
+        "padding": "0px"
+      },
+      "tag": "INPUT"
+    },
+    {
+      "disabled": false,
+      "label": "L",
+      "rect": {
+        "height": 43.5,
+        "width": 52.2109375,
+        "x": 1215.9609375,
+        "y": 238.984375
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(0, 0, 0)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(0, 0, 0)",
+        "fontFamily": "Geist, sans-serif",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "19.6px",
+        "padding": "0px"
+      },
+      "tag": "INPUT"
+    },
+    {
+      "disabled": false,
+      "label": "XL",
+      "rect": {
+        "height": 43.5,
+        "width": 52.2109375,
+        "x": 1281.3671875,
+        "y": 238.984375
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(0, 0, 0)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(0, 0, 0)",
+        "fontFamily": "Geist, sans-serif",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "19.6px",
+        "padding": "0px"
+      },
+      "tag": "INPUT"
+    },
+    {
+      "disabled": false,
+      "label": "XXL",
+      "rect": {
+        "height": 43.5,
+        "width": 52.2109375,
+        "x": 1346.7734375,
+        "y": 238.984375
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(0, 0, 0)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(0, 0, 0)",
+        "fontFamily": "Geist, sans-serif",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "19.6px",
+        "padding": "0px"
+      },
+      "tag": "INPUT"
+    },
+    {
+      "disabled": false,
+      "label": "Add to cart",
+      "rect": {
+        "height": 52,
+        "width": 446.6640625,
+        "x": 953.328125,
+        "y": 319.484375
+      },
+      "styles": {
+        "backgroundColor": "rgb(3, 3, 2)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(255, 255, 255)",
+        "borderRadius": "2px",
+        "boxShadow": "rgb(3, 3, 2) 0px 0px 0px 1px inset",
+        "color": "rgb(255, 255, 255)",
+        "fontFamily": "Geist, sans-serif",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "19.6px",
+        "padding": "16px 24px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": false,
+      "label": "add",
+      "rect": {
+        "height": 36,
+        "width": 36,
+        "x": 428.53125,
+        "y": 2290.8515625
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "linear-gradient(rgb(255, 255, 255) 0px, rgb(255, 255, 255) 100%)",
+        "border": "2px solid rgba(0, 0, 0, 0.15)",
+        "borderRadius": "50px",
+        "boxShadow": "rgb(3, 3, 2) 0px 0px 0px 1px inset",
+        "color": "rgba(3, 3, 2, 0.76)",
+        "fontFamily": "Geist, sans-serif",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "19.6px",
+        "padding": "0px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": false,
+      "label": "add",
+      "rect": {
+        "height": 36,
+        "width": 36,
+        "x": 865.859375,
+        "y": 2290.8515625
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "linear-gradient(rgb(255, 255, 255) 0px, rgb(255, 255, 255) 100%)",
+        "border": "2px solid rgba(0, 0, 0, 0.15)",
+        "borderRadius": "50px",
+        "boxShadow": "rgb(3, 3, 2) 0px 0px 0px 1px inset",
+        "color": "rgba(3, 3, 2, 0.76)",
+        "fontFamily": "Geist, sans-serif",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "19.6px",
+        "padding": "0px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": false,
+      "label": "add",
+      "rect": {
+        "height": 36,
+        "width": 36,
+        "x": 1303.1875,
+        "y": 2290.8515625
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "linear-gradient(rgb(255, 255, 255) 0px, rgb(255, 255, 255) 100%)",
+        "border": "2px solid rgba(0, 0, 0, 0.15)",
+        "borderRadius": "50px",
+        "boxShadow": "rgb(3, 3, 2) 0px 0px 0px 1px inset",
+        "color": "rgba(3, 3, 2, 0.76)",
+        "fontFamily": "Geist, sans-serif",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "19.6px",
+        "padding": "0px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": false,
+      "label": "add",
+      "rect": {
+        "height": 36,
+        "width": 36,
+        "x": 1740.515625,
+        "y": 2290.8515625
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "linear-gradient(rgb(255, 255, 255) 0px, rgb(255, 255, 255) 100%)",
+        "border": "2px solid rgba(0, 0, 0, 0.15)",
+        "borderRadius": "50px",
+        "boxShadow": "rgb(3, 3, 2) 0px 0px 0px 1px inset",
+        "color": "rgba(3, 3, 2, 0.76)",
+        "fontFamily": "Geist, sans-serif",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "19.6px",
+        "padding": "0px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": false,
+      "label": "add",
+      "rect": {
+        "height": 36,
+        "width": 36,
+        "x": 2177.84375,
+        "y": 2290.8515625
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "linear-gradient(rgb(255, 255, 255) 0px, rgb(255, 255, 255) 100%)",
+        "border": "2px solid rgba(0, 0, 0, 0.15)",
+        "borderRadius": "50px",
+        "boxShadow": "rgb(3, 3, 2) 0px 0px 0px 1px inset",
+        "color": "rgba(3, 3, 2, 0.76)",
+        "fontFamily": "Geist, sans-serif",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "19.6px",
+        "padding": "0px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": false,
+      "label": "add",
+      "rect": {
+        "height": 36,
+        "width": 36,
+        "x": 2615.171875,
+        "y": 2290.8515625
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "linear-gradient(rgb(255, 255, 255) 0px, rgb(255, 255, 255) 100%)",
+        "border": "2px solid rgba(0, 0, 0, 0.15)",
+        "borderRadius": "50px",
+        "boxShadow": "rgb(3, 3, 2) 0px 0px 0px 1px inset",
+        "color": "rgba(3, 3, 2, 0.76)",
+        "fontFamily": "Geist, sans-serif",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "19.6px",
+        "padding": "0px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": false,
+      "label": "add",
+      "rect": {
+        "height": 36,
+        "width": 36,
+        "x": 3052.5,
+        "y": 2290.8515625
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "linear-gradient(rgb(255, 255, 255) 0px, rgb(255, 255, 255) 100%)",
+        "border": "2px solid rgba(0, 0, 0, 0.15)",
+        "borderRadius": "50px",
+        "boxShadow": "rgb(3, 3, 2) 0px 0px 0px 1px inset",
+        "color": "rgba(3, 3, 2, 0.76)",
+        "fontFamily": "Geist, sans-serif",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "19.6px",
+        "padding": "0px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": false,
+      "label": "add",
+      "rect": {
+        "height": 36,
+        "width": 36,
+        "x": 3489.828125,
+        "y": 2290.8515625
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "linear-gradient(rgb(255, 255, 255) 0px, rgb(255, 255, 255) 100%)",
+        "border": "2px solid rgba(0, 0, 0, 0.15)",
+        "borderRadius": "50px",
+        "boxShadow": "rgb(3, 3, 2) 0px 0px 0px 1px inset",
+        "color": "rgba(3, 3, 2, 0.76)",
+        "fontFamily": "Geist, sans-serif",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "19.6px",
+        "padding": "0px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": false,
+      "label": "add",
+      "rect": {
+        "height": 36,
+        "width": 36,
+        "x": 3927.15625,
+        "y": 2290.8515625
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "linear-gradient(rgb(255, 255, 255) 0px, rgb(255, 255, 255) 100%)",
+        "border": "2px solid rgba(0, 0, 0, 0.15)",
+        "borderRadius": "50px",
+        "boxShadow": "rgb(3, 3, 2) 0px 0px 0px 1px inset",
+        "color": "rgba(3, 3, 2, 0.76)",
+        "fontFamily": "Geist, sans-serif",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "19.6px",
+        "padding": "0px"
+      },
+      "tag": "BUTTON"
+    }
+  ],
+  "url": "https://theme-fabric-demo.myshopify.com/products/womens-essential-sweatpant-in-black?variant=44434707710005"
+}

@@ -1,0 +1,39 @@
+{
+  "recordedAt": "2026-10-24T03:12:20.851925+00:00",
+  "status": "ROOT_NATIVE_ATTEMPTS_CLOSED_UNQUALIFIED_PUBLISHER_TENANT_EXECUTE_DEFECT",
+  "admission": "admission.json",
+  "admissionSha256": "c4dad9484f280065a823417baef08b6dc6a0287713b684d1643d84c203d0270e",
+  "attempts": [
+    {
+      "runId": "98f95df21bc7",
+      "verdict": "NO_RESOURCES_SANDBOX_DOCKER_DENIAL",
+      "tests": 0,
+      "migrations": 0
+    },
+    {
+      "runId": "515b6d97865b",
+      "verdict": "REAL_BASELINE392_PUBLISHER_PRIVILEGE_GUARD_FAILED_BEFORE_PHASE1",
+      "migrations": 321,
+      "tests": 1,
+      "pass": 0,
+      "fail": 1,
+      "skipped": 0,
+      "candidate393Applied": false,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    }
+  ],
+  "actualFailureReceipt": {
+    "path": "docs/implementation/niche-theme-programme/release-playfield201/native-qualification/native-runs/02/attempt-qualification.json",
+    "sha256": "86a073e3bc32d662fdfe3f508c072a8d70363aae90948c62ea0ac66eeb604dd3"
+  },
+  "independentDiagnostic": "publisher-baseline392-privilege-diagnostic.json (separate fresh936 baseline read-only; explicit migration256 app_tenant EXECUTE journal)",
+  "lease": "CLOSED_NO_RETRY_OR_SCHEMA_CHANGE_GRANTED",
+  "next": "Threadline source-only minimal ACL closure/sequential migration ordering proposal;393/394 not reallocated/emitted yet. No guard/profile weakening."
+}

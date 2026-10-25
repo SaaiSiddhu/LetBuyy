@@ -1,0 +1,26 @@
+{
+  "status": "CIRCUIT_SOURCE_QUALIFIED_OTHER_THEME_ORACLE_PENDING",
+  "classification": "SOURCE_UI_QUERY_CONTRACT_NOT_INSTALLED_BROWSER_OR_SQL_ACCEPTANCE",
+  "sourceHashes": {
+    "packages/theme-engine/src/circuit-theme.ts": "44f78cdaa4d9241723b7bc9ae0f0952d946e72b11775c05160c9949f87a69d2a",
+    "packages/theme-engine/src/circuit-discovery.ts": "cd72a83f2176e88e3fb83f793a51b912ef1e1022ebd244e67bf934d367c7d8f9",
+    "packages/theme-engine/test/circuit.test.ts": "12d42799a35fdcfef3113b90469cb581de9e21710f274ca0f9d86e5c31cf9236"
+  },
+  "bundleSha256": "14e72e526669bd8e7f2e252bfebdd5894e292fd6a888990a38c4d9528732eead",
+  "validation": {
+    "circuitUnitTests": 10,
+    "circuitCollectionSearchOracleChecks": 6,
+    "circuitOracleFindings": 0,
+    "actualEditorTemplateRoundtrips": 21,
+    "typecheck": "pass"
+  },
+  "changes": [
+    "canonical electronics capability gate",
+    "connector checkbox OR groups and scalar radio groups with empty Any choice",
+    "canonical discovery_query_fields preserve untouched filters/arrays/search/category/country/limit and reset page",
+    "canonical active_filters independent clear links",
+    "header/intro search retains active query fields"
+  ],
+  "previousEvidence": "discovery/ui-facet-contract/baseline-red preserves full expanded24/55 red baseline and honestly records observed23/54 initial aggregate",
+  "resourcesStarted": []
+}

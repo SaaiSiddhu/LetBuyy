@@ -1,0 +1,28 @@
+{
+  "runId": "936e5f577646",
+  "completedBeforeFailure": [
+    {
+      "device": "Desktop",
+      "actual": {
+        "heading": "Kindred saved heading B 936e5f577646",
+        "height": 1420,
+        "navLinks": [],
+        "scrollWidth": 1434,
+        "width": 1434
+      }
+    }
+  ],
+  "failedObservedDevice": "Tablet",
+  "actualIframeWidth": 820,
+  "actualReadyState": "complete",
+  "errorHeading": "Something went wrong",
+  "errorReference": "1136306685",
+  "hostGuidance": "Saved draft is kept; Retry preview offered.",
+  "retryActions": 0,
+  "outerViewportUnchanged": {
+    "width": 1280,
+    "height": 720
+  },
+  "requiredOuter3207681440": "NOT_RUN; browser-wide viewport capability not used under per-tab-only allocation",
+  "KQA01": "OPEN P2; long-brand/globalname and expected four absent nav links not reproduced."
+}

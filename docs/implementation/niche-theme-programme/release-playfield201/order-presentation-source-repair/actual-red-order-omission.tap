@@ -1,0 +1,30 @@
+TAP version 13
+# Subtest: Playfield 2.0.1 retains exact historical order markup and CSS with only PDP and version differences
+not ok 1 - Playfield 2.0.1 retains exact historical order markup and CSS with only PDP and version differences
+  ---
+  duration_ms: 72.563667
+  type: 'test'
+  location: '/Volumes/Projects/LetBuyy/packages/theme-engine/test/niche-order-presentation.test.ts:1:5012'
+  failureType: 'testCodeFailure'
+  error: '2.0.1 must retain saved order facts'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (/Volumes/Projects/LetBuyy/packages/theme-engine/test/niche-order-presentation.test.ts:68:12)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.start (node:internal/test_runner/test:944:17)
+    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 0
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2555.703125

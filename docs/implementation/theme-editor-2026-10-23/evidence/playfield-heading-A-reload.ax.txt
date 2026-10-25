@@ -1,0 +1,27 @@
+Browser tab: 7, Title: "LetBuyy Admin", URL: "http://admin.threadline-9cd50e893016.localhost:57225/syn-threadline-ui-d11a8917/online-store/themes/letbuyy-bloom/editor".
+The following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+Removed element IDs: 59-60, 64-130
+~		57 container Theme properties
+~			58 text Selected section
++			59 heading Age and interest opening, Value: 2
++				60 text Age and interest opening
+~			61 container
+~				62 container Smart defaults
+~					63 button (collapsed) Smart defaults, Secondary Actions: Expand
++						64 text Smart defaults
++				65 container
++					66 text Eyebrow
++					67 text field (settable) Eyebrow, Value: SMALL HANDS. BIG IDEAS.
++				68 container
++					69 text Heading
++					70 text field (settable) Heading, Value: Playfield saved heading A 9cd50e893016
++				71 container
++					72 text Description
++					73 text field (settable) Description, Value: Follow a curiosity. Find their next activity.
++				74 container
++					75 text Finder button
++					76 text field (settable) Finder button, Value: Find an activity
++				77 text BLOCKS
+~			54 checkbox Sections, Value: 0
+~			56 checkbox Settings, Value: 1
+The focused UI element is 1 AXWebArea LetBuyy Admin, URL: admin.threadline-9cd50e893016.localhost:57225/syn-threadline-ui-d11a8917/online-store/themes/letbuyy-bloom/editor

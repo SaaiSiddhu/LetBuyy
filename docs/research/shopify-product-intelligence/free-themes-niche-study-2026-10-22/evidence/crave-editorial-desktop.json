@@ -1,0 +1,386 @@
+{
+  "body": {
+    "background": "rgb(242, 239, 221)",
+    "color": "rgba(61, 8, 27, 0.75)",
+    "font": "Archivo, sans-serif",
+    "fontSize": "16px"
+  },
+  "controls": [
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Shop",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Search",
+      "tag": "INPUT",
+      "type": "search"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Email",
+      "tag": "INPUT",
+      "type": "email"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Subscribe",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Canada (CAD $)",
+      "tag": "BUTTON",
+      "type": "button"
+    }
+  ],
+  "headings": [
+    {
+      "font": "Archivo, sans-serif",
+      "height": 19.5,
+      "line": "19.5px",
+      "size": "13px",
+      "tag": "H2",
+      "text": "",
+      "weight": "400",
+      "width": 280,
+      "x": 949,
+      "y": -18.3984375
+    },
+    {
+      "font": "\"Proza Libre\", sans-serif",
+      "height": 52,
+      "line": "52px",
+      "size": "40px",
+      "tag": "H1",
+      "text": "Recipes",
+      "weight": "400",
+      "width": 1100,
+      "x": 170,
+      "y": 157.8984375
+    },
+    {
+      "font": "\"Proza Libre\", sans-serif",
+      "height": 31.1953125,
+      "line": "31.2px",
+      "size": "24px",
+      "tag": "H3",
+      "text": "Krapow Shrimp Rice Paper Wraps",
+      "weight": "400",
+      "width": 1100,
+      "x": 170,
+      "y": 800.8984375
+    },
+    {
+      "font": "\"Proza Libre\", sans-serif",
+      "height": 31.1953125,
+      "line": "31.2px",
+      "size": "24px",
+      "tag": "H3",
+      "text": "Veggie Rice Paper Dumplings",
+      "weight": "400",
+      "width": 544,
+      "x": 170,
+      "y": 1297.0859375
+    },
+    {
+      "font": "\"Proza Libre\", sans-serif",
+      "height": 31.1953125,
+      "line": "31.2px",
+      "size": "24px",
+      "tag": "H3",
+      "text": "Ground Meat Krapow",
+      "weight": "400",
+      "width": 544,
+      "x": 726,
+      "y": 1297.0859375
+    },
+    {
+      "font": "\"Proza Libre\", sans-serif",
+      "height": 31.1953125,
+      "line": "31.2px",
+      "size": "24px",
+      "tag": "H3",
+      "text": "Thai Krapow Fried Rice",
+      "weight": "400",
+      "width": 1100,
+      "x": 170,
+      "y": 2065.0703125
+    },
+    {
+      "font": "\"Proza Libre\", sans-serif",
+      "height": 31.1953125,
+      "line": "31.2px",
+      "size": "24px",
+      "tag": "H3",
+      "text": "Crispy Spicy Bulgogi Pork Belly",
+      "weight": "400",
+      "width": 1100,
+      "x": 170,
+      "y": 2779.0625
+    },
+    {
+      "font": "\"Proza Libre\", sans-serif",
+      "height": 52,
+      "line": "52px",
+      "size": "40px",
+      "tag": "H2",
+      "text": "Spice up your inbox",
+      "weight": "400",
+      "width": 1260,
+      "x": 90,
+      "y": 3041.25
+    },
+    {
+      "font": "\"Proza Libre\", sans-serif",
+      "height": 23.3984375,
+      "line": "23.4px",
+      "size": "18px",
+      "tag": "H2",
+      "text": "Quick links",
+      "weight": "400",
+      "width": 358.671875,
+      "x": 540.6640625,
+      "y": 3329.046875
+    },
+    {
+      "font": "\"Proza Libre\", sans-serif",
+      "height": 23.3984375,
+      "line": "23.4px",
+      "size": "18px",
+      "tag": "H2",
+      "text": "Our mission",
+      "weight": "400",
+      "width": 358.6640625,
+      "x": 911.3359375,
+      "y": 3329.046875
+    },
+    {
+      "font": "Archivo, sans-serif",
+      "height": 19.5,
+      "line": "19.5px",
+      "size": "13px",
+      "tag": "H2",
+      "text": "Country/region",
+      "weight": "400",
+      "width": 162.1796875,
+      "x": 180,
+      "y": 3679.7265625
+    }
+  ],
+  "links": [
+    {
+      "text": "Skip to content",
+      "url": "https://theme-crave-demo.myshopify.com/blogs/recipes#MainContent"
+    },
+    {
+      "text": "",
+      "url": "https://theme-crave-demo.myshopify.com/"
+    },
+    {
+      "text": "",
+      "url": "https://theme-crave-demo.myshopify.com/collections/meal-starters"
+    },
+    {
+      "text": "",
+      "url": "https://theme-crave-demo.myshopify.com/collections/combo-packs"
+    },
+    {
+      "text": "",
+      "url": "https://theme-crave-demo.myshopify.com/collections/other-goodies"
+    },
+    {
+      "text": "Meet us",
+      "url": "https://theme-crave-demo.myshopify.com/pages/meet-us"
+    },
+    {
+      "text": "Recipes",
+      "url": "https://theme-crave-demo.myshopify.com/blogs/recipes"
+    },
+    {
+      "text": "Contact",
+      "url": "https://theme-crave-demo.myshopify.com/pages/contact"
+    },
+    {
+      "text": "Cart",
+      "url": "https://theme-crave-demo.myshopify.com/cart"
+    },
+    {
+      "text": "Krapow Shrimp Rice Paper Wraps",
+      "url": "https://theme-crave-demo.myshopify.com/blogs/recipes/krapow-shrimp-rice-paper-wraps"
+    },
+    {
+      "text": "Veggie Rice Paper Dumplings",
+      "url": "https://theme-crave-demo.myshopify.com/blogs/recipes/veggie-rice-paper-dumplings-recipe"
+    },
+    {
+      "text": "Ground Meat Krapow",
+      "url": "https://theme-crave-demo.myshopify.com/blogs/recipes/ground-meat-krapow-recipe"
+    },
+    {
+      "text": "Thai Krapow Fried Rice",
+      "url": "https://theme-crave-demo.myshopify.com/blogs/recipes/thai-krapow-fried-rice-recipe"
+    },
+    {
+      "text": "Crispy Spicy Bulgogi Pork Belly",
+      "url": "https://theme-crave-demo.myshopify.com/blogs/recipes/crispy-spicy-bulgogi-pork-belly-recipe"
+    },
+    {
+      "text": "Shop all",
+      "url": "https://theme-crave-demo.myshopify.com/collections/all"
+    },
+    {
+      "text": "Meet us",
+      "url": "https://theme-crave-demo.myshopify.com/pages/meet-us"
+    },
+    {
+      "text": "Recipes",
+      "url": "https://theme-crave-demo.myshopify.com/blogs/recipes"
+    },
+    {
+      "text": "Contact",
+      "url": "https://theme-crave-demo.myshopify.com/pages/contact"
+    },
+    {
+      "text": "theme-crave-demo",
+      "url": "https://theme-crave-demo.myshopify.com/"
+    }
+  ],
+  "sections": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--17357908115690__main",
+      "rect": {
+        "height": 2809.3515625,
+        "width": 1440,
+        "x": 0,
+        "y": 125.8984375
+      },
+      "tag": "SECTION",
+      "text": "Recipes\nKrapow Shrimp Rice Paper Wraps\nDECEMBER 15, 2021\n\nSpicy, salty and oh-so-flavorful, these shrimp rice paper wraps make the perfect lil' snack.\n\n11 comments\nVeggie Rice Pape"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--17357908115690__163959439937cffbef",
+      "rect": {
+        "height": 265.796875,
+        "width": 1440,
+        "x": 0,
+        "y": 2999.25
+      },
+      "tag": "SECTION",
+      "text": "Spice up your inbox\n\nSign up for our newsletter to get exclusive recipes, cooking tips, and more.\n\nEmail"
+    }
+  ],
+  "title": "Recipes – theme-crave-demo",
+  "url": "https://theme-crave-demo.myshopify.com/blogs/recipes",
+  "viewport": {
+    "dpr": 1,
+    "height": 1000,
+    "width": 1440
+  },
+  "formGroups": [],
+  "grids": [],
+  "images": [
+    {
+      "alt": "Top-down view of Krapow shrimp rice paper wraps on a bright green plate, served with lime wedges.",
+      "complete": true,
+      "naturalWidth": 550,
+      "rect": {
+        "height": 550,
+        "width": 1096
+      }
+    },
+    {
+      "alt": "Top-down view of dumplings on a blue plate with a dipping sauce. ",
+      "complete": true,
+      "naturalWidth": 550,
+      "rect": {
+        "height": 307,
+        "width": 540
+      }
+    },
+    {
+      "alt": "Krapow dish served on a plate with a fried egg on top. The meal starter packet lies next to the plate. ",
+      "complete": true,
+      "naturalWidth": 550,
+      "rect": {
+        "height": 307,
+        "width": 540
+      }
+    },
+    {
+      "alt": "Thai krapow fried rice served on a blue plate. The meal starter packet lies next to the finished dish.",
+      "complete": true,
+      "naturalWidth": 550,
+      "rect": {
+        "height": 550,
+        "width": 1096
+      }
+    },
+    {
+      "alt": "Top-down view of a noodle dish on a plate, served with chopsticks.",
+      "complete": true,
+      "naturalWidth": 550,
+      "rect": {
+        "height": 550,
+        "width": 1096
+      }
+    }
+  ],
+  "bodyText": "Skip to content\n\nFree shipping on orders $35+ 🚀\n\nShop\nMeet us\nRecipes\nContact\nCart\nRecipes\nKrapow Shrimp Rice Paper Wraps\nDECEMBER 15, 2021\n\nSpicy, salty and oh-so-flavorful, these shrimp rice paper wraps make the perfect lil' snack.\n\n11 comments\nVeggie Rice Paper Dumplings\nDECEMBER 15, 2021\n\nServe these flavor bombs on their own as an appetizer, or as a meal with your favorite grains!\n\n16 comments\nGround Meat Krapow\nDECEMBER 2, 2021\n\nFire up this beloved Teigen fam recipe for chili basil stir-fry in under 20 minutes.\n\n7 comments\nThai Krapow Fried Rice\nDECEMBER 2, 2021\n\nHearty and aromatic, this classic fried rice will spice up any weeknight dinner.\n\nCrispy Spicy Bulgogi Pork Belly\nDECEMBER 2, 2021\n\nThis spicy pork belly has the perfect amount of crunch. Enjoy over rice or noodles for a satisfying meal.\n\n4 comments\nSpice up your inbox\n\nSign up for our newsletter to get exclusive recipes, cooking tips, and more.\n\nEmail\nQuick links\nShop all\nMeet us\nRecipes\nContact\nOur mission\n\nTo bring proud, loud Asian flavors to your fingertips any day of the week.\n\nTwitter\nFacebook\nPinterest\nInstagram\nTikTok\nCountry/region\nCanada (CAD $)\nPayment methods\n© 2026, theme-crave-demo Powered by Shopify"
+}

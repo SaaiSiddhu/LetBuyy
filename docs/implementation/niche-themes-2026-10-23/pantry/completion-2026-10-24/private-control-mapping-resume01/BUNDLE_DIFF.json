@@ -1,0 +1,190 @@
+{
+  "recordedAt": "2026-10-24T11:45:03.510Z",
+  "classification": "PRIVATE_VERSION_NEUTRAL_SOURCE_OVERLAY_NOT_FOR_IMMUTABLE_CAPTURE",
+  "inputBundleSha256": "1f883e68d1738e8fe4b402049fdc77f25763f600800b5ec068f3dfbdae7fa244",
+  "outputBundleSha256": "8b7f21e995238f5c9d19994a448f86852e1e63b69ad5adcd14dbd215ff5c4a4e",
+  "templatesUnchanged": true,
+  "packageIdentityVersionUnchanged": true,
+  "versionOrCaptureDecision": "PENDING_THEMES; do not replace or publish captured2.0.1 using this private bundle",
+  "mainWrites": false,
+  "installedAcceptance": false,
+  "verifiedInputs": [
+    {
+      "path": "packages/theme-engine/src/pantry-theme.ts",
+      "sha256": "9c440d32f146b8155ba78f522da52979fd09a0f3d32c4b25e5c3e289ef390925",
+      "actualSha256": "9c440d32f146b8155ba78f522da52979fd09a0f3d32c4b25e5c3e289ef390925"
+    },
+    {
+      "path": "packages/theme-engine/src/pantry-theme-v201.ts",
+      "sha256": "e08e3d16b831a7cb8fd7ca3d5ada6fda75a5e21f48c38ff40563541f7ccfca22",
+      "actualSha256": "e08e3d16b831a7cb8fd7ca3d5ada6fda75a5e21f48c38ff40563541f7ccfca22"
+    },
+    {
+      "path": "packages/theme-engine/src/pantry-styles.ts",
+      "sha256": "3a7e53583942a5188970d4f5e2901ce4e894ab3b4da55a30176073eaa03db278",
+      "actualSha256": "3a7e53583942a5188970d4f5e2901ce4e894ab3b4da55a30176073eaa03db278"
+    },
+    {
+      "path": "packages/theme-engine/src/pantry-discovery.ts",
+      "sha256": "d9c09fe8097123623d26cde25ec9951233792adadbdf8d0eb6628659234759d0",
+      "actualSha256": "d9c09fe8097123623d26cde25ec9951233792adadbdf8d0eb6628659234759d0"
+    },
+    {
+      "path": "packages/theme-engine/src/niche-order-presentation.ts",
+      "sha256": "5683e413e48bc11d6b0906dc344ec6c3b0c7413113172b11bda91c49d08cb444",
+      "actualSha256": "5683e413e48bc11d6b0906dc344ec6c3b0c7413113172b11bda91c49d08cb444"
+    },
+    {
+      "path": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "sha256": "ec2166ba230387d152fbd0629d12c19de6281b451c651166918adcd47c48eaf3",
+      "actualSha256": "ec2166ba230387d152fbd0629d12c19de6281b451c651166918adcd47c48eaf3"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-bundle.ts",
+      "sha256": "cdbad4b28277431a3ab06e56ed0ce16539e04837bb107f5f951a3df39a92ed76",
+      "actualSha256": "cdbad4b28277431a3ab06e56ed0ce16539e04837bb107f5f951a3df39a92ed76"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-renderer.ts",
+      "sha256": "794cbc6ff9ae71f995560f302e1b0d5f0d4ff4da59fa31191585851b1e822164",
+      "actualSha256": "794cbc6ff9ae71f995560f302e1b0d5f0d4ff4da59fa31191585851b1e822164"
+    },
+    {
+      "path": "packages/commerce-core/src/pantry-facts.ts",
+      "sha256": "1166f6ff89be545b446e0e072575b9bb761f9ddf81b39164d9579ce3206b396a",
+      "actualSha256": "1166f6ff89be545b446e0e072575b9bb761f9ddf81b39164d9579ce3206b396a"
+    },
+    {
+      "path": "packages/commerce-core/src/product-fact-presentation.ts",
+      "sha256": "17f291e91a8888d943363643f2f203ec52b95d308b999865fd9df6cd91947084",
+      "actualSha256": "17f291e91a8888d943363643f2f203ec52b95d308b999865fd9df6cd91947084"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/product-liquid-drop.ts",
+      "sha256": "58ad07c074f99c63a9ecfb2e40cf31f82a039a5b45a566d7602a936ebfd64fa7",
+      "actualSha256": "58ad07c074f99c63a9ecfb2e40cf31f82a039a5b45a566d7602a936ebfd64fa7"
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/online-store/pages/page.tsx",
+      "sha256": "30d63ac005ffe446184ee962a76bbbe973bc0e0d0613e740f5178c21440b0afb",
+      "actualSha256": "30d63ac005ffe446184ee962a76bbbe973bc0e0d0613e740f5178c21440b0afb"
+    },
+    {
+      "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/letbuyy-design-blueprints/04-refresh-pantry.md",
+      "sha256": "83a60004f991bb74c02539317d6c4394faf5afb97484f5d6c4bf134068a401b4",
+      "actualSha256": "83a60004f991bb74c02539317d6c4394faf5afb97484f5d6c4bf134068a401b4"
+    },
+    {
+      "path": "apps/commerce/web/src/app/store/[subdomain]/[...path]/page.tsx",
+      "sha256": "1a735f5f5dc73c9acb113831f6f2d66a864493e2d1167942fba6d8914cfe13d9",
+      "actualSha256": "1a735f5f5dc73c9acb113831f6f2d66a864493e2d1167942fba6d8914cfe13d9"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/content-service.ts",
+      "sha256": "11219830420cc9dc67de0adf33b4239c117e810a181b62dd0a38caaf1ab37fc5",
+      "actualSha256": "11219830420cc9dc67de0adf33b4239c117e810a181b62dd0a38caaf1ab37fc5"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "sha256": "37d71edee334719e2d44e30512eeb695d56cda86dc67b40fe5e092631c4582f4",
+      "actualSha256": "37d71edee334719e2d44e30512eeb695d56cda86dc67b40fe5e092631c4582f4"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-document.ts",
+      "sha256": "7ba285a54d71a01545c4cb1e4a3c1540a30caae2db793079b2b3cb32b8612412",
+      "actualSha256": "7ba285a54d71a01545c4cb1e4a3c1540a30caae2db793079b2b3cb32b8612412"
+    },
+    {
+      "path": "packages/theme-engine/src/portable-to-liquid.ts",
+      "sha256": "c981e822ec3f51bd7975e72862a957fc011b14a7f8984cdd0b38f8ba9a27803b",
+      "actualSha256": "c981e822ec3f51bd7975e72862a957fc011b14a7f8984cdd0b38f8ba9a27803b"
+    },
+    {
+      "path": "packages/theme-engine/src/schema-field-extensions.ts",
+      "sha256": "a5c53fdfc687bc9c7913ff64c1af1d51e496b70fd74b2a78e2b000bb66ee4d71",
+      "actualSha256": "a5c53fdfc687bc9c7913ff64c1af1d51e496b70fd74b2a78e2b000bb66ee4d71"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-bundle-core.ts",
+      "sha256": "0e1650a4d71ef358792c0f877f4ae678794fb6d2cfdebbb30d79563e4a2f452f",
+      "actualSha256": "0e1650a4d71ef358792c0f877f4ae678794fb6d2cfdebbb30d79563e4a2f452f"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-settings.ts",
+      "sha256": "3ac7b069b156f89d8f412103cbe6003775524fe4660f47c16a82b13c6a1a2e00",
+      "actualSha256": "3ac7b069b156f89d8f412103cbe6003775524fe4660f47c16a82b13c6a1a2e00"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-presets.ts",
+      "sha256": "283028890199a34e67863c337ebd0c788c830c60ddaa87854c3bad28f9581e82",
+      "actualSha256": "283028890199a34e67863c337ebd0c788c830c60ddaa87854c3bad28f9581e82"
+    },
+    {
+      "path": "packages/commerce-core/src/niche-product-facts.ts",
+      "sha256": "efdefb2c5a20306a6b80afa133a962d873341b01df51ac701696d8256c13eb2e",
+      "actualSha256": "efdefb2c5a20306a6b80afa133a962d873341b01df51ac701696d8256c13eb2e"
+    }
+  ],
+  "changes": [
+    {
+      "path": "/layout/theme/source",
+      "beforeSha256": "c968afac7c397293d1e15f0e1ef8872530e0437df603fd67d4ba860fbe15c395",
+      "afterSha256": "e2fd2b9dccf9a50c6d05ba6e18a985bfa07d08afcee623deb0435351b10a31e8"
+    },
+    {
+      "path": "/config/settings_schema/settings/typography/fields/pantryTextScale",
+      "beforeSha256": "eb045d78d273107348b0300c01d29b7552d622abbc6faf81b3ec55359aa9950c",
+      "afterSha256": "21d796afa49f5e14d1908eeb284e576716be74776855ecbabddd8a15f0a64dff"
+    },
+    {
+      "path": "/config/settings_data/current/pantryTextScale",
+      "beforeSha256": "eb045d78d273107348b0300c01d29b7552d622abbc6faf81b3ec55359aa9950c",
+      "afterSha256": "cb2842d6687d19c69a6c0d4eb6a0f1af02951cef170de56ab331046ea5baac08"
+    },
+    {
+      "path": "/sections/collection-product-list/source",
+      "beforeSha256": "a350b449409bb0cc093d355eaf06a0fc3129036f96397979e440fe1068ec847c",
+      "afterSha256": "3183c879ea9b2b2c59aa7eb2ed321689404b3ff68f112cf9226782a45d117109"
+    },
+    {
+      "path": "/sections/collection-product-list/schema/settings",
+      "beforeSha256": "26e86120cb6c8473a03eea4bafec79902c533d8cc74ac52b39489b1404561d0d",
+      "afterSha256": "38b041093a5c494075c38a8444d3e6bc19c35a80ef0406a205781b181bf7b6dc"
+    },
+    {
+      "path": "/sections/about-section/source",
+      "beforeSha256": "6427f3674567fb188f9cdfa64514432d5978312eda040ca62b550d36e5e7bb84",
+      "afterSha256": "ef0e51868d997f2643ef41cd83eaf8495d3732612c3644ab9a847a9c0fd8a607"
+    },
+    {
+      "path": "/sections/featured-products/source",
+      "beforeSha256": "243158bdf65ed91f9d7bc0d6f00fe25a2f6f7f8666b21568df849d857cfca4ff",
+      "afterSha256": "c65830f76f34caa6e01bfb3e6b146106ac54182029376af6fc48f5494f1e6627"
+    },
+    {
+      "path": "/sections/featured-products/schema/settings",
+      "beforeSha256": "a3fcc92b7dd6f70ce6be5e78bd281a2d7b70328bb984628058358f23bbcdaa4d",
+      "afterSha256": "4ed1ec45f9f8705b9fd7f95ffc589483e0f6925409763b61f008e61d2c8c46fa"
+    },
+    {
+      "path": "/sections/product-detail/source",
+      "beforeSha256": "249c7c8c1a4e27fa49ab502fdc7b8a20bf90f3214d933f41c3c4024d083f3307",
+      "afterSha256": "e4572067b687dc77ad7949a2f2507839f74141f90e69530946c262eba4e8e352"
+    },
+    {
+      "path": "/sections/product-detail/schema/settings",
+      "beforeSha256": "8cb9450c5bf90d9d8ecfa6b12e75bccdd052fe2ce92b86332cfcc6e717280ce1",
+      "afterSha256": "09fba93a32d16cff4bffe2c495189b2dfc724f88db556921ced732309a024e60"
+    },
+    {
+      "path": "/sections/product-grid/source",
+      "beforeSha256": "d195eb1ffa1d3dc1eef88af6350c9a096c439984fcecd203aebda657eda15206",
+      "afterSha256": "52e1c0fec9e4a3eb5ae1e1ff40579432d4a84a69a1dffd9f1ef91ad5d8d613ee"
+    },
+    {
+      "path": "/sections/product-grid/schema/settings",
+      "beforeSha256": "595efa0313d2904fc174186977b6f2498b79e9a459e23d6b593c36198901d8a3",
+      "afterSha256": "829b3f3f98b9c995f6f26dbab159f2fe87eaee20a580ca1fe60bbd6f48fade64"
+    }
+  ]
+}

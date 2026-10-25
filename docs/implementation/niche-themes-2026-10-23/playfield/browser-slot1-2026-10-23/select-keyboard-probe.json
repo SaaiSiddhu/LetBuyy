@@ -1,0 +1,79 @@
+{
+  "log": [
+    {
+      "keys": [
+        "ArrowUp"
+      ],
+      "states": [
+        "6-8",
+        "6-8"
+      ],
+      "url": "http://127.0.0.1:43271/store/browser-playfield/products?page=2&limit=1&category=Activities&country_of_origin=India&sort=name&age_band=6-8&interest=art"
+    },
+    {
+      "keys": [
+        "ArrowUp",
+        "Enter"
+      ],
+      "states": [
+        "6-8",
+        "6-8",
+        "6-8"
+      ],
+      "url": "http://127.0.0.1:43271/store/browser-playfield/products?search=&age_band=6-8&interest=art&sort=name&limit=1&category=Activities&country_of_origin=India"
+    },
+    {
+      "keys": [
+        "Space",
+        "ArrowUp",
+        "Enter"
+      ],
+      "states": [
+        "6-8",
+        "6-8",
+        "6-8",
+        "6-8"
+      ],
+      "url": "http://127.0.0.1:43271/store/browser-playfield/products?search=&age_band=6-8&interest=art&sort=name&limit=1&category=Activities&country_of_origin=India"
+    },
+    {
+      "keys": [
+        "Alt+ArrowDown",
+        "Home",
+        "Enter"
+      ],
+      "states": [
+        "6-8",
+        "6-8",
+        "6-8",
+        "6-8"
+      ],
+      "url": "http://127.0.0.1:43271/store/browser-playfield/products?search=&age_band=6-8&interest=art&sort=name&limit=1&category=Activities&country_of_origin=India"
+    },
+    {
+      "keys": [
+        "Home"
+      ],
+      "states": [
+        "6-8",
+        "6-8"
+      ],
+      "url": "http://127.0.0.1:43271/store/browser-playfield/products?page=2&limit=1&category=Activities&country_of_origin=India&sort=name&age_band=6-8&interest=art"
+    },
+    {
+      "keys": [
+        "Space",
+        "Home",
+        "Enter"
+      ],
+      "states": [
+        "6-8",
+        "6-8",
+        "6-8",
+        "6-8"
+      ],
+      "url": "http://127.0.0.1:43271/store/browser-playfield/products?search=&age_band=6-8&interest=art&sort=name&limit=1&category=Activities&country_of_origin=India"
+    }
+  ],
+  "closed": true
+}

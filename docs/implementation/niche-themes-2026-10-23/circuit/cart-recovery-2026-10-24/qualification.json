@@ -1,0 +1,61 @@
+{
+  "recordedAt": "2026-10-23T20:05:42.151613+00:00",
+  "classification": "CART_CLASS_SOURCE_QUALIFICATION_ONLY_NOT_LIVE_ACCEPTANCE",
+  "inheritedHydrationSha256": "5f0b2659f1fcfe65d651f248a2c052dba4201bf7c5caa36907a20aa527463bdd",
+  "sourcePins": {
+    "apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx": "db6f884364955b8f9c3687bead875a7211b87b575a9b478f4520b2dc1f6c9712",
+    "apps/commerce/web/src/lib/theme-engine/liquid-cart-recovery.test.ts": "1cc8bd46a88302dc9319f00d8e4a3c5688760bfcc8a76f494936b83943245070"
+  },
+  "qualifiedPickerSha256": "be1ecdf27902e67705e9eddafaa78d13f61fa0dbb44391310e093cf2021cafdf",
+  "outsideCartClassByteIdentical": true,
+  "existingCartTestUnchanged": true,
+  "parent134SourcePins": {
+    "unchanged": 133,
+    "onlyAllocatedHydrationChanged": [
+      "apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx"
+    ]
+  },
+  "parent150EpochEvidenceUnchanged": 17,
+  "protectedCandidatesUnchanged": [
+    "/private/tmp/theme-editor-candidate-20261023-latest392-manualtls01/apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx",
+    "/private/tmp/theme-editor-candidate-20261023-final02/apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx"
+  ],
+  "validation": {
+    "red": {
+      "pass": 0,
+      "fail": 1,
+      "skip": 0,
+      "log": "red-native-cart.tap",
+      "actualExpectedMismatch": "5 !== 4; actual native class/header"
+    },
+    "finalTargetedCartTests": {
+      "pass": 61,
+      "fail": 0,
+      "skip": 0,
+      "cancel": 0,
+      "newRecoveryTests": 14,
+      "existingTests": 47,
+      "log": "cart-regression-final.tap",
+      "reactMode": "normal client mode; final wider RSC cohort remains separate"
+    },
+    "commerceNoEmit": {
+      "exitCode": 0,
+      "log": "commerce-noemit-complete.log"
+    },
+    "lint": {
+      "baselineErrors": 1,
+      "baselineWarnings": 23,
+      "currentErrors": 1,
+      "currentWarnings": 23,
+      "introduced": 0,
+      "newTestErrors": 0,
+      "newTestWarnings": 0,
+      "normalizedDiagnosticSourceLinesEqual": true,
+      "wholeFileGreen": false
+    }
+  },
+  "runtimeApiBrowserDatabaseBuildActions": 0,
+  "liveF607HttpStatus": "NOT_CAPTURED_NOT_INFERRED",
+  "candidateWrites": false,
+  "installedPass": false
+}

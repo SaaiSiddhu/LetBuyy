@@ -1,0 +1,30 @@
+{
+  "recordedAt": "2026-10-25T00:00:08.956803+00:00",
+  "status": "INDEPENDENT_REVIEW_REQUIRES_PRIVATE_CORRECTION_BEFORE_NATIVE_ADMISSION",
+  "reviewer": "Themes",
+  "immutableOriginalProposal": "private-heading211-20261025-01/HANDOFF.json",
+  "findings": [
+    {
+      "id": "HEADING211-ROLLBACK-CHECKPOINT",
+      "evidence": "docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/ORDER_HEADING211_CHECKPOINT_COUNTEREXAMPLE_01.json",
+      "observed": "Exact pure predicate model accepts forged saved prior name/section_schemas/schema_version and DOWN would restore them. Native NOT_RUN.",
+      "correctionNeed": "Bind every field restored by paired DOWN to its exact accepted prior metadata/config provenance and add refusal controls."
+    },
+    {
+      "id": "HEADING211-HTTP-CONSERVATION",
+      "evidence": "Themes current review commentary and prepared native post-DOWN editor-read assertion",
+      "observed": "Actual HTTP reads can append legitimate operational telemetry, so full table equality across those reads is overbroad.",
+      "correctionNeed": "Immediate full pre-HTTP baseline, exact response request/trace attribution and base/parent/leaf operational mirrors, unchanged pre-existing rows, all other tables unchanged. Retain full witnesses across SQL-only replay/rollback."
+    }
+  ],
+  "sourceTestsRemainDatedPass": {
+    "PASS": 61,
+    "FAIL": 0,
+    "meaning": "Heading/child/roundtrip source checks do not prove the unexecuted native rollback/conservation paths."
+  },
+  "MainOrRuntimeAffected": false,
+  "sealedOriginalModified": false,
+  "newPrivateWriterAllocation": "Await exact newly granted paths/bases; prior lease ended/expired. No mutation until allocated.",
+  "runtime": "Root-only recovery; no new admission received",
+  "fullCertificate": false
+}

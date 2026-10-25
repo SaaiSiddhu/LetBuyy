@@ -1,0 +1,47 @@
+import assert from 'node:assert/strict';
+import test from 'node:test';
+import { createFirstPartyCatalogBundle, firstPartyThemeListings } from '../src/first-party-theme-catalog';
+import { createThreadlineThemeV201 } from '../src/threadline-theme-v201';
+
+test('Threadline 2.0.1 requires explicit distribution selection and retains its stable identity', () => {
+    const previous = createFirstPartyCatalogBundle('letbuyy-sense');
+    const successor = createFirstPartyCatalogBundle('letbuyy-sense', { threadlineVersion: '2.0.1' });
+    assert.equal(previous.package.version, '2.0.0');
+    assert.equal(successor.package.slug, previous.package.slug);
+    assert.equal(successor.package.version, '2.0.1');
+    assert.equal(successor.package.version_number, 3);
+    assert.deepEqual(successor, createFirstPartyCatalogBundle('letbuyy-sense', { designVersion: '2.0.0', threadlineVersion: '2.0.1' }));
+    assert.deepEqual(createThreadlineThemeV201(successor), successor);
+});
+
+test('Threadline selector leaves every other legacy and v2 distribution unchanged', () => {
+    for (const { slug } of firstPartyThemeListings()) {
+        if (slug === 'letbuyy-sense') continue;
+        assert.deepEqual(createFirstPartyCatalogBundle(slug, { threadlineVersion: '2.0.1' }), createFirstPartyCatalogBundle(slug), slug);
+        assert.deepEqual(createFirstPartyCatalogBundle(slug, { designVersion: '2.0.0', threadlineVersion: '2.0.1' }), createFirstPartyCatalogBundle(slug, { designVersion: '2.0.0' }), slug);
+    }
+});
+
+test('independent successor selectors compose without changing another theme selection', () => {
+    const selected = { designVersion: '2.0.0', threadlineVersion: '2.0.1', circuitVersion: '2.0.1', pantryVersion: '2.0.1', trailmarkVersion: '2.0.1', playfieldVersion: '2.0.1', dewdropVersion: '2.0.1' } as const;
+    for (const [slug, selector] of [
+        ['letbuyy-sense', { threadlineVersion: '2.0.1' }],
+        ['letbuyy-forge', { circuitVersion: '2.0.1' }],
+        ['letbuyy-refresh', { pantryVersion: '2.0.1' }],
+        ['letbuyy-ride', { trailmarkVersion: '2.0.1' }],
+        ['letbuyy-bloom', { playfieldVersion: '2.0.1' }],
+        ['letbuyy-aura', { dewdropVersion: '2.0.1' }],
+    ] as const) {
+        assert.deepEqual(createFirstPartyCatalogBundle(slug, selected), createFirstPartyCatalogBundle(slug, { designVersion: '2.0.0', ...selector }), slug);
+    }
+});
+
+test('Dewdrop successor requires both design and version selection without changing legacy or default v2', () => {
+    const previous = createFirstPartyCatalogBundle('letbuyy-aura', { designVersion: '2.0.0' });
+    const successor = createFirstPartyCatalogBundle('letbuyy-aura', { designVersion: '2.0.0', dewdropVersion: '2.0.1' });
+    assert.equal(previous.package.version, '2.0.0');
+    assert.equal(successor.package.slug, previous.package.slug);
+    assert.equal(successor.package.version, '2.0.1');
+    assert.equal(successor.package.version_number, 3);
+    assert.deepEqual(createFirstPartyCatalogBundle('letbuyy-aura', { dewdropVersion: '2.0.1' }), createFirstPartyCatalogBundle('letbuyy-aura'));
+});

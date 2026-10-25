@@ -1,0 +1,111 @@
+{
+  "recordedAt": "2026-10-23T19:24:27.050378+00:00",
+  "runId": "f6074d90e894",
+  "scope": "Normal installed Habitat2.0.0 template heading plus shared header/footer save/reload/preview/publish A/B; anonymous draft isolation; reviewed restoreA/new release; retainedB/reapplyB exact content hashes",
+  "status": "PASS_BOUNDED_EDITOR_CYCLE",
+  "phases": {
+    "A": {
+      "recordedAt": "2026-10-23T19:10:13.447377+00:00",
+      "runId": "f6074d90e894",
+      "phase": "A",
+      "proofStatus": 200,
+      "proof": {
+        "packageVersion": "2.0.0",
+        "releaseId": "87e4c406-bded-4500-b7a8-59d7050ab6f0",
+        "sourceDraftVersion": 3,
+        "releaseSha256": "fcd3a787116e839a919b9582bc07a1a74bead48aab68c5a84213b91f981b4571",
+        "orders": 0,
+        "installed": 2,
+        "editorObservations": {
+          "captureFailures": 0,
+          "records": []
+        }
+      },
+      "publicReadback": {
+        "url": "http://syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94",
+        "httpStatus": 200,
+        "expectedHeading": "Habitat saved heading A f6074d90e894",
+        "expectedFound": true,
+        "otherHeadingFound": false
+      }
+    },
+    "B": {
+      "recordedAt": "2026-10-23T19:10:56.243910+00:00",
+      "runId": "f6074d90e894",
+      "phase": "B",
+      "proofStatus": 200,
+      "proof": {
+        "packageVersion": "2.0.0",
+        "releaseId": "a389fc26-5d8a-4714-8c1b-3cf50015cf41",
+        "sourceDraftVersion": 6,
+        "releaseSha256": "9a9b7f850699462088fc2f928169ab6faf700f09e923c6485aeff4b303cfc50b",
+        "orders": 0,
+        "installed": 2,
+        "editorObservations": {
+          "captureFailures": 0,
+          "records": []
+        }
+      },
+      "publicReadback": {
+        "url": "http://syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94",
+        "httpStatus": 200,
+        "expectedHeading": "Habitat saved heading B f6074d90e894",
+        "expectedFound": true,
+        "otherHeadingFound": false
+      }
+    },
+    "restored-A": {
+      "recordedAt": "2026-10-23T19:12:16.246397+00:00",
+      "runId": "f6074d90e894",
+      "phase": "restored-A",
+      "proofStatus": 200,
+      "proof": {
+        "packageVersion": "2.0.0",
+        "releaseId": "b8b6f0de-4af0-4d46-84a7-b96c10430a35",
+        "sourceDraftVersion": null,
+        "releaseSha256": "fcd3a787116e839a919b9582bc07a1a74bead48aab68c5a84213b91f981b4571",
+        "orders": 0,
+        "installed": 2,
+        "editorObservations": {
+          "captureFailures": 0,
+          "records": []
+        }
+      },
+      "publicReadback": {
+        "url": "http://syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94",
+        "httpStatus": 200,
+        "expectedHeading": "Habitat saved heading A f6074d90e894",
+        "expectedFound": true,
+        "otherHeadingFound": false
+      }
+    },
+    "reapplied-B": {
+      "recordedAt": "2026-10-23T19:12:42.061340+00:00",
+      "runId": "f6074d90e894",
+      "phase": "reapplied-B",
+      "proofStatus": 200,
+      "proof": {
+        "packageVersion": "2.0.0",
+        "releaseId": "fb321f14-1493-4fa6-973e-23818abf81f7",
+        "sourceDraftVersion": 8,
+        "releaseSha256": "9a9b7f850699462088fc2f928169ab6faf700f09e923c6485aeff4b303cfc50b",
+        "orders": 0,
+        "installed": 2,
+        "editorObservations": {
+          "captureFailures": 0,
+          "records": []
+        }
+      },
+      "publicReadback": {
+        "url": "http://syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94",
+        "httpStatus": 200,
+        "expectedHeading": "Habitat saved heading B f6074d90e894",
+        "expectedFound": true,
+        "otherHeadingFound": false
+      }
+    }
+  },
+  "retainedDraftEvidence": "corrected-habitat-retained-B-after-restore.ax.txt",
+  "draftIsolationEvidence": "corrected-habitat-B-draft-public-isolation.json",
+  "full26Acceptance": false
+}

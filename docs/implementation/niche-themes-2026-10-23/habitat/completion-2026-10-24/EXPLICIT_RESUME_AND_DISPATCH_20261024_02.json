@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-24T12:02:51.514610+00:00",
+  "classification": "DIRECT_HUMAN_RESUME_AND_EXPLICIT_NAMED_COORDINATION_DISPATCH",
+  "humanInstruction": "Resume Habitat. I explicitly authorize messaging Themes and Editor to review the private fix, allocate a fresh admitted run and execute all 26 cases. Keep 2.0.0 frozen and report evidence, failures and anything NOT_RUN.",
+  "authoritySource": "Actual current human message in this Habitat chat",
+  "supersedesEarlierSendRejectionForNamedScope": true,
+  "originalRejectionPreserved": "COORDINATION_SEND_REJECTION_20261024_01.json",
+  "goal": {
+    "objective": "Existing full Habitat completion objective retained; no replacement goal",
+    "lastObservedPlatformStatus": "paused",
+    "workAuthorization": "DIRECTLY_RESUMED_BY_HUMAN",
+    "availableGoalToolCanSetActive": false
+  },
+  "dispatches": [
+    {
+      "target": "Themes",
+      "threadId": "01a164a4-a342-76d3-ab33-65e021ed57db",
+      "tool": "send_message_to_thread",
+      "result": "SUCCESS",
+      "reviewOrAllocationComplete": false
+    },
+    {
+      "target": "Theme Editor — End-to-End",
+      "threadId": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+      "tool": "send_message_to_thread",
+      "result": "SUCCESS",
+      "executionComplete": false
+    }
+  ],
+  "currentEvidence": {
+    "handoff": "HABITAT_RESUMED_HANDOFF_20261024_01.json",
+    "privateProposal": "private-habitat-v201-02/PROPOSAL.json",
+    "sourceTests": {
+      "PASS": 8,
+      "FAIL": 0,
+      "skipped": 0
+    },
+    "unchangedInputs": [
+      "packages/theme-engine/src/habitat-theme.ts",
+      "packages/theme-engine/src/theme-bundle.ts",
+      "packages/theme-engine/src/schema-field-extensions.ts",
+      "packages/theme-engine/src/experience-fonts.ts",
+      "packages/theme-engine/src/theme-presets.ts",
+      "packages/theme-engine/src/built-in-section-schemas.ts",
+      "packages/theme-engine/src/theme-registry.ts",
+      "packages/theme-engine/src/theme-document.ts",
+      "packages/theme-engine/src/template-registry.ts",
+      "packages/theme-engine/src/habitat-discovery.ts",
+      "packages/theme-engine/src/habitat-styles.ts",
+      "packages/theme-engine/src/theme-bundle-core.ts",
+      "packages/theme-engine/src/niche-order-presentation.ts",
+      "packages/theme-engine/src/theme-renderer.ts",
+      "packages/theme-engine/src/theme-settings.ts"
+    ],
+    "changedInputs": [],
+    "frozenOwnedMatchCount": 11,
+    "retainedOriginal936": {
+      "PASS": 21,
+      "FAIL": 0,
+      "PARTIAL": 1,
+      "NOT_RUN": 4
+    },
+    "freshRunCaseCount": 26,
+    "freshLifecycleCount": 17,
+    "freshQueryCount": 9,
+    "freshRunAssigned": false,
+    "freshCaseStatuses": "ALL_NOT_RUN_UNTIL_EXECUTION",
+    "expandedCases": 337,
+    "newRuntimePasses": 0
+  },
+  "freshResources": {
+    "candidate": null,
+    "sharedWriter": null,
+    "runtime": null,
+    "browser": null
+  },
+  "next": "Await exact Themes review/integration/admission and sole-Editor allocation; inspect live task progress and execute authorized owned actions when granted.",
+  "preservation": {
+    "frozen20Changed": false,
+    "old936Used": false,
+    "dbActions": 0,
+    "providerCalls": 0,
+    "appRestarts": 0,
+    "newGoalCreated": false,
+    "schedulesChanged": false
+  },
+  "certified": false
+}

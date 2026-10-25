@@ -1,0 +1,626 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-22T18:18:11.602047+00:00",
+  "baselineCommit": "85aac99043d8dc10469e12cbb810609a3b6f1b0d",
+  "scope": "Threadline source/artifact hashes at each actual validation boundary. Shared-checkout unrelated edits are not certified. App tests/typechecks ran in the workspace; production browser builds and governance used separate isolated snapshots.",
+  "package": {
+    "slug": "letbuyy-sense",
+    "version": "2.0.0",
+    "sha256": "61082be647eadae9b6e42002be241a82ba6c3627427568f6e64e2cf961c3742e"
+  },
+  "governance": {
+    "ok": true,
+    "generatedAt": "2026-10-22T17:48:15.798Z",
+    "counts": {
+      "PASS": 114,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "SKIP": 0,
+      "NOT_APPLICABLE": 1
+    }
+  },
+  "databaseRuns": [
+    {
+      "runId": "db7751f2857a",
+      "suites": 6,
+      "failedSuites": 0,
+      "tests": 43,
+      "assertionsPassed": 43,
+      "assertionsFailed": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "wallSeconds": 46.6
+    },
+    {
+      "runId": "e52492ca3ab6",
+      "suites": 1,
+      "failedSuites": 0,
+      "tests": 1,
+      "assertionsPassed": 1,
+      "assertionsFailed": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "wallSeconds": 25.1
+    },
+    {
+      "runId": "ddbeb58c1f9a",
+      "suites": 1,
+      "failedSuites": 0,
+      "tests": 8,
+      "assertionsPassed": 8,
+      "assertionsFailed": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "wallSeconds": 86.5
+    },
+    {
+      "runId": "224120746d4b",
+      "suites": 1,
+      "failedSuites": 0,
+      "tests": 35,
+      "assertionsPassed": 35,
+      "assertionsFailed": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "wallSeconds": 231.6
+    }
+  ],
+  "sourceFiles": [
+    {
+      "path": "apps/commerce/web/package.json",
+      "workspaceSha256": "0d87331b1873c015bbea86902e3c1d076e38919e988f36f85521d2f752fc76d9",
+      "browserCandidateSha256": "0d87331b1873c015bbea86902e3c1d076e38919e988f36f85521d2f752fc76d9",
+      "governanceSnapshotSha256": "0d87331b1873c015bbea86902e3c1d076e38919e988f36f85521d2f752fc76d9"
+    },
+    {
+      "path": "apps/commerce/web/public/theme-previews/threadline-2.0.0.webp",
+      "workspaceSha256": "e7c4df735a07dbde53701aa23880a22d72b9ef3e2868dfe0f0bf3e8600794f53",
+      "browserCandidateSha256": "e7c4df735a07dbde53701aa23880a22d72b9ef3e2868dfe0f0bf3e8600794f53",
+      "governanceSnapshotSha256": "e7c4df735a07dbde53701aa23880a22d72b9ef3e2868dfe0f0bf3e8600794f53"
+    },
+    {
+      "path": "apps/commerce/web/src/app/checkout-origin/checkout/page.tsx",
+      "workspaceSha256": "46ee9de23dc13f263ee473cc92f2752915ed8f7a334ccf1d71ae9ab57bffb75c",
+      "browserCandidateSha256": "46ee9de23dc13f263ee473cc92f2752915ed8f7a334ccf1d71ae9ab57bffb75c",
+      "governanceSnapshotSha256": "46ee9de23dc13f263ee473cc92f2752915ed8f7a334ccf1d71ae9ab57bffb75c"
+    },
+    {
+      "path": "apps/commerce/web/src/app/globals.css",
+      "workspaceSha256": "68376df68faf1d3868681603cf89bee0aa94835a390e677f79fcf488093d2581",
+      "browserCandidateSha256": "68376df68faf1d3868681603cf89bee0aa94835a390e677f79fcf488093d2581",
+      "governanceSnapshotSha256": "68376df68faf1d3868681603cf89bee0aa94835a390e677f79fcf488093d2581"
+    },
+    {
+      "path": "apps/commerce/web/src/app/preview/preview-content.tsx",
+      "workspaceSha256": "79d1ab50703aa3ac2e258b512e035c7cd0a509990e84550c741b9c61891800b3",
+      "browserCandidateSha256": "79d1ab50703aa3ac2e258b512e035c7cd0a509990e84550c741b9c61891800b3",
+      "governanceSnapshotSha256": "79d1ab50703aa3ac2e258b512e035c7cd0a509990e84550c741b9c61891800b3"
+    },
+    {
+      "path": "apps/commerce/web/src/app/store/[subdomain]/collections/[slug]/page.tsx",
+      "workspaceSha256": "38a80310f7a6a8a8b28789f0d74176c785592ac735b0fd10a015cf47dfddcaad",
+      "browserCandidateSha256": "38a80310f7a6a8a8b28789f0d74176c785592ac735b0fd10a015cf47dfddcaad",
+      "governanceSnapshotSha256": "38a80310f7a6a8a8b28789f0d74176c785592ac735b0fd10a015cf47dfddcaad"
+    },
+    {
+      "path": "apps/commerce/web/src/app/store/[subdomain]/layout.tsx",
+      "workspaceSha256": "6c1da1775b1b763e93f709ec8f11f45683cd19f3ef71cca0e9abf0e363b6076a",
+      "browserCandidateSha256": "6c1da1775b1b763e93f709ec8f11f45683cd19f3ef71cca0e9abf0e363b6076a",
+      "governanceSnapshotSha256": "6c1da1775b1b763e93f709ec8f11f45683cd19f3ef71cca0e9abf0e363b6076a"
+    },
+    {
+      "path": "apps/commerce/web/src/app/store/[subdomain]/products/page.tsx",
+      "workspaceSha256": "9d5ade3bac9fd9ed2cb9b8d738bae9393d1fc83ad8771570a28cf33ffac192ed",
+      "browserCandidateSha256": "9d5ade3bac9fd9ed2cb9b8d738bae9393d1fc83ad8771570a28cf33ffac192ed",
+      "governanceSnapshotSha256": "9d5ade3bac9fd9ed2cb9b8d738bae9393d1fc83ad8771570a28cf33ffac192ed"
+    },
+    {
+      "path": "apps/commerce/web/src/app/store/[subdomain]/shop/page.tsx",
+      "workspaceSha256": "0c1aec075ad6b01a335e880721ed4890d6091dcdb89c14503a0260e7586c996c",
+      "browserCandidateSha256": "0c1aec075ad6b01a335e880721ed4890d6091dcdb89c14503a0260e7586c996c",
+      "governanceSnapshotSha256": "0c1aec075ad6b01a335e880721ed4890d6091dcdb89c14503a0260e7586c996c"
+    },
+    {
+      "path": "apps/commerce/web/src/app/theme-preview/[slug]/page.tsx",
+      "workspaceSha256": "4e29a900bad7795fe310a332eb000e26d9928c61a04a3c5415ba97777dbb90ec",
+      "browserCandidateSha256": "4e29a900bad7795fe310a332eb000e26d9928c61a04a3c5415ba97777dbb90ec",
+      "governanceSnapshotSha256": "4e29a900bad7795fe310a332eb000e26d9928c61a04a3c5415ba97777dbb90ec"
+    },
+    {
+      "path": "apps/commerce/web/src/components/CatalogPreviewFrame.tsx",
+      "workspaceSha256": "fd16bc77cfd9aa091babcf342639e8605651995cbe909e25f97d839d0f9de3ff",
+      "browserCandidateSha256": "fd16bc77cfd9aa091babcf342639e8605651995cbe909e25f97d839d0f9de3ff",
+      "governanceSnapshotSha256": "fd16bc77cfd9aa091babcf342639e8605651995cbe909e25f97d839d0f9de3ff"
+    },
+    {
+      "path": "apps/commerce/web/src/components/CatalogPreviewNavigation.tsx",
+      "workspaceSha256": "43b645f697c85d9977a540fbd91f2cb24681c3804217a0dbd4cc489a9df0d8aa",
+      "browserCandidateSha256": "43b645f697c85d9977a540fbd91f2cb24681c3804217a0dbd4cc489a9df0d8aa",
+      "governanceSnapshotSha256": "43b645f697c85d9977a540fbd91f2cb24681c3804217a0dbd4cc489a9df0d8aa"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/demo/threadline-demo.ts",
+      "workspaceSha256": "a7202d4a41ed2c90869e0fa1923eb2b8d247499073622be1d98f2c713fb15dc0",
+      "browserCandidateSha256": "a7202d4a41ed2c90869e0fa1923eb2b8d247499073622be1d98f2c713fb15dc0",
+      "governanceSnapshotSha256": "a7202d4a41ed2c90869e0fa1923eb2b8d247499073622be1d98f2c713fb15dc0"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/product-service.ts",
+      "workspaceSha256": "4120e280ebaa7dde6b971153053de29fdee1f47754eaf03a62a00267bdb57ee3",
+      "browserCandidateSha256": "4120e280ebaa7dde6b971153053de29fdee1f47754eaf03a62a00267bdb57ee3",
+      "governanceSnapshotSha256": "4120e280ebaa7dde6b971153053de29fdee1f47754eaf03a62a00267bdb57ee3"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/apparel-route-query.ts",
+      "workspaceSha256": "cfa5e2963e8cd41ae0768a0315681b3ae42f7a374b2b6ce56bcda9cc23741a71",
+      "browserCandidateSha256": "cfa5e2963e8cd41ae0768a0315681b3ae42f7a374b2b6ce56bcda9cc23741a71",
+      "governanceSnapshotSha256": "cfa5e2963e8cd41ae0768a0315681b3ae42f7a374b2b6ce56bcda9cc23741a71"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/composition-engine.tsx",
+      "workspaceSha256": "bdc509e3f1bc91e8422cb52d893ba56d2912c8de9e84450513f408f87b1e6b86",
+      "browserCandidateSha256": "bdc509e3f1bc91e8422cb52d893ba56d2912c8de9e84450513f408f87b1e6b86",
+      "governanceSnapshotSha256": "bdc509e3f1bc91e8422cb52d893ba56d2912c8de9e84450513f408f87b1e6b86"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/data-binding-engine.ts",
+      "workspaceSha256": "ce2cdc4d6bb618996600ecf9417ca980fa893732ac98060ce223ea4e8158c656",
+      "browserCandidateSha256": "ce2cdc4d6bb618996600ecf9417ca980fa893732ac98060ce223ea4e8158c656",
+      "governanceSnapshotSha256": "ce2cdc4d6bb618996600ecf9417ca980fa893732ac98060ce223ea4e8158c656"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/liquid-cart-island.test.ts",
+      "workspaceSha256": "430e64a9038c9f4ba2c2d1e27aeb30da0ebc7e371ae1ff9b19caa465af319fb0",
+      "browserCandidateSha256": "430e64a9038c9f4ba2c2d1e27aeb30da0ebc7e371ae1ff9b19caa465af319fb0",
+      "governanceSnapshotSha256": "430e64a9038c9f4ba2c2d1e27aeb30da0ebc7e371ae1ff9b19caa465af319fb0"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx",
+      "workspaceSha256": "867c33363c17cc5b3583f8f0bafd0e7712638ab3bde3ade4cfc0b233862c6755",
+      "browserCandidateSha256": "867c33363c17cc5b3583f8f0bafd0e7712638ab3bde3ade4cfc0b233862c6755",
+      "governanceSnapshotSha256": "867c33363c17cc5b3583f8f0bafd0e7712638ab3bde3ade4cfc0b233862c6755"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/types.ts",
+      "workspaceSha256": "804325a6b26dc36636d2fd0b1ab0b00b3996455d402f5622ee4cda40d5850ad5",
+      "browserCandidateSha256": "804325a6b26dc36636d2fd0b1ab0b00b3996455d402f5622ee4cda40d5850ad5",
+      "governanceSnapshotSha256": "804325a6b26dc36636d2fd0b1ab0b00b3996455d402f5622ee4cda40d5850ad5"
+    },
+    {
+      "path": "apps/commerce/web/src/proxy.ts",
+      "workspaceSha256": "5a03c59a8d72c32b7a8e9437515ae0232138d51b5fb53a331ac191bbfd9f24a8",
+      "browserCandidateSha256": "5a03c59a8d72c32b7a8e9437515ae0232138d51b5fb53a331ac191bbfd9f24a8",
+      "governanceSnapshotSha256": "5a03c59a8d72c32b7a8e9437515ae0232138d51b5fb53a331ac191bbfd9f24a8"
+    },
+    {
+      "path": "apps/commerce/web/tests/storefront-static-assets.test.ts",
+      "workspaceSha256": "f03f2f5c4647610a913e83ac1f845d419513e0902821a77900e468ad397f8b2b",
+      "browserCandidateSha256": "f03f2f5c4647610a913e83ac1f845d419513e0902821a77900e468ad397f8b2b",
+      "governanceSnapshotSha256": "f03f2f5c4647610a913e83ac1f845d419513e0902821a77900e468ad397f8b2b"
+    },
+    {
+      "path": "apps/merchant/mobile/lib/screens/customize/theme_screen.dart",
+      "workspaceSha256": "19ed5ab4bf613590b25bd082366ff5119867f92aa8680606f6d14205062eddad",
+      "browserCandidateSha256": "19ed5ab4bf613590b25bd082366ff5119867f92aa8680606f6d14205062eddad",
+      "governanceSnapshotSha256": "19ed5ab4bf613590b25bd082366ff5119867f92aa8680606f6d14205062eddad"
+    },
+    {
+      "path": "apps/merchant/mobile/lib/services/theme_service.dart",
+      "workspaceSha256": "e8db30bbfffe4c5be21d4a39915bc1fa968346a4e1a0f0af813082b2033edeee",
+      "browserCandidateSha256": "e8db30bbfffe4c5be21d4a39915bc1fa968346a4e1a0f0af813082b2033edeee",
+      "governanceSnapshotSha256": "e8db30bbfffe4c5be21d4a39915bc1fa968346a4e1a0f0af813082b2033edeee"
+    },
+    {
+      "path": "apps/merchant/web/package.json",
+      "workspaceSha256": "d8f36114e974952c712c7145c351f15e5fe9bf849d1771026eef492040ef77a3",
+      "browserCandidateSha256": "d8f36114e974952c712c7145c351f15e5fe9bf849d1771026eef492040ef77a3",
+      "governanceSnapshotSha256": "d8f36114e974952c712c7145c351f15e5fe9bf849d1771026eef492040ef77a3"
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx",
+      "workspaceSha256": "74ea3e58de19f2041e5eaaba2eeb337eed9777f6e3af1e35689d84aaa91bdc17",
+      "browserCandidateSha256": "74ea3e58de19f2041e5eaaba2eeb337eed9777f6e3af1e35689d84aaa91bdc17",
+      "governanceSnapshotSha256": "74ea3e58de19f2041e5eaaba2eeb337eed9777f6e3af1e35689d84aaa91bdc17"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/ApparelFactsEditor.tsx",
+      "workspaceSha256": "4c1b151de0031c77b6bad1abd905a03c3afcd9f0ce37a62e21817ce5358980ba",
+      "browserCandidateSha256": "4c1b151de0031c77b6bad1abd905a03c3afcd9f0ce37a62e21817ce5358980ba",
+      "governanceSnapshotSha256": "4c1b151de0031c77b6bad1abd905a03c3afcd9f0ce37a62e21817ce5358980ba"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/ExperiencePicker.tsx",
+      "workspaceSha256": "9d78aa5a584813fb03f50c7418e554bb8197ca580d3fc0f0884df0ebcd376e07",
+      "browserCandidateSha256": "9d78aa5a584813fb03f50c7418e554bb8197ca580d3fc0f0884df0ebcd376e07",
+      "governanceSnapshotSha256": "9d78aa5a584813fb03f50c7418e554bb8197ca580d3fc0f0884df0ebcd376e07"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-library/ThemeWorkspace.tsx",
+      "workspaceSha256": "1332404f1665181035a001a4418a24d94db6fa49b9674dca59d10782d7bcad5d",
+      "browserCandidateSha256": "1332404f1665181035a001a4418a24d94db6fa49b9674dca59d10782d7bcad5d",
+      "governanceSnapshotSha256": "1332404f1665181035a001a4418a24d94db6fa49b9674dca59d10782d7bcad5d"
+    },
+    {
+      "path": "apps/merchant/web/src/lib/stores/resolve-owned-store.ts",
+      "workspaceSha256": "45c66ef04d1409c0c4004cf870a1075762ce3c5caccd605f37f375d9ac1ff3f9",
+      "browserCandidateSha256": "45c66ef04d1409c0c4004cf870a1075762ce3c5caccd605f37f375d9ac1ff3f9",
+      "governanceSnapshotSha256": "45c66ef04d1409c0c4004cf870a1075762ce3c5caccd605f37f375d9ac1ff3f9"
+    },
+    {
+      "path": "apps/merchant/web/tests/owned-store-resolution.test.mjs",
+      "workspaceSha256": "d476ff7f1c281dcd1f5715f4f55fc5b2a9f46f45674283fe131942862e059f34",
+      "browserCandidateSha256": "d476ff7f1c281dcd1f5715f4f55fc5b2a9f46f45674283fe131942862e059f34",
+      "governanceSnapshotSha256": "d476ff7f1c281dcd1f5715f4f55fc5b2a9f46f45674283fe131942862e059f34"
+    },
+    {
+      "path": "database/supabase/migrations/382_threadline_catalog_v2.sql",
+      "workspaceSha256": "475717e0f7afd78327ce89b55768e0a13347394a98a2bfcf8bfad19ed088b9dc",
+      "browserCandidateSha256": "04f1af2cfd12f930106b6371f75b8228c9b14c0ddc4720f98555f565feb1bba9",
+      "governanceSnapshotSha256": "475717e0f7afd78327ce89b55768e0a13347394a98a2bfcf8bfad19ed088b9dc"
+    },
+    {
+      "path": "database/supabase/migrations/383_storefront_apparel_discovery.sql",
+      "workspaceSha256": "2231fc7137df40cc65422760f47d1bf40da6d1c9ae520f9d83adae5bee404855",
+      "browserCandidateSha256": "2231fc7137df40cc65422760f47d1bf40da6d1c9ae520f9d83adae5bee404855",
+      "governanceSnapshotSha256": "2231fc7137df40cc65422760f47d1bf40da6d1c9ae520f9d83adae5bee404855"
+    },
+    {
+      "path": "database/supabase/rollback/382_threadline_catalog_v2.rollback.sql",
+      "workspaceSha256": "6866dc1cdadf828ce9c392e9fe71ede2acb08a3159d77887af8bd5a038a2105e",
+      "browserCandidateSha256": "6866dc1cdadf828ce9c392e9fe71ede2acb08a3159d77887af8bd5a038a2105e",
+      "governanceSnapshotSha256": "6866dc1cdadf828ce9c392e9fe71ede2acb08a3159d77887af8bd5a038a2105e"
+    },
+    {
+      "path": "database/supabase/rollback/383_storefront_apparel_discovery.rollback.sql",
+      "workspaceSha256": "e999bfc20bd07ed3a5eba855ca89eef3d033b4922f77eb73b24d8e8d306656a7",
+      "browserCandidateSha256": "e999bfc20bd07ed3a5eba855ca89eef3d033b4922f77eb73b24d8e8d306656a7",
+      "governanceSnapshotSha256": "e999bfc20bd07ed3a5eba855ca89eef3d033b4922f77eb73b24d8e8d306656a7"
+    },
+    {
+      "path": "packages/commerce-core/src/apparel.ts",
+      "workspaceSha256": "0afb1cf478a8279f3fa709403560b55c70f39d9c58f22c52f4a1e7bb4ac8b786",
+      "browserCandidateSha256": "0afb1cf478a8279f3fa709403560b55c70f39d9c58f22c52f4a1e7bb4ac8b786",
+      "governanceSnapshotSha256": "0afb1cf478a8279f3fa709403560b55c70f39d9c58f22c52f4a1e7bb4ac8b786"
+    },
+    {
+      "path": "packages/commerce-core/src/index.ts",
+      "workspaceSha256": "56086dcc293402694149d9b3c537039ff7e3bd42bc0b5a33ceb2b1d1d681b984",
+      "browserCandidateSha256": "56086dcc293402694149d9b3c537039ff7e3bd42bc0b5a33ceb2b1d1d681b984",
+      "governanceSnapshotSha256": "56086dcc293402694149d9b3c537039ff7e3bd42bc0b5a33ceb2b1d1d681b984"
+    },
+    {
+      "path": "packages/theme-engine/examples/index.json",
+      "workspaceSha256": "1245a09140841b5cdcf4a0327adf75b4d6f1dc2dfcb3f4c3350643a90b09de5e",
+      "browserCandidateSha256": "1245a09140841b5cdcf4a0327adf75b4d6f1dc2dfcb3f4c3350643a90b09de5e",
+      "governanceSnapshotSha256": "1245a09140841b5cdcf4a0327adf75b4d6f1dc2dfcb3f4c3350643a90b09de5e"
+    },
+    {
+      "path": "packages/theme-engine/examples/letbuyy-core-liquid/bundle.json",
+      "workspaceSha256": "a92e0b294c433352b78ad906421791b9abcfe8e0c15a393aab1ea590dbe77650",
+      "browserCandidateSha256": "a92e0b294c433352b78ad906421791b9abcfe8e0c15a393aab1ea590dbe77650",
+      "governanceSnapshotSha256": "a92e0b294c433352b78ad906421791b9abcfe8e0c15a393aab1ea590dbe77650"
+    },
+    {
+      "path": "packages/theme-engine/examples/letbuyy-core-liquid/files/config/settings_data.json",
+      "workspaceSha256": "d9decba01cf018adc371b283166903365c347ad0cc09bf62f86f4c0e22c12789",
+      "browserCandidateSha256": "d9decba01cf018adc371b283166903365c347ad0cc09bf62f86f4c0e22c12789",
+      "governanceSnapshotSha256": "d9decba01cf018adc371b283166903365c347ad0cc09bf62f86f4c0e22c12789"
+    },
+    {
+      "path": "packages/theme-engine/examples/letbuyy-core-liquid/manifest.json",
+      "workspaceSha256": "e4d77d66017d08e1048c11cf8ad28dbbd4e012493c635cc2c434d0a23a100ba7",
+      "browserCandidateSha256": "e4d77d66017d08e1048c11cf8ad28dbbd4e012493c635cc2c434d0a23a100ba7",
+      "governanceSnapshotSha256": "e4d77d66017d08e1048c11cf8ad28dbbd4e012493c635cc2c434d0a23a100ba7"
+    },
+    {
+      "path": "packages/theme-engine/examples/urban-kicks-liquid/bundle.json",
+      "workspaceSha256": "ecd74233874b9cb6f4763b9ab63af268abb785d4be54e8424e9dc3f6d47c3f39",
+      "browserCandidateSha256": "ecd74233874b9cb6f4763b9ab63af268abb785d4be54e8424e9dc3f6d47c3f39",
+      "governanceSnapshotSha256": "ecd74233874b9cb6f4763b9ab63af268abb785d4be54e8424e9dc3f6d47c3f39"
+    },
+    {
+      "path": "packages/theme-engine/examples/urban-kicks-liquid/files/config/settings_data.json",
+      "workspaceSha256": "d9decba01cf018adc371b283166903365c347ad0cc09bf62f86f4c0e22c12789",
+      "browserCandidateSha256": "d9decba01cf018adc371b283166903365c347ad0cc09bf62f86f4c0e22c12789",
+      "governanceSnapshotSha256": "d9decba01cf018adc371b283166903365c347ad0cc09bf62f86f4c0e22c12789"
+    },
+    {
+      "path": "packages/theme-engine/examples/urban-kicks-liquid/manifest.json",
+      "workspaceSha256": "32d6f39e81a72b1ae1e8fa8e683df9af6c7976886aa27279a8caf931d68ac9f8",
+      "browserCandidateSha256": "32d6f39e81a72b1ae1e8fa8e683df9af6c7976886aa27279a8caf931d68ac9f8",
+      "governanceSnapshotSha256": "32d6f39e81a72b1ae1e8fa8e683df9af6c7976886aa27279a8caf931d68ac9f8"
+    },
+    {
+      "path": "packages/theme-engine/src/experience-compositions.ts",
+      "workspaceSha256": "25b73068b7a4fcce5b4bad3768a376e08c7e384e843f707c3cf8f8fb361abc68",
+      "browserCandidateSha256": "25b73068b7a4fcce5b4bad3768a376e08c7e384e843f707c3cf8f8fb361abc68",
+      "governanceSnapshotSha256": "25b73068b7a4fcce5b4bad3768a376e08c7e384e843f707c3cf8f8fb361abc68"
+    },
+    {
+      "path": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "workspaceSha256": "2a735a06458b23db335bf1374496a5be1985fe05ce0c6e0fa7a0768bf321be25",
+      "browserCandidateSha256": "2a735a06458b23db335bf1374496a5be1985fe05ce0c6e0fa7a0768bf321be25",
+      "governanceSnapshotSha256": "2a735a06458b23db335bf1374496a5be1985fe05ce0c6e0fa7a0768bf321be25"
+    },
+    {
+      "path": "packages/theme-engine/src/index.ts",
+      "workspaceSha256": "b8101bfdbf5f9563f7cdbb7c5de0fb0a06828f941b3880ec150ec4fed6011df8",
+      "browserCandidateSha256": "b8101bfdbf5f9563f7cdbb7c5de0fb0a06828f941b3880ec150ec4fed6011df8",
+      "governanceSnapshotSha256": "b8101bfdbf5f9563f7cdbb7c5de0fb0a06828f941b3880ec150ec4fed6011df8"
+    },
+    {
+      "path": "packages/theme-engine/src/portable-to-liquid.ts",
+      "workspaceSha256": "c981e822ec3f51bd7975e72862a957fc011b14a7f8984cdd0b38f8ba9a27803b",
+      "browserCandidateSha256": "c981e822ec3f51bd7975e72862a957fc011b14a7f8984cdd0b38f8ba9a27803b",
+      "governanceSnapshotSha256": "c981e822ec3f51bd7975e72862a957fc011b14a7f8984cdd0b38f8ba9a27803b"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-bundle-core.ts",
+      "workspaceSha256": "d3a358df585edcebdba95706028117a784ffc46876d9160c5d90e0eda82ada42",
+      "browserCandidateSha256": "d3a358df585edcebdba95706028117a784ffc46876d9160c5d90e0eda82ada42",
+      "governanceSnapshotSha256": "d3a358df585edcebdba95706028117a784ffc46876d9160c5d90e0eda82ada42"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-bundle.ts",
+      "workspaceSha256": "27c6a778e76c190ea25d6dffc940804c9f741488b908f0d960f6285644fc8e25",
+      "browserCandidateSha256": "27c6a778e76c190ea25d6dffc940804c9f741488b908f0d960f6285644fc8e25",
+      "governanceSnapshotSha256": "27c6a778e76c190ea25d6dffc940804c9f741488b908f0d960f6285644fc8e25"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-presets.ts",
+      "workspaceSha256": "283028890199a34e67863c337ebd0c788c830c60ddaa87854c3bad28f9581e82",
+      "browserCandidateSha256": "283028890199a34e67863c337ebd0c788c830c60ddaa87854c3bad28f9581e82",
+      "governanceSnapshotSha256": "283028890199a34e67863c337ebd0c788c830c60ddaa87854c3bad28f9581e82"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-registry.ts",
+      "workspaceSha256": "df47c3ff4a6bfb0b4dfb56a49559249ab69d44f876bf1d422ecda385f09533ce",
+      "browserCandidateSha256": "df47c3ff4a6bfb0b4dfb56a49559249ab69d44f876bf1d422ecda385f09533ce",
+      "governanceSnapshotSha256": "df47c3ff4a6bfb0b4dfb56a49559249ab69d44f876bf1d422ecda385f09533ce"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-renderer.ts",
+      "workspaceSha256": "6af08570074726fb37da437b210d66f94142b71cd61f0095459ccb5eda256563",
+      "browserCandidateSha256": "6af08570074726fb37da437b210d66f94142b71cd61f0095459ccb5eda256563",
+      "governanceSnapshotSha256": "6af08570074726fb37da437b210d66f94142b71cd61f0095459ccb5eda256563"
+    },
+    {
+      "path": "packages/theme-engine/src/threadline-discovery.ts",
+      "workspaceSha256": "a3fba143d1217f0da83cf70ab335da66e82bc79cb883a9ad0e3b48773459e4b8",
+      "browserCandidateSha256": "a3fba143d1217f0da83cf70ab335da66e82bc79cb883a9ad0e3b48773459e4b8",
+      "governanceSnapshotSha256": "a3fba143d1217f0da83cf70ab335da66e82bc79cb883a9ad0e3b48773459e4b8"
+    },
+    {
+      "path": "packages/theme-engine/src/threadline-styles.ts",
+      "workspaceSha256": "19927c48340b3ff3403b13a945ebe186bf928de638f47281b0fe0421ded48385",
+      "browserCandidateSha256": "19927c48340b3ff3403b13a945ebe186bf928de638f47281b0fe0421ded48385",
+      "governanceSnapshotSha256": "19927c48340b3ff3403b13a945ebe186bf928de638f47281b0fe0421ded48385"
+    },
+    {
+      "path": "packages/theme-engine/src/threadline-theme.ts",
+      "workspaceSha256": "1e922e6c056de5017f35dfe08827eef0b41212b96bbff5b6695ab087422d523b",
+      "browserCandidateSha256": "1e922e6c056de5017f35dfe08827eef0b41212b96bbff5b6695ab087422d523b",
+      "governanceSnapshotSha256": "1e922e6c056de5017f35dfe08827eef0b41212b96bbff5b6695ab087422d523b"
+    },
+    {
+      "path": "packages/theme-engine/test/core-launch-compatibility.test.ts",
+      "workspaceSha256": "28fa76b8b95163dec266eb5db2d3d0642ac27cd887fb05875510215d9031f3e0",
+      "browserCandidateSha256": "28fa76b8b95163dec266eb5db2d3d0642ac27cd887fb05875510215d9031f3e0",
+      "governanceSnapshotSha256": "28fa76b8b95163dec266eb5db2d3d0642ac27cd887fb05875510215d9031f3e0"
+    },
+    {
+      "path": "packages/theme-engine/test/experience-compositions.test.ts",
+      "workspaceSha256": "44c683f294241017c6e58073cf7d9db570fa18529a0e108906f0d8981337345a",
+      "browserCandidateSha256": "44c683f294241017c6e58073cf7d9db570fa18529a0e108906f0d8981337345a",
+      "governanceSnapshotSha256": "44c683f294241017c6e58073cf7d9db570fa18529a0e108906f0d8981337345a"
+    },
+    {
+      "path": "packages/theme-engine/test/storefront-presentation.test.ts",
+      "workspaceSha256": "190cfbceca253c1f34524a4bf2e2553c7580a0b8cbe1a3041ef2c02cb87f21a5",
+      "browserCandidateSha256": "190cfbceca253c1f34524a4bf2e2553c7580a0b8cbe1a3041ef2c02cb87f21a5",
+      "governanceSnapshotSha256": "190cfbceca253c1f34524a4bf2e2553c7580a0b8cbe1a3041ef2c02cb87f21a5"
+    },
+    {
+      "path": "packages/theme-engine/test/theme-presets.test.ts",
+      "workspaceSha256": "2eb97c484dd72e59340bd37d3fdc7416aaa65a8729c893c7966546510d8f2430",
+      "browserCandidateSha256": "2eb97c484dd72e59340bd37d3fdc7416aaa65a8729c893c7966546510d8f2430",
+      "governanceSnapshotSha256": "2eb97c484dd72e59340bd37d3fdc7416aaa65a8729c893c7966546510d8f2430"
+    },
+    {
+      "path": "packages/theme-engine/test/threadline.test.ts",
+      "workspaceSha256": "cf4f03fd08fd5939d75709346c020884794a617638819ee539655c1396cfcbc4",
+      "browserCandidateSha256": "cf4f03fd08fd5939d75709346c020884794a617638819ee539655c1396cfcbc4",
+      "governanceSnapshotSha256": "cf4f03fd08fd5939d75709346c020884794a617638819ee539655c1396cfcbc4"
+    },
+    {
+      "path": "scripts/governance/executable-pg-fixture.mjs",
+      "workspaceSha256": "1d4d39cd88c2469d4916bd5e770b91a3ca50bc900c4572d899a8620f69f30fea",
+      "browserCandidateSha256": "1d4d39cd88c2469d4916bd5e770b91a3ca50bc900c4572d899a8620f69f30fea",
+      "governanceSnapshotSha256": "1d4d39cd88c2469d4916bd5e770b91a3ca50bc900c4572d899a8620f69f30fea"
+    },
+    {
+      "path": "scripts/governance/run-executable-suites.mjs",
+      "workspaceSha256": "46202c1d512bb0d01a47f117040caa20278646f51edec9cdbe7bd927cc5ceeae",
+      "browserCandidateSha256": "46202c1d512bb0d01a47f117040caa20278646f51edec9cdbe7bd927cc5ceeae",
+      "governanceSnapshotSha256": "46202c1d512bb0d01a47f117040caa20278646f51edec9cdbe7bd927cc5ceeae"
+    },
+    {
+      "path": "scripts/liquid-parity/build-first-party-catalog.mjs",
+      "workspaceSha256": "6234cd40055fe75931336ee47e262da61ccf59ffb780b1dc56ba8b2ffea1f49d",
+      "browserCandidateSha256": "6234cd40055fe75931336ee47e262da61ccf59ffb780b1dc56ba8b2ffea1f49d",
+      "governanceSnapshotSha256": "6234cd40055fe75931336ee47e262da61ccf59ffb780b1dc56ba8b2ffea1f49d"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/threadline-browser-fixture.ts",
+      "workspaceSha256": "be45021322388ff4f4dd94e52cba0d69d8046e08a4811f2a6f7637bb859ed119",
+      "browserCandidateSha256": "be45021322388ff4f4dd94e52cba0d69d8046e08a4811f2a6f7637bb859ed119",
+      "governanceSnapshotSha256": "be45021322388ff4f4dd94e52cba0d69d8046e08a4811f2a6f7637bb859ed119"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/threadline-lifecycle.postgres.test.ts",
+      "workspaceSha256": "9dc5a362da88d411243e4064715d2d53420f6a28ccc898d25c03f04953204bfa",
+      "browserCandidateSha256": "9dc5a362da88d411243e4064715d2d53420f6a28ccc898d25c03f04953204bfa",
+      "governanceSnapshotSha256": "9dc5a362da88d411243e4064715d2d53420f6a28ccc898d25c03f04953204bfa"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/resource-search-w.test.ts",
+      "workspaceSha256": "c980163472320946966c4ecf44e0b80cc793db7109b87395e67df2350a4c6d67",
+      "browserCandidateSha256": "c980163472320946966c4ecf44e0b80cc793db7109b87395e67df2350a4c6d67",
+      "governanceSnapshotSha256": "c980163472320946966c4ecf44e0b80cc793db7109b87395e67df2350a4c6d67"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/storefront-product-detail.test.ts",
+      "workspaceSha256": "5e59305f288bf401eb2009a8c23a448f39d4b125d3c5953e2f22c18639ec1d18",
+      "browserCandidateSha256": "5e59305f288bf401eb2009a8c23a448f39d4b125d3c5953e2f22c18639ec1d18",
+      "governanceSnapshotSha256": "5e59305f288bf401eb2009a8c23a448f39d4b125d3c5953e2f22c18639ec1d18"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/threadline-public-facts.test.ts",
+      "workspaceSha256": "07838394e68f3e3834c08693422ba94568f8887d9b3f42c13f46d8f9dc023934",
+      "browserCandidateSha256": "07838394e68f3e3834c08693422ba94568f8887d9b3f42c13f46d8f9dc023934",
+      "governanceSnapshotSha256": "07838394e68f3e3834c08693422ba94568f8887d9b3f42c13f46d8f9dc023934"
+    },
+    {
+      "path": "services/api-gateway/src/lib/public-product-view.ts",
+      "workspaceSha256": "4989ca6f90bc7d3af54d660fe841f7da46e2d9c7e2fbfd3aa67e514d0562ec5b",
+      "browserCandidateSha256": "4989ca6f90bc7d3af54d660fe841f7da46e2d9c7e2fbfd3aa67e514d0562ec5b",
+      "governanceSnapshotSha256": "4989ca6f90bc7d3af54d660fe841f7da46e2d9c7e2fbfd3aa67e514d0562ec5b"
+    },
+    {
+      "path": "services/api-gateway/src/routes/resource-search.ts",
+      "workspaceSha256": "c6998e1c756636fc4af373d7eab4e4e6f13184b5f10487acb214f1eedc80f223",
+      "browserCandidateSha256": "c6998e1c756636fc4af373d7eab4e4e6f13184b5f10487acb214f1eedc80f223",
+      "governanceSnapshotSha256": "c6998e1c756636fc4af373d7eab4e4e6f13184b5f10487acb214f1eedc80f223"
+    },
+    {
+      "path": "services/api-gateway/src/routes/storefront.ts",
+      "workspaceSha256": "36e48fdbbc7a64e47848bc14d6f92bc471ea3c4047b47471f7855a0b9f85b469",
+      "browserCandidateSha256": "36e48fdbbc7a64e47848bc14d6f92bc471ea3c4047b47471f7855a0b9f85b469",
+      "governanceSnapshotSha256": "36e48fdbbc7a64e47848bc14d6f92bc471ea3c4047b47471f7855a0b9f85b469"
+    },
+    {
+      "path": "services/api-gateway/src/routes/storefront/public-routes.ts",
+      "workspaceSha256": "5f1611e958f6710ddcc8bf3c3ea828db549a7cb17f34c6ec94658e6fb6e7924e",
+      "browserCandidateSha256": "5f1611e958f6710ddcc8bf3c3ea828db549a7cb17f34c6ec94658e6fb6e7924e",
+      "governanceSnapshotSha256": "5f1611e958f6710ddcc8bf3c3ea828db549a7cb17f34c6ec94658e6fb6e7924e"
+    },
+    {
+      "path": "services/api-gateway/src/routes/themes.ts",
+      "workspaceSha256": "01ec865cb8d878485dee67c5665df1091b514bd822ddc036d5b99bdbcaf54f8d",
+      "browserCandidateSha256": "01ec865cb8d878485dee67c5665df1091b514bd822ddc036d5b99bdbcaf54f8d",
+      "governanceSnapshotSha256": "01ec865cb8d878485dee67c5665df1091b514bd822ddc036d5b99bdbcaf54f8d"
+    },
+    {
+      "path": "tests/governance/owned-fixture-credential-lifetime.test.mjs",
+      "workspaceSha256": "840e52b99f24cf7c7b902d0bdab5817de82a6c551b53912c6f3830c3f7b052a9",
+      "browserCandidateSha256": "840e52b99f24cf7c7b902d0bdab5817de82a6c551b53912c6f3830c3f7b052a9",
+      "governanceSnapshotSha256": "840e52b99f24cf7c7b902d0bdab5817de82a6c551b53912c6f3830c3f7b052a9"
+    }
+  ],
+  "localEvidence": [
+    {
+      "localPath": "/private/tmp/threadline-theme-final-tests.log",
+      "sha256": "9cf04780d5b7993f8760160261d472b950dafd774963ad7682a40968c7cea925"
+    },
+    {
+      "localPath": "/private/tmp/threadline-merchant-final-tests.log",
+      "sha256": "33677e8114768c26f9c739e6c922ab50ffc061d63d0cbeab1de3020ec97f183c"
+    },
+    {
+      "localPath": "/private/tmp/threadline-commerce-final-host-tests.log",
+      "sha256": "0d64bf905ca674db36fdd52d5d7a82611edd221c700377a42159c457089747a2"
+    },
+    {
+      "localPath": "/private/tmp/threadline-gateway-final-contracts.log",
+      "sha256": "5a6fbdae0f3942304fbdf2efe9fecd7cdf231a9ce974011af4d30ac39b6cc1ba"
+    },
+    {
+      "localPath": "/private/tmp/threadline-resource-contracts.log",
+      "sha256": "7d587d1b70fc90a361959735e1ffa94a55071146563eec0462ea73a7d986a1d7"
+    },
+    {
+      "localPath": "/private/tmp/threadline-commerce-islands.log",
+      "sha256": "2b21b96c0e79429ff08b14605818dc4720385cc854a65dd5de46a70a979f82c0"
+    },
+    {
+      "localPath": "/private/tmp/threadline-regression-result.json",
+      "sha256": "c64fa20f34516aaf47fbf12b958a73959f343b8567a5ba7a0175c1b7e9ce056a"
+    },
+    {
+      "localPath": "/private/tmp/threadline-lifecycle-final-result.json",
+      "sha256": "a29016ba6b9770e5f34a708ff018489e83315c5e25f0379aa689f71142bb9b2a"
+    },
+    {
+      "localPath": "/private/tmp/threadline-buyer-identity-result.json",
+      "sha256": "182c2e8ed5af96186b140acb85044dfe90065a7da82be5c0be652d213c0e8326"
+    },
+    {
+      "localPath": "/private/tmp/threadline-release-recovery-result.json",
+      "sha256": "7161bb187730b92fd1b23d6484adb1382a2e7e531125937d900bd4e4af0c3b15"
+    },
+    {
+      "localPath": "/private/tmp/threadline-governance-final-host.json",
+      "sha256": "b9c633dc393c5fa57aa78a0a597076af41663e290fb89b0aa1e4feb806fd89e6"
+    },
+    {
+      "localPath": "/private/tmp/threadline-merchant-final-typecheck.log",
+      "sha256": "3721a61bff972c989b50f3fc67ca9e1d8feb489a272dcdb22e9a40b96ab2eeda"
+    },
+    {
+      "localPath": "/private/tmp/threadline-commerce-final-typecheck.log",
+      "sha256": "2befae50f88eeb7c08601ae4aa2008be8b9db7700ee83ebeaa3ef39128d06eb9"
+    },
+    {
+      "localPath": "/private/tmp/threadline-gateway-final-typecheck.log",
+      "sha256": "29cc77624109750ea932cc0c82aa9435c835dea1178bf80b5aa858a3bc81f892"
+    },
+    {
+      "localPath": "/private/tmp/threadline-credential-lifetime-final.log",
+      "sha256": "445b2595c856d7bfed15aebf611979cb3b7e72be70597baa8db3792705093449"
+    }
+  ],
+  "snapshotDifferences": [
+    "database/supabase/migrations/382_threadline_catalog_v2.sql"
+  ],
+  "limits": [
+    "Local only; no hosted deployment or real payment.",
+    "Browser checkout blocked by self-signed TLS; no bypass.",
+    "Public browser signup and completed-order detail not certified.",
+    "See README for measured responsive coverage and presentation limits."
+  ],
+  "snapshotDifferenceExplanation": {
+    "path": "database/supabase/migrations/382_threadline_catalog_v2.sql",
+    "difference": "Only SQL dollar-quote label: browser/governance snapshot uses $threadline$; workspace generator uses $liquidbundle$. Verified byte-equivalent after that exact substitution.",
+    "normalizedArtifactSha256": "c0b684d6434b68c0fca8a2988219278683984cb37f606817614b15d06519f3ab"
+  },
+  "browserEvidence": [
+    {
+      "path": "final-review-proof.json",
+      "sha256": "ada5796be5578a3829ff6b04415f2d7f108b1ee11b21e13853aad5ea2e2e222c"
+    },
+    {
+      "path": "store-host-assets-proof.json",
+      "sha256": "886cf2f9192bda00da3d5fdd58ae709f8d102e8252534ab880fa9082c273818d"
+    },
+    {
+      "path": "release-recovery-proof.json",
+      "sha256": "015eeb76d2e5e31d74e47dc3f1c0e1fcde03d783c2fd9b860c4a45497eb20ec5"
+    },
+    {
+      "path": "release-recovery-confirmed.jpg",
+      "sha256": "35ee10091f2561c6bacac185866c68add3af5a12d0cdc7a491b654919d29fe7f"
+    },
+    {
+      "path": "final-review-storefront.jpg",
+      "sha256": "b0349ab8c3ffd673a5aae4e2c623381633131b8f76182228049b98ed65df90cd"
+    },
+    {
+      "path": "published-home-320.jpg",
+      "sha256": "7e48328e7cbb654fc4525721e6a33368789626ec303cb3c5893d9d89a6b70e38"
+    },
+    {
+      "path": "published-cart-320.jpg",
+      "sha256": "00308e2b5cf56094b391ddb8c1e46e69d43fea444ca83e5fa03e34fde8c0c87f"
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "runId": "936e5f577646",
+  "wholeM01Accepted": false,
+  "rows": [
+    {
+      "key": "sports",
+      "id": "5dbce431-9870-4636-8b38-e65471737b52",
+      "version": 8,
+      "checks": {
+        "price": true,
+        "stock": true,
+        "publicSports": true,
+        "variantCount": true,
+        "variantFactsAndStocks": true
+      },
+      "limitations": []
+    },
+    {
+      "key": "sportsWitness",
+      "id": "93257d9f-f4ee-4bca-ad6d-72c1e29b37e1",
+      "version": 9,
+      "checks": {
+        "price": true,
+        "stock": true,
+        "publicSports": true,
+        "variantCount": true,
+        "variantFactsAndStocks": true
+      },
+      "limitations": [
+        "Normal UI does not offer the planned private supplier field; absent, privacy positive witness NOT_RUN.",
+        "Normal variant title is generated from option tuple: actual S/M/L; separate Small frame S/Medium frame M/Unavailable frame L title inputs absent. Public facts/stock/price oracles use actual tuples and UUIDs."
+      ]
+    },
+    {
+      "key": "sportsNoLength",
+      "id": "78726b89-2397-453a-916c-fbc1c9518139",
+      "version": 3,
+      "checks": {
+        "price": true,
+        "stock": true,
+        "publicSports": true,
+        "variantCount": true,
+        "variantFactsAndStocks": true
+      },
+      "limitations": []
+    }
+  ]
+}

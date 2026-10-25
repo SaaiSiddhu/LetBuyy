@@ -1,0 +1,76 @@
+TAP version 13
+# Subtest: synthetic catalog keeps the approved independent products, availability and bounded facts
+ok 1 - synthetic catalog keeps the approved independent products, availability and bounded facts
+  ---
+  duration_ms: 2.006291
+  type: 'test'
+  ...
+# Subtest: preview content mutates only a clone of the supplied package, never its source or catalog data
+ok 2 - preview content mutates only a clone of the supplied package, never its source or catalog data
+  ---
+  duration_ms: 20.395542
+  type: 'test'
+  ...
+# Subtest: explicit collection membership matches durable sample IDs, named/id lookups and supplied counts
+ok 3 - explicit collection membership matches durable sample IDs, named/id lookups and supplied counts
+  ---
+  duration_ms: 21.778417
+  type: 'test'
+  ...
+# Subtest: requires explicit review and canonical base eligibility before exposing a cart draft
+ok 4 - requires explicit review and canonical base eligibility before exposing a cart draft
+  ---
+  duration_ms: 78.283917
+  type: 'test'
+  ...
+# Subtest: invalid edits retain exact draft and last valid preview without allowing stale review
+ok 5 - invalid edits retain exact draft and last valid preview without allowing stale review
+  ---
+  duration_ms: 22.232833
+  type: 'test'
+  ...
+# Subtest: normalization requires a separate affirmative action and another review
+ok 6 - normalization requires a separate affirmative action and another review
+  ---
+  duration_ms: 14.683584
+  type: 'test'
+  ...
+# Subtest: method changes use only product-defined choices and invalidate a previous review
+ok 7 - method changes use only product-defined choices and invalidate a previous review
+  ---
+  duration_ms: 12.501792
+  type: 'test'
+  ...
+# Subtest: style changes affect the illustrative preview and exact reviewed summary
+ok 8 - style changes affect the illustrative preview and exact reviewed summary
+  ---
+  duration_ms: 16.9735
+  type: 'test'
+  ...
+# Subtest: malformed or unavailable facts fail closed; nonpersonalized canonical products are untouched
+ok 9 - malformed or unavailable facts fail closed; nonpersonalized canonical products are untouched
+  ---
+  duration_ms: 40.896708
+  type: 'test'
+  ...
+# Subtest: merchant labels are text, never HTML, and teardown removes behavior and blocks purchase
+ok 10 - merchant labels are text, never HTML, and teardown removes behavior and blocks purchase
+  ---
+  duration_ms: 15.731583
+  type: 'test'
+  ...
+# Subtest: actual catalog factory → public product mapper → sanitized Liquid PDP → existing-element binding preserves full facts
+ok 11 - actual catalog factory → public product mapper → sanitized Liquid PDP → existing-element binding preserves full facts
+  ---
+  duration_ms: 150.017375
+  type: 'test'
+  ...
+1..11
+# tests 11
+# suites 0
+# pass 11
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1918.026166

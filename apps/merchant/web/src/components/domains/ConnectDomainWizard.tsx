@@ -2,6 +2,7 @@
 
 import { useCallback, useMemo, useState } from 'react'
 import {
+    Section,
     AlertTriangle,
     ArrowLeft,
     ArrowRight,
@@ -93,9 +94,8 @@ export function ConnectDomainWizard({ store, onClose, onConnected }: ConnectDoma
 
             {/* Step 1 — enter domain */}
             {step === 'enter' && (
-                <div className="settings-home-card">
-                    <div className="settings-home-section-label">Connect a domain you own</div>
-                    <div className="settings-form-body">
+                <Section variant="grouped" title="Connect a domain you own" >
+
                         <div className="settings-general-hint">
                             Enter a domain you already own. We&apos;ll detect your provider and give you the exact records to add — no DNS expertise needed.
                         </div>
@@ -114,15 +114,14 @@ export function ConnectDomainWizard({ store, onClose, onConnected }: ConnectDoma
                                 <ArrowRight className="letbuyy-icon" aria-hidden="true" />
                             </Button>
                         </div>
-                    </div>
-                </div>
+
+                </Section>
             )}
 
             {/* Steps 2+3 — provider + DNS instructions */}
             {step === 'instructions' && records && (
-                <div className="settings-home-card">
-                    <div className="settings-home-section-label">Add these DNS records</div>
-                    <div className="settings-form-body">
+                <Section variant="grouped" title="Add these DNS records" >
+
                         <div className="domains-provider-banner">
                             <span className="domains-provider-icon"><Globe className="letbuyy-icon" aria-hidden="true" /></span>
                             <div className="domains-provider-copy">
@@ -164,15 +163,14 @@ export function ConnectDomainWizard({ store, onClose, onConnected }: ConnectDoma
                                 I&apos;ve added the records — Verify
                             </Button>
                         </div>
-                    </div>
-                </div>
+
+                </Section>
             )}
 
             {/* Step 4 — verify result (still pending) */}
             {step === 'verify' && (
-                <div className="settings-home-card">
-                    <div className="settings-home-section-label">Verifying</div>
-                    <div className="settings-form-body">
+                <Section variant="grouped" title="Verifying" >
+
                         <div className="domains-verify-state">
                             <span className="domains-verify-icon">
                                 {busy ? <Loader2 className="letbuyy-icon domains-spin" aria-hidden="true" /> : <AlertTriangle className="letbuyy-icon" aria-hidden="true" />}
@@ -190,15 +188,14 @@ export function ConnectDomainWizard({ store, onClose, onConnected }: ConnectDoma
                             <Button variant="secondary" onClick={() => setStep('instructions')}>Back to records</Button>
                             <Button onClick={() => void handleVerify()} loading={busy}>Check again</Button>
                         </div>
-                    </div>
-                </div>
+
+                </Section>
             )}
 
             {/* Step 5 — activated */}
             {step === 'activate' && (
-                <div className="settings-home-card">
-                    <div className="settings-home-section-label">Connected</div>
-                    <div className="settings-form-body">
+                <Section variant="grouped" title="Connected" >
+
                         <div className="domains-success">
                             <span className="domains-success-icon"><CheckCircle2 className="letbuyy-icon" aria-hidden="true" /></span>
                             <p className="domains-success-title">{cleanedDomain} is connected</p>
@@ -208,8 +205,8 @@ export function ConnectDomainWizard({ store, onClose, onConnected }: ConnectDoma
                                 Done
                             </Button>
                         </div>
-                    </div>
-                </div>
+
+                </Section>
             )}
         </div>
     )

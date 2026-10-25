@@ -189,7 +189,8 @@ export default function PreferencesPage() {
     if (loading) {
         return (
             <Page>
-                <PageHeader
+                <PageHeader identity="themes"
+                    recipe="index"
                     title="Preferences"
                     description="Control search previews and storefront preference fields."
                     breadcrumbs={[{ label: 'Online Store' }, { label: 'Preferences' }]}
@@ -207,7 +208,8 @@ export default function PreferencesPage() {
 
     return (
         <Page>
-            <PageHeader
+            <PageHeader identity="themes"
+                recipe="index"
                 title="Preferences"
                 description="Control search previews and storefront preference fields."
                 breadcrumbs={[{ label: 'Online Store' }, { label: 'Preferences' }]}

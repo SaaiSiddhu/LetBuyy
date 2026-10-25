@@ -4,8 +4,9 @@ import { join } from 'node:path';
 import test from 'node:test';
 import * as React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
+import { LetbuyyThemeProvider, ThemeToggleButton } from '@letbuyy/ui';
 import type { Theme } from '@letbuyy/theme-engine';
-import AnonymousPreviewShell from '../src/components/anonymous-preview-shell';
+import AnonymousPreviewShell, { getAnonymousPreviewFrameSrc } from '../src/components/anonymous-preview-shell';
 import DeveloperListingBuilderForm from '../src/components/developer-listing-builder-form';
 import {
     ThemeChangelog,
@@ -26,6 +27,35 @@ import {
 } from '../src/lib/utils';
 
 Reflect.set(globalThis, 'React', React);
+
+test('marketplace theme control keeps identical initial markup for server and saved browser preferences', () => {
+    const originalWindow = Object.getOwnPropertyDescriptor(globalThis, 'window');
+    const renderControl = () => renderToStaticMarkup(
+        <LetbuyyThemeProvider surface="marketplace">
+            <ThemeToggleButton unstyled className="tm-icon-button" label="Toggle color theme" />
+        </LetbuyyThemeProvider>,
+    ).match(/<button\b[\s\S]*?<\/button>/)?.[0];
+
+    try {
+        Reflect.deleteProperty(globalThis, 'window');
+        const serverMarkup = renderControl();
+        assert.ok(serverMarkup);
+        for (const preference of ['light', 'dark', 'system']) {
+            for (const systemDark of [false, true]) {
+                Object.defineProperty(globalThis, 'window', { configurable: true, value: {
+                    localStorage: { getItem: () => preference },
+                    matchMedia: () => ({ matches: systemDark }),
+                    __letbuyyResolvedTheme: preference === 'system' ? (systemDark ? 'dark' : 'light') : preference,
+                } });
+                assert.equal(renderControl(), serverMarkup, `${preference}, system dark=${systemDark}`);
+            }
+        }
+        assert.match(serverMarkup, /aria-label="Toggle color theme"/);
+    } finally {
+        if (originalWindow) Object.defineProperty(globalThis, 'window', originalWindow);
+        else Reflect.deleteProperty(globalThis, 'window');
+    }
+});
 
 const appRoot = join(process.cwd());
 const testControls = {
@@ -116,7 +146,7 @@ test('theme card renders linked facets, freshness, relative update, compare, pre
     assert.match(html, /New|Updated/);
     assert.match(html, /Updated (today|[0-9]+ days? ago|[0-9]+ months? ago|[0-9]+ years? ago)/);
     assert.ok(html.includes(`href="${themeCompareSingleHref(baseTheme.slug)}"`));
-    assert.ok(html.includes(`href="${themeSandboxPreviewHref(baseTheme.slug)}"`));
+    assert.ok(html.includes(`href="${themeSandboxPreviewHref(baseTheme.slug, baseTheme.version).replaceAll('&', '&amp;')}"`));
     assert.match(html, /role="dialog"/);
     assert.match(html, /Compare this theme/);
 });
@@ -139,7 +169,7 @@ test('detail page enrichment components render demo iframe, measured scores, com
     const shareHtml = renderToStaticMarkup(<ThemeDetailSharePanel theme={baseTheme} />);
 
     assert.match(demoHtml, /data-testid="theme-live-demo-iframe"/);
-    assert.match(demoHtml, /src="\/preview\/urban-kicks\?theme=urban-kicks"/);
+    assert.match(demoHtml, /src="[^"]+\/theme-preview\/urban-kicks\?version=1\.2\.0"/);
     assert.match(qualityHtml, /data-testid="theme-performance-score"[^>]*>91</);
     assert.match(qualityHtml, /data-testid="theme-accessibility-score"[^>]*>96</);
     assert.match(qualityHtml, /latest-chrome, latest-safari/);
@@ -155,9 +185,29 @@ test('anonymous preview shell renders without a store-owned preview session', ()
 
     assert.match(html, /Anonymous sandbox/);
     assert.match(html, /Sandbox store preview/);
-    assert.match(html, /Token: devtoken/);
+    assert.doesNotMatch(html, /devtoken|Token:/);
     assert.match(html, /data-testid="anonymous-preview-iframe"/);
-    assert.match(html, /src="\/preview\/urban-kicks\?theme=urban-kicks"/);
+    assert.match(html, /src="[^"]+\/theme-preview\/urban-kicks\?version=1\.2\.0"/);
+});
+
+test('anonymous demo ignores arbitrary frame URLs and never turns the token into authority', () => {
+    const target = getAnonymousPreviewFrameSrc('private-token', { ...baseTheme, demo_url: 'https://untrusted.invalid/collect', preview_url: 'javascript:alert(1)' });
+    assert.ok(target?.endsWith('/theme-preview/urban-kicks?version=1.2.0'));
+    assert.doesNotMatch(target!, /untrusted|private-token|javascript/);
+    assert.equal(getAnonymousPreviewFrameSrc('private-token'), null);
+    assert.equal(getAnonymousPreviewFrameSrc('private-token', { ...baseTheme, slug: '../private' }), null);
+    for (const version of ['', ' leading', 'invalid\nversion', 'x'.repeat(41)]) assert.equal(getAnonymousPreviewFrameSrc('', { ...baseTheme, version }), null);
+    const unavailable = renderToStaticMarkup(<AnonymousPreviewShell token="private-token" />);
+    assert.match(unavailable, /Demo unavailable/);
+    assert.doesNotMatch(unavailable, /private-token|<iframe/);
+});
+
+test('detail embed uses the configured exact package preview and rejects an unverified version', () => {
+    const html = renderToStaticMarkup(<ThemeLiveDemoEmbed theme={{ ...baseTheme, demo_url: 'https://untrusted.invalid/collect' }} />);
+    assert.match(html, /theme-preview\/urban-kicks\?version=1\.2\.0/);
+    assert.doesNotMatch(html, /untrusted|allow-popups/);
+    const invalid = renderToStaticMarkup(<ThemeLiveDemoEmbed theme={{ ...baseTheme, version: '' }} />);
+    assert.match(invalid, /Demo unavailable/); assert.doesNotMatch(invalid, /<iframe/);
 });
 
 test('developer listing builder renders the distinct create-listing form fields', () => {

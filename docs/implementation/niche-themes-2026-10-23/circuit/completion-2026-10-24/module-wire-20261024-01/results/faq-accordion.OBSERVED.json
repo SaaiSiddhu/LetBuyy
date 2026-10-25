@@ -1,0 +1,168 @@
+{
+  "classification": "SOURCE_STATE_SERIALIZATION_ONLY_NOT_ACTUAL_UI_OPERATIONS",
+  "type": "faq-accordion",
+  "group": "template",
+  "originalId": "section-1069f47c-de03-4fc8-954c-c1a5d42f2104",
+  "finalId": "section-01fc7188-1f77-43ad-9688-0e4b6b00fe81",
+  "sectionFieldsExercised": [
+    "title",
+    "allowMultipleOpen"
+  ],
+  "effectiveBlockFieldsExercised": [
+    "faq-item.question",
+    "faq-item.answer"
+  ],
+  "phases": [
+    {
+      "phase": "edited",
+      "observed": {
+        "settings": {
+          "title": "Circuit source title",
+          "allowMultipleOpen": false
+        },
+        "disabled": false,
+        "block_order": [
+          "block-e560a4be-7567-4691-866b-c07adaaf75e2",
+          "block-030824c2-6c7e-4273-b306-8be54e244427"
+        ],
+        "blocks": {
+          "block-e560a4be-7567-4691-866b-c07adaaf75e2": {
+            "type": "faq-item",
+            "settings": {
+              "question": "Circuit source question",
+              "answer": "Circuit source answer"
+            },
+            "disabled": false,
+            "blocks": {},
+            "block_order": []
+          },
+          "block-030824c2-6c7e-4273-b306-8be54e244427": {
+            "type": "faq-item",
+            "settings": {
+              "question": "Circuit source question",
+              "answer": "Circuit source answer"
+            },
+            "disabled": false,
+            "blocks": {},
+            "block_order": []
+          }
+        }
+      }
+    },
+    {
+      "phase": "hidden-reordered",
+      "observed": {
+        "settings": {
+          "title": "Circuit source title",
+          "allowMultipleOpen": false
+        },
+        "disabled": true,
+        "block_order": [
+          "block-030824c2-6c7e-4273-b306-8be54e244427",
+          "block-e560a4be-7567-4691-866b-c07adaaf75e2"
+        ],
+        "blocks": {
+          "block-030824c2-6c7e-4273-b306-8be54e244427": {
+            "type": "faq-item",
+            "settings": {
+              "question": "Circuit source question",
+              "answer": "Circuit source answer"
+            },
+            "disabled": true,
+            "blocks": {},
+            "block_order": []
+          },
+          "block-e560a4be-7567-4691-866b-c07adaaf75e2": {
+            "type": "faq-item",
+            "settings": {
+              "question": "Circuit source question",
+              "answer": "Circuit source answer"
+            },
+            "disabled": true,
+            "blocks": {},
+            "block_order": []
+          }
+        }
+      }
+    },
+    {
+      "phase": "shown",
+      "observed": {
+        "settings": {
+          "title": "Circuit source title",
+          "allowMultipleOpen": false
+        },
+        "disabled": false,
+        "block_order": [
+          "block-030824c2-6c7e-4273-b306-8be54e244427",
+          "block-e560a4be-7567-4691-866b-c07adaaf75e2"
+        ],
+        "blocks": {
+          "block-030824c2-6c7e-4273-b306-8be54e244427": {
+            "type": "faq-item",
+            "settings": {
+              "question": "Circuit source question",
+              "answer": "Circuit source answer"
+            },
+            "disabled": false,
+            "blocks": {},
+            "block_order": []
+          },
+          "block-e560a4be-7567-4691-866b-c07adaaf75e2": {
+            "type": "faq-item",
+            "settings": {
+              "question": "Circuit source question",
+              "answer": "Circuit source answer"
+            },
+            "disabled": false,
+            "blocks": {},
+            "block_order": []
+          }
+        }
+      }
+    },
+    {
+      "phase": "removed",
+      "originalSectionAbsent": true,
+      "protectedGroupIdentityRetained": false
+    },
+    {
+      "phase": "readded",
+      "observed": {
+        "settings": {
+          "title": "Circuit source title",
+          "allowMultipleOpen": false
+        },
+        "disabled": false,
+        "block_order": [
+          "block-9513bb40-04a6-4dac-9825-80a7295a596e",
+          "block-4fdaf4ac-90ea-476a-8cfe-4b7ecbc124a2"
+        ],
+        "blocks": {
+          "block-9513bb40-04a6-4dac-9825-80a7295a596e": {
+            "type": "faq-item",
+            "settings": {
+              "question": "Circuit source question",
+              "answer": "Circuit source answer"
+            },
+            "disabled": false,
+            "blocks": {},
+            "block_order": []
+          },
+          "block-4fdaf4ac-90ea-476a-8cfe-4b7ecbc124a2": {
+            "type": "faq-item",
+            "settings": {
+              "question": "Circuit source question",
+              "answer": "Circuit source answer"
+            },
+            "disabled": false,
+            "blocks": {},
+            "block_order": []
+          }
+        }
+      }
+    }
+  ],
+  "resourceAuthorityProved": false,
+  "actualUiCallbacksExecuted": false
+}

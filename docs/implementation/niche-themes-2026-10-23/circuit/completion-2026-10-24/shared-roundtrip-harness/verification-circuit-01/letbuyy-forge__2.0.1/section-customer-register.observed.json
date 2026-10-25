@@ -1,0 +1,66 @@
+{
+  "id": "section-customer-register",
+  "status": "PASS_SOURCE_DATA_CONTRACT",
+  "observed": {
+    "type": "customer-register",
+    "group": "template",
+    "firstId": "section-4e475686-f474-420d-86cd-afa327404238",
+    "finalId": "section-dd6bfae7-2b76-40d0-823c-a98f6b767cb5",
+    "phases": [
+      {
+        "phase": "edited",
+        "data": {
+          "type": "customer-register",
+          "settings": {
+            "heading": "Source fixture heading"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      {
+        "phase": "hidden-reordered",
+        "data": {
+          "type": "customer-register",
+          "settings": {
+            "heading": "Source fixture heading"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": true
+        }
+      },
+      {
+        "phase": "shown",
+        "data": {
+          "type": "customer-register",
+          "settings": {
+            "heading": "Source fixture heading"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      {
+        "phase": "removed",
+        "pinnedGroupSectionRetained": false
+      },
+      {
+        "phase": "readded",
+        "data": {
+          "type": "customer-register",
+          "settings": {
+            "heading": "Source fixture heading"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      }
+    ],
+    "actualUICallbacksExecuted": false,
+    "resourceAuthorityProved": false
+  }
+}

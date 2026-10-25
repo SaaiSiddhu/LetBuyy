@@ -1,0 +1,1698 @@
+{
+  "runId": "20b861608061",
+  "image": "postgres:16-alpine",
+  "restImage": "public.ecr.aws/supabase/postgrest:v16.2",
+  "limits": {
+    "postgres": {
+      "memory": "1g",
+      "cpus": "2",
+      "pids": "512"
+    },
+    "rest": {
+      "memory": "256m",
+      "cpus": "1",
+      "pids": "256"
+    }
+  },
+  "jobs": 1,
+  "containers": [
+    "letbuyy-exec-19735-mvmmc2mv-8fe952"
+  ],
+  "reaped": [],
+  "suites": 1,
+  "gatewayDbSuites": 1,
+  "failedSuites": 1,
+  "tests": 1,
+  "assertionsPassed": 0,
+  "assertionsFailed": 1,
+  "cancelled": 0,
+  "skipped": 0,
+  "todo": 0,
+  "wallSeconds": 21681.9,
+  "suiteSeconds": 21680.5,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "results": [
+    {
+      "name": "theme-completion-razorpay-browser.manual.ts",
+      "path": "tests/owned-db/theme-completion-razorpay-browser.manual.ts",
+      "kind": "gateway-db",
+      "cluster": "letbuyy-exec-19735-mvmmc2mv-8fe952",
+      "code": 1,
+      "timedOut": false,
+      "hasSummary": true,
+      "tests": 1,
+      "pass": 0,
+      "fail": 1,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "seconds": 21680.5,
+      "firstFailure": "not ok 1 - manual all-theme fixture binds real Test Mode credentials and canonical webhook recei",
+      "failures": [
+        "not ok 1 - manual all-theme fixture binds real Test Mode credentials and canonical webhook receiver"
+      ],
+      "skips": [],
+      "strayProcessesStopped": false,
+      "database": "letbuyy_exec_theme_completion_razorpay_browser_manual_ts",
+      "templateSeconds": 16.4,
+      "provisionSeconds": 0.9,
+      "rest": {
+        "container": "letbuyy-exec-20b861608061-rest-1",
+        "upstreamPort": 55128,
+        "proxyPort": 55129
+      },
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "migrations": {
+        "throughMigration": null,
+        "applied": [
+          {
+            "name": "000_baseline.sql",
+            "prefix": 0,
+            "sha256": "dd0797dac42e3fccec62d41a754469c7aaf5321ede649a8ed86b13a00822457d"
+          },
+          {
+            "name": "073_order_item_required_field_compatibility.sql",
+            "prefix": 73,
+            "sha256": "545628a195e0b69e7a8a8ef70ee0ec762e72fb113ed8a170339668d0ce4a4aef"
+          },
+          {
+            "name": "074_cod_pending_status.sql",
+            "prefix": 74,
+            "sha256": "3105c9bb64b80dee0d1609a38f80cbc201e8f542866c98d9d2fdae99966b0368"
+          },
+          {
+            "name": "075_cashfree_payment_provider.sql",
+            "prefix": 75,
+            "sha256": "a86e1dd629d9cb4166d9727b787e2d4bb641cb9fef7a5f5529880b1617ff1b47"
+          },
+          {
+            "name": "076_app_extension_registry.sql",
+            "prefix": 76,
+            "sha256": "550cea228b14dc6862e90024db6dfe42992ce4c62fb49ad94ab6e09a291ed0f3"
+          },
+          {
+            "name": "077_customer_reset_tokens.sql",
+            "prefix": 77,
+            "sha256": "5be1eb84d864ed91974ec0a86f16da28268008b6f3d2b4fc2d8cbc72e101951c"
+          },
+          {
+            "name": "078_password_set_intents.sql",
+            "prefix": 78,
+            "sha256": "2b2a95888fd67c16d4e80da1d1d99ee0b687b144a26ca538150ea62bd30a27c0"
+          },
+          {
+            "name": "079_partition_worker_request_logs.sql",
+            "prefix": 79,
+            "sha256": "e36875c5cfc5daaf6dfb8a0b79c99fb7978f4cca03c369e314d3431246a2e8a2"
+          },
+          {
+            "name": "080_partition_runtime_telemetry_metrics.sql",
+            "prefix": 80,
+            "sha256": "b12f22376f3bb5baafd074aeca8577f7da48f6844e6d6feff34ae99029ff1d51"
+          },
+          {
+            "name": "081_partition_outbox_events.sql",
+            "prefix": 81,
+            "sha256": "97f2b278d64ae3b6141caef977d3b9df858f13ab9076dfe7a5dbaf822cba10d0"
+          },
+          {
+            "name": "082_partition_platform_queue_jobs.sql",
+            "prefix": 82,
+            "sha256": "029e523148269eb6e67d1f2021056842bbf9df02c4a0bd4fa20679ce6f1d1a96"
+          },
+          {
+            "name": "083_partition_webhook_deliveries.sql",
+            "prefix": 83,
+            "sha256": "f749339184de4b567ff4db65d06850d02ab0cefe188da44700d65f75e57edeac"
+          },
+          {
+            "name": "084_trigram_search_indexes.sql",
+            "prefix": 84,
+            "sha256": "ffa18b900ca4bded960c7a5272e8a2bd94f71385e0c76a155da09c0e4e585c54"
+          },
+          {
+            "name": "085_orders_items_reconcile.sql",
+            "prefix": 85,
+            "sha256": "f30341cd9e1cee1b11d95cefcac8a3c6ca134e8425f97c214ba46700ee0ba6cb"
+          },
+          {
+            "name": "086_products_variants_reconcile.sql",
+            "prefix": 86,
+            "sha256": "b84b384e150ba42e7a9553396d506cf347cb6e73b3b75c974fdb169ceecfa8f0"
+          },
+          {
+            "name": "087_theme_template_drafts.sql",
+            "prefix": 87,
+            "sha256": "5e91b0a98ff1b34d359c69b9f7cd05a1294bccc925be869fcbf2e657ba4b6611"
+          },
+          {
+            "name": "088_inventory_available_batch.sql",
+            "prefix": 88,
+            "sha256": "3776bdb8285c2e8420e4d2117bf65a447c099ff403220c7b4cd1505e4393d249"
+          },
+          {
+            "name": "089_quarantine_platform_queue_job.sql",
+            "prefix": 89,
+            "sha256": "6086aafe09c5ee5dae7da958efd2f47e1c528e3e825ec3d6f0116482a8ebdb05"
+          },
+          {
+            "name": "090_custom_domains_and_store_access.sql",
+            "prefix": 90,
+            "sha256": "a8035ce52f1e82d37dcbaf27a3ecb08d18bd4e9dfab08a1f629bc3d1c4a31124"
+          },
+          {
+            "name": "091_theme_marketplace_stepup.sql",
+            "prefix": 91,
+            "sha256": "80d3c916f0f5cf077d14abb7d60f03becdd54bdba0d21fce442deb30ec18b596"
+          },
+          {
+            "name": "092_app_marketplace_pricing_policy.sql",
+            "prefix": 92,
+            "sha256": "3058c5197f43b271bf0b102bf42303019146afc2e67553e0285b320b6c49cf10"
+          },
+          {
+            "name": "093_app_pricing_plans.sql",
+            "prefix": 93,
+            "sha256": "e12a965afbdc6c959efcb00c7f1ec4081588e8c7fa4d3bac0a95ade045c46fe1"
+          },
+          {
+            "name": "094_app_billing_trials.sql",
+            "prefix": 94,
+            "sha256": "3335f036ee0995c9918166b0db79437998c4ae9f98f5c0c48561ed4668b3c4cd"
+          },
+          {
+            "name": "095_app_usage_metering.sql",
+            "prefix": 95,
+            "sha256": "30c5506440bdd258d09e9859e1f012fa8d023d37d0259ece46a763b9c660d706"
+          },
+          {
+            "name": "096_app_spend_controls.sql",
+            "prefix": 96,
+            "sha256": "5e2785f0c488a30d314fdf3356632928a637739d331b88dd31e668c6268bf889"
+          },
+          {
+            "name": "097_app_uninstall_feedback.sql",
+            "prefix": 97,
+            "sha256": "d576b755745f60c7529725b6cc8ad4b273df008f24b2281308f12450c745bc3a"
+          },
+          {
+            "name": "098_app_versions.sql",
+            "prefix": 98,
+            "sha256": "ae0f970a6aa6cca3ec8501d57afa1b176d52ed8a19a4b841e444da0691541297"
+          },
+          {
+            "name": "099_app_developer_consent_and_approval.sql",
+            "prefix": 99,
+            "sha256": "831d8eb079c4cb8ee6a1692eab2607b12ba2f43a7bebb9c87d8be899de927434"
+          },
+          {
+            "name": "100_app_discovery_foundation.sql",
+            "prefix": 100,
+            "sha256": "d58d0801eaca491a8b9e93d1caef4ade40a011867d4bb1314d227617d634159f"
+          },
+          {
+            "name": "101_app_trust_reviews_content.sql",
+            "prefix": 101,
+            "sha256": "ae8ebbfeab7f9e909ef8cddf7192ab3d09bbd669efb89044c5e0df06f8b52ef5"
+          },
+          {
+            "name": "102_app_developer_tooling_analytics.sql",
+            "prefix": 102,
+            "sha256": "ba925dffbe6c516f450a7c669295456c3cb9cb1392e95177d292c69da8fce06b"
+          },
+          {
+            "name": "103_app_api_quota_and_legacy_rls.sql",
+            "prefix": 103,
+            "sha256": "4791d3e7fc94c9c66dd3244349b63caaf78bf875e4b49a16c0eb14359baf65b5"
+          },
+          {
+            "name": "104_app_marketplace_scale_services.sql",
+            "prefix": 104,
+            "sha256": "32e4a7f49d642cb7ce2fd36749144dccabd658221e2560851cb2acb0b75ce0c2"
+          },
+          {
+            "name": "105_app_marketplace_responsiveness_i18n.sql",
+            "prefix": 105,
+            "sha256": "05278068c42bfdab733902430642ec188de04edab6bd8ef0d226a4dae55e93d4"
+          },
+          {
+            "name": "106_app_marketplace_growth_polish.sql",
+            "prefix": 106,
+            "sha256": "5e3bbcc4004db0fcff36f66b15d098e99cf7ebdafa46d79d6649c8570eaaf211"
+          },
+          {
+            "name": "107_security_rls_hardening_and_payment_uniqueness.sql",
+            "prefix": 107,
+            "sha256": "7def1413d6998eb0fe88881071d0585f11e34555285c310a3255bdbb7b690f58"
+          },
+          {
+            "name": "108_orders_tenant_key_not_null.sql",
+            "prefix": 108,
+            "sha256": "199f8d9f9e67e25a6c56594cde1cc4932e3c07117d95109d391bdfeb3e0c10de"
+          },
+          {
+            "name": "109_orders_money_width.sql",
+            "prefix": 109,
+            "sha256": "3c4126c3f348a75b2aaf6a148cd1ab60eabbb2152556f37edc74ab1b9a6db6de"
+          },
+          {
+            "name": "110_fk_hygiene_and_order_indexes.sql",
+            "prefix": 110,
+            "sha256": "ba568d8a687e1decfe10ed7742ec850cf8efff2200c02a832ed9a9f0fad6377f"
+          },
+          {
+            "name": "111_customer_credentials_source_of_truth.sql",
+            "prefix": 111,
+            "sha256": "ef7a6c7a4afefa275f9e22304ab47820e311565e9d8dd3b1f27ba3203e9fdcb2"
+          },
+          {
+            "name": "112_app_marketplace_parity_data_layer.sql",
+            "prefix": 112,
+            "sha256": "503643eaba77c162222c8a20f2d3669a5e2b122156707df7f737612bb7b113cc"
+          },
+          {
+            "name": "113_internal_os_rbac_spine.sql",
+            "prefix": 113,
+            "sha256": "10aa40782aa5c614157e336fd08c3e2929bfbbfe47152137b22634f0b16fc545"
+          },
+          {
+            "name": "114_mobile_onboarding_attempt_progress.sql",
+            "prefix": 114,
+            "sha256": "457d9819a9f3242baa7e9d04eff374b079c4ffcf9e5e9b8f5f3ca9cb461332de"
+          },
+          {
+            "name": "115_product_review_merchant_replies.sql",
+            "prefix": 115,
+            "sha256": "27bbf7d813f095ba26bf2e12959e7407a932716e9d8ebff0315a721177311fca"
+          },
+          {
+            "name": "116_mobile_draft_orders.sql",
+            "prefix": 116,
+            "sha256": "4b88f3683088a05ba842d2c760c7150c5fc09093abcf062ee5d663661ae83a6b"
+          },
+          {
+            "name": "117_mobile_customer_notes_tags.sql",
+            "prefix": 117,
+            "sha256": "67389a8c3c89ae124727c2ebbd15225431d9a9dedb0048575ee143659489f613"
+          },
+          {
+            "name": "118_mobile_shipping_labels.sql",
+            "prefix": 118,
+            "sha256": "5811bca65f9feb7aab2b5240028eeabe109338e7b9e78c8a8657f25ce9724204"
+          },
+          {
+            "name": "119_mobile_money_ledgers.sql",
+            "prefix": 119,
+            "sha256": "f190a43cbc009174cdb566fc2ab2065194b15276458b857fb1c2e9a96a17c256"
+          },
+          {
+            "name": "120_mobile_kyc_documents.sql",
+            "prefix": 120,
+            "sha256": "8e8a70cd1fac2ed665c4c904d758a0f70e20a068e0526d7d0bd2acfbdc0f76a9"
+          },
+          {
+            "name": "121_mobile_merchant_2fa_factors.sql",
+            "prefix": 121,
+            "sha256": "ff3efd5fb588028b3291c710fab9ea157c7c1a6e533802feb4b6290cbb1cb9b8"
+          },
+          {
+            "name": "122_mobile_business_profile.sql",
+            "prefix": 122,
+            "sha256": "bb5be765f0e8933a85964a945f96bed70102047d090e00c70d827cdebd35c8c5"
+          },
+          {
+            "name": "123_mobile_tax_rate_parity.sql",
+            "prefix": 123,
+            "sha256": "002e618ad3c5dd58a2e19aa6b23c04fcfcd5226ec83c9b3f707f47a1a919c518"
+          },
+          {
+            "name": "124_internal_os_risk_detection.sql",
+            "prefix": 124,
+            "sha256": "df841c6e3d3b3e5c5a8bbd25d1034e418a58db5a241c9b805b47606d8a81ef9c"
+          },
+          {
+            "name": "125_internal_os_trust_safety_cases.sql",
+            "prefix": 125,
+            "sha256": "3cf45320c885877401feae2a6f8b9ff92a93c7c4274d12856ee8e1843d3d5876"
+          },
+          {
+            "name": "126_internal_os_merchant_360_impersonation.sql",
+            "prefix": 126,
+            "sha256": "d54da2f2a227a1a60ee641c7f805b79027397ca1a264c5ac9cdd9085477f56db"
+          },
+          {
+            "name": "127_internal_os_support_ticketing.sql",
+            "prefix": 127,
+            "sha256": "11a22d0cd05d38423e1b9c4f940ca27bdc30b5eaf2ae8fe6892eb8cbab3f82f8"
+          },
+          {
+            "name": "128_internal_os_review_check_runs.sql",
+            "prefix": 128,
+            "sha256": "9e29b5b5f25ceb969b41346300b8ddd07bc48c32053126bae599ff35cf6f5bf8"
+          },
+          {
+            "name": "129_mobile_customer_segments.sql",
+            "prefix": 129,
+            "sha256": "e366308498a4a987599194cd87b01ac74905a2d6ea17bd24153a88d45762e1b6"
+          },
+          {
+            "name": "130_orders_site_id_not_null.sql",
+            "prefix": 130,
+            "sha256": "360bd72314ed6dcad0e6eebbc9cf535469cdcb781867a552ba64d2c008a7c3d6"
+          },
+          {
+            "name": "131_hot_table_partition_shadow_mirror.sql",
+            "prefix": 131,
+            "sha256": "b643e712854b3350d2f69fe90c91a2f576f2aba58febabb2eecdc5f8dc231bca"
+          },
+          {
+            "name": "132_mobile_whatsapp_commerce.sql",
+            "prefix": 132,
+            "sha256": "bbf67d2d827babdabe47f69199bba8a7a7b9593b3a4508f8e3d31a3f19f68b94"
+          },
+          {
+            "name": "133_internal_os_incident_command.sql",
+            "prefix": 133,
+            "sha256": "9e9c29bc2fdeb0db55f1e30d3cc47645680f6e144e7f3b2d3020d01f27edd641"
+          },
+          {
+            "name": "134_internal_os_developer_360_payout_reconciliation.sql",
+            "prefix": 134,
+            "sha256": "36855c789105044990b3f4c47d7e4ebe8dbb51187d4870ee0ed3ca4c1a9c27ef"
+          },
+          {
+            "name": "135_internal_os_compliance_data_subjects.sql",
+            "prefix": 135,
+            "sha256": "f0cae2539dd0e49b9ca3155362b9927feaafd55c2cd5531a7a89519b664206ce"
+          },
+          {
+            "name": "136_mobile_marketing_email_campaigns.sql",
+            "prefix": 136,
+            "sha256": "820e57c672f8df6f9355d87f5ff5145a97cfa06b19099408ac1fdc528208ef63"
+          },
+          {
+            "name": "137_mobile_storefront_localization.sql",
+            "prefix": 137,
+            "sha256": "773fea8bfd64dd8d7a9de94c41adb33e2302df0167ee3fe64865b2f5dc2eaecb"
+          },
+          {
+            "name": "138_mobile_store_metafields.sql",
+            "prefix": 138,
+            "sha256": "3abee14664104a4184b19497da873eeaba0d1ee2df772deafedd0f2d41c3f3d0"
+          },
+          {
+            "name": "139_executable_foundation_ledger_core.sql",
+            "prefix": 139,
+            "sha256": "eb6e9a7e9240341a47a0264e6baacae21b4f19f3e8ecc7c8ed9423c7afd05cbb"
+          },
+          {
+            "name": "140_mobile_cod_reconciliation.sql",
+            "prefix": 140,
+            "sha256": "fa957983744f34fe7931ce5082df55bd4e6d7ebee94fa3a30f44b1c61bf6c7ea"
+          },
+          {
+            "name": "141_executable_inventory_reservations.sql",
+            "prefix": 141,
+            "sha256": "ad7ef3db0b1e40fbdf7983ef57c775b6bfb1d46af0efcf6706052a566bfa8241"
+          },
+          {
+            "name": "142_executable_payment_sessions.sql",
+            "prefix": 142,
+            "sha256": "d4d85aafa2bc97e2a784a8900866476206d2afdb732269a02402582a5e1885e9"
+          },
+          {
+            "name": "143_executable_discount_stack.sql",
+            "prefix": 143,
+            "sha256": "141df367d1a94525846ad794c3730291b83d66ee5ace5151da24c3713c7f25c0"
+          },
+          {
+            "name": "144_executable_tax_gst_invoices.sql",
+            "prefix": 144,
+            "sha256": "62148a3ee5331058be1615da8e924dc2528727facf257858ffc8fa60c2679c4d"
+          },
+          {
+            "name": "145_executable_shipping_serviceability.sql",
+            "prefix": 145,
+            "sha256": "5a79fd5aca58c78133d3998e68f03b11596488047c258ab4ad9d40cb9bb1de62"
+          },
+          {
+            "name": "146_executable_checkout_state_machine.sql",
+            "prefix": 146,
+            "sha256": "12ef831a94f49dc5570af9cde0703cc523760be76e8e1049ac1f3e4e102e821e"
+          },
+          {
+            "name": "147_executable_order_state_risk.sql",
+            "prefix": 147,
+            "sha256": "41ad4f127fe76545dc3eccc00637c9c8e3e20cf8432db6ef2d0456c47cb4ead1"
+          },
+          {
+            "name": "148_executable_notifications_router.sql",
+            "prefix": 148,
+            "sha256": "5060d4c2cbb44d8145764a5ef762cb2bd0448758e62c50c7e1207492796db0a0"
+          },
+          {
+            "name": "149_executable_email_delivery.sql",
+            "prefix": 149,
+            "sha256": "50f1fd98a10100e4ef0d2117666adca3353deab561aa8ea23c03fee46eeac361"
+          },
+          {
+            "name": "150_executable_whatsapp_scoped.sql",
+            "prefix": 150,
+            "sha256": "c4953b761000242161e7f2677635228885114d9d9cdae47984879a4b9335373e"
+          },
+          {
+            "name": "151_executable_settlement_ledger.sql",
+            "prefix": 151,
+            "sha256": "83dc6e2245ef95884e63560a9c342cd1d0f451d54afbc60d7d116f7180c38f20"
+          },
+          {
+            "name": "152_executable_billing_autopay.sql",
+            "prefix": 152,
+            "sha256": "833193537d1894fd62d691db5861e73f950a182a3f4d99110e1334fd46c9f7ea"
+          },
+          {
+            "name": "153_executable_identity_security.sql",
+            "prefix": 153,
+            "sha256": "47b20eb2d6782ca700f5adb64fa96b906d99f06b944502f72b46928022ed3ee2"
+          },
+          {
+            "name": "154_executable_analytics_media_ai_seam.sql",
+            "prefix": 154,
+            "sha256": "c189791f69b34c724f61bb8091fa2c2499804545ce764644b5aced08595b45f5"
+          },
+          {
+            "name": "155_storefront_session_analytics.sql",
+            "prefix": 155,
+            "sha256": "929536a4212f47809f102f7c88a04682c9f8a197e75b898c1199a673d748d929"
+          },
+          {
+            "name": "156_executable_cart_channel_handoff.sql",
+            "prefix": 156,
+            "sha256": "6169c4b598299c1a4fde0f3ee21cd23bd99b2f7b94b646561904fb8df9d822cf"
+          },
+          {
+            "name": "157_product_metadata.sql",
+            "prefix": 157,
+            "sha256": "1431d5c75f9d1e5c6ecffe91fbeba44f8e6ccbb91b087c8baf50dbc67b483a59"
+          },
+          {
+            "name": "158_order_items_tenant_scope.sql",
+            "prefix": 158,
+            "sha256": "667e5858913eb34aa42c82839eedcd8f9b421b41ac9f05da33c31c003a7dff2b"
+          },
+          {
+            "name": "159_identity_foundation_core.sql",
+            "prefix": 159,
+            "sha256": "ad62712935700127a0f68ca46cc97b38f22aed7b48951063d38f76b6c2d7fc78"
+          },
+          {
+            "name": "160_foundation_money_ledger_authority.sql",
+            "prefix": 160,
+            "sha256": "8a12611d2e94669b8172266c09fc63bf48c4c0ea950d4242014804889b5d8276"
+          },
+          {
+            "name": "161_foundation_session_security.sql",
+            "prefix": 161,
+            "sha256": "ce47c5944b5ef5411b49aefe99e7fd2164bea7fef507b077f374b97ae97ec9af"
+          },
+          {
+            "name": "162_phase_a_commission_zero.sql",
+            "prefix": 162,
+            "sha256": "b74b033121dc867ebdcc4247e77b0fa3202cd54770b6def777b15d2ec0d5a7f6"
+          },
+          {
+            "name": "163_d2_live_data_leak_rls.sql",
+            "prefix": 163,
+            "sha256": "b89a40361667d4d526efb45631dbb5880f037e44869d90460df4d945c4fbfdfd"
+          },
+          {
+            "name": "164_d4_tenant_role_guc.sql",
+            "prefix": 164,
+            "sha256": "ec9cdb4d4a5201dd65d06d6835f00660a5a503e1081aa23d2d7d22dab7e13d43"
+          },
+          {
+            "name": "165_d5_canonical_money_paths.sql",
+            "prefix": 165,
+            "sha256": "ecc930f206d6d951cdbca4baf377630e4866d4c3eecff819b9a5c2d1297539bd"
+          },
+          {
+            "name": "166_d6_checkout_handoff_inventory.sql",
+            "prefix": 166,
+            "sha256": "60b323563e1bc348d01ea63835a5efd3f48d20f13d7ac0f83dcb8b5b9445c164"
+          },
+          {
+            "name": "167_app_billing_provider_mode_sandbox.sql",
+            "prefix": 167,
+            "sha256": "edbbe52b6307406a303450bcfa192477931b5952e964f1a32bd396ea9d64fe1e"
+          },
+          {
+            "name": "168_b1_b2_capture_refund_ledgering.sql",
+            "prefix": 168,
+            "sha256": "da0ddf4ee28c023bd91ff8e167c9d2a6157de089a49be4d4521101809bfcda14"
+          },
+          {
+            "name": "169_internal_os_executive_analytics_rollups.sql",
+            "prefix": 169,
+            "sha256": "d9b20d02813d796faad1682fed0dc0ebe504c444d2c5db402bbd59e69ba7194f"
+          },
+          {
+            "name": "170_v1_shipping_rates_gst.sql",
+            "prefix": 170,
+            "sha256": "17cae218be208a321e37aae12cdb6d65e118025a263a0887826162700dd4cf14"
+          },
+          {
+            "name": "171_liquid_bundle_persistence.sql",
+            "prefix": 171,
+            "sha256": "08392fd90bf4f16a1f79b020da694619e91cc0b064c99016bfdae893d085cc21"
+          },
+          {
+            "name": "172_liquid_bundle_refresh.sql",
+            "prefix": 172,
+            "sha256": "fd8da5b7d8a43a29dd63b81ac0b9216d1f7cfca95f3e88d68b8cf8502ef52b47"
+          },
+          {
+            "name": "173_v1_gift_card_issuance_lifecycle.sql",
+            "prefix": 173,
+            "sha256": "6f015975a6aa9bceb55df6ce31d41089f8ed8bcf0ffc471bd09015185282b586"
+          },
+          {
+            "name": "174_v1_gift_card_refund_restore.sql",
+            "prefix": 174,
+            "sha256": "ffcb2aca73466a7afa9a9cd32bde7e90e74704e7ec30f2e1f802711e36c33300"
+          },
+          {
+            "name": "175_fix_session_rpc_search_path.sql",
+            "prefix": 175,
+            "sha256": "301cb771a1076cbe95e23f9829c35d65a771484de91dbe218215d65a4e534c20"
+          },
+          {
+            "name": "176_v1_founding_program_schema.sql",
+            "prefix": 176,
+            "sha256": "96b9c23f33919250d7f5912e9850692f21af70223b09b46776db0da0a228f5cf"
+          },
+          {
+            "name": "177_v1_founding_program_rpcs.sql",
+            "prefix": 177,
+            "sha256": "84ab17f553c9bba0801b6cd1a64dadceede0ec46cfeedaee80c61844138ba9b0"
+          },
+          {
+            "name": "178_v1_pricing_plans_seed.sql",
+            "prefix": 178,
+            "sha256": "4177d8ff63238087d596d935622bd79677e9499cdd003c55e95c9261910c79e7"
+          },
+          {
+            "name": "179_outbox_partition_shadow_published_at.sql",
+            "prefix": 179,
+            "sha256": "2476c964cc224b6b93a2c166fe1d35f2f084a108c4a3334943f96dc5ac015eec"
+          },
+          {
+            "name": "180_urban_kicks_liquid_theme.sql",
+            "prefix": 180,
+            "sha256": "b99a7a39b630f246f80448d08ffb13356b48fe93ba18a8aa334a55a2d2cff5e0"
+          },
+          {
+            "name": "181_urban_kicks_settings_schema_complete.sql",
+            "prefix": 181,
+            "sha256": "6dfd9dafcc01a1de90dd6dc9d0ba2860ed452e950ef1e3ad0636289b950376d4"
+          },
+          {
+            "name": "182_v1_sites_timezone.sql",
+            "prefix": 182,
+            "sha256": "9a78c41baf85dde6f69b2e6749e9e5f83caa96d7e79080bc19d8b9508a464d7d"
+          },
+          {
+            "name": "183_v1_pricing_recompete.sql",
+            "prefix": 183,
+            "sha256": "8a8bc3e8bb251fe1145912ce9762e5b59d821cfe81340ccf06e62a3415225402"
+          },
+          {
+            "name": "184_v1_subscription_coupons.sql",
+            "prefix": 184,
+            "sha256": "59b82799fcef9a2973e751e66ed003fe76feacacc4f432b327bf8d00a48c7bd6"
+          },
+          {
+            "name": "185_v1_site_domains.sql",
+            "prefix": 185,
+            "sha256": "1555350bc010bbfda31385d82fe7b24dc2fd81de563c9c43e336a6d82e7c0f03"
+          },
+          {
+            "name": "186_v1_scale_commerce_os_coming_soon.sql",
+            "prefix": 186,
+            "sha256": "db7cff403e07f7d74cb075af48871a8387e90b29e36258df1659bc8c887aeeae"
+          },
+          {
+            "name": "187_v1_sites_site_settings.sql",
+            "prefix": 187,
+            "sha256": "4819a888ac8cf2db95f962ca0fb27328ce626462ca9305c00401b22749ff047d"
+          },
+          {
+            "name": "188_letbuyy_core_theme_row.sql",
+            "prefix": 188,
+            "sha256": "8b8fdc3cd0979b42e4e6d3815826b622ade65faff03134644e0f810960f088ae"
+          },
+          {
+            "name": "189_theme_persistence_idempotency.sql",
+            "prefix": 189,
+            "sha256": "e7b275c9ec0b950c7630e0d663dc18d592253f8010a5af712ed1c96b3e5d0fea"
+          },
+          {
+            "name": "190_theme_library_q.sql",
+            "prefix": 190,
+            "sha256": "3f7d5fefc775fc0ecd52687236f1213ba1d38660f8de88b4382b768260a6174b"
+          },
+          {
+            "name": "191_theme_purchases_rls_tenant_scope.sql",
+            "prefix": 191,
+            "sha256": "7ef4eee3408254974328b27d048145ee1b7176b44db3a2ae9e57a827605055be"
+          },
+          {
+            "name": "192_theme_engine_actor_fk_users_custom.sql",
+            "prefix": 192,
+            "sha256": "5d6f4f8c0cbbc4977665cd4a7d6efe27f60ca151fac64a0f4d21804a3a061fd2"
+          },
+          {
+            "name": "193_theme_registry_settings_schema_sync.sql",
+            "prefix": 193,
+            "sha256": "68b5f99b6056199c2a55518a0a3e2884489d65f9384ad20b8f15591e6a7b56f9"
+          },
+          {
+            "name": "194_demo_requests.sql",
+            "prefix": 194,
+            "sha256": "cb5fe74dd6967af9fb8f699206379955edf4b04333ce1114069f4daf2c40af3b"
+          },
+          {
+            "name": "195_contact_requests.sql",
+            "prefix": 195,
+            "sha256": "21500980189bc251e6a555a75e191aaf8b156200d9d3e069c028d907afdf0ecd"
+          },
+          {
+            "name": "196_theme_rls_tenant_hardening.sql",
+            "prefix": 196,
+            "sha256": "660dfcc2b9f94389d98389e16e031550a6b9d185b294607bd8b42878f17b478c"
+          },
+          {
+            "name": "197_letbuyy_core_first_class_theme.sql",
+            "prefix": 197,
+            "sha256": "593d1559b1adff9dca08428e111be56ed6d440afaf51a813960fa136130dee83"
+          },
+          {
+            "name": "198_tenant_registry_guc_closure.sql",
+            "prefix": 198,
+            "sha256": "d804b2d962e7f97dee85e7d6681f26169799c2a5acf07299c476076f0a4dc399"
+          },
+          {
+            "name": "199_liquid_activation_fresh_db_closure.sql",
+            "prefix": 199,
+            "sha256": "b4bb089f6462d4f78bfe31839c60c3a66a74edb0f5a7f6f9d468b8e6c024f549"
+          },
+          {
+            "name": "200_letbuyy_core_liquid_bundle_attach.sql",
+            "prefix": 200,
+            "sha256": "37a1a901b1f20d5c96b83e967c8b73f9e1a40c6124ab3634c67174a591ad0b08"
+          },
+          {
+            "name": "201_narrow_draft_orders_payment_method.sql",
+            "prefix": 201,
+            "sha256": "99b7e9f4534a0d6546c8941ad9b4688286af9665e9ad415077c3062360f5b55b"
+          },
+          {
+            "name": "202_narrow_checkout_order_payment_method.sql",
+            "prefix": 202,
+            "sha256": "6bf7940ca724755dc46315044d9467a48d694884442f5f3a85609ab22423a599"
+          },
+          {
+            "name": "203_narrow_orders_payment_columns.sql",
+            "prefix": 203,
+            "sha256": "c68609737d15849745b4d666462280a0b0af2f611ee3dc9fe689d044a380a646"
+          },
+          {
+            "name": "204_narrow_payment_attempts_transactions_provider.sql",
+            "prefix": 204,
+            "sha256": "2e45e4a4a88e05609e46a26355a68b8598a2aa77ffd9292d3600eb624763c3c8"
+          },
+          {
+            "name": "205_merchant_session_jti_consumption.sql",
+            "prefix": 205,
+            "sha256": "c62c014f60273573677cc405265593ce420aad3ca8dd9532f9784ea51537dace"
+          },
+          {
+            "name": "206_checkout_order_idempotency_advisory_lock.sql",
+            "prefix": 206,
+            "sha256": "bf6288a5dc2457b69b1f656db7a0be81a5a6f12b748be59a539f4aa70df1225c"
+          },
+          {
+            "name": "207_gift_card_issue_idempotency_advisory_lock.sql",
+            "prefix": 207,
+            "sha256": "8a55a5f531c61e27201374522dfe7bd2a7c0d9c8fe7f9b538f81ff9465ec3493"
+          },
+          {
+            "name": "208_employees_users_custom_fk_repoint.sql",
+            "prefix": 208,
+            "sha256": "a54036f4bccdc55d899619be99b568ffebed0d8c17e662f1c604fb6df1f3fd6e"
+          },
+          {
+            "name": "209_notification_preferences_users_custom_fk_repoint.sql",
+            "prefix": 209,
+            "sha256": "99e126bf4cdca29b2bddf66c519a8a190c813ab97a18ad369e5b2916a61fabfa"
+          },
+          {
+            "name": "210_notification_preferences_upsert_rpc.sql",
+            "prefix": 210,
+            "sha256": "b3112f86ed61f668d6f80939cec30bebc875f170bc43063bc94f98b67fb0cafd"
+          },
+          {
+            "name": "211_expire_unpaid_committed_reservations.sql",
+            "prefix": 211,
+            "sha256": "6a4f5f5cafc6cc80af32e1df28bc7890d4af9b87d47bea4152b0fab4f103abd7"
+          },
+          {
+            "name": "212_fix_release_order_inventory_variant_type_mismatch.sql",
+            "prefix": 212,
+            "sha256": "d5e4de4e6e962a8058021ebe4f2875045f4be6e8797f8b437c8a505751ae0003"
+          },
+          {
+            "name": "213_checkout_order_gst_place_of_supply_and_tax_lines.sql",
+            "prefix": 213,
+            "sha256": "ca3c9e3a90b4b53de7bacee0c571a8415323968b898e6e8f267382690b7878e0"
+          },
+          {
+            "name": "214_issue_gst_invoice.sql",
+            "prefix": 214,
+            "sha256": "0dd01800e5318c62a6aacd9dbf26fd4f88c6425f022591a7c857bbfc87f41ad8"
+          },
+          {
+            "name": "215_fix_gift_card_digest_search_path.sql",
+            "prefix": 215,
+            "sha256": "efd2b734cd279fabd77a96a3570cc1ef6a7b5fb8cdefb2074bb7fe739ec12754"
+          },
+          {
+            "name": "216_sync_products_stock_on_checkout_paths.sql",
+            "prefix": 216,
+            "sha256": "e0a2c756fc8fc768b3c3f1d839ae8362fc9215a018c5689e3a0e7377c079b400"
+          },
+          {
+            "name": "217_marketplace_channel_listings.sql",
+            "prefix": 217,
+            "sha256": "40863481e161cb5178b9c68c4456a2d6c70e24c9119faa9b2149b97ed8eafc81"
+          },
+          {
+            "name": "218_restore_checkout_idempotency_advisory_lock.sql",
+            "prefix": 218,
+            "sha256": "573e08f5e7a6c5f58ceed64175b74a5d9af6f326e155e45e07614c17666e4db6"
+          },
+          {
+            "name": "219_purchase_parent_child_orders.sql",
+            "prefix": 219,
+            "sha256": "f8ac3ead2b01780787f48a594c8a3c724961debce74ddfaa8ce83b3fe076d0aa"
+          },
+          {
+            "name": "220_marketplace_listing_detail.sql",
+            "prefix": 220,
+            "sha256": "984e935970d7af84c8f71e5316c127f8138545a0bd18b278e2fdc9c1ed28c9f3"
+          },
+          {
+            "name": "221_channel_listing_migration_realm.sql",
+            "prefix": 221,
+            "sha256": "061f580229feb0e9e0e1731a42f18f2db95740efe499fed05924df04814573da"
+          },
+          {
+            "name": "222_retire_migration_actor_realm.sql",
+            "prefix": 222,
+            "sha256": "b2c4ab7425ce30e794e1bb25bb3f4188079f2bc471abd1e6d06d536687e864d3"
+          },
+          {
+            "name": "223_platform_buyer_identity.sql",
+            "prefix": 223,
+            "sha256": "5a2adbf3533aff7c4f41ee795814556d81d5d549059b6a59c1d56584e6a86042"
+          },
+          {
+            "name": "224_buyer_notifications.sql",
+            "prefix": 224,
+            "sha256": "41f7dba7552ffaca8379363b8f3cdebf473ef4ce593343f0e2efe36532a8c292"
+          },
+          {
+            "name": "225_buyer_return_request_rpc.sql",
+            "prefix": 225,
+            "sha256": "9472a90b3ea080907ada53e7175d9c778ed4b23c578fe06ec5108fd92a4d8fb2"
+          },
+          {
+            "name": "226_product_shipping_profile.sql",
+            "prefix": 226,
+            "sha256": "1dc6eab8ed31f38adff2e786f26d30c48adb91cd1bb754b0c1951ced792e0e6f"
+          },
+          {
+            "name": "227_mobile_app_releases.sql",
+            "prefix": 227,
+            "sha256": "3cc60d0079ce678f637d110eca84708c5ad16d00ecbf46ec2cd44c7535ad83b2"
+          },
+          {
+            "name": "228_marketplace_banners.sql",
+            "prefix": 228,
+            "sha256": "2a2581a6693eb92ab0e931eda17d47c4810ccac1d1db8cf9d5f8c1f5b2a5e683"
+          },
+          {
+            "name": "229_seller_follow_graph.sql",
+            "prefix": 229,
+            "sha256": "18985219588d1130c64ea9329d0bb73c35c6e0d0c9e800388e410b5b42d54cd2"
+          },
+          {
+            "name": "230_personalization_signals.sql",
+            "prefix": 230,
+            "sha256": "4e0541abc8611882ba084ac7c7890c77880083e279ae9c77a0091f12f0bcf38a"
+          },
+          {
+            "name": "231_merchant_funded_loyalty_ledger.sql",
+            "prefix": 231,
+            "sha256": "0c4640f3c80e2df4f5597a2228b924965786fb6f8f850a5f0490dfbb610c86bd"
+          },
+          {
+            "name": "232_prepaid_ad_credits.sql",
+            "prefix": 232,
+            "sha256": "45b6e756f951bf8bbc86e095a9621ed34c5dfbaee3a53fa04991cb6fbf91c88a"
+          },
+          {
+            "name": "233_loyalty_redeem_authoritative_amount.sql",
+            "prefix": 233,
+            "sha256": "bb8d13c0adb11cdd5bc33a3027d8590a1d5cddc6abc8de97d03cad85aa5530bb"
+          },
+          {
+            "name": "234_checkout_loyalty_tender.sql",
+            "prefix": 234,
+            "sha256": "8b6ecf8b175c62c9043ecb3ee69b4411b397ed4d6fc6944cd1fd64bcd3d0fdf5"
+          },
+          {
+            "name": "235_loyalty_award_never_raises_on_account_state.sql",
+            "prefix": 235,
+            "sha256": "457b8a49eea451dffa056fc32ecb77beae85cbc75caa76830216f375bc81685d"
+          },
+          {
+            "name": "236_stored_value_write_fence.sql",
+            "prefix": 236,
+            "sha256": "f5cd81744e5dbbcc6a53b27affabb2ba36075c86b2caab1e73cb421cff37b3ae"
+          },
+          {
+            "name": "237_set_loyalty_program.sql",
+            "prefix": 237,
+            "sha256": "bad8454d2da7fa5705075d67586f1dcc437b3357145e3e96740869351eee6171"
+          },
+          {
+            "name": "238_ad_credit_tenant_fence.sql",
+            "prefix": 238,
+            "sha256": "d6bd7aac4c7b2caecfb0fb1179f0b0554ed2ec0e88709517c94c73083c52c28f"
+          },
+          {
+            "name": "239_ad_spend_metering.sql",
+            "prefix": 239,
+            "sha256": "2b66f197b0d2fa61453e854955f1ce4549b976c807bd0dad87e3cfe2e321ea2b"
+          },
+          {
+            "name": "240_sponsored_feed_serving_predicate.sql",
+            "prefix": 240,
+            "sha256": "5ddb5e59f7f2bbdcf5afad03dceb8f1ef860367793fcdbeb934892a504472f51"
+          },
+          {
+            "name": "241_restore_loyalty_on_refund.sql",
+            "prefix": 241,
+            "sha256": "e03df44050e3f87e7a4ba7b68aa60f68c885f289f92342f03fb978dfb0ad138e"
+          },
+          {
+            "name": "242_release_ad_campaign_budget.sql",
+            "prefix": 242,
+            "sha256": "e1b4f317e6ee46be69fccb0c54a33a1683287dd14496b39095bb604c6cde4c0c"
+          },
+          {
+            "name": "243_record_loyalty_value_at_earn.sql",
+            "prefix": 243,
+            "sha256": "656f137eb3b539c9bd8c58d78ccbec3f4f311466d025e92b7da183c4515d77dc"
+          },
+          {
+            "name": "244_qualify_extension_calls_in_queue_rpcs.sql",
+            "prefix": 244,
+            "sha256": "3bdd7a1007dc0afb4ac04016c1f8ee14758fae212f562a4f1bea2f0f705a3019"
+          },
+          {
+            "name": "245_inventory_adjustments_tenant_column.sql",
+            "prefix": 245,
+            "sha256": "a683537140ea46b1bb5577fdfbe4821c7cc563739525a78e6fbaeca66a3c95f7"
+          },
+          {
+            "name": "246_release_decrements_committed_quantity.sql",
+            "prefix": 246,
+            "sha256": "eba4de5a56d1f9fdc2f506e8df8af7804f9d3b7d23701049459d0cd1e9234226"
+          },
+          {
+            "name": "247_device_tokens_users_custom_fk_repoint.sql",
+            "prefix": 247,
+            "sha256": "a4439e7710f329cfcefe83b1b1f55cf7bc59fb8c55fd0e0a497722b9d888a2c1"
+          },
+          {
+            "name": "248_storefront_pages_users_custom_fk_repoint.sql",
+            "prefix": 248,
+            "sha256": "0e149e1663b64c0a5b607d421bfedd06d33567f7c242899154a0d33dbef4dee5"
+          },
+          {
+            "name": "249_storefront_policies_users_custom_fk_repoint.sql",
+            "prefix": 249,
+            "sha256": "cdfdb4d0b97fb5708db88e1af8f4e58e21e55ceecd1206f34b86dca6e3dfb387"
+          },
+          {
+            "name": "250_dormant_attribution_columns_users_custom_fk_repoint.sql",
+            "prefix": 250,
+            "sha256": "13cd865dbafba3e581693530197ae7267727591f12c3ff08f78eda80e9dc0d5b"
+          },
+          {
+            "name": "251_super_admin_allowlist_users_custom_fk_repoint.sql",
+            "prefix": 251,
+            "sha256": "7921ff24749b4d4f0a2959249edef7c89bc76db3f250dc8ecc6370ca4143924d"
+          },
+          {
+            "name": "252_late_capture_after_reservation_release.sql",
+            "prefix": 252,
+            "sha256": "1dd174b8f77e55d79e4b9e1dc4fd1427b238d8c781fe3a824ede26caa7b9070e"
+          },
+          {
+            "name": "253_fix_create_order_fulfillment_variant_type.sql",
+            "prefix": 253,
+            "sha256": "8929e8304040845d0e3e30773f6148736d9a876688f39fca491f095cca28fba3"
+          },
+          {
+            "name": "254_service_role_table_grants.sql",
+            "prefix": 254,
+            "sha256": "4cdcb7f563a193790b849ceaf888309c75c9a4e63988c788d9af3397e8f6b519"
+          },
+          {
+            "name": "255_buyer_verified_ownership_links.sql",
+            "prefix": 255,
+            "sha256": "e2400d37129e2bb40bf6bac14bb0885652a912ab225fa5a400b0df313ed9f703"
+          },
+          {
+            "name": "256_definer_functions_off_the_data_api.sql",
+            "prefix": 256,
+            "sha256": "1a7b542bac0f32b2c3c3a9b488fd1d241c73fc0a1dd1564d8ce33e3993c9de6f"
+          },
+          {
+            "name": "257_buyer_email_challenges.sql",
+            "prefix": 257,
+            "sha256": "c81110c44bdb2533a5905da4b3691684c418dfea7db355265723382aba2c641f"
+          },
+          {
+            "name": "258_buyer_authorization_codes.sql",
+            "prefix": 258,
+            "sha256": "a0579fd03c27bfda4c8b3b0e0dd0e456e10731dd14a3cccae62604be2269ac83"
+          },
+          {
+            "name": "259_marketplace_app_client_and_firebase_links.sql",
+            "prefix": 259,
+            "sha256": "fa46f65e52ff076c9df3f6201c772543ccdf0e822449d00e3a71193783573d0a"
+          },
+          {
+            "name": "260_buyer_profile_and_addresses.sql",
+            "prefix": 260,
+            "sha256": "c938b09493b37720538da1a5c4cc1755c8473d12db1274ec97c6f2544ea5c4a1"
+          },
+          {
+            "name": "261_support_tickets_privacy_topic.sql",
+            "prefix": 261,
+            "sha256": "9b870ac0e3cb37020b58c6c5d43dc3f5f246047ebb0e2b663ab75fb58264a05c"
+          },
+          {
+            "name": "262_support_tickets_privacy_open_request_unique.sql",
+            "prefix": 262,
+            "sha256": "db8b0f85ba584599518650f7d08849d5c48b31b100462844a0b1ec5ec601ee17"
+          },
+          {
+            "name": "263_console_magic_link_consumption.sql",
+            "prefix": 263,
+            "sha256": "715da67741d2595e93193c4bffd954861a14ddb9685af743325b66611534b18d"
+          },
+          {
+            "name": "264_support_ticket_reply_atomic.sql",
+            "prefix": 264,
+            "sha256": "1a38fda6443635d87563d62654a47fe5e1f526e24b824357762c9c8d1383d515"
+          },
+          {
+            "name": "265_operator_support_mutation_integrity.sql",
+            "prefix": 265,
+            "sha256": "4a5b5fe705b655889e02c458a1b837e5f1fdcd9682d32472173e24c0b2ef63fa"
+          },
+          {
+            "name": "266_buyer_address_atomic_default.sql",
+            "prefix": 266,
+            "sha256": "6e22bf05f68678f1c78efac0502fce00d2b94cfad82df485eaf7dc2e90fbd28f"
+          },
+          {
+            "name": "267_authenticated_checkout_order_ownership.sql",
+            "prefix": 267,
+            "sha256": "1ecabee0dd348cf58ac03a2c1d49e2f720025e2ec1601c1a62b88859b336f466"
+          },
+          {
+            "name": "268_hosted_checkout_buyer_binding.sql",
+            "prefix": 268,
+            "sha256": "1197ed1f3f7f7e36d218578403244dca6f82a35e5f28359a6d77f97c55f3fe1a"
+          },
+          {
+            "name": "269_customer_password_reset_atomic.sql",
+            "prefix": 269,
+            "sha256": "cd480efc05f3bf6fcb593354097f13c31c64d3656f7aea65ef332bc624fe82ee"
+          },
+          {
+            "name": "270_product_price_observations.sql",
+            "prefix": 270,
+            "sha256": "6899a0480f4fdb35e9400af48991fe9a8e7c127264cd621c6280ea9ae8fc2019"
+          },
+          {
+            "name": "271_channel_scoped_offer_price_history.sql",
+            "prefix": 271,
+            "sha256": "bad619f7b54635d6202f71b9620d58577e0a8491c031431d85eed919c210deee"
+          },
+          {
+            "name": "272_marketplace_origin_filter.sql",
+            "prefix": 272,
+            "sha256": "8a8a93fbeda1ff69f5aaaebbd607e0cefc789a7b12d2bc5ba5156332f4e37850"
+          },
+          {
+            "name": "273_product_importer_disclosure.sql",
+            "prefix": 273,
+            "sha256": "eb79e8a006a0e2accea0df9e7ca3b52413f64ce22189139937ed4776cefb2c0b"
+          },
+          {
+            "name": "274_sponsored_marketplace_approval_fence.sql",
+            "prefix": 274,
+            "sha256": "5251a2163ad2a5c940a91e12bc5be036718e98fa17adbc6f0e31a562d86f85b2"
+          },
+          {
+            "name": "275_marketplace_revision_bound_approval.sql",
+            "prefix": 275,
+            "sha256": "f7c91ec05b6599a72f016fb1a5efee6a84c3bbb689e5e49643a53da0975c2b79"
+          },
+          {
+            "name": "276_marketplace_listing_resubmission.sql",
+            "prefix": 276,
+            "sha256": "3d6cd6ead005925fb9d7cb2a21fbcfad1d83db8b644562c1eba3ba49902123d8"
+          },
+          {
+            "name": "277_marketplace_cart_sales_origin.sql",
+            "prefix": 277,
+            "sha256": "6ece7bd06c3ec1b36debc4855acca7621e872dffba9a12f0c8009e826834c2a1"
+          },
+          {
+            "name": "278_marketplace_order_listing_binding.sql",
+            "prefix": 278,
+            "sha256": "aaf26c8adb587a586f836dee16c31c35ff5aede21b7405ac4113366c64184c87"
+          },
+          {
+            "name": "279_marketplace_checkout_delivery_rate_binding.sql",
+            "prefix": 279,
+            "sha256": "5c6cfa610ffc855cd238f6380c2b86bedab61c7b70ea2ed3ee88fffb7e0efb9e"
+          },
+          {
+            "name": "280_price_reference_preceding_announcement.sql",
+            "prefix": 280,
+            "sha256": "5f210886cb2bf6143ad632ad13fdfbd2a59eccfad7c7e1c7d3588d51d469d186"
+          },
+          {
+            "name": "281_storefront_checkout_shipping_rate_binding.sql",
+            "prefix": 281,
+            "sha256": "888aa38c7086a43c8607c2ebdb703fd063233675244706704983c824e5f350a6"
+          },
+          {
+            "name": "282_payment_refund_provider_reconciliation.sql",
+            "prefix": 282,
+            "sha256": "2a1b55727a5e5085ec5e0fbf2a8957c49672ef8be6fd6d21ef8361c0e9e64b0e"
+          },
+          {
+            "name": "283_storefront_web_onboarding_draft.sql",
+            "prefix": 283,
+            "sha256": "bbf944394f0a9da7ecb22bf352f1934a2f52d7a1e40085d6ac9a49fb3b934316"
+          },
+          {
+            "name": "284_storefront_web_onboarding_channels.sql",
+            "prefix": 284,
+            "sha256": "3ab4155c812af51cd446ef4960a15ee5e62787a0eeeecd216563fc237866b81b"
+          },
+          {
+            "name": "285_storefront_web_onboarding_completion_status.sql",
+            "prefix": 285,
+            "sha256": "bf7a063f3e97e2d8cda3424ad120921f8017c4c349e52e8ea910498923ea811b"
+          },
+          {
+            "name": "286_store_customer_address_atomic_default.sql",
+            "prefix": 286,
+            "sha256": "9aeac575d3d750ef0dda542ed5b21fce34f5205bfeccbfb353d1fe0e44645ac2"
+          },
+          {
+            "name": "287_buyer_support_intake_atomic.sql",
+            "prefix": 287,
+            "sha256": "2e17476864ee23da0582d001c6817f5e5ff7ddfd996a03fce4eceffda78c1acd"
+          },
+          {
+            "name": "288_ledger_idempotency_payload_conflict.sql",
+            "prefix": 288,
+            "sha256": "ce41beefa9a947531671a06ac9a9948a5f012ab0000ae97f9ad1d4072ba7569e"
+          },
+          {
+            "name": "289_checkout_order_item_snapshot_integrity.sql",
+            "prefix": 289,
+            "sha256": "7cebda426f649f464552385893478bced808785c3abd606dd9ac6f8c548b5304"
+          },
+          {
+            "name": "290_canonical_ledger_writer_privileges.sql",
+            "prefix": 290,
+            "sha256": "dd7d0d7d61adc8f54c25b70c3924fbd79c0b51934dc977ae260cfa8c87d01995"
+          },
+          {
+            "name": "291_ad_credit_idempotency_payload_conflict.sql",
+            "prefix": 291,
+            "sha256": "714494ce2b21060eda4043e6e1b679dfe1c49825098953158e45510de186a12e"
+          },
+          {
+            "name": "292_atomic_ad_credit_purchase_finalization.sql",
+            "prefix": 292,
+            "sha256": "3d1929a8aa9dc39bd9a59413149ca2c5eab224aa7d39338ac1f21331ed7cd583"
+          },
+          {
+            "name": "293_ad_credit_purchase_canonical_liability.sql",
+            "prefix": 293,
+            "sha256": "cb8937a9e651dd3c0e88843495288350c6db11f07e057376da5ed150e79516fa"
+          },
+          {
+            "name": "294_payout_release_payable_reservation.sql",
+            "prefix": 294,
+            "sha256": "c1efd14b45768717a52751a841d3fb1f5a2967344c911d2acb3340b108284cec"
+          },
+          {
+            "name": "295_atomic_payout_statement_creation.sql",
+            "prefix": 295,
+            "sha256": "f1283d3dcb3a101d39ddec1d8cb3d3cd0d577cfb52d8c56332d2de570606f754"
+          },
+          {
+            "name": "296_marketplace_order_category_snapshot.sql",
+            "prefix": 296,
+            "sha256": "bf7cff13602adc6005c90e2c6121f17762635d38eade7b7a4f3860aab04eec51"
+          },
+          {
+            "name": "297_cod_remittance_writer_privileges.sql",
+            "prefix": 297,
+            "sha256": "8ef828e0ac8bafb6f99553bd7919801db825e6d8890fa1787081107087d08b06"
+          },
+          {
+            "name": "298_cod_remittance_request_binding.sql",
+            "prefix": 298,
+            "sha256": "c0afbd2bf89ca5501edfe21a73416b22196cf2a96a2062c168ed0344d02d8498"
+          },
+          {
+            "name": "299_cod_collection_atomicity.sql",
+            "prefix": 299,
+            "sha256": "75b9710b1e804c21640c3b75de12a00f75530f18d9e893dede970913c03c743d"
+          },
+          {
+            "name": "300_atomic_settlement_payout_instruction.sql",
+            "prefix": 300,
+            "sha256": "3d73f0fc5d93e59f4b870f528e344edc4bbffdb3831ea671d05325d4fca74f89"
+          },
+          {
+            "name": "301_atomic_payout_release_finalization.sql",
+            "prefix": 301,
+            "sha256": "f61c1c5fd5f00109ac18701696454e876ef573c2359450d4efb7b20a5cd92df4"
+          },
+          {
+            "name": "302_money_reconciliation_rpc_privileges.sql",
+            "prefix": 302,
+            "sha256": "777d02059ee21523f989b79037c42d99999338342f37128809be6487702c2eba"
+          },
+          {
+            "name": "303_canonical_wallet_reconciliation_projection.sql",
+            "prefix": 303,
+            "sha256": "91095d0973600be2735e1e41fc24d512b124341a282322a2dd62dba32c4e2bb0"
+          },
+          {
+            "name": "304_payout_statement_source_ledger_lineage.sql",
+            "prefix": 304,
+            "sha256": "1de0345f5644a9b76a578e0602eb2bd9f62075b50ef7a5ba0d773e94f4638790"
+          },
+          {
+            "name": "305_restore_payment_transaction_ledger_source_resolution.sql",
+            "prefix": 305,
+            "sha256": "5631c95c799e9e2b0663fe44a2768da925ec8c84ac5b7ca816b746ea22403e91"
+          },
+          {
+            "name": "306_store_creation_idempotency.sql",
+            "prefix": 306,
+            "sha256": "235b342f1b358dca479effa1652029a55f1101aef0ef24c7d010ce02988bf72f"
+          },
+          {
+            "name": "307_internal_auth_replay_claims.sql",
+            "prefix": 307,
+            "sha256": "a65354e0589dbc4e1bc0f4e8929e28d21b602c5b2f14da0a439b66642c39d29f"
+          },
+          {
+            "name": "308_restore_ad_credit_ledger_source_resolution.sql",
+            "prefix": 308,
+            "sha256": "6e3b60093179bcc1ae360904c37a867d15695ac1ee6c63ffbd2bc0fa93c76e92"
+          },
+          {
+            "name": "309_close_final_definer_data_api_access.sql",
+            "prefix": 309,
+            "sha256": "fc555f07c6602b6e7572aa4627ffc47127c5ee7b01b6f8d74dcea0cb22b8937f"
+          },
+          {
+            "name": "310_restrict_tenant_store_visibility.sql",
+            "prefix": 310,
+            "sha256": "68bfe0226e00c18a263d8d43455b942a54238716740baf9833dd6795d5ae5b3e"
+          },
+          {
+            "name": "311_reuse_canonical_employee_admin_policy.sql",
+            "prefix": 311,
+            "sha256": "ada626aa723f1dea71dcde71a29bcc6bceb613ee3628ba9bb819390e1e46fa87"
+          },
+          {
+            "name": "312_separate_developer_and_tenant_policy_roles.sql",
+            "prefix": 312,
+            "sha256": "92facf7ed6183f1a14a0d5f908baeb0b7edcf893eed0e04379f1730fec26f3d6"
+          },
+          {
+            "name": "313_protect_sensitive_approval_authority.sql",
+            "prefix": 313,
+            "sha256": "5ce260a38b17e76da061531f2562762a3c244a7cf063fbdb0bbacffbe80e6abf"
+          },
+          {
+            "name": "314_durable_console_sessions.sql",
+            "prefix": 314,
+            "sha256": "3664a17738ef70b59c74522524806adca3134c724be1145bf70725f452e0053d"
+          },
+          {
+            "name": "315_session_bound_sensitive_approvals.sql",
+            "prefix": 315,
+            "sha256": "3e296194d705cdde5fc114a17b4fe21106b11463ae702a214c0b893897e848d7"
+          },
+          {
+            "name": "316_session_bound_money_resolution.sql",
+            "prefix": 316,
+            "sha256": "d798c23fb92093b9e467eeb5c557c8ee1114abd5dabf9cf848161f29ce3081ef"
+          },
+          {
+            "name": "317_trust_site_status_ownership.sql",
+            "prefix": 317,
+            "sha256": "a9bad15a2008eded550048d9071a7220dd328615a847328e0bbfd0731f0be70b"
+          },
+          {
+            "name": "318_session_bound_trust_reinstatement.sql",
+            "prefix": 318,
+            "sha256": "26c262732ca369ddb6c819c19fd46cd2ad901ea4b08675e5967473d5d8d891b3"
+          },
+          {
+            "name": "319_protect_trust_mutation_authority.sql",
+            "prefix": 319,
+            "sha256": "edd93c15ea4b0544eca92cb22def1239fc4c2ec5b35b987610f302c5c6f27c59"
+          },
+          {
+            "name": "320_protect_global_runtime_claim_authority.sql",
+            "prefix": 320,
+            "sha256": "bcf98c01404f13429fa54e79ac4ee65b83b955a0b9d5d03ba1561f856529a131"
+          },
+          {
+            "name": "321_merchant_accessible_store_discovery.sql",
+            "prefix": 321,
+            "sha256": "e27d09dcf14cf6ef945418b13e722681192e1df14f04973238c608f2cf8825c4"
+          },
+          {
+            "name": "322_atomic_merchant_staff_lifecycle.sql",
+            "prefix": 322,
+            "sha256": "2159c06cf3e5fec1d8e7fb7b85b932aaa34ad5f75cd0ea144b6e3a1b2bef1a1f"
+          },
+          {
+            "name": "323_protect_platform_queue_authority.sql",
+            "prefix": 323,
+            "sha256": "2a4a9132c93e68b0a905d8f80a3a76e9fff2dd9564a564e559b48b029553ce68"
+          },
+          {
+            "name": "324_canonical_merchant_staff_invitations.sql",
+            "prefix": 324,
+            "sha256": "519d2ca3eb01b2f2d92b7febc92b7facd55115ef01f301b194869cb05a5f3b6f"
+          },
+          {
+            "name": "325_session_bound_console_overview.sql",
+            "prefix": 325,
+            "sha256": "6e3d62d7f846334d7bbacd4606c1d5b90d56716913736c3621957befd1dc36b6"
+          },
+          {
+            "name": "326_durable_console_mfa_verification.sql",
+            "prefix": 326,
+            "sha256": "e1edcbeca6fb0d6abe66358e8f45cf71eee4bd60402ba52cc335750b48206bd5"
+          },
+          {
+            "name": "327_atomic_subscription_payment_ownership.sql",
+            "prefix": 327,
+            "sha256": "1335e2ff6dc48d02152d201f6af4e2bd277fa5f9e2b567ef5f311d539cf0fc37"
+          },
+          {
+            "name": "328_subscription_checkout_source.sql",
+            "prefix": 328,
+            "sha256": "eb443b9200339a655bf20a6179447ae1cbae44acf7435b331f19cf13264d7354"
+          },
+          {
+            "name": "329_approved_operator_mfa_reset.sql",
+            "prefix": 329,
+            "sha256": "dcdfee27b1446c8ada5e8dc20282962d9e9748a5e6a02dd7429f592d8c0b25b5"
+          },
+          {
+            "name": "330_verified_buyer_privacy_exports.sql",
+            "prefix": 330,
+            "sha256": "171f8c418a34b38e9639b08fb6944fc9a92fd6ce634e32d45d4723595a857a32"
+          },
+          {
+            "name": "331_staff_invitation_force_rls.sql",
+            "prefix": 331,
+            "sha256": "ceb01af330129256a9804682bfa63f4012862b8dd7a0baeafb1f29ac95bb0edf"
+          },
+          {
+            "name": "332_identity_operator_session_exchange.sql",
+            "prefix": 332,
+            "sha256": "59f4f74b725f629f9e48ca532a5f3e42455e1e9303d547c4dda2c3ac434ab7f3"
+          },
+          {
+            "name": "333_loyalty_pending_earn_authority.sql",
+            "prefix": 333,
+            "sha256": "69e5881aed4f85109d95d1384652eb31b72fdd2d49d9c05503e66dc053796e7f"
+          },
+          {
+            "name": "334_loyalty_program_authority.sql",
+            "prefix": 334,
+            "sha256": "e778e89d465615f986c532f5fbc0f7e4355088d5868be61be2fb5437f44e46a1"
+          },
+          {
+            "name": "335_durable_loyalty_refund_recovery.sql",
+            "prefix": 335,
+            "sha256": "010bd5fa0c9b3aa9b5f1f0b6a407c253c10e51d7f347d2263ad40682be1dc220"
+          },
+          {
+            "name": "336_owned_refund_completion.sql",
+            "prefix": 336,
+            "sha256": "34ca54a6caff1c56bddb7a002caa7ef44f1c61fb2383185dd065fecd87c5712d"
+          },
+          {
+            "name": "337_unique_order_references.sql",
+            "prefix": 337,
+            "sha256": "eda009657e099e1e536d57f00769bf48804f69cc98f3e8673a314b62b9d9ef72"
+          },
+          {
+            "name": "338_merchant_totp_authority.sql",
+            "prefix": 338,
+            "sha256": "baf635a47b251c592a0eb314106fca24cef8e6085699758ba4879523b3191c4e"
+          },
+          {
+            "name": "339_merchant_erasure_review_intake.sql",
+            "prefix": 339,
+            "sha256": "5028cf629957563e378102b765afa92477e1ca3bdb33e6fe4a300c0613da2dd3"
+          },
+          {
+            "name": "340_merchant_step_up_challenges.sql",
+            "prefix": 340,
+            "sha256": "da3cb699fe130846927be71b844f193b3c03cfb6fab083efdef926ee3e00c0f3"
+          },
+          {
+            "name": "341_live_merchant_refund_approval.sql",
+            "prefix": 341,
+            "sha256": "a75d75131010123c2da3823ae7bfc82d0f9e5690ccd6fe912bf232de8255a6fb"
+          },
+          {
+            "name": "342_live_merchant_money_claims.sql",
+            "prefix": 342,
+            "sha256": "9f77969dffb20b071c857ea38da537429d52960fcef02145d53333c216808abc"
+          },
+          {
+            "name": "343_marketplace_seller_feed.sql",
+            "prefix": 343,
+            "sha256": "1134a59d7e940e91a5e3afbd2eaab35fd35339b5c51496476206d5aebf3afcff"
+          },
+          {
+            "name": "344_atomic_theme_draft_cas.sql",
+            "prefix": 344,
+            "sha256": "32d729014aebbff69d1ca7a750f8de0ad4e4e8511d323e1b3a299e54f762a4bc"
+          },
+          {
+            "name": "345_canonical_reel_review.sql",
+            "prefix": 345,
+            "sha256": "5cd56d6edb16c8125d3c9368da345ac3a063b9fe727e9d9de9d54d3352f5a69d"
+          },
+          {
+            "name": "346_product_atomic_edits.sql",
+            "prefix": 346,
+            "sha256": "55bdd8c65d793afed96eec42720e08073ebe7d10402c0b365abeb2ccb481c7c5"
+          },
+          {
+            "name": "347_free_subscription_checkout_receipts.sql",
+            "prefix": 347,
+            "sha256": "a2798ca89989b8ed6620f0df3ee144432617dff07ca9889ba7c7d8e0ebb66910"
+          },
+          {
+            "name": "348_buyer_support_mutation_receipts.sql",
+            "prefix": 348,
+            "sha256": "2a241f68d7c923b4b3b07854d7d4cc31b46c6da9b02833292eef876d0d5dade2"
+          },
+          {
+            "name": "349_money_ledger_reconciliation_traversal.sql",
+            "prefix": 349,
+            "sha256": "3f0b459582ce5ff4db41495a68ad8f6bb95c7bdfb33733780e70412562320bde"
+          },
+          {
+            "name": "350_buyer_ai_request_quotas.sql",
+            "prefix": 350,
+            "sha256": "62ebdb47346fe108d3e85b736d5e734a43ee2e33decc15769fc0553267c833f6"
+          },
+          {
+            "name": "351_buyer_support_recovery_readback.sql",
+            "prefix": 351,
+            "sha256": "8b9d712e240a100b1597c623bc4644667c21647ce3312afb798048bf4f33d85b"
+          },
+          {
+            "name": "352_webhook_partition_shadow_parity.sql",
+            "prefix": 352,
+            "sha256": "f96d608c6ecfd9cd9e52101616c3efc38fc1d5e3804ab7281011312e58adc10a"
+          },
+          {
+            "name": "353_approved_platform_job_recovery.sql",
+            "prefix": 353,
+            "sha256": "d7e03977390b81c60cd4698b9b5ee8591368f863dfa1106e8329faf9f327fe49"
+          },
+          {
+            "name": "354_atomic_theme_release_rollback.sql",
+            "prefix": 354,
+            "sha256": "3be0b06be60e3e2f7b15140feef826528ba98bc332f2289f479a918315b3d7ec"
+          },
+          {
+            "name": "355_ad_campaign_current_budget_authority.sql",
+            "prefix": 355,
+            "sha256": "c7290b31bb234c885568e9f5388da69b917a244722c85704c9df436f61ef3d45"
+          },
+          {
+            "name": "356_inventory_adjustment_receipts.sql",
+            "prefix": 356,
+            "sha256": "93963990d0aa88851fa71851c6cf02ee598be467896ee20b2d3101bf036409d7"
+          },
+          {
+            "name": "357_buyer_review_ownership.sql",
+            "prefix": 357,
+            "sha256": "8a35f176d524f4a42821306462193b55bb1f38a6e2a5232ad0b1baf6e3c1ce71"
+          },
+          {
+            "name": "358_console_current_oncall.sql",
+            "prefix": 358,
+            "sha256": "7aef46fdea08b3b05cd20900f2aa2d6b6b39bd9da0bd7813d3949f83bd7cf17e"
+          },
+          {
+            "name": "359_private_reel_intake.sql",
+            "prefix": 359,
+            "sha256": "8c358bb53630198c859931ff83e858040b348270ce99f1bae6e246b74944e919"
+          },
+          {
+            "name": "360_subscription_tax_quote_snapshot.sql",
+            "prefix": 360,
+            "sha256": "341a56d190f40140f1a6cfd5d2a2de587d6ff1cdf050b71203f06c9b438c313d"
+          },
+          {
+            "name": "361_collection_membership.sql",
+            "prefix": 361,
+            "sha256": "a15fdd1112ae0971fba49042cd00ef5220a48946aff3d32e2358932875d72534"
+          },
+          {
+            "name": "362_console_oncall_schedules.sql",
+            "prefix": 362,
+            "sha256": "5e39fbe9fd6fb15ca156054186d1de455ea6b50c02cec667c9a10bfbe8e55aef"
+          },
+          {
+            "name": "363_console_runtime_command_history.sql",
+            "prefix": 363,
+            "sha256": "70f653250d891f9f29b4ad797561e50af95c5943a92d64ee50801329ccb05dbb"
+          },
+          {
+            "name": "364_store_discovery_backend_grants.sql",
+            "prefix": 364,
+            "sha256": "ad6c98f03b53cdf7d05fc5857655d99f30419a1939367e019a3e753989683924"
+          },
+          {
+            "name": "365_owned_theme_upload.sql",
+            "prefix": 365,
+            "sha256": "1538a489850760714f917931affb50b42cc185fd8d7e8b79299f2be4e96d1204"
+          },
+          {
+            "name": "366_theme_publication_visibility.sql",
+            "prefix": 366,
+            "sha256": "1c7debf652bf16160f5582620da6caf4f9582bcb49fded067a7848bf01d9ad4f"
+          },
+          {
+            "name": "367_core_starter_announcement.sql",
+            "prefix": 367,
+            "sha256": "240ebc55d8acaa28e01124316580609b80b77e80b688f3e0124a905ed5f55577"
+          },
+          {
+            "name": "368_core_section_catalog_refresh.sql",
+            "prefix": 368,
+            "sha256": "efbb067c60f3db2c9bcf80c87391d4276e019de3f849dd2d55079cfde78f42c5"
+          },
+          {
+            "name": "369_scheduled_dispatch_preflight.sql",
+            "prefix": 369,
+            "sha256": "9c46bc30b4552dc8a8652d8ea753770715f82a2d83b74283816a8aad1682d968"
+          },
+          {
+            "name": "370_public_storefront_sql_readers.sql",
+            "prefix": 370,
+            "sha256": "fab7f8079823e9da1dc5d2e010353ad742e5a71767e432ea9402e12d6460797c"
+          },
+          {
+            "name": "371_storefront_access_metadata.sql",
+            "prefix": 371,
+            "sha256": "707940f21d449509ffe2258a127ecabe1d090367f70e966bee0787569cd9e414"
+          },
+          {
+            "name": "372_first_party_theme_catalog.sql",
+            "prefix": 372,
+            "sha256": "0b7390291aa5c488624eabfd2f1035a1f6786c638150ae9a702da015def47c13"
+          },
+          {
+            "name": "373_theme_library_install.sql",
+            "prefix": 373,
+            "sha256": "21d4abb18dbf8c45cc5d8fa607d8de8d7f3be586b0ba9353a8fed05e9fbe3fc7"
+          },
+          {
+            "name": "374_owned_storefront_visibility.sql",
+            "prefix": 374,
+            "sha256": "d7c0ed99b6480ede94fd7c59a5b9cc65d291b2985bc7e8bf3e5e4fdd23cde54a"
+          },
+          {
+            "name": "375_private_theme_editability.sql",
+            "prefix": 375,
+            "sha256": "bcc70368a81a85ae6a33e42c9208d6d80e077ee6e98f3c9d66977f4c12e07e27"
+          },
+          {
+            "name": "376_atomic_theme_instance_switch.sql",
+            "prefix": 376,
+            "sha256": "f9c2490cc60bde775b9298e9d4bbbae0288c00f500fe8e8a4d3028d858b53746"
+          },
+          {
+            "name": "377_theme_install_event_contract.sql",
+            "prefix": 377,
+            "sha256": "d1077e7aee38820ed3166552f78a4fc17c9f8331aea34c74b659185ee56ba77c"
+          },
+          {
+            "name": "378_storefront_metadata_role_closure.sql",
+            "prefix": 378,
+            "sha256": "6bd92b57b28d62b13b6cd2329e8ad69debee2f7c5b23b33d0054ac92692878ac"
+          },
+          {
+            "name": "379_merchant_ai_usage_total.sql",
+            "prefix": 379,
+            "sha256": "f91f86279c8099e2e13b7240811e4c4851b9994716f13ebe8aee0a3acf2e2f85"
+          },
+          {
+            "name": "380_merchant_transfer_metrics.sql",
+            "prefix": 380,
+            "sha256": "68c459182e10aad886d333d778f5d379ef3bf5e0cb97b06d5fa31fc5b0ae2363"
+          },
+          {
+            "name": "381_bounded_merchant_operations_reads.sql",
+            "prefix": 381,
+            "sha256": "327c6e3d9ee9e8b79ec133aeca87ebd58456a7ff24bd76b887a7e4f6e6fa9da3"
+          },
+          {
+            "name": "382_threadline_catalog_v2.sql",
+            "prefix": 382,
+            "sha256": "475717e0f7afd78327ce89b55768e0a13347394a98a2bfcf8bfad19ed088b9dc"
+          },
+          {
+            "name": "383_storefront_apparel_discovery.sql",
+            "prefix": 383,
+            "sha256": "2231fc7137df40cc65422760f47d1bf40da6d1c9ae520f9d83adae5bee404855"
+          },
+          {
+            "name": "384_theme_editor_template_keys.sql",
+            "prefix": 384,
+            "sha256": "e7304c2306956dd3784175d4f735e3d8f9029ddc1631f97b9d396d1ee9f55cca"
+          },
+          {
+            "name": "385_product_variant_facts.sql",
+            "prefix": 385,
+            "sha256": "d3761b5226c88fe4a609395500e8ace46d082b3bdb2c11176d86cb3bca4a486b"
+          },
+          {
+            "name": "386_storefront_discovery.sql",
+            "prefix": 386,
+            "sha256": "33c2849f93fc594902e5017f00ab3141780bd06f856ce67f4a21aa77e87da81d"
+          },
+          {
+            "name": "387_theme_install_version_precondition.sql",
+            "prefix": 387,
+            "sha256": "0e3efc617809fea71296d0325067b89b0b18c8e23210d9a6bda27ac05cbb61f0"
+          },
+          {
+            "name": "388_cart_order_fact_snapshots.sql",
+            "prefix": 388,
+            "sha256": "9de7c35b68684cd5d3c752166e5c6ae0b33c64c6b1ea8ac353a82bcac936d2c3"
+          },
+          {
+            "name": "389_niche_theme_catalog_v2.sql",
+            "prefix": 389,
+            "sha256": "3d9a5e0344db7537558554b723ffc134707bf7b98fe4941bc6bf268bd7330e61"
+          },
+          {
+            "name": "390_storefront_measurement_capabilities.sql",
+            "prefix": 390,
+            "sha256": "6e5eb5e50cecd43acc9a663dd79c505db6c7bfdbe4e559b34d998065f88e9027"
+          },
+          {
+            "name": "391_theme_editor_shared_groups.sql",
+            "prefix": 391,
+            "sha256": "27fa0234ad98c4b924fb0d1ecec22e9f592ab533f438ca348f99e4c6bb17a17c"
+          },
+          {
+            "name": "392_storefront_electronics_search.sql",
+            "prefix": 392,
+            "sha256": "f17f659b8d037c34f02b9cc1cda912ede406bda7950f99310ebae5ca77c61171"
+          },
+          {
+            "name": "393_theme_publisher_tenant_execute.sql",
+            "prefix": 393,
+            "sha256": "7fb066b3f6b8d27728c43b2b6dd1beecc5f311856c81ec0bca84513f5b83ac10"
+          }
+        ]
+      },
+      "proxyRequests": {
+        "forwarded": 6601,
+        "refused": 0,
+        "upstreamErrors": 1
+      }
+    }
+  ]
+}

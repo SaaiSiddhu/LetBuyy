@@ -1,0 +1,63 @@
+{
+  "recordedAt": "2026-10-24T12:17:41.793003+00:00",
+  "dispatchSHA256": "ec2166ba230387d152fbd0629d12c19de6281b451c651166918adcd47c48eaf3",
+  "dispatchSupportsPlayfield202": false,
+  "sourceWritesHere": [],
+  "native05Review": {
+    "recordedAt": "2026-10-24T12:16:17.479217+00:00",
+    "status": "PHASE4_ADVANCED_SHADOW_GUARD_PASS_UPDATE_PREVIEW_HTTP500_NOT_QUALIFIED_LANE_RELEASED",
+    "runId": "45eec3e980e6",
+    "tests": 5,
+    "PASS": 3,
+    "FAIL": 2,
+    "phaseCoverage": {
+      "PASS": [
+        1,
+        2,
+        3
+      ],
+      "FAIL": [
+        4
+      ],
+      "NOT_RUN": [
+        5,
+        6,
+        7,
+        8
+      ]
+    },
+    "newEvidence": "Ownedinstance staging/temp creation/role restoration and exactTenantPublicationContextError nowpass. Actualprivileges show app_tenant SELECTfalse andUPDATEfalse forglobalversions/packages/themes; service_roleSELECT/UPDATEtrue. NextrealnormalHTTPupdate-previewreturns500 atmanual359.",
+    "sourceTrace": "ThemeExecutionAdapter.loadTargetPackageVersionBundle andpublishVersionUpdateRelease stillSELECT globalcapturesinsideapp_tenant transaction; must reusea fixed ownedcontextreadcapability, notgenericcallbackelevation ornewACL",
+    "all1160PinsExact": true,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    },
+    "reaped": [],
+    "noRetryOr394Emission": true
+  },
+  "currentBrowserLease": null,
+  "runtimeLifecycle": {
+    "recordedAt": "2026-10-24T04:37:50.890244+00:00",
+    "status": "HISTORICAL936_SAFE_CUTOFF_PASSED_NO_CURRENT_ADMISSION",
+    "activeRunId": null,
+    "safeWorkingCutoffUtc": "2026-10-24T08:50:00Z",
+    "receipt": "editor-stable392-02-runtime-admission.json",
+    "oldF607Receipt": "editor-f607-timeout-cleanup-receipt.json",
+    "historicalRunId": "936e5f577646",
+    "observedLiveness": "NOT_PROBED_NO_USE_ALLOWED"
+  },
+  "currentInstalled": {
+    "PASS": 0,
+    "FAIL": 0,
+    "NOT_RUN": 14,
+    "historicalFailedRetestsPending": [
+      "PF-I05",
+      "PF-I06"
+    ]
+  }
+}

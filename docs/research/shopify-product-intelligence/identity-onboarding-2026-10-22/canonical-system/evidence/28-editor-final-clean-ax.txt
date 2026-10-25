@@ -1,0 +1,358 @@
+Browser tab: 1, Title: "[store] · Edit Horizon · Shopify", URL: "https://admin.shopify.com/store/[store]/themes/[theme]/editor?[query omitted]".
+0 AXWebArea [store] · Edit Horizon · Shopify, URL: admin.shopify.com/store/[store]/themes/[theme]/editor?[query omitted]
+	1 container app
+		2 container AppFrame
+			141 text Analytics
+			4 container AppFrameChrome
+				5 link Description: Skip to content, Value: admin.shopify.com/store/[store]/themes/[theme]/editor?[query omitted]
+				142 container Online Store
+					143 AXWebArea Shopify, URL: online-store-web.shopifyapps.com/themes/[theme]/editor?[query omitted]
+						144 container
+							145 container app
+								146 container
+									147 link Description: Skip to editing sidebar, Value: online-store-web.shopifyapps.com/themes/[theme]/editor?[query omitted]
+									318 link Description: Exit, Value: admin.shopify.com/store/[store]/themes
+									319 content list
+										320 checkbox Description: Open sections panel, Value: 1
+										321 checkbox Description: Open theme settings panel, Value: 0
+										322 checkbox Description: Open app embeds panel, Value: 0
+									323 text Horizon Success Active
+									324 pop up button (collapsed) Home page, Secondary Actions: Expand
+										325 text Home page
+									326 checkbox (collapsed) Description: Open Sidekick, Value: 0, Secondary Actions: Expand
+									327 checkbox Description: Deactivate inspector, Value: 1
+									328 checkbox Description: Enable mobile preview, Value: 0
+									329 button (disabled) Description: Revert the most recent action, ID: undo-:r5h:
+									330 button (disabled) Description: Re-apply the most recent reverted action, ID: redo-:r5h:
+									331 checkbox (collapsed) Description: View actions, Value: 0, Secondary Actions: Expand
+									332 container
+										333 button (disabled) Save
+									334 button (disabled) Save as
+									165 container
+										335 container
+											336 heading Home page, Value: 1
+												337 text Home page
+											338 container
+												339 heading Header, Value: 3
+													340 text Header
+												341 content list
+													342 checkbox Description: Add section, Value: 0
+													343 container
+														344 button Announcement bar
+														345 button (collapsed) Description: Open sub items menu, Secondary Actions: Expand
+														346 draggable Description: Re-arrange Announcement bar's order within the list, Value: 0
+														347 text Announcement bar
+														348 button Remove section
+														349 checkbox Description: Hide section, Value: 0
+													350 checkbox Description: Add section, Value: 0
+													351 container
+														352 button Header
+														353 button (collapsed) Description: Open sub items menu, Secondary Actions: Expand
+														354 draggable Description: Re-arrange Header's order within the list, Value: 0
+														355 text Header
+														356 checkbox Description: Hide section, Value: 0
+													357 checkbox Description: Add section, Value: 0
+													358 container
+														359 pop up button (collapsed) Add section, Secondary Actions: Expand
+														360 text Add section
+											361 container
+												362 heading Template, Value: 3
+													363 text Template
+												364 content list
+													365 checkbox Description: Add section, Value: 0
+													366 container ID: template--[template]__hero_jVaWmY, Hero Close sub items menu Re-arrange Hero's order within the list Remove section Hide section Add block Add block Heading – Browse our latest products Re-arrange Heading's order within the list Remove block Hide block Add block Button Re-arrange Button's order within the list Remove block Hide block Add block
+														367 container
+															368 button Hero
+															369 button (expanded) Description: Close sub items menu, Secondary Actions: Collapse
+															370 draggable Description: Re-arrange Hero's order within the list, Value: 0
+															371 text Hero
+															372 button Remove section
+															373 checkbox Description: Hide section, Value: 0
+														374 content list
+															375 container
+																376 button Add block
+																377 text Add block
+															378 checkbox Description: Add block, Value: 0
+															379 container
+																380 button Heading – Browse our latest products
+																381 draggable Description: Re-arrange Heading's order within the list, Value: 0
+																382 container template--[template]__hero_jVaWmY__text_YLPk4p-label
+																	383 text Heading – Browse our latest products
+																384 button Remove block
+																385 checkbox Description: Hide block, Value: 0
+															386 checkbox Description: Add block, Value: 0
+															387 container
+																388 button Button
+																389 draggable Description: Re-arrange Button's order within the list, Value: 0
+																390 text Button
+																391 button Remove block
+																392 checkbox Description: Hide block, Value: 0
+															393 checkbox Description: Add block, Value: 0
+													394 checkbox Description: Add section, Value: 0
+													395 container
+														396 button Featured collection
+														397 button (collapsed) Description: Open sub items menu, Secondary Actions: Expand
+														398 draggable Description: Re-arrange Featured collection's order within the list, Value: 0
+														399 text Featured collection
+														400 button Remove section
+														401 checkbox Description: Hide section, Value: 0
+													402 checkbox Description: Add section, Value: 0
+													403 container
+														404 pop up button (collapsed) Add section, Secondary Actions: Expand
+														405 text Add section
+											406 container
+												407 heading Footer, Value: 3
+													408 text Footer
+												409 content list
+													410 container
+														411 pop up button (collapsed) Add section, Secondary Actions: Expand
+														412 text Add section
+													413 checkbox Description: Add section, Value: 0
+													414 container
+														415 button Footer
+														416 button (collapsed) Description: Open sub items menu, Secondary Actions: Expand
+														417 draggable Description: Re-arrange Footer's order within the list, Value: 0
+														418 text Footer
+														419 button Remove section
+														420 checkbox Description: Hide section, Value: 0
+													421 checkbox Description: Add section, Value: 0
+													422 container
+														423 button Utilities
+														424 button (collapsed) Description: Open sub items menu, Secondary Actions: Expand
+														425 draggable Description: Re-arrange Utilities's order within the list, Value: 0
+														426 text Utilities
+														427 button Remove section
+														428 checkbox Description: Hide section, Value: 0
+													429 checkbox Description: Add section, Value: 0
+										430 container PowerFrame-PortalArea-SecondaryPanel
+											431 splitter 80
+											432 container
+												433 button Hero
+													434 heading Hero, Value: 1
+														435 text Hero
+												436 pop up button (collapsed) Secondary Actions: Expand
+												437 button Cancel and discard all changes
+												438 container
+													439 heading Media 1, Value: 3
+														440 text Media 1
+													441 text Type
+													442 content list Description: Type, ID: :r79:
+														443 button Image
+														444 button Video
+													445 text Image
+													446 text Upload images
+													447 container
+														448 button Upload images, ID: :r7o:
+														449 container
+															450 button Description: Select an image from your device, ID: ImagePickerSetting-Label1
+															451 button
+														452 button Explore a library of free images
+													453 heading Media 2, Value: 3
+														454 text Media 2
+													455 text Type
+													456 content list Description: Type, ID: :r7a:
+														457 button Image
+														458 button Video
+													459 text Image
+													460 text Upload images
+													461 container
+														462 button Upload images, ID: :r7p:
+														463 container
+															464 button Description: Select an image from your device, ID: ImagePickerSetting-Label2
+															465 button
+														466 button Explore a library of free images
+													467 heading Mobile media, Value: 3
+														468 text Mobile media
+													469 text Stack media
+													470 checkbox Stack media, Value: 0, ID: SwitchSetting1
+													471 text Show different media on mobile
+													472 checkbox Show different media on mobile, Value: 0, ID: SwitchSetting2
+													473 heading Section link, Value: 3
+														474 text Section link
+													475 text Link
+													476 button Connect dynamic source
+													477 container
+														478 text field (settable) Link, ID: UrlSetting1
+													479 text Open link in new tab
+													480 checkbox Open link in new tab, Value: 0, ID: SwitchSetting3
+													481 heading Layout, Value: 3
+														482 text Layout
+													483 text Direction
+													484 content list Description: Direction, ID: :r7e:
+														485 button Vertical
+														486 button Horizontal
+													487 text Align text baseline
+													488 checkbox Align text baseline, Value: 1, ID: SwitchSetting5
+													489 text Alignment
+													490 content list Description: Alignment, ID: :r7q:
+														491 button Left
+														492 button Center
+														493 button Right
+													494 text Position
+													495 pop up button (collapsed, settable) Position, Value: Bottom, ID: SelectSetting-Label7, Secondary Actions: Expand
+														496 menu
+															497 Top
+															498 Center
+															499 (selected) Bottom
+															500 Space between
+													501 text Gap
+													502 slider (settable, integer) Value: 24, ID: :r7f:
+													503 container
+														504 text field (settable) px, Value: 24, ID: :r7g:
+														505 text px
+													506 text Width
+													507 content list Description: Width, ID: :r7h:
+														508 button Page
+														509 button Full
+													510 text Height
+													511 pop up button (collapsed, settable) Height, Value: Medium, ID: SelectSetting-Label5, Secondary Actions: Expand
+														512 menu
+															513 Auto
+															514 Small
+															515 (selected) Medium
+															516 Large
+															517 Full screen
+															518 Custom
+													519 heading Appearance, Value: 3
+														520 text Appearance
+													521 text Background color
+													522 pop up button (collapsed) Description: Background color, selected color: Transparent, color picker is: inactive, , Secondary Actions: Expand
+														523 image Color swatch
+														524 text Transparent
+														525 button Clear color
+													526 text Media overlay
+													527 checkbox Media overlay, Value: 1, ID: SwitchSetting4
+													528 text Overlay color
+													529 pop up button (collapsed) Description: Overlay color, selected color: Hue: 0, saturation: 0, brightness: 0, color picker is: inactive, , Secondary Actions: Expand
+														530 image Color swatch
+														531 text #121212
+														532 button
+													533 text Overlay style
+													534 content list Description: Overlay style, ID: :r7s:
+														535 button Solid
+														536 button Gradient
+													537 text Blurred reflection
+													538 checkbox Blurred reflection, Value: 0, ID: SwitchSetting6
+													539 text Applies to images only
+													540 heading Padding, Value: 3
+														541 text Padding
+													542 text Top
+													543 slider (settable, integer) Value: 100, ID: :r7j:
+													544 container
+														545 text field (settable) px, Value: 100, ID: :r7k:
+														546 text px
+													547 text Bottom
+													548 slider (settable, integer) Value: 72, ID: :r7l:
+													549 container
+														550 text field (settable) px, Value: 72, ID: :r7m:
+														551 text px
+												552 container
+													553 button (collapsed) Description: Theme Settings, Secondary Actions: Expand
+														554 heading Theme Settings, Value: 3
+															555 text Theme Settings
+													556 button (collapsed) Description: Custom CSS, Secondary Actions: Expand
+														557 heading Custom CSS, Value: 3
+															558 text Custom CSS
+												559 content list
+													560 button Remove section
+														561 text Remove section
+										562 container
+											563 button Ask for changes
+												564 container
+													565 text Ask for changes
+											566 button Duplicate
+											567 button Hide
+											568 button Remove section
+											569 container
+												570 button Dismiss
+												571 text field (settable) Description: Ask for changes..., ID: :r87:
+												572 button (disabled) Send
+													573 image
+												574 button (disabled) Close
+											575 button Cancel
+										237 container Description: Online store preview, ID: storefront-iframe-1
+											238 AXWebArea [store], URL: [store].myshopify.com/?[query omitted]
+												239 link Description: Skip to content, Value: [store].myshopify.com/?[query omitted]
+												240 container
+													241 container header-group
+														242 container shopify-section-sections--[section]
+															243 text Welcome to our store
+														244 container header-component
+															245 heading [store], Value: 1
+																246 text [store]
+															247 container
+																248 link Description: [store], Value: [store].myshopify.com/
+																249 container Primary
+																	250 content list
+																		251 link Description: Home, Value: [store].myshopify.com/
+																		252 link Description: Catalog, Value: [store].myshopify.com/collections/all
+																		253 link Description: Contact, Value: [store].myshopify.com/pages/contact
+																254 pop up button Search
+																255 pop up button Account
+																256 pop up button (collapsed) Description: Cart, Secondary Actions: Expand
+													257 container MainContent
+														258 container
+															259 image
+															260 text Browse our latest products
+															261 link Description: Shop all, Value: [store].myshopify.com/collections/all
+														262 container shopify-section-template--[section]
+															263 container
+																264 heading Products, Value: 3
+																	265 text Products
+																266 container product-card-[placeholder]
+																	267 container
+																		268 heading Product title, Value: 3
+																			269 text Product title
+																		270 text Rs. 19.99
+																271 container product-card-[placeholder]
+																	272 container
+																		273 heading Product title, Value: 3
+																			274 text Product title
+																		275 text Rs. 19.99
+																276 container product-card-[placeholder]
+																	277 container
+																		278 heading Product title, Value: 3
+																			279 text Product title
+																		280 text Rs. 19.99
+																281 container product-card-[placeholder]
+																	282 container
+																		283 heading Product title, Value: 3
+																			284 text Product title
+																		285 text Rs. 19.99
+																286 container product-card-[placeholder]
+																	287 container
+																		288 heading Product title, Value: 3
+																			289 text Product title
+																		290 text Rs. 19.99
+																291 container product-card-[placeholder]
+																	292 container
+																		293 heading Product title, Value: 3
+																			294 text Product title
+																		295 text Rs. 19.99
+																296 container product-card-[placeholder]
+																	297 container
+																		298 heading Product title, Value: 3
+																			299 text Product title
+																		300 text Rs. 19.99
+																301 container product-card-[placeholder]
+																	302 container
+																		303 heading Product title, Value: 3
+																			304 text Product title
+																		305 text Rs. 19.99
+													306 container shopify-section-sections--[section]
+														307 container
+															308 text © 2026 
+															309 link Description: [store], Value: [store].myshopify.com/
+															310 text , 
+															311 link Description: Powered by Shopify, Value: shopify.com/?[query omitted]
+															312 button (collapsed) Terms and Policies, Secondary Actions: Expand
+															313 link Description: Facebook, Value: facebook.com/
+															314 link Description: Instagram, Value: instagram.com/
+															315 link Description: Youtube, Value: youtube.com/
+															316 link Description: Tiktok, Value: tiktok.com/
+															317 link Description: Twitter, Value: x.com/
+												576 button Hero
+													577 image
+													578 text Hero
+
+The focused UI element is 366 container ID: template--[template]__hero_jVaWmY, Hero Close sub items menu Re-arrange Hero's order within the list Remove section Hide section Add block Add block Heading – Browse our latest products Re-arrange Heading's order within the list Remove block Hide block Add block Button Re-arrange Button's order within the list Remove block Hide block Add block

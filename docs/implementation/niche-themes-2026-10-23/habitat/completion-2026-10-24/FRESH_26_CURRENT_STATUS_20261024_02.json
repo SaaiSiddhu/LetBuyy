@@ -1,0 +1,835 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-24T12:47:36.102056+00:00",
+  "classification": "INTERIM_ALL26_CASE_ACCOUNTING_NO_FRESH_RUN_ADMITTED",
+  "directHumanResumeAndDispatch": "EXPLICIT_RESUME_AND_DISPATCH_20261024_02.json",
+  "owners": "Themes allocates/reviews; Theme Editor sole UI controller",
+  "observedLiveTurns": {
+    "Themes": {
+      "threadId": "01a164a4-a342-76d3-ab33-65e021ed57db",
+      "turnId": "01a16da9-6e6d-7cf3-9b71-c6afbbcaf733",
+      "status": "inProgress",
+      "cursor": "4a88ad91-a502-40c5-8554-f10ec1e43e00:64"
+    },
+    "Editor": {
+      "threadId": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+      "turnId": "01a16de8-f861-7093-a605-808ca428d274",
+      "status": "inProgress",
+      "cursor": "55b3b7e5-65f2-4e37-bfbe-f3ebbd81cba2:82"
+    }
+  },
+  "admissionDecision": {
+    "path": "docs/implementation/niche-theme-programme/completion-original-matrix-runtime-admission-decision-20261024-01.json",
+    "sha256": "f18ae81fdad71443ac3ef8619c9d522ee417f9139ab8d00ec77a659e1da69be2",
+    "status": "ORIGINAL_FROZEN200_LANE_CONDITIONALLY_ADMISSIBLE_NO_RUNTIME_LEASE_YET",
+    "actualRuntime": null,
+    "actualBrowserLease": null,
+    "latestAssessment": {
+      "recordedAt": "2026-10-24T12:19:19.170490+00:00",
+      "catalogue394FullGate": "NOT a required prerequisite fororiginalfrozen200Dewdrop30/Kindred19 wherepackageupgraderoutesareoutsideallocatedcases; no394migrationor201promotionneeded",
+      "sourceCouplingToProve": "CurrentThemeExecutionAdapterchanges confinedloadTargetPackageVersionBundle/publishVersionUpdateRelease andfixedcapabilityhelpers; verifyalloriginalordinarypublication/checkout/count/renderer paths retainqualifiedcode/contracts, schema393 unchanged. Capture02/checkout08exact11 andnormalpublisher393 proofs reusedonlywithinactualscope.",
+      "nextOwner": "Editor preparesONE source-isolatedfrozen200runtime/compiledbuild/TLS/actors/smokeplan now; Rootreservesnextheavybuildaftercurrentnative/sourcewindow. No launchfromthisassessment.",
+      "hardGatesStillRequired": [
+        "Exactcurrentcompiledsource/sandbox/securityrelevantgates",
+        "Normalcanonical merchant/buyer auth+publish+count+checkoutsmoke",
+        "Ownednewrun/actors/site/dataeffectbudget",
+        "NormaltrustedcheckoutTLSandexpiry/protectedbaseline/cleanup",
+        "Separatecontrolledfault/realHTTPobserveradmissionforD02/O05"
+      ],
+      "relatedButSeparate": "Nativeupdate-previewgate remainsmandatoryforcatalogue394successor/updateacceptance, expandednestedoutlets/providercertificationnotclaimed; do notdelayoriginal200solelyforunrelatedexpandedcontrols."
+    }
+  },
+  "cases": [
+    {
+      "id": "HI-01",
+      "retained936Status": "PASS",
+      "freshStatus": "NOT_RUN",
+      "freshEvidence": [],
+      "retainedEvidence": [
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/habitat/run936-binding-and-publication-audit.json",
+          "present": true
+        },
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/habitat/run936-final-execution-audit.json",
+          "present": true
+        },
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/habitat/run936-final-addenda-audit.json",
+          "present": true
+        }
+      ],
+      "reason": "Fresh admitted runtime, actors, baseline and sole Editor lease pending."
+    },
+    {
+      "id": "HI-02",
+      "retained936Status": "PASS",
+      "freshStatus": "NOT_RUN",
+      "freshEvidence": [],
+      "retainedEvidence": [
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/habitat/run936-cohort-setup-audit.json",
+          "present": true
+        },
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/habitat/run936-probes-and-picker-audit.json",
+          "present": true
+        },
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/habitat/run936-picker-and-discovery-response-audit.json",
+          "present": true
+        }
+      ],
+      "reason": "Fresh admitted runtime, actors, baseline and sole Editor lease pending."
+    },
+    {
+      "id": "HI-03",
+      "retained936Status": "PASS",
+      "freshStatus": "NOT_RUN",
+      "freshEvidence": [],
+      "retainedEvidence": [
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/habitat/run936-cohort-setup-audit.json",
+          "present": true
+        }
+      ],
+      "reason": "Fresh admitted runtime, actors, baseline and sole Editor lease pending."
+    },
+    {
+      "id": "HI-04",
+      "retained936Status": "PASS",
+      "freshStatus": "NOT_RUN",
+      "freshEvidence": [],
+      "retainedEvidence": [
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/habitat/run936-binding-and-publication-audit.json",
+          "present": true
+        }
+      ],
+      "reason": "Fresh admitted runtime, actors, baseline and sole Editor lease pending."
+    },
+    {
+      "id": "HI-05",
+      "retained936Status": "PASS",
+      "freshStatus": "NOT_RUN",
+      "freshEvidence": [],
+      "retainedEvidence": [
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/habitat/run936-probes-and-picker-audit.json",
+          "present": true
+        },
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/habitat/run936-picker-and-discovery-response-audit.json",
+          "present": true
+        },
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/habitat/run936-final-execution-audit.json",
+          "present": true
+        },
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/habitat/run936-final-addenda-audit.json",
+          "present": true
+        }
+      ],
+      "reason": "Fresh admitted runtime, actors, baseline and sole Editor lease pending."
+    },
+    {
+      "id": "HI-06",
+      "retained936Status": "PASS",
+      "freshStatus": "NOT_RUN",
+      "freshEvidence": [],
+      "retainedEvidence": [
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/habitat/run936-final-picker-and-conservation-audit.json",
+          "present": true
+        },
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/habitat/run936-picker-and-discovery-response-audit.json",
+          "present": true
+        }
+      ],
+      "reason": "Fresh admitted runtime, actors, baseline and sole Editor lease pending."
+    },
+    {
+      "id": "HI-07",
+      "retained936Status": "PASS",
+      "freshStatus": "NOT_RUN",
+      "freshEvidence": [],
+      "retainedEvidence": [
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/habitat/run936-picker-and-discovery-response-audit.json",
+          "present": true
+        }
+      ],
+      "reason": "Fresh admitted runtime, actors, baseline and sole Editor lease pending."
+    },
+    {
+      "id": "HI-08",
+      "retained936Status": "PASS",
+      "freshStatus": "NOT_RUN",
+      "freshEvidence": [],
+      "retainedEvidence": [
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/habitat/run936-picker-and-discovery-response-audit.json",
+          "present": true
+        }
+      ],
+      "reason": "Fresh admitted runtime, actors, baseline and sole Editor lease pending."
+    },
+    {
+      "id": "HI-09",
+      "retained936Status": "PASS",
+      "freshStatus": "NOT_RUN",
+      "freshEvidence": [],
+      "retainedEvidence": [
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/habitat/run936-picker-and-discovery-response-audit.json",
+          "present": true
+        },
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/habitat/run936-browser-route-controls-audit.json",
+          "present": true
+        }
+      ],
+      "reason": "Fresh admitted runtime, actors, baseline and sole Editor lease pending."
+    },
+    {
+      "id": "HI-10",
+      "retained936Status": "PASS",
+      "freshStatus": "NOT_RUN",
+      "freshEvidence": [],
+      "retainedEvidence": [
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/habitat/run936-browser-recovery-audit.json",
+          "present": true
+        },
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/habitat/run936-picker-and-discovery-response-audit.json",
+          "present": true
+        }
+      ],
+      "reason": "Fresh admitted runtime, actors, baseline and sole Editor lease pending."
+    },
+    {
+      "id": "HI-11",
+      "retained936Status": "PARTIAL",
+      "freshStatus": "NOT_RUN",
+      "freshEvidence": [],
+      "retainedEvidence": [
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/habitat/run936-browser-route-controls-audit.json",
+          "present": true
+        },
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/habitat/run936-browser-recovery-audit.json",
+          "present": true
+        },
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/habitat/run936-final-execution-audit.json",
+          "present": true
+        },
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/habitat/run936-final-addenda-audit.json",
+          "present": true
+        }
+      ],
+      "reason": "Fresh admitted runtime, actors, baseline and sole Editor lease pending. Legacy capability-absence control remains an explicit separate clause."
+    },
+    {
+      "id": "HI-12",
+      "retained936Status": "PASS",
+      "freshStatus": "NOT_RUN",
+      "freshEvidence": [],
+      "retainedEvidence": [
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/habitat/run936-probes-and-picker-audit.json",
+          "present": true
+        },
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/habitat/run936-picker-and-discovery-response-audit.json",
+          "present": true
+        }
+      ],
+      "reason": "Fresh admitted runtime, actors, baseline and sole Editor lease pending."
+    },
+    {
+      "id": "HI-13",
+      "retained936Status": "PASS",
+      "freshStatus": "NOT_RUN",
+      "freshEvidence": [],
+      "retainedEvidence": [
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/habitat/run936-picker-and-discovery-response-audit.json",
+          "present": true
+        }
+      ],
+      "reason": "Fresh admitted runtime, actors, baseline and sole Editor lease pending."
+    },
+    {
+      "id": "HI-14",
+      "retained936Status": "NOT_RUN",
+      "freshStatus": "NOT_RUN",
+      "freshEvidence": [],
+      "retainedEvidence": [],
+      "reason": "Fresh admitted runtime, actors, baseline and sole Editor lease pending. Cart quantity/overstock server rejection is unexecuted."
+    },
+    {
+      "id": "HI-15",
+      "retained936Status": "NOT_RUN",
+      "freshStatus": "NOT_RUN",
+      "freshEvidence": [],
+      "retainedEvidence": [],
+      "reason": "Fresh admitted runtime, actors, baseline and sole Editor lease pending. No new normal COD order or exact retry proof."
+    },
+    {
+      "id": "HI-16",
+      "retained936Status": "NOT_RUN",
+      "freshStatus": "NOT_RUN",
+      "freshEvidence": [],
+      "retainedEvidence": [],
+      "reason": "Fresh admitted runtime, actors, baseline and sole Editor lease pending. Requires the new order baseline, same-UUID edit and immutable buyer/merchant/persisted history."
+    },
+    {
+      "id": "HI-17",
+      "retained936Status": "NOT_RUN",
+      "freshStatus": "NOT_RUN",
+      "freshEvidence": [],
+      "retainedEvidence": [],
+      "reason": "Fresh admitted runtime, actors, baseline and sole Editor lease pending. Requires a genuinely assigned absent/malformed historical record; no fabricated order."
+    },
+    {
+      "id": "HQ-01",
+      "retained936Status": "PASS",
+      "freshStatus": "NOT_RUN",
+      "freshEvidence": [],
+      "retainedEvidence": [
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/habitat/run936-picker-and-discovery-response-audit.json",
+          "present": true
+        }
+      ],
+      "reason": "Fresh admitted runtime, actors, baseline and sole Editor lease pending."
+    },
+    {
+      "id": "HQ-02",
+      "retained936Status": "PASS",
+      "freshStatus": "NOT_RUN",
+      "freshEvidence": [],
+      "retainedEvidence": [
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/habitat/run936-picker-and-discovery-response-audit.json",
+          "present": true
+        }
+      ],
+      "reason": "Fresh admitted runtime, actors, baseline and sole Editor lease pending."
+    },
+    {
+      "id": "HQ-03",
+      "retained936Status": "PASS",
+      "freshStatus": "NOT_RUN",
+      "freshEvidence": [],
+      "retainedEvidence": [
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/habitat/run936-picker-and-discovery-response-audit.json",
+          "present": true
+        }
+      ],
+      "reason": "Fresh admitted runtime, actors, baseline and sole Editor lease pending."
+    },
+    {
+      "id": "HQ-04",
+      "retained936Status": "PASS",
+      "freshStatus": "NOT_RUN",
+      "freshEvidence": [],
+      "retainedEvidence": [
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/habitat/run936-browser-recovery-audit.json",
+          "present": true
+        },
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/habitat/run936-picker-and-discovery-response-audit.json",
+          "present": true
+        }
+      ],
+      "reason": "Fresh admitted runtime, actors, baseline and sole Editor lease pending."
+    },
+    {
+      "id": "HQ-05",
+      "retained936Status": "PASS",
+      "freshStatus": "NOT_RUN",
+      "freshEvidence": [],
+      "retainedEvidence": [
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/habitat/run936-picker-and-discovery-response-audit.json",
+          "present": true
+        }
+      ],
+      "reason": "Fresh admitted runtime, actors, baseline and sole Editor lease pending."
+    },
+    {
+      "id": "HQ-06",
+      "retained936Status": "PASS",
+      "freshStatus": "NOT_RUN",
+      "freshEvidence": [],
+      "retainedEvidence": [
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/habitat/run936-picker-and-discovery-response-audit.json",
+          "present": true
+        }
+      ],
+      "reason": "Fresh admitted runtime, actors, baseline and sole Editor lease pending."
+    },
+    {
+      "id": "HQ-07",
+      "retained936Status": "PASS",
+      "freshStatus": "NOT_RUN",
+      "freshEvidence": [],
+      "retainedEvidence": [
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/habitat/run936-picker-and-discovery-response-audit.json",
+          "present": true
+        }
+      ],
+      "reason": "Fresh admitted runtime, actors, baseline and sole Editor lease pending."
+    },
+    {
+      "id": "HQ-08",
+      "retained936Status": "PASS",
+      "freshStatus": "NOT_RUN",
+      "freshEvidence": [],
+      "retainedEvidence": [
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/habitat/run936-picker-and-discovery-response-audit.json",
+          "present": true
+        },
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/habitat/run936-browser-route-controls-audit.json",
+          "present": true
+        }
+      ],
+      "reason": "Fresh admitted runtime, actors, baseline and sole Editor lease pending."
+    },
+    {
+      "id": "HQ-09",
+      "retained936Status": "PASS",
+      "freshStatus": "NOT_RUN",
+      "freshEvidence": [],
+      "retainedEvidence": [
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/habitat/run936-browser-route-controls-audit.json",
+          "present": true
+        },
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/habitat/run936-browser-recovery-audit.json",
+          "present": true
+        },
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/habitat/run936-picker-and-discovery-response-audit.json",
+          "present": true
+        }
+      ],
+      "reason": "Fresh admitted runtime, actors, baseline and sole Editor lease pending."
+    }
+  ],
+  "freshCounts": {
+    "NOT_RUN": 26
+  },
+  "retained936Counts": {
+    "PASS": 21,
+    "PARTIAL": 1,
+    "NOT_RUN": 4
+  },
+  "sourceResultsSeparate": {
+    "private02SourceRender": {
+      "PASS": 8,
+      "FAIL": 0,
+      "failureBaselinePreserved": 1,
+      "mainApplied": false
+    },
+    "sharedSourceDataContract": {
+      "PASS": 47,
+      "FAIL": 0,
+      "fieldsPreserved": 155,
+      "protectedFieldsUnedited": 2,
+      "selectedPinsExactBeforeAfter": 105,
+      "setupFailuresPreserved": 2
+    },
+    "runtimePassesAdded": 0
+  },
+  "sharedNativeFailureSeparate": {
+    "receipt": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/native-runs/05/root-result-review.json",
+    "runId": "45eec3e980e6",
+    "counts": {
+      "PASS": 3,
+      "FAIL": 2
+    },
+    "phasesNotRun": [
+      5,
+      6,
+      7,
+      8
+    ],
+    "actualPreview": "HTTP500",
+    "limitation": "Catalogue update/successor qualification is separate; the coordinator conditionally permits original200 assessment once ordinary current paths and fresh smoke/source/TLS/actors are admitted."
+  },
+  "nextAction": "Editor finishes the single fresh current393/frozen200 plan and obtains Root launch/build/runtime/UI admission; execute pre-edit query cohort, cart/COD, later edit/history with actual acknowledgements. Private02 review/opt-in remains separate and pending.",
+  "preservation": "No2.0.0/M1/Main/fixture/data/provider/app restart or schedule changes by Habitat; no expired936 use",
+  "fullThemeCertified": false,
+  "runtime07Current": {
+    "recordedAt": "2026-10-24T20:55:51.476921+00:00",
+    "binding": {
+      "runId": "49ada80bc494",
+      "candidate": "/private/tmp/letbuyy-shared-completion-20261024-06",
+      "runnerPid": 54685,
+      "origins": {
+        "identityOrigin": "http://accounts.threadline-49ada80bc494.localhost:64593",
+        "merchantOrigin": "http://admin.threadline-49ada80bc494.localhost:64594",
+        "commerceOrigin": "http://syn-threadline-ui-ae3f0477.localhost:64595",
+        "checkoutOrigin": "https://checkout.localhost:64597",
+        "apiOrigin": "http://127.0.0.1:64598"
+      },
+      "package": {
+        "slug": "letbuyy-craft",
+        "version": "2.1.0",
+        "prior": "2.0.0",
+        "bundleSha256": "95fd3f0fbfa026183a63a1fa111fa34fbf07b9492550752c96dd907a83785313"
+      },
+      "catalogThemeId": "7b669c70-0000-4000-8000-000000000004",
+      "installedInstanceId": null,
+      "releaseId": null,
+      "ownedHabitatSiteId": null,
+      "actorScope": null,
+      "controller": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+      "allocatorReviewer": "01a164a4-a342-76d3-ab33-65e021ed57db",
+      "browserQueuePositionProposed": 4,
+      "browserLease": "Programme sole Editor lease; this owner has no browser control",
+      "perThemeBindings": "Editor must allocate normal synthetic Habitat scope and record actual acknowledgements; shared Threadline site is not silently adopted",
+      "providerReceiverExpiresAt": "2026-10-24T22:20:00Z",
+      "extensionAuthorized": false
+    },
+    "caseRows": [
+      {
+        "id": "HI-01",
+        "originalRequirementReference": "FRESH_26_EXECUTION_REQUEST_20261024_02.json#/cases/0",
+        "executionPackage": "letbuyy-craft@2.1.0",
+        "executionRunId": "49ada80bc494",
+        "status": "PARTIAL",
+        "evidence": [
+          "runtime07-20261025/ROOT_CURRENT_TEST_APPLICABILITY.json"
+        ],
+        "independentReview": "PENDING",
+        "outstanding": [
+          "Complete actual package/instance/release/source and normal actor/buyer ownership binding receipt; original200/current210 labels remain distinct"
+        ]
+      },
+      {
+        "id": "HI-02",
+        "originalRequirementReference": "FRESH_26_EXECUTION_REQUEST_20261024_02.json#/cases/1",
+        "executionPackage": "letbuyy-craft@2.1.0",
+        "executionRunId": "49ada80bc494",
+        "status": "NOT_RUN",
+        "evidence": [],
+        "independentReview": "PENDING"
+      },
+      {
+        "id": "HI-03",
+        "originalRequirementReference": "FRESH_26_EXECUTION_REQUEST_20261024_02.json#/cases/2",
+        "executionPackage": "letbuyy-craft@2.1.0",
+        "executionRunId": "49ada80bc494",
+        "status": "NOT_RUN",
+        "evidence": [],
+        "independentReview": "PENDING"
+      },
+      {
+        "id": "HI-04",
+        "originalRequirementReference": "FRESH_26_EXECUTION_REQUEST_20261024_02.json#/cases/3",
+        "executionPackage": "letbuyy-craft@2.1.0",
+        "executionRunId": "49ada80bc494",
+        "status": "PARTIAL",
+        "evidence": [
+          "runtime07-20261025/ROOT_CURRENT_TEST_APPLICABILITY.json"
+        ],
+        "independentReview": "PENDING",
+        "outstanding": [
+          "PublishB/restoreA/draftB/reapply and all original seven-check isolation/recovery assertions"
+        ]
+      },
+      {
+        "id": "HI-05",
+        "originalRequirementReference": "FRESH_26_EXECUTION_REQUEST_20261024_02.json#/cases/4",
+        "executionPackage": "letbuyy-craft@2.1.0",
+        "executionRunId": "49ada80bc494",
+        "status": "NOT_RUN",
+        "evidence": [],
+        "independentReview": "PENDING"
+      },
+      {
+        "id": "HI-06",
+        "originalRequirementReference": "FRESH_26_EXECUTION_REQUEST_20261024_02.json#/cases/5",
+        "executionPackage": "letbuyy-craft@2.1.0",
+        "executionRunId": "49ada80bc494",
+        "status": "NOT_RUN",
+        "evidence": [],
+        "independentReview": "PENDING"
+      },
+      {
+        "id": "HI-07",
+        "originalRequirementReference": "FRESH_26_EXECUTION_REQUEST_20261024_02.json#/cases/6",
+        "executionPackage": "letbuyy-craft@2.1.0",
+        "executionRunId": "49ada80bc494",
+        "status": "NOT_RUN",
+        "evidence": [],
+        "independentReview": "PENDING"
+      },
+      {
+        "id": "HI-08",
+        "originalRequirementReference": "FRESH_26_EXECUTION_REQUEST_20261024_02.json#/cases/7",
+        "executionPackage": "letbuyy-craft@2.1.0",
+        "executionRunId": "49ada80bc494",
+        "status": "NOT_RUN",
+        "evidence": [],
+        "independentReview": "PENDING"
+      },
+      {
+        "id": "HI-09",
+        "originalRequirementReference": "FRESH_26_EXECUTION_REQUEST_20261024_02.json#/cases/8",
+        "executionPackage": "letbuyy-craft@2.1.0",
+        "executionRunId": "49ada80bc494",
+        "status": "NOT_RUN",
+        "evidence": [],
+        "independentReview": "PENDING"
+      },
+      {
+        "id": "HI-10",
+        "originalRequirementReference": "FRESH_26_EXECUTION_REQUEST_20261024_02.json#/cases/9",
+        "executionPackage": "letbuyy-craft@2.1.0",
+        "executionRunId": "49ada80bc494",
+        "status": "NOT_RUN",
+        "evidence": [],
+        "independentReview": "PENDING"
+      },
+      {
+        "id": "HI-11",
+        "originalRequirementReference": "FRESH_26_EXECUTION_REQUEST_20261024_02.json#/cases/10",
+        "executionPackage": "letbuyy-craft@2.1.0",
+        "executionRunId": "49ada80bc494",
+        "status": "NOT_RUN",
+        "evidence": [],
+        "independentReview": "PENDING"
+      },
+      {
+        "id": "HI-12",
+        "originalRequirementReference": "FRESH_26_EXECUTION_REQUEST_20261024_02.json#/cases/11",
+        "executionPackage": "letbuyy-craft@2.1.0",
+        "executionRunId": "49ada80bc494",
+        "status": "NOT_RUN",
+        "evidence": [],
+        "independentReview": "PENDING"
+      },
+      {
+        "id": "HI-13",
+        "originalRequirementReference": "FRESH_26_EXECUTION_REQUEST_20261024_02.json#/cases/12",
+        "executionPackage": "letbuyy-craft@2.1.0",
+        "executionRunId": "49ada80bc494",
+        "status": "NOT_RUN",
+        "evidence": [],
+        "independentReview": "PENDING"
+      },
+      {
+        "id": "HI-14",
+        "originalRequirementReference": "FRESH_26_EXECUTION_REQUEST_20261024_02.json#/cases/13",
+        "executionPackage": "letbuyy-craft@2.1.0",
+        "executionRunId": "49ada80bc494",
+        "status": "NOT_RUN",
+        "evidence": [],
+        "independentReview": "PENDING"
+      },
+      {
+        "id": "HI-15",
+        "originalRequirementReference": "FRESH_26_EXECUTION_REQUEST_20261024_02.json#/cases/14",
+        "executionPackage": "letbuyy-craft@2.1.0",
+        "executionRunId": "49ada80bc494",
+        "status": "NOT_RUN",
+        "evidence": [],
+        "independentReview": "PENDING"
+      },
+      {
+        "id": "HI-16",
+        "originalRequirementReference": "FRESH_26_EXECUTION_REQUEST_20261024_02.json#/cases/15",
+        "executionPackage": "letbuyy-craft@2.1.0",
+        "executionRunId": "49ada80bc494",
+        "status": "NOT_RUN",
+        "evidence": [],
+        "independentReview": "PENDING"
+      },
+      {
+        "id": "HI-17",
+        "originalRequirementReference": "FRESH_26_EXECUTION_REQUEST_20261024_02.json#/cases/16",
+        "executionPackage": "letbuyy-craft@2.1.0",
+        "executionRunId": "49ada80bc494",
+        "status": "NOT_RUN",
+        "evidence": [],
+        "independentReview": "PENDING"
+      },
+      {
+        "id": "HQ-01",
+        "originalRequirementReference": "FRESH_26_EXECUTION_REQUEST_20261024_02.json#/cases/17",
+        "executionPackage": "letbuyy-craft@2.1.0",
+        "executionRunId": "49ada80bc494",
+        "status": "NOT_RUN",
+        "evidence": [],
+        "independentReview": "PENDING"
+      },
+      {
+        "id": "HQ-02",
+        "originalRequirementReference": "FRESH_26_EXECUTION_REQUEST_20261024_02.json#/cases/18",
+        "executionPackage": "letbuyy-craft@2.1.0",
+        "executionRunId": "49ada80bc494",
+        "status": "NOT_RUN",
+        "evidence": [],
+        "independentReview": "PENDING"
+      },
+      {
+        "id": "HQ-03",
+        "originalRequirementReference": "FRESH_26_EXECUTION_REQUEST_20261024_02.json#/cases/19",
+        "executionPackage": "letbuyy-craft@2.1.0",
+        "executionRunId": "49ada80bc494",
+        "status": "NOT_RUN",
+        "evidence": [],
+        "independentReview": "PENDING"
+      },
+      {
+        "id": "HQ-04",
+        "originalRequirementReference": "FRESH_26_EXECUTION_REQUEST_20261024_02.json#/cases/20",
+        "executionPackage": "letbuyy-craft@2.1.0",
+        "executionRunId": "49ada80bc494",
+        "status": "NOT_RUN",
+        "evidence": [],
+        "independentReview": "PENDING"
+      },
+      {
+        "id": "HQ-05",
+        "originalRequirementReference": "FRESH_26_EXECUTION_REQUEST_20261024_02.json#/cases/21",
+        "executionPackage": "letbuyy-craft@2.1.0",
+        "executionRunId": "49ada80bc494",
+        "status": "NOT_RUN",
+        "evidence": [],
+        "independentReview": "PENDING"
+      },
+      {
+        "id": "HQ-06",
+        "originalRequirementReference": "FRESH_26_EXECUTION_REQUEST_20261024_02.json#/cases/22",
+        "executionPackage": "letbuyy-craft@2.1.0",
+        "executionRunId": "49ada80bc494",
+        "status": "NOT_RUN",
+        "evidence": [],
+        "independentReview": "PENDING"
+      },
+      {
+        "id": "HQ-07",
+        "originalRequirementReference": "FRESH_26_EXECUTION_REQUEST_20261024_02.json#/cases/23",
+        "executionPackage": "letbuyy-craft@2.1.0",
+        "executionRunId": "49ada80bc494",
+        "status": "NOT_RUN",
+        "evidence": [],
+        "independentReview": "PENDING"
+      },
+      {
+        "id": "HQ-08",
+        "originalRequirementReference": "FRESH_26_EXECUTION_REQUEST_20261024_02.json#/cases/24",
+        "executionPackage": "letbuyy-craft@2.1.0",
+        "executionRunId": "49ada80bc494",
+        "status": "NOT_RUN",
+        "evidence": [],
+        "independentReview": "PENDING"
+      },
+      {
+        "id": "HQ-09",
+        "originalRequirementReference": "FRESH_26_EXECUTION_REQUEST_20261024_02.json#/cases/25",
+        "executionPackage": "letbuyy-craft@2.1.0",
+        "executionRunId": "49ada80bc494",
+        "status": "NOT_RUN",
+        "evidence": [],
+        "independentReview": "PENDING"
+      }
+    ],
+    "freshCounts": {
+      "PASS": 0,
+      "FAIL": 0,
+      "PARTIAL": 2,
+      "NOT_RUN": 24
+    },
+    "observedEditor": {
+      "observedAt": "2026-10-24T20:07:57.426452+00:00",
+      "cursor": "55b3b7e5-65f2-4e37-bfbe-f3ebbd81cba2:153",
+      "turn": "01a16f77-65e2-7272-af85-e1f3fc114c94",
+      "status": "inProgress",
+      "progress": "Earlier current turn acknowledged shared browser queue and Threadline install/publish preparation; latest commentary concerns separately authorized fallback-card QA. No fresh Habitat execution receipt observed.",
+      "noInference": "This observation is not Habitat pass/fail evidence and does not allocate this owner browser control."
+    },
+    "newSourceCheckSeparate": {
+      "PASS": 2,
+      "FAIL": 1,
+      "skipped": 0,
+      "exitCode": 1,
+      "finding": "runtime07-20261025/ORDER_HEADING_FINDING.json"
+    },
+    "nextAction": "Root current intended-desk Test correlation and buyer/merchant/persisted history; later normal UI four-variant setup from ORIGINAL_RECIPE_SETUP_AFTER_CURRENT_TEST.json. No new browser controller/stack/queue allocation by Habitat.",
+    "fullThemeCertified": false,
+    "observedThemes": {
+      "observedAt": "2026-10-24T20:07:57.426452+00:00",
+      "cursor": "4a88ad91-a502-40c5-8554-f10ec1e43e00:106",
+      "turn": "01a16f77-5b7a-7471-8fb4-fac6ff2d82a0",
+      "status": "inProgress",
+      "progress": "Shared-gate independent acceptance saved; other-theme source/performance review in progress. Habitat private successor source grant not received."
+    },
+    "coordinationDispatch": "Both explicit named messages returned success; not execution-complete receipts.",
+    "currentController": "01a16ce5-e5ba-7191-ab2c-a1b76947d2b5",
+    "currentControllerRecord": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/LIVE_BROWSER_QUEUE.json",
+    "rootReceipt": "runtime07-20261025/ROOT_CURRENT_TEST_APPLICABILITY.json",
+    "actualCurrentDeskTest": {
+      "id": "HAB-RZP-DESK-01",
+      "status": "PARTIAL_POSITIVE_PURCHASE_FINANCIAL_WEBHOOK_PASS_CAPTURE_FLAG_OPEN",
+      "applicableTo": [
+        "HAB-C-RAZORPAY-BROWSER",
+        "HAB-C-RAZORPAY-VERIFY",
+        "HAB-C-RAZORPAY-WEBHOOK"
+      ],
+      "rationale": "An intended furniture product/actual selected variant purchased on published Habitat210 can satisfy the separate per-theme actual Test requirement despite a different original query fixture, once actual order/payment/mode/amount/currency/HMAC/ledger/buyer/merchant/history receipts pass.",
+      "notApplicableTo": [
+        "HI-02 original full recipe",
+        "HI-06 through HI-13 exact four-variant/probe clauses",
+        "HQ-01 through HQ-09",
+        "HI-14 quantity2/full-A snapshot/overstock",
+        "HI-15 new CODqty2/retry",
+        "HI-16 exact original-COD snapshot after later edit",
+        "HI-17 genuine absent/malformed historical control"
+      ],
+      "requiredOutstanding": [
+        "Canonical owner disposition and affected retest for R07-HOSTED-CAPTURE-FLAG-01",
+        "Required negative/recovery/final independent acceptance",
+        "Original four-variant/COD/query/history requirements remain separate"
+      ],
+      "noCasePromotionFromBankUiOrOtherThemePayment": true,
+      "ownerProvisionalId": "HAB-R07-RAZORPAY-CURRENT-DESK-01",
+      "ownerReview": "runtime07-20261025/CURRENT_TEST_FINANCIAL_OWNER_REVIEW.json",
+      "actualOrderNumber": "ORD-20261024-10004"
+    },
+    "private211SourceProposal": {
+      "path": "private-heading211-20261025-01/HANDOFF.json",
+      "status": "SEALED_SOURCE_REVIEW_PENDING_NATIVE_NOT_RUN_MAIN_NOT_APPLIED",
+      "sourceTests": {
+        "PASS": 61,
+        "FAIL": 0,
+        "skipped": 0,
+        "new": 22,
+        "retained": 39
+      },
+      "doesNotCloseInstalled210Heading": true
+    },
+    "blockedLatestEditorMessage": "runtime07-20261025/COORDINATION_REJECTION_20261025_01.json",
+    "currentFinancialOwnerReview": "runtime07-20261025/CURRENT_TEST_FINANCIAL_OWNER_REVIEW.json"
+  },
+  "latestStatus": "RUNTIME07_CURRENT_SECTION_SUPERSEDES_OLDER_UNASSIGNED_ADMISSION_ONLY",
+  "updatedAt": "2026-10-24T21:03:31.839869+00:00"
+}

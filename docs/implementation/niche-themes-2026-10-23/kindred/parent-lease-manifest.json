@@ -1,0 +1,47 @@
+{
+  "baseline": "/private/tmp/letbuyy-kindred-parent-before-image-binding-20261023/manifest.json",
+  "files": [
+    {
+      "source": "apps/merchant/web/src/app/[store]/products/new/page.tsx",
+      "beforeSha256": "5355405c2fbc03f2a7546f111d218b7d127d23f2ea8c63581e88a49d69b5b204",
+      "sha256": "32fced1ae70c5e2f6c0293c519cfaa8f84442058ca352ed197a6969594fbb80f",
+      "lines": 1449,
+      "diff": "parent-review-page.tsx.diff"
+    },
+    {
+      "source": "apps/merchant/web/src/components/products/NicheFactsEditor.tsx",
+      "beforeSha256": "1a2f06a13107c10f9fc5a03bd84d1bc4a5e62b0761c9bc7f6084094e9c967a8b",
+      "sha256": "2038755783ca6e437c51052354720760fd20e5b4c53c36ffe7ba4210869d9a29",
+      "lines": 53,
+      "diff": "parent-review-NicheFactsEditor.tsx.diff"
+    },
+    {
+      "source": "apps/merchant/web/src/lib/product-form-state.ts",
+      "beforeSha256": "fdc3dbf23410af2483db7572984ea2558811a9613705bcba5cefe2f4df2822d7",
+      "sha256": "b1dbd809e7946ca35dd9810b121379cbd3946dd962048df135a5112543481559",
+      "lines": 390,
+      "diff": "parent-review-product-form-state.ts.diff"
+    },
+    {
+      "source": "apps/merchant/web/src/lib/product-facts-draft.ts",
+      "beforeSha256": "b857d4e17f727fc2ab77a1edde344e7c982822ce29884cc613fb338dd3de1922",
+      "sha256": "b583ab3cd95324f4185ecec375090b2a80a162eec233e5854cf5a2728bd42271",
+      "lines": 107,
+      "diff": "parent-review-product-facts-draft.ts.diff"
+    },
+    {
+      "source": "apps/merchant/web/src/lib/product-facts-draft.test.ts",
+      "beforeSha256": "b2e6e458f1bed58590d456970e28174360294f563b4b77fc06f0e497f0d0f2dd",
+      "sha256": "39af44e95883715648cbbe0e5c0ffcc58779f35f7ce802e1e278b5f928534eca",
+      "lines": 111,
+      "diff": "parent-review-product-facts-draft.test.ts.diff"
+    },
+    {
+      "source": "apps/merchant/web/src/components/products/product-conflict.test.tsx",
+      "beforeSha256": "4e7549a2b6484b94bf55bb12a40de68c4d75022edd88129c3fd9803620843979",
+      "sha256": "7f4d34f153bf66a83151a5a4c2c2a7e8f92ccd42dcb7f6ea2381524fb58cdb19",
+      "lines": 710,
+      "diff": "parent-review-product-conflict.test.tsx.diff"
+    }
+  ]
+}

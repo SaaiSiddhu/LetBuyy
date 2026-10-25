@@ -1,0 +1,265 @@
+{
+  "runId": "936e5f577646",
+  "guardVerified": true,
+  "readOnly": true,
+  "actual": [
+    {
+      "id": "5dbce431-9870-4636-8b38-e65471737b52",
+      "name": "Trailmark lifecycle racket",
+      "price": 1800,
+      "stock": 8,
+      "active": true,
+      "siteId": "2f958a36-71bf-4e8f-89fd-d3363f4fe42c",
+      "country": "India",
+      "version": 8,
+      "category": "Recreation",
+      "metadata": {
+        "sports": {
+          "length": {
+            "unit": "cm",
+            "value": 67.5
+          },
+          "weight": {
+            "unit": "g",
+            "value": 85
+          },
+          "activity": "Badminton",
+          "dimensions": {
+            "unit": "cm",
+            "width": 26,
+            "height": 2,
+            "length": 67.5
+          },
+          "compatibility": {
+            "status": "unconfirmed"
+          },
+          "equipmentType": "racket"
+        }
+      },
+      "variants": [
+        {
+          "id": "f63aa9f6-d375-4633-aff6-74b35ba05992",
+          "price": 1800,
+          "stock": 4,
+          "title": "26.5 in",
+          "option1": "26.5 in",
+          "metadata": {
+            "sports": {
+              "length": {
+                "unit": "in",
+                "value": 26.5
+              },
+              "weight": {
+                "unit": "g",
+                "value": 80
+              },
+              "dimensions": {
+                "unit": "in",
+                "width": 10,
+                "length": 26.5
+              }
+            }
+          }
+        },
+        {
+          "id": "e39e309c-3aac-4a90-b6e8-31506e1c818c",
+          "price": 1800,
+          "stock": 4,
+          "title": "Common size",
+          "option1": "Common size",
+          "metadata": {}
+        }
+      ],
+      "chargeTax": false,
+      "inventory": [
+        {
+          "id": "6c91d3b2-0ab6-4edb-aa07-5f8ccd40fa50",
+          "reserved": 0,
+          "available": 4
+        },
+        {
+          "id": "f22b007e-be44-484d-8904-b668186280bb",
+          "reserved": 0,
+          "available": 4
+        },
+        {
+          "id": "6a9357eb-e8b2-4567-9982-17ea7eed66f7",
+          "reserved": 0,
+          "available": 8
+        }
+      ],
+      "optionsCount": 1,
+      "variantsCount": 2,
+      "otherMetadataSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "privateSupplierPresent": false
+    },
+    {
+      "id": "93257d9f-f4ee-4bca-ad6d-72c1e29b37e1",
+      "name": "Trailmark same-variant witness racket",
+      "price": 9999,
+      "stock": 5,
+      "active": true,
+      "siteId": "2f958a36-71bf-4e8f-89fd-d3363f4fe42c",
+      "country": "India",
+      "version": 9,
+      "category": "Recreation",
+      "metadata": {
+        "sports": {
+          "length": {
+            "unit": "cm",
+            "value": 67.5
+          },
+          "weight": {
+            "unit": "g",
+            "value": 85
+          },
+          "activity": "Badminton",
+          "dimensions": {
+            "unit": "cm",
+            "width": 26,
+            "height": 2,
+            "length": 67.5
+          },
+          "compatibility": {
+            "status": "unconfirmed"
+          },
+          "equipmentType": "racket"
+        }
+      },
+      "variants": [
+        {
+          "id": "39740b91-60f6-4299-b4d4-dbad7e6a9dc7",
+          "price": 400,
+          "stock": 0,
+          "title": "L",
+          "option1": "L",
+          "metadata": {
+            "sports": {
+              "length": {
+                "unit": "mm",
+                "value": 254
+              },
+              "weight": {
+                "unit": "g",
+                "value": 75
+              }
+            }
+          }
+        },
+        {
+          "id": "103f0ff0-1bc5-46b2-be49-9553912124aa",
+          "price": 1000,
+          "stock": 2,
+          "title": "M",
+          "option1": "M",
+          "metadata": {
+            "sports": {
+              "length": {
+                "unit": "mm",
+                "value": 700
+              },
+              "weight": {
+                "unit": "g",
+                "value": 90
+              },
+              "dimensions": {
+                "unit": "mm",
+                "width": 270,
+                "length": 700
+              }
+            }
+          }
+        },
+        {
+          "id": "364b5606-eaed-4699-98d6-f5f6249ebf48",
+          "price": 500,
+          "stock": 3,
+          "title": "S",
+          "option1": "S",
+          "metadata": {
+            "sports": {
+              "weight": {
+                "unit": "g",
+                "value": 84
+              }
+            }
+          }
+        }
+      ],
+      "chargeTax": false,
+      "inventory": [
+        {
+          "id": "7d7a8f27-b5fc-4fd4-b387-5727ef96d90d",
+          "reserved": 0,
+          "available": 3
+        },
+        {
+          "id": "8d886ba9-36a9-43ed-8c21-ab1354256974",
+          "reserved": 0,
+          "available": 2
+        },
+        {
+          "id": "97721479-eb84-4c77-9475-044860b707ef",
+          "reserved": 0,
+          "available": 0
+        },
+        {
+          "id": "10c313af-4cee-4fa3-a9cf-0e671c447158",
+          "reserved": 0,
+          "available": 5
+        }
+      ],
+      "optionsCount": 1,
+      "variantsCount": 3,
+      "otherMetadataSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "privateSupplierPresent": false
+    },
+    {
+      "id": "78726b89-2397-453a-916c-fbc1c9518139",
+      "name": "Trailmark unmeasured storage fixture",
+      "price": 250,
+      "stock": 2,
+      "active": true,
+      "siteId": "2f958a36-71bf-4e8f-89fd-d3363f4fe42c",
+      "country": "India",
+      "version": 3,
+      "category": "Recreation",
+      "metadata": {
+        "sports": {
+          "weight": {
+            "unit": "g",
+            "value": 120
+          },
+          "activity": "Badminton",
+          "dimensions": {
+            "unit": "cm",
+            "width": 20,
+            "height": 15,
+            "length": 50
+          },
+          "compatibility": {
+            "status": "unconfirmed"
+          },
+          "equipmentType": "storage",
+          "gripCircumference": {
+            "unit": "mm",
+            "value": 84
+          }
+        }
+      },
+      "variants": null,
+      "chargeTax": false,
+      "inventory": [
+        {
+          "id": "1a380ee3-318f-4f94-9be6-2b05167545f6",
+          "reserved": 0,
+          "available": 2
+        }
+      ],
+      "optionsCount": 0,
+      "variantsCount": 0,
+      "otherMetadataSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "privateSupplierPresent": false
+    }
+  ]
+}

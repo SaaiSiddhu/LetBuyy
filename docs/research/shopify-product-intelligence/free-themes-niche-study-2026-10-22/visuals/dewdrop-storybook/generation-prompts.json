@@ -1,0 +1,38 @@
+{
+  "researchDate": "2026-10-22",
+  "photographyOriginal": true,
+  "records": [
+    {
+      "id": "hero",
+      "mode": "built-in image_gen",
+      "useCase": "product-mockup",
+      "prompt": "Use case: product-mockup. Asset type: original personal-care storefront hero photography, landscape 3:2. Primary request: editorial still life of a muted sage glass pump bottle, a low off-white cream jar and a small frosted rose lip-tint tube on warm pale limestone, with a subtle rose cosmetic texture swipe. Scene/backdrop: softly sunlit studio, warm cream wall, water-like caustic shadows but dry tabletop. Composition: close tactile photography, products grouped off-center on the right with natural negative space left, full objects visible. Materials: frosted glass, uncoated minimal packaging, ceramic stone. Palette: sage green, cream, dusty rose. Constraints: no people, no text, no logos, no badges, no health imagery, no medical claims, no leaves suggesting ingredients, no watermark. Premium calm beauty editorial, believable physical bottles.",
+      "output": "Generated images are saved to /Users/saai_mithra/.codex/generated_images/01a164ba-ec9f-7073-8f2a-66878e99b008 as /Users/saai_mithra/.codex/generated_images/01a164ba-ec9f-7073-8f2a-66878e99b008/exec-cc6adea1-c784-489b-9c3b-4318cc5f3e68.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+      "finalAsset": "assets/hero.png"
+    },
+    {
+      "id": "tint",
+      "mode": "built-in image_gen",
+      "useCase": "product-mockup",
+      "prompt": "Use case: product-mockup. Asset type: beauty catalog product photograph, portrait 4:5. Primary request: one small frosted glass lip-tint tube filled with dusty rose tint, tall ivory cap, next to a single thick dusty rose cosmetic swipe on warm pale limestone. Style: premium understated natural studio product photography. Composition: entire tube centered upright with breathing room, texture swipe beside base; no extra products. Palette: warm cream and muted dusty rose. Lighting: soft sunlight, realistic glass and cosmetic texture. Constraints: no text, no logos, no badges, no watermark, no medical imagery or claims. This is a fictional unbranded lip cosmetic.",
+      "output": "Generated images are saved to /Users/saai_mithra/.codex/generated_images/01a164ba-ec9f-7073-8f2a-66878e99b008 as /Users/saai_mithra/.codex/generated_images/01a164ba-ec9f-7073-8f2a-66878e99b008/exec-884e5627-2575-45ad-ae21-d936a8d8c2ee.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+      "finalAsset": "assets/tint.png"
+    },
+    {
+      "id": "cleanser",
+      "mode": "built-in image_gen",
+      "useCase": "product-mockup",
+      "prompt": "Use case: product-mockup. Asset type: personal-care catalog photo, portrait 4:5. Primary request: one muted sage frosted glass pump bottle with ivory pump on pale limestone, representing a fictional gel cleanser, with a small transparent gel texture smear beside base. Full bottle visible centered with ample margin. Soft warm daylight and gentle natural shadow. Premium quiet tactile studio photography. Background warm cream stone. Materials believable frosted glass, off-white pump, clear viscous gel. Constraints no text, logos, leaf/ingredient props, claims, badges, medical imagery, watermark, people or extra products.",
+      "output": "Generated images are saved to /Users/saai_mithra/.codex/generated_images/01a164ba-ec9f-7073-8f2a-66878e99b008 as /Users/saai_mithra/.codex/generated_images/01a164ba-ec9f-7073-8f2a-66878e99b008/exec-51a6fec1-f03a-417e-bc8b-05ddcbe64694.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+      "finalAsset": "assets/cleanser.png"
+    },
+    {
+      "id": "cream",
+      "mode": "built-in image_gen",
+      "useCase": "product-mockup",
+      "prompt": "Use case: product-mockup. Asset type: beauty catalog product photo, portrait 4:5. Primary request: one low wide frosted glass cream jar filled with ivory cream, simple off-white lid resting slightly open on the jar, next to a small smooth ivory cream texture swipe on pale warm limestone. Full jar and lid visible centered, ample breathing room. Quiet premium tactile studio photography, soft warm sunlight and realistic gentle shadow. Palette cream, warm beige, off-white. Constraints no text, logos, ingredient props, leaves, badges, claims, watermark, people, medical imagery or extra bottles. This is fictional unbranded face cream.",
+      "output": "Generated images are saved to /Users/saai_mithra/.codex/generated_images/01a164ba-ec9f-7073-8f2a-66878e99b008 as /Users/saai_mithra/.codex/generated_images/01a164ba-ec9f-7073-8f2a-66878e99b008/exec-8f15eed8-da9c-43ce-8358-aec84112237d.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+      "finalAsset": "assets/cream.png"
+    }
+  ]
+}

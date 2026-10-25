@@ -10,6 +10,7 @@ import { CustomerAuthProvider } from '../../context/customer-auth-context';
 import { WishlistProvider } from '../../context/wishlist-context';
 import { AppRouterContext } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 import { PathnameContext, PathParamsContext } from 'next/dist/shared/lib/hooks-client-context.shared-runtime';
+import { savedFacts } from '../../lib/order-facts.test-support';
 import type { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 
 const orderA = {
@@ -168,5 +169,24 @@ test('linked order detail discards the prior buyer order and rechecks ownership 
         await failSession();
         assert.doesNotMatch(document.body.textContent || '', /A-PRIVATE-ORDER|A private item/);
         assert.match(document.body.textContent || '', /We could not check your account right now/);
+    });
+});
+
+
+test('actual buyer detail renders saved choices and drops them after buyer ownership is denied', async () => {
+    let reads = 0;
+    const snapshot = savedFacts();
+    const today = { name: 'Today product' };
+    await withMountedAccount(() => <OrderDetailClient subdomain="demo" id="order-a" />, async url => {
+        assert.equal(url, '/api/buyer/orders?order_id=order-a');
+        reads++;
+        return reads === 1 ? Response.json({ order: { ...orderA, items: [{ ...orderA.items[0], niche_snapshot: snapshot, product: today }] } }) : Response.json({ error: 'Order not found' }, { status: 404 });
+    }, async (document, switchBuyer) => {
+        for (const expected of ['PC02', 'Saved Pink Clay ingredients', 'Saved edition 2', '250 g', 'Asha']) assert.ok(document.body.textContent!.includes(expected), expected);
+        assert.doesNotMatch(document.body.textContent!, /RW01|Today product/);
+        today.name = 'Changed product';
+        assert.match(document.body.textContent!, /PC02/);
+        await switchBuyer();
+        assert.doesNotMatch(document.body.textContent!, /PC02|Asha|Saved edition 2/);
     });
 });

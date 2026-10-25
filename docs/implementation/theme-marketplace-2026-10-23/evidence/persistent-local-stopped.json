@@ -1,0 +1,10 @@
+{
+  "recordedAt": "2026-10-24T01:14:41.810Z",
+  "localId": "ed52fedf85eb",
+  "status": "stopped",
+  "allRecordedProcessesStopped": true,
+  "bothOwnedContainersStopped": true,
+  "volumePreserved": "letbuyy-local-marketplace-ed52fedf85eb-data",
+  "volumeCreatedAt": "2026-10-24T01:08:01Z",
+  "expiresAt": null
+}

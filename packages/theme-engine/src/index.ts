@@ -2,12 +2,11 @@ import { z } from 'zod';
 import { DEFAULT_THEME_SETTINGS, type ThemeSettings } from './theme-settings';
 import { SlugSchema, UuidSchema } from '@letbuyy/shared-types';
 import { BUILT_IN_SECTION_SCHEMAS } from './built-in-section-schemas';
+import { ThemeEditorTemplateKeySchema } from './template-registry';
+import { validateFieldValue as validateEditorFieldValue, resolveFieldOptions, isFieldVisible, type ExtendedSchemaField, type ExtendedSectionSchema, type ExtendedThemeSettingsSchema, type ExtendedSchemaField as SchemaField, type ExtendedSectionSchema as SectionSchema, type ExtendedThemeSettingsSchema as ThemeSettingsSchema } from './schema-field-extensions';
 import {
   getDefaultStorefrontThemeTemplate,
   hasRenderableThemeTemplate,
-  type SchemaField,
-  type SectionSchema,
-  type ThemeSettingsSchema,
 } from './theme-registry';
 import { localizeThemeTemplateConfig, LiquidThemePackageBundleSchema, type LiquidThemePackageBundle } from './theme-bundle';
 
@@ -22,6 +21,16 @@ export * from './portable-to-liquid';
 export * from './theme-presets';
 export * from './industry-experience-map';
 export * from './theme-bundle-core';
+export * from './first-party-theme-catalog';
+export * from './playfield-theme';
+export * from './circuit-theme';
+export * from './pantry-theme';
+export * from './habitat-theme';
+export * from './kindred-theme';
+export * from './madeyours-theme';
+export * from './dewdrop-theme';
+export * from './trailmark-theme';
+export * from './marginalia-theme';
 export * from './experience-fonts';
 export * from './section-schema-migrations';
 export * from './settings-schema-canonical';
@@ -45,6 +54,7 @@ export * from './theme-packager';
 export * from './theme-version';
 export * from './theme-upgrade';
 export * from './theme-install';
+export * from './theme-install-receipt';
 // Phase Q — site-scoped theme library request contracts
 export * from './theme-library-schemas';
 export * from './theme-publish';
@@ -292,8 +302,8 @@ export interface ThemeTemplateReference {
 }
 
 export interface ThemeTemplateValidationRuntime {
-  sectionSchemas: Record<string, SectionSchema>;
-  settingsSchema: ThemeSettingsSchema;
+  sectionSchemas: Record<string, ExtendedSectionSchema>;
+  settingsSchema: ExtendedThemeSettingsSchema;
 }
 
 interface ThemeSectionConfig extends ThemeTemplateRecord {
@@ -367,11 +377,20 @@ function validateSafeThemeJson(value: unknown, path: string, issues: string[]) {
   }
 }
 
-function validateThemeFieldValue(field: SchemaField, value: unknown, path: string, issues: string[]) {
+function validateRequiredThemeFields(fields: Record<string, ExtendedSchemaField>, settings: ThemeTemplateRecord, path: string, issues: string[]) {
+  for (const [key, field] of Object.entries(fields)) {
+    if (field.required && isFieldVisible(field, settings) && !Object.hasOwn(settings, key)) validateThemeFieldValue(field, undefined, `${path}.${key}`, issues);
+  }
+}
+
+function validateThemeFieldValue(field: ExtendedSchemaField, value: unknown, path: string, issues: string[], requiredVisible = true) {
+  const descriptorIssue = validateEditorFieldValue({ ...field, required: field.required && requiredVisible }, value);
+  if (descriptorIssue) { issues.push(field.type === 'color' && value ? `${path} must be a valid CSS color` : `${path}: ${descriptorIssue}`); return; }
   if (value === null || value === undefined || value === '') return;
 
   switch (field.type) {
     case 'toggle':
+    case 'checkbox':
       if (typeof value !== 'boolean') issues.push(`${path} must be a boolean`);
       return;
     case 'range':
@@ -391,13 +410,10 @@ function validateThemeFieldValue(field: SchemaField, value: unknown, path: strin
     }
     case 'select':
     case 'radio':
-      if (typeof value !== 'string') {
-        issues.push(`${path} must be a string`);
-        return;
-      }
-      if (field.options && !field.options.includes(value)) {
-        issues.push(`${path} must be one of: ${field.options.join(', ')}`);
-      }
+      if (!resolveFieldOptions(field).length && typeof value !== 'string') issues.push(`${path} must be a string`);
+      return;
+    case 'header':
+    case 'paragraph':
       return;
     case 'color':
       if (typeof value !== 'string') {
@@ -429,7 +445,7 @@ function validateThemeFieldValue(field: SchemaField, value: unknown, path: strin
 }
 
 function validateThemeSectionSettings(
-  schema: SectionSchema,
+  schema: ExtendedSectionSchema,
   settings: ThemeTemplateRecord,
   path: string,
   issues: string[],
@@ -439,6 +455,7 @@ function validateThemeSectionSettings(
     ...Object.keys(fieldSchemas),
     ...Object.keys(asThemeRecord(schema.defaults)),
   ]);
+  validateRequiredThemeFields(fieldSchemas, settings, path, issues);
 
   for (const [key, value] of Object.entries(settings)) {
     if (isUnsafeThemeKey(key)) {
@@ -452,7 +469,7 @@ function validateThemeSectionSettings(
     }
 
     const field = fieldSchemas[key];
-    if (field) validateThemeFieldValue(field, value, `${path}.${key}`, issues);
+    if (field) validateThemeFieldValue(field, value, `${path}.${key}`, issues, isFieldVisible(field, settings));
     validateSafeThemeJson(value, `${path}.${key}`, issues);
   }
 }
@@ -484,13 +501,14 @@ function validateThemeBlocks(
     }
 
     const settings = asThemeRecord(record.settings);
+    validateRequiredThemeFields(blockSchema.fields, settings, `${path}[${index}].settings`, issues);
     for (const [key, value] of Object.entries(settings)) {
       const field = blockSchema.fields[key];
       if (!field) {
         issues.push(`${path}[${index}].settings.${key} is not defined by the ${type} block schema`);
         continue;
       }
-      validateThemeFieldValue(field, value, `${path}[${index}].settings.${key}`, issues);
+      validateThemeFieldValue(field, value, `${path}[${index}].settings.${key}`, issues, isFieldVisible(field, settings));
       validateSafeThemeJson(value, `${path}[${index}].settings.${key}`, issues);
     }
   });
@@ -519,13 +537,15 @@ function validateThemeBlock(
     issues.push(`${path}.disabled must be a boolean`);
   }
 
-  for (const [key, value] of Object.entries(asThemeRecord(record.settings))) {
+  const settings = asThemeRecord(record.settings);
+  validateRequiredThemeFields(blockSchema.fields, settings, `${path}.settings`, issues);
+  for (const [key, value] of Object.entries(settings)) {
     const field = blockSchema.fields[key];
     if (!field) {
       issues.push(`${path}.settings.${key} is not defined by the ${type} block schema`);
       continue;
     }
-    validateThemeFieldValue(field, value, `${path}.settings.${key}`, issues);
+    validateThemeFieldValue(field, value, `${path}.settings.${key}`, issues, isFieldVisible(field, settings));
     validateSafeThemeJson(value, `${path}.settings.${key}`, issues);
   }
 }
@@ -622,6 +642,7 @@ function validateThemeSettings(
   const fields = Object.values(settingsGroups).reduce<Record<string, SchemaField>>((acc, group) => {
     return { ...acc, ...(group.fields || {}) };
   }, {});
+  validateRequiredThemeFields(fields, settings, 'themeSettings', issues);
 
   for (const [key, value] of Object.entries(settings)) {
     if (isUnsafeThemeKey(key)) {
@@ -635,7 +656,7 @@ function validateThemeSettings(
       continue;
     }
 
-    validateThemeFieldValue(field, value, `themeSettings.${key}`, issues);
+    validateThemeFieldValue(field, value, `themeSettings.${key}`, issues, isFieldVisible(field, settings));
     validateSafeThemeJson(value, `themeSettings.${key}`, issues);
   }
 }
@@ -964,12 +985,18 @@ export const ThemeSlugParamSchema = z.object({
 
 export const ThemeStoreQuerySchema = z.object({
   store_id: UuidSchema,
-  template_key: z.string().trim().regex(/^[a-z0-9][a-z0-9_-]{0,79}$/i).default('index'),
+  template_key: ThemeEditorTemplateKeySchema.default('index'),
 });
 
 export const InstallThemeSchema = z.object({
   store_id: UuidSchema,
   config_overrides: z.record(z.string(), z.unknown()).default({}),
+  expected_version: z.string().min(1).max(40).refine(
+    value => value === value.trim() && !/[\u0000-\u001f\u007f]/.test(value),
+    'Choose the exact catalog version',
+  ).optional(),
+  expected_package_id: UuidSchema.optional(),
+  expected_package_version_id: UuidSchema.optional(),
 });
 
 const ThemeDraftIntentKeySchema = z.string().min(8).max(200).refine(
@@ -979,7 +1006,7 @@ const ThemeDraftIntentKeySchema = z.string().min(8).max(200).refine(
 
 export const SaveThemeDraftSchema = z.object({
   store_id: UuidSchema,
-  template_key: z.string().trim().regex(/^[a-z0-9][a-z0-9_-]{0,79}$/i).default('index'),
+  template_key: ThemeEditorTemplateKeySchema.default('index'),
   template_config: z.record(z.string(), z.unknown()),
   base_version: z.number().int().nonnegative().max(2_147_483_646),
   idempotency_key: ThemeDraftIntentKeySchema,
@@ -994,7 +1021,7 @@ export const ReorderThemeDraftSchema = SaveThemeDraftSchema.omit({ template_conf
 
 export const PublishThemeSchema = z.object({
   store_id: UuidSchema,
-  template_key: z.string().trim().regex(/^[a-z0-9][a-z0-9_-]{0,79}$/i).default('index'),
+  template_key: ThemeEditorTemplateKeySchema.default('index'),
   template_config: z.record(z.string(), z.unknown()).optional(),
   base_version: z.number().int().positive().max(2_147_483_646),
   make_store_live: z.boolean().default(true),
@@ -1009,7 +1036,7 @@ export const DiscardThemeDraftSchema = ThemeStoreQuerySchema.extend({
 
 export const PreviewTokenSchema = z.object({
   store_id: UuidSchema,
-  template_key: z.string().trim().regex(/^[a-z0-9][a-z0-9_-]{0,79}$/i).default('index'),
+  template_key: ThemeEditorTemplateKeySchema.default('index'),
   ttl_seconds: z.number().int().min(60).max(3600).default(900),
 });
 
@@ -1385,7 +1412,9 @@ export function resolveStorefrontThemePresentation(rawTemplateConfig:Record<stri
         primaryColor: themeSettingsRecord.primaryColor as string || DEFAULT_THEME_SETTINGS.primaryColor,
         secondaryColor: themeSettingsRecord.secondaryColor as string || DEFAULT_THEME_SETTINGS.secondaryColor,
         accentColor: themeSettingsRecord.accentColor as string || DEFAULT_THEME_SETTINGS.accentColor,
-        fontFamily: themeSettingsRecord.fontFamily as string || DEFAULT_THEME_SETTINGS.fontFamily,
+        // Liquid's editable bodyFontFamily is the canonical setting. The
+        // presentation DTO retains fontFamily for existing React/checkout callers.
+        fontFamily: (appearanceOverrides.fontFamily || themeSettingsRecord.bodyFontFamily || themeSettingsRecord.fontFamily) as string || DEFAULT_THEME_SETTINGS.fontFamily,
         borderRadius: themeSettingsRecord.borderRadius as number ?? DEFAULT_THEME_SETTINGS.borderRadius,
     };
 

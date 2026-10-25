@@ -1,0 +1,36 @@
+{
+  "recordedAt": "2026-10-25T00:32:13.851138+00:00",
+  "status": "R01_R02_R03_CASE_SOURCE_ACCEPTED_ONE_BOUNDED_METADATA_TRANSPORT_FIX_REQUIRED_BEFORE_NATIVE",
+  "packet": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-provenance03/HANDOFF.json",
+  "packetSha256": "db438bacfa02f47620e96340d34bc99b7cc69de3e26eeb173e3faf254ca29a57",
+  "physicalPins": "APPAREL03_PHYSICAL_HASH_REVIEW.json",
+  "inspected": [
+    "Native whole saved niche/options/personalization + exact product/variant/quantity/price, SQL replay full-data check and later catalogue edit history.",
+    "Full-public SQL-only count/sortedSHA256 witnesses including partitions/materialized views/sequences and explicit foreign-table refusal; full function/security/role/ACL/profile conservation. Scoped11table HTTP witness clearly named.",
+    "Future admission and hashes before application/owned module imports; actual recursive runtime/TypeScript/vendor/tool/SQL/bootstrap closure and source directory322/max393; exact fourUP application before baseline; actual parent applied migration/cleanup evidence only accepted postrun.",
+    "No native activation, existing Run07 read/action, source application, old row or frozen package change."
+  ],
+  "retainedEvidence": {
+    "sourceArtifacts": 61,
+    "sourceClosureFiles": 1120,
+    "toolPins": 5411,
+    "overlayPins": 8,
+    "frozenOverlays": 7,
+    "mismatches": 0,
+    "metadataChecks": 13,
+    "existing16_45_1NotRerun": true
+  },
+  "finding": {
+    "id": "APPAREL03-IO-01",
+    "line": 50,
+    "paths": [
+      "functions()",
+      "tables()"
+    ],
+    "observation": "Both full pg_proc/function-definition and all-public pg_attribute profile aggregations use owned.psql, whose execFileSync buffer is implicit default. Existing scriptLarge supplies64MiB and is already used for full security/data witness. A bounded pure2MiB stdout probe under the actual Node fails ENOBUFS; this is not a PG execution or exact native profile size claim.",
+    "evidence": "APPAREL_PROFILE_OUTPUT_BUFFER_REVIEW_01.json",
+    "requiredCorrection": "Use unchanged existing owned.scriptLarge for the two large metadata SELECT reads only. Keep all assertions, SQL, profiles and budgets exact; refresh source/closure/plan pins in fresh private04. No helper or owned-db-support source change."
+  },
+  "nativeStatus": "QUEUED_AFTER_CAPTURE_PAIR_NOT_ADMITTED",
+  "certificate": false
+}

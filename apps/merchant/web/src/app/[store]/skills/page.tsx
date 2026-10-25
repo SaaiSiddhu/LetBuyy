@@ -273,6 +273,7 @@ export default function SkillsPage() {
         return (
             <Page>
                 <PageHeader
+                    recipe="index"
                     title="Skills"
                     description="List professional strengths and proficiency levels for your public resume."
                     breadcrumbs={[{ label: 'Resume' }, { label: 'Skills' }]}
@@ -289,6 +290,7 @@ export default function SkillsPage() {
     return (
         <Page>
             <PageHeader
+                recipe="index"
                 title="Skills"
                 description="List professional strengths and proficiency levels for your public resume."
                 breadcrumbs={[{ label: 'Resume' }, { label: 'Skills' }]}

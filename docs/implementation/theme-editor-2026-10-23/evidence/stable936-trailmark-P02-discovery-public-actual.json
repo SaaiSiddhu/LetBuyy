@@ -1,0 +1,2596 @@
+{
+  "recordedAt": "2026-10-24T06:45:58.602Z",
+  "runId": "936e5f577646",
+  "guardVerified": true,
+  "readOnly": true,
+  "evidenceClass": "Existing owned read-only canonical discovery collector adapted to frozen recipes; separate public HTTP reads from browser UI and private preview transport",
+  "collections": {
+    "trailmarkAll": "ab5750b8-3626-413e-b0b4-4d8e4482e217",
+    "trailmarkBaseline": "4c8500dd-cec6-401b-ba8d-c4f1eb94b2ca",
+    "trailmarkWitness": "57ee45c9-a7a5-478e-ab8e-941a1a034bd1",
+    "trailmarkNoLength": "d4232f27-9ed2-41e9-8b49-a77a617767de",
+    "trailmarkEmpty": "87a1d24f-2095-4c47-bada-379337526067"
+  },
+  "variantAliases": {
+    "sports.inch": "f63aa9f6-d375-4633-aff6-74b35ba05992",
+    "sports.common": "e39e309c-3aac-4a90-b6e8-31506e1c818c",
+    "sportsWitness.small": "364b5606-eaed-4699-98d6-f5f6249ebf48",
+    "sportsWitness.medium": "103f0ff0-1bc5-46b2-be49-9553912124aa",
+    "sportsWitness.soldOut": "39740b91-60f6-4299-b4d4-dbad7e6a9dc7"
+  },
+  "results": [
+    {
+      "id": "Q-OVERRIDE-mm",
+      "route": "collection",
+      "query": "collection_id=4c8500dd-cec6-401b-ba8d-c4f1eb94b2ca&search=Trailmark&length_value=673.1&length_unit=mm",
+      "status": 200,
+      "requestId": "9dd27a2d-6409-4cfb-9dcd-b5d1517f551a",
+      "responseSha256": "34368a9e0b669a08018d618cc89f915cfe7fed416a697eb770988674adf31040",
+      "meta": {
+        "page": 1,
+        "per_page": 20,
+        "total": 1,
+        "total_pages": 1,
+        "has_next": false,
+        "has_prev": false
+      },
+      "discovery": {
+        "query": {
+          "page": 1,
+          "limit": 20,
+          "search": "Trailmark",
+          "sort": "display_order",
+          "collection_id": "4c8500dd-cec6-401b-ba8d-c4f1eb94b2ca",
+          "length_value": 673.1,
+          "length_unit": "mm"
+        },
+        "facets": [
+          {
+            "key": "activity",
+            "value": "badminton",
+            "label": "Badminton",
+            "count": 1
+          },
+          {
+            "key": "category",
+            "value": "Recreation",
+            "label": "Recreation",
+            "count": 1
+          },
+          {
+            "key": "country_of_origin",
+            "value": "india",
+            "label": "India",
+            "count": 1
+          },
+          {
+            "key": "equipment_type",
+            "value": "racket",
+            "label": "racket",
+            "count": 1
+          }
+        ],
+        "matches": [
+          {
+            "product_id": "5dbce431-9870-4636-8b38-e65471737b52",
+            "price": 1800,
+            "variant_ids": [
+              "f63aa9f6-d375-4633-aff6-74b35ba05992"
+            ]
+          }
+        ],
+        "measurement_capabilities": {
+          "equipment_length": {
+            "available": true,
+            "allowed_units": [
+              "mm",
+              "cm",
+              "m",
+              "in"
+            ]
+          },
+          "max_width_cm": {
+            "available": false
+          },
+          "max_depth_cm": {
+            "available": false
+          }
+        }
+      },
+      "products": [
+        {
+          "id": "5dbce431-9870-4636-8b38-e65471737b52",
+          "price": 1800
+        }
+      ],
+      "checks": {
+        "HTTP200": true,
+        "total": true,
+        "dataCount": true,
+        "exactMatchingVariantIds": true,
+        "exactMeasurementCapabilities": true
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "Q-OVERRIDE-cm",
+      "route": "collection",
+      "query": "collection_id=4c8500dd-cec6-401b-ba8d-c4f1eb94b2ca&search=Trailmark&length_value=67.31&length_unit=cm",
+      "status": 200,
+      "requestId": "c752e0f5-1a93-4b3b-b50e-35d9ec8c31a4",
+      "responseSha256": "4d9ccae75d8bbb6ff43e40322352ad36be8a1782ab2859af1e0643b62388c169",
+      "meta": {
+        "page": 1,
+        "per_page": 20,
+        "total": 1,
+        "total_pages": 1,
+        "has_next": false,
+        "has_prev": false
+      },
+      "discovery": {
+        "query": {
+          "page": 1,
+          "limit": 20,
+          "search": "Trailmark",
+          "sort": "display_order",
+          "collection_id": "4c8500dd-cec6-401b-ba8d-c4f1eb94b2ca",
+          "length_value": 67.31,
+          "length_unit": "cm"
+        },
+        "facets": [
+          {
+            "key": "activity",
+            "value": "badminton",
+            "label": "Badminton",
+            "count": 1
+          },
+          {
+            "key": "category",
+            "value": "Recreation",
+            "label": "Recreation",
+            "count": 1
+          },
+          {
+            "key": "country_of_origin",
+            "value": "india",
+            "label": "India",
+            "count": 1
+          },
+          {
+            "key": "equipment_type",
+            "value": "racket",
+            "label": "racket",
+            "count": 1
+          }
+        ],
+        "matches": [
+          {
+            "product_id": "5dbce431-9870-4636-8b38-e65471737b52",
+            "price": 1800,
+            "variant_ids": [
+              "f63aa9f6-d375-4633-aff6-74b35ba05992"
+            ]
+          }
+        ],
+        "measurement_capabilities": {
+          "equipment_length": {
+            "available": true,
+            "allowed_units": [
+              "mm",
+              "cm",
+              "m",
+              "in"
+            ]
+          },
+          "max_width_cm": {
+            "available": false
+          },
+          "max_depth_cm": {
+            "available": false
+          }
+        }
+      },
+      "products": [
+        {
+          "id": "5dbce431-9870-4636-8b38-e65471737b52",
+          "price": 1800
+        }
+      ],
+      "checks": {
+        "HTTP200": true,
+        "total": true,
+        "dataCount": true,
+        "exactMatchingVariantIds": true,
+        "exactMeasurementCapabilities": true
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "Q-OVERRIDE-in",
+      "route": "collection",
+      "query": "collection_id=4c8500dd-cec6-401b-ba8d-c4f1eb94b2ca&search=Trailmark&length_value=26.5&length_unit=in",
+      "status": 200,
+      "requestId": "1a0f263e-91c6-4007-a45b-1cb8fac3d1f8",
+      "responseSha256": "f9b304197349da6fb1f987b8e8d155180a0cb90d757263a29da5f870e77f5080",
+      "meta": {
+        "page": 1,
+        "per_page": 20,
+        "total": 1,
+        "total_pages": 1,
+        "has_next": false,
+        "has_prev": false
+      },
+      "discovery": {
+        "query": {
+          "page": 1,
+          "limit": 20,
+          "search": "Trailmark",
+          "sort": "display_order",
+          "collection_id": "4c8500dd-cec6-401b-ba8d-c4f1eb94b2ca",
+          "length_value": 26.5,
+          "length_unit": "in"
+        },
+        "facets": [
+          {
+            "key": "activity",
+            "value": "badminton",
+            "label": "Badminton",
+            "count": 1
+          },
+          {
+            "key": "category",
+            "value": "Recreation",
+            "label": "Recreation",
+            "count": 1
+          },
+          {
+            "key": "country_of_origin",
+            "value": "india",
+            "label": "India",
+            "count": 1
+          },
+          {
+            "key": "equipment_type",
+            "value": "racket",
+            "label": "racket",
+            "count": 1
+          }
+        ],
+        "matches": [
+          {
+            "product_id": "5dbce431-9870-4636-8b38-e65471737b52",
+            "price": 1800,
+            "variant_ids": [
+              "f63aa9f6-d375-4633-aff6-74b35ba05992"
+            ]
+          }
+        ],
+        "measurement_capabilities": {
+          "equipment_length": {
+            "available": true,
+            "allowed_units": [
+              "mm",
+              "cm",
+              "m",
+              "in"
+            ]
+          },
+          "max_width_cm": {
+            "available": false
+          },
+          "max_depth_cm": {
+            "available": false
+          }
+        }
+      },
+      "products": [
+        {
+          "id": "5dbce431-9870-4636-8b38-e65471737b52",
+          "price": 1800
+        }
+      ],
+      "checks": {
+        "HTTP200": true,
+        "total": true,
+        "dataCount": true,
+        "exactMatchingVariantIds": true,
+        "exactMeasurementCapabilities": true
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "Q-COMMON-mm",
+      "route": "collection",
+      "query": "collection_id=4c8500dd-cec6-401b-ba8d-c4f1eb94b2ca&search=Trailmark&length_value=675&length_unit=mm",
+      "status": 200,
+      "requestId": "ecd67766-f2c6-4728-8335-89c81838cb89",
+      "responseSha256": "d283438221a4c1e4b54dad4183b706b79c98b1c5f31370ebb3b519dc7a457650",
+      "meta": {
+        "page": 1,
+        "per_page": 20,
+        "total": 1,
+        "total_pages": 1,
+        "has_next": false,
+        "has_prev": false
+      },
+      "discovery": {
+        "query": {
+          "page": 1,
+          "limit": 20,
+          "search": "Trailmark",
+          "sort": "display_order",
+          "collection_id": "4c8500dd-cec6-401b-ba8d-c4f1eb94b2ca",
+          "length_value": 675,
+          "length_unit": "mm"
+        },
+        "facets": [
+          {
+            "key": "activity",
+            "value": "badminton",
+            "label": "Badminton",
+            "count": 1
+          },
+          {
+            "key": "category",
+            "value": "Recreation",
+            "label": "Recreation",
+            "count": 1
+          },
+          {
+            "key": "country_of_origin",
+            "value": "india",
+            "label": "India",
+            "count": 1
+          },
+          {
+            "key": "equipment_type",
+            "value": "racket",
+            "label": "racket",
+            "count": 1
+          }
+        ],
+        "matches": [
+          {
+            "product_id": "5dbce431-9870-4636-8b38-e65471737b52",
+            "price": 1800,
+            "variant_ids": [
+              "e39e309c-3aac-4a90-b6e8-31506e1c818c"
+            ]
+          }
+        ],
+        "measurement_capabilities": {
+          "equipment_length": {
+            "available": true,
+            "allowed_units": [
+              "mm",
+              "cm",
+              "m",
+              "in"
+            ]
+          },
+          "max_width_cm": {
+            "available": false
+          },
+          "max_depth_cm": {
+            "available": false
+          }
+        }
+      },
+      "products": [
+        {
+          "id": "5dbce431-9870-4636-8b38-e65471737b52",
+          "price": 1800
+        }
+      ],
+      "checks": {
+        "HTTP200": true,
+        "total": true,
+        "dataCount": true,
+        "exactMatchingVariantIds": true,
+        "exactMeasurementCapabilities": true
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "Q-COMMON-cm",
+      "route": "collection",
+      "query": "collection_id=4c8500dd-cec6-401b-ba8d-c4f1eb94b2ca&search=Trailmark&length_value=67.5&length_unit=cm",
+      "status": 200,
+      "requestId": "afffed8c-3b31-4f1d-9605-7e8e8e85d54d",
+      "responseSha256": "8513f4b815cff39d27b43708788a0fed7b1c64de0ecb4650aee64e61876a30fd",
+      "meta": {
+        "page": 1,
+        "per_page": 20,
+        "total": 1,
+        "total_pages": 1,
+        "has_next": false,
+        "has_prev": false
+      },
+      "discovery": {
+        "query": {
+          "page": 1,
+          "limit": 20,
+          "search": "Trailmark",
+          "sort": "display_order",
+          "collection_id": "4c8500dd-cec6-401b-ba8d-c4f1eb94b2ca",
+          "length_value": 67.5,
+          "length_unit": "cm"
+        },
+        "facets": [
+          {
+            "key": "activity",
+            "value": "badminton",
+            "label": "Badminton",
+            "count": 1
+          },
+          {
+            "key": "category",
+            "value": "Recreation",
+            "label": "Recreation",
+            "count": 1
+          },
+          {
+            "key": "country_of_origin",
+            "value": "india",
+            "label": "India",
+            "count": 1
+          },
+          {
+            "key": "equipment_type",
+            "value": "racket",
+            "label": "racket",
+            "count": 1
+          }
+        ],
+        "matches": [
+          {
+            "product_id": "5dbce431-9870-4636-8b38-e65471737b52",
+            "price": 1800,
+            "variant_ids": [
+              "e39e309c-3aac-4a90-b6e8-31506e1c818c"
+            ]
+          }
+        ],
+        "measurement_capabilities": {
+          "equipment_length": {
+            "available": true,
+            "allowed_units": [
+              "mm",
+              "cm",
+              "m",
+              "in"
+            ]
+          },
+          "max_width_cm": {
+            "available": false
+          },
+          "max_depth_cm": {
+            "available": false
+          }
+        }
+      },
+      "products": [
+        {
+          "id": "5dbce431-9870-4636-8b38-e65471737b52",
+          "price": 1800
+        }
+      ],
+      "checks": {
+        "HTTP200": true,
+        "total": true,
+        "dataCount": true,
+        "exactMatchingVariantIds": true,
+        "exactMeasurementCapabilities": true
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "Q-COMMON-in",
+      "route": "collection",
+      "query": "collection_id=4c8500dd-cec6-401b-ba8d-c4f1eb94b2ca&search=Trailmark&length_value=26.5748031496063&length_unit=in",
+      "status": 200,
+      "requestId": "8c8eabcc-1995-441a-bf94-7a7b674c92cc",
+      "responseSha256": "59ad5c51f994ef5f501c964e7667076b64a9b00aecd0cc828030162f2e9e372b",
+      "meta": {
+        "page": 1,
+        "per_page": 20,
+        "total": 1,
+        "total_pages": 1,
+        "has_next": false,
+        "has_prev": false
+      },
+      "discovery": {
+        "query": {
+          "page": 1,
+          "limit": 20,
+          "search": "Trailmark",
+          "sort": "display_order",
+          "collection_id": "4c8500dd-cec6-401b-ba8d-c4f1eb94b2ca",
+          "length_value": 26.5748031496063,
+          "length_unit": "in"
+        },
+        "facets": [
+          {
+            "key": "activity",
+            "value": "badminton",
+            "label": "Badminton",
+            "count": 1
+          },
+          {
+            "key": "category",
+            "value": "Recreation",
+            "label": "Recreation",
+            "count": 1
+          },
+          {
+            "key": "country_of_origin",
+            "value": "india",
+            "label": "India",
+            "count": 1
+          },
+          {
+            "key": "equipment_type",
+            "value": "racket",
+            "label": "racket",
+            "count": 1
+          }
+        ],
+        "matches": [
+          {
+            "product_id": "5dbce431-9870-4636-8b38-e65471737b52",
+            "price": 1800,
+            "variant_ids": [
+              "e39e309c-3aac-4a90-b6e8-31506e1c818c"
+            ]
+          }
+        ],
+        "measurement_capabilities": {
+          "equipment_length": {
+            "available": true,
+            "allowed_units": [
+              "mm",
+              "cm",
+              "m",
+              "in"
+            ]
+          },
+          "max_width_cm": {
+            "available": false
+          },
+          "max_depth_cm": {
+            "available": false
+          }
+        }
+      },
+      "products": [
+        {
+          "id": "5dbce431-9870-4636-8b38-e65471737b52",
+          "price": 1800
+        }
+      ],
+      "checks": {
+        "HTTP200": true,
+        "total": true,
+        "dataCount": true,
+        "exactMatchingVariantIds": true,
+        "exactMeasurementCapabilities": true
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "Q-UNIT-NOT-DROPPED",
+      "route": "collection",
+      "query": "collection_id=4c8500dd-cec6-401b-ba8d-c4f1eb94b2ca&search=Trailmark&length_value=26.5&length_unit=cm",
+      "status": 200,
+      "requestId": "c41a6ade-b2c2-4b2b-a0ec-679ad11d4d79",
+      "responseSha256": "d966c1f6a15b4f93af44f1793857a2d39943ff160738a4ad64be8a0a78d43773",
+      "meta": {
+        "page": 1,
+        "per_page": 20,
+        "total": 0,
+        "total_pages": 0,
+        "has_next": false,
+        "has_prev": false
+      },
+      "discovery": {
+        "query": {
+          "page": 1,
+          "limit": 20,
+          "search": "Trailmark",
+          "sort": "display_order",
+          "collection_id": "4c8500dd-cec6-401b-ba8d-c4f1eb94b2ca",
+          "length_value": 26.5,
+          "length_unit": "cm"
+        },
+        "facets": [],
+        "matches": [],
+        "measurement_capabilities": {
+          "equipment_length": {
+            "available": false,
+            "allowed_units": []
+          },
+          "max_width_cm": {
+            "available": false
+          },
+          "max_depth_cm": {
+            "available": false
+          }
+        }
+      },
+      "products": [],
+      "checks": {
+        "HTTP200": true,
+        "total": true,
+        "dataCount": true,
+        "exactMatchingVariantIds": true,
+        "exactMeasurementCapabilities": true
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "Q-CROSS-SIZE-LENGTH",
+      "route": "collection",
+      "query": "collection_id=57ee45c9-a7a5-478e-ab8e-941a1a034bd1&search=Trailmark&size=M&length_value=675&length_unit=mm",
+      "status": 200,
+      "requestId": "4f1b1cae-9a93-4ae0-807c-7ec18e268c40",
+      "responseSha256": "7d9c31220205560ce3023ee7d74c369de0fe04962dd4055730689dc0f09e679b",
+      "meta": {
+        "page": 1,
+        "per_page": 20,
+        "total": 0,
+        "total_pages": 0,
+        "has_next": false,
+        "has_prev": false
+      },
+      "discovery": {
+        "query": {
+          "page": 1,
+          "limit": 20,
+          "search": "Trailmark",
+          "sort": "display_order",
+          "collection_id": "57ee45c9-a7a5-478e-ab8e-941a1a034bd1",
+          "size": "M",
+          "length_value": 675,
+          "length_unit": "mm"
+        },
+        "facets": [],
+        "matches": [],
+        "measurement_capabilities": {
+          "equipment_length": {
+            "available": false,
+            "allowed_units": []
+          },
+          "max_width_cm": {
+            "available": false
+          },
+          "max_depth_cm": {
+            "available": false
+          }
+        }
+      },
+      "products": [],
+      "checks": {
+        "HTTP200": true,
+        "total": true,
+        "dataCount": true,
+        "exactMatchingVariantIds": true,
+        "exactMeasurementCapabilities": true
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "Q-CROSS-PRICE-LENGTH",
+      "route": "collection",
+      "query": "collection_id=57ee45c9-a7a5-478e-ab8e-941a1a034bd1&search=Trailmark&size=M&length_value=700&length_unit=mm&max_price=500",
+      "status": 200,
+      "requestId": "b112178f-68d6-45a3-82da-79e2eafe1801",
+      "responseSha256": "9e5e68c9fa63af68177353b0a48089ec55b31b90f79e10125c38e4f191874cdb",
+      "meta": {
+        "page": 1,
+        "per_page": 20,
+        "total": 0,
+        "total_pages": 0,
+        "has_next": false,
+        "has_prev": false
+      },
+      "discovery": {
+        "query": {
+          "page": 1,
+          "limit": 20,
+          "search": "Trailmark",
+          "sort": "display_order",
+          "collection_id": "57ee45c9-a7a5-478e-ab8e-941a1a034bd1",
+          "size": "M",
+          "max_price": 500,
+          "length_value": 700,
+          "length_unit": "mm"
+        },
+        "facets": [],
+        "matches": [],
+        "measurement_capabilities": {
+          "equipment_length": {
+            "available": false,
+            "allowed_units": []
+          },
+          "max_width_cm": {
+            "available": false
+          },
+          "max_depth_cm": {
+            "available": false
+          }
+        }
+      },
+      "products": [],
+      "checks": {
+        "HTTP200": true,
+        "total": true,
+        "dataCount": true,
+        "exactMatchingVariantIds": true,
+        "exactMeasurementCapabilities": true
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "Q-MEDIUM-POSITIVE",
+      "route": "collection",
+      "query": "collection_id=57ee45c9-a7a5-478e-ab8e-941a1a034bd1&search=Trailmark&size=M&length_value=700&length_unit=mm&min_price=1000&max_price=1000",
+      "status": 200,
+      "requestId": "76598312-b1c4-41e7-9972-5d621e8fad4f",
+      "responseSha256": "b85525a51b9f10397c698da4b83e4b6a14cc2aea5cc7d0488b190d9ffd000760",
+      "meta": {
+        "page": 1,
+        "per_page": 20,
+        "total": 1,
+        "total_pages": 1,
+        "has_next": false,
+        "has_prev": false
+      },
+      "discovery": {
+        "query": {
+          "page": 1,
+          "limit": 20,
+          "search": "Trailmark",
+          "sort": "display_order",
+          "collection_id": "57ee45c9-a7a5-478e-ab8e-941a1a034bd1",
+          "size": "M",
+          "min_price": 1000,
+          "max_price": 1000,
+          "length_value": 700,
+          "length_unit": "mm"
+        },
+        "facets": [
+          {
+            "key": "activity",
+            "value": "badminton",
+            "label": "Badminton",
+            "count": 1
+          },
+          {
+            "key": "category",
+            "value": "Recreation",
+            "label": "Recreation",
+            "count": 1
+          },
+          {
+            "key": "country_of_origin",
+            "value": "india",
+            "label": "India",
+            "count": 1
+          },
+          {
+            "key": "equipment_type",
+            "value": "racket",
+            "label": "racket",
+            "count": 1
+          },
+          {
+            "key": "size",
+            "value": "m",
+            "label": "M",
+            "count": 1
+          }
+        ],
+        "matches": [
+          {
+            "product_id": "93257d9f-f4ee-4bca-ad6d-72c1e29b37e1",
+            "price": 1000,
+            "variant_ids": [
+              "103f0ff0-1bc5-46b2-be49-9553912124aa"
+            ]
+          }
+        ],
+        "measurement_capabilities": {
+          "equipment_length": {
+            "available": true,
+            "allowed_units": [
+              "mm",
+              "cm",
+              "m",
+              "in"
+            ]
+          },
+          "max_width_cm": {
+            "available": false
+          },
+          "max_depth_cm": {
+            "available": false
+          }
+        }
+      },
+      "products": [
+        {
+          "id": "93257d9f-f4ee-4bca-ad6d-72c1e29b37e1",
+          "price": 9999
+        }
+      ],
+      "checks": {
+        "HTTP200": true,
+        "total": true,
+        "dataCount": true,
+        "exactMatchingVariantIds": true,
+        "exactMeasurementCapabilities": true,
+        "persistedBasePrice9999": true,
+        "matchingPrice": true
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "Q-SMALL-POSITIVE",
+      "route": "collection",
+      "query": "collection_id=57ee45c9-a7a5-478e-ab8e-941a1a034bd1&search=Trailmark&size=S&length_value=67.5&length_unit=cm&max_price=500",
+      "status": 200,
+      "requestId": "f651a1fe-38c7-405b-beba-c45184d0777c",
+      "responseSha256": "33fafe965a524f83133fd00e4a5cbe846d011ce2a69c7c4dfde5f8d09998f011",
+      "meta": {
+        "page": 1,
+        "per_page": 20,
+        "total": 1,
+        "total_pages": 1,
+        "has_next": false,
+        "has_prev": false
+      },
+      "discovery": {
+        "query": {
+          "page": 1,
+          "limit": 20,
+          "search": "Trailmark",
+          "sort": "display_order",
+          "collection_id": "57ee45c9-a7a5-478e-ab8e-941a1a034bd1",
+          "size": "S",
+          "max_price": 500,
+          "length_value": 67.5,
+          "length_unit": "cm"
+        },
+        "facets": [
+          {
+            "key": "activity",
+            "value": "badminton",
+            "label": "Badminton",
+            "count": 1
+          },
+          {
+            "key": "category",
+            "value": "Recreation",
+            "label": "Recreation",
+            "count": 1
+          },
+          {
+            "key": "country_of_origin",
+            "value": "india",
+            "label": "India",
+            "count": 1
+          },
+          {
+            "key": "equipment_type",
+            "value": "racket",
+            "label": "racket",
+            "count": 1
+          },
+          {
+            "key": "size",
+            "value": "s",
+            "label": "S",
+            "count": 1
+          }
+        ],
+        "matches": [
+          {
+            "product_id": "93257d9f-f4ee-4bca-ad6d-72c1e29b37e1",
+            "price": 500,
+            "variant_ids": [
+              "364b5606-eaed-4699-98d6-f5f6249ebf48"
+            ]
+          }
+        ],
+        "measurement_capabilities": {
+          "equipment_length": {
+            "available": true,
+            "allowed_units": [
+              "mm",
+              "cm",
+              "m",
+              "in"
+            ]
+          },
+          "max_width_cm": {
+            "available": false
+          },
+          "max_depth_cm": {
+            "available": false
+          }
+        }
+      },
+      "products": [
+        {
+          "id": "93257d9f-f4ee-4bca-ad6d-72c1e29b37e1",
+          "price": 9999
+        }
+      ],
+      "checks": {
+        "HTTP200": true,
+        "total": true,
+        "dataCount": true,
+        "exactMatchingVariantIds": true,
+        "exactMeasurementCapabilities": true,
+        "persistedBasePrice9999": true,
+        "matchingPrice": true
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "Q-SOLDOUT-ONLY",
+      "route": "collection",
+      "query": "collection_id=57ee45c9-a7a5-478e-ab8e-941a1a034bd1&search=Trailmark&size=L&length_value=10&length_unit=in",
+      "status": 200,
+      "requestId": "9ddf784c-9ac6-4e27-afe6-12531fa234ba",
+      "responseSha256": "ad1ec6bc5cf1303e67a5a6d453236490abe073559dd1fee78b3e0d4a9dcfb239",
+      "meta": {
+        "page": 1,
+        "per_page": 20,
+        "total": 0,
+        "total_pages": 0,
+        "has_next": false,
+        "has_prev": false
+      },
+      "discovery": {
+        "query": {
+          "page": 1,
+          "limit": 20,
+          "search": "Trailmark",
+          "sort": "display_order",
+          "collection_id": "57ee45c9-a7a5-478e-ab8e-941a1a034bd1",
+          "size": "L",
+          "length_value": 10,
+          "length_unit": "in"
+        },
+        "facets": [],
+        "matches": [],
+        "measurement_capabilities": {
+          "equipment_length": {
+            "available": false,
+            "allowed_units": []
+          },
+          "max_width_cm": {
+            "available": false
+          },
+          "max_depth_cm": {
+            "available": false
+          }
+        }
+      },
+      "products": [],
+      "checks": {
+        "HTTP200": true,
+        "total": true,
+        "dataCount": true,
+        "exactMatchingVariantIds": true,
+        "exactMeasurementCapabilities": true
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "Q-NO-LENGTH",
+      "route": "collection",
+      "query": "collection_id=d4232f27-9ed2-41e9-8b49-a77a617767de&search=Trailmark",
+      "status": 200,
+      "requestId": "acb04db7-b2f6-4fb1-9e17-00fd07ef0aa1",
+      "responseSha256": "985033fb853121db97c31ccd5a7ddc246d69458fb364f1b3ed0e04bf0c8e1be0",
+      "meta": {
+        "page": 1,
+        "per_page": 20,
+        "total": 1,
+        "total_pages": 1,
+        "has_next": false,
+        "has_prev": false
+      },
+      "discovery": {
+        "query": {
+          "page": 1,
+          "limit": 20,
+          "search": "Trailmark",
+          "sort": "display_order",
+          "collection_id": "d4232f27-9ed2-41e9-8b49-a77a617767de"
+        },
+        "facets": [
+          {
+            "key": "activity",
+            "value": "badminton",
+            "label": "Badminton",
+            "count": 1
+          },
+          {
+            "key": "category",
+            "value": "Recreation",
+            "label": "Recreation",
+            "count": 1
+          },
+          {
+            "key": "country_of_origin",
+            "value": "india",
+            "label": "India",
+            "count": 1
+          },
+          {
+            "key": "equipment_type",
+            "value": "storage",
+            "label": "storage",
+            "count": 1
+          }
+        ],
+        "matches": [
+          {
+            "product_id": "78726b89-2397-453a-916c-fbc1c9518139",
+            "price": 250,
+            "variant_ids": []
+          }
+        ],
+        "measurement_capabilities": {
+          "equipment_length": {
+            "available": false,
+            "allowed_units": []
+          },
+          "max_width_cm": {
+            "available": false
+          },
+          "max_depth_cm": {
+            "available": false
+          }
+        }
+      },
+      "products": [
+        {
+          "id": "78726b89-2397-453a-916c-fbc1c9518139",
+          "price": 250
+        }
+      ],
+      "checks": {
+        "HTTP200": true,
+        "total": true,
+        "dataCount": true,
+        "exactMatchingVariantIds": true,
+        "exactMeasurementCapabilities": true
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "Q-NO-LENGTH-SELECTED",
+      "route": "collection",
+      "query": "collection_id=d4232f27-9ed2-41e9-8b49-a77a617767de&search=Trailmark&length_value=50&length_unit=cm",
+      "status": 200,
+      "requestId": "813036de-dfe8-4215-b1b2-33736b4a1369",
+      "responseSha256": "16dbd78abd64199eb3fb9baf52d444388e53c7dad4b9a0125f34139315ff5d74",
+      "meta": {
+        "page": 1,
+        "per_page": 20,
+        "total": 0,
+        "total_pages": 0,
+        "has_next": false,
+        "has_prev": false
+      },
+      "discovery": {
+        "query": {
+          "page": 1,
+          "limit": 20,
+          "search": "Trailmark",
+          "sort": "display_order",
+          "collection_id": "d4232f27-9ed2-41e9-8b49-a77a617767de",
+          "length_value": 50,
+          "length_unit": "cm"
+        },
+        "facets": [],
+        "matches": [],
+        "measurement_capabilities": {
+          "equipment_length": {
+            "available": false,
+            "allowed_units": []
+          },
+          "max_width_cm": {
+            "available": false
+          },
+          "max_depth_cm": {
+            "available": false
+          }
+        }
+      },
+      "products": [],
+      "checks": {
+        "HTTP200": true,
+        "total": true,
+        "dataCount": true,
+        "exactMatchingVariantIds": true,
+        "exactMeasurementCapabilities": true
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "Q-EMPTY-COLLECTION",
+      "route": "collection",
+      "query": "collection_id=87a1d24f-2095-4c47-bada-379337526067&search=Trailmark",
+      "status": 200,
+      "requestId": "7fe188fe-1426-457e-868e-e09f9587e682",
+      "responseSha256": "d71df7a3e2513aea116ff769c5fb2158089f6fdba87cc8411379d157d73c8e13",
+      "meta": {
+        "page": 1,
+        "per_page": 20,
+        "total": 0,
+        "total_pages": 0,
+        "has_next": false,
+        "has_prev": false
+      },
+      "discovery": {
+        "query": {
+          "page": 1,
+          "limit": 20,
+          "search": "Trailmark",
+          "sort": "display_order",
+          "collection_id": "87a1d24f-2095-4c47-bada-379337526067"
+        },
+        "facets": [],
+        "matches": [],
+        "measurement_capabilities": {
+          "equipment_length": {
+            "available": false,
+            "allowed_units": []
+          },
+          "max_width_cm": {
+            "available": false
+          },
+          "max_depth_cm": {
+            "available": false
+          }
+        }
+      },
+      "products": [],
+      "checks": {
+        "HTTP200": true,
+        "total": true,
+        "dataCount": true,
+        "exactMatchingVariantIds": true,
+        "exactMeasurementCapabilities": true
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "Q-PAST-END",
+      "route": "collection",
+      "query": "collection_id=4c8500dd-cec6-401b-ba8d-c4f1eb94b2ca&search=Trailmark&page=9&limit=1",
+      "status": 200,
+      "requestId": "e0db7000-6e49-4068-bc9e-ee57145936b9",
+      "responseSha256": "fa70a3989c389482cdde951ddb6937fb758c7c69be2e33f2274c1562211c6c51",
+      "meta": {
+        "page": 9,
+        "per_page": 1,
+        "total": 1,
+        "total_pages": 1,
+        "has_next": false,
+        "has_prev": true
+      },
+      "discovery": {
+        "query": {
+          "page": 9,
+          "limit": 1,
+          "search": "Trailmark",
+          "sort": "display_order",
+          "collection_id": "4c8500dd-cec6-401b-ba8d-c4f1eb94b2ca"
+        },
+        "facets": [
+          {
+            "key": "activity",
+            "value": "badminton",
+            "label": "Badminton",
+            "count": 1
+          },
+          {
+            "key": "category",
+            "value": "Recreation",
+            "label": "Recreation",
+            "count": 1
+          },
+          {
+            "key": "country_of_origin",
+            "value": "india",
+            "label": "India",
+            "count": 1
+          },
+          {
+            "key": "equipment_type",
+            "value": "racket",
+            "label": "racket",
+            "count": 1
+          }
+        ],
+        "matches": [],
+        "measurement_capabilities": {
+          "equipment_length": {
+            "available": true,
+            "allowed_units": [
+              "mm",
+              "cm",
+              "m",
+              "in"
+            ]
+          },
+          "max_width_cm": {
+            "available": false
+          },
+          "max_depth_cm": {
+            "available": false
+          }
+        }
+      },
+      "products": [],
+      "checks": {
+        "HTTP200": true,
+        "total": true,
+        "dataCount": true,
+        "exactMatchingVariantIds": true,
+        "exactMeasurementCapabilities": true
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "Q-QUERY-PRESERVATION",
+      "route": "collection",
+      "query": "collection_id=57ee45c9-a7a5-478e-ab8e-941a1a034bd1&search=Trailmark&length_value=700&length_unit=mm&size=M&connector=usb-c&connector=hdmi&category=Recreation&country_of_origin=India&sort=price-desc&limit=1&page=2",
+      "status": 200,
+      "requestId": "6b0db17e-cd05-4c0d-9e5d-dc3305aa59e9",
+      "responseSha256": "319febc012169765e376930930d6cde687cbf4a95cc4db123f387ad6574505ed",
+      "meta": {
+        "page": 2,
+        "per_page": 1,
+        "total": 0,
+        "total_pages": 0,
+        "has_next": false,
+        "has_prev": true
+      },
+      "discovery": {
+        "query": {
+          "page": 2,
+          "limit": 1,
+          "search": "Trailmark",
+          "category": "Recreation",
+          "country_of_origin": "India",
+          "sort": "price-desc",
+          "collection_id": "57ee45c9-a7a5-478e-ab8e-941a1a034bd1",
+          "size": "M",
+          "connector": [
+            "usb-c",
+            "hdmi"
+          ],
+          "length_value": 700,
+          "length_unit": "mm"
+        },
+        "facets": [],
+        "matches": [],
+        "measurement_capabilities": {
+          "equipment_length": {
+            "available": false,
+            "allowed_units": []
+          },
+          "max_width_cm": {
+            "available": false
+          },
+          "max_depth_cm": {
+            "available": false
+          }
+        }
+      },
+      "products": [],
+      "checks": {
+        "HTTP200": true,
+        "total": true,
+        "dataCount": true,
+        "exactMatchingVariantIds": true,
+        "exactMeasurementCapabilities": true
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "Q-OVERRIDE-mm",
+      "route": "search",
+      "query": "collection_id=4c8500dd-cec6-401b-ba8d-c4f1eb94b2ca&search=Trailmark&length_value=673.1&length_unit=mm",
+      "status": 200,
+      "requestId": "07fe8a96-56b4-4b8f-82a1-4ed194741bf3",
+      "responseSha256": "34368a9e0b669a08018d618cc89f915cfe7fed416a697eb770988674adf31040",
+      "meta": {
+        "page": 1,
+        "per_page": 20,
+        "total": 1,
+        "total_pages": 1,
+        "has_next": false,
+        "has_prev": false
+      },
+      "discovery": {
+        "query": {
+          "page": 1,
+          "limit": 20,
+          "search": "Trailmark",
+          "sort": "display_order",
+          "collection_id": "4c8500dd-cec6-401b-ba8d-c4f1eb94b2ca",
+          "length_value": 673.1,
+          "length_unit": "mm"
+        },
+        "facets": [
+          {
+            "key": "activity",
+            "value": "badminton",
+            "label": "Badminton",
+            "count": 1
+          },
+          {
+            "key": "category",
+            "value": "Recreation",
+            "label": "Recreation",
+            "count": 1
+          },
+          {
+            "key": "country_of_origin",
+            "value": "india",
+            "label": "India",
+            "count": 1
+          },
+          {
+            "key": "equipment_type",
+            "value": "racket",
+            "label": "racket",
+            "count": 1
+          }
+        ],
+        "matches": [
+          {
+            "product_id": "5dbce431-9870-4636-8b38-e65471737b52",
+            "price": 1800,
+            "variant_ids": [
+              "f63aa9f6-d375-4633-aff6-74b35ba05992"
+            ]
+          }
+        ],
+        "measurement_capabilities": {
+          "equipment_length": {
+            "available": true,
+            "allowed_units": [
+              "mm",
+              "cm",
+              "m",
+              "in"
+            ]
+          },
+          "max_width_cm": {
+            "available": false
+          },
+          "max_depth_cm": {
+            "available": false
+          }
+        }
+      },
+      "products": [
+        {
+          "id": "5dbce431-9870-4636-8b38-e65471737b52",
+          "price": 1800
+        }
+      ],
+      "checks": {
+        "HTTP200": true,
+        "total": true,
+        "dataCount": true,
+        "exactMatchingVariantIds": true,
+        "exactMeasurementCapabilities": true
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "Q-OVERRIDE-cm",
+      "route": "search",
+      "query": "collection_id=4c8500dd-cec6-401b-ba8d-c4f1eb94b2ca&search=Trailmark&length_value=67.31&length_unit=cm",
+      "status": 200,
+      "requestId": "9e36cbc4-c91e-457e-80b3-b35c3cd0af5a",
+      "responseSha256": "4d9ccae75d8bbb6ff43e40322352ad36be8a1782ab2859af1e0643b62388c169",
+      "meta": {
+        "page": 1,
+        "per_page": 20,
+        "total": 1,
+        "total_pages": 1,
+        "has_next": false,
+        "has_prev": false
+      },
+      "discovery": {
+        "query": {
+          "page": 1,
+          "limit": 20,
+          "search": "Trailmark",
+          "sort": "display_order",
+          "collection_id": "4c8500dd-cec6-401b-ba8d-c4f1eb94b2ca",
+          "length_value": 67.31,
+          "length_unit": "cm"
+        },
+        "facets": [
+          {
+            "key": "activity",
+            "value": "badminton",
+            "label": "Badminton",
+            "count": 1
+          },
+          {
+            "key": "category",
+            "value": "Recreation",
+            "label": "Recreation",
+            "count": 1
+          },
+          {
+            "key": "country_of_origin",
+            "value": "india",
+            "label": "India",
+            "count": 1
+          },
+          {
+            "key": "equipment_type",
+            "value": "racket",
+            "label": "racket",
+            "count": 1
+          }
+        ],
+        "matches": [
+          {
+            "product_id": "5dbce431-9870-4636-8b38-e65471737b52",
+            "price": 1800,
+            "variant_ids": [
+              "f63aa9f6-d375-4633-aff6-74b35ba05992"
+            ]
+          }
+        ],
+        "measurement_capabilities": {
+          "equipment_length": {
+            "available": true,
+            "allowed_units": [
+              "mm",
+              "cm",
+              "m",
+              "in"
+            ]
+          },
+          "max_width_cm": {
+            "available": false
+          },
+          "max_depth_cm": {
+            "available": false
+          }
+        }
+      },
+      "products": [
+        {
+          "id": "5dbce431-9870-4636-8b38-e65471737b52",
+          "price": 1800
+        }
+      ],
+      "checks": {
+        "HTTP200": true,
+        "total": true,
+        "dataCount": true,
+        "exactMatchingVariantIds": true,
+        "exactMeasurementCapabilities": true
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "Q-OVERRIDE-in",
+      "route": "search",
+      "query": "collection_id=4c8500dd-cec6-401b-ba8d-c4f1eb94b2ca&search=Trailmark&length_value=26.5&length_unit=in",
+      "status": 200,
+      "requestId": "7fa71d70-71a9-4068-9b8b-b9355b91b98c",
+      "responseSha256": "f9b304197349da6fb1f987b8e8d155180a0cb90d757263a29da5f870e77f5080",
+      "meta": {
+        "page": 1,
+        "per_page": 20,
+        "total": 1,
+        "total_pages": 1,
+        "has_next": false,
+        "has_prev": false
+      },
+      "discovery": {
+        "query": {
+          "page": 1,
+          "limit": 20,
+          "search": "Trailmark",
+          "sort": "display_order",
+          "collection_id": "4c8500dd-cec6-401b-ba8d-c4f1eb94b2ca",
+          "length_value": 26.5,
+          "length_unit": "in"
+        },
+        "facets": [
+          {
+            "key": "activity",
+            "value": "badminton",
+            "label": "Badminton",
+            "count": 1
+          },
+          {
+            "key": "category",
+            "value": "Recreation",
+            "label": "Recreation",
+            "count": 1
+          },
+          {
+            "key": "country_of_origin",
+            "value": "india",
+            "label": "India",
+            "count": 1
+          },
+          {
+            "key": "equipment_type",
+            "value": "racket",
+            "label": "racket",
+            "count": 1
+          }
+        ],
+        "matches": [
+          {
+            "product_id": "5dbce431-9870-4636-8b38-e65471737b52",
+            "price": 1800,
+            "variant_ids": [
+              "f63aa9f6-d375-4633-aff6-74b35ba05992"
+            ]
+          }
+        ],
+        "measurement_capabilities": {
+          "equipment_length": {
+            "available": true,
+            "allowed_units": [
+              "mm",
+              "cm",
+              "m",
+              "in"
+            ]
+          },
+          "max_width_cm": {
+            "available": false
+          },
+          "max_depth_cm": {
+            "available": false
+          }
+        }
+      },
+      "products": [
+        {
+          "id": "5dbce431-9870-4636-8b38-e65471737b52",
+          "price": 1800
+        }
+      ],
+      "checks": {
+        "HTTP200": true,
+        "total": true,
+        "dataCount": true,
+        "exactMatchingVariantIds": true,
+        "exactMeasurementCapabilities": true
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "Q-COMMON-mm",
+      "route": "search",
+      "query": "collection_id=4c8500dd-cec6-401b-ba8d-c4f1eb94b2ca&search=Trailmark&length_value=675&length_unit=mm",
+      "status": 200,
+      "requestId": "c11b294b-9205-486d-8cb7-503692bd311e",
+      "responseSha256": "d283438221a4c1e4b54dad4183b706b79c98b1c5f31370ebb3b519dc7a457650",
+      "meta": {
+        "page": 1,
+        "per_page": 20,
+        "total": 1,
+        "total_pages": 1,
+        "has_next": false,
+        "has_prev": false
+      },
+      "discovery": {
+        "query": {
+          "page": 1,
+          "limit": 20,
+          "search": "Trailmark",
+          "sort": "display_order",
+          "collection_id": "4c8500dd-cec6-401b-ba8d-c4f1eb94b2ca",
+          "length_value": 675,
+          "length_unit": "mm"
+        },
+        "facets": [
+          {
+            "key": "activity",
+            "value": "badminton",
+            "label": "Badminton",
+            "count": 1
+          },
+          {
+            "key": "category",
+            "value": "Recreation",
+            "label": "Recreation",
+            "count": 1
+          },
+          {
+            "key": "country_of_origin",
+            "value": "india",
+            "label": "India",
+            "count": 1
+          },
+          {
+            "key": "equipment_type",
+            "value": "racket",
+            "label": "racket",
+            "count": 1
+          }
+        ],
+        "matches": [
+          {
+            "product_id": "5dbce431-9870-4636-8b38-e65471737b52",
+            "price": 1800,
+            "variant_ids": [
+              "e39e309c-3aac-4a90-b6e8-31506e1c818c"
+            ]
+          }
+        ],
+        "measurement_capabilities": {
+          "equipment_length": {
+            "available": true,
+            "allowed_units": [
+              "mm",
+              "cm",
+              "m",
+              "in"
+            ]
+          },
+          "max_width_cm": {
+            "available": false
+          },
+          "max_depth_cm": {
+            "available": false
+          }
+        }
+      },
+      "products": [
+        {
+          "id": "5dbce431-9870-4636-8b38-e65471737b52",
+          "price": 1800
+        }
+      ],
+      "checks": {
+        "HTTP200": true,
+        "total": true,
+        "dataCount": true,
+        "exactMatchingVariantIds": true,
+        "exactMeasurementCapabilities": true
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "Q-COMMON-cm",
+      "route": "search",
+      "query": "collection_id=4c8500dd-cec6-401b-ba8d-c4f1eb94b2ca&search=Trailmark&length_value=67.5&length_unit=cm",
+      "status": 200,
+      "requestId": "f43fa285-7ca5-472a-9535-8f201236aa9c",
+      "responseSha256": "8513f4b815cff39d27b43708788a0fed7b1c64de0ecb4650aee64e61876a30fd",
+      "meta": {
+        "page": 1,
+        "per_page": 20,
+        "total": 1,
+        "total_pages": 1,
+        "has_next": false,
+        "has_prev": false
+      },
+      "discovery": {
+        "query": {
+          "page": 1,
+          "limit": 20,
+          "search": "Trailmark",
+          "sort": "display_order",
+          "collection_id": "4c8500dd-cec6-401b-ba8d-c4f1eb94b2ca",
+          "length_value": 67.5,
+          "length_unit": "cm"
+        },
+        "facets": [
+          {
+            "key": "activity",
+            "value": "badminton",
+            "label": "Badminton",
+            "count": 1
+          },
+          {
+            "key": "category",
+            "value": "Recreation",
+            "label": "Recreation",
+            "count": 1
+          },
+          {
+            "key": "country_of_origin",
+            "value": "india",
+            "label": "India",
+            "count": 1
+          },
+          {
+            "key": "equipment_type",
+            "value": "racket",
+            "label": "racket",
+            "count": 1
+          }
+        ],
+        "matches": [
+          {
+            "product_id": "5dbce431-9870-4636-8b38-e65471737b52",
+            "price": 1800,
+            "variant_ids": [
+              "e39e309c-3aac-4a90-b6e8-31506e1c818c"
+            ]
+          }
+        ],
+        "measurement_capabilities": {
+          "equipment_length": {
+            "available": true,
+            "allowed_units": [
+              "mm",
+              "cm",
+              "m",
+              "in"
+            ]
+          },
+          "max_width_cm": {
+            "available": false
+          },
+          "max_depth_cm": {
+            "available": false
+          }
+        }
+      },
+      "products": [
+        {
+          "id": "5dbce431-9870-4636-8b38-e65471737b52",
+          "price": 1800
+        }
+      ],
+      "checks": {
+        "HTTP200": true,
+        "total": true,
+        "dataCount": true,
+        "exactMatchingVariantIds": true,
+        "exactMeasurementCapabilities": true
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "Q-COMMON-in",
+      "route": "search",
+      "query": "collection_id=4c8500dd-cec6-401b-ba8d-c4f1eb94b2ca&search=Trailmark&length_value=26.5748031496063&length_unit=in",
+      "status": 200,
+      "requestId": "11a50bfd-90c5-4d28-b0b8-ca4f62131373",
+      "responseSha256": "59ad5c51f994ef5f501c964e7667076b64a9b00aecd0cc828030162f2e9e372b",
+      "meta": {
+        "page": 1,
+        "per_page": 20,
+        "total": 1,
+        "total_pages": 1,
+        "has_next": false,
+        "has_prev": false
+      },
+      "discovery": {
+        "query": {
+          "page": 1,
+          "limit": 20,
+          "search": "Trailmark",
+          "sort": "display_order",
+          "collection_id": "4c8500dd-cec6-401b-ba8d-c4f1eb94b2ca",
+          "length_value": 26.5748031496063,
+          "length_unit": "in"
+        },
+        "facets": [
+          {
+            "key": "activity",
+            "value": "badminton",
+            "label": "Badminton",
+            "count": 1
+          },
+          {
+            "key": "category",
+            "value": "Recreation",
+            "label": "Recreation",
+            "count": 1
+          },
+          {
+            "key": "country_of_origin",
+            "value": "india",
+            "label": "India",
+            "count": 1
+          },
+          {
+            "key": "equipment_type",
+            "value": "racket",
+            "label": "racket",
+            "count": 1
+          }
+        ],
+        "matches": [
+          {
+            "product_id": "5dbce431-9870-4636-8b38-e65471737b52",
+            "price": 1800,
+            "variant_ids": [
+              "e39e309c-3aac-4a90-b6e8-31506e1c818c"
+            ]
+          }
+        ],
+        "measurement_capabilities": {
+          "equipment_length": {
+            "available": true,
+            "allowed_units": [
+              "mm",
+              "cm",
+              "m",
+              "in"
+            ]
+          },
+          "max_width_cm": {
+            "available": false
+          },
+          "max_depth_cm": {
+            "available": false
+          }
+        }
+      },
+      "products": [
+        {
+          "id": "5dbce431-9870-4636-8b38-e65471737b52",
+          "price": 1800
+        }
+      ],
+      "checks": {
+        "HTTP200": true,
+        "total": true,
+        "dataCount": true,
+        "exactMatchingVariantIds": true,
+        "exactMeasurementCapabilities": true
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "Q-UNIT-NOT-DROPPED",
+      "route": "search",
+      "query": "collection_id=4c8500dd-cec6-401b-ba8d-c4f1eb94b2ca&search=Trailmark&length_value=26.5&length_unit=cm",
+      "status": 200,
+      "requestId": "52c01d14-3ea9-4b55-b85a-a29c48ed15fe",
+      "responseSha256": "d966c1f6a15b4f93af44f1793857a2d39943ff160738a4ad64be8a0a78d43773",
+      "meta": {
+        "page": 1,
+        "per_page": 20,
+        "total": 0,
+        "total_pages": 0,
+        "has_next": false,
+        "has_prev": false
+      },
+      "discovery": {
+        "query": {
+          "page": 1,
+          "limit": 20,
+          "search": "Trailmark",
+          "sort": "display_order",
+          "collection_id": "4c8500dd-cec6-401b-ba8d-c4f1eb94b2ca",
+          "length_value": 26.5,
+          "length_unit": "cm"
+        },
+        "facets": [],
+        "matches": [],
+        "measurement_capabilities": {
+          "equipment_length": {
+            "available": false,
+            "allowed_units": []
+          },
+          "max_width_cm": {
+            "available": false
+          },
+          "max_depth_cm": {
+            "available": false
+          }
+        }
+      },
+      "products": [],
+      "checks": {
+        "HTTP200": true,
+        "total": true,
+        "dataCount": true,
+        "exactMatchingVariantIds": true,
+        "exactMeasurementCapabilities": true
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "Q-CROSS-SIZE-LENGTH",
+      "route": "search",
+      "query": "collection_id=57ee45c9-a7a5-478e-ab8e-941a1a034bd1&search=Trailmark&size=M&length_value=675&length_unit=mm",
+      "status": 200,
+      "requestId": "6955fc75-2e93-4f11-beb1-367f05f9f72c",
+      "responseSha256": "7d9c31220205560ce3023ee7d74c369de0fe04962dd4055730689dc0f09e679b",
+      "meta": {
+        "page": 1,
+        "per_page": 20,
+        "total": 0,
+        "total_pages": 0,
+        "has_next": false,
+        "has_prev": false
+      },
+      "discovery": {
+        "query": {
+          "page": 1,
+          "limit": 20,
+          "search": "Trailmark",
+          "sort": "display_order",
+          "collection_id": "57ee45c9-a7a5-478e-ab8e-941a1a034bd1",
+          "size": "M",
+          "length_value": 675,
+          "length_unit": "mm"
+        },
+        "facets": [],
+        "matches": [],
+        "measurement_capabilities": {
+          "equipment_length": {
+            "available": false,
+            "allowed_units": []
+          },
+          "max_width_cm": {
+            "available": false
+          },
+          "max_depth_cm": {
+            "available": false
+          }
+        }
+      },
+      "products": [],
+      "checks": {
+        "HTTP200": true,
+        "total": true,
+        "dataCount": true,
+        "exactMatchingVariantIds": true,
+        "exactMeasurementCapabilities": true
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "Q-CROSS-PRICE-LENGTH",
+      "route": "search",
+      "query": "collection_id=57ee45c9-a7a5-478e-ab8e-941a1a034bd1&search=Trailmark&size=M&length_value=700&length_unit=mm&max_price=500",
+      "status": 200,
+      "requestId": "d303306a-d24b-48ff-a7f6-f676e263d741",
+      "responseSha256": "9e5e68c9fa63af68177353b0a48089ec55b31b90f79e10125c38e4f191874cdb",
+      "meta": {
+        "page": 1,
+        "per_page": 20,
+        "total": 0,
+        "total_pages": 0,
+        "has_next": false,
+        "has_prev": false
+      },
+      "discovery": {
+        "query": {
+          "page": 1,
+          "limit": 20,
+          "search": "Trailmark",
+          "sort": "display_order",
+          "collection_id": "57ee45c9-a7a5-478e-ab8e-941a1a034bd1",
+          "size": "M",
+          "max_price": 500,
+          "length_value": 700,
+          "length_unit": "mm"
+        },
+        "facets": [],
+        "matches": [],
+        "measurement_capabilities": {
+          "equipment_length": {
+            "available": false,
+            "allowed_units": []
+          },
+          "max_width_cm": {
+            "available": false
+          },
+          "max_depth_cm": {
+            "available": false
+          }
+        }
+      },
+      "products": [],
+      "checks": {
+        "HTTP200": true,
+        "total": true,
+        "dataCount": true,
+        "exactMatchingVariantIds": true,
+        "exactMeasurementCapabilities": true
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "Q-MEDIUM-POSITIVE",
+      "route": "search",
+      "query": "collection_id=57ee45c9-a7a5-478e-ab8e-941a1a034bd1&search=Trailmark&size=M&length_value=700&length_unit=mm&min_price=1000&max_price=1000",
+      "status": 200,
+      "requestId": "6c3ed00e-d292-4f2c-a3e2-776be6db5111",
+      "responseSha256": "b85525a51b9f10397c698da4b83e4b6a14cc2aea5cc7d0488b190d9ffd000760",
+      "meta": {
+        "page": 1,
+        "per_page": 20,
+        "total": 1,
+        "total_pages": 1,
+        "has_next": false,
+        "has_prev": false
+      },
+      "discovery": {
+        "query": {
+          "page": 1,
+          "limit": 20,
+          "search": "Trailmark",
+          "sort": "display_order",
+          "collection_id": "57ee45c9-a7a5-478e-ab8e-941a1a034bd1",
+          "size": "M",
+          "min_price": 1000,
+          "max_price": 1000,
+          "length_value": 700,
+          "length_unit": "mm"
+        },
+        "facets": [
+          {
+            "key": "activity",
+            "value": "badminton",
+            "label": "Badminton",
+            "count": 1
+          },
+          {
+            "key": "category",
+            "value": "Recreation",
+            "label": "Recreation",
+            "count": 1
+          },
+          {
+            "key": "country_of_origin",
+            "value": "india",
+            "label": "India",
+            "count": 1
+          },
+          {
+            "key": "equipment_type",
+            "value": "racket",
+            "label": "racket",
+            "count": 1
+          },
+          {
+            "key": "size",
+            "value": "m",
+            "label": "M",
+            "count": 1
+          }
+        ],
+        "matches": [
+          {
+            "product_id": "93257d9f-f4ee-4bca-ad6d-72c1e29b37e1",
+            "price": 1000,
+            "variant_ids": [
+              "103f0ff0-1bc5-46b2-be49-9553912124aa"
+            ]
+          }
+        ],
+        "measurement_capabilities": {
+          "equipment_length": {
+            "available": true,
+            "allowed_units": [
+              "mm",
+              "cm",
+              "m",
+              "in"
+            ]
+          },
+          "max_width_cm": {
+            "available": false
+          },
+          "max_depth_cm": {
+            "available": false
+          }
+        }
+      },
+      "products": [
+        {
+          "id": "93257d9f-f4ee-4bca-ad6d-72c1e29b37e1",
+          "price": 9999
+        }
+      ],
+      "checks": {
+        "HTTP200": true,
+        "total": true,
+        "dataCount": true,
+        "exactMatchingVariantIds": true,
+        "exactMeasurementCapabilities": true,
+        "persistedBasePrice9999": true,
+        "matchingPrice": true
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "Q-SMALL-POSITIVE",
+      "route": "search",
+      "query": "collection_id=57ee45c9-a7a5-478e-ab8e-941a1a034bd1&search=Trailmark&size=S&length_value=67.5&length_unit=cm&max_price=500",
+      "status": 200,
+      "requestId": "3a993d0d-b45b-4ee4-af52-aaa793cfeeb4",
+      "responseSha256": "33fafe965a524f83133fd00e4a5cbe846d011ce2a69c7c4dfde5f8d09998f011",
+      "meta": {
+        "page": 1,
+        "per_page": 20,
+        "total": 1,
+        "total_pages": 1,
+        "has_next": false,
+        "has_prev": false
+      },
+      "discovery": {
+        "query": {
+          "page": 1,
+          "limit": 20,
+          "search": "Trailmark",
+          "sort": "display_order",
+          "collection_id": "57ee45c9-a7a5-478e-ab8e-941a1a034bd1",
+          "size": "S",
+          "max_price": 500,
+          "length_value": 67.5,
+          "length_unit": "cm"
+        },
+        "facets": [
+          {
+            "key": "activity",
+            "value": "badminton",
+            "label": "Badminton",
+            "count": 1
+          },
+          {
+            "key": "category",
+            "value": "Recreation",
+            "label": "Recreation",
+            "count": 1
+          },
+          {
+            "key": "country_of_origin",
+            "value": "india",
+            "label": "India",
+            "count": 1
+          },
+          {
+            "key": "equipment_type",
+            "value": "racket",
+            "label": "racket",
+            "count": 1
+          },
+          {
+            "key": "size",
+            "value": "s",
+            "label": "S",
+            "count": 1
+          }
+        ],
+        "matches": [
+          {
+            "product_id": "93257d9f-f4ee-4bca-ad6d-72c1e29b37e1",
+            "price": 500,
+            "variant_ids": [
+              "364b5606-eaed-4699-98d6-f5f6249ebf48"
+            ]
+          }
+        ],
+        "measurement_capabilities": {
+          "equipment_length": {
+            "available": true,
+            "allowed_units": [
+              "mm",
+              "cm",
+              "m",
+              "in"
+            ]
+          },
+          "max_width_cm": {
+            "available": false
+          },
+          "max_depth_cm": {
+            "available": false
+          }
+        }
+      },
+      "products": [
+        {
+          "id": "93257d9f-f4ee-4bca-ad6d-72c1e29b37e1",
+          "price": 9999
+        }
+      ],
+      "checks": {
+        "HTTP200": true,
+        "total": true,
+        "dataCount": true,
+        "exactMatchingVariantIds": true,
+        "exactMeasurementCapabilities": true,
+        "persistedBasePrice9999": true,
+        "matchingPrice": true
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "Q-SOLDOUT-ONLY",
+      "route": "search",
+      "query": "collection_id=57ee45c9-a7a5-478e-ab8e-941a1a034bd1&search=Trailmark&size=L&length_value=10&length_unit=in",
+      "status": 200,
+      "requestId": "d35fd966-df72-4b65-92b4-219d7709b0e7",
+      "responseSha256": "ad1ec6bc5cf1303e67a5a6d453236490abe073559dd1fee78b3e0d4a9dcfb239",
+      "meta": {
+        "page": 1,
+        "per_page": 20,
+        "total": 0,
+        "total_pages": 0,
+        "has_next": false,
+        "has_prev": false
+      },
+      "discovery": {
+        "query": {
+          "page": 1,
+          "limit": 20,
+          "search": "Trailmark",
+          "sort": "display_order",
+          "collection_id": "57ee45c9-a7a5-478e-ab8e-941a1a034bd1",
+          "size": "L",
+          "length_value": 10,
+          "length_unit": "in"
+        },
+        "facets": [],
+        "matches": [],
+        "measurement_capabilities": {
+          "equipment_length": {
+            "available": false,
+            "allowed_units": []
+          },
+          "max_width_cm": {
+            "available": false
+          },
+          "max_depth_cm": {
+            "available": false
+          }
+        }
+      },
+      "products": [],
+      "checks": {
+        "HTTP200": true,
+        "total": true,
+        "dataCount": true,
+        "exactMatchingVariantIds": true,
+        "exactMeasurementCapabilities": true
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "Q-NO-LENGTH",
+      "route": "search",
+      "query": "collection_id=d4232f27-9ed2-41e9-8b49-a77a617767de&search=Trailmark",
+      "status": 200,
+      "requestId": "7222a37e-2d12-41dd-94d1-2177177fea91",
+      "responseSha256": "985033fb853121db97c31ccd5a7ddc246d69458fb364f1b3ed0e04bf0c8e1be0",
+      "meta": {
+        "page": 1,
+        "per_page": 20,
+        "total": 1,
+        "total_pages": 1,
+        "has_next": false,
+        "has_prev": false
+      },
+      "discovery": {
+        "query": {
+          "page": 1,
+          "limit": 20,
+          "search": "Trailmark",
+          "sort": "display_order",
+          "collection_id": "d4232f27-9ed2-41e9-8b49-a77a617767de"
+        },
+        "facets": [
+          {
+            "key": "activity",
+            "value": "badminton",
+            "label": "Badminton",
+            "count": 1
+          },
+          {
+            "key": "category",
+            "value": "Recreation",
+            "label": "Recreation",
+            "count": 1
+          },
+          {
+            "key": "country_of_origin",
+            "value": "india",
+            "label": "India",
+            "count": 1
+          },
+          {
+            "key": "equipment_type",
+            "value": "storage",
+            "label": "storage",
+            "count": 1
+          }
+        ],
+        "matches": [
+          {
+            "product_id": "78726b89-2397-453a-916c-fbc1c9518139",
+            "price": 250,
+            "variant_ids": []
+          }
+        ],
+        "measurement_capabilities": {
+          "equipment_length": {
+            "available": false,
+            "allowed_units": []
+          },
+          "max_width_cm": {
+            "available": false
+          },
+          "max_depth_cm": {
+            "available": false
+          }
+        }
+      },
+      "products": [
+        {
+          "id": "78726b89-2397-453a-916c-fbc1c9518139",
+          "price": 250
+        }
+      ],
+      "checks": {
+        "HTTP200": true,
+        "total": true,
+        "dataCount": true,
+        "exactMatchingVariantIds": true,
+        "exactMeasurementCapabilities": true
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "Q-NO-LENGTH-SELECTED",
+      "route": "search",
+      "query": "collection_id=d4232f27-9ed2-41e9-8b49-a77a617767de&search=Trailmark&length_value=50&length_unit=cm",
+      "status": 200,
+      "requestId": "a3187ecd-e2e9-4a31-8f7f-2b733163805a",
+      "responseSha256": "16dbd78abd64199eb3fb9baf52d444388e53c7dad4b9a0125f34139315ff5d74",
+      "meta": {
+        "page": 1,
+        "per_page": 20,
+        "total": 0,
+        "total_pages": 0,
+        "has_next": false,
+        "has_prev": false
+      },
+      "discovery": {
+        "query": {
+          "page": 1,
+          "limit": 20,
+          "search": "Trailmark",
+          "sort": "display_order",
+          "collection_id": "d4232f27-9ed2-41e9-8b49-a77a617767de",
+          "length_value": 50,
+          "length_unit": "cm"
+        },
+        "facets": [],
+        "matches": [],
+        "measurement_capabilities": {
+          "equipment_length": {
+            "available": false,
+            "allowed_units": []
+          },
+          "max_width_cm": {
+            "available": false
+          },
+          "max_depth_cm": {
+            "available": false
+          }
+        }
+      },
+      "products": [],
+      "checks": {
+        "HTTP200": true,
+        "total": true,
+        "dataCount": true,
+        "exactMatchingVariantIds": true,
+        "exactMeasurementCapabilities": true
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "Q-EMPTY-COLLECTION",
+      "route": "search",
+      "query": "collection_id=87a1d24f-2095-4c47-bada-379337526067&search=Trailmark",
+      "status": 200,
+      "requestId": "72d133e8-be95-4f16-a67d-306589b7dc57",
+      "responseSha256": "d71df7a3e2513aea116ff769c5fb2158089f6fdba87cc8411379d157d73c8e13",
+      "meta": {
+        "page": 1,
+        "per_page": 20,
+        "total": 0,
+        "total_pages": 0,
+        "has_next": false,
+        "has_prev": false
+      },
+      "discovery": {
+        "query": {
+          "page": 1,
+          "limit": 20,
+          "search": "Trailmark",
+          "sort": "display_order",
+          "collection_id": "87a1d24f-2095-4c47-bada-379337526067"
+        },
+        "facets": [],
+        "matches": [],
+        "measurement_capabilities": {
+          "equipment_length": {
+            "available": false,
+            "allowed_units": []
+          },
+          "max_width_cm": {
+            "available": false
+          },
+          "max_depth_cm": {
+            "available": false
+          }
+        }
+      },
+      "products": [],
+      "checks": {
+        "HTTP200": true,
+        "total": true,
+        "dataCount": true,
+        "exactMatchingVariantIds": true,
+        "exactMeasurementCapabilities": true
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "Q-PAST-END",
+      "route": "search",
+      "query": "collection_id=4c8500dd-cec6-401b-ba8d-c4f1eb94b2ca&search=Trailmark&page=9&limit=1",
+      "status": 200,
+      "requestId": "e0387335-590f-4c8b-91d9-65bb0c0d57f0",
+      "responseSha256": "fa70a3989c389482cdde951ddb6937fb758c7c69be2e33f2274c1562211c6c51",
+      "meta": {
+        "page": 9,
+        "per_page": 1,
+        "total": 1,
+        "total_pages": 1,
+        "has_next": false,
+        "has_prev": true
+      },
+      "discovery": {
+        "query": {
+          "page": 9,
+          "limit": 1,
+          "search": "Trailmark",
+          "sort": "display_order",
+          "collection_id": "4c8500dd-cec6-401b-ba8d-c4f1eb94b2ca"
+        },
+        "facets": [
+          {
+            "key": "activity",
+            "value": "badminton",
+            "label": "Badminton",
+            "count": 1
+          },
+          {
+            "key": "category",
+            "value": "Recreation",
+            "label": "Recreation",
+            "count": 1
+          },
+          {
+            "key": "country_of_origin",
+            "value": "india",
+            "label": "India",
+            "count": 1
+          },
+          {
+            "key": "equipment_type",
+            "value": "racket",
+            "label": "racket",
+            "count": 1
+          }
+        ],
+        "matches": [],
+        "measurement_capabilities": {
+          "equipment_length": {
+            "available": true,
+            "allowed_units": [
+              "mm",
+              "cm",
+              "m",
+              "in"
+            ]
+          },
+          "max_width_cm": {
+            "available": false
+          },
+          "max_depth_cm": {
+            "available": false
+          }
+        }
+      },
+      "products": [],
+      "checks": {
+        "HTTP200": true,
+        "total": true,
+        "dataCount": true,
+        "exactMatchingVariantIds": true,
+        "exactMeasurementCapabilities": true
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "Q-QUERY-PRESERVATION",
+      "route": "search",
+      "query": "collection_id=57ee45c9-a7a5-478e-ab8e-941a1a034bd1&search=Trailmark&length_value=700&length_unit=mm&size=M&connector=usb-c&connector=hdmi&category=Recreation&country_of_origin=India&sort=price-desc&limit=1&page=2",
+      "status": 200,
+      "requestId": "ef394360-b320-4aac-b35a-5135d1a22979",
+      "responseSha256": "319febc012169765e376930930d6cde687cbf4a95cc4db123f387ad6574505ed",
+      "meta": {
+        "page": 2,
+        "per_page": 1,
+        "total": 0,
+        "total_pages": 0,
+        "has_next": false,
+        "has_prev": true
+      },
+      "discovery": {
+        "query": {
+          "page": 2,
+          "limit": 1,
+          "search": "Trailmark",
+          "category": "Recreation",
+          "country_of_origin": "India",
+          "sort": "price-desc",
+          "collection_id": "57ee45c9-a7a5-478e-ab8e-941a1a034bd1",
+          "size": "M",
+          "connector": [
+            "usb-c",
+            "hdmi"
+          ],
+          "length_value": 700,
+          "length_unit": "mm"
+        },
+        "facets": [],
+        "matches": [],
+        "measurement_capabilities": {
+          "equipment_length": {
+            "available": false,
+            "allowed_units": []
+          },
+          "max_width_cm": {
+            "available": false
+          },
+          "max_depth_cm": {
+            "available": false
+          }
+        }
+      },
+      "products": [],
+      "checks": {
+        "HTTP200": true,
+        "total": true,
+        "dataCount": true,
+        "exactMatchingVariantIds": true,
+        "exactMeasurementCapabilities": true
+      },
+      "verdict": "PASS"
+    }
+  ],
+  "privatePreview": "NOT_RUN: normal signed preview resource transport not collected here; public responses do not substitute."
+}

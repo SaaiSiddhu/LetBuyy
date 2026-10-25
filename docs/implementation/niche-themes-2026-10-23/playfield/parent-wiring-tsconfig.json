@@ -1,0 +1,16 @@
+{
+  "extends": "../../../../apps/merchant/web/tsconfig.json",
+  "compilerOptions": { "incremental": false, "rootDir": "../../../.." },
+  "include": [
+    "../../../../apps/merchant/web/next-env.d.ts",
+    "../../../../apps/merchant/web/src/app/[store]/products/new/page.tsx",
+    "../../../../apps/merchant/web/src/app/[store]/products/[productId]/page.tsx",
+    "../../../../apps/merchant/web/src/lib/product-form-state.ts",
+    "../../../../apps/merchant/web/src/lib/variant-facts-draft.ts",
+    "../../../../apps/merchant/web/src/lib/variant-facts-draft.test.ts",
+    "../../../../apps/merchant/web/src/components/products/VariantFactsEditor.tsx",
+    "../../../../apps/merchant/web/src/components/products/VariantFactsEditor.test.tsx",
+    "../../../../apps/merchant/web/src/components/products/product-conflict.test.tsx"
+  ],
+  "exclude": []
+}

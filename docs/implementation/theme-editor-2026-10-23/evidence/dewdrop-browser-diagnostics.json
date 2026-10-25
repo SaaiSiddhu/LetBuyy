@@ -1,0 +1,265 @@
+{
+  "recordedAt": "2026-10-23T15:38:34.319865+00:00",
+  "classification": "ACTUAL_CURRENT_FIXTURE_DIAGNOSTICS_NOT_FINAL_THEME_ACCEPTANCE",
+  "runId": "9cd50e893016",
+  "candidate": "/private/tmp/theme-editor-candidate-20261023-final02",
+  "controller": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+  "cases": [
+    {
+      "id": "B00",
+      "status": "PARTIAL",
+      "observations": [
+        "NormalownerUIlogin, actualAddDewdrop2.0, editor21templates, templateheading save/reload, A/Bpublish/anonymousreadback/restoreA/exacthashA/draftBpreserved/reapplyB exacthashB PASS.",
+        "Sharedannouncement save/reload FAIL; previewparentCSP FAIL; fullthemeacceptanceOPEN."
+      ]
+    },
+    {
+      "id": "M01",
+      "status": "FAIL",
+      "observations": [
+        "ActualCloudRinse normalUI Directions edit→Saveproduct rejects This change must originate from this merchant app; unsaved draft kept and controls frozen.",
+        "Independent readonly publicGET confirms unchanged originalfacts/stock12; no successfulsave/restore claimed."
+      ]
+    },
+    {
+      "id": "M02",
+      "status": "BLOCKED",
+      "observations": [
+        "Merchantauthoringroundtrip depends on observed origin guard repair; no alternate APIwrite used."
+      ]
+    },
+    {
+      "id": "M03",
+      "status": "NOT_RUN",
+      "observations": []
+    },
+    {
+      "id": "M04",
+      "status": "BLOCKED",
+      "observations": [
+        "No authenticated mutation/stale-version UI roundtrip after actual merchantorigin rejection."
+      ]
+    },
+    {
+      "id": "M05",
+      "status": "PARTIAL",
+      "observations": [
+        "All13fixturecollectioncreates+membershipreadbacks passed as SETUP ONLY; actualmerchantcollection/editorresourcesauthoring NOT_RUN."
+      ]
+    },
+    {
+      "id": "D01",
+      "status": "PASS",
+      "observations": [
+        "Actualpublic/products displays17catalogitems includingall4beauty. Cloud/DailyVeil/Tintcorrectroutinegroups; PalmWashunknown underMoreproducts withmissingimage/ingredients guidance."
+      ]
+    },
+    {
+      "id": "D02",
+      "status": "PARTIAL",
+      "observations": [
+        "Native Routine/Format/Shade controls used from supplied metadata. Actual unknown Palm Wash cohort shows only Search and Sort, no niche chooser, with honest missing-facts guidance. Malformed-response branch deferred; no interception."
+      ]
+    },
+    {
+      "id": "D03",
+      "status": "PASS",
+      "observations": [
+        "ActualColourcollectionefac19f5→colour/Liptint/PinkClayApply returns1Tint andretainscollectionID.",
+        "Actual/search?search=Fixture→samecontrols returns1Tint andpreservessearchroute/query.",
+        "Ownerreadonlysame-response witness price560 andexactPinkUUID7f840c26-0e46-4b6a-a753-1f95190e2693."
+      ]
+    },
+    {
+      "id": "D04",
+      "status": "PASS",
+      "observations": [
+        "Actual five native sort choices preserve search=Fixture, limit=1, country_of_origin=India and category=Care while resetting page to1. Next page2 and Previous page1 preserve carriers."
+      ]
+    },
+    {
+      "id": "D05",
+      "status": "PASS",
+      "observations": [
+        "Actual repeated connector=usb-c and connector=hdmi survive sort; removing usb-c retains hdmi and other carriers; removing hdmi restores4 Care results/page1."
+      ]
+    },
+    {
+      "id": "D06",
+      "status": "PASS",
+      "observations": [
+        "Actual retired format and named shade yield zero results without invented offered choices. Sort preserves both; clear format preserves shade and zero results."
+      ]
+    },
+    {
+      "id": "D07",
+      "status": "PARTIAL",
+      "observations": [
+        "Actual harmless closing-form/script search probe renders literal escaped title, empty niche search input and no executable probe script. Scoped SSR confirms hidden global filter carrier retains properly escaped query; payload is not absent from every input. This is the observed sanitizer case only.",
+        "Closing-form subcase passed; frozen matrix closing-script subcase deferred, so full D07 not credited."
+      ]
+    },
+    {
+      "id": "P01",
+      "status": "PASS",
+      "observations": [
+        "ActualRosewater520→PinkClay560/PC02/exactingredientsCI77492/common6ml, exactpackएकइकाईselected.",
+        "KeyboardEnter switchesRose→Pink; sameRGB remains distinctownerreadonlyUUIDs."
+      ]
+    },
+    {
+      "id": "P02",
+      "status": "PARTIAL",
+      "observations": [
+        "Actual Terracotta590/unavailable/disabled purchase; canonical anonymous cart POST409 INSUFFICIENT_INVENTORY. Owner before/after public stock/facts match4/4/0; owned proof site orders0/product order lines0. No pre-negative full inventory hash or cart/reservation row-count proof invented."
+      ]
+    },
+    {
+      "id": "P03",
+      "status": "PARTIAL",
+      "observations": [
+        "Actual canonical cart API omitted variant409 VARIANT_REQUIRED and unknown variant400 VARIANT_NOT_FOUND. Foreign-site cart-token test deferred; no valid foreign positive control."
+      ]
+    },
+    {
+      "id": "C01",
+      "status": "PARTIAL",
+      "observations": [
+        "Actual Pink Clay, exact Hindi pack, quantity2 Add acknowledgement; drawer and full cart show2x560=1120 and approved saved details. Normal reload retains exact visible cart. Canonical cart GET persistence proof deferred; no token extracted from hidden browser state."
+      ]
+    },
+    {
+      "id": "C02",
+      "status": "PARTIAL",
+      "observations": [
+        "Actual canonical anonymous cart commands reject client price/niche_snapshot/product_snapshot fields400 VALIDATION_ERROR. Properties shade-spoof subcase deferred."
+      ]
+    },
+    {
+      "id": "C03",
+      "status": "NOT_RUN",
+      "observations": [
+        "Deferred until primary purchase succeeds and a separate valid stale cart can be preserved before later product edit."
+      ]
+    },
+    {
+      "id": "A01",
+      "status": "PASS",
+      "observations": [
+        "Normal buyer registration, issuer consent and callback completed; account positive control and reload passed. Visible token-free session reports expected buyer ID90214344-8291-4937-be43-4a1db9753ced; emailVerified=false."
+      ]
+    },
+    {
+      "id": "H01",
+      "status": "BLOCKED",
+      "observations": [
+        "Actual normal Checkout navigation fails ERR_CERT_AUTHORITY_INVALID at https://checkout.localhost:57228 before hosted contact/delivery UI. Primary2-Pink cart preserved. No order created and no TLS bypass."
+      ]
+    },
+    {
+      "id": "H02",
+      "status": "NOT_RUN",
+      "observations": [
+        "Depends on actual original hosted UI confirm; none reached because H01 TLS blocked. No arbitrary confirm/API-order substitute."
+      ]
+    },
+    {
+      "id": "O01",
+      "status": "NOT_RUN",
+      "observations": [
+        "Depends on actual primary order, absent after H01 TLS block."
+      ]
+    },
+    {
+      "id": "O02",
+      "status": "NOT_RUN",
+      "observations": [
+        "Depends on actual primary order positive control, absent after H01 TLS block."
+      ]
+    },
+    {
+      "id": "O03",
+      "status": "NOT_RUN",
+      "observations": [
+        "Later product edit deferred until primary order and additional active stale-cart positive controls exist; normal merchant save also failed M01."
+      ]
+    },
+    {
+      "id": "O04",
+      "status": "NOT_RUN",
+      "observations": [
+        "Historical comparison depends on actual primary order and later successful edit; neither exists."
+      ]
+    },
+    {
+      "id": "O05",
+      "status": "NOT_RUN",
+      "observations": [
+        "Depends on order/history preconditions and relevant later edit; deferred."
+      ]
+    },
+    {
+      "id": "S01",
+      "status": "NOT_RUN",
+      "observations": [
+        "Hostile merchant-facts case deferred after normal merchant save failed M01. Search D07 is separate evidence."
+      ]
+    },
+    {
+      "id": "S02",
+      "status": "NOT_RUN",
+      "observations": [
+        "No deliberate owned legacy order fixture allocated; no synthetic API purchase substituted."
+      ]
+    },
+    {
+      "id": "R01",
+      "status": "IN_PROGRESS",
+      "observations": [
+        "Run9cd50e893016, original cart, failed merchant draft and all evidence retained for remaining ten-theme checks and corrected/trusted baseline. Cleanup not requested."
+      ]
+    }
+  ],
+  "uiEvidence": [
+    "dewdrop-public-A.jpg",
+    "dewdrop-colour-filter.ax.txt",
+    "dewdrop-search-filter.ax.txt",
+    "dewdrop-merchant-origin-failure.jpg",
+    "dewdrop-shared-header-preview-failure.jpg",
+    "dewdrop-merchant-origin-banner.jpg",
+    "dewdrop-search-five-sorts.json",
+    "dewdrop-search-pagination.json",
+    "dewdrop-repeated-filter-recovery.json",
+    "dewdrop-stale-filter-recovery.json",
+    "dewdrop-unsafe-search-observation.ax.txt",
+    "dewdrop-unknown-metadata-browsing.ax.txt",
+    "dewdrop-cart-reload.jpg",
+    "dewdrop-buyer-account-reload.jpg"
+  ],
+  "serverEvidence": [
+    "dewdrop-publication-A-proof.json",
+    "dewdrop-publication-B-proof.json",
+    "dewdrop-restore-A-proof.json",
+    "dewdrop-reapply-B-proof.json",
+    "dewdrop-oos-cart-negative.json",
+    "dewdrop-cart-authority-negatives.json",
+    "dewdrop-unsafe-search-server-html.json",
+    "../../niche-themes-2026-10-23/dewdrop/p02-post-negative-effects-9cd50e893016.json",
+    "../../niche-themes-2026-10-23/dewdrop/d07-scoped-ssr-sanitizer-9cd50e893016.json"
+  ],
+  "notClaimed": [
+    "all30pass",
+    "previewacceptance",
+    "sharedgroupsavedurability",
+    "normalmerchantfactsave",
+    "buyercheckout/ordercompletion"
+  ],
+  "caseCounts": {
+    "BLOCKED": 3,
+    "FAIL": 1,
+    "IN_PROGRESS": 1,
+    "NOT_RUN": 10,
+    "PARTIAL": 8,
+    "PASS": 7
+  }
+}

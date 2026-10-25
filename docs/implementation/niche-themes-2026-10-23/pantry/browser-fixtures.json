@@ -1,0 +1,178 @@
+{
+  "scope": "Actual explicit v2 factory → trusted dispatcher → actual StoreService/template resolver → actual section binder → actual mapper/compositor helpers → LiquidRenderer → canonical assembly and unchanged app storefront CSS. Isolated native navigation class only; no cart/variant/purchase hydration, public read-only conversion, Next/API/DB/order claim.",
+  "context": "Only app document margin/input-font reset, source-equivalent light layout variables and approved M1 local Inter bytes; no repair stylesheet. Hindi is a text/glyph stress fixture, not completed translation. Product/common quantities never inherited into missing variants.",
+  "liveServiceEffects": 0,
+  "files": [
+    {
+      "scene": "home",
+      "route": "/",
+      "mode": "trusted public v2 dispatcher through actual binder",
+      "products": [
+        "7b669c70-1005-4000-8000-000000000001",
+        "7b669c70-1005-4000-8000-000000000002"
+      ],
+      "bytes": 46378,
+      "sha256": "e8c57c696836e939966ca879dfcf5e81bd9edf161b5a97576c1a1a0233cbcf91"
+    },
+    {
+      "scene": "collection",
+      "route": "/products",
+      "mode": "trusted public v2 dispatcher through actual binder",
+      "products": [
+        "7b669c70-1005-4000-8000-000000000001",
+        "7b669c70-1005-4000-8000-000000000002"
+      ],
+      "bytes": 43481,
+      "sha256": "c8e8d7e4aa1aa404739ca94cd4691b7943809eeeccbdfcc1915f2d73ec82873c"
+    },
+    {
+      "scene": "pulses",
+      "route": "/collections/pulses-lentils",
+      "mode": "trusted public v2 dispatcher through actual binder",
+      "products": [
+        "7b669c70-1005-4000-8000-000000000001"
+      ],
+      "bytes": 42952,
+      "sha256": "096064b2eda8f4065314cae639d180929d24475bd8c3f48976803f24c70cb592"
+    },
+    {
+      "scene": "rice-shelf",
+      "route": "/collections/rice-grains",
+      "mode": "trusted public v2 dispatcher through actual binder",
+      "products": [
+        "7b669c70-1005-4000-8000-000000000002"
+      ],
+      "bytes": 42958,
+      "sha256": "6615a41833403648c0a021ed66041b7c9c841e9d5408a70d7d7cb60f6713f0e6"
+    },
+    {
+      "scene": "product",
+      "route": "/product/7b669c70-1005-4000-8000-000000000001",
+      "mode": "trusted public v2 dispatcher through actual binder",
+      "products": [
+        "7b669c70-1005-4000-8000-000000000001",
+        "7b669c70-1005-4000-8000-000000000002"
+      ],
+      "bytes": 48044,
+      "sha256": "8b261750205c362f40b68b2dd2adc0676b72d08d696611131e7a596548aa6de2"
+    },
+    {
+      "scene": "rice",
+      "route": "/product/7b669c70-1005-4000-8000-000000000002",
+      "mode": "trusted public v2 dispatcher through actual binder",
+      "products": [
+        "7b669c70-1005-4000-8000-000000000002",
+        "7b669c70-1005-4000-8000-000000000001"
+      ],
+      "bytes": 46245,
+      "sha256": "5a160451d74f45d6e621fcde5f36e35d841baba918fc4148289465a342e2c295"
+    },
+    {
+      "scene": "unknown-food",
+      "route": "/product/7b669c70-1005-4000-8000-000000000001",
+      "mode": "explicit synthetic stress through actual preloaded binder",
+      "products": [
+        "7b669c70-1005-4000-8000-000000000001",
+        "7b669c70-1005-4000-8000-000000000002"
+      ],
+      "bytes": 47464,
+      "sha256": "febe864c7241a1d1ef8ec01463605b3764c7f88731a6f994d0ef48fe428e688e"
+    },
+    {
+      "scene": "missing-variant",
+      "route": "/product/7b669c70-1005-4000-8000-000000000001",
+      "mode": "explicit synthetic stress through actual preloaded binder",
+      "products": [
+        "7b669c70-1005-4000-8000-000000000001",
+        "7b669c70-1005-4000-8000-000000000002"
+      ],
+      "bytes": 47882,
+      "sha256": "a753449ae42b2fd5ad6a0b095e640ce203e960a98303c6a01840e22ec353ffd8"
+    },
+    {
+      "scene": "sold-out",
+      "route": "/product/7b669c70-1005-4000-8000-000000000001",
+      "mode": "explicit synthetic stress through actual preloaded binder",
+      "products": [
+        "7b669c70-1005-4000-8000-000000000001",
+        "7b669c70-1005-4000-8000-000000000002"
+      ],
+      "bytes": 48102,
+      "sha256": "908bf297084d1394cae983b759628918fe117da8f5345e4e0d239b2377eb3513"
+    },
+    {
+      "scene": "hindi",
+      "route": "/product/7b669c70-1005-4000-8000-000000000001",
+      "mode": "explicit synthetic stress through actual preloaded binder",
+      "products": [
+        "7b669c70-1005-4000-8000-000000000001",
+        "7b669c70-1005-4000-8000-000000000002"
+      ],
+      "bytes": 49983,
+      "sha256": "21d3aeed8045bcc15dd4c8efb1c49ece478d7ddf3abfac084eeb1f6028bf4465"
+    }
+  ],
+  "sourceFiles": [
+    {
+      "file": "packages/theme-engine/src/pantry-theme.ts",
+      "sha256": "c2cf6db03b4c1dab0c73ca0278cc1572f2867e10aa32de9715eb64f947019bcd"
+    },
+    {
+      "file": "packages/theme-engine/src/pantry-styles.ts",
+      "sha256": "3a7e53583942a5188970d4f5e2901ce4e894ab3b4da55a30176073eaa03db278"
+    },
+    {
+      "file": "packages/theme-engine/src/pantry-discovery.ts",
+      "sha256": "298f8031a752216a241121b02c70bebbb44d8dc89b9a5b48d10798b5b484be20"
+    },
+    {
+      "file": "packages/theme-engine/src/theme-renderer.ts",
+      "sha256": "04591b02ec3673af603d16169e137d305ce0879d73670e5f9af7491a3ed974a3"
+    },
+    {
+      "file": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "sha256": "88e4189bf1703a938c9cabac6e2f5ba7bc78ddeeeafc2b45b780579becb08e14"
+    },
+    {
+      "file": "packages/commerce-core/src/product-fact-presentation.ts",
+      "sha256": "17f291e91a8888d943363643f2f203ec52b95d308b999865fd9df6cd91947084"
+    },
+    {
+      "file": "apps/commerce/web/src/lib/demo/pantry-demo.ts",
+      "sha256": "5ebf3c97735d5429ff779a4fd30e437cc8ce66d34ab054f07fe65b15d78e874e"
+    },
+    {
+      "file": "apps/commerce/web/src/lib/demo/catalog-demo-dispatch.ts",
+      "sha256": "da96f8ef94d79e956a433dbe0eee17726ee99e702a3226561c3f8aeb917782a5"
+    },
+    {
+      "file": "apps/commerce/web/src/lib/theme-engine/catalog-demo-data.ts",
+      "sha256": "238930ce88863c3cca60c91598d22f0cc1b842e285ac6d2e481f098195294d61"
+    },
+    {
+      "file": "apps/commerce/web/src/lib/theme-engine/data-binding-engine.ts",
+      "sha256": "8a2bb2a9c650704ba7c70c31d0795f435df126d28247bf287ee44f671a068975"
+    },
+    {
+      "file": "apps/commerce/web/src/lib/theme-engine/product-liquid-drop.ts",
+      "sha256": "431a91090afd25f2d21b3fe954d5404cef8835422e7ca4325328359e2c68913d"
+    },
+    {
+      "file": "apps/commerce/web/src/lib/theme-engine/composition-engine.tsx",
+      "sha256": "21dbb9f669aacd1c11b65e8e3ea78463b5435a58c30cf54d627d268b96edc0f5"
+    },
+    {
+      "file": "apps/commerce/web/src/lib/theme-engine/liquid-page-assembly.ts",
+      "sha256": "e87118f925cca189a94f7c934c7270175305842b210cbf5ea3bf5bec785ea765"
+    },
+    {
+      "file": "apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx",
+      "sha256": "404c6a3396a713fbf510ba72692b3b3cdc1b873832999e168470b3aa5270b428"
+    },
+    {
+      "file": "apps/commerce/web/src/app/store/[subdomain]/liquid-theme.css",
+      "sha256": "f7f31610c85bf37430fe96fe5cbde8366d3fd9b30e0e43fe7ebfa0ecf3d2f24b"
+    }
+  ],
+  "navSourceSha256": "404c6a3396a713fbf510ba72692b3b3cdc1b873832999e168470b3aa5270b428"
+}

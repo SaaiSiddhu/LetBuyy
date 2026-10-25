@@ -1,0 +1,9 @@
+{
+  "packages/theme-engine/src/template-registry.ts": "42ec70a7d5120785164b2aff6a090d127701080298b21b030203a556f0ba1542",
+  "packages/theme-engine/src/index.ts": "b8101bfdbf5f9563f7cdbb7c5de0fb0a06828f941b3880ec150ec4fed6011df8",
+  "apps/merchant/web/src/app/api/themes/[themeId]/editor/route.ts": "d8fcf4454e7d73c519377075b162a0db2020222a44cfea737e3fecf4867ff587",
+  "apps/merchant/web/src/app/api/themes/[themeId]/editor/draft/route.ts": "3d926516f64e00d1834728df763e6a4d01fbdfd7c0c36ab0762fe8d688ae643e",
+  "apps/merchant/web/src/app/api/themes/[themeId]/preview-session/route.ts": "48234c00227f181d148a5538a15cc08b04f21e37a0590c87c20ef42b2f9c7848",
+  "services/api-gateway/src/execution/theme-execution.adapter.ts": "13fb51d862f2a7ce90879fe102bcf3bf9cf9a4f351fa305a9158842b73f0beae",
+  "packages/theme-engine/src/theme-renderer.ts": "6af08570074726fb37da437b210d66f94142b71cd61f0095459ccb5eda256563"
+}

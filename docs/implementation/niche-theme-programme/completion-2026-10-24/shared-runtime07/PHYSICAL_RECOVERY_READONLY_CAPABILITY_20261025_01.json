@@ -1,0 +1,107 @@
+{
+  "container": "letbuyy-exec-54685-mvmssydy-fe81e9",
+  "image": "postgres:16-alpine",
+  "imageId": "sha256:721873c34ceb9f8d8fc265984940dc982404c105f19ad51be9fdc5970a6080ea",
+  "running": true,
+  "labels": {
+    "com.letbuyy.executable-fixture": "1",
+    "com.letbuyy.executable-fixture.owner-pid": "54685",
+    "com.letbuyy.executable-fixture.role": "postgres",
+    "com.letbuyy.executable-fixture.run-id": "49ada80bc494"
+  },
+  "mounts": [
+    {
+      "type": "volume",
+      "name": "letbuyy-exec-49ada80bc494-1-data",
+      "destination": "/var/lib/postgresql/data",
+      "readWrite": true
+    }
+  ],
+  "catalog": {
+    "walLevel": "replica",
+    "databases": [
+      {
+        "name": "letbuyy_exec_theme_completion_razorpay_browser_manual_ts",
+        "bytes": 130038807,
+        "allowConnections": true
+      },
+      {
+        "name": "letbuyy_executable",
+        "bytes": 7537167,
+        "allowConnections": true
+      },
+      {
+        "name": "letbuyy_tpl_gateway",
+        "bytes": 50453527,
+        "allowConnections": false
+      },
+      {
+        "name": "postgres",
+        "bytes": 7699479,
+        "allowConnections": true
+      },
+      {
+        "name": "template0",
+        "bytes": 7537167,
+        "allowConnections": false
+      },
+      {
+        "name": "template1",
+        "bytes": 7537167,
+        "allowConnections": true
+      }
+    ],
+    "sourceRole": {
+      "name": "postgres",
+      "super": true,
+      "replication": true
+    },
+    "walSenders": 0,
+    "archiveMode": "off",
+    "walKeepSize": "0",
+    "dataChecksums": "off",
+    "maxWalSenders": "10",
+    "serverVersion": "16.15",
+    "fullPageWrites": "on",
+    "replicationRules": [
+      {
+        "auth": "trust",
+        "type": "local",
+        "error": null,
+        "users": [
+          "all"
+        ],
+        "address": null,
+        "database": [
+          "replication"
+        ]
+      },
+      {
+        "auth": "trust",
+        "type": "host",
+        "error": null,
+        "users": [
+          "all"
+        ],
+        "address": "127.0.0.1",
+        "database": [
+          "replication"
+        ]
+      },
+      {
+        "auth": "trust",
+        "type": "host",
+        "error": null,
+        "users": [
+          "all"
+        ],
+        "address": "::1",
+        "database": [
+          "replication"
+        ]
+      }
+    ],
+    "nonDefaultTablespaces": null,
+    "activeReplicationSlots": 0
+  }
+}

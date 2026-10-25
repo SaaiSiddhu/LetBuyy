@@ -1,0 +1,37 @@
+{
+  "classification": "FIXTURE_CORRECTED_SOURCE_GREEN_AWAITING_ROOT_REPIN_FRESH_RETRY",
+  "recordedAt": "2026-10-23T16:41:23.561671+00:00",
+  "previousSuiteSha256": "f0893696d1104c7f46e382eab4eb44ea48758eceeed223e52a6f052385ce1617",
+  "suite": {
+    "path": "services/api-gateway/src/__tests__/owned-db/storefront-electronics-search.postgres.test.ts",
+    "sha256": "58d87deaf18c7582a8d13918aea1cf63289436fa1abdd4d4c6961bf7ca900da7",
+    "topLevelTests": 8
+  },
+  "failedNativeRun": {
+    "runId": "e9e26bcac125",
+    "pass": 0,
+    "hookFailed": 8,
+    "skip": 0,
+    "sourceInputsConserved": 190,
+    "proofs": 5,
+    "resourcesRemaining": [],
+    "archived": "native-runs/01"
+  },
+  "correction": "Create the S witness with valid empty metadata, then separately assert actual forbidden electronics UPDATE is rejected by product_variants_metadata_envelope with full business-hash conservation. This is a persistence-denial proof, not stored legacy override read proof.",
+  "preserved": "All eight test names and existing query/oracle/tenant/ACL/defaultAST/rollback/performance checks; unchanged SQL draft pair/provider fence.",
+  "validation": {
+    "sourceAndCanonicalPass": 6,
+    "fail": 0,
+    "skip": 0,
+    "gatewayNoEmitExit": 0
+  },
+  "artifacts": {
+    "fixture-correction.diff": "5f331861c5ed3200706163c33298ba1beecef6a453c07448eabdcabe6e3679ec",
+    "fixture-correction-source-validation.command.json": "b4d254b6f864f5f2eff2ad28c1a0bc90e8b024896090462e42f09774fbdfa18a",
+    "fixture-correction-source-validation.log": "01abcda385b1e551a446da5da3c90c073d51c782ab5f17f7767e65d7f328c81f",
+    "fixture-correction-gateway-noEmit.command.json": "e67682385ff5a05176d46d049d293a93bbaf88b4d2c436f0e99ae29e8a3abae3",
+    "fixture-correction-gateway-noEmit.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "freshRetryExecuted": false,
+  "rootRepinRequired": true
+}

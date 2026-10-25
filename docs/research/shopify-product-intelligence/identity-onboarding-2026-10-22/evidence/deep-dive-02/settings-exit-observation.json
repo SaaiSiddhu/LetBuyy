@@ -1,0 +1,25 @@
+{
+  "main": [
+    {
+      "childCount": 3,
+      "display": "flex",
+      "id": "AppFrameMain",
+      "opacity": "1",
+      "rect": {
+        "height": 770,
+        "width": 920,
+        "x": 220,
+        "y": 4
+      },
+      "tag": "MAIN",
+      "textLength": 528,
+      "visibility": "visible"
+    }
+  ],
+  "progress": [],
+  "viewport": {
+    "dpr": 2,
+    "height": 778,
+    "width": 1144
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "recordedAt": "2026-10-23T18:41:40.628616+00:00",
+  "status": "ROOT_EXISTING_CANONICAL_CONTRACT_CLARIFIED_NO_PRODUCT_SQL_CHANGE",
+  "finding": "One atomic product command can advance the opaque numeric revision more than1 through existing row triggers",
+  "authority": "Current source implementation, not a new governance rule",
+  "sourceEvidence": [
+    {
+      "path": "database/supabase/migrations/388_cart_order_fact_snapshots.sql",
+      "line": 615,
+      "claim": "Fields UPDATE"
+    },
+    {
+      "path": "database/supabase/migrations/388_cart_order_fact_snapshots.sql",
+      "line": 750,
+      "claim": "Explicitly permits several numeric increments inside one atomic transaction; return final token, never calculate next"
+    },
+    {
+      "path": "database/supabase/migrations/388_cart_order_fact_snapshots.sql",
+      "line": 752,
+      "claim": "Final variants-cache/audit UPDATE"
+    },
+    {
+      "path": "database/supabase/migrations/000_baseline.sql",
+      "line": 4381,
+      "claim": "Generic row-update version trigger increments when application did not set new token"
+    }
+  ],
+  "actualObservation": {
+    "runId": "f6074d90e894",
+    "singleCloudMetadataCommand": "9to11",
+    "normalFullFormSaves": "3to6to9",
+    "originalAssertionsPreserved": true
+  },
+  "correctOracles": [
+    "Use exact acknowledged/reloaded final revision for next CAS",
+    "Exactly1 command receipt/outbox event/audit effect per original key",
+    "Exact replay returns same result and adds0effects",
+    "Stale/wrong-key commands remain rejected with unchanged protected data",
+    "No intermediate atomic revision is treated as independently committed public mutation"
+  ],
+  "notAnOracle": "afterVersion===beforeVersion+1",
+  "rootRequestedReadonlyProof": "Original Cloud key exactly1receipt/1outbox/1audit and storedfinal11 before remainingcontrols resume",
+  "scope": "No source/schema/API mutation, no assertion hiding, no SQL replay, no relaxed idempotency/CAS/rollback gate"
+}

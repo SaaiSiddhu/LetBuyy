@@ -1,0 +1,58 @@
+{
+  "recordedAt": "2026-10-23T16:32:40.852Z",
+  "runId": "9cd50e893016",
+  "guardVerified": true,
+  "readOnly": true,
+  "hashAlgorithmNote": "SqlSha256 fields hash PostgreSQL jsonb::text UTF8 bytes; they are not the differently serialized fixture-release JSON.stringify hash.",
+  "result": {
+    "siteId": "7dfc2cb7-b06e-411c-9b2a-0b44882705be",
+    "instances": [
+      {
+        "slug": "letbuyy-aura",
+        "status": "inactive",
+        "version": "2.0.0",
+        "packageId": "683e9c05-17da-4c07-852b-0768d80f9457",
+        "instanceId": "140afd1a-506b-4204-9938-ca978b579f9b",
+        "draftRevision": 15,
+        "currentDraftId": "fb6a789c-8a8e-46f9-bd1d-395697744a85",
+        "activeReleaseId": "57b0d5eb-335e-4955-9af2-74034def3f10",
+        "catalogChecksum": null,
+        "packageVersionId": "4898a498-b428-4a9e-a2f3-578da987edf0",
+        "installedBundleVersion": "2.0.0",
+        "installedConfigSqlSha256": "a82030f4c29c5d8c43b8e534610fa6698cb2056bc677f1ff7f7633cf76177706",
+        "capturedPackageManifestSqlSha256": "d0c6e2e26452d82adb03b28f467502c2ca6ca6a2e50f7c93d7d8798ec356c2b9"
+      },
+      {
+        "slug": "letbuyy-craft",
+        "status": "active",
+        "version": "2.0.0",
+        "packageId": "fcce393b-10c4-4bde-a552-4f304a3c6f14",
+        "instanceId": "f043270c-8b2f-4a3f-a865-234956e22173",
+        "draftRevision": 9,
+        "currentDraftId": "2a6c848a-7f45-42ef-9b7b-30315b6c2647",
+        "activeReleaseId": "b5bcba43-2bcb-48cc-bba4-7b4c11bb6a03",
+        "catalogChecksum": null,
+        "packageVersionId": "eb37fa9d-73a0-4912-a77d-16e03c22b265",
+        "installedBundleVersion": "2.0.0",
+        "installedConfigSqlSha256": "b85da2d8a4a6baafd3382253b3b08ea3b4bcb6ef5fda188479c3e2acfba4fa06",
+        "capturedPackageManifestSqlSha256": "47dc29c26dc3c7fc4d02c3a44c01443941991658015356a96a9c3e3f965a5384"
+      },
+      {
+        "slug": "letbuyy-refresh",
+        "status": "inactive",
+        "version": "2.0.0",
+        "packageId": "38f4145e-6bd5-43e7-bbb2-a8be5ce0dce3",
+        "instanceId": "01d8fd5a-6e44-4f80-8a31-f4fcd3c85525",
+        "draftRevision": 9,
+        "currentDraftId": "85866c95-9fae-41c9-90d4-60ef241e8521",
+        "activeReleaseId": "263caa5a-e0a9-4e77-afe3-84f933edd031",
+        "catalogChecksum": null,
+        "packageVersionId": "dcbdb373-4e88-46e0-93b8-b544fe2425dc",
+        "installedBundleVersion": "2.0.0",
+        "installedConfigSqlSha256": "20e24ce9a60a3584b71b16f482460d81cd0dc8c4af7339744401c84e98c8cc12",
+        "capturedPackageManifestSqlSha256": "4b752db87450b34d47b2df1590346337ab15dfc4bc54b84133cb45ab986bdae7"
+      }
+    ],
+    "currentReleaseId": "b5bcba43-2bcb-48cc-bba4-7b4c11bb6a03"
+  }
+}

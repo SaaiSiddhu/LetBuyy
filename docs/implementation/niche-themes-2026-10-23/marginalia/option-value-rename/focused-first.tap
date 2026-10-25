@@ -1,0 +1,96 @@
+TAP version 13
+# Subtest: option rename opens an explicit keyboard dialog before changing the retained variant
+ok 1 - option rename opens an explicit keyboard dialog before changing the retained variant
+  ---
+  duration_ms: 391.735916
+  type: 'test'
+  ...
+# Subtest: option rename sends the same book UUIDs with edited facts, sibling metadata and post-order stock intact
+ok 2 - option rename sends the same book UUIDs with edited facts, sibling metadata and post-order stock intact
+  ---
+  duration_ms: 307.081708
+  type: 'test'
+  ...
+# Subtest: option rename validation, keyboard Save, Escape and Cancel preserve the original draft until committed
+ok 3 - option rename validation, keyboard Save, Escape and Cancel preserve the original draft until committed
+  ---
+  duration_ms: 122.162709
+  type: 'test'
+  ...
+# Subtest: option rename survives draft recovery and preserves immutable retry bytes while a newer rename stays bound to its UUID
+ok 4 - option rename survives draft recovery and preserves immutable retry bytes while a newer rename stays bound to its UUID
+  ---
+  duration_ms: 249.215416
+  type: 'test'
+  ...
+# Subtest: explicit rename preserves sparse row identities, raw facts, other axes and commercial fields
+ok 5 - explicit rename preserves sparse row identities, raw facts, other axes and commercial fields
+  ---
+  duration_ms: 1.259542
+  type: 'test'
+  ...
+# Subtest: renaming a second axis updates every affected row without borrowing UUIDs or facts
+ok 6 - renaming a second axis updates every affected row without borrowing UUIDs or facts
+  ---
+  duration_ms: 0.156792
+  type: 'test'
+  ...
+# Subtest: unchanged normalized value is a true no-op and new rows remain unbound
+ok 7 - unchanged normalized value is a true no-op and new rows remain unbound
+  ---
+  duration_ms: 0.118083
+  type: 'test'
+  ...
+# Subtest: blank, oversized, duplicate and stale selections refuse atomically
+ok 8 - blank, oversized, duplicate and stale selections refuse atomically
+  ---
+  duration_ms: 0.255417
+  type: 'test'
+  ...
+# Subtest: ambiguous axes, missing source rows, duplicate IDs and colliding tuples never merge rows
+not ok 9 - ambiguous axes, missing source rows, duplicate IDs and colliding tuples never merge rows
+  ---
+  duration_ms: 1.653917
+  type: 'test'
+  location: '/Volumes/Projects/LetBuyy/apps/merchant/web/src/lib/product-form-state.option-rename.test.ts:2:4771'
+  failureType: 'testCodeFailure'
+  error: |-
+    The input did not match the regular expression /Variant combinations are kept/. Input:
+    
+    'Error: This option value has changed. Close and review the latest values.'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual:
+  error: 'This option value has changed. Close and review the latest values.'
+  stack: |-
+    renameVariantOptionValue (/Volumes/Projects/LetBuyy/apps/merchant/web/src/lib/product-form-state.ts:157:147)
+    <anonymous> (/Volumes/Projects/LetBuyy/apps/merchant/web/src/lib/product-form-state.option-rename.test.ts:61:29)
+    getActual (node:assert:609:5)
+    Function.throws (node:assert:757:24)
+    TestContext.<anonymous> (/Volumes/Projects/LetBuyy/apps/merchant/web/src/lib/product-form-state.option-rename.test.ts:61:16)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+  operator: 'throws'
+  stack: |-
+    TestContext.<anonymous> (/Volumes/Projects/LetBuyy/apps/merchant/web/src/lib/product-form-state.option-rename.test.ts:61:16)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+1..9
+# tests 9
+# suites 0
+# pass 8
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2638.225292

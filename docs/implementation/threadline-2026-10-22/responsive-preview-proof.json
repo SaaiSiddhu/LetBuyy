@@ -1,0 +1,23 @@
+[
+  {
+    "device": "desktop",
+    "bodyWidth": 1434,
+    "documentWidth": 1434,
+    "hero": "The everyday edit, made yours.",
+    "viewport": 1434
+  },
+  {
+    "device": "tablet",
+    "bodyWidth": 814,
+    "documentWidth": 814,
+    "hero": "The everyday edit, made yours.",
+    "viewport": 814
+  },
+  {
+    "device": "mobile",
+    "bodyWidth": 384,
+    "documentWidth": 384,
+    "hero": "The everyday edit, made yours.",
+    "viewport": 384
+  }
+]

@@ -1,0 +1,13 @@
+{
+  "classification": "PARSE_ONLY_NO_IMPORT_NO_EXECUTION_NO_TYPECHECK_NO_NATIVE",
+  "files": [
+    {
+      "file": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/theme-shared-groups.postgres.test.ts.proposed",
+      "syntaxDiagnostics": []
+    },
+    {
+      "file": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/niche-theme-promotion.postgres.test.ts.proposed",
+      "syntaxDiagnostics": []
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "createdAt": "2026-10-23T08:32:06.841275+00:00",
+  "classification": "SOURCE_CONTRACT_ONLY_NOT_INSTALLED_OR_BROWSER_ACCEPTANCE",
+  "lease": "RELEASED_TO_THEMES_COORDINATOR",
+  "source": [
+    {
+      "path": "packages/theme-engine/src/trailmark-theme.ts",
+      "beforeSha256": "d19f81896346b3f2e1a288e220262cad8ed4962782b3c6713b0b394b3e572384",
+      "sha256": "ec412bcee2940769612323c2155ac807cef8d73bd1a06caa754cbb1fd11e90b5"
+    },
+    {
+      "path": "packages/theme-engine/test/trailmark.test.ts",
+      "beforeSha256": "70046a3f21b5472af2fd90ab6a37af4fbb6f768bd5362440b5f89132c2946227",
+      "sha256": "6e4c8d4dbe813ea00637c2059e3595f80ca93162337353c9ff56c316001a0477"
+    }
+  ],
+  "changedFactoryField": "Fresh templates.list-collections.sections.list-collections-grid.settings.subtitle only: remove unused inherited Core default before installation. Schema/render fields unchanged.",
+  "preserved": "Input Core and already captured Trailmark v2 packages stay unchanged; no runtime sanitizer, merchant-data stripping, shared normalizer/index/registry, schema relaxation, buyer section or asset changes.",
+  "bundleSha256": "9a4fa30b290d912f598d13dd841f3af6ff2502575cb1c83ad402318a01ba8560",
+  "checks": {
+    "actualEditorRegistryRoundtrip": {
+      "templates": 21,
+      "failed": 0,
+      "baselineIssues": [],
+      "baselineWireIssues": [],
+      "actualFunctions": "AST extraction of buildBundleTemplateConfig, normalizeSettingsSchema, normalizeEditorState, buildDraftConfig, getAllSections from their current owner sources; real engine persistence manifest, validator, document index and portable compiler; no package\u2192app/service import."
+    },
+    "positiveControlBeforeFix": {
+      "exitCode": 1,
+      "failed": 21,
+      "reason": "Inherited category-grid subtitle rejected before normalization and after JSON wire"
+    },
+    "trailmarkTests": {
+      "pass": 11,
+      "fail": 0,
+      "skip": 0
+    },
+    "themeNoEmit": {
+      "exitCode": 0,
+      "command": "node_modules/.bin/tsc --noEmit -p packages/theme-engine/tsconfig.json --tsBuildInfoFile /private/tmp/trailmark-factory.tsbuildinfo"
+    },
+    "factoryAndTestsNoEmit": {
+      "exitCode": 0,
+      "command": "node_modules/.bin/tsc --noEmit -p docs/implementation/niche-themes-2026-10-23/trailmark/factory-validation/typecheck.json"
+    }
+  }
+}

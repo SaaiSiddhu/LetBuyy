@@ -1,0 +1,34 @@
+{
+  "recordedAt": "2026-10-23T19:21:19.841390+00:00",
+  "status": "WAITING_FOR_SEPARATE_WRAPPER_OWNER_SOURCE_RELEASE_BEFORE_COMBINED_REGRESSION",
+  "allocation": "Root integration notice: Threadline solely edits exact niche-order-presentation wrapper/test; Playfield reads released source, runs final required regression snapshot and writes a new addendum. No overlapping source edits.",
+  "alreadyCompleted": "Dynamic-owner listener RED12PASS1FAIL thenGREEN13PASS; stable142PASS/typecheck0; receipt sealed unchanged.",
+  "preservedReceipts": [
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/v201-source-repair-2026-10-23/SOURCE_RELEASE.json",
+      "sha256": "222d37e7f7826ca47e7e883e311305e3ad8ab75c64a57396cc790ab6b7194217"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/variant-url-source-2026-10-24/SOURCE_RELEASE.json",
+      "sha256": "8518ac7cf4a736f3d18bf903742365db46b81cf2009a92b1f0639763c73c89cd"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/variant-url-owner-transition-2026-10-24/SOURCE_RELEASE.json",
+      "sha256": "7411084578fa7ffa556592cea8dbfd857e7c5991dfd339735367810266693ab9"
+    }
+  ],
+  "observedPinsBeforeWrapperRelease": {
+    "packages/theme-engine/src/niche-order-presentation.ts": "6d3cb80e5dc5c922328ae0f653d74492cc202b0f4714fc08314a81a60cfdfc00",
+    "packages/theme-engine/src/first-party-theme-catalog.ts": "48e8126f5681d91fb1780b521bd5d53c4bf933156ca2b97c64932d95e0800605",
+    "packages/theme-engine/src/playfield-theme-v201.ts": "f2d428503df3630bcb79141488d109e10284412a2a523fa8ad77343aa47ae132",
+    "apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx": "5f0b2659f1fcfe65d651f248a2c052dba4201bf7c5caa36907a20aa527463bdd",
+    "apps/commerce/web/src/lib/theme-engine/variant-selection-url.ts": "290b94804e758325f8262a4dd53bdc81ddbbf30b4ae1a811f7affacde5158ed1",
+    "apps/commerce/web/src/lib/theme-engine/variant-selection-url.test.ts": "1d4febedd0d6babf2cd0a3146f758adf082293a5bb8065291034bfdc8b6b477f"
+  },
+  "wrapperOwnerReleaseFound": false,
+  "broadRegressionRerunStarted": false,
+  "newBundleBuiltOrCaptured": false,
+  "activeRuntimeMutated": false,
+  "installedStatusAdvanced": false,
+  "nextAction": "On explicit wrapper-owner source release, pin released wrapper and catalog dependency epoch, rerun required source cohorts, independently record new bundle hash/order parity and preserve all prior receipts in a new SOURCE_RELEASE addendum. No runtime/browser/DB/distribution work."
+}

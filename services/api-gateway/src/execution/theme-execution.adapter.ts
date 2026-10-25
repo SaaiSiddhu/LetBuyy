@@ -1,11 +1,17 @@
 import { resolveLiquidBundleArtifact } from '../lib/theme-release-bundle';
 import type { SupabaseClient } from '@letbuyy/infrastructure/supabase-adapter';
+import type { Env } from '../index';
+import type { OwnedStoreScope } from '../lib/tenant-context';
+import { withTenantTx, bindOwnedTenantActor, publishThemeReleaseInTenantTx, readThemeUpdateTargetInTenantTx, TenantTransactionUnavailableError } from '../lib/tenant-transaction';
 import { THEME_APPLICATION_WORKFLOWS, THEME_EXECUTION_PIPELINES, defineRuntimeBridge, ThemeDraftSaveResultSchema, ThemePublishResultSchema, ThemeRollbackResultSchema, UuidSchema } from '@letbuyy/shared-types';
 import {
     asThemeRecord as asRecord,
     collectThemeTemplateValidationIssues,
+    compilePortableToLiquidBundle,
     hasRenderableThemeTemplate,
     LiquidThemePackageBundleSchema,
+    buildLiquidThemePackagePersistencePayload,
+    InstallThemeSchema,
     getThemeDefaultTemplate,
     LETBUYY_CORE_THEME_SLUG,
     LETBUYY_CORE_BUNDLE_SLUG,
@@ -16,13 +22,16 @@ import {
     REGISTERED_SECTION_SCHEMA_MIGRATIONS,
     resolveRenderableThemeTemplateConfig,
     toThemeDocumentV2,
+    ThemeEditorTemplateKeySchema,
     type LiquidThemePackageBundle,
     type StoreTemplateConfig,
     type ThemeDocument,
     type ThemeDraftSaveResult,
     type ThemePublishResult,
+    type ThemeUpdateDiff,
 } from '@letbuyy/theme-engine';
 import { AppError, ConflictError, ForbiddenError, NotFoundError, ValidationError } from '../lib/errors';
+import { foundationStructuredLog } from '../lib/foundation-observability';
 import { isMissingSchemaError } from '../lib/supabase';
 import type {
     ArchiveSiteThemeInput,
@@ -87,20 +96,6 @@ interface DraftRecord extends DbRecord {
     auto_saved_at?: string | null;
 }
 
-interface ThemeReleaseRecord extends DbRecord {
-    id: string;
-    store_id: string;
-    theme_id: string;
-    release_version: number;
-    release_config?: DbRecord | null;
-    template_snapshot?: DbRecord | null;
-    settings_snapshot?: DbRecord | null;
-    release_manifest?: DbRecord | null;
-    theme_instance_id?: string | null;
-    theme_package_version_id?: string | null;
-    published_at?: string;
-}
-
 interface ThemeInstanceRecord extends DbRecord {
     id: string;
     theme_package_id: string;
@@ -128,6 +123,17 @@ interface PublishReleaseSnapshotInput {
     makeStoreLive: boolean;
     requestId?: string | null;
     rollbackOfReleaseId?: string | null;
+}
+
+interface VersionUpdateInput {
+    scope: OwnedStoreScope; themeSlug: string; targetPackageVersionId: string; currentReleaseId: string;
+    mergedBundle: LiquidThemePackageBundle; currentReleaseConfig: DbRecord;
+    idempotencyKey: string; requestHash: string; confirmedDiffHash: string;
+    diff: ThemeUpdateDiff; requiresConfirmation: boolean;
+    publishMessage?: string | null; makeStoreLive: boolean; requestId?: string | null;
+}
+interface VersionUpdateResult extends PublishThemeReleaseResult {
+    idempotent: boolean; diff: ThemeUpdateDiff; requiresConfirmation: boolean;
 }
 
 function isMissingDeletedAtError(
@@ -197,6 +203,12 @@ function readPublishedReleaseResult(data: unknown): PublishThemeReleaseResult {
     };
 }
 
+/** postgres.js returns Date; REST returns a string. Both retry paths expose the same UTC representation. */
+function versionUpdateTimestamp(value: unknown): string | null {
+    const date = value instanceof Date ? value : typeof value === 'string' ? new Date(value) : null;
+    return date && Number.isFinite(date.getTime()) ? date.toISOString() : null;
+}
+
 async function sha256Hex(input: string): Promise<string> {
     const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(input));
     return Array.from(new Uint8Array(digest))
@@ -211,7 +223,8 @@ const DEFAULT_THEME_TEMPLATE_OPTIONS = [
     { key: 'collection', label: 'Collection page', type: 'collection' },
     { key: 'page', label: 'Content page', type: 'page' },
     { key: 'cart', label: 'Cart page', type: 'cart' },
-    { key: 'blog', label: 'Blog post', type: 'blog' },
+    { key: 'blog', label: 'Blog listing', type: 'blog' },
+    { key: 'article', label: 'Blog post', type: 'article' },
 ] as const;
 
 /**
@@ -220,11 +233,12 @@ const DEFAULT_THEME_TEMPLATE_OPTIONS = [
  */
 // Kept as one `as const` literal: supabase-js parses the select string at the type level, and a
 // widened `string` degrades the row type to GenericStringError.
-const THEME_REGISTRY_COLUMNS = 'id, slug, name, description, is_premium, letbuyy_pricing_type, letbuyy_price_inr, supported_site_types, config, default_template, section_schemas, block_schemas, settings_schema, renderer_manifest, schema_version, renderer_version' as const;
+const THEME_REGISTRY_COLUMNS = 'id, slug, name, version, description, is_premium, letbuyy_pricing_type, letbuyy_price_inr, supported_site_types, config, default_template, section_schemas, block_schemas, settings_schema, renderer_manifest, schema_version, renderer_version' as const;
 
 function normalizeThemeTemplateKey(value: unknown): string {
-    const normalized = typeof value === 'string' ? value.trim() : '';
-    return /^[a-z0-9][a-z0-9_-]{0,79}$/i.test(normalized) ? normalized : 'index';
+    const parsed = ThemeEditorTemplateKeySchema.default('index').safeParse(value ?? undefined);
+    if (!parsed.success) throw new ValidationError('Invalid theme template key.');
+    return parsed.data;
 }
 
 function labelFromTemplateKey(key: string): string {
@@ -240,8 +254,8 @@ function listThemeTemplateOptions(templateConfig: DbRecord): Array<{ key: string
     const templateRecords = asRecord(templateConfig.templates);
     const keys = new Set<string>(DEFAULT_THEME_TEMPLATE_OPTIONS.map((option) => option.key));
     for (const key of Object.keys(templateRecords)) {
-        const normalized = normalizeThemeTemplateKey(key);
-        keys.add(normalized);
+        const parsed = ThemeEditorTemplateKeySchema.safeParse(key);
+        if (parsed.success) keys.add(parsed.data);
     }
 
     return Array.from(keys).map((key) => {
@@ -271,12 +285,12 @@ export class ThemeExecutionAdapter {
 
     private schemaRegistry: SchemaRegistryExecutionAdapter;
 
-    constructor(private db: SupabaseClient, private boundSiteId?: string) {
+    constructor(private db: SupabaseClient, private boundSiteId?: string, private versionUpdateEnv?: Env) {
         this.schemaRegistry = new SchemaRegistryExecutionAdapter(db);
     }
 
-    private async validateTemplateConfig(templateConfig: DbRecord, theme: ThemeRecord): Promise<ThemeRuntimeSchema> {
-        const runtime = await this.schemaRegistry.resolveThemeRuntime(theme);
+    private async validateTemplateConfig(templateConfig: DbRecord, theme: ThemeRecord, resolvedRuntime?: ThemeRuntimeSchema): Promise<ThemeRuntimeSchema> {
+        const runtime = resolvedRuntime ?? await this.schemaRegistry.resolveThemeRuntime(theme);
         const issues = collectThemeTemplateValidationIssues({
             templateConfig,
             runtime,
@@ -804,21 +818,56 @@ export class ThemeExecutionAdapter {
         const theme = await this.getTheme(slug);
         if (theme.is_site_private && theme.owned_by_site_id !== input.store_id) throw new ForbiddenError('This theme belongs to another store.');
         if (Object.keys(input.config_overrides || {}).length) throw new ValidationError('Customize the theme in the editor after adding it.');
+        const catalogVersionResult = InstallThemeSchema.shape.expected_version.unwrap().safeParse(theme.version);
+        if (!catalogVersionResult.success) throw new AppError('The catalog version could not be confirmed. Retry loading its details.', 503, 'THEME_STATE_UNAVAILABLE');
+        const catalogVersion = catalogVersionResult.data;
+        const versionConflict = () => new AppError('This theme version changed. Refresh its details before adding it.', 409, 'THEME_VERSION_CONFLICT');
+        if (input.expected_version && input.expected_version !== catalogVersion) throw versionConflict();
         // Always initialize from the selected design. Never merge outgoing store settings.
         const templateConfig = mergeThemeIdentity(getThemeDefaultTemplate(theme), theme);
-        const runtime = await this.validateTemplateConfig(templateConfig, theme);
+        const runtime = await this.schemaRegistry.resolveThemeRuntime(theme);
+        const runtimeIdentity = this.draftRuntime(runtime, 'api');
+        if ((input.expected_package_id && input.expected_package_id.toLowerCase() !== runtime.themePackageId?.toLowerCase())
+            || (input.expected_package_version_id && input.expected_package_version_id.toLowerCase() !== runtime.themePackageVersionId?.toLowerCase())) throw versionConflict();
+        const { data: selectedVersion, error: selectedVersionError } = await this.db.from('theme_package_versions')
+            .select('id,theme_package_id,version').eq('id', runtime.themePackageVersionId!)
+            .eq('theme_package_id', runtime.themePackageId!).eq('release_status', 'published').is('deleted_at', null).maybeSingle();
+        const selected = asRecord(selectedVersion);
+        if (selectedVersionError || !UuidSchema.safeParse(selected.id).success || selected.id !== runtime.themePackageVersionId
+            || selected.theme_package_id !== runtime.themePackageId || !InstallThemeSchema.shape.expected_version.unwrap().safeParse(selected.version).success) {
+            throw new AppError('The selected theme runtime could not be confirmed. Retry loading its details.', 503, 'THEME_STATE_UNAVAILABLE');
+        }
+        if (selected.version !== catalogVersion || (input.expected_version && selected.version !== input.expected_version)) throw versionConflict();
+        const selectedBundle = LiquidThemePackageBundleSchema.safeParse(templateConfig.liquidBundle);
+        if (selectedBundle.success && selectedBundle.data.package.version !== selected.version) throw versionConflict();
+        await this.validateTemplateConfig(templateConfig, theme, runtime);
         const { resolveStoreThemeLimit } = await import('../lib/theme-library-limits');
         const { limit } = await resolveStoreThemeLimit(this.db, input.store_id);
         const { data, error } = await this.db.rpc('install_owned_theme_v1', {
             p_actor: userId, p_site: input.store_id, p_slug: slug,
-            p_config: templateConfig, p_runtime: this.draftRuntime(runtime, 'api'),
+            p_config: templateConfig, p_runtime: {
+                ...runtimeIdentity, catalog_version: catalogVersion, selected_version: selected.version,
+                ...(input.expected_version ? { expected_version: input.expected_version } : {}),
+                ...(input.expected_package_id ? { expected_package_id: input.expected_package_id } : {}),
+                ...(input.expected_package_version_id ? { expected_package_version_id: input.expected_package_version_id } : {}),
+            },
             p_bound_site: this.boundSiteId || null, p_limit: limit, p_request: requestId || null,
         });
         if (error?.code === '42501') throw new ForbiddenError('This theme is not available for this store.');
+        if (error?.code === 'PT409' && error.message === 'THEME_VERSION_CONFLICT') throw versionConflict();
+        if (error?.code === 'PT409' && error.message === 'THEME_INSTANCE_VERSION_CONFLICT') {
+            throw new AppError('Your library has a different version of this theme. Review its update in the library before continuing.', 409, 'THEME_INSTANCE_VERSION_CONFLICT');
+        }
         if (error?.code === 'PT409') throw new AppError('Your theme library is full. Archive a theme or upgrade your plan.', 409, 'THEME_LIMIT_REACHED');
         if (error?.code === 'PT400') throw new ValidationError('Purchase this theme before adding it.');
         const result = asRecord(data);
-        if (error || !result.theme_instance_id) throw new AppError('Adding the theme was not confirmed. Retry adding it.', 503, 'THEME_INSTALL_UNCONFIRMED');
+        const installedTheme = asRecord(result.theme);
+        if (error || !UuidSchema.safeParse(result.theme_instance_id).success
+            || typeof result.already_installed !== 'boolean'
+            || result.theme_package_id !== runtime.themePackageId || result.theme_package_version_id !== runtime.themePackageVersionId
+            || result.installed_version !== selected.version || installedTheme.slug !== slug || installedTheme.version !== result.installed_version) {
+            throw new AppError('Adding the selected theme version was not confirmed. Retry adding it.', 503, 'THEME_INSTALL_UNCONFIRMED');
+        }
         return result;
     }
 
@@ -1353,7 +1402,15 @@ export class ThemeExecutionAdapter {
     }
 
     private privateThemeDefinition(source: ThemeRecord, config: DbRecord): DbRecord {
+        const sourceVersion = InstallThemeSchema.shape.expected_version.unwrap().safeParse(source.version);
+        const bundle = LiquidThemePackageBundleSchema.safeParse(config.liquidBundle);
+        const version = sourceVersion.success ? sourceVersion.data : source.version == null && bundle.success ? bundle.data.package.version : null;
+        if (!version || !InstallThemeSchema.shape.expected_version.unwrap().safeParse(version).success
+            || (config.liquidBundle !== undefined && (!bundle.success || bundle.data.package.version !== version))) {
+            throw new AppError('The source theme package version could not be confirmed. Reload its details before copying it.', 503, 'THEME_STATE_UNAVAILABLE');
+        }
         return {
+            version,
             catalog_visible: false,
             site_type: source.site_type || 'store',
             config: source.config || {},
@@ -1366,6 +1423,32 @@ export class ThemeExecutionAdapter {
             renderer_version: source.renderer_version || '1.0.0',
             thumbnail_url: source.thumbnail_url || null,
         };
+    }
+
+    private async privateBlankThemeDefinition(source: ThemeRecord, config: DbRecord, slug: string): Promise<DbRecord> {
+        const runtime = await this.schemaRegistry.resolveThemeRuntime(source);
+        if (runtime.source !== 'database' || !runtime.themePackageId || !runtime.themePackageVersionId) {
+            throw new AppError('The source theme contract could not be confirmed. Retry creating the blank theme.', 503, 'THEME_STATE_UNAVAILABLE');
+        }
+        await this.validateTemplateConfig(config, { ...source, slug }, runtime);
+        // A blank starts from the immutable Core contract, including its legacy
+        // slots. Persist that complete contract before the new private package
+        // is captured; private identities must never infer public compatibility.
+        return this.privateThemeDefinition({
+            ...source,
+            config: { ...asRecord(source.config),
+                template_schema: structuredClone(runtime.templateSchema),
+                layout_schema: structuredClone(runtime.layoutSchema),
+                asset_manifest: structuredClone(runtime.assetManifest),
+                performance_budget: structuredClone(runtime.performanceBudget),
+            },
+            section_schemas: structuredClone(runtime.sectionSchemas),
+            block_schemas: structuredClone(runtime.blockSchemas),
+            settings_schema: asRecord(structuredClone(runtime.settingsSchema)),
+            renderer_manifest: structuredClone(runtime.rendererManifest),
+            schema_version: runtime.schemaManifestVersion,
+            renderer_version: runtime.rendererVersion,
+        }, config);
     }
 
     async createSiteTheme(
@@ -1388,6 +1471,7 @@ export class ThemeExecutionAdapter {
             const bundle = asRecord(blankConfig.liquidBundle);
             blankConfig.liquidBundle = { ...bundle, templates: { ...asRecord(bundle.templates), index: { sections: {}, order: [] } } };
         }
+        const blankDefinition = await this.privateBlankThemeDefinition(core, blankConfig, newSlug);
 
         // A private package must remain editable. Discovery excludes is_site_private
         // and owned_by_site_id rather than disabling its runtime.
@@ -1397,7 +1481,7 @@ export class ThemeExecutionAdapter {
             .insert({
                 slug: newSlug,
                 name: input.name,
-                ...this.privateThemeDefinition(core, blankConfig),
+                ...blankDefinition,
                 is_active: true,
                 is_site_private: true,
                 owned_by_site_id: storeId,
@@ -1812,27 +1896,21 @@ export class ThemeExecutionAdapter {
      * never match. Callers must verify ownership BEFORE calling this method.
      */
     async loadCurrentReleaseBundle(
-        storeId: string,
+        scope: OwnedStoreScope,
         themeSlug: string,
     ): Promise<{
         currentDocument: ThemeDocument;
         currentReleaseConfig: DbRecord;
         currentReleaseId: string;
     }> {
-        const { data: release, error } = await this.db
-            .from('theme_releases')
-            .select('id, release_config')
-            .eq('store_id', storeId)
-            .eq('theme_id', themeSlug)
-            .eq('is_current', true)
-            .is('deleted_at', null)
-            .maybeSingle();
+        const release = await this.withVersionUpdateTenant(scope, async tx => {
+            const rows = await tx.unsafe(`SELECT id,release_config FROM public.theme_releases
+                WHERE store_id=$1::uuid AND theme_id=$2 AND is_current AND deleted_at IS NULL`, [scope.siteId,themeSlug]);
+            if(rows.length!==1)throw new NotFoundError('No current theme release found for this store');
+            return rows[0];
+        });
 
-        if (error || !release) {
-            throw new NotFoundError('No current theme release found for this store');
-        }
-
-        const releaseRecord = release as ThemeReleaseRecord;
+        const releaseRecord = {id:UuidSchema.parse(release.id),release_config:asRecord(release.release_config)};
         const releaseConfig = asRecord(releaseRecord.release_config ?? {});
         const bundle = resolveLiquidBundleArtifact(releaseConfig);
 
@@ -1842,7 +1920,11 @@ export class ThemeExecutionAdapter {
 
         // parseLiquidThemePackageBundle validates schema + G4 gate
         const parsedBundle = parseLiquidThemePackageBundle(bundle);
-        const currentDocument = toThemeDocumentV2(parsedBundle);
+        // Published editor overrides live beside the immutable captured code.
+        // Merge from the same effective content the storefront renders, preserving
+        // explicit clears and block order without reading the unpublished draft.
+        const { bundle: publishedBundle } = compilePortableToLiquidBundle(releaseConfig, { baseBundle: parsedBundle });
+        const currentDocument = toThemeDocumentV2(publishedBundle);
 
         return {
             currentDocument,
@@ -1853,117 +1935,164 @@ export class ThemeExecutionAdapter {
 
     /**
      * Load a specific theme_package_versions row and return its Liquid bundle.
-     * Throws ValidationError if the row is missing or the bundle is invalid / has
-     * an unsupported schema_version (G4 gate inside parseLiquidThemePackageBundle).
-     *
-     * NOT tenant-scoped at this layer (package versions are global catalog rows).
-     * Callers must verify ownership of the store before calling this method.
+     * Uses the resolved tenant's actual catalog policies and refuses missing,
+     * unavailable or invalid bundles (including the G4 schema gate).
      */
-    async loadTargetPackageVersionBundle(packageVersionId: string): Promise<LiquidThemePackageBundle> {
-        const { data: pkgVersion, error } = await this.db
-            .from('theme_package_versions')
-            .select('id, package_manifest')
-            .eq('id', packageVersionId)
-            .maybeSingle();
+    private validateUpdateTarget(packageVersionId: string, version: DbRecord, pkg: DbRecord, catalog: DbRecord,
+        scope: { themeSlug: string; storeId: string; userId: string }): LiquidThemePackageBundle {
+        if (version.id !== packageVersionId || version.deleted_at != null) throw new NotFoundError('Theme package version not found');
+        if (version.release_status !== 'published' || pkg.status !== 'active' || pkg.deleted_at != null)
+            throw new ValidationError('The target theme package version is unavailable');
+        if (pkg.id !== version.theme_package_id || pkg.slug !== scope.themeSlug || catalog.id !== pkg.legacy_theme_id
+            || catalog.slug !== scope.themeSlug || catalog.is_active !== true)
+            throw new ValidationError('The target version does not belong to this available theme');
+        if ((this.boundSiteId && this.boundSiteId !== scope.storeId)
+            || (catalog.is_site_private === true && catalog.owned_by_site_id !== scope.storeId)
+            || (catalog.owned_by_site_id != null && catalog.owned_by_site_id !== scope.storeId))
+            throw new ForbiddenError('This theme is not available to this store');
+        let bundle: LiquidThemePackageBundle;
+        try { bundle = parseLiquidThemePackageBundle(asRecord(version.package_manifest).liquidBundle); }
+        catch { throw new ValidationError('Target package version has an invalid or unsupported Liquid bundle'); }
+        if (bundle.package.slug !== scope.themeSlug || bundle.package.version !== version.version
+            || bundle.package.version_number !== version.version_number || bundle.schema_version !== version.schema_version
+            || bundle.renderer.renderer_version !== version.renderer_version)
+            throw new ValidationError('Target package version identity does not match its immutable bundle');
+        return bundle;
+    }
 
-        if (error || !pkgVersion) {
-            throw new NotFoundError('Theme package version not found');
-        }
-
-        const manifest = asRecord((pkgVersion as DbRecord).package_manifest ?? {});
-        const rawBundle = manifest.liquidBundle;
-
-        if (!rawBundle) {
-            throw new ValidationError('Package version does not contain a Liquid bundle');
-        }
-
-        try {
-            return parseLiquidThemePackageBundle(rawBundle);
-        } catch (err) {
-            // Convert ZodError / UnsupportedLiquidBundleSchemaVersionError → ValidationError
-            // so the route can surface it as a 422 rather than an unhandled 500.
-            throw new ValidationError(
-                `Target package version has an invalid or unsupported Liquid bundle: ${(err as Error).message}`,
-            );
-        }
+    async loadTargetPackageVersionBundle(packageVersionId:string, scope:OwnedStoreScope, themeSlug:string):Promise<LiquidThemePackageBundle>{
+        return this.withVersionUpdateTenant(scope,async tx=>{
+            const rows=await readThemeUpdateTargetInTenantTx(tx,scope,packageVersionId);
+            if(rows.length!==1)throw new NotFoundError('Theme package version not found');
+            return this.validateUpdateTarget(packageVersionId,asRecord(rows[0].version),asRecord(rows[0].package),asRecord(rows[0].catalog),
+                {themeSlug,storeId:scope.siteId,userId:scope.customUser.id});
+        });
     }
 
     /**
      * Publish a new theme release with a merged Liquid bundle produced by
-     * planThemeSafeUpdate / fromThemeDocumentV2. Includes idempotency pre-check
-     * (returns existing release if the same idempotency_key was already used for
-     * this store) and post-enrich (persists the key on the new release row).
+     * planThemeSafeUpdate / fromThemeDocumentV2. Exact intent receipts survive
+     * response loss; the instance pin, existing publisher and receipt share one transaction.
      *
-     * TENANCY: store_id is the FIRST filter in every DB query — cross-tenant
-     * collision is structurally impossible.
+     * TENANCY: canonical resolved scope, app_tenant RLS and an owner lock protect
+     * the update; explicit store predicates are an additional boundary.
      * NO-DATA-LOSS LAW: the merged bundle was validated by parseThemeDocument inside
      * planThemeSafeUpdate before being passed here; conflicts are surfaced to the caller
      * via diff.conflicts before this method is invoked.
      */
-    async publishVersionUpdateRelease(input: {
-        storeId: string;
-        themeSlug: string;
-        mergedBundle: LiquidThemePackageBundle;
-        currentReleaseConfig: DbRecord;
-        userId: string;
-        idempotencyKey: string;
-        publishMessage?: string | null;
-        makeStoreLive: boolean;
-        requestId?: string | null;
-    }): Promise<{ release_id: string; release_version: number; published_at: string; idempotent: boolean }> {
-        // Idempotency pre-check — store_id is always the FIRST filter (cross-tenant proof)
-        const { data: existingRelease } = await this.db
-            .from('theme_releases')
-            .select('id, release_version, published_at')
-            .eq('store_id', input.storeId)
-            .eq('idempotency_key', input.idempotencyKey)
-            .is('deleted_at', null)
-            .maybeSingle();
+    private versionUpdateReceipt(row: DbRecord | null, requestHash: string): VersionUpdateResult | null {
+        if (!row) return null;
+        const receipt = asRecord(asRecord(row.metadata).theme_version_update);
+        if (receipt.request_hash !== requestHash) throw new ConflictError('This update key belongs to a different confirmed request');
+        const diff = asRecord(receipt.diff);
+        const publishedAt = versionUpdateTimestamp(row.published_at);
+        if (!Array.isArray(diff.sections) || !Array.isArray(diff.conflicts) || typeof receipt.requires_confirmation !== 'boolean'
+            || !publishedAt || !UuidSchema.safeParse(row.id).success
+            || !Number.isSafeInteger(Number(row.release_version)) || Number(row.release_version) < 1)
+            throw new AppError('The original theme update receipt is unavailable.', 503, 'THEME_UPDATE_UNAVAILABLE');
+        return { release_id: String(row.id), release_version: Number(row.release_version), published_at: publishedAt,
+            idempotent: true, diff: diff as unknown as ThemeUpdateDiff, requiresConfirmation: receipt.requires_confirmation };
+    }
 
-        if (existingRelease) {
-            const existing = existingRelease as ThemeReleaseRecord;
-            return {
-                release_id: existing.id,
-                release_version: existing.release_version,
-                published_at: existing.published_at || new Date().toISOString(),
-                idempotent: true,
-            };
-        }
+    /** Authorization and target availability must precede replay. The transaction repeats it under its site lock. */
+    async findVersionUpdateReplay(scope:OwnedStoreScope,themeSlug:string,idempotencyKey:string,requestHash:string):Promise<VersionUpdateResult|null>{
+        return this.withVersionUpdateTenant(scope,async tx=>{
+            const rows=await tx.unsafe(`SELECT id,release_version,published_at,metadata FROM public.theme_releases
+                WHERE store_id=$1::uuid AND theme_id=$2 AND idempotency_key=$3 AND deleted_at IS NULL`,[scope.siteId,themeSlug,idempotencyKey]);
+            if(rows.length>1)throw new Error('Ambiguous theme update receipt');
+            return this.versionUpdateReceipt(rows.length?asRecord(rows[0]):null,requestHash);
+        });
+    }
 
-        // Build release config: inherit all current release fields, replace liquidBundle
-        // with the merged bundle produced by planThemeSafeUpdate → fromThemeDocumentV2.
+    private async withVersionUpdateTenant<T>(scope:OwnedStoreScope,work:import('../lib/tenant-transaction').TenantTxCallback<T>,write=false):Promise<T>{
+        try{
+            if(!this.versionUpdateEnv)throw new TenantTransactionUnavailableError();
+            if(this.boundSiteId&&this.boundSiteId!==scope.siteId)throw new ForbiddenError('Not authorized for this store');
+            return await withTenantTx(this.versionUpdateEnv,scope.tenant,async tx=>{
+                await bindOwnedTenantActor(tx,scope);
+                const owners=write?await tx.unsafe(`SELECT id FROM public.sites WHERE id=$1::uuid AND deleted_at IS NULL
+                    AND(custom_user_id=$2::uuid OR user_id=$2::uuid) FOR UPDATE`,[scope.siteId,scope.customUser.id])
+                    :await tx.unsafe(`SELECT id FROM public.sites WHERE id=$1::uuid AND deleted_at IS NULL
+                    AND(custom_user_id=$2::uuid OR user_id=$2::uuid) FOR SHARE`,[scope.siteId,scope.customUser.id]);
+                if(owners.length!==1)throw new ForbiddenError('Your access to this store changed');
+                return work(tx);
+            });
+        }catch(error){return this.versionUpdateFailure(error,scope.tenant.requestId);}
+    }
+
+    private versionUpdateFailure(error:unknown,traceId:string):never{
+        if(error instanceof AppError)throw error;
+        if(error instanceof TenantTransactionUnavailableError)throw new AppError('Theme updates require the transactional database connection. Retry this request.',503,'THEME_UPDATE_UNAVAILABLE');
+        const code=(error as {code?:unknown})?.code;
+        if(typeof code==='string'&&['40P01','40001','23505'].includes(code))throw new ConflictError('The theme update changed concurrently; review a fresh preview');
+        const requestId=/^[a-zA-Z0-9][a-zA-Z0-9._:-]{0,127}$/.test(traceId)?traceId:null;
+        const sqlstate=typeof code==='string'&&/^[0-9A-Z]{5}$/.test(code)?code:null;
+        console.error(JSON.stringify(foundationStructuredLog({level:'error',operation:'theme.version_update',...(requestId?{request_id:requestId}:{}),
+            classification:'unexpected_transaction_failure',...(sqlstate?{sqlstate}:{})})));
+        throw new AppError('An internal error occurred',500,'INTERNAL_ERROR');
+    }
+
+    /** One transaction around the existing publisher: selected instance, release artifacts and receipt commit together. */
+    async publishVersionUpdateRelease(input: VersionUpdateInput): Promise<VersionUpdateResult> {
         const releaseConfig: DbRecord = {
             ...input.currentReleaseConfig,
             liquidBundle: input.mergedBundle,
+            templates: input.mergedBundle.templates,
         };
-
-        const release = await this.publishReleaseSnapshot({
-            storeId: input.storeId,
-            themeId: input.themeSlug,
-            releaseConfig,
-            publishedBy: input.userId,
-            publishMessage:
-                input.publishMessage ||
-                `Version update to ${String((input.mergedBundle as unknown as DbRecord).schema_version)}`,
-            makeStoreLive: input.makeStoreLive,
-            requestId: input.requestId,
-        });
-
-        // Idempotency post-enrich: persist the caller-supplied key so subsequent retries
-        // hit the pre-check above. Both store_id and id are required — always tenant-scoped.
-        if (!release.release_id.startsWith('local-fallback:')) {
-            await this.db
-                .from('theme_releases')
-                .update({ idempotency_key: input.idempotencyKey })
-                .eq('store_id', input.storeId)
-                .eq('id', release.release_id);
-        }
-
-        return {
-            release_id: release.release_id,
-            release_version: release.release_version,
-            published_at: release.published_at,
-            idempotent: false,
-        };
+        const result = await this.withVersionUpdateTenant(input.scope,async tx=>{
+                const sites = await tx.unsafe(`SELECT id FROM public.sites WHERE id=$1::uuid AND deleted_at IS NULL
+                    AND(custom_user_id=$2::uuid OR user_id=$2::uuid) FOR UPDATE`, [input.scope.siteId, input.scope.customUser.id]);
+                if (sites.length !== 1 || this.boundSiteId && this.boundSiteId !== input.scope.siteId) throw new ForbiddenError('Your access to this store changed');
+                const targets = await readThemeUpdateTargetInTenantTx(tx,input.scope,input.targetPackageVersionId,true);
+                if (targets.length !== 1) throw new NotFoundError('Theme package version not found');
+                const target = this.validateUpdateTarget(input.targetPackageVersionId, asRecord(targets[0].version), asRecord(targets[0].package), asRecord(targets[0].catalog),
+                    { themeSlug: input.themeSlug, storeId: input.scope.siteId, userId: input.scope.customUser.id });
+                if (target.package.version !== input.mergedBundle.package.version || target.package.version_number !== input.mergedBundle.package.version_number)
+                    throw new ConflictError('The selected theme version changed');
+                const receipts = await tx.unsafe(`SELECT id,release_version,published_at,metadata FROM public.theme_releases
+                    WHERE store_id=$1::uuid AND theme_id=$2 AND idempotency_key=$3 AND deleted_at IS NULL`, [input.scope.siteId, input.themeSlug, input.idempotencyKey]);
+                const replay = this.versionUpdateReceipt(receipts.length ? asRecord(receipts[0]) : null, input.requestHash);
+                if (replay) return replay;
+                const current = await tx.unsafe(`SELECT id,theme_instance_id FROM public.theme_releases WHERE store_id=$1::uuid AND theme_id=$2
+                    AND id=$3::uuid AND is_current AND deleted_at IS NULL AND release_config=$4::text::jsonb FOR UPDATE`,
+                    [input.scope.siteId, input.themeSlug, input.currentReleaseId, JSON.stringify(input.currentReleaseConfig)]);
+                if (current.length !== 1) throw new ConflictError('The published theme changed; review a fresh update preview');
+                const instances = await tx.unsafe(`SELECT id FROM public.theme_instances WHERE store_id=$1::uuid AND theme_slug=$2
+                    AND id=$3::uuid AND theme_package_id=$4::uuid AND deleted_at IS NULL FOR UPDATE`,
+                    [input.scope.siteId, input.themeSlug, current[0].theme_instance_id as string, asRecord(targets[0].package).id as string]);
+                if (instances.length !== 1) throw new ConflictError('The installed theme changed; review a fresh update preview');
+                const instanceId = String(instances[0].id);
+                // Private drafts/patches/revisions are deliberately not consumed by a package update.
+                await tx.unsafe(`UPDATE public.theme_instances SET theme_package_version_id=$3::uuid,installed_config=$4::text::jsonb,
+                    updated_at=now(),updated_by=$5::uuid WHERE store_id=$1::uuid AND id=$2::uuid`,
+                    [input.scope.siteId, instanceId, input.targetPackageVersionId, JSON.stringify(releaseConfig), input.scope.customUser.id]);
+                const published = await publishThemeReleaseInTenantTx(tx,input.scope,{themeSlug:input.themeSlug,releaseConfig,
+                    targetPackageVersionId:input.targetPackageVersionId,priorReleaseId:input.currentReleaseId,requestHash:input.requestHash,
+                    publishMessage:input.publishMessage||`Version update to ${target.package.version}`,makeStoreLive:input.makeStoreLive});
+                const rows=[published];
+                const release = readPublishedReleaseResult(rows.map(row => ({...row,published_at:versionUpdateTimestamp(row.published_at)})));
+                const payload = buildLiquidThemePackagePersistencePayload(target), capturedSchema = payload.schemaManifest, renderer = payload.rendererManifest;
+                const runtime: ThemeRuntimeSchema = {
+                    source: 'database', themePackageId: String(asRecord(targets[0].package).id), themePackageVersionId: input.targetPackageVersionId,
+                    schemaManifestVersion: capturedSchema.manifest_version, rendererVersion: target.renderer.renderer_version,
+                    sectionSchemas: capturedSchema.section_schemas as ThemeRuntimeSchema['sectionSchemas'], blockSchemas: capturedSchema.block_schemas,
+                    settingsSchema: capturedSchema.settings_schema as unknown as ThemeRuntimeSchema['settingsSchema'], templateSchema: capturedSchema.template_schema,
+                    layoutSchema: capturedSchema.layout_schema, rendererManifest: renderer.renderer_manifest, approvedRendererKeys: renderer.approved_renderer_keys,
+                    assetManifest: renderer.asset_manifest, performanceBudget: renderer.performance_budget,
+                };
+                const artifacts = this.buildReleaseArtifacts({storeId:input.scope.siteId,themeId:input.themeSlug,releaseConfig,runtime,themeInstanceId:instanceId,
+                    publishedBy:input.scope.customUser.id,makeStoreLive:input.makeStoreLive},release.release_id,release.release_version);
+                const receipt = {request_hash:input.requestHash,confirmed_diff_hash:input.confirmedDiffHash,target_package_version_id:input.targetPackageVersionId,
+                    prior_release_id:input.currentReleaseId,diff:input.diff,requires_confirmation:input.requiresConfirmation};
+                const persisted = await tx.unsafe(`UPDATE public.theme_releases SET idempotency_key=$4,release_manifest=$5::text::jsonb,
+                    asset_manifest=$6::text::jsonb,cache_manifest=$7::text::jsonb,schema_manifest_version=$8,
+                    metadata=coalesce(metadata,'{}'::jsonb)||jsonb_build_object('theme_version_update',$9::text::jsonb)
+                    WHERE store_id=$1::uuid AND theme_id=$2 AND id=$3::uuid RETURNING id`,
+                    [input.scope.siteId,input.themeSlug,release.release_id,input.idempotencyKey,JSON.stringify(artifacts.release_manifest),JSON.stringify(artifacts.asset_manifest),
+                    JSON.stringify(artifacts.cache_manifest),runtime.schemaManifestVersion,JSON.stringify(receipt)]);
+                if (persisted.length !== 1) throw new Error('Missing transactional theme update receipt');
+                return {...release,idempotent:false,diff:input.diff,requiresConfirmation:input.requiresConfirmation};
+        },true);
+        return result;
     }
 }

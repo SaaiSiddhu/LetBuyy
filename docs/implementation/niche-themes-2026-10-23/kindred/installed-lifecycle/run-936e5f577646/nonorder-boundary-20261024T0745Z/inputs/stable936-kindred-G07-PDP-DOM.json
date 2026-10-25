@@ -1,0 +1,66 @@
+{
+  "runId": "936e5f577646",
+  "actual": {
+    "content": "What’s included\n1 × Mug\n\n300 ml\n\nHand wash.\n\n1 × Notebook\n1 × Pen\n\nReview the listed contents and the selected packaging before adding this product to your bag.",
+    "headings": [
+      "Kindred lifecycle gift box",
+      "What’s included",
+      "Write a review",
+      "Open box · Check the supplied contents list.",
+      "Closed box · Confirm the selected packaging option.",
+      "Threadline",
+      "Cart"
+    ],
+    "images": [
+      {
+        "alt": "Kindred lifecycle gift box",
+        "height": 900,
+        "loaded": true,
+        "src": "http://syn-threadline-ui-6815276b.localhost:50494/theme-assets/kindred/v2/little-pause-open.webp",
+        "width": 1200
+      },
+      {
+        "alt": "Kindred lifecycle gift box",
+        "height": 750,
+        "loaded": false,
+        "src": "http://syn-threadline-ui-6815276b.localhost:50494/theme-assets/kindred/v2/little-pause-closed.webp",
+        "width": 1000
+      },
+      {
+        "alt": "",
+        "height": 900,
+        "loaded": true,
+        "src": "http://syn-threadline-ui-6815276b.localhost:50494/theme-assets/kindred/v2/little-pause-open.webp",
+        "width": 1200
+      },
+      {
+        "alt": "",
+        "height": 750,
+        "loaded": true,
+        "src": "http://syn-threadline-ui-6815276b.localhost:50494/theme-assets/kindred/v2/little-pause-closed.webp",
+        "width": 1000
+      },
+      {
+        "alt": "Kindred lifecycle gift box — open box",
+        "height": 900,
+        "loaded": true,
+        "src": "http://syn-threadline-ui-6815276b.localhost:50494/theme-assets/kindred/v2/little-pause-open.webp",
+        "width": 1200
+      },
+      {
+        "alt": "Kindred lifecycle gift box — closed box",
+        "height": 750,
+        "loaded": true,
+        "src": "http://syn-threadline-ui-6815276b.localhost:50494/theme-assets/kindred/v2/little-pause-closed.webp",
+        "width": 1000
+      }
+    ],
+    "navLinks": [],
+    "url": "http://syn-threadline-ui-6815276b.localhost:58091/product/4abca70a-c4f1-42cb-bac1-2988d1c1435c",
+    "variantPickers": 0,
+    "viewport": {
+      "height": 720,
+      "width": 1280
+    }
+  }
+}

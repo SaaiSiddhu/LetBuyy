@@ -1,0 +1,133 @@
+{
+  "recordedAt": "2026-10-24T09:16:22.861145+00:00",
+  "scope": "Private successor source only; Main catalogue remains Root owned",
+  "sources": {
+    "packages/theme-engine/src/first-party-theme-catalog.ts": "48e8126f5681d91fb1780b521bd5d53c4bf933156ca2b97c64932d95e0800605",
+    "packages/theme-engine/src/pantry-theme.ts": "9c440d32f146b8155ba78f522da52979fd09a0f3d32c4b25e5c3e289ef390925",
+    "packages/theme-engine/src/theme-bundle.ts": "cdbad4b28277431a3ab06e56ed0ce16539e04837bb107f5f951a3df39a92ed76",
+    "packages/theme-engine/src/niche-order-presentation.ts": "6c5f89356bab085cc8a3a359c5caad4503dc8442176df0b8a1558b849d651ac3",
+    "packages/theme-engine/src/theme-renderer.ts": "794cbc6ff9ae71f995560f302e1b0d5f0d4ff4da59fa31191585851b1e822164",
+    "packages/theme-engine/src/theme-document.ts": "7ba285a54d71a01545c4cb1e4a3c1540a30caae2db793079b2b3cb32b8612412",
+    "packages/theme-engine/src/portable-to-liquid.ts": "c981e822ec3f51bd7975e72862a957fc011b14a7f8984cdd0b38f8ba9a27803b",
+    "packages/theme-engine/src/index.ts": "1544081a6b4e1c7c276ed6cbfd1a9bd39fdbe10fca6406cd72b7ba1eb1d584e5",
+    "packages/theme-engine/package.json": "8eec1e66946b79412200297e8755d67f6769fe49beec86c5d7eeb2ccf013b763",
+    "pnpm-lock.yaml": "15fd89109bbc17e0624e29d5a1b56db07e19f1f880c44d9a9abf847b52b6d09a"
+  },
+  "catalogueImportRebindings": [
+    {
+      "original": "from './theme-presets'",
+      "private": "from '../../../../../../../packages/theme-engine/src/theme-presets.ts'",
+      "path": "packages/theme-engine/src/theme-presets.ts",
+      "sha256": "283028890199a34e67863c337ebd0c788c830c60ddaa87854c3bad28f9581e82"
+    },
+    {
+      "original": "from './theme-bundle-core'",
+      "private": "from '../../../../../../../packages/theme-engine/src/theme-bundle-core.ts'",
+      "path": "packages/theme-engine/src/theme-bundle-core.ts",
+      "sha256": "0e1650a4d71ef358792c0f877f4ae678794fb6d2cfdebbb30d79563e4a2f452f"
+    },
+    {
+      "original": "from './theme-bundle'",
+      "private": "from '../../../../../../../packages/theme-engine/src/theme-bundle.ts'",
+      "path": "packages/theme-engine/src/theme-bundle.ts",
+      "sha256": "cdbad4b28277431a3ab06e56ed0ce16539e04837bb107f5f951a3df39a92ed76"
+    },
+    {
+      "original": "from './threadline-theme'",
+      "private": "from '../../../../../../../packages/theme-engine/src/threadline-theme.ts'",
+      "path": "packages/theme-engine/src/threadline-theme.ts",
+      "sha256": "1e922e6c056de5017f35dfe08827eef0b41212b96bbff5b6695ab087422d523b"
+    },
+    {
+      "original": "from './playfield-theme'",
+      "private": "from '../../../../../../../packages/theme-engine/src/playfield-theme.ts'",
+      "path": "packages/theme-engine/src/playfield-theme.ts",
+      "sha256": "00493cb361c8fc796941524d9673ee4c1bfa3a12785017e2397e408b924edb63"
+    },
+    {
+      "original": "from './playfield-theme-v201'",
+      "private": "from '../../../../../../../packages/theme-engine/src/playfield-theme-v201.ts'",
+      "path": "packages/theme-engine/src/playfield-theme-v201.ts",
+      "sha256": "f2d428503df3630bcb79141488d109e10284412a2a523fa8ad77343aa47ae132"
+    },
+    {
+      "original": "from './circuit-theme'",
+      "private": "from '../../../../../../../packages/theme-engine/src/circuit-theme.ts'",
+      "path": "packages/theme-engine/src/circuit-theme.ts",
+      "sha256": "44f78cdaa4d9241723b7bc9ae0f0952d946e72b11775c05160c9949f87a69d2a"
+    },
+    {
+      "original": "from './pantry-theme'",
+      "private": "from '../../../../../../../packages/theme-engine/src/pantry-theme.ts'",
+      "path": "packages/theme-engine/src/pantry-theme.ts",
+      "sha256": "9c440d32f146b8155ba78f522da52979fd09a0f3d32c4b25e5c3e289ef390925"
+    },
+    {
+      "original": "from './habitat-theme'",
+      "private": "from '../../../../../../../packages/theme-engine/src/habitat-theme.ts'",
+      "path": "packages/theme-engine/src/habitat-theme.ts",
+      "sha256": "0144fdf830ab3c5ddf42ebfcb86258b99e74ed8a8d724469012479705352e8c3"
+    },
+    {
+      "original": "from './kindred-theme'",
+      "private": "from '../../../../../../../packages/theme-engine/src/kindred-theme.ts'",
+      "path": "packages/theme-engine/src/kindred-theme.ts",
+      "sha256": "3a47dc979dbdf5dce395fd44a858e007567820f4fac569fade603ff6da4fd551"
+    },
+    {
+      "original": "from './madeyours-theme'",
+      "private": "from '../../../../../../../packages/theme-engine/src/madeyours-theme.ts'",
+      "path": "packages/theme-engine/src/madeyours-theme.ts",
+      "sha256": "c56bdba5b9e9376c4a296cadc2d4f31a33598a033692d2f6c21daa71b3e98193"
+    },
+    {
+      "original": "from './dewdrop-theme'",
+      "private": "from '../../../../../../../packages/theme-engine/src/dewdrop-theme.ts'",
+      "path": "packages/theme-engine/src/dewdrop-theme.ts",
+      "sha256": "ec0cf0890c607056c1da13087b1c51ee6931d120c46370802360b740f0693190"
+    },
+    {
+      "original": "from './trailmark-theme'",
+      "private": "from '../../../../../../../packages/theme-engine/src/trailmark-theme.ts'",
+      "path": "packages/theme-engine/src/trailmark-theme.ts",
+      "sha256": "ec412bcee2940769612323c2155ac807cef8d73bd1a06caa754cbb1fd11e90b5"
+    },
+    {
+      "original": "from './marginalia-theme'",
+      "private": "from '../../../../../../../packages/theme-engine/src/marginalia-theme.ts'",
+      "path": "packages/theme-engine/src/marginalia-theme.ts",
+      "sha256": "a109aa33018aa786dffaea7a067415b13fe73ddc17beca7ef18a83f58301b7e9"
+    },
+    {
+      "original": "from './niche-order-presentation'",
+      "private": "from '../../../../../../../packages/theme-engine/src/niche-order-presentation.ts'",
+      "path": "packages/theme-engine/src/niche-order-presentation.ts",
+      "sha256": "6c5f89356bab085cc8a3a359c5caad4503dc8442176df0b8a1558b849d651ac3"
+    }
+  ],
+  "wrapperImportRebindings": [
+    {
+      "original": "from './theme-bundle'",
+      "private": "from '../../../../../../../packages/theme-engine/src/theme-bundle.ts'",
+      "path": "packages/theme-engine/src/theme-bundle.ts",
+      "sha256": "cdbad4b28277431a3ab06e56ed0ce16539e04837bb107f5f951a3df39a92ed76"
+    },
+    {
+      "original": "from './pantry-theme'",
+      "private": "from '../../../../../../../packages/theme-engine/src/pantry-theme.ts'",
+      "path": "packages/theme-engine/src/pantry-theme.ts",
+      "sha256": "9c440d32f146b8155ba78f522da52979fd09a0f3d32c4b25e5c3e289ef390925"
+    },
+    {
+      "original": "from './niche-order-presentation'",
+      "private": "from '../../../../../../../packages/theme-engine/src/niche-order-presentation.ts'",
+      "path": "packages/theme-engine/src/niche-order-presentation.ts",
+      "sha256": "6c5f89356bab085cc8a3a359c5caad4503dc8442176df0b8a1558b849d651ac3"
+    }
+  ],
+  "priorAppliedSource": {
+    "path": "docs/implementation/niche-themes-2026-10-23/pantry/completion-2026-10-24/applied-private-heading-20261024-01/src/pantry-theme.ts",
+    "sha256": "00e8661dc205ed0c5d9d6e47e6b5b4f1354f1d1ac95c0aee18cb6b3b64cd1995"
+  },
+  "noRuntimeOrBrowserGrant": true
+}

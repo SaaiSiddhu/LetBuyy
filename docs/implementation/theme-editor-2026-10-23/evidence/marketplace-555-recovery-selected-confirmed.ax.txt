@@ -1,0 +1,88 @@
+Browser tab: 22, Title: "Install Theme | LetBuyy Themes", URL: "http://themes.threadline-555b91e19691.localhost:9015/install?[query-redacted]".
+1 AXWebArea Install Theme | LetBuyy Themes, URL: themes.threadline-555b91e19691.localhost:9015/install?[query-redacted]
+	2 container
+		3 link Description: LetBuyy Themes home, Value: themes.threadline-555b91e19691.localhost:9015/
+		4 container Main navigation
+			5 button (collapsed) Browse, Secondary Actions: Expand
+			6 button (collapsed) Build, Secondary Actions: Expand
+			7 link Description: Pricing, Value: themes.threadline-555b91e19691.localhost:9015/pricing
+			8 link Description: Support, Value: themes.threadline-555b91e19691.localhost:9015/support
+		9 button Search themes
+		10 button Toggle color theme
+		11 button (collapsed) Description: Account menu, Secondary Actions: Expand
+	12 container
+		73 link Description: Back to Threadline, Value: themes.threadline-555b91e19691.localhost:9015/themes/letbuyy-sense
+		74 heading Install Threadline, Value: 1
+			75 text Install  Threadline
+		76 text Add this theme to the selected store’s private library. Customize and publish separately. Version  2.0.0 The instance and package version were not confirmed. Check this store’s library and retry the same Add request.
+		77 text Store
+		78 pop up button (collapsed, settable) Store, Value: Threadline - syn-threadline-ui-202c08c0.letbuyy.com - draft, ID: store_id, Secondary Actions: Expand
+			79 menu
+				80 (disabled) Select a store
+				81 (selected) Threadline - syn-threadline-ui-202c08c0.letbuyy.com - draft
+		82 text Adding creates a private library instance. Your current live theme, catalog and existing drafts stay in place. Customize and publish in the merchant theme editor.
+		83 link Description: Review theme before install, Value: themes.threadline-555b91e19691.localhost:9015/themes/letbuyy-sense
+		84 container
+			85 checkbox (settable, integer) Description: Add this design to the selected store’s library. Publication is a separate action., Value: 1
+			86 text Add this design to the selected store’s library. Publication is a separate action.
+		87 button Install Theme
+	17 container LetBuyy Themes footer
+		18 heading LetBuyy Themes footer, Value: 2, ID: site-footer-heading
+			19 text LetBuyy Themes footer
+		20 link Description: LetBuyy Themes home, Value: themes.threadline-555b91e19691.localhost:9015/
+		21 text Reviewed themes for LetBuyy stores, portfolios, resumes, landing pages and SaaS consoles — previewed with your own products before you install.
+		22 container Browse
+			23 heading Browse, Value: 3
+				24 text Browse
+			25 content list
+				26 link Description: All themes, Value: themes.threadline-555b91e19691.localhost:9015/themes
+				27 link Description: Store themes, Value: themes.threadline-555b91e19691.localhost:9015/themes/category/store
+				28 link Description: Portfolio themes, Value: themes.threadline-555b91e19691.localhost:9015/themes/category/portfolio
+				29 link Description: Landing pages, Value: themes.threadline-555b91e19691.localhost:9015/themes/category/landing
+				30 link Description: Compare themes, Value: themes.threadline-555b91e19691.localhost:9015/themes/compare
+		31 container Build
+			32 heading Build, Value: 3
+				33 text Build
+			34 content list
+				35 link Description: Theme docs, Value: themes.threadline-555b91e19691.localhost:9015/docs
+				36 link Description: API reference, Value: themes.threadline-555b91e19691.localhost:9015/docs/api
+				37 link Description: Developer console, Value: themes.threadline-555b91e19691.localhost:9015/developer
+				38 link Description: Submit a theme, Value: themes.threadline-555b91e19691.localhost:9015/developer/listings/new
+		39 container Platform
+			40 heading Platform, Value: 3
+				41 text Platform
+			42 content list
+				43 link Description: LetBuyy, Value: letbuyy.com/
+				44 link Description: Platform pricing, Value: letbuyy.com/pricing
+				45 link Description: App Marketplace, Value: letbuyy.com/sitemap
+				46 link Description: Theme pricing, Value: themes.threadline-555b91e19691.localhost:9015/pricing
+		47 container Support
+			48 heading Support, Value: 3
+				49 text Support
+			50 content list
+				51 link Description: Help centre, Value: themes.threadline-555b91e19691.localhost:9015/support
+				52 link Description: Contact us, Value: themes.threadline-555b91e19691.localhost:9015/contact
+				53 link Description: About Themes, Value: themes.threadline-555b91e19691.localhost:9015/about
+				54 link Description: Your account, Value: themes.threadline-555b91e19691.localhost:9015/dashboard
+		55 container Region and language
+			56 button Change region and language
+				57 text India
+				58 text English
+		59 container Legal links
+			60 link Description: Terms, Value: themes.threadline-555b91e19691.localhost:9015/legal/terms
+			61 link Description: Privacy, Value: themes.threadline-555b91e19691.localhost:9015/legal/privacy
+			62 link Description: Refunds, Value: themes.threadline-555b91e19691.localhost:9015/legal/refund
+			63 link Description: Licence, Value: themes.threadline-555b91e19691.localhost:9015/legal/license
+			64 link Description: support@letbuyy.com, Value: mailto:support@letbuyy.com
+			65 button Your Privacy Choices
+		66 container Social links
+			67 link Description: Facebook, Value: facebook.com/share/14tEGNoJSXR/
+			68 link Description: X, Value: x.com/letbuyyhq
+			69 link Description: YouTube, Value: youtube.com/@letbuyyhq
+			70 link Description: Instagram, Value: instagram.com/letbuyyhq
+		71 container
+			72 text ©  2026  LetBuyy. All rights reserved.
+	88 pop up button (collapsed) Description: Open Next.js Dev Tools, ID: next-logo, Secondary Actions: Expand
+		89 image
+
+The focused UI element is 85 checkbox (settable, integer) Description: Add this design to the selected store’s library. Publication is a separate action., Value: 1

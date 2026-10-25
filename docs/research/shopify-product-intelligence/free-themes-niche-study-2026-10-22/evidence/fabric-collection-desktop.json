@@ -1,0 +1,1326 @@
+{
+  "body": {
+    "background": "rgb(255, 255, 255)",
+    "color": "rgba(3, 3, 2, 0.76)",
+    "font": "Geist, sans-serif",
+    "fontSize": "14px"
+  },
+  "controls": [
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Cart",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Availability",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "INPUT",
+      "type": "checkbox"
+    },
+    {
+      "disabled": true,
+      "expanded": null,
+      "label": "",
+      "tag": "INPUT",
+      "type": "checkbox"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Price",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "0",
+      "tag": "INPUT",
+      "type": "text"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "168.00",
+      "tag": "INPUT",
+      "type": "text"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Color",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Beige",
+      "tag": "INPUT",
+      "type": "checkbox"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Black",
+      "tag": "INPUT",
+      "type": "checkbox"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Blue",
+      "tag": "INPUT",
+      "type": "checkbox"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Brown",
+      "tag": "INPUT",
+      "type": "checkbox"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Gold",
+      "tag": "INPUT",
+      "type": "checkbox"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Gray",
+      "tag": "INPUT",
+      "type": "checkbox"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Green",
+      "tag": "INPUT",
+      "type": "checkbox"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Navy",
+      "tag": "INPUT",
+      "type": "checkbox"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Orange",
+      "tag": "INPUT",
+      "type": "checkbox"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Purple",
+      "tag": "INPUT",
+      "type": "checkbox"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Red",
+      "tag": "INPUT",
+      "type": "checkbox"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "White",
+      "tag": "INPUT",
+      "type": "checkbox"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Yellow",
+      "tag": "INPUT",
+      "type": "checkbox"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Sort",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Default",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Zoom out",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Email address",
+      "tag": "INPUT",
+      "type": "email"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Sign up",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Shop",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Customer care",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "About us",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Connect",
+      "tag": "SUMMARY",
+      "type": ""
+    }
+  ],
+  "headings": [
+    {
+      "font": "Geist, sans-serif",
+      "height": 72,
+      "line": "72px",
+      "size": "72px",
+      "tag": "H1",
+      "text": "Womenswear",
+      "weight": "400",
+      "width": 448.9921875,
+      "x": 495.5,
+      "y": 154.390625
+    }
+  ],
+  "links": [
+    {
+      "text": "Skip to content",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/womenswear-children-only#MainContent"
+    },
+    {
+      "text": "Womenswear",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/womenswear-children-only"
+    },
+    {
+      "text": "",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/womens-tshirts-tanks"
+    },
+    {
+      "text": "",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/women-tops"
+    },
+    {
+      "text": "",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/women-bottoms"
+    },
+    {
+      "text": "",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/women-dresses"
+    },
+    {
+      "text": "",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/women-loungewear"
+    },
+    {
+      "text": "",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/socks-accessories"
+    },
+    {
+      "text": "",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/womenswear-children-only"
+    },
+    {
+      "text": "",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/womens-tshirts-tanks"
+    },
+    {
+      "text": "Menswear",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/mens-children-only"
+    },
+    {
+      "text": "",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/men-tshirts-tanks"
+    },
+    {
+      "text": "",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/men-tops"
+    },
+    {
+      "text": "",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/men-bottoms"
+    },
+    {
+      "text": "",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/men-loungewear"
+    },
+    {
+      "text": "",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/socks-accessories"
+    },
+    {
+      "text": "",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/men-lightweight-knitwear"
+    },
+    {
+      "text": "",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/mens-children-only"
+    },
+    {
+      "text": "",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/men-tshirts-tanks"
+    },
+    {
+      "text": "Home",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/home-new"
+    },
+    {
+      "text": "",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/bath-new"
+    },
+    {
+      "text": "",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/bedding-new"
+    },
+    {
+      "text": "",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/apothecary-new"
+    },
+    {
+      "text": "",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/home-new"
+    },
+    {
+      "text": "",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/bath-new"
+    },
+    {
+      "text": "",
+      "url": "https://theme-fabric-demo.myshopify.com/"
+    },
+    {
+      "text": "Skip to results list",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/womenswear-children-only#ResultsList"
+    },
+    {
+      "text": "Women's Essential Sweatpant",
+      "url": "https://theme-fabric-demo.myshopify.com/products/womens-essential-sweatpant-in-black?variant=44434707710005"
+    },
+    {
+      "text": "Women's Essential Sweatpant",
+      "url": "https://theme-fabric-demo.myshopify.com/products/womens-essential-sweatpant-in-alabaster?variant=44434707480629"
+    },
+    {
+      "text": "Women's Essential Sweatpant",
+      "url": "https://theme-fabric-demo.myshopify.com/products/womens-essential-sweatpant-in-coriander?variant=44434707251253"
+    },
+    {
+      "text": "Women's Essential Sweatpant",
+      "url": "https://theme-fabric-demo.myshopify.com/products/womens-essential-sweatpant-in-heather-grey?variant=44434707021877"
+    },
+    {
+      "text": "Women's Essential Sweatpant",
+      "url": "https://theme-fabric-demo.myshopify.com/products/womens-essential-sweatpant-in-umber?variant=44434597249077"
+    },
+    {
+      "text": "Women's Essential Sweatpant",
+      "url": "https://theme-fabric-demo.myshopify.com/products/womens-essential-sweatpant-in-light-taupe?variant=44434593906741"
+    },
+    {
+      "text": "Women's Essential Crew",
+      "url": "https://theme-fabric-demo.myshopify.com/products/womens-essential-crew-in-oat-melange-1?variant=44434866536501"
+    },
+    {
+      "text": "Women’s Essential Crew",
+      "url": "https://theme-fabric-demo.myshopify.com/products/women-s-essential-crew-in-fog?variant=44434631393333"
+    },
+    {
+      "text": "Women's Essential Crew",
+      "url": "https://theme-fabric-demo.myshopify.com/products/womens-essential-crew-in-racing-green?variant=44434609700917"
+    },
+    {
+      "text": "Women's Essential Crew",
+      "url": "https://theme-fabric-demo.myshopify.com/products/womens-essential-crew-in-violet?variant=44434539315253"
+    },
+    {
+      "text": "Women's Essential Crew",
+      "url": "https://theme-fabric-demo.myshopify.com/products/womens-essential-crew-in-white-sand?variant=44434525782069"
+    },
+    {
+      "text": "Women's Essential Crew",
+      "url": "https://theme-fabric-demo.myshopify.com/products/womens-essential-crew-in-porcini?variant=44434524635189"
+    },
+    {
+      "text": "Women's Set Longsleeve",
+      "url": "https://theme-fabric-demo.myshopify.com/products/womens-set-longsleeve-in-black?variant=44434293948469"
+    },
+    {
+      "text": "Women's Set Longsleeve",
+      "url": "https://theme-fabric-demo.myshopify.com/products/womens-set-longsleeve-in-marshmallow?variant=44434293784629"
+    },
+    {
+      "text": "Women's Set Longsleeve",
+      "url": "https://theme-fabric-demo.myshopify.com/products/womens-set-longsleeve-in-plum?variant=44434293620789"
+    },
+    {
+      "text": "Wide Leg Sweatpant",
+      "url": "https://theme-fabric-demo.myshopify.com/products/womens-wide-leg-sweatpant-in-coriander?variant=44434698895413"
+    },
+    {
+      "text": "Women's Wide Leg Sweatpant",
+      "url": "https://theme-fabric-demo.myshopify.com/products/womens-wide-leg-sweatpant-in-black?variant=44434698666037"
+    },
+    {
+      "text": "Women's Wide Leg Sweatpant",
+      "url": "https://theme-fabric-demo.myshopify.com/products/womens-wide-leg-sweatpant-in-dark-olive?variant=44434698436661"
+    },
+    {
+      "text": "Women's Wide Leg Sweatpant",
+      "url": "https://theme-fabric-demo.myshopify.com/products/womens-wide-leg-sweatpant-in-racing-green?variant=44434593218613"
+    },
+    {
+      "text": "Women's Wide Leg Sweatpant",
+      "url": "https://theme-fabric-demo.myshopify.com/products/womens-wide-leg-sweatpant-in-heather-grey?variant=44434565922869"
+    },
+    {
+      "text": "Women's Mariam Tank",
+      "url": "https://theme-fabric-demo.myshopify.com/products/womens-mariam-tank-in-black?variant=44434419875893"
+    },
+    {
+      "text": "Women's Mariam Tank",
+      "url": "https://theme-fabric-demo.myshopify.com/products/womens-mariam-tank-in-jester-red?variant=44434419646517"
+    },
+    {
+      "text": "Women's Mariam Tank",
+      "url": "https://theme-fabric-demo.myshopify.com/products/womens-mariam-tank-in-blue-lotus?variant=44434353455157"
+    },
+    {
+      "text": "Women's Mariam Tank",
+      "url": "https://theme-fabric-demo.myshopify.com/products/womens-mariam-tank-in-sienna?variant=44434290114613"
+    },
+    {
+      "text": "2",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/womenswear-children-only?page=2"
+    },
+    {
+      "text": "3",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/womenswear-children-only?page=3"
+    },
+    {
+      "text": "5",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/womenswear-children-only?page=5"
+    },
+    {
+      "text": "Next",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/womenswear-children-only?page=2"
+    },
+    {
+      "text": "Search",
+      "url": "https://theme-fabric-demo.myshopify.com/search"
+    },
+    {
+      "text": "Womenswear",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/womenswear-children-only"
+    },
+    {
+      "text": "Menswear",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/mens-children-only"
+    },
+    {
+      "text": "Sale",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/sale"
+    },
+    {
+      "text": "FAQ",
+      "url": "https://theme-fabric-demo.myshopify.com/pages/faq"
+    },
+    {
+      "text": "Fit guide",
+      "url": "https://theme-fabric-demo.myshopify.com/pages/fit-guide"
+    },
+    {
+      "text": "Contact us",
+      "url": "https://theme-fabric-demo.myshopify.com/pages/contact"
+    },
+    {
+      "text": "Our story",
+      "url": "https://theme-fabric-demo.myshopify.com/pages/our-story"
+    },
+    {
+      "text": "Blog",
+      "url": "https://theme-fabric-demo.myshopify.com/blogs/news"
+    },
+    {
+      "text": "Materials & care",
+      "url": "https://theme-fabric-demo.myshopify.com/pages/materials-care"
+    },
+    {
+      "text": "Fabric",
+      "url": "https://theme-fabric-demo.myshopify.com/"
+    }
+  ],
+  "sections": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--19138330624053__section",
+      "rect": {
+        "height": 232,
+        "width": 1440,
+        "x": 0,
+        "y": 74.390625
+      },
+      "tag": "DIV",
+      "text": "Womenswear"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--19138330624053__main-collection",
+      "rect": {
+        "height": 2307.9375,
+        "width": 1440,
+        "x": 0,
+        "y": 306.390625
+      },
+      "tag": "DIV",
+      "text": "Skip to results list\nAvailability\nPrice\nColor\n97 items\nSort\nColumn grid\nWomen's Essential Sweatpant\nChoose\nWomen's Essential Sweatpant\n$80.00 CAD\nWomen's Essential Sweatpant\nSALE\nC"
+    }
+  ],
+  "title": "Womenswear – Fabric",
+  "url": "https://theme-fabric-demo.myshopify.com/collections/womenswear-children-only",
+  "viewport": {
+    "dpr": 1,
+    "height": 1000,
+    "width": 1440
+  },
+  "formGroups": [
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "Column grid",
+    "\n    \n      Column grid\n    \n\n    \n      \n        \n        \n\n\n\n      \n\n      \n        \n        \n\n\n\n\n\n\n      \n\n    \n  ",
+    "\n                    \n                      \n                        \n                        \n\n\n\n\n                        \n                      \n                      Beige\n                      \n                    \n                  ",
+    "\n                    \n                      \n                        \n                        \n\n\n\n\n                        \n                      \n                      Black\n                      \n                    \n                  ",
+    "\n                    \n                      \n                        \n                        \n\n\n\n\n                        \n                      \n                      Blue\n                      \n                    \n                  ",
+    "\n                    \n                      \n                        \n                        \n\n\n\n\n                        \n                      \n                      Brown\n                      \n                    \n                  ",
+    "\n                    \n                      \n                        \n                        \n\n\n\n\n                        \n                      \n                      Gold\n                      \n                    \n                  ",
+    "\n                    \n                      \n                        \n                        \n\n\n\n\n                        \n                      \n                      Gray\n                      \n                    \n                  ",
+    "\n                    \n                      \n                        \n                        \n\n\n\n\n                        \n                      \n                      Green\n                      \n                    \n                  ",
+    "\n                    \n                      \n                        \n                        \n\n\n\n\n                        \n                      \n                      Navy\n                      \n                    \n                  ",
+    "\n                    \n                      \n                        \n                        \n\n\n\n\n                        \n                      \n                      Orange\n                      \n                    \n                  ",
+    "\n                    \n                      \n                        \n                        \n\n\n\n\n                        \n                      \n                      Purple\n                      \n                    \n                  ",
+    "\n                    \n                      \n                        \n                        \n\n\n\n\n                        \n                      \n                      Red\n                      \n                    \n                  ",
+    "\n                    \n                      \n                        \n                        \n\n\n\n\n                        \n                      \n                      White\n                      \n                    \n                  ",
+    "\n                    \n                      \n                        \n                        \n\n\n\n\n                        \n                      \n                      Yellow\n                      \n                    \n                  "
+  ],
+  "grids": [
+    {
+      "className": "section product-grid-container color-scheme-1",
+      "columns": "40px 1360px 40px",
+      "display": "grid",
+      "gap": "normal",
+      "height": 2307.9375,
+      "tag": "RESULTS-LIST",
+      "width": 1440
+    },
+    {
+      "className": "collection-wrapper grid gap-style collection-wrapper--grid-full-width",
+      "columns": "40px 113.328px 113.328px 113.328px 113.328px 113.328px 113.328px 113.328px 113.328px 113.328px 113.328px 113.328px 113.328px 40px",
+      "display": "grid",
+      "gap": "0px",
+      "height": 2283.9375,
+      "tag": "DIV",
+      "width": 1440
+    },
+    {
+      "className": "facets__inputs-list list-unstyled",
+      "columns": "none",
+      "display": "flex",
+      "gap": "11.2px",
+      "height": 43.1953125,
+      "tag": "UL",
+      "width": 101.453125
+    },
+    {
+      "className": "facets__inputs-list list-unstyled facets__inputs-list--swatches",
+      "columns": "28px 28px 28px 28px",
+      "display": "grid",
+      "gap": "11.2px",
+      "height": 145.5859375,
+      "tag": "UL",
+      "width": 145.5859375
+    },
+    {
+      "className": "\n    grid main-collection-grid\n collection-wrapper--full-width\n collection-wrapper--full-width-on-mobile\n    spacing-style\n  ",
+      "columns": "0px 120px 120px 120px 120px 120px 120px 120px 120px 120px 120px 120px 120px 0px",
+      "display": "grid",
+      "gap": "0px",
+      "height": 2215.9375,
+      "tag": "DIV",
+      "width": 1440
+    },
+    {
+      "className": "product-grid product-grid--template--19138330624053__main-collection product-grid--grid ",
+      "columns": "288px 288px 288px 288px 288px",
+      "display": "grid",
+      "gap": "16px 0px",
+      "height": 2119.9375,
+      "tag": "UL",
+      "width": 1440
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "8px",
+      "height": 411.1875,
+      "tag": "DIV",
+      "width": 288
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "8px",
+      "height": 411.1875,
+      "tag": "DIV",
+      "width": 288
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "8px",
+      "height": 411.1875,
+      "tag": "DIV",
+      "width": 288
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "8px",
+      "height": 411.1875,
+      "tag": "DIV",
+      "width": 288
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "8px",
+      "height": 411.1875,
+      "tag": "DIV",
+      "width": 288
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "8px",
+      "height": 411.1875,
+      "tag": "DIV",
+      "width": 288
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "8px",
+      "height": 411.1875,
+      "tag": "DIV",
+      "width": 288
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "8px",
+      "height": 411.1875,
+      "tag": "DIV",
+      "width": 288
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "8px",
+      "height": 411.1875,
+      "tag": "DIV",
+      "width": 288
+    }
+  ],
+  "images": [
+    {
+      "alt": "Francis is 5ft 9.5in, a regular size XS and wearing a S.",
+      "complete": true,
+      "naturalWidth": 288,
+      "rect": {
+        "height": 360,
+        "width": 288
+      }
+    },
+    {
+      "alt": "Women's Essential Sweatpant",
+      "complete": true,
+      "naturalWidth": 288,
+      "rect": {
+        "height": 360,
+        "width": 288
+      }
+    },
+    {
+      "alt": "Women's Essential Sweatpant",
+      "complete": true,
+      "naturalWidth": 288,
+      "rect": {
+        "height": 360,
+        "width": 288
+      }
+    },
+    {
+      "alt": "Women's Essential Sweatpant",
+      "complete": true,
+      "naturalWidth": 288,
+      "rect": {
+        "height": 360,
+        "width": 288
+      }
+    },
+    {
+      "alt": "Women's Essential Sweatpant",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 360,
+        "width": 288
+      }
+    },
+    {
+      "alt": "Ali is 5ft 11in, a regular S and wearing an XS.",
+      "complete": true,
+      "naturalWidth": 288,
+      "rect": {
+        "height": 360,
+        "width": 288
+      }
+    },
+    {
+      "alt": "Women's Essential Sweatpant",
+      "complete": true,
+      "naturalWidth": 288,
+      "rect": {
+        "height": 360,
+        "width": 288
+      }
+    },
+    {
+      "alt": "Women's Essential Sweatpant",
+      "complete": true,
+      "naturalWidth": 288,
+      "rect": {
+        "height": 360,
+        "width": 288
+      }
+    },
+    {
+      "alt": "Women's Essential Sweatpant",
+      "complete": false,
+      "naturalWidth": 288,
+      "rect": {
+        "height": 360,
+        "width": 288
+      }
+    },
+    {
+      "alt": "Women's Essential Sweatpant",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 360,
+        "width": 288
+      }
+    },
+    {
+      "alt": "Ali is 5ft 11in, a regular S and wearing an XS.",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 360,
+        "width": 288
+      }
+    },
+    {
+      "alt": "Women's Essential Sweatpant",
+      "complete": true,
+      "naturalWidth": 288,
+      "rect": {
+        "height": 360,
+        "width": 288
+      }
+    }
+  ],
+  "bodyText": "Skip to content\nWomenswear\nMenswear\nHome\nTotal items in cart: 0\nWomenswear\nSkip to results list\nAvailability\nPrice\nColor\n97 items\nSort\nColumn grid\nWomen's Essential Sweatpant\nChoose\nWomen's Essential Sweatpant\n$80.00 CAD\nWomen's Essential Sweatpant\nSALE\nChoose\nWomen's Essential Sweatpant\nSale price \n$70.00 CAD \nRegular price \n$80.00 CAD\nWomen's Essential Sweatpant\nSALE\nChoose\nWomen's Essential Sweatpant\nSale price \n$70.00 CAD \nRegular price \n$80.00 CAD\nWomen's Essential Sweatpant\nChoose\nWomen's Essential Sweatpant\n$80.00 CAD\nWomen's Essential Sweatpant\nSALE\nChoose\nWomen's Essential Sweatpant\nSale price \n$60.00 CAD \nRegular price \n$80.00 CAD\nWomen's Essential Sweatpant\nSALE\nChoose\nWomen's Essential Sweatpant\nSale price \n$60.00 CAD \nRegular price \n$80.00 CAD\nWomen's Essential Crew\nChoose\nWomen's Essential Crew\n$38.00 CAD\nWomen’s Essential Crew\nSALE\nChoose\nWomen’s Essential Crew\nSale price \n$28.00 CAD \nRegular price \n$38.00 CAD\nWomen's Essential Crew\nSALE\nChoose\nWomen's Essential Crew\nSale price \n$35.00 CAD \nRegular price \n$38.00 CAD\nWomen's Essential Crew\nSALE\nChoose\nWomen's Essential Crew\nSale price \n$25.00 CAD \nRegular price \n$38.00 CAD\nWomen's Essential Crew\nSALE\nChoose\nWomen's Essential Crew\nSale price \n$25.00 CAD \nRegular price \n$38.00 CAD\nWomen's Essential Crew\nSALE\nChoose\nWomen's Essential Crew\nSale price \n$25.00 CAD \nRegular price \n$38.00 CAD\nWomen's Set Longsleeve\nChoose\nWomen's Set Longsleeve\n$48.00 CAD\nWomen's Set Longsleeve\nChoose\nWomen's Set Longsleeve\n$48.00 CAD\nWomen's Set Longsleeve\nChoose\nWomen's Set Longsleeve\n$48.00 CAD\nWide Leg Sweatpant\nSALE\nChoose\nWide Leg Sweatpant\n$80.00 CAD\nWomen's Wide Leg Sweatpant\nChoose\nWomen's Wide Leg Sweatpant\n$80.00 CAD\nWomen's Wide Leg Sweatpant\nSALE\nChoose\nWomen's Wide Leg Sweatpant\n$80.00 CAD\nWomen's Wide Leg Sweatpant\nSALE\nChoose\nWomen's Wide Leg Sweatpant\nSale price \n$60.00 CAD \nRegular price \n$80.00 CAD\nWomen's Wide Leg Sweatpant\nChoose\nWomen's Wide Leg Sweatpant\n$80.00 CAD\nWomen's Mariam Tank\nChoose\nWomen's Mariam Tank\n$40.00 CAD\nWomen's Mariam Tank\nSALE\nChoose\nWomen's Mariam Tank\nSale price \n$20.00 CAD \nRegular price \n$35.00 CAD\nWomen's Mariam Tank\nSALE\nChoose\nWomen's Mariam Tank\nSale price \n$24.00 CAD \nRegular price \n$35.00 CAD\nWomen's Mariam Tank\nChoose\nWomen's Mariam Tank\n$40.00 CAD\n1\n2\n3\n…\n5\nEmail\nShop\nSearch\nWomenswear\nMenswear\nSale\nCustomer care\nFAQ\nFit guide\nContact us\nAbout us\nOur story\nBlog\nMaterials & care\nConnect\nInstagram\nTikTok\nYoutube\nFacebook\n© 2026 Fabric, Powered by Shopify"
+}

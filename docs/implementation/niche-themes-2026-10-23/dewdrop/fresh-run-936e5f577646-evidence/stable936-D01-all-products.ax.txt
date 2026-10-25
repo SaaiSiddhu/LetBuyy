@@ -1,0 +1,189 @@
+Browser tab: 53, Title: "Products | Threadline", URL: "http://syn-threadline-ui-6815276b.localhost:50494/products?limit=20".
+0 AXWebArea Products | Threadline, URL: syn-threadline-ui-6815276b.localhost:50494/products?limit=20
+	1 container
+		2 text Dewdrop 936 B — saved recovery draft.
+		3 link syn-threadline-ui-6815276b.localhost:50494/products?limit=20
+		4 container Description: Primary, ID: lb-nav-panel-header-default
+		5 link Description: Threadline, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b
+		6 button (collapsed) Description: Search, Secondary Actions: Expand
+		7 link Description: Log in, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/customers/login
+		8 link Description: Cart ( 1 ), Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/cart
+		9 container Filter products by country of origin
+			10 container
+				11 text Country of origin
+				12 text field (settable) Country of origin, ID: lb-product-origin-filter
+				13 button Apply filter
+		14 text THE ROUTINE SHELF
+		15 heading All Products, Value: 1
+			16 text All Products
+		17 text Browse by use. Each product is sold independently.
+		18 container
+			19 text Search care products
+			20 search text field (settable) Search care products
+			21 text Routine stage
+			22 pop up button (collapsed, settable) Routine stage, Value: All stages, Secondary Actions: Expand
+				23 menu
+					24 (selected) All stages
+					25 care
+					26 cleanse
+					27 colour
+			28 text Format
+			29 pop up button (collapsed, settable) Format, Value: All formats, Secondary Actions: Expand
+				30 menu
+					31 (selected) All formats
+					32 Face cream
+					33 Gel cleanser
+					34 Lip tint
+			35 text Shade name
+			36 pop up button (collapsed, settable) Shade name, Value: All named shades, Secondary Actions: Expand
+				37 menu
+					38 (selected) All named shades
+					39 Pink Clay
+					40 Rosewater
+			41 text Sort
+			42 pop up button (collapsed, settable) Sort, Value: Featured, Secondary Actions: Expand
+				43 menu
+					44 (selected) Featured
+					45 Price: low to high
+					46 Price: high to low
+					47 Newest
+					48 Name
+			49 button Apply filters
+		50 link Description: Clear filters, Value: syn-threadline-ui-6815276b.localhost:50494/products?limit=20&sort=display_order
+		51 text 17 products
+		52 text THE EVERYDAY SHELF
+		53 heading Choose your next step, Value: 2
+			54 text Choose your next step
+		55 container Cleanse products
+			56 text 01
+			57 heading Cleanse, Value: 2
+				58 text Cleanse
+			59 container
+				60 link Description: Fixture Cloud Rinse, Value: syn-threadline-ui-6815276b.localhost:50494/product/1d743654-5039-41e9-931f-08bb4530dfc5
+				61 text GEL CLEANSER
+				62 heading Fixture Cloud Rinse, Value: 3
+					63 link Description: Fixture Cloud Rinse, Value: syn-threadline-ui-6815276b.localhost:50494/product/1d743654-5039-41e9-931f-08bb4530dfc5
+				64 text INR 640.00 150 ml
+				65 link Description: View product →, Value: syn-threadline-ui-6815276b.localhost:50494/product/1d743654-5039-41e9-931f-08bb4530dfc5
+		66 container Care products
+			67 text 02
+			68 heading Care, Value: 2
+				69 text Care
+			70 container
+				71 link Description: Fixture Daily Veil, Value: syn-threadline-ui-6815276b.localhost:50494/product/e0b42b7e-ee03-4706-ab4e-0a279858b444
+				72 text FACE CREAM
+				73 heading Fixture Daily Veil, Value: 3
+					74 link Description: Fixture Daily Veil, Value: syn-threadline-ui-6815276b.localhost:50494/product/e0b42b7e-ee03-4706-ab4e-0a279858b444
+				75 text INR 880.00 50 g
+				76 link Description: View product →, Value: syn-threadline-ui-6815276b.localhost:50494/product/e0b42b7e-ee03-4706-ab4e-0a279858b444
+		77 container Colour products
+			78 text 03
+			79 heading Colour, Value: 2
+				80 text Colour
+			81 container
+				82 link Description: Fixture Soft Colour, Value: syn-threadline-ui-6815276b.localhost:50494/product/f04c5a94-8f0c-48ae-a450-e2374caa5c7e
+				83 text LIP TINT
+				84 heading Fixture Soft Colour, Value: 3
+					85 link Description: Fixture Soft Colour, Value: syn-threadline-ui-6815276b.localhost:50494/product/f04c5a94-8f0c-48ae-a450-e2374caa5c7e
+				86 text INR 520.00 6 ml 3 named shades
+				87 link Description: View product →, Value: syn-threadline-ui-6815276b.localhost:50494/product/f04c5a94-8f0c-48ae-a450-e2374caa5c7e
+		88 container
+			89 heading More products, Value: 2
+				90 text More products
+			91 text Routine information not supplied.
+			92 link Description: The Everyday Cotton Dress, Value: syn-threadline-ui-6815276b.localhost:50494/product/0d6c961f-ad62-429d-a3c4-364e09a26099
+			93 heading The Everyday Cotton Dress, Value: 3
+				94 link Description: The Everyday Cotton Dress, Value: syn-threadline-ui-6815276b.localhost:50494/product/0d6c961f-ad62-429d-a3c4-364e09a26099
+			95 text INR 3,990.00
+			96 text Ingredients not supplied
+			97 link Description: View product →, Value: syn-threadline-ui-6815276b.localhost:50494/product/0d6c961f-ad62-429d-a3c4-364e09a26099
+			98 link Description: Product image not supplied, Value: syn-threadline-ui-6815276b.localhost:50494/product/1bdd6fce-732b-43bf-9025-2c32caa251b4
+			99 heading MadeYours lifecycle notebook, Value: 3
+				100 link Description: MadeYours lifecycle notebook, Value: syn-threadline-ui-6815276b.localhost:50494/product/1bdd6fce-732b-43bf-9025-2c32caa251b4
+			101 text INR 690.00
+			102 text Ingredients not supplied
+			103 link Description: View product →, Value: syn-threadline-ui-6815276b.localhost:50494/product/1bdd6fce-732b-43bf-9025-2c32caa251b4
+			104 link Description: Marginalia lifecycle lined notebook, Value: syn-threadline-ui-6815276b.localhost:50494/product/43fba2a8-bc4d-4939-917e-8430991fbd09
+			105 heading Marginalia lifecycle lined notebook, Value: 3
+				106 link Description: Marginalia lifecycle lined notebook, Value: syn-threadline-ui-6815276b.localhost:50494/product/43fba2a8-bc4d-4939-917e-8430991fbd09
+			107 text INR 320.00
+			108 text Ingredients not supplied
+			109 link Description: View product →, Value: syn-threadline-ui-6815276b.localhost:50494/product/43fba2a8-bc4d-4939-917e-8430991fbd09
+			110 link Description: The Everyday Linen Shirt, Value: syn-threadline-ui-6815276b.localhost:50494/product/462a9b90-036c-45ac-96b3-f3a7ff4a0053
+			111 heading The Everyday Linen Shirt, Value: 3
+				112 link Description: The Everyday Linen Shirt, Value: syn-threadline-ui-6815276b.localhost:50494/product/462a9b90-036c-45ac-96b3-f3a7ff4a0053
+			113 text INR 2,490.00
+			114 text Ingredients not supplied
+			115 link Description: View product →, Value: syn-threadline-ui-6815276b.localhost:50494/product/462a9b90-036c-45ac-96b3-f3a7ff4a0053
+			116 link Description: Kindred lifecycle gift box, Value: syn-threadline-ui-6815276b.localhost:50494/product/4abca70a-c4f1-42cb-bac1-2988d1c1435c
+			117 heading Kindred lifecycle gift box, Value: 3
+				118 link Description: Kindred lifecycle gift box, Value: syn-threadline-ui-6815276b.localhost:50494/product/4abca70a-c4f1-42cb-bac1-2988d1c1435c
+			119 text INR 1,100.00
+			120 text Ingredients not supplied
+			121 link Description: View product →, Value: syn-threadline-ui-6815276b.localhost:50494/product/4abca70a-c4f1-42cb-bac1-2988d1c1435c
+			122 link Description: Tailored Straight Trouser, Value: syn-threadline-ui-6815276b.localhost:50494/product/4c2d7870-da01-4f42-926a-012434b7d3e9
+			123 heading Tailored Straight Trouser, Value: 3
+				124 link Description: Tailored Straight Trouser, Value: syn-threadline-ui-6815276b.localhost:50494/product/4c2d7870-da01-4f42-926a-012434b7d3e9
+			125 text INR 3,290.00
+			126 text Ingredients not supplied
+			127 link Description: View product →, Value: syn-threadline-ui-6815276b.localhost:50494/product/4c2d7870-da01-4f42-926a-012434b7d3e9
+			128 link Description: Product image not supplied, Value: syn-threadline-ui-6815276b.localhost:50494/product/5dbce431-9870-4636-8b38-e65471737b52
+			129 heading Trailmark lifecycle racket, Value: 3
+				130 link Description: Trailmark lifecycle racket, Value: syn-threadline-ui-6815276b.localhost:50494/product/5dbce431-9870-4636-8b38-e65471737b52
+			131 text INR 1,800.00
+			132 text Ingredients not supplied
+			133 link Description: View product →, Value: syn-threadline-ui-6815276b.localhost:50494/product/5dbce431-9870-4636-8b38-e65471737b52
+			134 link Description: Product image not supplied, Value: syn-threadline-ui-6815276b.localhost:50494/product/61d34f39-5c67-4e1f-88c8-549674f35b24
+			135 heading Circuit lifecycle hub, Value: 3
+				136 link Description: Circuit lifecycle hub, Value: syn-threadline-ui-6815276b.localhost:50494/product/61d34f39-5c67-4e1f-88c8-549674f35b24
+			137 text INR 1,200.00
+			138 text Ingredients not supplied
+			139 link Description: View product →, Value: syn-threadline-ui-6815276b.localhost:50494/product/61d34f39-5c67-4e1f-88c8-549674f35b24
+			140 link Description: Product image not supplied, Value: syn-threadline-ui-6815276b.localhost:50494/product/7070e083-276f-461d-8b17-c441561fae40
+			141 heading Habitat lifecycle desk, Value: 3
+				142 link Description: Habitat lifecycle desk, Value: syn-threadline-ui-6815276b.localhost:50494/product/7070e083-276f-461d-8b17-c441561fae40
+			143 text INR 8,900.00
+			144 text Ingredients not supplied
+			145 link Description: View product →, Value: syn-threadline-ui-6815276b.localhost:50494/product/7070e083-276f-461d-8b17-c441561fae40
+			146 link Description: Product image not supplied, Value: syn-threadline-ui-6815276b.localhost:50494/product/b930546b-c927-4606-bf77-b12a3281d09d
+			147 heading Playfield lifecycle activity kit, Value: 3
+				148 link Description: Playfield lifecycle activity kit, Value: syn-threadline-ui-6815276b.localhost:50494/product/b930546b-c927-4606-bf77-b12a3281d09d
+			149 text INR 480.00
+			150 text Ingredients not supplied
+			151 link Description: View product →, Value: syn-threadline-ui-6815276b.localhost:50494/product/b930546b-c927-4606-bf77-b12a3281d09d
+			152 link Description: Product image not supplied, Value: syn-threadline-ui-6815276b.localhost:50494/product/c0919503-a07e-4144-9efe-af7a686b8333
+			153 heading Pantry lifecycle rice, Value: 3
+				154 link Description: Pantry lifecycle rice, Value: …
+			155 text INR 220.00
+			156 text Ingredients not supplied
+			157 link Description: View product →, Value: …
+			158 link Description: Product image not supplied, Value: …
+			159 heading Pantry lifecycle red lentils, Value: 3
+				160 link Description: Pantry lifecycle red lentils, Value: …
+			161 text INR 180.00
+			162 text Ingredients not supplied
+			163 link Description: View product →, Value: …
+			164 link Description: Product image not supplied, Value: …
+			165 heading Fixture Palm Wash, Value: 3
+				166 link Description: Fixture Palm Wash, Value: …
+			167 text INR 460.00
+			168 text Ingredients not supplied
+			169 link Description: View product →, Value: …
+			170 link Description: Product image not supplied, Value: …
+			171 heading Marginalia lifecycle book, Value: 3
+				172 link Description: Marginalia lifecycle book, Value: …
+			173 text INR 420.00
+			174 text Ingredients not supplied
+			175 link Description: View product →, Value: …
+		176 container Product pages
+			177 text Page 1
+		178 heading Threadline, Value: 3
+			179 text Threadline
+		180 text Dewdrop 936 B footer saved
+		181 heading CONTACT, Value: 4
+			182 text CONTACT
+		183 link Description: Contact us, Value: …
+		184 text © Threadline. All rights reserved.
+		185 link Description: Powered by LetBuyy, Value: letbuyy.com/
+
+The focused UI element is 0 AXWebArea Products | Threadline, URL: syn-threadline-ui-6815276b.localhost:50494/products?limit=20

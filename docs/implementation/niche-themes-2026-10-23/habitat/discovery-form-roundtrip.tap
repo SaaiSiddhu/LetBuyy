@@ -1,0 +1,136 @@
+TAP version 13
+# Subtest: collection: actual sort/apply/search forms preserve every unedited canonical value and repeated connectors
+ok 1 - collection: actual sort/apply/search forms preserve every unedited canonical value and repeated connectors
+  ---
+  duration_ms: 230.466708
+  type: 'test'
+  ...
+# Subtest: collection: actual independent clears, clear-all and pagination keep unrelated query values
+ok 2 - collection: actual independent clears, clear-all and pagination keep unrelated query values
+  ---
+  duration_ms: 139.810375
+  type: 'test'
+  ...
+# Subtest: collection: missing per-dimension support preserves thresholds as hidden fields without advertising controls
+ok 3 - collection: missing per-dimension support preserves thresholds as hidden fields without advertising controls
+  ---
+  duration_ms: 216.133542
+  type: 'test'
+  ...
+# Subtest: collection: an explicitly supplied numeric facet enables only its own cm threshold without rounding
+ok 4 - collection: an explicitly supplied numeric facet enables only its own cm threshold without rounding
+  ---
+  duration_ms: 77.417208
+  type: 'test'
+  ...
+# Subtest: search: actual sort/apply/search forms preserve every unedited canonical value and repeated connectors
+ok 5 - search: actual sort/apply/search forms preserve every unedited canonical value and repeated connectors
+  ---
+  duration_ms: 82.55425
+  type: 'test'
+  ...
+# Subtest: search: actual independent clears, clear-all and pagination keep unrelated query values
+ok 6 - search: actual independent clears, clear-all and pagination keep unrelated query values
+  ---
+  duration_ms: 89.736125
+  type: 'test'
+  ...
+# Subtest: search: missing per-dimension support preserves thresholds as hidden fields without advertising controls
+ok 7 - search: missing per-dimension support preserves thresholds as hidden fields without advertising controls
+  ---
+  duration_ms: 192.692166
+  type: 'test'
+  ...
+# Subtest: search: an explicitly supplied numeric facet enables only its own cm threshold without rounding
+ok 8 - search: an explicitly supplied numeric facet enables only its own cm threshold without rounding
+  ---
+  duration_ms: 68.0485
+  type: 'test'
+  ...
+# Subtest: pure Habitat factory versions stable Craft and preserves old input plus canonical routes
+ok 9 - pure Habitat factory versions stable Craft and preserves old input plus canonical routes
+  ---
+  duration_ms: 37.364042
+  type: 'test'
+  ...
+# Subtest: actual Liquid home and collection render real identities, numeric dimensions and safe empty states
+ok 10 - actual Liquid home and collection render real identities, numeric dimensions and safe empty states
+  ---
+  duration_ms: 230.189334
+  type: 'test'
+  ...
+# Subtest: PDP preserves canonical gallery/variant/cart/review islands with accessible supplied facts
+ok 11 - PDP preserves canonical gallery/variant/cart/review islands with accessible supplied facts
+  ---
+  duration_ms: 61.985833
+  type: 'test'
+  ...
+# Subtest: missing facts/media never become invented sizes/materials/delivery promises
+ok 12 - missing facts/media never become invented sizes/materials/delivery promises
+  ---
+  duration_ms: 50.342417
+  type: 'test'
+  ...
+# Subtest: merchant content/resource settings survive document roundtrip and change actual output
+ok 13 - merchant content/resource settings survive document roundtrip and change actual output
+  ---
+  duration_ms: 109.397875
+  type: 'test'
+  ...
+# Subtest: furniture filters require real server capability and preserve supported search/query values
+ok 14 - furniture filters require real server capability and preserve supported search/query values
+  ---
+  duration_ms: 77.164084
+  type: 'test'
+  ...
+# Subtest: related furniture requires explicit canonical section products and never invents bundles
+ok 15 - related furniture requires explicit canonical section products and never invents bundles
+  ---
+  duration_ms: 91.377959
+  type: 'test'
+  ...
+# Subtest: scoped responsive and reduced-motion contracts retain one-column furniture on small screens
+ok 16 - scoped responsive and reduced-motion contracts retain one-column furniture on small screens
+  ---
+  duration_ms: 7.8
+  type: 'test'
+  ...
+# Subtest: nested variant facts require a bounded display projection; renderer depth cap stays intact
+ok 17 - nested variant facts require a bounded display projection; renderer depth cap stays intact
+  ---
+  duration_ms: 101.902208
+  type: 'test'
+  ...
+# Subtest: room context is an explicit merchant media choice, never inferred from a second photo
+ok 18 - room context is an explicit merchant media choice, never inferred from a second photo
+  ---
+  duration_ms: 79.27425
+  type: 'test'
+  ...
+# Subtest: declared product display projection renders supplied measures without inventing missing raw material
+ok 19 - declared product display projection renders supplied measures without inventing missing raw material
+  ---
+  duration_ms: 44.653291
+  type: 'test'
+  ...
+# Subtest: current finish panel follows the real picker, precedes purchase and starts with explicit common/unknown facts
+ok 20 - current finish panel follows the real picker, precedes purchase and starts with explicit common/unknown facts
+  ---
+  duration_ms: 63.834125
+  type: 'test'
+  ...
+# Subtest: retained addable FAQ and standalone badge keep exact preview IDs on native roots, absent publicly
+ok 21 - retained addable FAQ and standalone badge keep exact preview IDs on native roots, absent publicly
+  ---
+  duration_ms: 76.5435
+  type: 'test'
+  ...
+1..21
+# tests 21
+# suites 0
+# pass 21
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2327.140708

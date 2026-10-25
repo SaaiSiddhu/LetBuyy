@@ -1,0 +1,15 @@
+--- qualified384-body.reference.sql
++++ 391-replacement.proposal.sql
+@@ -90,6 +90,12 @@
+   END LOOP;
+   IF jsonb_typeof(v_input->'templates'->p_template_key)='object' THEN
+    v_templates:=jsonb_set(v_templates,ARRAY[p_template_key],v_input->'templates'->p_template_key,true); END IF;
++  -- Shared groups are explicit document-wide edits, not unselected pages.
++  -- Reapply only supplied header/footer groups after preserving prior pages.
++  IF jsonb_typeof(v_input#>'{templates,header}')='object' THEN
++   v_templates:=jsonb_set(v_templates,'{header}',v_input#>'{templates,header}',true); END IF;
++  IF jsonb_typeof(v_input#>'{templates,footer}')='object' THEN
++   v_templates:=jsonb_set(v_templates,'{footer}',v_input#>'{templates,footer}',true); END IF;
+   v_config:=v_input||jsonb_build_object('templates',v_templates);
+   IF d.id IS NULL THEN
+    INSERT INTO public.theme_instance_drafts(theme_instance_id,store_id,base_release_id,draft_version,working_manifest,schema_manifest_version,created_by,updated_by)

@@ -3,6 +3,44 @@
 @source "./**/*.{ts,tsx}";
 @source "../../../../../packages/typescript/ui/src/**/*.{ts,tsx}";
 
+/* Route feedback uses existing brand/motion roles; the shell keeps its geometry. */
+.merchant-navigation-feedback {
+  position: fixed;
+  inset-inline: 0;
+  top: var(--admin-header-height);
+  height: calc(var(--lb-space-1) / 2);
+  z-index: var(--lb-z-sticky);
+  overflow: hidden;
+  pointer-events: none;
+}
+.merchant-navigation-feedback[hidden] { display: none; }
+.merchant-navigation-feedback-line {
+  display: block;
+  width: 40%;
+  height: 100%;
+  background: var(--lb-color-primary);
+  animation: merchant-route-pending calc(var(--lb-motion-slow) * 5) linear infinite;
+}
+.merchant-link-pending {
+  display: inline-block;
+  flex-shrink: 0;
+  width: var(--lb-size-icon-inline);
+  height: var(--lb-size-icon-inline);
+  margin-inline-start: auto;
+  border: calc(var(--lb-space-1) / 2) solid currentColor;
+  border-inline-end-color: transparent;
+  border-radius: var(--lb-radius-full);
+  animation: spin calc(var(--lb-motion-slow) * 5) linear infinite;
+}
+@keyframes merchant-route-pending {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(350%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .merchant-navigation-feedback-line { width: 100%; animation: none; }
+  .merchant-link-pending { animation: none; }
+}
+
 /* ======================================
    LETBUYY ADMIN — DESIGN SYSTEM
    Synced with accounts app theme
@@ -97,27 +135,14 @@
      app header and lands inside it. Clear the whole header instead. */
   --lb-toast-offset-block-start: calc(var(--admin-header-height) + var(--lb-space-3));
 
-  --header-bg: rgb(10 9 18);
-  --header-border: color-mix(in srgb, var(--lb-color-primary) 14%, transparent);
-  --header-fg: rgb(255 255 255);
-  --header-muted: rgba(255, 255, 255, 0.55);
-  --header-control-bg: rgba(255, 255, 255, 0.07);
-  --header-control-border: color-mix(in srgb, var(--lb-color-primary) 20%, transparent);
-  --header-control-hover: rgba(255, 255, 255, 0.11);
-  --header-control-active: color-mix(in srgb, var(--lb-color-primary) 22%, transparent);
-  --header-logo-glow: color-mix(in srgb, var(--lb-color-primary) 32%, transparent);
-  --header-search-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 6px 20px color-mix(in srgb, var(--lb-color-primary) 10%, transparent);
+
 
   /* — Sidebar — dark ink, matched to the header — */
   /* Legacy flat aliases, retained because ~850 declarations in this file still
      read them. They are now DERIVED from the canonical sidebar contract rather
      than carrying their own literals, so the rail has exactly one source of
      truth (tokens.ts, admin surface identity). Do not add new consumers. */
-  --sidebar-bg: var(--lb-component-sidebar-bg);
-  --sidebar-border: var(--lb-component-sidebar-border);
-  --sidebar-active-bg: var(--lb-component-sidebar-active-bg);
-  --sidebar-active-text: var(--lb-component-sidebar-active-text);
-  --sidebar-hover-bg: var(--lb-component-sidebar-hover-bg);
+
 
   /* — Sidebar Layout Tokens (fixed; change these to restyle the whole nav) — */
   --sidebar-width: 226px;
@@ -462,6 +487,21 @@ body {
    scroll does so inside it (the page plane, the nav rail, the settings pane),
    which is what keeps the header, the rail and the page's curved top pinned. */
 .admin-shell {
+  --header-bg: var(--lb-component-header-bg);
+  --header-border: color-mix(in srgb, var(--lb-color-primary) 14%, transparent);
+  --header-fg: var(--lb-component-header-text);
+  --header-muted: var(--lb-component-header-text-subdued);
+  --header-control-bg: rgba(255, 255, 255, 0.07);
+  --header-control-border: color-mix(in srgb, var(--lb-color-primary) 20%, transparent);
+  --header-control-hover: rgba(255, 255, 255, 0.11);
+  --header-control-active: color-mix(in srgb, var(--lb-color-primary) 22%, transparent);
+  --header-logo-glow: color-mix(in srgb, var(--lb-color-primary) 32%, transparent);
+  --header-search-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 6px 20px color-mix(in srgb, var(--lb-color-primary) 10%, transparent);
+  --sidebar-bg: var(--lb-component-sidebar-bg);
+  --sidebar-border: var(--lb-component-sidebar-border);
+  --sidebar-active-bg: var(--lb-component-sidebar-active-bg);
+  --sidebar-active-text: var(--lb-component-sidebar-active-text);
+  --sidebar-hover-bg: var(--lb-component-sidebar-hover-bg);
   display: flex;
   flex-direction: column;
   height: 100dvh;
@@ -2953,7 +2993,7 @@ body {
   border-radius: var(--lb-radius-full);
 }
 
-.settings-content > main {
+.settings-content > [data-lb-page] {
   width: 100%;
   max-width: var(--settings-content-max-w);
   margin: 0 auto;
@@ -2969,54 +3009,6 @@ body {
      — the bar then lines up with the fields above it, and @letbuyy/ui is
      untouched for every other surface. */
   --lb-size-save-bar-width: 100%;
-}
-
-/* ── Settings page header — compact Shopify-style ──────────────────
-   Override the PageHeader design tokens scoped to settings only.
-   No change to the @letbuyy/ui component itself.
-   ────────────────────────────────────────────────────────────────── */
-.settings-content > main header {
-  /* Compact title: 20px (Shopify) vs default 24px */
-  --lb-component-page-header-title-size: 20px;
-  --lb-component-page-header-title-line-height: 1.25;
-  /* Icon matches title size */
-  --lb-component-page-header-icon-size: 20px;
-  /* Compact header row: 40px (Shopify) vs default 64px */
-  --lb-density-header-height: 40px;
-  /* Compact action buttons: 32px height */
-  --lb-density-button-height: 32px;
-  /* Tighter gap in the header column */
-  gap: var(--lb-space-2);
-  /* No divider: the header sits directly above the first card/section, whose
-     own border already reads as the section boundary — a rule here on top
-     of that was a doubled-up edge, not a second real boundary. One margin
-     now stands in for what used to be padding-bottom + border + margin
-     stacked together. */
-  margin-bottom: var(--lb-space-4);
-}
-
-/* Icon: subdued, matches Shopify's muted icon style */
-.settings-content > main header [data-lb-page-header-icon="true"] {
-  color: var(--lb-color-text-subdued);
-  opacity: 0.9;
-}
-
-/* Title: semibold, tight tracking */
-.settings-content > main header [data-lb-page-header-title="true"] {
-  font-weight: var(--lb-font-weight-semibold);
-  letter-spacing: -0.01em;
-  color: var(--lb-color-text);
-}
-
-/* Action buttons: compact padding */
-.settings-content > main header a[class*="inline-flex"],
-.settings-content > main header button[class*="inline-flex"] {
-  padding-left: var(--lb-space-3);
-  padding-right: var(--lb-space-3);
-  font-size: var(--lb-font-size-secondary);
-  font-weight: var(--lb-font-weight-medium);
-  border-radius: var(--lb-radius-md);
-  letter-spacing: 0;
 }
 
 /* ══ Responsive breakpoints ═════════════════════════════════════════
@@ -3065,7 +3057,7 @@ body {
   }
 
   /* Mobile content: tighter horizontal padding */
-  .settings-content > main {
+  .settings-content > [data-lb-page] {
     max-width: 100%;
     padding: var(--lb-space-5) var(--lb-space-4) var(--lb-space-8);
   }
@@ -3073,7 +3065,7 @@ body {
 
 /* Tablet (640–1023px): wider content padding + constrained max-width */
 @media (min-width: 640px) and (max-width: 1023px) {
-  .settings-content > main {
+  .settings-content > [data-lb-page] {
     max-width: 720px;
     margin: 0 auto;
     padding: var(--lb-space-6) var(--lb-space-7) var(--lb-space-8);
@@ -3119,27 +3111,9 @@ body {
   stroke-width: 2.2;
 }
 
-.settings-home-card {
-  background: var(--lb-color-surface);
-  border: 1px solid var(--lb-color-border);
-  border-radius: var(--lb-radius-lg);
-  overflow: hidden;
-}
 
-.settings-home-section-label {
-  display: flex;
-  align-items: center;
-  padding: var(--lb-space-2) var(--lb-space-5);
-  min-height: 34px;
-  font-size: var(--lb-font-size-caption);
-  font-weight: var(--lb-font-weight-semibold);
-  letter-spacing: 0.055em;
-  text-transform: uppercase;
-  color: var(--lb-color-text-muted);
-  background: var(--lb-color-surface-subdued);
-  border-bottom: 1px solid var(--lb-color-border);
-  user-select: none;
-}
+
+
 
 .settings-home-row {
   display: flex;
@@ -3258,56 +3232,19 @@ body {
 /* Hero card */
 .settings-dashboard-hero {
   position: relative;
-  overflow: hidden;
-  padding: var(--lb-space-6);
-  background: var(--lb-color-surface);
-  border: 1px solid var(--lb-color-border);
-  border-radius: var(--lb-radius-xl);
+  padding: var(--lb-density-card-padding);
   display: flex;
   flex-direction: column;
   gap: var(--lb-space-3);
 }
 
-.settings-dashboard-hero::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 260px;
-  height: 100%;
-  background: linear-gradient(
-    135deg,
-    transparent 0%,
-    color-mix(in srgb, var(--lb-color-primary) 5%, transparent) 100%
-  );
-  pointer-events: none;
-}
 
-.settings-dashboard-hero-eyebrow {
-  margin: 0;
-  font-size: var(--lb-font-size-caption);
-  font-weight: var(--lb-font-weight-semibold);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--lb-color-primary);
-}
 
-.settings-dashboard-hero-title {
-  margin: 0;
-  font-size: var(--lb-font-size-h2);
-  font-weight: 800;
-  color: var(--lb-color-text);
-  line-height: 1.15;
-  letter-spacing: -0.025em;
-}
 
-.settings-dashboard-hero-desc {
-  margin: 0;
-  font-size: var(--lb-font-size-body);
-  color: var(--lb-color-text-subdued);
-  line-height: 1.6;
-  max-width: 540px;
-}
+
+
+
+
 
 .settings-dashboard-hero-stats {
   display: flex;
@@ -3317,33 +3254,9 @@ body {
   margin-top: var(--lb-space-1);
 }
 
-.settings-dashboard-hero-stat {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: var(--lb-space-1) var(--lb-space-3);
-  border-radius: var(--lb-radius-full);
-  font-size: var(--lb-font-size-caption);
-  font-weight: var(--lb-font-weight-medium);
-}
 
-.settings-dashboard-hero-stat .letbuyy-icon {
-  width: 12px;
-  height: 12px;
-  stroke-width: 2.3;
-}
 
-.settings-dashboard-hero-stat--available {
-  background: color-mix(in srgb, var(--lb-color-success) 10%, transparent);
-  color: color-mix(in srgb, var(--lb-color-success) 75%, var(--lb-color-text) 25%);
-  border: 1px solid color-mix(in srgb, var(--lb-color-success) 22%, transparent);
-}
 
-.settings-dashboard-hero-stat--pending {
-  background: color-mix(in srgb, var(--lb-color-warning) 10%, transparent);
-  color: color-mix(in srgb, var(--lb-color-warning) 75%, var(--lb-color-text) 25%);
-  border: 1px solid color-mix(in srgb, var(--lb-color-warning) 22%, transparent);
-}
 
 /* Single column at every width. The five phases carry different task
    counts (2 to 4 rows each), so a 2-column pairing put a short card
@@ -3358,23 +3271,12 @@ body {
 
 /* Phase card */
 .settings-dashboard-phase {
-  background: var(--lb-color-surface);
-  border: 1px solid var(--lb-color-border);
-  border-radius: var(--lb-radius-lg);
-  overflow: hidden;
   display: flex;
   flex-direction: column;
 }
 
 /* Phase card header (colored icon + title + count badge) */
-.settings-dashboard-phase-header {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--lb-space-3);
-  padding: var(--lb-space-4);
-  background: var(--lb-color-surface-subdued);
-  border-bottom: 1px solid var(--lb-color-border);
-}
+
 
 .settings-dashboard-phase-icon {
   display: flex;
@@ -3395,47 +3297,14 @@ body {
   stroke-width: 2.2;
 }
 
-.settings-dashboard-phase-meta {
-  flex: 1;
-  min-width: 0;
-}
 
-.settings-dashboard-phase-title {
-  font-size: var(--lb-font-size-secondary);
-  font-weight: var(--lb-font-weight-semibold);
-  color: var(--lb-color-text);
-  line-height: 1.3;
-}
 
-.settings-dashboard-phase-subdesc {
-  font-size: var(--lb-font-size-caption);
-  color: var(--lb-color-text-muted);
-  margin-top: 3px;
-  line-height: 1.4;
-}
 
-.settings-dashboard-phase-count {
-  flex-shrink: 0;
-  display: inline-flex;
-  align-items: center;
-  padding: 2px 7px;
-  border-radius: var(--lb-radius-sm);
-  font-size: 11px;
-  font-weight: var(--lb-font-weight-medium);
-  margin-top: 1px;
-}
 
-.settings-dashboard-phase-count--full {
-  background: color-mix(in srgb, var(--lb-color-success) 10%, transparent);
-  color: color-mix(in srgb, var(--lb-color-success) 75%, var(--lb-color-text) 25%);
-  border: 1px solid color-mix(in srgb, var(--lb-color-success) 22%, transparent);
-}
 
-.settings-dashboard-phase-count--partial {
-  background: color-mix(in srgb, var(--lb-color-warning) 10%, transparent);
-  color: color-mix(in srgb, var(--lb-color-warning) 75%, var(--lb-color-text) 25%);
-  border: 1px solid color-mix(in srgb, var(--lb-color-warning) 22%, transparent);
-}
+
+
+
 
 /* Task rows */
 .settings-dashboard-task {
@@ -3731,7 +3600,7 @@ body {
   align-items: flex-start;
   justify-content: space-between;
   gap: var(--lb-space-5);
-  padding: var(--lb-space-4) var(--lb-space-5);
+  padding: var(--lb-space-0);
 }
 
 .settings-form-danger-copy {
@@ -4365,7 +4234,7 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: var(--lb-space-4);
-  padding: var(--lb-space-4) var(--lb-space-5);
+  padding: var(--lb-space-0);
   flex-wrap: wrap;
 }
 
@@ -4405,7 +4274,7 @@ body {
 }
 
 .settings-plan-tos {
-  padding: var(--lb-space-3) var(--lb-space-5);
+  padding: var(--lb-space-0);
   font-size: var(--lb-font-size-caption);
   color: var(--lb-color-text-muted);
   border-top: 1px solid var(--lb-color-border);
@@ -4425,7 +4294,7 @@ body {
 }
 
 .settings-plan-subs-desc {
-  padding: var(--lb-space-3) var(--lb-space-5);
+  padding: var(--lb-space-0);
   font-size: var(--lb-font-size-caption);
   color: var(--lb-color-text-subdued);
   line-height: 1.5;
@@ -4464,9 +4333,6 @@ body {
   align-items: center;
   gap: var(--lb-space-3);
   padding: var(--lb-space-4);
-  background: var(--lb-color-surface);
-  border: 1px solid var(--lb-color-border);
-  border-radius: var(--lb-radius-lg);
 }
 
 .billing-stat-icon {
@@ -4512,7 +4378,7 @@ body {
   align-items: flex-start;
   justify-content: space-between;
   gap: var(--lb-space-4);
-  padding: var(--lb-space-5);
+  padding: var(--lb-space-0);
   flex-wrap: wrap;
 }
 .billing-upcoming-main { display: flex; flex-direction: column; gap: var(--lb-space-2); min-width: 0; }
@@ -4549,7 +4415,7 @@ body {
 }
 .billing-upcoming-warn .letbuyy-icon { width: 16px; height: 16px; flex-shrink: 0; color: var(--lb-color-warning); }
 .billing-upcoming-foot {
-  padding: var(--lb-space-3) var(--lb-space-5);
+  padding: var(--lb-space-0);
   border-top: 1px solid var(--lb-color-border);
   font-size: var(--lb-font-size-caption);
   color: var(--lb-color-text-muted);
@@ -5146,7 +5012,13 @@ body {
 
 /* Buy domain */
 .domains-buy-toggle { display: flex; align-items: center; justify-content: space-between; width: 100%; background: transparent; border: none; padding: 0; cursor: pointer; }
-.domains-buy-label { flex: 1; }
+.domains-buy-label {
+  flex: 1;
+  margin: 0;
+  font-size: var(--lb-font-size-section-title);
+  font-weight: var(--lb-font-weight-semibold);
+  line-height: var(--lb-line-height-section-title);
+}
 .domains-buy-chevron { width: 16px; height: 16px; color: var(--lb-color-text-muted); margin-right: var(--lb-space-4); transition: transform var(--lb-motion-fast); }
 .domains-buy-chevron.is-open { transform: rotate(90deg); }
 .domains-buy-search { display: grid; grid-template-columns: 1fr auto; gap: var(--lb-space-2); align-items: end; }
@@ -5979,7 +5851,7 @@ body {
      this range. The banner case in particular is now structural: the wrapper is
      a flex column, so the panel takes what is left instead of overflowing. */
 
-  /* No .settings-content > main rule here. The identical declaration already
+  /* No .settings-content > [data-lb-page] rule here. The identical declaration already
      lives in the <=1023px block, which contains this range; repeating it ~3100
      lines later at equal specificity meant it also beat the 640-1023px TABLET
      rule, so 640-768px silently lost its 720px max-width and wider padding. */

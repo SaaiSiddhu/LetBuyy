@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-24T08:44:32.592345+00:00",
+  "classification": "INDEPENDENT_SOURCE_OBSERVED_EDITOR_WIRING_GAP_NOT_BROWSER_FAILURE",
+  "originalFinding": "Marginalia MG-C-GAP-01",
+  "reviewerThreadId": "01a16ce5-e5ba-7191-ab2c-a1b76947d2b5",
+  "sourcePins": [
+    {
+      "path": "apps/merchant/web/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx",
+      "sha256": "8fe3b25fa551758fd4b9bf2c040b9cbc8810f71df331f5b1b39559790c2c637c"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/SectionTreePanel.tsx",
+      "sha256": "fa4e30236d9f00af2276bcc0ed7c75a6e010923035bc678770ac74288e8ea0c5"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/BlockChildRow.tsx",
+      "sha256": "2ea8f4a5b10df83db4d12cf4821ca78700027f1edefcb6c852e0d22050eec7d9"
+    }
+  ],
+  "observed": {
+    "mainPageSectionTreePanelLine": 1588,
+    "pageProvidesSectionActions": true,
+    "pageProvidesOnAddChildBlock": false,
+    "pageProvidesOnRemoveChildBlock": false,
+    "pageProvidesOnMoveChildBlock": false,
+    "treeDeclaresAndForwardsThoseOptionalCallbacks": true
+  },
+  "requiredDisposition": "Existing Editor owner reconciles supported block hierarchy with canonical schema/state helpers, wires every required supported operation once and proves actual saved result. Do not invent nested schemas for themes that permit none. Flat block reorder/visibility require separate explicit coverage.",
+  "status": "OPEN_SOURCE_GAP_QUEUED_FOR_SHARED_EDITOR_OWNER",
+  "sourceLeaseGranted": false,
+  "runtimeReproduced": false,
+  "browserAcceptance": "NOT_RUN",
+  "preservation": "Read-only source review; no Main edit, runtime, database or browser action."
+}

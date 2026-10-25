@@ -57,7 +57,7 @@ test('immutable storefront content uses pooled SQL while current site policy byp
     'pooled = await loadCurrentThemeReleaseFromPooledSql',
     'public.read_published_storefront_site_v1($1, true)',
     'public.read_published_storefront_release_v1($1, $2, $3, $4)',
-    'const pooledResult = await queryPublicProductsFromPooledSql',
+    '.rpc(STOREFRONT_DISCOVERY_RPC, storefrontDiscoveryRpcArgs(storeId, query, options.ids))',
     'return null',
     'getSupabaseAdmin(c)',
   ], 'storefront pooled SQL hot reads');

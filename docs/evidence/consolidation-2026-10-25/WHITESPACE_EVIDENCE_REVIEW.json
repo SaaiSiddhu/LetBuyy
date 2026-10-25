@@ -1,0 +1,6 @@
+{
+  "status": "ACTIVE_SOURCE_CLEAN_HISTORICAL_EVIDENCE_RETAINED",
+  "scope": "Four final blank lines in active source/test files were normalized. Raw accessibility captures, recorded diffs and archived prompt text retain their original bytes, including meaningful or historical whitespace. The full whitespace diagnostic remains in the private check archive; it is not a behavioral or governance failure.",
+  "historical_evidence_whitespace_annotations": 11638,
+  "active_source_check": "git diff --cached --check -- apps services packages scripts database"
+}

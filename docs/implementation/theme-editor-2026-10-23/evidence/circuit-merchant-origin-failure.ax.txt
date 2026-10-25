@@ -1,0 +1,56 @@
+Browser tab: 12, Title: "LetBuyy Admin", URL: "http://admin.threadline-9cd50e893016.localhost:57225/syn-threadline-ui-d11a8917/products/169ce9c6-d30a-4abf-b1e0-58a771ab88bd".
+The following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+Removed element IDs: 256-260, 370-373
+~		368 container
+~			369 heading Edit product, Value: 1
++				370 text Edit product
++			371 button Discard
++			372 button (disabled) Save product
++		373 container
++			374 heading Product needs attention, Value: 3
++				375 text Product needs attention
++			376 text This change must originate from this merchant app.
++		377 button Check latest product
+~				69 pop up button (disabled, collapsed, settable) Product facts category, Value: Electronics, Secondary Actions: Expand
+~					85 text field (disabled) Manufacturer, Value: Synthetic Lab
+~					87 text field (disabled) Exact product model, Value: Synthetic H1
+~					89 pop up button (disabled, collapsed, settable) Product kind, Value: Hub, Secondary Actions: Expand
+~						103 text field (disabled) Power input maximum (W), Value: 65
+~						105 text field (disabled) Power output maximum (W), Value: 45
+~						107 text field (disabled) Cable power capacity maximum (W)
+~						109 text field (disabled) Laptop pass-through maximum (W), Value: 60
+~						111 text field (disabled) Data transfer maximum (Mb/s)
+~						113 text field (disabled) Cable length (mm)
+~							121 pop up button (disabled, collapsed, settable) Connector 1 kind, Value: USB-C, Secondary Actions: Expand
+~							134 pop up button (disabled, collapsed, settable) Connector 1 role, Value: Power input, Secondary Actions: Expand
+~							145 text field (disabled) Connector 1 count, Value: 1
+~							146 button (disabled) Remove connector 1
+~							153 pop up button (disabled, collapsed, settable) Connector 2 kind, Value: USB-C, Secondary Actions: Expand
+~							166 pop up button (disabled, collapsed, settable) Connector 2 role, Value: Power output, Secondary Actions: Expand
+~							177 text field (disabled) Connector 2 count, Value: 2
+~							178 button (disabled) Remove connector 2
+~							185 pop up button (disabled, collapsed, settable) Connector 3 kind, Value: USB-A, Secondary Actions: Expand
+~							198 pop up button (disabled, collapsed, settable) Connector 3 role, Value: Data, Secondary Actions: Expand
+~							209 text field (disabled) Connector 3 count, Value: 1
+~							210 button (disabled) Remove connector 3
+~						213 button (disabled) Add connector
+~						218 text field (disabled) Video width (px)
+~						220 text field (disabled) Video height (px)
+~						222 text field (disabled) Video refresh rate (Hz)
+~						227 text field (disabled) Product length (mm)
+~						229 text field (disabled) Product width (mm)
+~						231 text field (disabled) Product height (mm)
+~						235 button (disabled) Add host requirement
+~							242 text field (disabled) Included item 1 label, Value: Hub
+~							244 text field (disabled) Included item 1 quantity, Value: 1
+~							245 button (disabled) Remove included item 1
+~						248 button (disabled) Add included item
+~						253 text field (disabled) Product fact-sheet reference
+~						255 date field (disabled, settable) Product fact-sheet source date
+~						265 button (disabled) Add device reference
+~					267 text entry area (disabled) Electronics notes
+~					268 button (disabled) Clear all electronics facts
++	378 container
++		379 text Could not save product This change must originate from this merchant app.
++		380 button Dismiss notification
+The focused UI element is 0 AXWebArea LetBuyy Admin, URL: admin.threadline-9cd50e893016.localhost:57225/syn-threadline-ui-d11a8917/products/169ce9c6-d30a-4abf-b1e0-58a771ab88bd

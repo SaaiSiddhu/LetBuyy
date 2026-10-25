@@ -1,0 +1,51 @@
+{
+  "recordedAt": "2026-10-24T08:53:56.449Z",
+  "classification": "PRIVATE_ACTUAL_SOURCE_FACTORY_RENDERER_QUALIFICATION_ONLY",
+  "mainApplied": false,
+  "review": "PENDING",
+  "source": {
+    "classification": "PRIVATE_SOURCE_PROPOSAL_NOT_MAIN_APPLIED_OR_RUNTIME_ADMITTED",
+    "productionPath": "packages/theme-engine/src/circuit-theme.ts",
+    "baseSha256": "44f78cdaa4d9241723b7bc9ae0f0952d946e72b11775c05160c9949f87a69d2a",
+    "candidateSha256": "cffa7be316a123c6d132237c5464653237dd089c59cc8cb0e8c8667c4f061a51",
+    "patchSha256": "3115e41d26dbcd68b2667458ae7520084a9e115ab6fe154d4a7db86a5066196d",
+    "scope": "One Circuit-owned collection-product-list factory line; no shared engine/editor/query/migration change.",
+    "behavior": "Render a merchant-supplied nonempty results heading. Default is empty to retain the exact existing default page HTML; clearing removes this optional heading.",
+    "identity": "letbuyy-forge/2.0.0 unchanged privately; catalog snapshot/regeneration or version handling remains the allocator’s responsibility before any install.",
+    "mainApplied": false,
+    "review": "PENDING",
+    "validation": "Pending actual source-renderer oracle."
+  },
+  "baselinePublicBundleSha256": "cadab65d5351e1d5f8506d3620df481700ff38ae7e23c19f7282d1f31be79b46",
+  "candidateBundleSha256": "63c01b578143bdcaec40f5a75da863ab055993858f2bb7cb4f3cea38fa55e9f4",
+  "actualPublicPipelineEquality": true,
+  "sourceScopeOnlyResultsSection": true,
+  "realJSONDocumentRoundtrip": true,
+  "cases": [
+    {
+      "template": "collection",
+      "observedOldFieldEffect": false,
+      "privateCustomTitleRenders": true,
+      "clearRestoresExactDefault": true,
+      "merchantTextEscaped": true,
+      "defaultHtmlAndStyleByteIdentical": true,
+      "originalDefaultHtmlSha256": "f159fccce9dd86f0593a05c3197f9a0f752bf6205ce527889745c8dc09e71e37",
+      "privateDefaultHtmlSha256": "f159fccce9dd86f0593a05c3197f9a0f752bf6205ce527889745c8dc09e71e37"
+    },
+    {
+      "template": "search",
+      "observedOldFieldEffect": false,
+      "privateCustomTitleRenders": true,
+      "clearRestoresExactDefault": true,
+      "merchantTextEscaped": true,
+      "defaultHtmlAndStyleByteIdentical": true,
+      "originalDefaultHtmlSha256": "ea160b8bab308eac4347370e9932f540d71e1411a62cbd78af11dd2cafc54651",
+      "privateDefaultHtmlSha256": "ea160b8bab308eac4347370e9932f540d71e1411a62cbd78af11dd2cafc54651"
+    }
+  ],
+  "limitations": [
+    "No mounted editor, save/reload, preview/publish, browser, native PostgreSQL, provider or current installed acceptance.",
+    "No product regression suite, typecheck, full build or real governance gate was run.",
+    "Any eventual apply needs allocator source lease, independent review, catalogue/version lineage and affected candidate retests."
+  ]
+}

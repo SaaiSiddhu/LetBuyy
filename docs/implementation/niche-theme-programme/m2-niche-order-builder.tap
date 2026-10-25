@@ -1,0 +1,58 @@
+TAP version 13
+# Subtest: all nine v2 packages require explicit distribution version and retain stable catalog identities
+ok 1 - all nine v2 packages require explicit distribution version and retain stable catalog identities
+  ---
+  duration_ms: 127.654625
+  type: 'test'
+  ...
+# Subtest: Threadline keeps the same bundle and unknown catalog slugs fail closed
+ok 2 - Threadline keeps the same bundle and unknown catalog slugs fail closed
+  ---
+  duration_ms: 21.215959
+  type: 'test'
+  ...
+# Subtest: the distribution builder includes historical order facts only in the nine explicit v2 packages
+ok 3 - the distribution builder includes historical order facts only in the nine explicit v2 packages
+  ---
+  duration_ms: 100.480375
+  type: 'test'
+  ...
+# Subtest: decoration is pure and idempotent for all nine explicit v2 designs
+ok 4 - decoration is pure and idempotent for all nine explicit v2 designs
+  ---
+  duration_ms: 85.634334
+  type: 'test'
+  ...
+# Subtest: Core, pinned Threadline, v1 captures, other versions and third-party bundles retain exact bytes
+ok 5 - Core, pinned Threadline, v1 captures, other versions and third-party bundles retain exact bytes
+  ---
+  duration_ms: 24.2645
+  type: 'test'
+  ...
+# Subtest: actual Liquid preserves bounded scalar facts through depth four with escaped text and existing order money
+ok 6 - actual Liquid preserves bounded scalar facts through depth four with escaped text and existing order money
+  ---
+  duration_ms: 103.6915
+  type: 'test'
+  ...
+# Subtest: missing legacy scalar stays a brief neutral fallback instead of invented namespace facts
+ok 7 - missing legacy scalar stays a brief neutral fallback instead of invented namespace facts
+  ---
+  duration_ms: 37.435583
+  type: 'test'
+  ...
+# Subtest: a missing canonical line seam refuses decoration instead of modifying unrelated markup
+ok 8 - a missing canonical line seam refuses decoration instead of modifying unrelated markup
+  ---
+  duration_ms: 5.472334
+  type: 'test'
+  ...
+1..8
+# tests 8
+# suites 0
+# pass 8
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 789.316041

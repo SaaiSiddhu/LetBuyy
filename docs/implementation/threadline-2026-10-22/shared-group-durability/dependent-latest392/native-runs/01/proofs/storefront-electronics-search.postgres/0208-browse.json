@@ -1,0 +1,1126 @@
+{
+  "runId": "bc5db405796b",
+  "sequence": 208,
+  "operation": "browse",
+  "inputs": {
+    "suiteSha256": "58d87deaf18c7582a8d13918aea1cf63289436fa1abdd4d4c6961bf7ca900da7",
+    "upSha256": "f17f659b8d037c34f02b9cc1cda912ede406bda7950f99310ebae5ca77c61171",
+    "downSha256": "b66f348b56f8f45c60eacf1ba63e1f10177a2be6c0e9d33eb829649838d6a73e",
+    "admissionSha256": "36cebb87a628423c0f9d3228d4fa43cb73df5032af0d06655d0373d03e490b81",
+    "validatorCasesSha256": "34af5bba863bc02a82e65413fd96e9843df5690df01d44917a0f9d742e9727cf",
+    "predecessor391UpSha256": "27fa0234ad98c4b924fb0d1ecec22e9f592ab533f438ca348f99e4c6bb17a17c",
+    "predecessor391DownSha256": "7fea9fbf09df7f8f3af189ce3e406d3f7582ae2c371bf4dde225b59f91f25b54"
+  },
+  "value": {
+    "signature": "public.browse_storefront_products_v1(uuid,jsonb,uuid[])",
+    "tenantSiteId": "8eeaf607-f57d-421c-b011-8dc9f86464c8",
+    "query": {
+      "page": 1,
+      "limit": 20,
+      "sort": "display_order"
+    },
+    "productIds": null,
+    "raw": {
+      "data": [
+        {
+          "id": "0143dda6-bad4-45e2-98ee-d0fe76ad3573",
+          "name": "Rejected connector accessory 1",
+          "slug": "syn-0143dda6-bad4-45e2-98ee-d0fe76ad3573",
+          "tags": [],
+          "price": 1200,
+          "stock": 8,
+          "images": [],
+          "category": "Search392",
+          "metadata": {
+            "electronics": {
+              "kind": "hub",
+              "model": "REJECTED-CONNECTOR-MODEL-1",
+              "connectors": [
+                {
+                  "kind": "usb_c",
+                  "role": "data",
+                  "count": 1
+                }
+              ],
+              "manufacturer": "Synthetic Lab",
+              "power_input_w": 65,
+              "power_output_w": 45,
+              "pass_through_output_w": 60
+            }
+          },
+          "store_id": "8eeaf607-f57d-421c-b011-8dc9f86464c8",
+          "variants": [],
+          "is_active": true,
+          "seo_title": null,
+          "created_at": "2026-10-23T17:08:01.345538+00:00",
+          "updated_at": "2026-10-23T17:08:01.345538+00:00",
+          "description": "",
+          "is_featured": false,
+          "product_type": null,
+          "compare_price": null,
+          "seo_description": null,
+          "track_inventory": true,
+          "importer_details": null,
+          "country_of_origin": "India"
+        },
+        {
+          "id": "15049e1f-7546-4ead-bae8-8af60f296e7f",
+          "name": "Rejected connector accessory 3",
+          "slug": "syn-15049e1f-7546-4ead-bae8-8af60f296e7f",
+          "tags": [],
+          "price": 1200,
+          "stock": 8,
+          "images": [],
+          "category": "Search392",
+          "metadata": {
+            "electronics": {
+              "kind": "hub",
+              "model": "REJECTED-CONNECTOR-MODEL-3",
+              "connectors": [
+                {
+                  "kind": "USB-C",
+                  "role": "data",
+                  "count": 1
+                }
+              ],
+              "manufacturer": "Synthetic Lab",
+              "power_input_w": 65,
+              "power_output_w": 45,
+              "pass_through_output_w": 60
+            }
+          },
+          "store_id": "8eeaf607-f57d-421c-b011-8dc9f86464c8",
+          "variants": [],
+          "is_active": true,
+          "seo_title": null,
+          "created_at": "2026-10-23T17:08:01.499378+00:00",
+          "updated_at": "2026-10-23T17:08:01.499378+00:00",
+          "description": "",
+          "is_featured": false,
+          "product_type": null,
+          "compare_price": null,
+          "seo_description": null,
+          "track_inventory": true,
+          "importer_details": null,
+          "country_of_origin": "India"
+        },
+        {
+          "id": "1839faf4-72f2-456d-969c-b508f3333005",
+          "name": "LegacyName-sports",
+          "slug": "syn-1839faf4-72f2-456d-969c-b508f3333005",
+          "tags": [
+            "LegacyTag-sports"
+          ],
+          "price": 999,
+          "stock": 5,
+          "images": [],
+          "category": "Search392",
+          "metadata": {
+            "sports": {
+              "length": {
+                "unit": "cm",
+                "value": 67.5
+              },
+              "activity": "badminton",
+              "equipmentType": "racket"
+            }
+          },
+          "store_id": "8eeaf607-f57d-421c-b011-8dc9f86464c8",
+          "variants": [],
+          "is_active": true,
+          "seo_title": null,
+          "created_at": "2026-10-23T17:08:03.294417+00:00",
+          "updated_at": "2026-10-23T17:08:03.294417+00:00",
+          "description": "LegacyDescription-sports",
+          "is_featured": false,
+          "product_type": null,
+          "compare_price": null,
+          "seo_description": null,
+          "track_inventory": true,
+          "importer_details": null,
+          "country_of_origin": "India"
+        },
+        {
+          "id": "1c3cbd51-ac22-4de0-a74d-f6293b3f8eaf",
+          "name": "Separate accessory",
+          "slug": "syn-1c3cbd51-ac22-4de0-a74d-f6293b3f8eaf",
+          "tags": [],
+          "price": 400,
+          "stock": 8,
+          "images": [],
+          "category": "Search392",
+          "metadata": {
+            "electronics": {
+              "kind": "hub",
+              "model": "नमूना H‑1 Δ",
+              "connectors": [
+                {
+                  "kind": "hdmi",
+                  "role": "video",
+                  "count": 1
+                }
+              ],
+              "manufacturer": "Synthetic Lab",
+              "power_input_w": 65,
+              "power_output_w": 45,
+              "pass_through_output_w": 60
+            }
+          },
+          "store_id": "8eeaf607-f57d-421c-b011-8dc9f86464c8",
+          "variants": [],
+          "is_active": true,
+          "seo_title": null,
+          "created_at": "2026-10-23T17:08:00.922926+00:00",
+          "updated_at": "2026-10-23T17:08:00.922926+00:00",
+          "description": "",
+          "is_featured": false,
+          "product_type": null,
+          "compare_price": null,
+          "seo_description": null,
+          "track_inventory": true,
+          "importer_details": null,
+          "country_of_origin": "India"
+        },
+        {
+          "id": "1f0d49ad-eaeb-4f4e-9cb2-a23a7c6a32b0",
+          "name": "Rejected connector accessory 6",
+          "slug": "syn-1f0d49ad-eaeb-4f4e-9cb2-a23a7c6a32b0",
+          "tags": [],
+          "price": 1200,
+          "stock": 8,
+          "images": [],
+          "category": "Search392",
+          "metadata": {
+            "electronics": {
+              "kind": "hub",
+              "model": "REJECTED-CONNECTOR-MODEL-6",
+              "connectors": [
+                {
+                  "kind": "usb-c",
+                  "role": "data",
+                  "count": 0
+                }
+              ],
+              "manufacturer": "Synthetic Lab",
+              "power_input_w": 65,
+              "power_output_w": 45,
+              "pass_through_output_w": 60
+            }
+          },
+          "store_id": "8eeaf607-f57d-421c-b011-8dc9f86464c8",
+          "variants": [],
+          "is_active": true,
+          "seo_title": null,
+          "created_at": "2026-10-23T17:08:01.729041+00:00",
+          "updated_at": "2026-10-23T17:08:01.729041+00:00",
+          "description": "",
+          "is_featured": false,
+          "product_type": null,
+          "compare_price": null,
+          "seo_description": null,
+          "track_inventory": true,
+          "importer_details": null,
+          "country_of_origin": "India"
+        },
+        {
+          "id": "2d7031cd-b7d0-4016-b627-16590b5c5f0b",
+          "name": "Rejected connector accessory 8",
+          "slug": "syn-2d7031cd-b7d0-4016-b627-16590b5c5f0b",
+          "tags": [],
+          "price": 1200,
+          "stock": 8,
+          "images": [],
+          "category": "Search392",
+          "metadata": {
+            "electronics": {
+              "kind": "hub",
+              "model": "REJECTED-CONNECTOR-MODEL-8",
+              "connectors": [
+                {
+                  "kind": "usb-c",
+                  "role": "data"
+                }
+              ],
+              "manufacturer": "Synthetic Lab",
+              "power_input_w": 65,
+              "power_output_w": 45,
+              "pass_through_output_w": 60
+            }
+          },
+          "store_id": "8eeaf607-f57d-421c-b011-8dc9f86464c8",
+          "variants": [],
+          "is_active": true,
+          "seo_title": null,
+          "created_at": "2026-10-23T17:08:01.881363+00:00",
+          "updated_at": "2026-10-23T17:08:01.881363+00:00",
+          "description": "",
+          "is_featured": false,
+          "product_type": null,
+          "compare_price": null,
+          "seo_description": null,
+          "track_inventory": true,
+          "importer_details": null,
+          "country_of_origin": "India"
+        },
+        {
+          "id": "35d6eed3-553c-454e-8889-8707f1208c73",
+          "name": "LegacyName-toys",
+          "slug": "syn-35d6eed3-553c-454e-8889-8707f1208c73",
+          "tags": [
+            "LegacyTag-toys"
+          ],
+          "price": 999,
+          "stock": 5,
+          "images": [],
+          "category": "Search392",
+          "metadata": {
+            "toys": {
+              "ageBands": [
+                "6-8"
+              ],
+              "interests": [
+                "art"
+              ]
+            }
+          },
+          "store_id": "8eeaf607-f57d-421c-b011-8dc9f86464c8",
+          "variants": [],
+          "is_active": true,
+          "seo_title": null,
+          "created_at": "2026-10-23T17:08:03.062958+00:00",
+          "updated_at": "2026-10-23T17:08:03.062958+00:00",
+          "description": "LegacyDescription-toys",
+          "is_featured": false,
+          "product_type": null,
+          "compare_price": null,
+          "seo_description": null,
+          "track_inventory": true,
+          "importer_details": null,
+          "country_of_origin": "India"
+        },
+        {
+          "id": "4063bcc6-24e1-481f-b8f0-97a2e5e827f8",
+          "name": "Connector-only accessory",
+          "slug": "syn-4063bcc6-24e1-481f-b8f0-97a2e5e827f8",
+          "tags": [],
+          "price": 1200,
+          "stock": 8,
+          "images": [],
+          "category": "Search392",
+          "metadata": {
+            "electronics": {
+              "kind": "other",
+              "connectors": [
+                {
+                  "kind": "sd",
+                  "role": "card-reader",
+                  "count": 1
+                }
+              ]
+            }
+          },
+          "store_id": "8eeaf607-f57d-421c-b011-8dc9f86464c8",
+          "variants": [],
+          "is_active": true,
+          "seo_title": null,
+          "created_at": "2026-10-23T17:08:01.036598+00:00",
+          "updated_at": "2026-10-23T17:08:01.036598+00:00",
+          "description": "",
+          "is_featured": false,
+          "product_type": null,
+          "compare_price": null,
+          "seo_description": null,
+          "track_inventory": true,
+          "importer_details": null,
+          "country_of_origin": "India"
+        },
+        {
+          "id": "44d0a2bc-cb9c-4dd1-95b1-9fd89bffa0f7",
+          "name": "Same display name",
+          "slug": "syn-44d0a2bc-cb9c-4dd1-95b1-9fd89bffa0f7",
+          "tags": [],
+          "price": 450,
+          "stock": 8,
+          "images": [],
+          "category": "Search392",
+          "metadata": {
+            "electronics": {
+              "kind": "other",
+              "model": "TIE-MODEL",
+              "connectors": []
+            }
+          },
+          "store_id": "8eeaf607-f57d-421c-b011-8dc9f86464c8",
+          "variants": [],
+          "is_active": true,
+          "seo_title": null,
+          "created_at": "2026-10-23T17:08:02.934408+00:00",
+          "updated_at": "2026-10-23T17:08:02.934408+00:00",
+          "description": "",
+          "is_featured": false,
+          "product_type": null,
+          "compare_price": null,
+          "seo_description": null,
+          "track_inventory": true,
+          "importer_details": null,
+          "country_of_origin": "India"
+        },
+        {
+          "id": "48b5b5c7-5459-4d81-b70c-6a6399747a32",
+          "name": "Rejected connector accessory 9",
+          "slug": "syn-48b5b5c7-5459-4d81-b70c-6a6399747a32",
+          "tags": [],
+          "price": 1200,
+          "stock": 8,
+          "images": [],
+          "category": "Search392",
+          "metadata": {
+            "electronics": {
+              "kind": "hub",
+              "model": "REJECTED-CONNECTOR-MODEL-9",
+              "connectors": [
+                {
+                  "kind": "usb-c",
+                  "role": "data",
+                  "count": 1,
+                  "private_key": "PRIVATE-CONNECTOR"
+                }
+              ],
+              "manufacturer": "Synthetic Lab",
+              "power_input_w": 65,
+              "power_output_w": 45,
+              "pass_through_output_w": 60
+            }
+          },
+          "store_id": "8eeaf607-f57d-421c-b011-8dc9f86464c8",
+          "variants": [],
+          "is_active": true,
+          "seo_title": null,
+          "created_at": "2026-10-23T17:08:01.955063+00:00",
+          "updated_at": "2026-10-23T17:08:01.955063+00:00",
+          "description": "",
+          "is_featured": false,
+          "product_type": null,
+          "compare_price": null,
+          "seo_description": null,
+          "track_inventory": true,
+          "importer_details": null,
+          "country_of_origin": "India"
+        },
+        {
+          "id": "51193e96-a94d-4d37-84f8-a1dd6b87354d",
+          "name": "Malformed accessory",
+          "slug": "syn-51193e96-a94d-4d37-84f8-a1dd6b87354d",
+          "tags": [],
+          "price": 1200,
+          "stock": 8,
+          "images": [],
+          "category": "Search392",
+          "metadata": {
+            "private": "PRIVATE-OUTER-TERM",
+            "electronics": {
+              "kind": "hub",
+              "model": "POISON-ONE",
+              "connectors": "bad",
+              "manufacturer": "Synthetic Lab",
+              "power_input_w": 65,
+              "power_output_w": 45,
+              "pass_through_output_w": 60
+            }
+          },
+          "store_id": "8eeaf607-f57d-421c-b011-8dc9f86464c8",
+          "variants": [],
+          "is_active": true,
+          "seo_title": null,
+          "created_at": "2026-10-23T17:08:01.073203+00:00",
+          "updated_at": "2026-10-23T17:08:01.073203+00:00",
+          "description": "",
+          "is_featured": false,
+          "product_type": null,
+          "compare_price": null,
+          "seo_description": null,
+          "track_inventory": true,
+          "importer_details": null,
+          "country_of_origin": "India"
+        },
+        {
+          "id": "536e2c10-763e-47d2-a324-523487fb6eed",
+          "name": "Rejected connector accessory 0",
+          "slug": "syn-536e2c10-763e-47d2-a324-523487fb6eed",
+          "tags": [],
+          "price": 1200,
+          "stock": 8,
+          "images": [],
+          "category": "Search392",
+          "metadata": {
+            "electronics": {
+              "kind": "hub",
+              "model": "REJECTED-CONNECTOR-MODEL-0",
+              "connectors": [
+                {
+                  "kind": "USB C",
+                  "role": "data",
+                  "count": 1
+                }
+              ],
+              "manufacturer": "Synthetic Lab",
+              "power_input_w": 65,
+              "power_output_w": 45,
+              "pass_through_output_w": 60
+            }
+          },
+          "store_id": "8eeaf607-f57d-421c-b011-8dc9f86464c8",
+          "variants": [],
+          "is_active": true,
+          "seo_title": null,
+          "created_at": "2026-10-23T17:08:01.267735+00:00",
+          "updated_at": "2026-10-23T17:08:01.267735+00:00",
+          "description": "",
+          "is_featured": false,
+          "product_type": null,
+          "compare_price": null,
+          "seo_description": null,
+          "track_inventory": true,
+          "importer_details": null,
+          "country_of_origin": "India"
+        },
+        {
+          "id": "53f0a0d8-c1fa-4e9f-80e7-dcdc2fdd6bec",
+          "name": "Numeric model accessory",
+          "slug": "syn-53f0a0d8-c1fa-4e9f-80e7-dcdc2fdd6bec",
+          "tags": [],
+          "price": 1200,
+          "stock": 8,
+          "images": [],
+          "category": "Search392",
+          "metadata": {
+            "electronics": {
+              "kind": "hub",
+              "model": 987654321,
+              "connectors": [
+                {
+                  "kind": "usb-c",
+                  "role": "power-input",
+                  "count": 1
+                },
+                {
+                  "kind": "usb-c",
+                  "role": "power-output",
+                  "count": 2
+                },
+                {
+                  "kind": "usb-a",
+                  "role": "data",
+                  "count": 1
+                }
+              ],
+              "manufacturer": "Synthetic Lab",
+              "power_input_w": 65,
+              "power_output_w": 45,
+              "pass_through_output_w": 60
+            }
+          },
+          "store_id": "8eeaf607-f57d-421c-b011-8dc9f86464c8",
+          "variants": [],
+          "is_active": true,
+          "seo_title": null,
+          "created_at": "2026-10-23T17:08:01.19283+00:00",
+          "updated_at": "2026-10-23T17:08:01.19283+00:00",
+          "description": "",
+          "is_featured": false,
+          "product_type": null,
+          "compare_price": null,
+          "seo_description": null,
+          "track_inventory": true,
+          "importer_details": null,
+          "country_of_origin": "India"
+        },
+        {
+          "id": "57098274-d37f-4703-b904-e3a48742ba2c",
+          "name": "LegacyName-books",
+          "slug": "syn-57098274-d37f-4703-b904-e3a48742ba2c",
+          "tags": [
+            "LegacyTag-books"
+          ],
+          "price": 999,
+          "stock": 5,
+          "images": [],
+          "category": "Search392",
+          "metadata": {
+            "books": {
+              "kind": "book",
+              "format": "paperback",
+              "authors": [
+                "LegacyAuthorOnly"
+              ],
+              "language": "English",
+              "subjects": [
+                "Fiction"
+              ]
+            }
+          },
+          "store_id": "8eeaf607-f57d-421c-b011-8dc9f86464c8",
+          "variants": [],
+          "is_active": true,
+          "seo_title": null,
+          "created_at": "2026-10-23T17:08:03.332308+00:00",
+          "updated_at": "2026-10-23T17:08:03.332308+00:00",
+          "description": "LegacyDescription-books",
+          "is_featured": false,
+          "product_type": null,
+          "compare_price": null,
+          "seo_description": null,
+          "track_inventory": true,
+          "importer_details": null,
+          "country_of_origin": "India"
+        },
+        {
+          "id": "5b332eb6-d7f0-495d-9581-2d9da4950501",
+          "name": "Unknown accessory",
+          "slug": "syn-5b332eb6-d7f0-495d-9581-2d9da4950501",
+          "tags": [],
+          "price": 1200,
+          "stock": 8,
+          "images": [],
+          "category": "Search392",
+          "metadata": {},
+          "store_id": "8eeaf607-f57d-421c-b011-8dc9f86464c8",
+          "variants": [],
+          "is_active": true,
+          "seo_title": null,
+          "created_at": "2026-10-23T17:08:00.99857+00:00",
+          "updated_at": "2026-10-23T17:08:00.99857+00:00",
+          "description": "",
+          "is_featured": false,
+          "product_type": null,
+          "compare_price": null,
+          "seo_description": null,
+          "track_inventory": true,
+          "importer_details": null,
+          "country_of_origin": "India"
+        },
+        {
+          "id": "715cde4a-25c3-4427-8eb2-4944a989c4cd",
+          "name": "Same display name",
+          "slug": "syn-715cde4a-25c3-4427-8eb2-4944a989c4cd",
+          "tags": [],
+          "price": 450,
+          "stock": 8,
+          "images": [],
+          "category": "Search392",
+          "metadata": {
+            "electronics": {
+              "kind": "other",
+              "model": "TIE-MODEL",
+              "connectors": []
+            }
+          },
+          "store_id": "8eeaf607-f57d-421c-b011-8dc9f86464c8",
+          "variants": [],
+          "is_active": true,
+          "seo_title": null,
+          "created_at": "2026-10-23T17:08:02.853494+00:00",
+          "updated_at": "2026-10-23T17:08:02.853494+00:00",
+          "description": "",
+          "is_featured": false,
+          "product_type": null,
+          "compare_price": null,
+          "seo_description": null,
+          "track_inventory": true,
+          "importer_details": null,
+          "country_of_origin": "India"
+        },
+        {
+          "id": "78c81dea-9fec-4a4e-82ef-d896a9ebf891",
+          "name": "Only sold variant accessory",
+          "slug": "syn-78c81dea-9fec-4a4e-82ef-d896a9ebf891",
+          "tags": [],
+          "price": 2000,
+          "stock": 999,
+          "images": [],
+          "category": "Search392",
+          "metadata": {
+            "electronics": {
+              "kind": "other",
+              "model": "RELATIONAL-UNAVAILABLE",
+              "connectors": [
+                {
+                  "kind": "displayport",
+                  "role": "video",
+                  "count": 1
+                }
+              ]
+            }
+          },
+          "store_id": "8eeaf607-f57d-421c-b011-8dc9f86464c8",
+          "variants": [
+            {
+              "id": "3248ea3a-4744-4198-a143-8f7635d33e03",
+              "sku": null,
+              "price": 100,
+              "stock": 0,
+              "title": "Synthetic M",
+              "weight": null,
+              "barcode": null,
+              "option1": "M",
+              "option2": null,
+              "option3": null,
+              "options": {
+                "Size": "M"
+              },
+              "metadata": {},
+              "position": 0,
+              "image_url": null,
+              "product_id": "78c81dea-9fec-4a4e-82ef-d896a9ebf891",
+              "weight_unit": "kg",
+              "compare_price": null,
+              "inventory_qty": 0,
+              "inventory_quantity": 0
+            }
+          ],
+          "is_active": true,
+          "seo_title": null,
+          "created_at": "2026-10-23T17:08:02.730102+00:00",
+          "updated_at": "2026-10-23T17:08:02.806085+00:00",
+          "description": "",
+          "is_featured": false,
+          "product_type": null,
+          "compare_price": null,
+          "seo_description": null,
+          "track_inventory": true,
+          "importer_details": null,
+          "country_of_origin": "India"
+        },
+        {
+          "id": "8089e4c6-05bd-485b-9a03-22f3dd1bd690",
+          "name": "Rejected connector accessory 4",
+          "slug": "syn-8089e4c6-05bd-485b-9a03-22f3dd1bd690",
+          "tags": [],
+          "price": 1200,
+          "stock": 8,
+          "images": [],
+          "category": "Search392",
+          "metadata": {
+            "electronics": {
+              "kind": "hub",
+              "model": "REJECTED-CONNECTOR-MODEL-4",
+              "connectors": [
+                {
+                  "kind": "unknown-connector",
+                  "role": "data",
+                  "count": 1
+                }
+              ],
+              "manufacturer": "Synthetic Lab",
+              "power_input_w": 65,
+              "power_output_w": 45,
+              "pass_through_output_w": 60
+            }
+          },
+          "store_id": "8eeaf607-f57d-421c-b011-8dc9f86464c8",
+          "variants": [],
+          "is_active": true,
+          "seo_title": null,
+          "created_at": "2026-10-23T17:08:01.573047+00:00",
+          "updated_at": "2026-10-23T17:08:01.573047+00:00",
+          "description": "",
+          "is_featured": false,
+          "product_type": null,
+          "compare_price": null,
+          "seo_description": null,
+          "track_inventory": true,
+          "importer_details": null,
+          "country_of_origin": "India"
+        },
+        {
+          "id": "8e10f3c7-6d01-4292-8d8c-05fdef8f4e49",
+          "name": "Rejected connector accessory 5",
+          "slug": "syn-8e10f3c7-6d01-4292-8d8c-05fdef8f4e49",
+          "tags": [],
+          "price": 1200,
+          "stock": 8,
+          "images": [],
+          "category": "Search392",
+          "metadata": {
+            "electronics": {
+              "kind": "hub",
+              "model": "REJECTED-CONNECTOR-MODEL-5",
+              "connectors": [
+                {
+                  "kind": "usb-c",
+                  "role": "charging",
+                  "count": 1
+                }
+              ],
+              "manufacturer": "Synthetic Lab",
+              "power_input_w": 65,
+              "power_output_w": 45,
+              "pass_through_output_w": 60
+            }
+          },
+          "store_id": "8eeaf607-f57d-421c-b011-8dc9f86464c8",
+          "variants": [],
+          "is_active": true,
+          "seo_title": null,
+          "created_at": "2026-10-23T17:08:01.651708+00:00",
+          "updated_at": "2026-10-23T17:08:01.651708+00:00",
+          "description": "",
+          "is_featured": false,
+          "product_type": null,
+          "compare_price": null,
+          "seo_description": null,
+          "track_inventory": true,
+          "importer_details": null,
+          "country_of_origin": "India"
+        },
+        {
+          "id": "977de32a-fffa-463d-a644-d33225d79261",
+          "name": "Impossible accessory",
+          "slug": "syn-977de32a-fffa-463d-a644-d33225d79261",
+          "tags": [],
+          "price": 1200,
+          "stock": 8,
+          "images": [],
+          "category": "Search392",
+          "metadata": {
+            "electronics": {
+              "kind": "hub",
+              "model": "POISON-TWO",
+              "connectors": [
+                {
+                  "kind": "usb-c",
+                  "role": "power-input",
+                  "count": 1
+                },
+                {
+                  "kind": "usb-c",
+                  "role": "power-output",
+                  "count": 2
+                },
+                {
+                  "kind": "usb-a",
+                  "role": "data",
+                  "count": 1
+                }
+              ],
+              "manufacturer": "Synthetic Lab",
+              "power_input_w": 65,
+              "power_output_w": 45,
+              "pass_through_output_w": 66
+            }
+          },
+          "store_id": "8eeaf607-f57d-421c-b011-8dc9f86464c8",
+          "variants": [],
+          "is_active": true,
+          "seo_title": null,
+          "created_at": "2026-10-23T17:08:01.113323+00:00",
+          "updated_at": "2026-10-23T17:08:01.113323+00:00",
+          "description": "",
+          "is_featured": false,
+          "product_type": null,
+          "compare_price": null,
+          "seo_description": null,
+          "track_inventory": true,
+          "importer_details": null,
+          "country_of_origin": "India"
+        }
+      ],
+      "count": 35,
+      "facets": [
+        {
+          "key": "activity",
+          "count": 1,
+          "label": "badminton",
+          "value": "badminton"
+        },
+        {
+          "key": "age_band",
+          "count": 1,
+          "label": "6-8",
+          "value": "6-8"
+        },
+        {
+          "key": "books_format",
+          "count": 1,
+          "label": "paperback",
+          "value": "paperback"
+        },
+        {
+          "key": "books_kind",
+          "count": 1,
+          "label": "book",
+          "value": "book"
+        },
+        {
+          "key": "books_language",
+          "count": 1,
+          "label": "English",
+          "value": "english"
+        },
+        {
+          "key": "books_subject",
+          "count": 1,
+          "label": "Fiction",
+          "value": "fiction"
+        },
+        {
+          "key": "category",
+          "count": 33,
+          "label": "Search392",
+          "value": "Search392"
+        },
+        {
+          "key": "connector",
+          "count": 1,
+          "label": "hdmi",
+          "value": "hdmi"
+        },
+        {
+          "key": "connector",
+          "count": 1,
+          "label": "sd",
+          "value": "sd"
+        },
+        {
+          "key": "connector",
+          "count": 2,
+          "label": "usb-a",
+          "value": "usb-a"
+        },
+        {
+          "key": "connector",
+          "count": 2,
+          "label": "usb-c",
+          "value": "usb-c"
+        },
+        {
+          "key": "country_of_origin",
+          "count": 33,
+          "label": "India",
+          "value": "india"
+        },
+        {
+          "key": "electronics_kind",
+          "count": 3,
+          "label": "hub",
+          "value": "hub"
+        },
+        {
+          "key": "electronics_kind",
+          "count": 6,
+          "label": "other",
+          "value": "other"
+        },
+        {
+          "key": "equipment_type",
+          "count": 1,
+          "label": "racket",
+          "value": "racket"
+        },
+        {
+          "key": "finish",
+          "count": 1,
+          "label": "Natural",
+          "value": "natural"
+        },
+        {
+          "key": "format",
+          "count": 1,
+          "label": "Cream",
+          "value": "cream"
+        },
+        {
+          "key": "interest",
+          "count": 1,
+          "label": "art",
+          "value": "art"
+        },
+        {
+          "key": "material",
+          "count": 1,
+          "label": "Wood",
+          "value": "wood"
+        },
+        {
+          "key": "occasion",
+          "count": 1,
+          "label": "birthday",
+          "value": "birthday"
+        },
+        {
+          "key": "pack_size",
+          "count": 1,
+          "label": "250 g",
+          "value": "g:250"
+        },
+        {
+          "key": "pass_through_output_w",
+          "count": 3,
+          "label": "60",
+          "value": "60"
+        },
+        {
+          "key": "personalization_method",
+          "count": 1,
+          "label": "engrave",
+          "value": "engrave"
+        },
+        {
+          "key": "power_input_w",
+          "count": 3,
+          "label": "65",
+          "value": "65"
+        },
+        {
+          "key": "power_output_w",
+          "count": 3,
+          "label": "45",
+          "value": "45"
+        },
+        {
+          "key": "recipient",
+          "count": 1,
+          "label": "friend",
+          "value": "friend"
+        },
+        {
+          "key": "routine_stage",
+          "count": 1,
+          "label": "care",
+          "value": "care"
+        },
+        {
+          "key": "size",
+          "count": 1,
+          "label": "M",
+          "value": "m"
+        },
+        {
+          "key": "size",
+          "count": 1,
+          "label": "S",
+          "value": "s"
+        }
+      ],
+      "matches": [
+        {
+          "price": 1200,
+          "product_id": "0143dda6-bad4-45e2-98ee-d0fe76ad3573",
+          "variant_ids": []
+        },
+        {
+          "price": 1200,
+          "product_id": "15049e1f-7546-4ead-bae8-8af60f296e7f",
+          "variant_ids": []
+        },
+        {
+          "price": 999,
+          "product_id": "1839faf4-72f2-456d-969c-b508f3333005",
+          "variant_ids": []
+        },
+        {
+          "price": 400,
+          "product_id": "1c3cbd51-ac22-4de0-a74d-f6293b3f8eaf",
+          "variant_ids": []
+        },
+        {
+          "price": 1200,
+          "product_id": "1f0d49ad-eaeb-4f4e-9cb2-a23a7c6a32b0",
+          "variant_ids": []
+        },
+        {
+          "price": 1200,
+          "product_id": "2d7031cd-b7d0-4016-b627-16590b5c5f0b",
+          "variant_ids": []
+        },
+        {
+          "price": 999,
+          "product_id": "35d6eed3-553c-454e-8889-8707f1208c73",
+          "variant_ids": []
+        },
+        {
+          "price": 1200,
+          "product_id": "4063bcc6-24e1-481f-b8f0-97a2e5e827f8",
+          "variant_ids": []
+        },
+        {
+          "price": 450,
+          "product_id": "44d0a2bc-cb9c-4dd1-95b1-9fd89bffa0f7",
+          "variant_ids": []
+        },
+        {
+          "price": 1200,
+          "product_id": "48b5b5c7-5459-4d81-b70c-6a6399747a32",
+          "variant_ids": []
+        },
+        {
+          "price": 1200,
+          "product_id": "51193e96-a94d-4d37-84f8-a1dd6b87354d",
+          "variant_ids": []
+        },
+        {
+          "price": 1200,
+          "product_id": "536e2c10-763e-47d2-a324-523487fb6eed",
+          "variant_ids": []
+        },
+        {
+          "price": 1200,
+          "product_id": "53f0a0d8-c1fa-4e9f-80e7-dcdc2fdd6bec",
+          "variant_ids": []
+        },
+        {
+          "price": 999,
+          "product_id": "57098274-d37f-4703-b904-e3a48742ba2c",
+          "variant_ids": []
+        },
+        {
+          "price": 1200,
+          "product_id": "5b332eb6-d7f0-495d-9581-2d9da4950501",
+          "variant_ids": []
+        },
+        {
+          "price": 450,
+          "product_id": "715cde4a-25c3-4427-8eb2-4944a989c4cd",
+          "variant_ids": []
+        },
+        {
+          "price": 100,
+          "product_id": "78c81dea-9fec-4a4e-82ef-d896a9ebf891",
+          "variant_ids": []
+        },
+        {
+          "price": 1200,
+          "product_id": "8089e4c6-05bd-485b-9a03-22f3dd1bd690",
+          "variant_ids": []
+        },
+        {
+          "price": 1200,
+          "product_id": "8e10f3c7-6d01-4292-8d8c-05fdef8f4e49",
+          "variant_ids": []
+        },
+        {
+          "price": 1200,
+          "product_id": "977de32a-fffa-463d-a644-d33225d79261",
+          "variant_ids": []
+        }
+      ],
+      "measurement_capabilities": {
+        "max_depth_cm": {
+          "available": true
+        },
+        "max_width_cm": {
+          "available": true
+        },
+        "equipment_length": {
+          "available": true,
+          "allowed_units": [
+            "mm",
+            "cm",
+            "m",
+            "in"
+          ]
+        }
+      }
+    }
+  }
+}

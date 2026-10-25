@@ -1,0 +1,17 @@
+{
+  "runId": "3948938e7c9b",
+  "name": "mounted-api",
+  "sequence": 41,
+  "suiteSha256": "e71b15856e4868d28f249d8debf7f758de31cf61715bd10c0844ce79c2bc66b2",
+  "value": {
+    "path": "/v1/themes/letbuyy-sense/releases/fe93872b-8ec8-4206-9391-006a2221d99c/rollback",
+    "method": "POST",
+    "status": 403,
+    "response": {
+      "error": {
+        "code": "FORBIDDEN",
+        "message": "Your current account cannot restore this store theme."
+      }
+    }
+  }
+}

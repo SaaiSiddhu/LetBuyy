@@ -1,0 +1,30 @@
+{
+  "status": "ROOT_REVIEWED_TENANT_CORRECTION_SOURCE_ONLY_BASELINE",
+  "files": [
+    {
+      "path": "services/api-gateway/src/lib/tenant-transaction.ts",
+      "sha256": "4392d5e05b5ec0bde212c216f5cfc6086087d67fa7e646fd54da0c16cc1518cb",
+      "snapshot": "docs/implementation/niche-theme-programme/release-playfield201/native-qualification/tenant-correction/services__api-gateway__src__lib__tenant-transaction.ts.before.snapshot"
+    },
+    {
+      "path": "services/api-gateway/src/routes/themes/theme-update-route.ts",
+      "sha256": "85e3e888f9bf222e07abddd58a92c39417dcbbed8773872049a982e487afc89b",
+      "snapshot": "docs/implementation/niche-theme-programme/release-playfield201/native-qualification/tenant-correction/services__api-gateway__src__routes__themes__theme-update-route.ts.before.snapshot"
+    },
+    {
+      "path": "services/api-gateway/src/execution/theme-execution.adapter.ts",
+      "sha256": "f9d8a01afa9075abb5e33f0ca4cc73fbe3a1d860aef03473e30f1372ba5b00fd",
+      "snapshot": "docs/implementation/niche-theme-programme/release-playfield201/native-qualification/tenant-correction/services__api-gateway__src__execution__theme-execution.adapter.ts.before.snapshot"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/theme-update.test.ts",
+      "sha256": "3ba874df56639895940c22a26b2b7f9f52d7a1fca3cad6e278cd4425c988c8dc",
+      "snapshot": "docs/implementation/niche-theme-programme/release-playfield201/native-qualification/tenant-correction/services__api-gateway__src____tests____theme-update.test.ts.before.snapshot"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/playfield201-promotion.postgres.test.ts",
+      "sha256": "f06e2e2185fcb97d58e2972a4e697cb82e6fc9bd0bdf70ef97f629ccfa7c08ea",
+      "snapshot": "docs/implementation/niche-theme-programme/release-playfield201/native-qualification/tenant-correction/services__api-gateway__src____tests____owned-db__playfield201-promotion.postgres.test.ts.before.snapshot"
+    }
+  ]
+}

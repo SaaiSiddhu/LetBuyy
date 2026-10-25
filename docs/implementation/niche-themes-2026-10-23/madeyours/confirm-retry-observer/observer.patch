@@ -1,0 +1,159 @@
+--- a/services/api-gateway/src/__tests__/owned-db/theme-editor-fixture-observation.ts
++++ b/services/api-gateway/src/__tests__/owned-db/theme-editor-fixture-observation.ts
+@@ -128,7 +128,9 @@
+       let parsedBody: unknown;
+       try { parsedBody = JSON.parse(input.body); } catch { throw new ObservationError(400, 'INVALID_REPLAY_SELECTOR'); }
+       const body = record(parsedBody);
+-      if (Object.keys(body).length !== 1 || !Object.hasOwn(body, 'index') || typeof body.index !== 'number' || !Number.isInteger(body.index) || body.index < 0 || body.index >= MAX_RECORDS) throw new ObservationError(400, 'INVALID_REPLAY_SELECTOR');
++      if (Object.keys(body).some(key => !['index', 'mode'].includes(key)) || !Object.hasOwn(body, 'index') || typeof body.index !== 'number' || !Number.isInteger(body.index) || body.index < 0 || body.index >= MAX_RECORDS
++        || (Object.hasOwn(body, 'mode') && body.mode !== 'same-key-conflict')) throw new ObservationError(400, 'INVALID_REPLAY_SELECTOR');
++      const conflict = body.mode === 'same-key-conflict';
+       const original = this.#records[body.index];
+       if (!original) throw new ObservationError(404, 'CONFIRM_NOT_RECORDED');
+       if (original.replays >= MAX_REPLAYS) throw new ObservationError(429, 'REPLAY_LIMIT');
+@@ -136,11 +138,21 @@
+       if (!this.#ownsConfirmation(original.cartId, original.orderId)) throw new ObservationError(404, 'CONFIRM_NOT_OWNED');
+       this.#busy = true; original.replays++;
+       try {
++        let replayBody = original.body;
++        if (conflict) {
++          const command = CheckoutConfirmSchema.parse(JSON.parse(original.body));
++          const first = 'cod_fixture_same_key_conflict_1', second = 'cod_fixture_same_key_conflict_2';
++          replayBody = JSON.stringify(CheckoutConfirmSchema.parse({ ...command,
++            payment_intent_id: command.payment_intent_id === first ? second : first }));
++        }
+         const before = this.#proof(original.orderId, null);
+-        const result = await this.#gateway.request(original.path, { method: 'POST', headers: new Headers(original.headers), body: original.body });
++        const result = await this.#gateway.request(original.path, { method: 'POST', headers: new Headers(original.headers), body: replayBody });
+         const after = this.#proof(original.orderId, null), selectedOrder = orderId(result);
++        const errorCode = record(record(result.json as unknown).error).code;
+         return { status: result.status >= 200 && result.status < 300 ? 200 : result.status, body: { index: body.index, originalOrderId: original.orderId, orderId: selectedOrder,
+           commandSha256: original.commandSha256, responseSha256: digest(result.text), responseStatus: result.status,
++          ...(conflict ? { mode: 'same-key-conflict', replayCommandSha256: digest('POST\n' + original.path + '\n' + replayBody),
++            responseCode: typeof errorCode === 'string' && ['CONFLICT', 'CHECKOUT_PAYMENT_INTENT_MISMATCH', 'VALIDATION_ERROR', 'UNAUTHORIZED', 'FORBIDDEN', 'NOT_FOUND', 'CHECKOUT_UNAVAILABLE', 'INTERNAL_ERROR'].includes(errorCode) ? errorCode : null } : {}),
+           requestId: uuid(result.headers.get('X-Request-ID')), sameOrder: selectedOrder === original.orderId,
+           effectsUnchanged: JSON.stringify(before) === JSON.stringify(after), before, after } };
+       } finally { this.#busy = false; }
+--- a/services/api-gateway/src/__tests__/theme-editor-fixture-observation.test.ts
++++ b/services/api-gateway/src/__tests__/theme-editor-fixture-observation.test.ts
+@@ -14,7 +14,7 @@
+ const response = (status = 200): GatewayResponse => ({ status, text: JSON.stringify({ data: { order: { id: order }, customer: 'PRIVATE-CUSTOMER' } }),
+   json: { data: { order: { id: order } } }, headers: new Headers({ 'X-Request-ID': '66666666-6666-4666-8666-666666666666' }) });
+ 
+-function fixture(options: { own?: boolean; proof?: Record<string, unknown>; count?: number; fail?: boolean; blocked?: Promise<void>; replayStatus?: number } = {}) {
++function fixture(options: { own?: boolean; proof?: Record<string, unknown>; afterProof?: Record<string, unknown>; count?: number; fail?: boolean; blocked?: Promise<void>; replayStatus?: number; replayCode?: string } = {}) {
+   const calls: Array<{ path: string; init: RequestInit | undefined }> = [], queries: string[] = [];
+   const instance = new ThemeEditorFixtureObservation({ profile: 'editor', siteId: site, nonce,
+     owned: { psql(sql: string) {
+@@ -22,10 +22,15 @@
+       if (options.fail) throw new Error('PRIVATE-DATABASE-DETAIL');
+       if (sql.startsWith('SELECT EXISTS')) return options.own === false ? 'f' : 't';
+       if (sql.startsWith('SELECT count')) return String(options.count ?? 1);
+-      return JSON.stringify(options.proof ?? proof);
++      return JSON.stringify(calls.length && options.afterProof ? options.afterProof : options.proof ?? proof);
+     } },
+     gateway: { async request(selectedPath: string, init?: RequestInit) {
+-      calls.push({ path: selectedPath, init }); if (options.blocked) await options.blocked; return response(options.replayStatus);
++      calls.push({ path: selectedPath, init }); if (options.blocked) await options.blocked;
++      if (options.replayCode) {
++        const json = { error: { code: options.replayCode, message: 'PRIVATE-DATABASE-DETAIL', details: { command: 'PRIVATE-ORIGINAL-UI-KEY' } } };
++        return { status: options.replayStatus ?? 409, text: JSON.stringify(json), json, headers: new Headers() };
++      }
++      return response(options.replayStatus);
+     } },
+   });
+   const capture = (changes: Partial<Parameters<ThemeEditorFixtureObservation['capture']>[0]> = {}) => instance.capture({ method: 'POST', path, body,
+@@ -116,3 +121,93 @@
+   assert.equal((result?.body as {sameOrder: boolean}).sameOrder, false);
+   assert.equal((result?.body as {orderId: unknown}).orderId, null);
+ });
++
++test('same-key conflict copies only a captured owned COD command, changes one nonkey field and reports the Gateway result', async () => {
++  const f = fixture({ replayStatus: 409, replayCode: 'CONFLICT' });
++  const command = { idempotency_key: 'PRIVATE-ORIGINAL-UI-KEY', payment_intent_id: 'cod_PRIVATE-original', razorpay_signature: 'PRIVATE-EXISTING-FIELD' };
++  const capturedBody = JSON.stringify(command);
++  f.capture({ body: capturedBody });
++  const result = await f.control('{"index":0,"mode":"same-key-conflict"}');
++  assert.equal(result?.status, 409); assert.equal(f.calls.length, 1);
++  const call = f.calls[0], altered = JSON.parse(String(call.init?.body));
++  assert.equal(call.path, path); assert.equal(call.init?.method, 'POST');
++  assert.deepEqual(altered, { ...command, payment_intent_id: 'cod_fixture_same_key_conflict_1' });
++  assert.equal(new Headers(call.init?.headers).get('Authorization'), 'PRIVATE-AUTH');
++  assert.equal(new Headers(call.init?.headers).get('Cookie'), 'PRIVATE-COOKIE');
++  const report = result?.body as {mode: string; responseStatus: number; responseCode: string; commandSha256: string; replayCommandSha256: string; effectsUnchanged: boolean; sameOrder: boolean; orderId: unknown};
++  assert.equal(report.mode, 'same-key-conflict'); assert.equal(report.responseStatus, 409); assert.equal(report.responseCode, 'CONFLICT');
++  assert.notEqual(report.replayCommandSha256, report.commandSha256);
++  assert.equal(report.effectsUnchanged, true); assert.equal(report.sameOrder, false); assert.equal(report.orderId, null);
++  assert.doesNotMatch(JSON.stringify({ result, summary: f.instance.summary() }), /PRIVATE|signature|idempotency_key|Cookie|Authorization|customer/);
++  assert.equal(f.instance.summary().records.length, 1);
++  // A conflict probe never rewrites the captured command used by the default exact replay.
++  await f.control(); assert.equal(f.calls[1].init?.body, capturedBody);
++});
++
++test('fixed conflict mutation remains different when the captured intent already equals the first sentinel', async () => {
++  for (const payment_intent_id of [undefined, 'cod_fixture_same_key_conflict_1', 'cod_fixture_same_key_conflict_2']) {
++    const f = fixture({ replayStatus: 409, replayCode: 'CONFLICT' });
++    const command = { idempotency_key: 'PRIVATE-ORIGINAL-UI-KEY', ...(payment_intent_id ? { payment_intent_id } : {}) };
++    f.capture({ body: JSON.stringify(command) });
++    assert.equal((await f.control('{"index":0,"mode":"same-key-conflict"}'))?.status, 409);
++    const altered = JSON.parse(String(f.calls[0].init?.body));
++    assert.equal(altered.idempotency_key, command.idempotency_key);
++    assert.notEqual(altered.payment_intent_id, payment_intent_id);
++    assert.equal(altered.payment_intent_id, payment_intent_id === 'cod_fixture_same_key_conflict_1' ? 'cod_fixture_same_key_conflict_2' : 'cod_fixture_same_key_conflict_1');
++  }
++});
++
++test('conflict mode is a strict selector and never accepts caller-controlled commands or capabilities', async () => {
++  const f = fixture(); f.capture();
++  for (const invalid of ['{"mode":"same-key-conflict"}', '{"index":0,"mode":"exact"}', '{"index":0,"mode":null}', '{"index":0,"mode":true}',
++    '{"index":0,"mode":{}}', '{"index":0,"mode":"same-key-conflict","body":{}}', '{"index":0,"mode":"same-key-conflict","path":"/other"}',
++    '{"index":0,"mode":"same-key-conflict","headers":{}}', '{"index":0,"mode":"same-key-conflict","idempotency_key":"forged"}',
++    '{"index":0,"mode":"same-key-conflict","payment_intent_id":"caller"}', ' '.repeat(129)]) {
++    assert.equal((await f.control(invalid))?.status, 400);
++  }
++  assert.equal((await f.control('{"index":0,"mode":"same-key-conflict"}', { nonce: 'wrong' }))?.status, 403);
++  assert.equal((await f.control('{"index":0,"mode":"same-key-conflict"}', { method: 'GET' }))?.status, 405);
++  assert.equal((await f.control('{"index":0,"mode":"same-key-conflict"}', { path: EDITOR_CONFIRM_REPLAY_PATH + '?mode=same-key-conflict' }))?.status, 400);
++  assert.equal((await f.control('{"index":1,"mode":"same-key-conflict"}'))?.status, 404);
++  assert.equal(f.calls.length, 0);
++});
++
++test('conflict and exact replay share the same finite budget and busy guard', async () => {
++  const f = fixture(); f.capture();
++  await f.control(); await f.control('{"index":0,"mode":"same-key-conflict"}'); await f.control();
++  assert.equal((await f.control('{"index":0,"mode":"same-key-conflict"}'))?.status, 429);
++  assert.equal(f.calls.length, 3); assert.equal(f.instance.summary().records[0].replays, 3);
++  let release!: () => void; const blocked = new Promise<void>(done => { release = done; });
++  const concurrent = fixture({ blocked }); concurrent.capture();
++  const pending = concurrent.control('{"index":0,"mode":"same-key-conflict"}');
++  assert.equal((await concurrent.control())?.status, 409);
++  assert.equal((await concurrent.control('{"index":0,"mode":"same-key-conflict"}'))?.status, 409);
++  release(); assert.equal((await pending)?.status, 200);
++  assert.equal(concurrent.calls.length, 1);
++});
++
++test('conflict replay rechecks current ownership and cannot use a retired capture', async () => {
++  const options = { own: true }; const f = fixture(options); f.capture();
++  options.own = false;
++  assert.equal((await f.control('{"index":0,"mode":"same-key-conflict"}'))?.status, 404);
++  assert.equal(f.calls.length, 0);
++  f.instance.dispose();
++  assert.equal((await f.control('{"index":0,"mode":"same-key-conflict"}'))?.status, 404);
++});
++
++test('conflict report preserves real failure codes/status and effect differences without leaking arbitrary errors', async () => {
++  const mismatch = fixture({ replayStatus: 409, replayCode: 'CHECKOUT_PAYMENT_INTENT_MISMATCH', afterProof: { ...proof, inventoryEventCount: 2 } });
++  mismatch.capture();
++  const result = await mismatch.control('{"index":0,"mode":"same-key-conflict"}');
++  assert.equal(result?.status, 409);
++  assert.equal((result?.body as {responseCode: string}).responseCode, 'CHECKOUT_PAYMENT_INTENT_MISMATCH');
++  assert.equal((result?.body as {effectsUnchanged: boolean}).effectsUnchanged, false);
++  const privateError = fixture({ replayStatus: 503, replayCode: 'PRIVATE_CUSTOMER_COMMAND' }); privateError.capture();
++  const refused = await privateError.control('{"index":0,"mode":"same-key-conflict"}');
++  assert.equal(refused?.status, 503); assert.equal((refused?.body as {responseCode: unknown}).responseCode, null);
++  assert.doesNotMatch(JSON.stringify(refused), /PRIVATE|message|details|command:/);
++  const unexpectedSuccess = fixture(); unexpectedSuccess.capture();
++  const success = await unexpectedSuccess.control('{"index":0,"mode":"same-key-conflict"}');
++  assert.equal(success?.status, 200); assert.equal((success?.body as {responseStatus: number}).responseStatus, 200);
++  assert.equal((success?.body as {responseCode: unknown}).responseCode, null);
++});

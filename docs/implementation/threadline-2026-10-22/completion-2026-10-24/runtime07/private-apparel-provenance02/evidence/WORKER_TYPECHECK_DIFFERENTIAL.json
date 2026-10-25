@@ -1,0 +1,7 @@
+{
+  "privateOwnedDiagnostics": 0,
+  "unmodifiedCandidateDiagnostics": 5,
+  "exactDiagnosticEquality": true,
+  "firstAttempt": "worker-typecheck01 retained; lacked Cloudflare type roots; not claimed as baseline platform defects",
+  "status": "NO_NEW_DIAGNOSTICS_WITHIN_PREPARED_SOURCE_CLOSURE_NOT_GLOBAL_GREEN_BUILD"
+}

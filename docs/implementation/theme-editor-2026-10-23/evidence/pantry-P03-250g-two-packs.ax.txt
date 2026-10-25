@@ -1,0 +1,13 @@
+Browser tab: 11, Title: "Pantry lifecycle red lentils | Threadline", URL: "http://syn-threadline-ui-d11a8917.localhost:57226/product/7369995f-a9f9-44bb-8dee-bb0ab7b8e265".
+The following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+Removed element IDs: 34-36, 43
++			59 text ₹180
++			60 text 250 g.
++			61 text 250 g net per pack
++			62 text ₹72.00 / 100 g
++			63 text 2 sellable packs · 500 g total net contents.
++			64 text Quantity counts sellable packs. Shipping is calculated at checkout.
+~			40 checkbox 250 g, Value: 1
+~			45 stepper (settable, integer) Number of packs, Value: 2, ID: lb-quantity-pantry-selection
+~			46 button Add to cart
+The focused UI element is 45 stepper (settable, integer) Number of packs, Value: 2, ID: lb-quantity-pantry-selection

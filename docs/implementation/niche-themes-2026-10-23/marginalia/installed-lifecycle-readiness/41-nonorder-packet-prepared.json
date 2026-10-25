@@ -1,0 +1,56 @@
+{
+  "recordedAt": "2026-10-24T06:38:34.868264+00:00",
+  "classification": "ROOT_REQUESTED_MG_NONORDER_GUIDANCE_PREPARED_NOT_ALLOCATION_OR_EXECUTION",
+  "packet": {
+    "path": "docs/implementation/niche-themes-2026-10-23/marginalia/stable936-nonorder-editor-packet.md",
+    "sha256": "fb71b940d3967974999714c836ffa067a7537b354899a43fb0ccc70a867fea1f",
+    "bytes": 13189
+  },
+  "matrixSha256": "f65557129858ac0906fd6f7dfd78fc00c6124e30fbd2a52187cb82b8913bed82",
+  "rootRequest": "Prepare packet only for sole Editor after Trailmark; no live/data/source actions. Send to Editor within authorized programme.",
+  "scope": [
+    "MG-ID-01",
+    "MG-INSTALL-01",
+    "MG-BK-EN-01",
+    "MG-BK-HI-01",
+    "MG-BK-OOS-01:UI observations only",
+    "MG-PAPER-01",
+    "MG-RULING-01",
+    "MG-AUTHOR-01",
+    "MG-QUERY-01",
+    "MG-CLEAR-01"
+  ],
+  "B00": "Full A/B Save/reload/publication/Recovery retained-draft/reapply cycle under MG-INSTALL-01, not17thcase.",
+  "held": [
+    "MG-CART-01",
+    "MG-CART-RELOAD-01",
+    "MG-COD-01",
+    "MG-HIST-BASELINE-01",
+    "MG-LATE-EDIT-01",
+    "MG-HIST-AFTER-EDIT-01"
+  ],
+  "OOSBoundary": "No disabled purchase click or server/cart negative control in this slice; deferred attempt/no-effect clause cannot silently receive PASS.",
+  "knownCandidateOnly": {
+    "stationeryProductId": "43fba2a8-bc4d-4939-917e-8430991fbd09",
+    "source": "stable936-D01-all-products.ax.txt public product link; revalidate current normal readback before actual binding.",
+    "bookAndExistingVariantUUIDs": null,
+    "whyNull": "Book link truncated in available sanitized evidence; no acknowledged fresh variant IDs available to preparer. Owner must discover/readback and preserve both actual IDs."
+  },
+  "MGbindings": null,
+  "MGactiveLease": false,
+  "preserve": "Pantry6284/Lentils2/360/tab53; existing checkout/capabilities/orders untouched.",
+  "sourceRuntime": "Admitted font/axis58090/58091, original936 issuer/API; previewlocalhost58091. Corrections393/count/checkout not live.",
+  "actionsHere": {
+    "browser": false,
+    "database": false,
+    "api": false,
+    "build": false,
+    "productionSource": false,
+    "docsOnly": true
+  },
+  "cases": {
+    "PASS": 0,
+    "FAIL": 0,
+    "NOT_RUN": 16
+  }
+}

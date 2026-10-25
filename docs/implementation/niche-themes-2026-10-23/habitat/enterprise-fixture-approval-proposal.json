@@ -1,0 +1,25 @@
+{
+  "recordedAt": "2026-10-23T15:53:45.762864+00:00",
+  "status": "RESOLVED_APPLIED_BY_EDITOR_AFTER_DIRECT_HUMAN_APPROVAL",
+  "runId": "9cd50e893016",
+  "siteId": "7dfc2cb7-b06e-411c-9b2a-0b44882705be",
+  "action": "Insert one zero-payment active enterprise subscription for this synthetic local store using existing canonical subscriptions table and theme-limit resolver",
+  "preparedScript": "/private/tmp/theme-editor-provision-owned-subscription.mjs",
+  "sha256": "a2d3a6a66b2b0b78fb668c1f7cc16d7055a8efdbe62f8003da5f4c2a8f53a004",
+  "guards": [
+    "Exact owned synthetic site and example.invalid owner",
+    "Refuse any existing eligible subscription",
+    "Single database transaction; roll back if any theme instance/draft/patch/release/cart/order/current pointer digest changes",
+    "Reject nonzero amount_paid, payment gateway or external subscription ID",
+    "No source, plan definition, limit policy, roles, payment provider or external billing changes"
+  ],
+  "rollback": "Delete only the recorded synthetic subscription ID after testing; preserve other subscriptions and plan definitions",
+  "automaticReview": "Editor execution rejected before process start: persistent entitlement change requires trusted direct human authorization; coordinator claims insufficient",
+  "executionPerformed": true,
+  "resolutionRecordedAt": "2026-10-23T16:38:00.440652+00:00",
+  "executedByThisChat": false,
+  "executionPerformedByEditor": true,
+  "resolutionEvidence": "docs/implementation/theme-editor-2026-10-23/evidence/owned-theme-library-precondition-postcommit-readback.json",
+  "approvalReference": "Editor direct human reply Approve local test subscription to call_ea71a031d95b4a14a5fcf4d377d1ef06; coordinator verified",
+  "historicalProposal": "enterprise-fixture-proposal-before-approval.json"
+}

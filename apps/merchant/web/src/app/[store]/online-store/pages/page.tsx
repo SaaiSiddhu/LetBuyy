@@ -768,7 +768,8 @@ export default function PagesPage() {
 
     return (
         <Page>
-            <PageHeader
+            <PageHeader identity="themes"
+                recipe="index"
                 title="Pages"
                 description="Manage published storefront content, policies, and navigation menus."
                 breadcrumbs={[{ label: 'Online Store' }, { label: 'Pages' }]}

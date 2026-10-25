@@ -1,0 +1,71 @@
+{
+  "version": 7,
+  "fields": {
+    "header": {
+      "template": "header",
+      "section": "announcement-default",
+      "key": "text"
+    },
+    "footer": {
+      "template": "footer",
+      "section": "footer-default",
+      "key": "storeName"
+    },
+    "local": {
+      "template": "index",
+      "section": "kindred-hero-banner-1",
+      "key": "heading"
+    }
+  },
+  "markers": {
+    "header": "Native391 header letbuyy-summit",
+    "footer": "Native391 footer letbuyy-summit",
+    "local": "Native391 local letbuyy-summit omitted-header omitted-footer omitted-header-footer"
+  },
+  "packageId": "224a3ae0-a9c6-4102-a3be-437be4346d46",
+  "packageVersionId": "c38093bb-94de-49eb-85e2-bf810e88e529",
+  "releaseId": "1aaf8ee3-5f2a-4c55-a755-7f61f50258fb",
+  "rootSha256": "5dfa270c12657642dc40447bc0a41561428bc56c5be8dbc99e311c8c4b852c73",
+  "immutableBaseSha256": "d3d19b3da2cb0214613ba81ba4a08a187cacdce985fefc2c351a7c6a72792058",
+  "projectedSha256": "40a5b977b27add0325067af57741d58c5f2f7f7a6145d3cc8fe552fa2069fbb6",
+  "publicStatus": 200,
+  "omissionProofs": [
+    {
+      "omitted": [
+        "header"
+      ],
+      "acknowledgedVersion": 5,
+      "reloadedVersion": 5,
+      "header": "Native391 header letbuyy-summit",
+      "footer": "Native391 footer letbuyy-summit",
+      "selectedLocal": "Native391 local letbuyy-summit omitted-header"
+    },
+    {
+      "omitted": [
+        "footer"
+      ],
+      "acknowledgedVersion": 6,
+      "reloadedVersion": 6,
+      "header": "Native391 header letbuyy-summit",
+      "footer": "Native391 footer letbuyy-summit",
+      "selectedLocal": "Native391 local letbuyy-summit omitted-header omitted-footer"
+    },
+    {
+      "omitted": [
+        "header",
+        "footer"
+      ],
+      "acknowledgedVersion": 7,
+      "reloadedVersion": 7,
+      "header": "Native391 header letbuyy-summit",
+      "footer": "Native391 footer letbuyy-summit",
+      "selectedLocal": "Native391 local letbuyy-summit omitted-header omitted-footer omitted-header-footer"
+    }
+  ],
+  "protectedCatalog": {
+    "rowSha256": "00fc3f8e44e661c05d53ea8acfc70e4744eb82e06a9e90623ce5d2479fda1c16",
+    "activeCount": 0,
+    "lastInstallUpdate": null,
+    "protectedContentSha256": "8718b19bf74f15e49853eccdaf82b3172f0bb3ab154e58eec8ce4bc7d8a3765d"
+  }
+}

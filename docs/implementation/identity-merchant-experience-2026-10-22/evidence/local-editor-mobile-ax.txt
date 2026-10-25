@@ -1,0 +1,40 @@
+Browser tab: 8, Title: "LetBuyy Admin", URL: "http://localhost:9001/ux-audit-1022/online-store/themes/letbuyy-core/editor".
+1 AXWebArea LetBuyy Admin, URL: localhost:9001/ux-audit-1022/online-store/themes/letbuyy-core/editor
+	2 container
+		3 link Description: Back to themes, Value: localhost:9001/ux-audit-1022/online-store/themes
+		4 checkbox Description: Toggle navigation panel, Value: 1
+		5 button Sections
+		6 button Theme settings
+		7 button Theme styles
+		8 button Versions
+		79 container
+			80 text LetBuyy Core Draft theme
+			81 text Saved
+			82 container Template
+				83 pop up button (collapsed, settable) Description: Template, Value: Home page, Secondary Actions: Expand
+					84 menu
+						85 (selected) Home page
+						86 Product page
+						87 Collection page
+						88 Content page
+						89 Cart page
+						90 Blog post
+		22 button (disabled) Save
+		23 button Publish
+		68 container Live theme preview
+			69 text Live preview
+			70 text ux-audit-1022 . localhost  -  1440 px
+			71 container Preview device
+				72 checkbox Desktop, Value: 1
+				73 checkbox Tablet, Value: 0
+				74 checkbox Mobile, Value: 0
+			75 container
+				76 text ux-audit-1022 . localhost
+				77 container ux-audit-1022 storefront preview
+					78 AXWebArea about:blank
+		91 container Editor panels
+			92 checkbox Sections, Value: 0
+			93 checkbox Preview, Value: 1
+			94 checkbox Settings, Value: 0
+
+The focused UI element is 1 AXWebArea LetBuyy Admin, URL: localhost:9001/ux-audit-1022/online-store/themes/letbuyy-core/editor

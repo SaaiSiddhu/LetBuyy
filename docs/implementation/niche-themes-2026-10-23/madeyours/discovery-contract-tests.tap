@@ -1,0 +1,52 @@
+TAP version 13
+# Subtest: letbuyy-nova collection: actual supplied fields/choices and selected values submit canonical queries
+ok 1 - letbuyy-nova collection: actual supplied fields/choices and selected values submit canonical queries
+  ---
+  duration_ms: 139.893958
+  type: 'test'
+  ...
+# Subtest: letbuyy-nova collection: actual sort, independent clears and pagination preserve the full query
+ok 2 - letbuyy-nova collection: actual sort, independent clears and pagination preserve the full query
+  ---
+  duration_ms: 14.213958
+  type: 'test'
+  ...
+# Subtest: letbuyy-nova collection: blank selections and absent/malformed capability never invent a niche request
+ok 3 - letbuyy-nova collection: blank selections and absent/malformed capability never invent a niche request
+  ---
+  duration_ms: 96.783125
+  type: 'test'
+  ...
+# Subtest: letbuyy-nova search: actual supplied fields/choices and selected values submit canonical queries
+ok 4 - letbuyy-nova search: actual supplied fields/choices and selected values submit canonical queries
+  ---
+  duration_ms: 52.2125
+  type: 'test'
+  ...
+# Subtest: letbuyy-nova search: actual sort, independent clears and pagination preserve the full query
+ok 5 - letbuyy-nova search: actual sort, independent clears and pagination preserve the full query
+  ---
+  duration_ms: 8.743875
+  type: 'test'
+  ...
+# Subtest: letbuyy-nova search: blank selections and absent/malformed capability never invent a niche request
+ok 6 - letbuyy-nova search: blank selections and absent/malformed capability never invent a niche request
+  ---
+  duration_ms: 86.317916
+  type: 'test'
+  ...
+# Subtest: trusted MadeYours demo remains no-network and refuse unsupported niche facets rather than mimicking SQL
+ok 7 - trusted MadeYours demo remains no-network and refuse unsupported niche facets rather than mimicking SQL
+  ---
+  duration_ms: 11.97775
+  type: 'test'
+  ...
+1..7
+# tests 7
+# suites 0
+# pass 7
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1307.844875

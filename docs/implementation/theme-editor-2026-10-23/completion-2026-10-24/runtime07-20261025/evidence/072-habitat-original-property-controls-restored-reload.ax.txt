@@ -1,0 +1,147 @@
+Browser tab: 173052882, Title: "LetBuyy Admin", URL: "http://admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes/letbuyy-craft/editor".
+1 AXWebArea LetBuyy Admin, URL: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes/letbuyy-craft/editor
+	2 container
+		3 link Description: Back to themes, Value: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes
+		4 checkbox Description: Toggle navigation panel, Value: 1
+		5 button Sections
+		6 button Theme settings
+		7 button Theme styles
+		8 button Versions
+		9 text Habitat Active
+		10 text Saved
+		11 container Template
+			12 pop up button (collapsed, settable) Description: Template, Value: Habitat rooms and furniture, Secondary Actions: Expand
+				13 menu
+					14 (selected) Habitat rooms and furniture
+					15 Habitat spatial product
+					16 Habitat furniture collection
+					17 Page
+					18 LetBuyy Core cart
+					19 Blog
+					20 Article
+					21 Policy page
+					22 LetBuyy Core search
+					23 Contact
+					24 Password
+					25 404 Not Found
+					26 Login
+					27 Order detail
+					28 Order history
+					29 All collections
+					30 Account
+					31 Register
+					32 Account settings
+					33 Wishlist
+					34 Addresses
+		35 button (disabled) Undo
+		36 button (disabled) Redo
+		37 button (disabled) Save
+		38 button Publish
+		39 container Theme editor navigation
+			40 heading Habitat rooms and furniture, Value: 2
+				41 text Habitat rooms and furniture
+			42 text v18
+			43 outline Theme sections
+				44 container
+					45 text HEADER
+					46 button Announcement Bar
+					47 button Header
+				48 container
+					49 text TEMPLATE
+					50 container Template sections
+						51 row (selectable) Room index and panorama
+							52 button Room index and panorama
+						53 row (selectable) Furniture object grid
+							54 button Furniture object grid
+						55 row (selectable) Materials and care editorial
+							56 button Materials and care editorial
+						57 row (selectable) Measurement guide
+							58 button Measurement guide
+						59 row (selected) Supplied service information Toggle Supplied service information visibility Move Supplied service information up Move Supplied service information down Remove Supplied service information
+							60 button Supplied service information
+							61 checkbox Description: Toggle Supplied service information visibility, Value: 1
+							62 button Move Supplied service information up
+							63 button (disabled) Move Supplied service information down
+							64 button Remove Supplied service information
+					65 pop up button (collapsed, settable) Value: Marquee, Secondary Actions: Expand
+						66 menu
+							67 (selected) Marquee
+							68 404 Not Found
+							69 Spotlight
+							70 Search
+							71 Video Hero
+							72 Call to Action
+							73 Room index and panorama
+							74 Blog Listing
+							75 Cart
+							76 Contact Form
+							77 Page Content
+							78 Furniture object grid
+							79 Rich Content
+							80 Testimonials
+							81 Supplied service information
+							82 Materials and care editorial
+							83 Brand Marquee
+							84 Category Grid
+							85 FAQ Accordion
+							86 Password Gate
+							87 Services Grid
+							88 App Block Slot
+							89 Customer Login
+							90 Policy Content
+							91 Portfolio Grid
+							92 Product Detail
+							93 Skills Section
+							94 Article Content
+							95 Banner Carousel
+							96 Order History
+							97 Announcement Bar
+							98 Customer Account
+							99 Collection Banner
+							100 Room and furniture discovery
+							101 Customer Register
+							102 Account Settings
+							103 Wishlist
+							104 Independent related furniture
+							105 Newsletter Signup
+							106 Addresses
+							107 Experience Timeline
+							108 Order Detail
+							109 Furniture search results
+							110 Measurement guide
+					111 button Add
+				112 container
+					113 text FOOTER
+					114 button Footer
+		115 container Live theme preview
+			116 text Live preview
+			117 text syn-threadline-ui-ae3f0477 . localhost  -  1440 px
+			118 container Preview device
+				119 checkbox Desktop, Value: 1
+				120 checkbox Tablet, Value: 0
+				121 checkbox Mobile, Value: 0
+			122 container
+				123 text syn-threadline-ui-ae3f0477 . localhost
+				124 checkbox Description: Inspect preview, Value: 1
+				125 container syn-threadline-ui-ae3f0477 storefront preview
+					126 AXWebArea about:blank
+		127 container Theme properties
+			128 text Selected section
+			129 heading Supplied service information, Value: 2
+				130 text Supplied service information
+			131 container Smart defaults
+				132 button (collapsed) Smart defaults, Secondary Actions: Expand
+					133 text Smart defaults
+			134 container
+				135 text Assembly information
+				136 text field (settable) Assembly information
+				137 text Actual delivery information
+				138 text field (settable) Actual delivery information
+				139 text Measurement information
+				140 text field (settable) Measurement information
+				141 text BLOCKS
+				142 button Add Badge
+					143 text Add 
+					144 text Badge
+
+The focused UI element is 60 button Supplied service information

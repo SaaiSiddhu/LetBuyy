@@ -1,0 +1,43 @@
+{
+  "recordedAt": "2026-10-23T17:13:41.849662+00:00",
+  "status": "LATEST392_NATIVE_FINAL_REVIEW_COMPLETE",
+  "runId": "bc5db405796b",
+  "qualification": {
+    "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/latest392-qualification.json",
+    "sha256": "c8950c43a7a041bf1fa97e54d5fe414f896ab5abb23fddcff846f29265620ffa",
+    "bytes": 11718
+  },
+  "manifest": {
+    "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/latest392-native-evidence-manifest.json",
+    "sha256": "47d95fa27507c0ea3f4fd2facccdff3d5ed2b1cbc3147bb7326502c03aab618f",
+    "bytes": 112685
+  },
+  "manifestFilesReverified": 376,
+  "sourceInputsReverifiedCurrentAndBeforeAfter": 816,
+  "allOriginalAndCopiedNativeProofsReverified": 365,
+  "all343SearchProofsBindExactSourceSQLAdmissionAndValidatorInputs": true,
+  "actualDefaultLATEST392EnteredAllThree": true,
+  "dependent392RestoreProofsVerified": true,
+  "pass": 19,
+  "fail": 0,
+  "skip": 0,
+  "sourceChangesDuringLane": false,
+  "nativeRetries": 0,
+  "rootIndependentReview": "PENDING_COORDINATOR",
+  "browserAcceptance": "NOT_RUN_NATIVE_LEASE_ONLY",
+  "retainedResourcesTouched": false,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "reaped": [],
+  "report": {
+    "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/LATEST392-NATIVE-RESULT.md",
+    "sha256": "8dc5e706d9ef318c6640713ccd117510a10665d71dbae379c3611dcfa244446e",
+    "bytes": 4182
+  }
+}

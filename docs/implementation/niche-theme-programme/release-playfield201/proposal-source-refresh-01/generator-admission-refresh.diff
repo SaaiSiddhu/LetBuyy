@@ -1,0 +1,68 @@
+--- docs/implementation/niche-theme-programme/release-playfield201/generate-playfield201.ts@before
++++ docs/implementation/niche-theme-programme/release-playfield201/generate-playfield201.ts@revised
+@@ -15,6 +15,15 @@
+ export const MIGRATION = 393;
+ const admissionPath = 'docs/implementation/niche-theme-programme/playfield201-source-admission.json';
+ const admissionSha = 'c7eeecfc5474a89a928e974a5c1332122d6efb0424cd15ad7126ae7e365e5f75';
++const revisedAdmissionPath = 'docs/implementation/niche-theme-programme/playfield201-order-url-interim-admission.json';
++const revisedAdmissionSha = 'c8420182d002cf4a5584656e3a43c3e542705d4f69eb131738de9225c326225d';
++const revisedBuilderReviewPath = 'docs/implementation/niche-theme-programme/playfield201-independent-revised-builder-review.json';
++const revisedBuilderReviewSha = 'a5f868c08db43c5e2678f5045c928e96f9a1ac040e5dded7e68a42abf450e480';
++const approvedRawBuilderSha = '91dd7e6239aefa6a341dfc04ba5d8cc79d8136f1c4d46b48fda66799ecbbe9d7';
++const revisedOrderSources = {
++  'packages/theme-engine/src/niche-order-presentation.ts': '6c5f89356bab085cc8a3a359c5caad4503dc8442176df0b8a1558b849d651ac3',
++  'packages/theme-engine/test/niche-order-presentation.test.ts': '20cef99b2deea24bb02b0c08ecfe7224eb3e8fe90b2a30c09c06afc88502eb19',
++};
+ const previousDirectory = 'docs/implementation/niche-theme-programme/release-v2/proposals/81e91859ebc8c497a49da337d064e1885a76964839d14e39f4a0a3de2283f47f';
+ const checkpoint = 'playfield201Promotion393';
+ const delimiter = '$playfield201payload$';
+@@ -40,10 +49,19 @@
+   assert.equal(admission.sourceFiles.length, 7);
+   for (const row of admission.sourceFiles) assert.equal(hashFile(row.path), row.sha256, `Unadmitted source: ${row.path}`);
+   assert.equal(hashFile(admission.ownerRelease.path), admission.ownerRelease.sha256);
++  // The original c8/73 receipt is historical. Only this later exact Root admission authorizes repaired91.
++  assert.equal(hashFile(revisedAdmissionPath), revisedAdmissionSha, 'Repaired source admission changed.');
++  const revised = JSON.parse(read(revisedAdmissionPath)) as { status: string; newRawBuilderSha256: string; oldC8StillNotPromotable: boolean };
++  assert.equal(revised.status, 'ROOT_PLAYFIELD201_ORDER_AND_URL_SOURCE_INTERIM_ADMITTED_FINAL_POST_CART_GATE_PENDING');
++  assert.equal(revised.newRawBuilderSha256, approvedRawBuilderSha); assert.equal(revised.oldC8StillNotPromotable, true);
++  assert.equal(hashFile(revisedBuilderReviewPath), revisedBuilderReviewSha);
++  for (const [relative, hash] of Object.entries(revisedOrderSources)) assert.equal(hashFile(relative), hash);
+   const sourceHashes = { ...factorySourceHashes(), ...Object.fromEntries(admission.sourceFiles.map(row => [row.path, row.sha256])),
+     [admissionPath]: admissionSha, [admission.ownerRelease.path]: admission.ownerRelease.sha256,
++    [revisedAdmissionPath]: revisedAdmissionSha, [revisedBuilderReviewPath]: revisedBuilderReviewSha, ...revisedOrderSources,
+     [own + 'generate-playfield201.ts']: hashFile(own + 'generate-playfield201.ts'),
+-    [own + 'generate-playfield201.test.ts']: hashFile(own + 'generate-playfield201.test.ts') };
++    [own + 'generate-playfield201.test.ts']: hashFile(own + 'generate-playfield201.test.ts'),
++    [own + 'tsconfig.proposal.json']: hashFile(own + 'tsconfig.proposal.json') };
+   assert(!Object.hasOwn(sourceHashes, 'apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx'), 'Moving URL-restoration source is outside this capture.');
+   const previousManifest = JSON.parse(read(previousDirectory + '/manifest.json')) as { artifacts: Array<{ slug: string; file: string; fileSha256: string }> };
+   assert.equal(hashFile(previousDirectory + '/manifest.json'), 'c0e8d5b7338a70a797a2acc24976700a146f8df4f9a3716d55fab4c03e8cf515');
+@@ -64,7 +82,7 @@
+   }
+   const raw = createFirstPartyCatalogBundle(SLUG, { designVersion: '2.0.0', playfieldVersion: VERSION });
+   const rawFactorySha256 = sha256(JSON.stringify(raw));
+-  assert.equal(rawFactorySha256, 'c8a1defdf97a0d8d9bf1060c86d5a1727d458747e56353db88f44b456a8bfc5d');
++  assert.equal(rawFactorySha256, approvedRawBuilderSha);
+   const bundle = LiquidThemePackageBundleSchema.parse(JSON.parse(canonicalJson(raw)));
+   assert.equal(bundle.package.version_number, 3); assert.equal(bundle.package.status, 'active');
+   assert.equal(bundle.package.release_status, 'published'); assert.equal(bundle.renderer.engine, 'liquid');
+@@ -78,6 +96,8 @@
+   for (const [relative, hash] of Object.entries(sourceHashes)) assert.equal(hashFile(relative), hash, 'Source moved during capture.');
+   const manifest = { status: 'PROPOSAL_ONLY_NOT_EMITTED_NOT_DATABASE_QUALIFIED', migration: MIGRATION, slug: SLUG, id: ID, version: VERSION,
+     sourceHashes, rawFactorySha256, semanticDifferencePaths, historicalBuilderOutputsPreserved: 20, previousNineArtifactFilesPreserved: 9,
++    revisedSourceAdmission: { path: revisedAdmissionPath, sha256: revisedAdmissionSha },
++    qualificationScope: 'Stable Liquid/catalog factory and declared source inputs only; final combined post-cart runtime gate remains pending. No moving hydration/cart bytes are frozen or qualified here.',
+     previous: { file: previousDirectory + '/letbuyy-bloom-2.0.0.json', fileSha256: hashFile(previousDirectory + '/letbuyy-bloom-2.0.0.json'), payloadSha256: previous.payloadSha256 },
+     artifact: { file: SLUG + '-2.0.1.json', fileSha256: sha256(canonicalJson(artifact) + '\n'), bundleSha256: artifact.bundleSha256, payloadSha256: artifact.payloadSha256 },
+     persistedDatabaseCapturesChecked: false, movingHydrationSourceExcluded: true,
+--- docs/implementation/niche-theme-programme/release-playfield201/generate-playfield201.test.ts@before
++++ docs/implementation/niche-theme-programme/release-playfield201/generate-playfield201.test.ts@revised
+@@ -14,7 +14,7 @@
+   assert.equal(artifact.id, ID); assert.equal(artifact.slug, SLUG); assert.equal(artifact.version, VERSION);
+   assert.equal(artifact.persistence.themePackageVersion.version_number, 3);
+   assert.equal(artifact.persistence.themePackageVersion.release_status, 'published');
+-  assert.equal(manifest.rawFactorySha256, 'c8a1defdf97a0d8d9bf1060c86d5a1727d458747e56353db88f44b456a8bfc5d');
++  assert.equal(manifest.rawFactorySha256, '91dd7e6239aefa6a341dfc04ba5d8cc79d8136f1c4d46b48fda66799ecbbe9d7');
+   assert.deepEqual(manifest.semanticDifferencePaths, ['/package/version', '/package/version_number', '/sections/product-detail/source']);
+   assert.deepEqual(artifact.document.liquidBundle, artifact.persistence.themePackageVersion.package_manifest.liquidBundle);
+ });

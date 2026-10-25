@@ -1,0 +1,131 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-10-24T07:23:06.085719+00:00",
+  "runId": "936e5f577646",
+  "matrix": {
+    "path": "installed-book-stationery-lifecycle.matrix.json",
+    "sha256": "f65557129858ac0906fd6f7dfd78fc00c6124e30fbd2a52187cb82b8913bed82",
+    "unchanged": true
+  },
+  "classification": "ROLLING_ACTUAL_RESULTS_SOURCE_MATRIX_IMMUTABLE",
+  "soleController": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+  "activeScope": "Finite sole-Editor NONORDER scope ended at owner07:15:45 boundary; read-only review only, purchase/history/edit grant absent",
+  "bindings": {
+    "product.books": "f2382fe0-6a3e-4241-9aef-9a54c765433f",
+    "books.en_hardback": "760cb43c-ecfc-490f-8cee-080bfdcd6281",
+    "books.hi_paperback": "ec05efc6-dce5-4948-ae3e-a1c173542cc9",
+    "books.en_paperback_oos": "9e4fbca8-6bef-4a03-b9d4-274f524575ad",
+    "product.stationery": "43fba2a8-bc4d-4939-917e-8430991fbd09",
+    "collection.books_and_paper": "d5609b77-743c-45b5-b435-814f2ca95058",
+    "cart.book": null,
+    "cart.stationery": null,
+    "order.id": null,
+    "order.book": null,
+    "order.stationery": null
+  },
+  "cases": [
+    {
+      "id": "MG-ID-01",
+      "status": "PASS",
+      "evidence": "installed-lifecycle-readiness/42-MG-ID-01-actual-review.json",
+      "note": "Actual normal UI setup acknowledged and independently reviewed."
+    },
+    {
+      "id": "MG-INSTALL-01",
+      "status": "PASS",
+      "evidence": "installed-lifecycle-readiness/48-MG-INSTALL-lineage-actual-review.json",
+      "note": "Full normal installed B00 behavior/resource persistence in45/47 plus actual FK-chain/full manifest equality to admitted immutable2.0.0 artifact verified in48. NULL checksum retained honestly."
+    },
+    {
+      "id": "MG-BK-EN-01",
+      "status": "PASS",
+      "evidence": "installed-lifecycle-readiness/43-PDP-actual-review.json",
+      "note": "Actual installed native picker/PDP DOM and accessibility facts/prices/identity reviewed; no purchase actions."
+    },
+    {
+      "id": "MG-BK-HI-01",
+      "status": "PASS",
+      "evidence": "installed-lifecycle-readiness/43-PDP-actual-review.json",
+      "note": "Actual installed native picker/PDP DOM and accessibility facts/prices/identity reviewed; no purchase actions."
+    },
+    {
+      "id": "MG-BK-OOS-01",
+      "status": "NOT_RUN",
+      "evidence": "installed-lifecycle-readiness/43-PDP-actual-review.json",
+      "note": "UI facts/price450/stock0 and add+buy disabled observed. Attempt/no accepted effect clause held; whole case NOT_RUN."
+    },
+    {
+      "id": "MG-PAPER-01",
+      "status": "PASS",
+      "evidence": "installed-lifecycle-readiness/43-PDP-actual-review.json",
+      "note": "Actual installed native picker/PDP DOM and accessibility facts/prices/identity reviewed; no purchase actions."
+    },
+    {
+      "id": "MG-RULING-01",
+      "status": "PASS",
+      "evidence": "installed-lifecycle-readiness/46-native-discovery-controls-review.json",
+      "note": "Actual native Apply/Next/sort/independent canonical clear URLs and exact retained fields independently verified on both routes as applicable."
+    },
+    {
+      "id": "MG-AUTHOR-01",
+      "status": "PASS",
+      "evidence": "installed-lifecycle-readiness/44-discovery-actual-review.json",
+      "note": "Both actual routes and browser receipts show exact same-variant positive and impossible/OOS-negative witnesses; listing420 preserved."
+    },
+    {
+      "id": "MG-QUERY-01",
+      "status": "PASS",
+      "evidence": "installed-lifecycle-readiness/46-native-discovery-controls-review.json",
+      "note": "Actual native Apply/Next/sort/independent canonical clear URLs and exact retained fields independently verified on both routes as applicable."
+    },
+    {
+      "id": "MG-CLEAR-01",
+      "status": "PASS",
+      "evidence": "installed-lifecycle-readiness/46-native-discovery-controls-review.json",
+      "note": "Actual native Apply/Next/sort/independent canonical clear URLs and exact retained fields independently verified on both routes as applicable."
+    },
+    {
+      "id": "MG-CART-01",
+      "status": "NOT_RUN",
+      "evidence": null,
+      "note": "NOT_RUN: excluded from finite nonorder grant; await checkout recovery admission/retest and separate named scope. No MG cart/order bindings."
+    },
+    {
+      "id": "MG-CART-RELOAD-01",
+      "status": "NOT_RUN",
+      "evidence": null,
+      "note": "NOT_RUN: excluded from finite nonorder grant; await checkout recovery admission/retest and separate named scope. No MG cart/order bindings."
+    },
+    {
+      "id": "MG-COD-01",
+      "status": "NOT_RUN",
+      "evidence": null,
+      "note": "NOT_RUN: excluded from finite nonorder grant; await checkout recovery admission/retest and separate named scope. No MG cart/order bindings."
+    },
+    {
+      "id": "MG-HIST-BASELINE-01",
+      "status": "NOT_RUN",
+      "evidence": null,
+      "note": "NOT_RUN: excluded from finite nonorder grant; await checkout recovery admission/retest and separate named scope. No MG cart/order bindings."
+    },
+    {
+      "id": "MG-LATE-EDIT-01",
+      "status": "NOT_RUN",
+      "evidence": null,
+      "note": "NOT_RUN: excluded from finite nonorder grant; await checkout recovery admission/retest and separate named scope. No MG cart/order bindings."
+    },
+    {
+      "id": "MG-HIST-AFTER-EDIT-01",
+      "status": "NOT_RUN",
+      "evidence": null,
+      "note": "NOT_RUN: excluded from finite nonorder grant; await checkout recovery admission/retest and separate named scope. No MG cart/order bindings."
+    }
+  ],
+  "counts": {
+    "PASS": 9,
+    "FAIL": 0,
+    "NOT_RUN": 7
+  },
+  "wholeLifecycleComplete": false,
+  "latestReview": "installed-lifecycle-readiness/48-MG-INSTALL-lineage-actual-review.json"
+}

@@ -1,0 +1,20 @@
+{
+  "recordedAt": "2026-10-25T02:17:42.219411+00:00",
+  "status": "ROOT_AUTHORIZED_ONE_ADDITIONAL_LOGICAL_WITNESS_FIX_WITHIN_EXISTING_HARNESS02_PATHS",
+  "parentGrant": "PRESERVED_RUNTIME07_PRIVATE_HARNESS_AMENDMENT_02.json",
+  "owner": "01a16d03-613e-71b0-a591-07d4d24347d4",
+  "privateRoot": "/private/tmp/letbuyy-preserved-runtime07-prep-20261025-02",
+  "scopeChange": "No newpath/resource; sameprovisioner andfocusedpure/nativeCASE-source paths alreadymutable. Parentdeadline/firstseal remains.",
+  "sourceFinding": {
+    "id": "PR-R04",
+    "priority": "P1",
+    "path": "scripts/governance/owned-database-provision.mjs",
+    "original01Line": 163,
+    "confirmedSource": "measurePreservedDatabase profile queriesallpg_trigger, hashesrawtgname+pg_get_triggerdef withnointernalfilter; generatedinternalFK namescarryphysicalOID suffixes, unlikeRootauthoritativestoppedwitnesswhich excludesinternalnamesandretainsconstraints.",
+    "required": "Normalize internal trigger identity bylogicalconstraint relation/schema/name, referencedrelation, functionsignature, event/timing, deferral/init/enabled andotherenforcement semantics; excludeonlygeneratedphysicalOID naming. Retaincounts/missing/disabled/function/event/reference/deferralchanges as mismatches and exactusertriggernames/definitions. Do notsimplydropinternals orrelaxconstraint/RLS/ACL evidence.",
+    "testScope": "Pureactualwitness-contract positiveequalphysicalnamevariance and negativeenforcementchanges, futureactualPGrestore CASE SOURCE only. PrimaryPG16triggergenerationcitation beingverifiedbyRoot; no additionalDB query byThemes."
+  },
+  "baselineRule": "Additionalnewsemanticwitness needs separatelycaptured expectedvalues laterunderRootadmission; neverrewriteorrelabelfrozenRoot488table/35954row/13categoryreceipt.",
+  "NativeContext": "Frozenapparel04 operates inonesamefreshDB withno logicalrestore, unaffected bythisseparaterestore-witness amendment. No change tocurrent3cohort budget orapparel04source.",
+  "forbidden": "Allparentgrantforbiddensremain; noMain/old01/old07/SIGCONT/DB/Docker/native/archive/state/key/build/browseraction"
+}

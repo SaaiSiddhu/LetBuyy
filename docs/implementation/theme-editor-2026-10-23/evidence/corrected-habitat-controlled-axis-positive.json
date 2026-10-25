@@ -1,0 +1,39 @@
+{
+  "recordedAt": "2026-10-23T19:39:39.198962+00:00",
+  "runId": "f6074d90e894",
+  "status": "PASS_CONTROLLED_FIRST_AXIS_SAVE_RELOAD_SAME_UUID_FACT_STOCK_PROOF",
+  "merchantOrigin": "http://admin.threadline-f6074d90e894.localhost:54183",
+  "runtimeAdmission": "docs/implementation/niche-theme-programme/supplemental-merchant-axis-runtime-admission.json",
+  "naturalExistingHostSession": true,
+  "manualSessionTransfer": false,
+  "normalSaveClicks": 1,
+  "versionBefore": 8,
+  "versionAfter": 16,
+  "versionContract": "Opaque final token, not assumed +1",
+  "checks": {
+    "id": true,
+    "name": true,
+    "sku": true,
+    "price": true,
+    "stock": true,
+    "metadata": true,
+    "inventoryBusiness": true,
+    "orders": true,
+    "cartDigest": true,
+    "sameVariantIds": true,
+    "allOldVariantFactsCommercialFields": true,
+    "correctTitleAppend": true,
+    "widthValuesPreserved": true,
+    "finishNaturalSaved": true
+  },
+  "optionIdentityObservation": "Canonical parent writer replaced Width option-row ID while retaining its values and both durable variant IDs. No option-row-ID preservation claimed.",
+  "priorFailurePreserved": "Original62075/tab21 untouched unsaved rejected draft",
+  "evidence": [
+    "corrected-habitat-axis-before-readback.json",
+    "corrected-habitat-axis-first-axis-saved-readback.json",
+    "corrected-habitat-controlled-first-natural-reloaded.ax.txt",
+    "corrected-habitat-controlled-first-natural-reloaded.jpg"
+  ],
+  "wholeHI02Accepted": false,
+  "remaining": "Full frozen four-variant cohort not yet authored; cart UI recovery defect still open."
+}

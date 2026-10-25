@@ -1,0 +1,26 @@
+{
+  "recordedAt": "2026-10-24T11:33:28.709282+00:00",
+  "scope": "Resumed checkpoint and fresh integration dependencies, not a grant or execution receipt",
+  "files": [
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/resumed-checkpoint-20261024-01/README.md",
+      "sha256": "7568b9c41d101ab691fa5823cc69cb0d0201f219c88f7758144ed31b4cf7e15c",
+      "bytes": 3954
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/resumed-checkpoint-20261024-01/RESUME_ACKNOWLEDGEMENT.json",
+      "sha256": "0a6981e675ece26c32b98f2ab4dd919b46d9544781b632183dde40d9b422db05",
+      "bytes": 4042
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/resumed-checkpoint-20261024-01/SHARED_BLOCK_DEPENDENCY_MAP.json",
+      "sha256": "eb69ad9788742400a5da3dd4748639ef6d7f7b00af5d30b02ade07a53f2ed929",
+      "bytes": 8441
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/resumed-checkpoint-20261024-01/VERSIONED_INTEGRATION_REQUEST.json",
+      "sha256": "91a9f75dfa9a2a2829327a3a6d2fe64aa6479e7a879bec4b46e3843e15b06e28",
+      "bytes": 4012
+    }
+  ]
+}

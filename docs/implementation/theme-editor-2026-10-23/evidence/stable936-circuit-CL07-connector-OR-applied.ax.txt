@@ -1,0 +1,129 @@
+Browser tab: 70, Title: "Lifecycle accessories | Threadline", URL: "http://syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/collections/01f56eb8-89fa-4fc5-be47-02f3ec591f2f?limit=20&sort=display_order&collection_id=01f56eb8-89fa-4fc5-be47-02f3ec591f2f&connector=ac-plug&connector=usb-a&data_rate_mbps=&electronics_kind=&length_mm=&pass_through_output_w=&power_capacity_w=&power_input_w=&power_output_w=".
+1 AXWebArea Lifecycle accessories | Threadline, URL: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/collections/01f56eb8-89fa-4fc5-be47-02f3ec591f2f?limit=20&sort=display_order&collection_id=01f56eb8-89fa-4fc5-be47-02f3ec591f2f&connector=ac-plug&connector=usb-a&data_rate_mbps=&electronics_kind=&length_mm=&pass_through_output_w=&power_capacity_w=&power_input_w=&power_output_w=
+	2 container
+		3 text Circuit 936 B — saved recovery draft.
+		4 container Description: Primary, ID: lb-nav-panel-header-default
+		5 link Description: Threadline, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b
+		6 container
+			7 text Search products, models and connectors
+			8 search text field (settable) Search products, models and connectors, ID: ct-header-search-header-default
+			9 button Search
+		10 link Description: Log in, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/customers/login
+		11 link Description: Cart ( 2 ), Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/cart
+		12 container Filter products by country of origin
+			13 container
+				14 text Country of origin
+				15 text field (settable) Country of origin, ID: lb-product-origin-filter
+				16 button Apply filter
+		17 text THE CONNECTION DESK
+		18 heading Lifecycle accessories, Value: 1
+			19 text Lifecycle accessories
+		20 text 2 products
+		21 container
+			22 text Search products, models and connectors
+			23 search text field (settable) Search products, models and connectors, ID: ct-search-forge-discovery-collection
+			24 button Search
+		25 container
+			26 heading Filter accessories, Value: 2
+				27 text Filter accessories
+			28 container Connector
+				29 text Connector
+				30 container
+					31 checkbox (settable, integer) Description: ac-plug (1 matching product), Value: 1
+					32 text ac-plug (1 matching product)
+				33 container
+					34 checkbox (settable, integer) Description: usb-a (1 matching product), Value: 1
+					35 text usb-a (1 matching product)
+				36 container
+					37 checkbox (settable, integer) Description: usb-c (2 matching products), Value: 0
+					38 text usb-c (2 matching products)
+			39 container Accessory type
+				40 text Accessory type
+				41 radio button (settable, integer) Description: Any, Value: 1
+				42 container
+					43 radio button (settable, integer) Description: charger (1 matching product), Value: 0
+					44 text charger (1 matching product)
+				45 container
+					46 radio button (settable, integer) Description: hub (1 matching product), Value: 0
+					47 text hub (1 matching product)
+			48 container Pass-through output (W)
+				49 text Pass-through output (W)
+				50 radio button (settable, integer) Description: Any, Value: 1
+				51 container
+					52 radio button (settable, integer) Description: 60 (1 matching product), Value: 0
+					53 text 60 (1 matching product)
+			54 container Power input (W)
+				55 text Power input (W)
+				56 radio button (settable, integer) Description: Any, Value: 1
+				57 container
+					58 radio button (settable, integer) Description: 65 (1 matching product), Value: 0
+					59 text 65 (1 matching product)
+				60 container
+					61 radio button (settable, integer) Description: 70 (1 matching product), Value: 0
+					62 text 70 (1 matching product)
+			63 container Power output (W)
+				64 text Power output (W)
+				65 radio button (settable, integer) Description: Any, Value: 1
+				66 container
+					67 radio button (settable, integer) Description: 45 (1 matching product), Value: 0
+					68 text 45 (1 matching product)
+				69 container
+					70 radio button (settable, integer) Description: 65 (1 matching product), Value: 0
+					71 text 65 (1 matching product)
+			72 button Apply filters
+			73 link Description: Clear filters, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/collections/01f56eb8-89fa-4fc5-be47-02f3ec591f2f?limit=20&sort=display_order&collection_id=01f56eb8-89fa-4fc5-be47-02f3ec591f2f
+		74 container
+			75 text Sort by
+			76 pop up button (collapsed, settable) Sort by, Value: Featured, ID: ct-sort-forge-results-collection, Secondary Actions: Expand
+				77 menu
+					78 (selected) Featured
+					79 Price: low to high
+					80 Price: high to low
+					81 Newest
+					82 Name
+			83 button Sort
+		84 container Applied filters
+			85 link Description: Remove Connector: ac-plug, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/collections/01f56eb8-89fa-4fc5-be47-02f3ec591f2f?limit=20&sort=display_order&collection_id=01f56eb8-89fa-4fc5-be47-02f3ec591f2f&connector=usb-a
+			86 link Description: Remove Connector: usb-a, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/collections/01f56eb8-89fa-4fc5-be47-02f3ec591f2f?limit=20&sort=display_order&collection_id=01f56eb8-89fa-4fc5-be47-02f3ec591f2f&connector=ac-plug
+		87 container
+			88 link Description: Product image not supplied, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/product/61d34f39-5c67-4e1f-88c8-549674f35b24
+			89 text Synthetic Lab · Synthetic H1
+			90 heading Circuit lifecycle hub, Value: 3
+				91 link Description: Circuit lifecycle hub, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/product/61d34f39-5c67-4e1f-88c8-549674f35b24
+			92 definition list
+				93 container Output maximum
+					94 text Output maximum
+				95 text 45 W
+				96 container Power outputs
+					97 text Power outputs
+				98 text 2 × USB-C
+			99 text INR 1,200.00
+			100 link Description: View product →, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/product/61d34f39-5c67-4e1f-88c8-549674f35b24
+			101 text Available
+		102 container
+			103 link Description: Product image not supplied, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/product/8e65cb28-74c6-41cf-9702-05348faf5f26
+			104 text Synthetic Lab · Synthetic C65
+			105 heading Circuit lifecycle finish charger, Value: 3
+				106 link Description: Circuit lifecycle finish charger, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/product/8e65cb28-74c6-41cf-9702-05348faf5f26
+			107 definition list
+				108 container Output maximum
+					109 text Output maximum
+				110 text 65 W
+				111 container Power outputs
+					112 text Power outputs
+				113 text 2 × USB-C
+			114 text INR 1,900.00
+			115 link Description: View product →, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/product/8e65cb28-74c6-41cf-9702-05348faf5f26
+			116 text Available
+		117 container Product pages
+			118 text Page 1 of 1
+		119 heading Threadline, Value: 3
+			120 text Threadline
+		121 text Circuit 936 B footer saved
+		122 heading CONTACT, Value: 4
+			123 text CONTACT
+		124 link Description: Contact us, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/contact
+		125 text © Threadline. All rights reserved.
+		126 link Description: Powered by LetBuyy, Value: letbuyy.com/
+
+The focused UI element is 1 AXWebArea Lifecycle accessories | Threadline, URL: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/collections/01f56eb8-89fa-4fc5-be47-02f3ec591f2f?limit=20&sort=display_order&collection_id=01f56eb8-89fa-4fc5-be47-02f3ec591f2f&connector=ac-plug&connector=usb-a&data_rate_mbps=&electronics_kind=&length_mm=&pass_through_output_w=&power_capacity_w=&power_input_w=&power_output_w=

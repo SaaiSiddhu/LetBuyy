@@ -1,0 +1,18 @@
+{
+  "status": "ROOT_PUBLISHER_ACL393_NATIVE_SOURCE_ADMITTED_ONE_FRESH_DEFAULT_LATEST392",
+  "suitePath": "services/api-gateway/src/__tests__/owned-db/theme-publisher-acl.postgres.test.ts",
+  "suiteSha256": "e71b15856e4868d28f249d8debf7f758de31cf61715bd10c0844ce79c2bc66b2",
+  "allocationPath": "docs/implementation/niche-theme-programme/publisher-acl393-source-allocation.json",
+  "allocationSha256": "e0e70d9145957272c33042f22f8a51bfe365a60a638a794704d04e425c22ea98",
+  "manifestPath": "docs/implementation/niche-theme-programme/publisher-acl393/case-operand-repair/v2/manifest.json",
+  "manifestSha256": "e5db28e52ef55bb7da76d42a547a9d5b48c4969a138ea0ccfd24f201555d597d",
+  "inputClosurePath": "docs/implementation/niche-theme-programme/publisher-acl393/source-input-closure.json",
+  "inputClosureSha256": "2851f65451c43154e5f896d6bb0a7964a521307471baac90947c528a6ef42e16",
+  "sourceMigrationMaximum": 392,
+  "sourceMigrationCount": 321,
+  "migrationCeiling": null,
+  "candidateMigration": 393,
+  "candidateOutsideMigrationScan": true,
+  "nativeLease": "GRANTED_ONE_FRESH_DEFAULT_LATEST392_JOBS1_NO_REAP_PREPARED2_600S",
+  "recordedAt": "2026-10-24T05:33:35.309186+00:00"
+}

@@ -17,7 +17,7 @@ test('analytics dashboard and revenue expose previous-period comparison data', (
     assert.match(routeSource, /comparison:\s*\{/);
     assert.match(routeSource, /previous_period:\s*\{/);
     assert.match(routeSource, /rollupRowsBetween\(rows,\s*previousSince,\s*currentSince\)/);
-    assert.match(routeSource, /revenueChartFromRollupRows\(previousRows\)/);
+    assert.match(routeSource, /merchant_daily_revenue_history/);
     assert.match(routeSource, /metricDelta\(currentAverageOrderValue,\s*previousAverageOrderValue\)/);
 });
 

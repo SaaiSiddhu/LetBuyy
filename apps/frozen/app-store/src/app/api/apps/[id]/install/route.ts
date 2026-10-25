@@ -76,7 +76,10 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
         if (body?.action === 'oauth_install') {
             const app = await api.appStore.app(appId);
             const appRecord = app as JsonObject;
-            const redirectUri = stringValue(body.redirect_uri) || stringValue(appRecord.app_url);
+            const registeredRedirects = Array.isArray(appRecord.oauth_redirect_uris)
+                ? appRecord.oauth_redirect_uris.filter((value): value is string => typeof value === 'string' && value.length > 0)
+                : [];
+            const redirectUri = stringValue(body.redirect_uri) || registeredRedirects[0];
             if (!redirectUri) {
                 return NextResponse.json({ error: { code: 'VALIDATION', message: 'A registered OAuth redirect URL is required before this app can be installed.' } }, { status: 400 });
             }
@@ -126,13 +129,13 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
         if (body?.action === 'update_extension_registration' && typeof body.installation_id === 'string' && typeof body.registration_id === 'string') {
             const status = body.status === 'enabled' ? 'enabled' : 'disabled';
-            const data = await api.appStore.updateExtensionRegistration(body.installation_id, body.registration_id, { status });
+            const data = await api.appStore.updateExtensionRegistration(body.installation_id, body.registration_id, { status, store_id: stringValue(body.store_id) });
             return NextResponse.json({ data });
         }
 
         if (body?.action === 'update_function_registration' && typeof body.installation_id === 'string' && typeof body.registration_id === 'string') {
             const status = body.status === 'enabled' ? 'enabled' : 'disabled';
-            const data = await api.appStore.updateFunctionRegistration(body.installation_id, body.registration_id, { status });
+            const data = await api.appStore.updateFunctionRegistration(body.installation_id, body.registration_id, { status, store_id: stringValue(body.store_id) });
             return NextResponse.json({ data });
         }
 

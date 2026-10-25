@@ -1,0 +1,268 @@
+Browser tab: 25, Title: "LetBuyy Admin", URL: "http://admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/online-store/themes/letbuyy-craft/editor".
+1 AXWebArea LetBuyy Admin, URL: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/online-store/themes/letbuyy-craft/editor
+	2 container
+		3 link Description: Back to themes, Value: admin.threadline-f6074d90e894.localhost:62075/syn-threadline-ui-33be9d94/online-store/themes
+		4 checkbox Description: Toggle navigation panel, Value: 1
+		5 button Sections
+		6 button Theme settings
+		7 button Theme styles
+		8 button Versions
+		9 text Habitat Active
+		10 text Saved
+		11 container Template
+			12 pop up button (collapsed, settable) Description: Template, Value: Habitat rooms and furniture, Secondary Actions: Expand
+				13 menu
+					14 (selected) Habitat rooms and furniture
+					15 Habitat spatial product
+					16 Habitat furniture collection
+					17 Page
+					18 LetBuyy Core cart
+					19 Blog
+					20 Article
+					21 Policy page
+					22 LetBuyy Core search
+					23 Contact
+					24 Password
+					25 404 Not Found
+					26 Login
+					27 Order detail
+					28 Order history
+					29 All collections
+					30 Account
+					31 Register
+					32 Account settings
+					33 Wishlist
+					34 Addresses
+		35 button (disabled) Undo
+		36 button (disabled) Redo
+		37 button (disabled) Save
+		38 button Publish
+		39 container Theme editor navigation
+			40 heading Habitat rooms and furniture, Value: 2
+				41 text Habitat rooms and furniture
+			42 text v6
+			43 outline Theme sections
+				44 container
+					45 text HEADER
+					46 button Announcement Bar
+					48 button Header
+				49 container
+					50 text TEMPLATE
+					51 container Template sections
+						52 row (selected) Room index and panorama Toggle Room index and panorama visibility Move Room index and panorama up Move Room index and panorama down Remove Room index and panorama
+							53 button Room index and panorama
+							128 checkbox Description: Toggle Room index and panorama visibility, Value: 1
+							129 button (disabled) Move Room index and panorama up
+							130 button Move Room index and panorama down
+							131 button Remove Room index and panorama
+						54 row (selectable) Furniture object grid
+							55 button Furniture object grid
+						56 row (selectable) Materials and care editorial
+							57 button Materials and care editorial
+						58 row (selectable) Measurement guide
+							59 button Measurement guide
+						60 row (selectable) Supplied service information
+							61 button Supplied service information
+					62 pop up button (collapsed, settable) Value: Marquee, Secondary Actions: Expand
+						63 menu
+							64 (selected) Marquee
+							65 404 Not Found
+							66 Spotlight
+							67 Search
+							68 Video Hero
+							69 Call to Action
+							70 Room index and panorama
+							71 Blog Listing
+							72 Cart
+							73 Contact Form
+							74 Page Content
+							75 Furniture object grid
+							76 Rich Content
+							77 Testimonials
+							78 Supplied service information
+							79 Materials and care editorial
+							80 Brand Marquee
+							81 Category Grid
+							82 FAQ Accordion
+							83 Password Gate
+							84 Services Grid
+							85 App Block Slot
+							86 Customer Login
+							87 Policy Content
+							88 Portfolio Grid
+							89 Product Detail
+							90 Skills Section
+							91 Article Content
+							92 Banner Carousel
+							93 Order History
+							94 Announcement Bar
+							95 Customer Account
+							96 Collection Banner
+							97 Room and furniture discovery
+							98 Customer Register
+							99 Account Settings
+							100 Wishlist
+							101 Independent related furniture
+							102 Newsletter Signup
+							103 Addresses
+							104 Experience Timeline
+							105 Order Detail
+							106 Furniture search results
+							107 Measurement guide
+					108 button Add
+				109 container
+					110 text FOOTER
+					111 button Footer
+		112 container Live theme preview
+			113 text Live preview
+			114 text syn-threadline-ui-33be9d94 . localhost  -  1440 px
+			115 container Preview device
+				116 checkbox Desktop, Value: 1
+				117 checkbox Tablet, Value: 0
+				118 checkbox Mobile, Value: 0
+			119 container
+				120 text syn-threadline-ui-33be9d94 . localhost
+				121 checkbox Description: Inspect preview, Value: 1
+				122 container syn-threadline-ui-33be9d94 storefront preview
+					188 AXWebArea LetBuyy Store, URL: localhost:62076/preview?[query-redacted]
+						189 container
+							190 checkbox Description: Select announcement-bar section, Value: 0
+								191 text Habitat shared header f6074d90e894
+								192 link localhost:62076/preview?[query-redacted]
+							193 checkbox Description: Select header section, Value: 0
+								194 container Description: Primary, ID: lb-nav-panel-header-default
+								195 link Description: THREADLINE, Value: localhost:62076/store/syn-threadline-ui-33be9d94
+								196 button (collapsed) Description: Search, Secondary Actions: Expand
+								197 link Description: Log in, Value: localhost:62076/store/syn-threadline-ui-33be9d94/customers/login
+								198 link Description: Cart ( 0 ), Value: localhost:62076/store/syn-threadline-ui-33be9d94/cart
+							199 checkbox Description: Select hero-banner section, Value: 1
+								200 text THE CONSIDERED HOME
+								201 heading Habitat saved heading B f6074d90e894, Value: 1
+									202 text Habitat saved heading B f6074d90e894
+								203 text Find furniture for your space, with the dimensions and details to make it yours.
+								204 container Room collections
+									205 text START WITH A ROOM
+									206 text Collections supplied by this store will appear here.
+								207 container
+									208 text Start with the space you have.
+									209 text Room dimensions, doorways and access matter.
+								210 link Description: Explore furniture, Value: localhost:62076/store/syn-threadline-ui-33be9d94/products
+							211 checkbox Description: Select product-grid section, Value: 0
+								212 heading A place to pause., Value: 2
+									213 text A place to pause.
+								214 container
+									215 link Description: Product photograph not supplied, Value: localhost:62076/store/syn-threadline-ui-33be9d94/product/084711bb-a989-4708-bb0a-11f6c9d4d3d5
+									216 heading Fixture Palm Wash, Value: 3
+										217 link Description: Fixture Palm Wash, Value: localhost:62076/store/syn-threadline-ui-33be9d94/product/084711bb-a989-4708-bb0a-11f6c9d4d3d5
+									218 text INR 460.00 Dimensions not supplied
+									219 link Description: View dimensions & options, Value: localhost:62076/store/syn-threadline-ui-33be9d94/product/084711bb-a989-4708-bb0a-11f6c9d4d3d5
+								220 container
+									221 link Description: Product photograph not supplied, Value: localhost:62076/store/syn-threadline-ui-33be9d94/product/1682c90c-8888-483a-a1b5-3251a3e91737
+									222 heading Playfield lifecycle activity kit, Value: 3
+										223 link Description: Playfield lifecycle activity kit, Value: localhost:62076/store/syn-threadline-ui-33be9d94/product/1682c90c-8888-483a-a1b5-3251a3e91737
+									224 text INR 480.00 Dimensions not supplied Edition: Inherited, Unknown facts, Paper
+									225 link Description: View dimensions & options, Value: localhost:62076/store/syn-threadline-ui-33be9d94/product/1682c90c-8888-483a-a1b5-3251a3e91737
+								226 container
+									227 link Description: Fixture Soft Colour, Value: localhost:62076/store/syn-threadline-ui-33be9d94/product/2bcbdf71-270c-40ac-8819-82d8921e35f0
+									228 heading Fixture Soft Colour, Value: 3
+										229 link Description: Fixture Soft Colour, Value: localhost:62076/store/syn-threadline-ui-33be9d94/product/2bcbdf71-270c-40ac-8819-82d8921e35f0
+									230 text INR 520.00 Dimensions not supplied Shade name: Rosewater, Pink Clay, Terracotta पैक आकार: एक इकाई
+									231 link Description: View dimensions & options, Value: localhost:62076/store/syn-threadline-ui-33be9d94/product/2bcbdf71-270c-40ac-8819-82d8921e35f0
+								232 container
+									233 link Description: The Everyday Linen Shirt, Value: localhost:62076/store/syn-threadline-ui-33be9d94/product/3c7ffd00-5cf8-419a-80cd-00bb56918465
+									234 heading The Everyday Linen Shirt, Value: 3
+										235 link Description: The Everyday Linen Shirt, Value: localhost:62076/store/syn-threadline-ui-33be9d94/product/3c7ffd00-5cf8-419a-80cd-00bb56918465
+									236 text INR 2,490.00 Dimensions not supplied Color: Oat Size: S, M, L, XL
+									237 link Description: View dimensions & options, Value: localhost:62076/store/syn-threadline-ui-33be9d94/product/3c7ffd00-5cf8-419a-80cd-00bb56918465
+								238 container Product pages
+							239 checkbox Description: Select about-section section, Value: 0
+							240 checkbox Description: Select habitat-measurement-guide section, Value: 0
+								241 text BEFORE YOU BRING IT HOME
+								242 heading Measure twice. Make room once., Value: 2
+									243 text Measure twice. Make room once.
+								244 text Check the furniture footprint and the route it will take to reach your room.
+								245 content list
+									246 container
+										247 heading Map your room, Value: 3
+											248 text Map your room
+										249 text Mark the supplied width and depth. Keep your own circulation space.
+									250 container
+										251 heading Follow the access path, Value: 3
+											252 text Follow the access path
+										253 text Measure doors, stair turns and lifts against package dimensions.
+									254 container
+										255 heading Check delivery conditions, Value: 3
+											256 text Check delivery conditions
+										257 text Read the merchant’s actual service terms before checkout.
+							258 checkbox Description: Select trust-badges section, Value: 0
+							259 checkbox Description: Select footer section, Value: 0
+								260 heading Threadline, Value: 3
+									261 text Threadline
+								262 text Habitat shared footer f6074d90e894
+								263 heading CONTACT, Value: 4
+									264 text CONTACT
+								265 link Description: Contact us, Value: localhost:62076/store/syn-threadline-ui-33be9d94/contact
+								266 text © Threadline. All rights reserved.
+								267 link Description: Powered by LetBuyy, Value: letbuyy.com/
+		124 container Theme properties
+			125 text Selected section
+			126 heading Room index and panorama, Value: 2
+				127 text Room index and panorama
+			132 container
+				133 container Smart defaults
+					134 button (collapsed) Smart defaults, Secondary Actions: Expand
+						135 text Smart defaults
+				136 text Room panorama
+				137 text field (settable) Room panorama image URL
+				138 container
+					139 text Upload image
+					140 button Upload image file
+				141 button Browse media library for Room panorama
+				142 container
+					143 text Panorama caption
+					144 text field (settable) Panorama caption
+				145 container
+					146 text Primary destination
+					147 text field (settable) Primary destination, Value: /products
+				148 container
+					149 text Primary link
+					150 text field (settable) Primary link, Value: Explore furniture
+				151 container
+					152 text Eyebrow
+					153 text field (settable) Eyebrow, Value: The considered home
+				154 container
+					155 text Heading
+					156 text field (settable) Heading, Value: Habitat saved heading B f6074d90e894
+				157 container
+					158 text Room photograph description
+					159 text field (settable) Room photograph description
+				160 container
+					161 text Guide destination
+					162 text field (settable) Guide destination
+				163 container
+					164 text Guide link
+					165 text field (settable) Guide link
+				166 text Panorama focal position
+				167 pop up button (collapsed, settable) Panorama focal position, Value: Center, Secondary Actions: Expand
+					168 menu
+						169 (disabled) Saved value unavailable
+						170 (selected) Center
+						171 Top
+						172 Bottom
+				173 container
+					174 text Description
+					175 text field (settable) Description, Value: Find furniture for your space, with the dimensions and details to make it yours.
+				176 text Room collection 1
+				177 combo box (collapsed, settable) Room collection 1, Secondary Actions: Expand
+				178 text Room collection 2
+				179 combo box (collapsed, settable) Room collection 2, Secondary Actions: Expand
+				180 text Room collection 3
+				181 combo box (collapsed, settable) Room collection 3, Secondary Actions: Expand
+				182 text Room collection 4
+				183 combo box (collapsed, settable) Room collection 4, Secondary Actions: Expand
+				184 container
+					185 text Room index label
+					186 text field (settable) Room index label, Value: Start with a room
+				187 text BLOCKS
+
+The focused UI element is 53 button Room index and panorama

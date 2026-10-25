@@ -1,0 +1,57 @@
+{
+  "classification": "PREPARED_STRUCTURAL_TESTED_NOT_NATIVE_QUALIFIED_OR_APPLIED",
+  "recordedAt": "2026-10-23T15:48:39.165390+00:00",
+  "migration": 392,
+  "defect": "CIRCUIT-SEARCH-MODEL-001",
+  "baselineProsrcMd5": "95cda4d15f36172c5457ad5045600cde",
+  "proposedProsrcMd5": "bdaec8db8f836e94294e4bdd9c449346",
+  "drafts": [
+    {
+      "path": "392_electronics_search.up.draft.sql",
+      "sha256": "f17f659b8d037c34f02b9cc1cda912ede406bda7950f99310ebae5ca77c61171"
+    },
+    {
+      "path": "392_electronics_search.down.draft.sql",
+      "sha256": "b66f348b56f8f45c60eacf1ba63e1f10177a2be6c0e9d33eb829649838d6a73e"
+    }
+  ],
+  "nativeSuite": {
+    "path": "services/api-gateway/src/__tests__/owned-db/storefront-electronics-search.postgres.test.ts",
+    "sha256": "46521c9926ed5f34d6b63071e6ef0e38e199075d842e8b9e85b36c54e58820b0",
+    "topLevelTests": 8,
+    "executed": false,
+    "rootInventoryRegistrationRequired": true
+  },
+  "validation": {
+    "sourceContract": {
+      "pass": 3,
+      "fail": 0,
+      "skipped": 0,
+      "command": "source-contract.command.json"
+    },
+    "gatewayNoEmit": {
+      "exitCode": 0,
+      "command": "gateway-noEmit.command.json"
+    }
+  },
+  "admission": "Root pending; no admission.json exists",
+  "requiredPredecessor": "actual emitted/admitted391 pair and actual391 body pin",
+  "productionPathsChanged": [],
+  "runtimeMutations": [],
+  "newResources": [],
+  "defaultLatestPlan": "native-plan.json",
+  "hashes": {
+    "392_electronics_search.down.draft.sql": "b66f348b56f8f45c60eacf1ba63e1f10177a2be6c0e9d33eb829649838d6a73e",
+    "392_electronics_search.up.draft.sql": "f17f659b8d037c34f02b9cc1cda912ede406bda7950f99310ebae5ca77c61171",
+    "README.md": "32e89c3f34f374e6f7b9d3e69270fcda8518c32615930e6bbf50d29dc3e368bd",
+    "admission.template.json": "3cdfcab17b0efaa265a163fcd1e3a6043729d3da71617f65a7921d5be030a821",
+    "build-drafts.mjs": "2e7d274adddd2656be593b6f219a0230f26eeeaeed3a9bcc0f4332c123526c79",
+    "gateway-noEmit.command.json": "2835c09e3c53beb02a99ededf41370663b4f181654d1c5f07cdcd9cc0ada4299",
+    "gateway-noEmit.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "native-plan.json": "ef950aaeed5794f00d398bb15fa6285b912d41b3d379051cdc6fcdf28a534bde",
+    "source-contract.command.json": "2ba9867d27d8be32989123141809ec30ccb712028a64beccc518099a76ea7485",
+    "source-contract.log": "61d462dc81c9c8ae123058c361054504f4b495081f1cd3dea5a820fbee2cefcf",
+    "source-contract.test.mjs": "6469fc6cdf0a70469b0dfd8f69055f2c79261bc0a1f0076fe8ce80ae900b65a6",
+    "source-evidence.json": "51c27dc451d4f6335697a448d221c7f19a528512bcd434c76b89c14b9ecd8406"
+  }
+}

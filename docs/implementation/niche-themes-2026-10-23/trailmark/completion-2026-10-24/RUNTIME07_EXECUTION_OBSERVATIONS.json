@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-24T21:26:10.548735+00:00",
+  "classification": "CONTROLLER_REPORTED_UI_PROGRESS_PENDING_EXACT_BINDINGS_AND_ARTIFACT_REVIEW",
+  "runId": "49ada80bc494",
+  "candidate": "/private/tmp/letbuyy-shared-completion-20261024-06",
+  "controller": "01a16ce5-e5ba-7191-ab2c-a1b76947d2b5",
+  "directOwnerRuntimeLease": false,
+  "directOwnerRuntimeActions": [],
+  "observations": [
+    {
+      "id": "TM-R07-OBS-001",
+      "observedAt": "2026-10-24T21:10:22.726192+00:00",
+      "source": {
+        "threadId": "01a16ce5-e5ba-7191-ab2c-a1b76947d2b5",
+        "cursor": "51712cb0-c119-4027-97c5-69539082064e:101",
+        "channel": "compact wait_threads commentary"
+      },
+      "reported": "Trailmark is installed as its own 2.1.0 draft. Its labelled change survived a full reload, publication was acknowledged, and the live activity layout is visible. Controller is checking selected racket measurements before Test purchase.",
+      "potentialClauses": [
+        "L00 install/save/reload/publication UI clauses"
+      ],
+      "notEstablished": [
+        "Exact package/instance/release/draft UUIDs and config/template/asset fingerprints",
+        "Actual intended selected common/inch UUID and stock",
+        "Actual Trailmark Test or COD order/payment/readback",
+        "Private preview and full L00 acceptance",
+        "Any discovery query pair or remaining lifecycle stage"
+      ],
+      "requestIds": [],
+      "status": "REPORTED_PENDING_DURABLE_ARTIFACT_BINDING_NOT_STAGE_PASS"
+    },
+    {
+      "id": "TM-R07-OBS-002",
+      "observedAt": "2026-10-24T21:15:38.261070+00:00",
+      "classification": "OWNER_VISUAL_INSPECTION_OF_CONTROLLER_CAPTURED_RUNTIME_SCREENSHOTS",
+      "evidence": [
+        {
+          "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/trailmark-26inch-selected.png",
+          "sha256": "8943a76a7d26f819ce7993d41483d0a3866f8a366dded7a0dd34cb5b2d31fc6e"
+        },
+        {
+          "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/trailmark-cart-recovery-required.png",
+          "sha256": "0a4061734e85d1373b34dbf27a88e4a45eab72e92f558af124b19913e02690fd"
+        },
+        {
+          "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/trailmark-cart-restored.png",
+          "sha256": "ac57c5708c1c8589bc0ee3f4845f24372a02bea37a3f061231190aadde7fbcc9"
+        }
+      ],
+      "visibleSelectedPdp": {
+        "product": "Trailmark lifecycle racket",
+        "priceINR": 1800,
+        "productCommonHeader": "67.5cm/85g/Badminton",
+        "selectedOption": "Length26.5in",
+        "selectedFacts": "26.5in/80g/dimensions26.5x10in; no selected height visible",
+        "CommonOption": "Visible selectable Common size button; its selection was not inspected in these captures."
+      },
+      "initialCartObservation": {
+        "message": "We could not confirm this update. Reload the saved cart before checkout.",
+        "action": "Reload saved cart",
+        "checkoutAction": "Review your cart before checkout",
+        "triggerAndHttp": "Not established by inspected screenshots; do not infer requestcode, transportcause or silent initialsuccess."
+      },
+      "recoveredCartObservation": {
+        "logicalVisibleLines": 1,
+        "selectedOption": "Length26.5in",
+        "quantity": 1,
+        "unitSubtotalTotalINR": 1800,
+        "savedEquipment": "Badminton/racket,26.5in/80g,Length26.5in/Width10in,heightabsent,compatibilityUnconfirmed",
+        "checkoutAction": "Proceed to checkout"
+      },
+      "limits": [
+        "No rawHTTP/cartfingerprint/privateprojectionreadback inspected yet.",
+        "No COMMON selection/dimensions/media/fulldiscovery stage accepted.",
+        "PDP/cart clauses are partial runtime observations; no full case closure."
+      ],
+      "caseStatus": "PENDING_COMPLETE_BOUND_RECEIPTS_NOT_WHOLE_STAGE_PASS"
+    },
+    {
+      "id": "TM-R07-OBS-003",
+      "observedAt": "2026-10-24T21:26:10.548735+00:00",
+      "classification": "ACTUAL_TEST_ORDER_AND_READONLY_CANONICAL_FINANCIAL_CORRELATION",
+      "evidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/trailmark/completion-2026-10-24/RUNTIME07_PAYMENT_AUDIT.json",
+        "sha256": "2a53053cb3a34d035aa0daa230748f321d975251a9627714f170ca2056b1a3bb"
+      },
+      "orderId": "c2991cb7-d637-4f11-86d4-fe02252dfc7f",
+      "orderNumber": "ORD-20261024-10006",
+      "selectedVariant": "ef6281cd-7148-4cc5-be34-37e1a4f98e74",
+      "totalMinor": 182000,
+      "positiveResult": "PASS exact intendedsportsvariant/order/paidstatus/onebalancedcapture/processed signaturevalidcallbacks/one selectedvariantcommittedunit/buyer+merchant saved26.5in80gfacts.",
+      "limits": "Not localCOD, after-edit immutable proof, exact release binding, providernegative/recovery or wholelifecyclecertificate."
+    }
+  ],
+  "bindingStatus": "PENDING_CONTROLLER_EDITOR_RECEIPTS",
+  "newClosedLifecycleStages": 0,
+  "newClosedExpandedCases": 0,
+  "sourceEdits": [],
+  "certification": "NOT_ISSUED",
+  "actualPrePaymentProductBinding": {
+    "receipt": {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/trailmark-before-stock.json",
+      "sha256": "c00b505b131a9c9df838300c9972dcda6ab706ef4cb064f37ce6f0b0367e1143"
+    },
+    "runId": "49ada80bc494",
+    "siteId": "02049de4-41c3-4b10-b5b2-a60a6b5e82bf",
+    "productId": "22446d70-4e10-41f0-97f0-55662eeea763",
+    "inchVariant": "ef6281cd-7148-4cc5-be34-37e1a4f98e74",
+    "commonVariant": "69729510-82e4-44fa-8892-19bbd9d59700",
+    "responseStatus": 200,
+    "requestId": null,
+    "requestIdLimit": "Controllerredactedstockreceipt does not retain a requestID; none invented."
+  },
+  "sequenceDeviation": {
+    "path": "docs/implementation/niche-themes-2026-10-23/trailmark/completion-2026-10-24/RUNTIME07_SEQUENCE_DEVIATION.json",
+    "sha256": "404a37443be297a4d31efebe362595671a5ca409de96558a4def514f433a860c"
+  },
+  "financialAndSavedFactsAudit": {
+    "path": "docs/implementation/niche-themes-2026-10-23/trailmark/completion-2026-10-24/RUNTIME07_PAYMENT_AUDIT.json",
+    "sha256": "2a53053cb3a34d035aa0daa230748f321d975251a9627714f170ca2056b1a3bb"
+  }
+}

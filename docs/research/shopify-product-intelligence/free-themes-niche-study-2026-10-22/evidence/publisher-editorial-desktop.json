@@ -1,0 +1,435 @@
+{
+  "body": {
+    "background": "rgba(0, 0, 0, 0)",
+    "color": "rgba(18, 18, 18, 0.75)",
+    "font": "Archivo, sans-serif",
+    "fontSize": "16px"
+  },
+  "controls": [
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Search",
+      "tag": "INPUT",
+      "type": "search"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Email",
+      "tag": "INPUT",
+      "type": "email"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Subscribe",
+      "tag": "BUTTON",
+      "type": "submit"
+    }
+  ],
+  "headings": [
+    {
+      "font": "Newsreader, serif",
+      "height": 38.3984375,
+      "line": "38.4px",
+      "size": "31.2px",
+      "tag": "H2",
+      "text": "",
+      "weight": "400",
+      "width": 369,
+      "x": 1456,
+      "y": 442.296875
+    },
+    {
+      "font": "Newsreader, serif",
+      "height": 76.796875,
+      "line": "38.4px",
+      "size": "31.2px",
+      "tag": "H2",
+      "text": "Our offerings include a curated selection of books, apparel, merch, and accessories.",
+      "weight": "400",
+      "width": 780,
+      "x": 330,
+      "y": 158.59375
+    },
+    {
+      "font": "Newsreader, serif",
+      "height": 226.734375,
+      "line": "32.4px",
+      "size": "23.4px",
+      "tag": "H3",
+      "text": "Established in 2015, Actual Source is an American publisher, brand, and book store that collaborates with contemporary artists and designers",
+      "weight": "400",
+      "width": 638,
+      "x": 65,
+      "y": 939.703125
+    },
+    {
+      "font": "Newsreader, serif",
+      "height": 194.34375,
+      "line": "32.4px",
+      "size": "23.4px",
+      "tag": "H3",
+      "text": "Actual Source (Studio) is the collaborative design practice of Davis Ngarupe (Cook Islands / USA) and JP Haynie (USA). Together, and with th",
+      "weight": "400",
+      "width": 638,
+      "x": 737,
+      "y": 1917.4375
+    },
+    {
+      "font": "Newsreader, serif",
+      "height": 64,
+      "line": "64px",
+      "size": "52px",
+      "tag": "H2",
+      "text": "Our studio space",
+      "weight": "400",
+      "width": 387.453125,
+      "x": 85,
+      "y": 2698.578125
+    },
+    {
+      "font": "Newsreader, serif",
+      "height": 28.796875,
+      "line": "28.8px",
+      "size": "23.4px",
+      "tag": "H2",
+      "text": "📄 Menu",
+      "weight": "400",
+      "width": 332,
+      "x": 50,
+      "y": 2977.578125
+    },
+    {
+      "font": "Newsreader, serif",
+      "height": 28.796875,
+      "line": "28.8px",
+      "size": "23.4px",
+      "tag": "H2",
+      "text": "🌀 Shop",
+      "weight": "400",
+      "width": 332,
+      "x": 386,
+      "y": 2977.578125
+    },
+    {
+      "font": "Newsreader, serif",
+      "height": 28.796875,
+      "line": "28.8px",
+      "size": "23.4px",
+      "tag": "H2",
+      "text": "📍 Visit us",
+      "weight": "400",
+      "width": 332,
+      "x": 722,
+      "y": 2977.578125
+    },
+    {
+      "font": "Newsreader, serif",
+      "height": 28.796875,
+      "line": "28.8px",
+      "size": "23.4px",
+      "tag": "H2",
+      "text": "Join our email list",
+      "weight": "400",
+      "width": 670,
+      "x": 50,
+      "y": 3265.046875
+    }
+  ],
+  "links": [
+    {
+      "text": "Skip to content",
+      "url": "https://theme-publisher-demo.myshopify.com/pages/about#MainContent"
+    },
+    {
+      "text": "",
+      "url": "https://theme-publisher-demo.myshopify.com/collections/all"
+    },
+    {
+      "text": "",
+      "url": "https://theme-publisher-demo.myshopify.com/"
+    },
+    {
+      "text": "Cart",
+      "url": "https://theme-publisher-demo.myshopify.com/cart"
+    },
+    {
+      "text": "books",
+      "url": "https://theme-publisher-demo.myshopify.com/collections/books"
+    },
+    {
+      "text": "apparel",
+      "url": "https://theme-publisher-demo.myshopify.com/collections/apparel"
+    },
+    {
+      "text": "merch",
+      "url": "https://theme-publisher-demo.myshopify.com/collections/merch"
+    },
+    {
+      "text": "accessories",
+      "url": "https://theme-publisher-demo.myshopify.com/collections/accessories"
+    },
+    {
+      "text": "FREE SHIPPING ON ALL ORDERS OVER $150 IN NORTH AMERICA",
+      "url": "https://theme-publisher-demo.myshopify.com/pages/shipping-and-returns"
+    },
+    {
+      "text": "See upcoming events",
+      "url": "https://theme-publisher-demo.myshopify.com/blogs/news"
+    },
+    {
+      "text": "Home",
+      "url": "https://theme-publisher-demo.myshopify.com/"
+    },
+    {
+      "text": "About",
+      "url": "https://theme-publisher-demo.myshopify.com/pages/about"
+    },
+    {
+      "text": "Events",
+      "url": "https://theme-publisher-demo.myshopify.com/blogs/news"
+    },
+    {
+      "text": "Policies",
+      "url": "https://theme-publisher-demo.myshopify.com/pages/shipping-and-returns"
+    },
+    {
+      "text": "Contact",
+      "url": "https://theme-publisher-demo.myshopify.com/pages/contact"
+    },
+    {
+      "text": "Search",
+      "url": "https://theme-publisher-demo.myshopify.com/search"
+    },
+    {
+      "text": "Books",
+      "url": "https://theme-publisher-demo.myshopify.com/collections/books"
+    },
+    {
+      "text": "Apparel",
+      "url": "https://theme-publisher-demo.myshopify.com/collections/apparel"
+    },
+    {
+      "text": "Merch",
+      "url": "https://theme-publisher-demo.myshopify.com/collections/merch"
+    },
+    {
+      "text": "Accessories",
+      "url": "https://theme-publisher-demo.myshopify.com/collections/accessories"
+    },
+    {
+      "text": "Shop all",
+      "url": "https://theme-publisher-demo.myshopify.com/collections/all"
+    },
+    {
+      "text": "theme-publisher-demo",
+      "url": "https://theme-publisher-demo.myshopify.com/"
+    }
+  ],
+  "sections": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--23705064079669__1657076045330cea6b",
+      "rect": {
+        "height": 168.796875,
+        "width": 1440,
+        "x": 0,
+        "y": 118.59375
+      },
+      "tag": "SECTION",
+      "text": "Our offerings include a curated selection of books, apparel, merch, and accessories."
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--23705064079669__16570743145d8ecddb",
+      "rect": {
+        "height": 616.3125,
+        "width": 1440,
+        "x": 0,
+        "y": 287.390625
+      },
+      "tag": "SECTION",
+      "text": ""
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--23705064079669__1657074403b1ed3165",
+      "rect": {
+        "height": 311.734375,
+        "width": 1440,
+        "x": 0,
+        "y": 903.703125
+      },
+      "tag": "SECTION",
+      "text": "Established in 2015, Actual Source is an American publisher, brand, and book store that collaborates with contemporary artists and designers, to release limited edition books, font"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--23705064079669__16570756653d75e708",
+      "rect": {
+        "height": 702,
+        "width": 1440,
+        "x": 0,
+        "y": 1215.4375
+      },
+      "tag": "SECTION",
+      "text": ""
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--23705064079669__165707448622b6f6f3",
+      "rect": {
+        "height": 251.34375,
+        "width": 1440,
+        "x": 0,
+        "y": 1917.4375
+      },
+      "tag": "SECTION",
+      "text": "Actual Source (Studio) is the collaborative design practice of Davis Ngarupe (Cook Islands / USA) and JP Haynie (USA). Together, and with their community of collaborators, they des"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--23705064079669__1658731157a47aa456",
+      "rect": {
+        "height": 52.796875,
+        "width": 1440,
+        "x": 0,
+        "y": 2168.78125
+      },
+      "tag": "SECTION",
+      "text": "📦 FREE SHIPPING ON ALL ORDERS OVER $150 IN NORTH AMERICA 📦"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--23705064079669__16587311960701fc7d",
+      "rect": {
+        "height": 720,
+        "width": 1440,
+        "x": 0,
+        "y": 2221.578125
+      },
+      "tag": "SECTION",
+      "text": "Our studio space\nGALLERY SHOWS, OPENINGS, INTIMATE FUNCTIONS & MORE\nSee upcoming events"
+    }
+  ],
+  "title": "About – theme-publisher-demo",
+  "url": "https://theme-publisher-demo.myshopify.com/pages/about",
+  "viewport": {
+    "dpr": 1,
+    "height": 1000,
+    "width": 1440
+  },
+  "formGroups": [],
+  "grids": [
+    {
+      "className": "multicolumn-list contains-content-container grid grid--1-col-tablet-down grid--2-col-desktop",
+      "columns": "none",
+      "display": "flex",
+      "gap": "4px",
+      "height": 251.734375,
+      "tag": "UL",
+      "width": 1340
+    },
+    {
+      "className": "multicolumn-list contains-content-container grid grid--1-col-tablet-down grid--2-col-desktop",
+      "columns": "none",
+      "display": "flex",
+      "gap": "4px",
+      "height": 219.34375,
+      "tag": "UL",
+      "width": 1340
+    }
+  ],
+  "images": [
+    {
+      "alt": "Multicolor art print hanging on a shelf in front of multiple file boxes. ",
+      "complete": true,
+      "naturalWidth": 1440,
+      "rect": {
+        "height": 616.3125,
+        "width": 1440
+      }
+    },
+    {
+      "alt": "A photo of the Actual Source storefront in the daytime. ",
+      "complete": true,
+      "naturalWidth": 499,
+      "rect": {
+        "height": 666,
+        "width": 444
+      }
+    },
+    {
+      "alt": "A gray World Series art and photography book on a gravel floor. ",
+      "complete": true,
+      "naturalWidth": 499,
+      "rect": {
+        "height": 666,
+        "width": 892
+      }
+    },
+    {
+      "alt": "A person holds a folded paper with an illustration over his head while sitting on the ground. ",
+      "complete": true,
+      "naturalWidth": 720,
+      "rect": {
+        "height": 720,
+        "width": 720
+      }
+    },
+    {
+      "alt": "Bright white and light wood studio space.",
+      "complete": true,
+      "naturalWidth": 720,
+      "rect": {
+        "height": 720,
+        "width": 720
+      }
+    }
+  ],
+  "bodyText": "Skip to content\nCart\nOur offerings include a curated selection of books, apparel, merch, and accessories.\nEstablished in 2015, Actual Source is an American publisher, brand, and book store that collaborates with contemporary artists and designers, to release limited edition books, fonts, clothing, and objects. Selected Actual Source publications are held in the library collection of the Museum of Modern Art (NY) and at the Robert B. Haas Family Arts Library at Yale University.\nActual Source (Studio) is the collaborative design practice of Davis Ngarupe (Cook Islands / USA) and JP Haynie (USA). Together, and with their community of collaborators, they design and execute publications, visual identities, websites, packaging, apparel, and physical spaces for clients in many diverse fields at large and small scale.\n\n📦 FREE SHIPPING ON ALL ORDERS OVER $150 IN NORTH AMERICA 📦\n\nOur studio space\nGALLERY SHOWS, OPENINGS, INTIMATE FUNCTIONS & MORE\nSee upcoming events\n📄 Menu\nHome\nAbout\nEvents\nPolicies\nContact\nSearch\n🌀 Shop\nBooks\nApparel\nMerch\nAccessories\nShop all\n📍 Visit us\n\n33 New Montgomery Street, #750\nSan Francisco, California\nUnited States 94105\nOpen by appointment only\n\nJoin our email list\nEmail\nTwitter\nFacebook\nInstagram\nTikTok\nYouTube\nPayment methods\n© 2026, theme-publisher-demo Powered by Shopify"
+}

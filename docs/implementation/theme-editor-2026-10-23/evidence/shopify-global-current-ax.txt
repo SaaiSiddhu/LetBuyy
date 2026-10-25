@@ -1,0 +1,172 @@
+Browser tab: 1, Title: "My Store 4 · Edit Horizon · Shopify", URL: "https://admin.shopify.com/store/iy8ux0-ik/themes/159203459244/editor?[redacted]
+0 AXWebArea My Store 4 · Edit Horizon · Shopify, URL: admin.shopify.com/store/iy8ux0-ik/themes/159203459244/editor?[redacted]
+	1 container app
+		3 container AppFrame
+			4 container AppFrameChrome
+				5 link Description: Skip to content, Value: admin.shopify.com/store/iy8ux0-ik/themes/159203459244/editor?[redacted]
+				6 container Online Store
+					7 AXWebArea Shopify, URL: online-store-web.shopifyapps.com/themes/159203459244/editor?[redacted]
+						8 container app
+							9 container
+								10 link Description: Skip to editing sidebar, Value: online-store-web.shopifyapps.com/themes/159203459244/editor?[redacted]
+								11 link Description: Exit, Value: admin.shopify.com/store/iy8ux0-ik/themes
+								12 content list
+									13 checkbox Description: Open sections panel, Value: 0
+									14 checkbox Description: Open theme settings panel, Value: 1
+									15 checkbox Description: Open app embeds panel, Value: 0
+								16 text Horizon
+								17 pop up button (collapsed) Description: Home page, Secondary Actions: Expand
+								18 checkbox (collapsed) Description: Open Sidekick, Value: 0, Secondary Actions: Expand
+								19 checkbox Description: Deactivate inspector, Value: 1
+								20 checkbox Description: Enable mobile preview, Value: 0
+								21 button (disabled) Description: Revert the most recent action, ID: undo-:rh:
+								22 button (disabled) Description: Re-apply the most recent reverted action, ID: redo-:rh:
+								23 checkbox (collapsed) Description: View actions, Value: 0, Secondary Actions: Expand
+								24 container
+									25 button (disabled) Save
+								26 button (disabled) Save as
+								27 container
+									28 container
+										29 heading Theme settings, Value: 1
+											30 text Theme settings
+										31 container
+											32 button (collapsed) Description: Logo and favicon, Secondary Actions: Expand
+												33 heading Logo and favicon, Value: 3
+													34 text Logo and favicon
+											35 button (collapsed) Description: Color palette, Secondary Actions: Expand
+												36 heading Color palette, Value: 3
+													37 text Color palette
+											38 button (collapsed) Description: Typography, Secondary Actions: Expand
+												39 heading Typography, Value: 3
+													40 text Typography
+											41 button (collapsed) Description: Page, Secondary Actions: Expand
+												42 heading Page, Value: 3
+													43 text Page
+											44 button (collapsed) Description: Animations, Secondary Actions: Expand
+												45 heading Animations, Value: 3
+													46 text Animations
+											47 button (collapsed) Description: Badges, Secondary Actions: Expand
+												48 heading Badges, Value: 3
+													49 text Badges
+											50 button (collapsed) Description: Buttons, Secondary Actions: Expand
+												51 heading Buttons, Value: 3
+													52 text Buttons
+											53 button (collapsed) Description: Cart, Secondary Actions: Expand
+												54 heading Cart, Value: 3
+													55 text Cart
+											56 button (collapsed) Description: Drawers, Secondary Actions: Expand
+												57 heading Drawers, Value: 3
+													58 text Drawers
+											59 button (collapsed) Description: Icons, Secondary Actions: Expand
+												60 heading Icons, Value: 3
+													61 text Icons
+											62 button (collapsed) Description: Input fields, Secondary Actions: Expand
+												63 heading Input fields, Value: 3
+													64 text Input fields
+											65 button (collapsed) Description: Popovers and modals, Secondary Actions: Expand
+												66 heading Popovers and modals, Value: 3
+													67 text Popovers and modals
+											68 button (collapsed) Description: Prices, Secondary Actions: Expand
+												69 heading Prices, Value: 3
+													70 text Prices
+											71 button (collapsed) Description: Product cards, Secondary Actions: Expand
+												72 heading Product cards, Value: 3
+													73 text Product cards
+											74 button (collapsed) Description: Search, Secondary Actions: Expand
+												75 heading Search, Value: 3
+													76 text Search
+											77 button (collapsed) Description: Swatches, Secondary Actions: Expand
+												78 heading Swatches, Value: 3
+													79 text Swatches
+											80 button (collapsed) Description: Variant pickers, Secondary Actions: Expand
+												81 heading Variant pickers, Value: 3
+													82 text Variant pickers
+											83 button (collapsed) Description: Custom CSS, Secondary Actions: Expand
+												84 heading Custom CSS, Value: 3
+													85 text Custom CSS
+										86 button Theme style
+											87 heading Theme style, Value: 3
+												88 text Theme style
+									89 container Description: Online store preview, ID: storefront-iframe-1
+										90 AXWebArea My Store 4, URL: iy8ux0-ik.myshopify.com/?[redacted]
+											91 link Description: Skip to content, Value: iy8ux0-ik.myshopify.com/?[redacted]
+											92 container header-group
+												93 container shopify-section-sections--22510807908524__header_announcements_9jGBFp
+													94 text Welcome to our store
+												95 container header-component
+													96 heading My Store 4, Value: 1
+														97 text My Store 4
+													98 container
+														99 button (collapsed) Description: Menu, Secondary Actions: Expand
+														100 pop up button Search
+														101 link Description: My Store 4, Value: iy8ux0-ik.myshopify.com/
+														102 pop up button Account
+														103 pop up button (collapsed) Description: Cart, Secondary Actions: Expand
+											104 container MainContent
+												105 container
+													106 image
+													107 text Browse our latest products
+													108 link Description: Shop all, Value: iy8ux0-ik.myshopify.com/collections/all
+												109 container shopify-section-template--22510807515308__product_list_fa6P9H
+													110 container
+														111 heading Products, Value: 3
+															112 text Products
+														113 container product-card-AdlBNdG5NVkZWTzl3d__static-product-card
+															114 container
+																115 heading Product title, Value: 3
+																	116 text Product title
+																117 text Rs. 19.99
+														118 container product-card-AdlBNdG5NVkZWTzl3d__static-product-card-1
+															119 container
+																120 heading Product title, Value: 3
+																	121 text Product title
+																122 text Rs. 19.99
+														123 container product-card-AdlBNdG5NVkZWTzl3d__static-product-card-2
+															124 container
+																125 heading Product title, Value: 3
+																	126 text Product title
+																127 text Rs. 19.99
+														128 container product-card-AdlBNdG5NVkZWTzl3d__static-product-card-3
+															129 container
+																130 heading Product title, Value: 3
+																	131 text Product title
+																132 text Rs. 19.99
+														133 container product-card-AdlBNdG5NVkZWTzl3d__static-product-card-4
+															134 container
+																135 heading Product title, Value: 3
+																	136 text Product title
+																137 text Rs. 19.99
+														138 container product-card-AdlBNdG5NVkZWTzl3d__static-product-card-5
+															139 container
+																140 heading Product title, Value: 3
+																	141 text Product title
+																142 text Rs. 19.99
+														143 container product-card-AdlBNdG5NVkZWTzl3d__static-product-card-6
+															144 container
+																145 heading Product title, Value: 3
+																	146 text Product title
+																147 text Rs. 19.99
+														148 container product-card-AdlBNdG5NVkZWTzl3d__static-product-card-7
+															149 container
+																150 heading Product title, Value: 3
+																	151 text Product title
+																152 text Rs. 19.99
+											153 container
+												154 container shopify-section-sections--22510807941292__footer_utilities_jLGE8U
+													155 container
+														156 text © 2026 
+														157 link Description: My Store 4, Value: iy8ux0-ik.myshopify.com/
+														158 text , 
+														159 link Description: Powered by Shopify, Value: shopify.com/?[redacted]
+														160 button (collapsed) Terms and Policies, Secondary Actions: Expand
+														161 link Description: Facebook, Value: facebook.com/
+														162 link Description: Instagram, Value: instagram.com/
+														163 link Description: Youtube, Value: youtube.com/
+														164 link Description: Tiktok, Value: tiktok.com/
+														165 link Description: Twitter, Value: x.com/
+											166 container
+												167 button Hero
+													168 image
+													169 text Hero
+
+The focused UI element is 7 AXWebArea Shopify, URL: online-store-web.shopifyapps.com/themes/159203459244/editor?[redacted]

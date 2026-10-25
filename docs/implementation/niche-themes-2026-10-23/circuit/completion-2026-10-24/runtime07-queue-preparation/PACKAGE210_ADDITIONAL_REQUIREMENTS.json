@@ -1,0 +1,806 @@
+{
+  "recordedAt": "2026-10-24T20:32:49.571312+00:00",
+  "classification": "UNEXECUTED_VERSION_SPECIFIC_REQUIREMENTS",
+  "binding": {
+    "runtimeRunId": "49ada80bc494",
+    "slug": "letbuyy-forge",
+    "version": "2.1.0",
+    "versionNumber": 5,
+    "bundleSha256": "dca13332176a945d3fb775b617c96a40573c497f6ef71784459b8d7ef64b77d3",
+    "installedPackageId": null,
+    "installedVersionId": null,
+    "draftId": null,
+    "releaseId": null,
+    "installedDescriptorObserved": false
+  },
+  "original288RowsUnchanged": true,
+  "rows": [
+    {
+      "caseId": "CE210-B-trust-badges-badge",
+      "requirement": "New service-information badge root lifecycle",
+      "required": true,
+      "status": "NOT_RUN",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null
+      },
+      "binding": {
+        "runtimeRunId": "49ada80bc494",
+        "slug": "letbuyy-forge",
+        "version": "2.1.0",
+        "versionNumber": 5,
+        "bundleSha256": "dca13332176a945d3fb775b617c96a40573c497f6ef71784459b8d7ef64b77d3",
+        "installedPackageId": null,
+        "installedVersionId": null,
+        "draftId": null,
+        "releaseId": null,
+        "installedDescriptorObserved": false
+      },
+      "evidence": [],
+      "sectionType": "trust-badges",
+      "blockType": "badge",
+      "operations": [
+        "select_correct_instance",
+        "add",
+        "edit_each_declared_field",
+        "reorder_siblings",
+        "hide",
+        "show",
+        "save",
+        "full_reload",
+        "private_preview",
+        "publish",
+        "public_readback",
+        "delete",
+        "save_reload_deleted",
+        "re_add",
+        "preserve_other_templates_and_original_package"
+      ]
+    },
+    {
+      "caseId": "CE210-F-trust-badges-badge-label",
+      "requirement": "New service-information badge label field",
+      "required": true,
+      "status": "NOT_RUN",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null
+      },
+      "binding": {
+        "runtimeRunId": "49ada80bc494",
+        "slug": "letbuyy-forge",
+        "version": "2.1.0",
+        "versionNumber": 5,
+        "bundleSha256": "dca13332176a945d3fb775b617c96a40573c497f6ef71784459b8d7ef64b77d3",
+        "installedPackageId": null,
+        "installedVersionId": null,
+        "draftId": null,
+        "releaseId": null,
+        "installedDescriptorObserved": false
+      },
+      "evidence": [],
+      "sectionType": "trust-badges",
+      "blockType": "badge",
+      "field": "label",
+      "operations": [
+        "edit",
+        "save",
+        "full_reload",
+        "private_preview",
+        "publish",
+        "public_readback"
+      ]
+    },
+    {
+      "caseId": "CE210-N-banner-carousel-slide",
+      "requirement": "Badge children and grandchildren in this exact declared root context",
+      "required": true,
+      "status": "NOT_RUN",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null
+      },
+      "binding": {
+        "runtimeRunId": "49ada80bc494",
+        "slug": "letbuyy-forge",
+        "version": "2.1.0",
+        "versionNumber": 5,
+        "bundleSha256": "dca13332176a945d3fb775b617c96a40573c497f6ef71784459b8d7ef64b77d3",
+        "installedPackageId": null,
+        "installedVersionId": null,
+        "draftId": null,
+        "releaseId": null,
+        "installedDescriptorObserved": false
+      },
+      "evidence": [],
+      "sectionType": "banner-carousel",
+      "rootBlockType": "slide",
+      "parentKind": "EXACT_FIRST_PARTY_INLINE",
+      "rootFields": [
+        "heading",
+        "image",
+        "link"
+      ],
+      "childType": "badge",
+      "childFields": [
+        "label"
+      ],
+      "requiredDepths": [
+        2,
+        3
+      ],
+      "operations": [
+        "select_correct_instance",
+        "add",
+        "edit_each_declared_field",
+        "reorder_siblings",
+        "hide",
+        "show",
+        "save",
+        "full_reload",
+        "private_preview",
+        "publish",
+        "public_readback",
+        "delete",
+        "save_reload_deleted",
+        "re_add",
+        "preserve_other_templates_and_original_package"
+      ],
+      "expected": "Distinct stable root/child/grandchild UUIDs; child label at depths2/3; correct selection, order and visibility after reload and public rendering."
+    },
+    {
+      "caseId": "CE210-N-brand-marquee-brand",
+      "requirement": "Badge children and grandchildren in this exact declared root context",
+      "required": true,
+      "status": "NOT_RUN",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null
+      },
+      "binding": {
+        "runtimeRunId": "49ada80bc494",
+        "slug": "letbuyy-forge",
+        "version": "2.1.0",
+        "versionNumber": 5,
+        "bundleSha256": "dca13332176a945d3fb775b617c96a40573c497f6ef71784459b8d7ef64b77d3",
+        "installedPackageId": null,
+        "installedVersionId": null,
+        "draftId": null,
+        "releaseId": null,
+        "installedDescriptorObserved": false
+      },
+      "evidence": [],
+      "sectionType": "brand-marquee",
+      "rootBlockType": "brand",
+      "parentKind": "EXACT_FIRST_PARTY_INLINE",
+      "rootFields": [
+        "name"
+      ],
+      "childType": "badge",
+      "childFields": [
+        "label"
+      ],
+      "requiredDepths": [
+        2,
+        3
+      ],
+      "operations": [
+        "select_correct_instance",
+        "add",
+        "edit_each_declared_field",
+        "reorder_siblings",
+        "hide",
+        "show",
+        "save",
+        "full_reload",
+        "private_preview",
+        "publish",
+        "public_readback",
+        "delete",
+        "save_reload_deleted",
+        "re_add",
+        "preserve_other_templates_and_original_package"
+      ],
+      "expected": "Distinct stable root/child/grandchild UUIDs; child label at depths2/3; correct selection, order and visibility after reload and public rendering."
+    },
+    {
+      "caseId": "CE210-N-experience-timeline-experience",
+      "requirement": "Badge children and grandchildren in this exact declared root context",
+      "required": true,
+      "status": "NOT_RUN",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null
+      },
+      "binding": {
+        "runtimeRunId": "49ada80bc494",
+        "slug": "letbuyy-forge",
+        "version": "2.1.0",
+        "versionNumber": 5,
+        "bundleSha256": "dca13332176a945d3fb775b617c96a40573c497f6ef71784459b8d7ef64b77d3",
+        "installedPackageId": null,
+        "installedVersionId": null,
+        "draftId": null,
+        "releaseId": null,
+        "installedDescriptorObserved": false
+      },
+      "evidence": [],
+      "sectionType": "experience-timeline",
+      "rootBlockType": "experience",
+      "parentKind": "EXACT_FIRST_PARTY_INLINE",
+      "rootFields": [
+        "company",
+        "period",
+        "title"
+      ],
+      "childType": "badge",
+      "childFields": [
+        "label"
+      ],
+      "requiredDepths": [
+        2,
+        3
+      ],
+      "operations": [
+        "select_correct_instance",
+        "add",
+        "edit_each_declared_field",
+        "reorder_siblings",
+        "hide",
+        "show",
+        "save",
+        "full_reload",
+        "private_preview",
+        "publish",
+        "public_readback",
+        "delete",
+        "save_reload_deleted",
+        "re_add",
+        "preserve_other_templates_and_original_package"
+      ],
+      "expected": "Distinct stable root/child/grandchild UUIDs; child label at depths2/3; correct selection, order and visibility after reload and public rendering."
+    },
+    {
+      "caseId": "CE210-N-faq-accordion-faq-item",
+      "requirement": "Badge children and grandchildren in this exact declared root context",
+      "required": true,
+      "status": "NOT_RUN",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null
+      },
+      "binding": {
+        "runtimeRunId": "49ada80bc494",
+        "slug": "letbuyy-forge",
+        "version": "2.1.0",
+        "versionNumber": 5,
+        "bundleSha256": "dca13332176a945d3fb775b617c96a40573c497f6ef71784459b8d7ef64b77d3",
+        "installedPackageId": null,
+        "installedVersionId": null,
+        "draftId": null,
+        "releaseId": null,
+        "installedDescriptorObserved": false
+      },
+      "evidence": [],
+      "sectionType": "faq-accordion",
+      "rootBlockType": "faq-item",
+      "parentKind": "EXACT_FIRST_PARTY_INLINE",
+      "rootFields": [
+        "answer",
+        "question"
+      ],
+      "childType": "badge",
+      "childFields": [
+        "label"
+      ],
+      "requiredDepths": [
+        2,
+        3
+      ],
+      "operations": [
+        "select_correct_instance",
+        "add",
+        "edit_each_declared_field",
+        "reorder_siblings",
+        "hide",
+        "show",
+        "save",
+        "full_reload",
+        "private_preview",
+        "publish",
+        "public_readback",
+        "delete",
+        "save_reload_deleted",
+        "re_add",
+        "preserve_other_templates_and_original_package"
+      ],
+      "expected": "Distinct stable root/child/grandchild UUIDs; child label at depths2/3; correct selection, order and visibility after reload and public rendering."
+    },
+    {
+      "caseId": "CE210-N-footer-link",
+      "requirement": "Badge children and grandchildren in this exact declared root context",
+      "required": true,
+      "status": "NOT_RUN",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null
+      },
+      "binding": {
+        "runtimeRunId": "49ada80bc494",
+        "slug": "letbuyy-forge",
+        "version": "2.1.0",
+        "versionNumber": 5,
+        "bundleSha256": "dca13332176a945d3fb775b617c96a40573c497f6ef71784459b8d7ef64b77d3",
+        "installedPackageId": null,
+        "installedVersionId": null,
+        "draftId": null,
+        "releaseId": null,
+        "installedDescriptorObserved": false
+      },
+      "evidence": [],
+      "sectionType": "footer",
+      "rootBlockType": "link",
+      "parentKind": "EXACT_FIRST_PARTY_INLINE",
+      "rootFields": [
+        "href",
+        "label"
+      ],
+      "childType": "badge",
+      "childFields": [
+        "label"
+      ],
+      "requiredDepths": [
+        2,
+        3
+      ],
+      "operations": [
+        "select_correct_instance",
+        "add",
+        "edit_each_declared_field",
+        "reorder_siblings",
+        "hide",
+        "show",
+        "save",
+        "full_reload",
+        "private_preview",
+        "publish",
+        "public_readback",
+        "delete",
+        "save_reload_deleted",
+        "re_add",
+        "preserve_other_templates_and_original_package"
+      ],
+      "expected": "Distinct stable root/child/grandchild UUIDs; child label at depths2/3; correct selection, order and visibility after reload and public rendering."
+    },
+    {
+      "caseId": "CE210-N-header-link",
+      "requirement": "Badge children and grandchildren in this exact declared root context",
+      "required": true,
+      "status": "NOT_RUN",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null
+      },
+      "binding": {
+        "runtimeRunId": "49ada80bc494",
+        "slug": "letbuyy-forge",
+        "version": "2.1.0",
+        "versionNumber": 5,
+        "bundleSha256": "dca13332176a945d3fb775b617c96a40573c497f6ef71784459b8d7ef64b77d3",
+        "installedPackageId": null,
+        "installedVersionId": null,
+        "draftId": null,
+        "releaseId": null,
+        "installedDescriptorObserved": false
+      },
+      "evidence": [],
+      "sectionType": "header",
+      "rootBlockType": "link",
+      "parentKind": "EXACT_FIRST_PARTY_INLINE",
+      "rootFields": [
+        "href",
+        "label"
+      ],
+      "childType": "badge",
+      "childFields": [
+        "label"
+      ],
+      "requiredDepths": [
+        2,
+        3
+      ],
+      "operations": [
+        "select_correct_instance",
+        "add",
+        "edit_each_declared_field",
+        "reorder_siblings",
+        "hide",
+        "show",
+        "save",
+        "full_reload",
+        "private_preview",
+        "publish",
+        "public_readback",
+        "delete",
+        "save_reload_deleted",
+        "re_add",
+        "preserve_other_templates_and_original_package"
+      ],
+      "expected": "Distinct stable root/child/grandchild UUIDs; child label at depths2/3; correct selection, order and visibility after reload and public rendering."
+    },
+    {
+      "caseId": "CE210-N-portfolio-grid-project",
+      "requirement": "Badge children and grandchildren in this exact declared root context",
+      "required": true,
+      "status": "NOT_RUN",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null
+      },
+      "binding": {
+        "runtimeRunId": "49ada80bc494",
+        "slug": "letbuyy-forge",
+        "version": "2.1.0",
+        "versionNumber": 5,
+        "bundleSha256": "dca13332176a945d3fb775b617c96a40573c497f6ef71784459b8d7ef64b77d3",
+        "installedPackageId": null,
+        "installedVersionId": null,
+        "draftId": null,
+        "releaseId": null,
+        "installedDescriptorObserved": false
+      },
+      "evidence": [],
+      "sectionType": "portfolio-grid",
+      "rootBlockType": "project",
+      "parentKind": "EXACT_FIRST_PARTY_INLINE",
+      "rootFields": [
+        "link",
+        "summary",
+        "title"
+      ],
+      "childType": "badge",
+      "childFields": [
+        "label"
+      ],
+      "requiredDepths": [
+        2,
+        3
+      ],
+      "operations": [
+        "select_correct_instance",
+        "add",
+        "edit_each_declared_field",
+        "reorder_siblings",
+        "hide",
+        "show",
+        "save",
+        "full_reload",
+        "private_preview",
+        "publish",
+        "public_readback",
+        "delete",
+        "save_reload_deleted",
+        "re_add",
+        "preserve_other_templates_and_original_package"
+      ],
+      "expected": "Distinct stable root/child/grandchild UUIDs; child label at depths2/3; correct selection, order and visibility after reload and public rendering."
+    },
+    {
+      "caseId": "CE210-N-services-grid-service",
+      "requirement": "Badge children and grandchildren in this exact declared root context",
+      "required": true,
+      "status": "NOT_RUN",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null
+      },
+      "binding": {
+        "runtimeRunId": "49ada80bc494",
+        "slug": "letbuyy-forge",
+        "version": "2.1.0",
+        "versionNumber": 5,
+        "bundleSha256": "dca13332176a945d3fb775b617c96a40573c497f6ef71784459b8d7ef64b77d3",
+        "installedPackageId": null,
+        "installedVersionId": null,
+        "draftId": null,
+        "releaseId": null,
+        "installedDescriptorObserved": false
+      },
+      "evidence": [],
+      "sectionType": "services-grid",
+      "rootBlockType": "service",
+      "parentKind": "EXACT_FIRST_PARTY_INLINE",
+      "rootFields": [
+        "description",
+        "link",
+        "title"
+      ],
+      "childType": "badge",
+      "childFields": [
+        "label"
+      ],
+      "requiredDepths": [
+        2,
+        3
+      ],
+      "operations": [
+        "select_correct_instance",
+        "add",
+        "edit_each_declared_field",
+        "reorder_siblings",
+        "hide",
+        "show",
+        "save",
+        "full_reload",
+        "private_preview",
+        "publish",
+        "public_readback",
+        "delete",
+        "save_reload_deleted",
+        "re_add",
+        "preserve_other_templates_and_original_package"
+      ],
+      "expected": "Distinct stable root/child/grandchild UUIDs; child label at depths2/3; correct selection, order and visibility after reload and public rendering."
+    },
+    {
+      "caseId": "CE210-N-skills-section-skill",
+      "requirement": "Badge children and grandchildren in this exact declared root context",
+      "required": true,
+      "status": "NOT_RUN",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null
+      },
+      "binding": {
+        "runtimeRunId": "49ada80bc494",
+        "slug": "letbuyy-forge",
+        "version": "2.1.0",
+        "versionNumber": 5,
+        "bundleSha256": "dca13332176a945d3fb775b617c96a40573c497f6ef71784459b8d7ef64b77d3",
+        "installedPackageId": null,
+        "installedVersionId": null,
+        "draftId": null,
+        "releaseId": null,
+        "installedDescriptorObserved": false
+      },
+      "evidence": [],
+      "sectionType": "skills-section",
+      "rootBlockType": "skill",
+      "parentKind": "EXACT_FIRST_PARTY_INLINE",
+      "rootFields": [
+        "level",
+        "name"
+      ],
+      "childType": "badge",
+      "childFields": [
+        "label"
+      ],
+      "requiredDepths": [
+        2,
+        3
+      ],
+      "operations": [
+        "select_correct_instance",
+        "add",
+        "edit_each_declared_field",
+        "reorder_siblings",
+        "hide",
+        "show",
+        "save",
+        "full_reload",
+        "private_preview",
+        "publish",
+        "public_readback",
+        "delete",
+        "save_reload_deleted",
+        "re_add",
+        "preserve_other_templates_and_original_package"
+      ],
+      "expected": "Distinct stable root/child/grandchild UUIDs; child label at depths2/3; correct selection, order and visibility after reload and public rendering."
+    },
+    {
+      "caseId": "CE210-N-spotlight-badge",
+      "requirement": "Badge children and grandchildren in this exact declared root context",
+      "required": true,
+      "status": "NOT_RUN",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null
+      },
+      "binding": {
+        "runtimeRunId": "49ada80bc494",
+        "slug": "letbuyy-forge",
+        "version": "2.1.0",
+        "versionNumber": 5,
+        "bundleSha256": "dca13332176a945d3fb775b617c96a40573c497f6ef71784459b8d7ef64b77d3",
+        "installedPackageId": null,
+        "installedVersionId": null,
+        "draftId": null,
+        "releaseId": null,
+        "installedDescriptorObserved": false
+      },
+      "evidence": [],
+      "sectionType": "spotlight",
+      "rootBlockType": "badge",
+      "parentKind": "REUSABLE",
+      "rootFields": [
+        "label"
+      ],
+      "childType": "badge",
+      "childFields": [
+        "label"
+      ],
+      "requiredDepths": [
+        2,
+        3
+      ],
+      "operations": [
+        "select_correct_instance",
+        "add",
+        "edit_each_declared_field",
+        "reorder_siblings",
+        "hide",
+        "show",
+        "save",
+        "full_reload",
+        "private_preview",
+        "publish",
+        "public_readback",
+        "delete",
+        "save_reload_deleted",
+        "re_add",
+        "preserve_other_templates_and_original_package"
+      ],
+      "expected": "Distinct stable root/child/grandchild UUIDs; child label at depths2/3; correct selection, order and visibility after reload and public rendering."
+    },
+    {
+      "caseId": "CE210-N-testimonials-testimonial",
+      "requirement": "Badge children and grandchildren in this exact declared root context",
+      "required": true,
+      "status": "NOT_RUN",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null
+      },
+      "binding": {
+        "runtimeRunId": "49ada80bc494",
+        "slug": "letbuyy-forge",
+        "version": "2.1.0",
+        "versionNumber": 5,
+        "bundleSha256": "dca13332176a945d3fb775b617c96a40573c497f6ef71784459b8d7ef64b77d3",
+        "installedPackageId": null,
+        "installedVersionId": null,
+        "draftId": null,
+        "releaseId": null,
+        "installedDescriptorObserved": false
+      },
+      "evidence": [],
+      "sectionType": "testimonials",
+      "rootBlockType": "testimonial",
+      "parentKind": "EXACT_FIRST_PARTY_INLINE",
+      "rootFields": [
+        "author",
+        "quote"
+      ],
+      "childType": "badge",
+      "childFields": [
+        "label"
+      ],
+      "requiredDepths": [
+        2,
+        3
+      ],
+      "operations": [
+        "select_correct_instance",
+        "add",
+        "edit_each_declared_field",
+        "reorder_siblings",
+        "hide",
+        "show",
+        "save",
+        "full_reload",
+        "private_preview",
+        "publish",
+        "public_readback",
+        "delete",
+        "save_reload_deleted",
+        "re_add",
+        "preserve_other_templates_and_original_package"
+      ],
+      "expected": "Distinct stable root/child/grandchild UUIDs; child label at depths2/3; correct selection, order and visibility after reload and public rendering."
+    },
+    {
+      "caseId": "CE210-N-trust-badges-badge",
+      "requirement": "Badge children and grandchildren in this exact declared root context",
+      "required": true,
+      "status": "NOT_RUN",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null
+      },
+      "binding": {
+        "runtimeRunId": "49ada80bc494",
+        "slug": "letbuyy-forge",
+        "version": "2.1.0",
+        "versionNumber": 5,
+        "bundleSha256": "dca13332176a945d3fb775b617c96a40573c497f6ef71784459b8d7ef64b77d3",
+        "installedPackageId": null,
+        "installedVersionId": null,
+        "draftId": null,
+        "releaseId": null,
+        "installedDescriptorObserved": false
+      },
+      "evidence": [],
+      "sectionType": "trust-badges",
+      "rootBlockType": "badge",
+      "parentKind": "REUSABLE",
+      "rootFields": [
+        "label"
+      ],
+      "childType": "badge",
+      "childFields": [
+        "label"
+      ],
+      "requiredDepths": [
+        2,
+        3
+      ],
+      "operations": [
+        "select_correct_instance",
+        "add",
+        "edit_each_declared_field",
+        "reorder_siblings",
+        "hide",
+        "show",
+        "save",
+        "full_reload",
+        "private_preview",
+        "publish",
+        "public_readback",
+        "delete",
+        "save_reload_deleted",
+        "re_add",
+        "preserve_other_templates_and_original_package"
+      ],
+      "expected": "Distinct stable root/child/grandchild UUIDs; child label at depths2/3; correct selection, order and visibility after reload and public rendering."
+    },
+    {
+      "caseId": "CE210-N-limits-and-protection",
+      "requirement": "Existing nesting, cardinality and frozen app boundaries",
+      "required": true,
+      "status": "NOT_RUN",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null
+      },
+      "binding": {
+        "runtimeRunId": "49ada80bc494",
+        "slug": "letbuyy-forge",
+        "version": "2.1.0",
+        "versionNumber": 5,
+        "bundleSha256": "dca13332176a945d3fb775b617c96a40573c497f6ef71784459b8d7ef64b77d3",
+        "installedPackageId": null,
+        "installedVersionId": null,
+        "draftId": null,
+        "releaseId": null,
+        "installedDescriptorObserved": false
+      },
+      "evidence": [],
+      "operations": [
+        "depth4_refused",
+        "direct_root_limit50_retained",
+        "child_limit100_retained",
+        "declared_root_limits_retained",
+        "duplicate_uuid_refused",
+        "app_child_refused",
+        "unknown_type_refused",
+        "saved_tree_preserved_on_refusal"
+      ],
+      "expected": "Normal visible limits first; API refusal branches require a separately admitted negative scope. No app execution or schema relaxation. Shared source/native guards remain attributed to their own cohorts."
+    }
+  ],
+  "counts": {
+    "NOT_RUN": 15
+  },
+  "countingRule": "Requirements and suboperations only; no source, callback, native or UI execution credit."
+}

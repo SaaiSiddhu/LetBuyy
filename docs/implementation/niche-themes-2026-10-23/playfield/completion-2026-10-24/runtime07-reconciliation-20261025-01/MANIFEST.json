@@ -1,0 +1,54 @@
+{
+  "files": [
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/runtime07-reconciliation-20261025-01/EDITOR_SLICE_SUBMISSION.json",
+      "sha256": "83722737f1489dbda7e43d7dccb3c460043e160a906e219bc06ecde248b9f2e0",
+      "bytes": 9285
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/runtime07-reconciliation-20261025-01/METADATA_CORRECTION_INPUT.json",
+      "sha256": "b0927afee216b1738926d3540380524b576fcd1239c22e17bf7933d06b0cb2b2",
+      "bytes": 1568
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/runtime07-reconciliation-20261025-01/RECONCILIATION_RESULT.json",
+      "sha256": "8b951d77e6010a0affe1155f5ce9dd37cde1d3af3db5361ba9f06da53bbfa215",
+      "bytes": 8312
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/runtime07-reconciliation-20261025-01/SHARED_EVIDENCE_APPLICABILITY.json",
+      "sha256": "4ae0564be195c3b394e83f3a22211d2d1e9e11e28f9feb2b414ebe252ac66959",
+      "bytes": 5066
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/runtime07-reconciliation-20261025-01/before/CAPABILITY_INVENTORY.json",
+      "sha256": "7539b3fa48c7cdb4242596aad9c29dfbbff1be625a40b56881378bbb19fc0e95",
+      "bytes": 242156
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/runtime07-reconciliation-20261025-01/before/COVERAGE.json",
+      "sha256": "bf76ad329d9ff9879170cc2f983853167d8da7fbc12303d38e260fc4cda8d467",
+      "bytes": 880347
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/runtime07-reconciliation-20261025-01/before/FINDINGS.md",
+      "sha256": "e61100455927b51f4f9345a8735c268a9b692c39574738cc120e16662b43dfca",
+      "bytes": 3340
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/runtime07-reconciliation-20261025-01/before/RUNBOOK.md",
+      "sha256": "834ebc218d7583e47eaf974e7a4a5a0d0d98bce8602eb64b647e2236fb11044c",
+      "bytes": 11231
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/runtime07-reconciliation-20261025-01/before/SHARED_REQUESTS.json",
+      "sha256": "435caf863a401fe2aeabd975ea8bc423cb6e91e95636a76c9115759670891a78",
+      "bytes": 8715
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/runtime07-reconciliation-20261025-01/reconcile_runtime07.py",
+      "sha256": "a3b62954aa950c6bba3f1e5378037bf0f0dbde2a8751f3b2bd4d2be0c64e9c1e",
+      "bytes": 29215
+    }
+  ]
+}

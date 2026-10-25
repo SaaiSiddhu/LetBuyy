@@ -32,6 +32,11 @@ export async function GET(request: NextRequest, context: { params: Promise<{ car
         if (!value || value.length > 2048) return jsonError(400, 'CHECKOUT_HANDOFF_REQUIRED', 'Checkout handoff is incomplete.');
         handoff.set(key, value);
     }
+    const buyerBinding = query.get('buyer_binding');
+    if (buyerBinding !== null) {
+        if (!/^[a-f0-9]{64}$/.test(buyerBinding)) return jsonError(400, 'CHECKOUT_HANDOFF_REQUIRED', 'Checkout handoff is incomplete.');
+        handoff.set('buyer_binding', buyerBinding);
+    }
     if (!UUID.test(handoff.get('site_id') || '')) return jsonError(400, 'CHECKOUT_HANDOFF_REQUIRED', 'Checkout handoff is incomplete.');
     const country = query.get('country') || '';
     const state = query.get('state') || '';
@@ -137,6 +142,7 @@ function projectFailure(status: number, payload: unknown) {
         INSUFFICIENT_INVENTORY: 'Some items are no longer available in that quantity. Review your cart and try again.',
         PAYMENT_SETUP_REQUIRED: 'Payment setup is required for this store.',
         CHECKOUT_STATE_CONFLICT: 'Checkout details changed. Refresh checkout and try again.',
+        CHECKOUT_PRODUCT_CHANGED: 'Some products changed. Review the current items in your cart before checking out again.',
         CHECKOUT_SHIPPING_CHANGED: 'The delivery price changed. Review the updated delivery option and try again.',
         CHECKOUT_PROVIDER_PAYMENT_REQUIRED: 'Payment confirmation is required to complete checkout.',
         CHECKOUT_PROVIDER_SIGNATURE_INVALID: 'Payment could not be verified. Please try again or contact support.',
@@ -163,6 +169,11 @@ export async function POST(request: NextRequest, context: { params: Promise<{ ca
         const value = query.get(key);
         if (!value || value.length > 2048) return jsonError(400, 'CHECKOUT_HANDOFF_REQUIRED', 'Checkout handoff is incomplete.');
         handoff.set(key, value);
+    }
+    const buyerBinding = query.get('buyer_binding');
+    if (buyerBinding !== null) {
+        if (!/^[a-f0-9]{64}$/.test(buyerBinding)) return jsonError(400, 'CHECKOUT_HANDOFF_REQUIRED', 'Checkout handoff is incomplete.');
+        handoff.set('buyer_binding', buyerBinding);
     }
     if (!UUID.test(handoff.get('site_id') || '')) return jsonError(400, 'CHECKOUT_HANDOFF_REQUIRED', 'Checkout handoff is incomplete.');
 

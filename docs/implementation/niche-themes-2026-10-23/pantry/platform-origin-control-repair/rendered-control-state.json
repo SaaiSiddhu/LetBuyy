@@ -1,0 +1,90 @@
+{
+  "classification": "SOURCE_RENDERED_DOM_FORMDATA_NOT_RUNTIME_ACCEPTANCE",
+  "input": {
+    "page": 4,
+    "limit": 1,
+    "search": "lentils",
+    "category": "Staples",
+    "country_of_origin": "India",
+    "sort": "newest",
+    "collection_id": "82c43d65-85bc-4313-a49b-c745c8328de6",
+    "connector": [
+      "usb-c",
+      "hdmi"
+    ],
+    "pack_size": "g:250"
+  },
+  "apply": {
+    "method": "get",
+    "action": "/store/demo/collections/staples",
+    "entries": [
+      [
+        "limit",
+        "1"
+      ],
+      [
+        "search",
+        "lentils"
+      ],
+      [
+        "category",
+        "Staples"
+      ],
+      [
+        "sort",
+        "newest"
+      ],
+      [
+        "collection_id",
+        "82c43d65-85bc-4313-a49b-c745c8328de6"
+      ],
+      [
+        "connector",
+        "hdmi"
+      ],
+      [
+        "connector",
+        "usb-c"
+      ],
+      [
+        "pack_size",
+        "g:250"
+      ],
+      [
+        "country_of_origin",
+        "Nepal"
+      ]
+    ],
+    "parsed": {
+      "page": 1,
+      "limit": 1,
+      "search": "lentils",
+      "category": "Staples",
+      "country_of_origin": "Nepal",
+      "sort": "newest",
+      "collection_id": "82c43d65-85bc-4313-a49b-c745c8328de6",
+      "connector": [
+        "hdmi",
+        "usb-c"
+      ],
+      "pack_size": "g:250"
+    }
+  },
+  "clear": {
+    "href": "/store/demo/collections/staples?limit=1&search=lentils&category=Staples&sort=newest&collection_id=82c43d65-85bc-4313-a49b-c745c8328de6&connector=hdmi&connector=usb-c&pack_size=g%3A250",
+    "parsed": {
+      "page": 1,
+      "limit": 1,
+      "search": "lentils",
+      "category": "Staples",
+      "sort": "newest",
+      "collection_id": "82c43d65-85bc-4313-a49b-c745c8328de6",
+      "connector": [
+        "hdmi",
+        "usb-c"
+      ],
+      "pack_size": "g:250"
+    }
+  },
+  "lifecycleCaseP06": "BLOCKED_PENDING_EDITOR_REVERIFY_ON_NEXT_CANDIDATE"
+}

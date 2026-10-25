@@ -1,0 +1,25 @@
+- heading [level=1]: Customer events
+- button "Add custom pixel":
+- link "Explore pixel apps":
+- heading "Customer events" [level=1]
+- heading "Pixels" [level=2]:
+- button "More information about pixels":
+- textbox "Search pixels"
+- button "Sort the results":
+- table
+- paragraph: This is where you'll manage your pixels
+- paragraph: Collect customer events through app pixel or custom pixel integrations.
+- button "Add custom pixel":
+- link "Explore pixel apps":
+- paragraph:
+- button "Learn more about pixels":
+- status
+- status
+- status
+- paragraph
+- button "Close" [disabled]:
+- textbox "Work with Sidekick"
+- button "Add files and more":
+- button "Voice":
+- button "Open Sidekick":
+- status

@@ -1,0 +1,616 @@
+{
+  "body": {
+    "background": "rgb(252, 252, 252)",
+    "color": "rgba(2, 9, 18, 0.75)",
+    "font": "\"Anonymous Pro\", monospace",
+    "fontSize": "15.75px"
+  },
+  "controls": [
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Menu",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "true",
+      "label": "",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "true",
+      "label": "",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Search",
+      "tag": "INPUT",
+      "type": "search"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Decrease quantity for Green Bundle",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "INPUT",
+      "type": "number"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Increase quantity for Green Bundle",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Add to cart",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Buy it now",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Share",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "What's the shelf life?",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "How much is shipping?",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "What's inside?",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Email",
+      "tag": "INPUT",
+      "type": "email"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Subscribe",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    }
+  ],
+  "headings": [
+    {
+      "font": "\"Anonymous Pro\", monospace",
+      "height": 20.140625,
+      "line": "20.15px",
+      "size": "13.65px",
+      "tag": "H2",
+      "text": "",
+      "weight": "400",
+      "width": 301.8046875,
+      "x": 36.75,
+      "y": -32.421875
+    },
+    {
+      "font": "Figtree, sans-serif",
+      "height": 46.9453125,
+      "line": "46.95px",
+      "size": "37.5px",
+      "tag": "H1",
+      "text": "Green Bundle",
+      "weight": "500",
+      "width": 358.5,
+      "x": 15.75,
+      "y": 739.3984375
+    },
+    {
+      "font": "Figtree, sans-serif",
+      "height": 62.59375,
+      "line": "31.3px",
+      "size": "25px",
+      "tag": "H2",
+      "text": "Frequently asked questions",
+      "weight": "500",
+      "width": 323,
+      "x": 33.5,
+      "y": 2125.015625
+    },
+    {
+      "font": "Figtree, sans-serif",
+      "height": 25,
+      "line": "23.475px",
+      "size": "18.75px",
+      "tag": "H3",
+      "text": "What's the shelf life?",
+      "weight": "500",
+      "width": 192.75,
+      "x": 71,
+      "y": 2251.609375
+    },
+    {
+      "font": "Figtree, sans-serif",
+      "height": 25,
+      "line": "23.475px",
+      "size": "18.75px",
+      "tag": "H3",
+      "text": "How much is shipping?",
+      "weight": "500",
+      "width": 211.21875,
+      "x": 71,
+      "y": 2435.859375
+    },
+    {
+      "font": "Figtree, sans-serif",
+      "height": 25,
+      "line": "23.475px",
+      "size": "18.75px",
+      "tag": "H3",
+      "text": "What's inside?",
+      "weight": "500",
+      "width": 132.359375,
+      "x": 71,
+      "y": 2493.359375
+    },
+    {
+      "font": "Figtree, sans-serif",
+      "height": 93.890625,
+      "line": "46.95px",
+      "size": "37.5px",
+      "tag": "H2",
+      "text": "More plants. More often.",
+      "weight": "500",
+      "width": 274.5,
+      "x": 57.75,
+      "y": 3156.359375
+    },
+    {
+      "font": "Figtree, sans-serif",
+      "height": 30.171875,
+      "line": "30.175px",
+      "size": "21.25px",
+      "tag": "H3",
+      "text": "Next-day delivery",
+      "weight": "500",
+      "width": 302,
+      "x": 44,
+      "y": 3401
+    },
+    {
+      "font": "Figtree, sans-serif",
+      "height": 30.171875,
+      "line": "30.175px",
+      "size": "21.25px",
+      "tag": "H3",
+      "text": "Carbon offsetting",
+      "weight": "500",
+      "width": 302,
+      "x": 44,
+      "y": 3660.921875
+    },
+    {
+      "font": "Figtree, sans-serif",
+      "height": 187.78125,
+      "line": "31.3px",
+      "size": "25px",
+      "tag": "H2",
+      "text": "Our drinks are bottled in glass, never plastic. It’s better for you, better for the planet, and more fun to drink from.",
+      "weight": "500",
+      "width": 281,
+      "x": 54.5,
+      "y": 4314.34375
+    },
+    {
+      "font": "Figtree, sans-serif",
+      "height": 25.0390625,
+      "line": "25.04px",
+      "size": "20px",
+      "tag": "H2",
+      "text": "Quick links",
+      "weight": "500",
+      "width": 310,
+      "x": 40,
+      "y": 4626.125
+    },
+    {
+      "font": "Figtree, sans-serif",
+      "height": 25.0390625,
+      "line": "25.04px",
+      "size": "20px",
+      "tag": "H2",
+      "text": "Our mission",
+      "weight": "500",
+      "width": 310,
+      "x": 40,
+      "y": 4901.7578125
+    },
+    {
+      "font": "Figtree, sans-serif",
+      "height": 25.0390625,
+      "line": "25.04px",
+      "size": "20px",
+      "tag": "H2",
+      "text": "We send delicious emails.",
+      "weight": "500",
+      "width": 310,
+      "x": 40,
+      "y": 5132.546875
+    }
+  ],
+  "links": [
+    {
+      "text": "Skip to content",
+      "url": "https://theme-taste-demo.myshopify.com/products/green-bundle-1#MainContent"
+    },
+    {
+      "text": "",
+      "url": "https://theme-taste-demo.myshopify.com/collections/all-drinks"
+    },
+    {
+      "text": "",
+      "url": "https://theme-taste-demo.myshopify.com/collections/cold-pressed-juices"
+    },
+    {
+      "text": "",
+      "url": "https://theme-taste-demo.myshopify.com/collections/boosters"
+    },
+    {
+      "text": "",
+      "url": "https://theme-taste-demo.myshopify.com/collections/kombuchas"
+    },
+    {
+      "text": "",
+      "url": "https://theme-taste-demo.myshopify.com/collections/plant-milks"
+    },
+    {
+      "text": "",
+      "url": "https://theme-taste-demo.myshopify.com/collections/shakes"
+    },
+    {
+      "text": "",
+      "url": "https://theme-taste-demo.myshopify.com/collections/lemonades"
+    },
+    {
+      "text": "",
+      "url": "https://theme-taste-demo.myshopify.com/collections/bundles"
+    },
+    {
+      "text": "",
+      "url": "https://theme-taste-demo.myshopify.com/blogs/recipes"
+    },
+    {
+      "text": "",
+      "url": "https://theme-taste-demo.myshopify.com/pages/about-us"
+    },
+    {
+      "text": "",
+      "url": "https://theme-taste-demo.myshopify.com/pages/contact"
+    },
+    {
+      "text": "",
+      "url": "https://theme-taste-demo.myshopify.com/"
+    },
+    {
+      "text": "Cart",
+      "url": "https://theme-taste-demo.myshopify.com/cart"
+    },
+    {
+      "text": "Skip to product information",
+      "url": "https://theme-taste-demo.myshopify.com/products/green-bundle-1#ProductInfo-template--22715887386646__main"
+    },
+    {
+      "text": "Drinks",
+      "url": "https://theme-taste-demo.myshopify.com/collections/all-drinks"
+    },
+    {
+      "text": "Bundles",
+      "url": "https://theme-taste-demo.myshopify.com/collections/bundles"
+    },
+    {
+      "text": "Recipes",
+      "url": "https://theme-taste-demo.myshopify.com/blogs/recipes"
+    },
+    {
+      "text": "About",
+      "url": "https://theme-taste-demo.myshopify.com/pages/about-us"
+    },
+    {
+      "text": "theme-taste-demo",
+      "url": "https://theme-taste-demo.myshopify.com/"
+    }
+  ],
+  "sections": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715887386646__main",
+      "rect": {
+        "height": 1877.4921875,
+        "width": 390,
+        "x": 0,
+        "y": 115.5234375
+      },
+      "tag": "SECTION",
+      "text": "Skip to product information\nOpen media 1 in modal\nGreen Bundle\nRegular price\n$64.95 CAD\n\nWith no sweet fruits of any kind, this is our most rigorous detox, suitable for green juice"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715887386646__164513521989ed42e3",
+      "rect": {
+        "height": 600.59375,
+        "width": 390,
+        "x": 0,
+        "y": 2013.015625
+      },
+      "tag": "SECTION",
+      "text": "IN CASE YOU’RE WONDERING\n\nFrequently asked questions\nWhat's the shelf life?\n\nGuaranteed 10 days on delivery. See the label for the best before date. Once opened, drink within 5 day"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715887386646__image-with-text",
+      "rect": {
+        "height": 695.140625,
+        "width": 390,
+        "x": 0,
+        "y": 2633.609375
+      },
+      "tag": "DIV",
+      "text": "More plants. More often."
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715887386646__1645193988a0dc9331",
+      "rect": {
+        "height": 607.59375,
+        "width": 390,
+        "x": 0,
+        "y": 3348.75
+      },
+      "tag": "SECTION",
+      "text": "Next-day delivery\n\nOrder by 10pm and wake up to your order of organic drinks on your doorstep! Next-day delivery is available across most of Canada and the USA.\n\nCarbon offsetting\n"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715887386646__16451940863f9e3c8d",
+      "rect": {
+        "height": 569.78125,
+        "width": 390,
+        "x": 0,
+        "y": 3976.34375
+      },
+      "tag": "SECTION",
+      "text": "Our drinks are bottled in glass, never plastic. It’s better for you, better for the planet, and more fun to drink from."
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715887386646__product-recommendations",
+      "rect": {
+        "height": 0,
+        "width": 390,
+        "x": 0,
+        "y": 4566.125
+      },
+      "tag": "SECTION",
+      "text": ""
+    }
+  ],
+  "title": "Green Bundle – theme-taste-demo",
+  "url": "https://theme-taste-demo.myshopify.com/products/green-bundle-1",
+  "viewport": {
+    "dpr": 1,
+    "height": 844,
+    "width": 390
+  },
+  "formGroups": [],
+  "grids": [
+    {
+      "className": "product product--small product--thumbnail grid grid--1-col grid--2-col-tablet",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 1853.4921875,
+      "tag": "DIV",
+      "width": 358.5
+    },
+    {
+      "className": "product__media-list grid grid--peek list-unstyled slider slider--mobile",
+      "columns": "none",
+      "display": "flex",
+      "gap": "12px",
+      "height": 573.25,
+      "tag": "UL",
+      "width": 390
+    },
+    {
+      "className": "product__media-item grid__item slider__slide is-active",
+      "columns": "none",
+      "display": "flex",
+      "gap": "normal",
+      "height": 552.25,
+      "tag": "LI",
+      "width": 358.5
+    },
+    {
+      "className": "grid grid--1-col grid--2-col-tablet collapsible-content__grid collapsible-content__grid--reverse",
+      "columns": "none",
+      "display": "flex",
+      "gap": "12px",
+      "height": 326.5,
+      "tag": "DIV",
+      "width": 323
+    },
+    {
+      "className": "image-with-text__grid grid grid--gapless grid--1-col grid--3-col-tablet image-with-text__grid--reverse",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 647.140625,
+      "tag": "DIV",
+      "width": 358.5
+    },
+    {
+      "className": "multicolumn-list contains-content-container grid grid--1-col-tablet-down grid--2-col-desktop",
+      "columns": "none",
+      "display": "flex",
+      "gap": "12px",
+      "height": 535.59375,
+      "tag": "UL",
+      "width": 390
+    },
+    {
+      "className": "slideshow banner banner--small grid grid--1-col slider slider--everywhere banner--mobile-bottom",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 569.78125,
+      "tag": "DIV",
+      "width": 358.5
+    },
+    {
+      "className": "slideshow__slide grid__item grid--1-col slider__slide",
+      "columns": "none",
+      "display": "flex",
+      "gap": "normal",
+      "height": 569.78125,
+      "tag": "DIV",
+      "width": 358.5
+    }
+  ],
+  "images": [
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 326,
+      "rect": {
+        "height": 537.75,
+        "width": 354.5
+      }
+    },
+    {
+      "alt": "Strawberry lemonade and matcha brekky drinks peeking out of a tote bag.",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 452.75,
+        "width": 354.5
+      }
+    },
+    {
+      "alt": "",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 294,
+        "width": 358.5
+      }
+    }
+  ],
+  "bodyText": "Skip to content\n\nWelcome to our store\n\nCart\nSkip to product information\nOpen media 1 in modal\nGreen Bundle\nRegular price\n$64.95 CAD\n\nWith no sweet fruits of any kind, this is our most rigorous detox, suitable for green juice fans and intermediate to advanced cleansers.\n\nQuantity\nDecrease quantity for Green Bundle\nIncrease quantity for Green Bundle\nAdd to cart\nBuy it now\n\nThis is a demonstration store. You can purchase products like this from Greenhouse Juice.\n\nMeet the Green Bundle:\n\n5 Cold-pressed Juices\n\n3 Lemonades\n\n1 Shake\n\n2 Boosters\n\nAre you a title-holding Cleanser, atop the podium with a gold cup (filled with green juice, of course)? This one’s for you. The organic Cold-pressed Juices included each day deliver a rainbow of nutrients (admittedly, a mostly green rainbow) with no sweet fruit ingredients for our lowest-sugar Cleanse. Unique in that it features a fifth juice, in place of a second Shake, the Green Cleanse provides more nutrients from plant ingredients and fewer overall calories.\n\n\nShare\n\nIN CASE YOU’RE WONDERING\n\nFrequently asked questions\nWhat's the shelf life?\n\nGuaranteed 10 days on delivery. See the label for the best before date. Once opened, drink within 5 days. Keep below 4°C.\n\nHow much is shipping?\nWhat's inside?\nMore plants. More often.\nNext-day delivery\n\nOrder by 10pm and wake up to your order of organic drinks on your doorstep! Next-day delivery is available across most of Canada and the USA.\n\nCarbon offsetting\n\nWe carbon-offset every one of our home deliveries. Currently, our donations support Pachama's Jari Pará Project, which protects the Amazonian Rainforest.\n\nOur drinks are bottled in glass, never plastic. It’s better for you, better for the planet, and more fun to drink from.\nQuick links\nDrinks\nBundles\nRecipes\nAbout\nOur mission\n\nWe offer sustainable access to delicious plant-based nutrition.\n\nWe send delicious emails.\nEmail\nTwitter\nFacebook\nPinterest\nInstagram\nTikTok\n© 2026, theme-taste-demo Powered by Shopify"
+}

@@ -32,6 +32,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test, { afterEach, before } from 'node:test';
+import {setTimeout as pause} from 'node:timers/promises';
 import { createLetbuyyInternalIdentityHeaders } from '@letbuyy/auth-core';
 import {
     Gateway,
@@ -138,6 +139,7 @@ function seedSuperAdmin(label: string): Person {
 
 /** A request as this person: a freshly signed internal identity, the credential platform staff present. */
 async function as(person: Person, path: string, init: RequestInit = {}): Promise<GatewayResponse> {
+    await pause(800); // Keep ordinary journeys within the real 20-point/s limiter.
     const headers = { ...(await signedIdentityHeaders(person.id, person.email)), 'X-Idempotency-Key': crypto.randomUUID(), ...((init.headers as Record<string, string> | undefined) ?? {}) };
     return gateway.request(path, { ...init, headers });
 }

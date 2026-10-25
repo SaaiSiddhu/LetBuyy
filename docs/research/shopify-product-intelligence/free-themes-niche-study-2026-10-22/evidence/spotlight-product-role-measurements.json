@@ -1,0 +1,218 @@
+{
+  "load": "load completed",
+  "images": [
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 715
+    },
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 715
+    }
+  ],
+  "roles": [
+    {
+      "disabled": false,
+      "label": "Cart",
+      "rect": {
+        "height": 117.515625,
+        "width": 1200,
+        "x": 120,
+        "y": 0
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgba(18, 18, 18, 0.75)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgba(18, 18, 18, 0.75)",
+        "fontFamily": "Inter, sans-serif",
+        "fontSize": "16px",
+        "fontWeight": "400",
+        "gap": "normal 20px",
+        "lineHeight": "28.8px",
+        "padding": "36px 50px 12px"
+      },
+      "tag": "HEADER"
+    },
+    {
+      "disabled": false,
+      "label": "Cap Ebbets Corduroy",
+      "rect": {
+        "height": 104,
+        "width": 345,
+        "x": 925,
+        "y": 133.515625
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(18, 18, 18)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(18, 18, 18)",
+        "fontFamily": "Inter, sans-serif",
+        "fontSize": "40px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "52px",
+        "padding": "0px"
+      },
+      "tag": "H1"
+    },
+    {
+      "disabled": false,
+      "label": "Decrease quantity for Cap Ebbets Corduroy",
+      "rect": {
+        "height": 47,
+        "width": 45,
+        "x": 926,
+        "y": 325.015625
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(18, 18, 18)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(18, 18, 18)",
+        "fontFamily": "Arial",
+        "fontSize": "18px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "normal",
+        "padding": "0px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": false,
+      "label": "quantity",
+      "rect": {
+        "height": 47,
+        "width": 50,
+        "x": 971,
+        "y": 325.015625
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(18, 18, 18)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(18, 18, 18)",
+        "fontFamily": "Arial",
+        "fontSize": "14px",
+        "fontWeight": "500",
+        "gap": "normal",
+        "lineHeight": "normal",
+        "padding": "0px 5px"
+      },
+      "tag": "INPUT"
+    },
+    {
+      "disabled": false,
+      "label": "Increase quantity for Cap Ebbets Corduroy",
+      "rect": {
+        "height": 47,
+        "width": 45,
+        "x": 1021,
+        "y": 325.015625
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(18, 18, 18)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(18, 18, 18)",
+        "fontFamily": "Arial",
+        "fontSize": "18px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "normal",
+        "padding": "0px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": true,
+      "label": "Sold out",
+      "rect": {
+        "height": 47,
+        "width": 345,
+        "x": 925,
+        "y": 397.015625
+      },
+      "styles": {
+        "backgroundColor": "rgb(255, 255, 255)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(18, 18, 18)",
+        "borderRadius": "5px",
+        "boxShadow": "none",
+        "color": "rgb(18, 18, 18)",
+        "fontFamily": "Inter, sans-serif",
+        "fontSize": "15px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "18px",
+        "padding": "0px 30px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": false,
+      "label": "Buy it now",
+      "rect": {
+        "height": 47,
+        "width": 345,
+        "x": 925,
+        "y": 454.015625
+      },
+      "styles": {
+        "backgroundColor": "rgb(252, 228, 119)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(18, 18, 18)",
+        "borderRadius": "5px",
+        "boxShadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+        "color": "rgb(18, 18, 18)",
+        "fontFamily": "Inter, sans-serif",
+        "fontSize": "15px",
+        "fontWeight": "500",
+        "gap": "normal",
+        "lineHeight": "18px",
+        "padding": "15px 30px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": false,
+      "label": "Share",
+      "rect": {
+        "height": 44,
+        "width": 66.359375,
+        "x": 925,
+        "y": 1130.15625
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(18, 18, 18)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(18, 18, 18)",
+        "fontFamily": "Arial",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "normal",
+        "padding": "1px 6px 1px 0px"
+      },
+      "tag": "BUTTON"
+    }
+  ],
+  "url": "https://theme-spotlight-demo.myshopify.com/products/copy-of-ebbets-wool-c-cap-navy"
+}

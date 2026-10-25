@@ -1,0 +1,457 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-24T08:34:52.497096+00:00",
+  "branch": "letbuyy/theme-release-performance-resume",
+  "head": "85aac99043d8dc10469e12cbb810609a3b6f1b0d",
+  "classification": "BOUNDED_READ_SNAPSHOT_NOT_SOURCE_FREEZE_OR_EXECUTION_LEASE",
+  "files": [
+    {
+      "path": "apps/commerce/web/src/app/store/[subdomain]/liquid-theme.css",
+      "sha256": "f7f31610c85bf37430fe96fe5cbde8366d3fd9b30e0e43fe7ebfa0ecf3d2f24b",
+      "bytes": 54434
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/data-binding-engine.ts",
+      "sha256": "4b8334b7e07e64209d3585671ff98a4c7c359719424715119e3a2ea2d667e56d",
+      "bytes": 11971
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx",
+      "sha256": "db6f884364955b8f9c3687bead875a7211b87b575a9b478f4520b2dc1f6c9712",
+      "bytes": 143908
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx",
+      "sha256": "8fe3b25fa551758fd4b9bf2c040b9cbc8810f71df331f5b1b39559790c2c637c",
+      "bytes": 101918
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/products/new/page.tsx",
+      "sha256": "d092e9e2859b61e3cfdf1f9f54bc670fe8c9ffc757e486b1abad5612d1882877",
+      "bytes": 92137
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/ApparelFactsEditor.tsx",
+      "sha256": "4c1b151de0031c77b6bad1abd905a03c3afcd9f0ce37a62e21817ce5358980ba",
+      "bytes": 3862
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/BlockChildRow.tsx",
+      "sha256": "2ea8f4a5b10df83db4d12cf4821ca78700027f1edefcb6c852e0d22050eec7d9",
+      "bytes": 13368
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "sha256": "37d71edee334719e2d44e30512eeb695d56cda86dc67b40fe5e092631c4582f4",
+      "bytes": 27004
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/SectionTreePanel.tsx",
+      "sha256": "fa4e30236d9f00af2276bcc0ed7c75a6e010923035bc678770ac74288e8ea0c5",
+      "bytes": 22216
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/TemplateSwitcherPanel.tsx",
+      "sha256": "33cb4a17d37e5b88ada4920ea48b89b8c28c577eb35466816f589f8dfee50254",
+      "bytes": 15518
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/controls/ImagePickerControl.tsx",
+      "sha256": "59d1c012220378d52c3dc5a0325d298b21cddfaba35a47a65f5525392c0a58af",
+      "bytes": 9731
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/controls/ResourcePickerControl.tsx",
+      "sha256": "92429413c57c5a9d56626d58de00e63b7e72b74d92a1556217358b588422439a",
+      "bytes": 19905
+    },
+    {
+      "path": "apps/merchant/web/src/lib/product-form-state.ts",
+      "sha256": "3d0c279d6ccb7344abf3801f7bda0e53d892a9e76057e5494e0b9211ddd22306",
+      "bytes": 34028
+    },
+    {
+      "path": "database/supabase/migrations/382_threadline_catalog_v2.sql",
+      "sha256": "475717e0f7afd78327ce89b55768e0a13347394a98a2bfcf8bfad19ed088b9dc",
+      "bytes": 166123
+    },
+    {
+      "path": "database/supabase/rollback/382_threadline_catalog_v2.rollback.sql",
+      "sha256": "6866dc1cdadf828ce9c392e9fe71ede2acb08a3159d77887af8bd5a038a2105e",
+      "bytes": 990
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/OWNERSHIP.md",
+      "sha256": "a254bcab7433d559755fc896fb20cd9dcd50b85317a22278dd8d98cc5c252fbc",
+      "bytes": 4236
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/capture-schedule.json",
+      "sha256": "76ae11ac82babd2c665a8a8d7a5bf887eaaee6356799dd2ee5074531ad8090b4",
+      "bytes": 79162
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/collection-count-native/native-runs/02/root-qualification.json",
+      "sha256": "b99237b975a1fc7cf82ba81b6e508af7751f086d80dcef784e5563afcbfe7d1a",
+      "bytes": 1748
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/EXECUTION_RUNBOOK.md",
+      "sha256": "bee0af6056fe5732b421e23d0eb1118290dc4330af7c5b289da7e5588245d8bd",
+      "bytes": 26987
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/EXECUTION_STATE.json",
+      "sha256": "e025bb69eb3fb0d05e495b9ad4c4166c07487318374e6f28fe7d4546475c8ef5",
+      "bytes": 8965
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/native-runs/01/root-interruption-review.json",
+      "sha256": "e799f314d95cfcd7d3339972b3430224cbcafd091f509a08568f160b60478fe9",
+      "bytes": 2367
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/fresh-fixture-lifecycle.json",
+      "sha256": "bda1ac4a7f758268979f7192034ad049f113d52adccfc1622db0e399dc10bca4",
+      "bytes": 64443
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/README.md",
+      "sha256": "15847dbc0bc30a24fbaa33810315db257c7147557585f3a11102f8a72e79e7e8",
+      "bytes": 18786
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/auth-isolation-2026-10-23/README.md",
+      "sha256": "9ee14cc87a9e8fe93a0e07c04dc3a8f40db30896a2ecf111e77d150bb05affb5",
+      "bytes": 6069
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/auth-isolation-2026-10-23/browser-auth-proof.json",
+      "sha256": "2b95d20c2d98212a02695e6388d319b9ea67f7af9f2ea51f44650fe400dbc8e1",
+      "bytes": 1063
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/auth-isolation-2026-10-23/http-auth-proof.json",
+      "sha256": "086d863f37bc941c2d6fca26ef9626f2f5af05f7e1d144f20689931cd9eba7c3",
+      "bytes": 3410
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/browser-release-proof.json",
+      "sha256": "3ba08a6d85c4e201e19bde7c5f5a709c21182e541280393562e77b14e6a29f81",
+      "bytes": 426
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/installed-lifecycle-index/installed-threadline-lifecycle.index.json",
+      "sha256": "5a7d3f7116a7ce4cc815c89ef988741a93b8a15f1648fbb628e2144634628094",
+      "bytes": 27518
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/measurement-discovery/browser-acceptance-plan.json",
+      "sha256": "ba6dd9548440ea63f7b03616022d24f6dc819c38309930b5b98f746357d08547",
+      "bytes": 5372
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/qa-2026-10-23/README.md",
+      "sha256": "9366933e3ffa24dce9730aee50f054f23d0a18280eb9f8cbe7c2c750443a71dc",
+      "bytes": 12778
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/qa-2026-10-23/buyer-order-after.json",
+      "sha256": "36831253864233b09395f617d58437f5cd7a2d22e27f6e43e121f6361db770be",
+      "bytes": 804
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/qa-2026-10-23/cart-focus-after.json",
+      "sha256": "b8a984cef1f805ae0df2ace832f3117c11b533b40c5b0b571a80b50bac4b66d2",
+      "bytes": 1130
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/qa-2026-10-23/order-server-amounts.json",
+      "sha256": "b4dcf580f7b20140b995da4088d7862b2d536c38294c597eb1f4d3416bc04607",
+      "bytes": 312
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/qa-2026-10-23/review-mobile-checks.json",
+      "sha256": "048d2f631d735245ae1921163dfb0a5f5eb028cf96fa5ca7c89d390e38183569",
+      "bytes": 7430
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/qa-2026-10-23/search-after.json",
+      "sha256": "168414a911b28c757dcfacd409ee66cadc54a9f48fee668d9eab26c0aef80474",
+      "bytes": 404
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/qa-2026-10-23/validation-manifest.json",
+      "sha256": "c94664cdb0cb705136945a4e1d4b4f51e4fcbc022762527ee6ef9667df4d4643",
+      "bytes": 12478
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/release-recovery-proof.json",
+      "sha256": "015eeb76d2e5e31d74e47dc3f1c0e1fcde03d783c2fd9b860c4a45497eb20ec5",
+      "bytes": 582
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/responsive-preview-proof.json",
+      "sha256": "646ffdbe2b9d58d379e46244e96ac4675b16ff1151532b5c4a4f0f5d02c4aff8",
+      "bytes": 448
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/latest392-qualification.json",
+      "sha256": "c8950c43a7a041bf1fa97e54d5fe414f896ab5abb23fddcff846f29265620ffa",
+      "bytes": 11718
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/native-runs/01/proofs/theme-shared-groups.postgres/letbuyy-sense.json",
+      "sha256": "889dce70c5f026cdb3a60b2eeb005d333cd0c33777fe8d6ffaa47dbd48be0bca",
+      "bytes": 2303
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/store-host-assets-proof.json",
+      "sha256": "886cf2f9192bda00da3d5fdd58ae709f8d102e8252534ab880fa9082c273818d",
+      "bytes": 581
+    },
+    {
+      "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/09_ACCEPTANCE_AND_LIMITATIONS.md",
+      "sha256": "4ffcd5cc5202836437d7bb4b63b3837eb41cc56ff79ad7eeb9564d270900a037",
+      "bytes": 6664
+    },
+    {
+      "path": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/letbuyy-design-blueprints/01-sense-threadline.md",
+      "sha256": "d8b2254acb47e6ae6f45ae92d87d4606f97b94ded2f0364d5f02a9a7850be114",
+      "bytes": 11764
+    },
+    {
+      "path": "packages/commerce-core/src/apparel.ts",
+      "sha256": "2d8833f58ac431a0f0acf4e348906476758240606f2d5ddb7014be7426040b3e",
+      "bytes": 2286
+    },
+    {
+      "path": "packages/theme-engine/src/experience-apply.ts",
+      "sha256": "fcf62ca230b604f6dd4d33cc34a1b0d990caa131f815fc3666dae4fbce15f6b4",
+      "bytes": 35703
+    },
+    {
+      "path": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "sha256": "48e8126f5681d91fb1780b521bd5d53c4bf933156ca2b97c64932d95e0800605",
+      "bytes": 4862
+    },
+    {
+      "path": "packages/theme-engine/src/theme-bundle-core.ts",
+      "sha256": "0e1650a4d71ef358792c0f877f4ae678794fb6d2cfdebbb30d79563e4a2f452f",
+      "bytes": 5963
+    },
+    {
+      "path": "packages/theme-engine/src/theme-bundle.ts",
+      "sha256": "cdbad4b28277431a3ab06e56ed0ce16539e04837bb107f5f951a3df39a92ed76",
+      "bytes": 213170
+    },
+    {
+      "path": "packages/theme-engine/src/theme-document.ts",
+      "sha256": "7ba285a54d71a01545c4cb1e4a3c1540a30caae2db793079b2b3cb32b8612412",
+      "bytes": 37055
+    },
+    {
+      "path": "packages/theme-engine/src/threadline-discovery.ts",
+      "sha256": "a3fba143d1217f0da83cf70ab335da66e82bc79cb883a9ad0e3b48773459e4b8",
+      "bytes": 2599
+    },
+    {
+      "path": "packages/theme-engine/src/threadline-styles.ts",
+      "sha256": "19927c48340b3ff3403b13a945ebe186bf928de638f47281b0fe0421ded48385",
+      "bytes": 10278
+    },
+    {
+      "path": "packages/theme-engine/src/threadline-theme.ts",
+      "sha256": "1e922e6c056de5017f35dfe08827eef0b41212b96bbff5b6695ab087422d523b",
+      "bytes": 15830
+    },
+    {
+      "path": "packages/theme-engine/test/threadline.test.ts",
+      "sha256": "cf4f03fd08fd5939d75709346c020884794a617638819ee539655c1396cfcbc4",
+      "bytes": 4360
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/threadline-lifecycle.postgres.test.ts",
+      "sha256": "9dc5a362da88d411243e4064715d2d53420f6a28ccc898d25c03f04953204bfa",
+      "bytes": 15994
+    },
+    {
+      "path": "apps/platform/identity/src/app/buyer/authorize/authorize-client.tsx",
+      "sha256": "2dde0d20974c75a1ef76e5a9dfd4ef3800a95bfb9b5502baa5b77f6d93e4e98e",
+      "bytes": 9334
+    },
+    {
+      "path": "apps/platform/identity/src/app/api/buyer/register/route.ts",
+      "sha256": "1c8c3997c1390f1889670f6bb8a983d0405c4d440f242aa7ef53d6325e68c7e6",
+      "bytes": 3672
+    },
+    {
+      "path": "apps/platform/identity/src/app/api/buyer/verify-email/confirm/route.ts",
+      "sha256": "51a60d807b14ecfe73d9fdf5b6883b8829be6fb626cc5c793537fe6f400e6c91",
+      "bytes": 2749
+    },
+    {
+      "path": "apps/platform/identity/src/app/api/buyer/oauth/authorize/route.ts",
+      "sha256": "a3029345670864341c5ae9ad7ec28fb1fd94d0fed128b7971ebb18dd63c8c5f1",
+      "bytes": 4029
+    },
+    {
+      "path": "apps/commerce/web/src/app/api/buyer-auth/start/route.ts",
+      "sha256": "845fa0f8008e5d75f65b4e48afb8e6cc8b2fa63d3ed5184a620a5f1550bfa251",
+      "bytes": 3406
+    },
+    {
+      "path": "apps/commerce/web/src/app/api/buyer-auth/callback/route.ts",
+      "sha256": "fcab3c4285496e7d8942a707fca92d99e7a992551402e05af14ae896124dabf4",
+      "bytes": 7284
+    },
+    {
+      "path": "apps/commerce/web/src/app/api/buyer-auth/logout/route.ts",
+      "sha256": "ca0ef41e379b404e4318bf4af2339af3505c9ce2bb93b1d6787e12093e152d6e",
+      "bytes": 1437
+    },
+    {
+      "path": "apps/commerce/web/src/app/api/buyer/profile/route.ts",
+      "sha256": "74be358c47d71d66a5e3784c4709ec9b7106525e7f82df0c343dd2e8b5a6e841",
+      "bytes": 4615
+    },
+    {
+      "path": "apps/commerce/web/src/app/api/buyer/addresses/route.ts",
+      "sha256": "7037a7dd75f2ae75720fb31395ca0ee82fd910cdc6d9eed0566b77b46d22e5c8",
+      "bytes": 3571
+    },
+    {
+      "path": "services/api-gateway/src/routes/storefront/cart-routes.ts",
+      "sha256": "a92dc02137ff70c71336487b16f627ddf7b35213250a34c5cec835fd3fdf5588",
+      "bytes": 45739
+    },
+    {
+      "path": "apps/commerce/web/src/app/checkout-origin/checkout/page.tsx",
+      "sha256": "46ee9de23dc13f263ee473cc92f2752915ed8f7a334ccf1d71ae9ab57bffb75c",
+      "bytes": 10206
+    },
+    {
+      "path": "apps/commerce/web/src/app/store/[subdomain]/checkout/checkout-client.tsx",
+      "sha256": "2c03e5a030eb890a63ba248d56f7447305565858a49f3b0ee1e67b53fee18baa",
+      "bytes": 88118
+    },
+    {
+      "path": "apps/commerce/web/src/app/api/checkout-handoff/route.ts",
+      "sha256": "e7bb0d555a6409ce430af2e77f9d1429f1c5c6775295c6a083989dd972de4149",
+      "bytes": 5171
+    },
+    {
+      "path": "apps/commerce/web/src/app/api/checkout/[cartId]/[step]/route.ts",
+      "sha256": "94455bc02ad97b801de5e8cabd995473c022bb330d468fe412aeb8b6590a339b",
+      "bytes": 11809
+    },
+    {
+      "path": "services/api-gateway/src/routes/checkout.ts",
+      "sha256": "2bee4e2e2d69a87e1acde3ab4e3009ee92f78f6e349b57ba8b0376d6ff47f68a",
+      "bytes": 75454
+    },
+    {
+      "path": "packages/infrastructure/razorpay-adapter/index.ts",
+      "sha256": "74d056c4f5ebfb57ee9de265ec380b85ace4d01d2680eec2c8462782fee2d2ff",
+      "bytes": 20642
+    },
+    {
+      "path": "services/api-gateway/src/lib/provider-payment-verification.ts",
+      "sha256": "d8fe69118fd17f3a8710a222d57e7505d6af1c38b70b26f0a91d3e4d263a01a7",
+      "bytes": 4400
+    },
+    {
+      "path": "services/webhook-service/src/index.ts",
+      "sha256": "e6f64bfcbfba897aa59600f04e148e35488ee8da8f9b4d394230b7677f9449d5",
+      "bytes": 44096
+    },
+    {
+      "path": "services/api-gateway/src/routes/storefront/buyer-order-routes.ts",
+      "sha256": "0aceb52671a428d2f5eda8036771fa53fa609a61e0c446cc9db0dfbd3a47f546",
+      "bytes": 11976
+    },
+    {
+      "path": "services/api-gateway/src/routes/storefront/buyer-realm-wiring.ts",
+      "sha256": "b7a81a1396c0f81c18fc958b3fb5231a97341399e681799d8743856c574fd7fa",
+      "bytes": 43864
+    },
+    {
+      "path": "apps/commerce/web/src/app/api/buyer/orders/route.ts",
+      "sha256": "512082a8b21ae20002b7266c74c559608a170c8d13d42a16871f62f88d8e5a5d",
+      "bytes": 7843
+    },
+    {
+      "path": "apps/commerce/web/src/app/store/[subdomain]/account/orders/[id]/order-detail-client.tsx",
+      "sha256": "3799218f92b911b5a5e39815fda4fc7f3e084d68df67cf2bc260784b3ce11fe2",
+      "bytes": 8947
+    },
+    {
+      "path": "packages/commerce-core/src/product-fact-snapshot.ts",
+      "sha256": "0cbc6299ed4464bf7b46141ca786c98c7a01c2bea0ac93bb975caa790a1f3582",
+      "bytes": 14852
+    }
+  ],
+  "threadContext": {
+    "requestingThreadId": "01a16ce5-e5ba-7191-ab2c-a1b76947d2b5",
+    "humanTurnId": "01a16cf8-99f0-7f51-852c-d0fd6ea08262",
+    "originalOwnerThreadId": "01a161c9-36d1-7802-af70-d346f524bff3",
+    "originalOwnerLatestPauseTurnId": "01a16ce2-9157-7f72-91fa-18380bf34e3f",
+    "readThroughTool": true,
+    "outgoingMessagesSent": false
+  },
+  "statusOfRelevantPaths": [
+    " M apps/commerce/web/src/app/store/[subdomain]/liquid-theme.css",
+    " M apps/commerce/web/src/lib/theme-engine/data-binding-engine.ts",
+    " M apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx",
+    " M apps/merchant/web/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx",
+    " M apps/merchant/web/src/app/[store]/products/new/page.tsx",
+    " M apps/merchant/web/src/components/theme-editor/BlockChildRow.tsx",
+    " M apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+    " M apps/merchant/web/src/components/theme-editor/SectionTreePanel.tsx",
+    " M apps/merchant/web/src/components/theme-editor/controls/ImagePickerControl.tsx",
+    " M apps/merchant/web/src/components/theme-editor/controls/ResourcePickerControl.tsx",
+    " M packages/theme-engine/src/theme-bundle-core.ts",
+    " M packages/theme-engine/src/theme-bundle.ts",
+    "?? apps/merchant/web/src/components/products/ApparelFactsEditor.tsx",
+    "?? apps/merchant/web/src/lib/product-form-state.ts",
+    "?? database/supabase/migrations/382_threadline_catalog_v2.sql",
+    "?? database/supabase/rollback/382_threadline_catalog_v2.rollback.sql",
+    "?? docs/implementation/niche-theme-programme/OWNERSHIP.md",
+    "?? docs/implementation/niche-theme-programme/capture-schedule.json",
+    "?? docs/implementation/niche-theme-programme/collection-count-native/native-runs/02/root-qualification.json",
+    "?? docs/implementation/niche-theme-programme/completion-2026-10-24/EXECUTION_RUNBOOK.md",
+    "?? docs/implementation/niche-theme-programme/completion-2026-10-24/EXECUTION_STATE.json",
+    "?? docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/native-runs/01/root-interruption-review.json",
+    "?? docs/implementation/theme-editor-2026-10-23/evidence/fresh-fixture-lifecycle.json",
+    "?? docs/implementation/threadline-2026-10-22/README.md",
+    "?? docs/implementation/threadline-2026-10-22/auth-isolation-2026-10-23/README.md",
+    "?? docs/implementation/threadline-2026-10-22/auth-isolation-2026-10-23/browser-auth-proof.json",
+    "?? docs/implementation/threadline-2026-10-22/auth-isolation-2026-10-23/http-auth-proof.json",
+    "?? docs/implementation/threadline-2026-10-22/browser-release-proof.json",
+    "?? docs/implementation/threadline-2026-10-22/installed-lifecycle-index/installed-threadline-lifecycle.index.json",
+    "?? docs/implementation/threadline-2026-10-22/measurement-discovery/browser-acceptance-plan.json",
+    "?? docs/implementation/threadline-2026-10-22/qa-2026-10-23/README.md",
+    "?? docs/implementation/threadline-2026-10-22/qa-2026-10-23/buyer-order-after.json",
+    "?? docs/implementation/threadline-2026-10-22/qa-2026-10-23/cart-focus-after.json",
+    "?? docs/implementation/threadline-2026-10-22/qa-2026-10-23/order-server-amounts.json",
+    "?? docs/implementation/threadline-2026-10-22/qa-2026-10-23/review-mobile-checks.json",
+    "?? docs/implementation/threadline-2026-10-22/qa-2026-10-23/search-after.json",
+    "?? docs/implementation/threadline-2026-10-22/qa-2026-10-23/validation-manifest.json",
+    "?? docs/implementation/threadline-2026-10-22/release-recovery-proof.json",
+    "?? docs/implementation/threadline-2026-10-22/responsive-preview-proof.json",
+    "?? docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/latest392-qualification.json",
+    "?? docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/native-runs/01/proofs/theme-shared-groups.postgres/letbuyy-sense.json",
+    "?? docs/implementation/threadline-2026-10-22/store-host-assets-proof.json",
+    "?? docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/09_ACCEPTANCE_AND_LIMITATIONS.md",
+    "?? docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/letbuyy-design-blueprints/01-sense-threadline.md",
+    "?? packages/commerce-core/src/apparel.ts",
+    "?? packages/theme-engine/src/threadline-discovery.ts",
+    "?? packages/theme-engine/src/threadline-styles.ts",
+    "?? packages/theme-engine/src/threadline-theme.ts",
+    "?? packages/theme-engine/test/threadline.test.ts",
+    "?? services/api-gateway/src/__tests__/owned-db/threadline-lifecycle.postgres.test.ts"
+  ],
+  "protectedState": "No browser/app/database/provider action; no user data or session access; no shared source edited.",
+  "executionMode": "SINGLE AGENT; no subagents, chats, automations or cross-chat dispatch created.",
+  "preSealCorrection": "Corrected catalog filename locator and added explicit 32 section-instance field-operation mappings before Phase0 seal."
+}

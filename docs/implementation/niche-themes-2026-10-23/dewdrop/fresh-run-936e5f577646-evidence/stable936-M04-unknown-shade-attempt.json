@@ -1,0 +1,9 @@
+{
+  "recordedAt": "2026-10-24T03:32:55.375Z",
+  "runId": "936e5f577646",
+  "maximumAttempts": 1,
+  "commandSha256": "b08c06f041d4daeb78e916c47d749f41f1a5badaf9b947985d4a48377c4262e5",
+  "selector": "metadata.beauty.shades[0].value",
+  "currentVersion": 15,
+  "stockOmitted": true
+}

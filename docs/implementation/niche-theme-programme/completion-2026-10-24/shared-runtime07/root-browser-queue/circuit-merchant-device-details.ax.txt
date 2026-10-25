@@ -1,0 +1,161 @@
+- banner:
+  - link "LetBuyy dashboard":
+    - /url: /syn-threadline-ui-ae3f0477/dashboard
+  - button "Search":
+    - generic: Search
+    - generic: ⌘
+    - generic: K
+  - button "Setup assistant":
+  - button "Notifications":
+  - button "Switch store, current store Threadline":
+    - generic: TH
+    - generic: Threadline
+- complementary:
+  - navigation "Primary navigation":
+    - list:
+      - link "Home":
+        - /url: /syn-threadline-ui-ae3f0477/dashboard
+        - generic: Home
+      - link "Orders":
+        - /url: /syn-threadline-ui-ae3f0477/orders
+        - generic: Orders
+      - link "Products":
+        - /url: /syn-threadline-ui-ae3f0477/products
+        - generic: Products
+      - button "Toggle Products section":
+      - link "Inventory":
+        - /url: /syn-threadline-ui-ae3f0477/products/inventory
+        - generic: Inventory
+      - button "Toggle Inventory section":
+      - link "Purchasing":
+        - /url: /syn-threadline-ui-ae3f0477/products/purchase-orders
+        - generic: Purchasing
+      - button "Toggle Purchasing section":
+      - link "Customers":
+        - /url: /syn-threadline-ui-ae3f0477/customers
+        - generic: Customers
+      - button "Toggle Customers section":
+      - link "Money":
+        - /url: /syn-threadline-ui-ae3f0477/settings/billing
+        - generic: Money
+      - button "Toggle Money section":
+      - link "Marketing":
+        - /url: /syn-threadline-ui-ae3f0477/coupons
+        - generic: Marketing
+      - button "Toggle Marketing section":
+      - link "Content":
+        - /url: /syn-threadline-ui-ae3f0477/pages
+        - generic: Content
+      - button "Toggle Content section":
+      - link "Analytics":
+        - /url: /syn-threadline-ui-ae3f0477/analytics
+        - generic: Analytics
+  - generic: Sales channels
+  - navigation "Sales channels":
+    - list:
+      - link "Online Store":
+        - /url: /syn-threadline-ui-ae3f0477/online-store
+        - generic: Online Store
+      - button "Toggle Online Store section" [expanded]:
+      - list:
+        - link "Themes":
+          - /url: /syn-threadline-ui-ae3f0477/online-store/themes
+        - link "Store pages":
+          - /url: /syn-threadline-ui-ae3f0477/online-store/pages
+        - link "Preferences":
+          - /url: /syn-threadline-ui-ae3f0477/online-store/preferences
+  - generic: Apps
+  - navigation "Apps":
+    - list:
+      - link "Add":
+        - /url: /syn-threadline-ui-ae3f0477/apps
+        - generic: Add
+  - navigation "Settings navigation":
+    - list:
+      - link "Settings":
+        - /url: /syn-threadline-ui-ae3f0477/settings
+        - generic: Settings
+- main:
+  - 'heading "Order #ORD-20261024-10005" [level=1]'
+  - link "All orders":
+    - /url: /syn-threadline-ui-ae3f0477/orders
+  - heading "Order summary" [level=2]
+  - text: Confirmed
+  - text: "Payment: Paid"
+  - text: "Fulfillment: Unfulfilled"
+  - text: "Refund: None"
+  - generic: Order number
+  - generic: "#ORD-20261024-10005"
+  - generic: Placed
+  - generic: 25 Oct 2026, 02:30 am
+  - generic: Last updated
+  - generic: 25 Oct 2026
+  - generic: Payment method
+  - generic: RAZORPAY
+  - generic: Payment gateway
+  - generic: razorpay
+  - generic: Payment ID
+  - generic: pay_TrszunRgM1c6LO
+  - generic: Payment processed
+  - generic: 25 Oct 2026, 02:30 am
+  - heading "Customer" [level=2]
+  - generic: Name
+  - generic: Synthetic Circuit Buyer
+  - generic: Email
+  - button "syn-circuit-runtime07@example.invalid"
+  - generic: Phone
+  - generic: "9000000000"
+  - button "View customer profile":
+    - text: View customer profile
+  - heading "Line items" [level=2]
+  - paragraph: 1 item
+  - paragraph: Circuit lifecycle hub
+  - paragraph: SYN-EDITOR-electronics-49ada80bc494
+  - generic: 1 × ₹1,200.00
+  - generic: ₹1,200.00
+  - generic "Saved product details for Circuit lifecycle hub" [active]
+  - region "Device and accessory details":
+    - heading "Device and accessory details" [level=3]
+    - term: Manufacturer
+    - definition: Synthetic Lab
+    - term: Model
+    - definition: Synthetic H1
+    - term: Product type
+    - definition: hub
+    - term: Connectors
+    - definition: 1 × USB-C (power input) 2 × USB-C (power output) 1 × USB-A (data)
+    - term: Power input
+    - definition: 65 W
+    - term: Power output
+    - definition: 45 W
+    - term: Pass-through output
+    - definition: 60 W
+    - term: Box contents
+    - definition: 1 × Hub
+    - term: Host requirements
+    - definition: Not recorded with this order.
+    - term: Referenced devices
+    - definition: Not recorded with this order.
+  - heading "Addresses" [level=2]
+  - generic: Ship to
+  - paragraph: 24 Fixture Lane
+  - paragraph: Bengaluru, Karnataka 560001
+  - paragraph: "9000000000"
+  - generic: Bill to
+  - generic: Same as shipping
+  - generic: Shipping method
+  - generic: standard
+  - heading "Payment summary" [level=2]
+  - generic: Subtotal
+  - generic: ₹1,200.00
+  - generic: Shipping
+  - generic: ₹20.00
+  - generic: Tax (GST)
+  - generic: ₹0.00
+  - generic: Total
+  - generic: ₹1,220.00
+  - generic: Refund status
+  - generic: None
+  - generic: Return status
+  - generic: None
+- alert

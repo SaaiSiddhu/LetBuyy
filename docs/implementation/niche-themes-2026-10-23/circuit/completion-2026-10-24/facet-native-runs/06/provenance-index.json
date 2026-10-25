@@ -1,0 +1,336 @@
+{
+  "runId": "786c7515c57a",
+  "verifiedAndCopiedReceipts": 66,
+  "receipts": [
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0001-source-admission.json",
+      "sha256": "8075ed7f23a8f4725719b8aa725ea069cb956aad98dc8553499ef4265b16a3fd",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0001-source-admission.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0002-browse.json",
+      "sha256": "bb54e0fa6602a52012782c047dbde3e6ae9633c0e1e309d062706a539e6418f9",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0002-browse.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0003-browse.json",
+      "sha256": "2bd67fcba2aa3d0299b5ec4572ec1b24cda3f1c8667296e4cc5b5137f1aea543",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0003-browse.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0004-browse.json",
+      "sha256": "04b127ef248c3099a0b242cd6c6e7e6560a2c63b42397ab2f5a30954e3588080",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0004-browse.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0005-browse.json",
+      "sha256": "4d560862a7f6f04c4c84fb8ae658d4688cb55f9a38e40e08af9f972bd337204e",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0005-browse.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0006-browse.json",
+      "sha256": "64f2aaad0f558c2049e9bf83c8912923044c919312c6d3d240af39aeab356be0",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0006-browse.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0007-browse.json",
+      "sha256": "cc6ffe42bf3b228e0d94de6965a2fcedfc4aa2507daa6d31ab841f5ca3731bf6",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0007-browse.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0008-browse.json",
+      "sha256": "358bc1b191b5d35572070cb2a9d5333506a4c0e5bfc97dd8c142ca4feea6ee2c",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0008-browse.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0009-browse.json",
+      "sha256": "449f1b6e15c3794b82f14e6b570ebb8d99bdcc6789046fa6b627c8dc09cec81f",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0009-browse.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0010-browse.json",
+      "sha256": "abbb3ee574b62f5cc7021476788c182b399883b037cd4ee61e9e30265f2ae491",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0010-browse.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0011-browse.json",
+      "sha256": "65c9f49b142c78c97f01aae1c4107ae27b50e06bd0e603b4873ecd279643eb1b",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0011-browse.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0012-all-public-table-hashes.json",
+      "sha256": "389cbe88bfd0425bbbf31668a292e173aa1bd9dcae63db30d1db4a481d35987c",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0012-all-public-table-hashes.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0013-all-public-table-hashes.json",
+      "sha256": "389cbe88bfd0425bbbf31668a292e173aa1bd9dcae63db30d1db4a481d35987c",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0013-all-public-table-hashes.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0014-roles-denied.json",
+      "sha256": "a05957ddc15aa1529ea87cfe33248b1101899cad93ef65362e57fd176bfe770c",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0014-roles-denied.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0015-browse.json",
+      "sha256": "dc83150e16ae9ccdf192cd44b814d04fc65563cb56387a714adc4705bda01d8f",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0015-browse.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0016-browse.json",
+      "sha256": "e68737db78e9704d65f458a8d236f828c47152e3902d8fcd7a2aaba8ef31f8c0",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0016-browse.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0017-browse.json",
+      "sha256": "22247ac20c4c68c88ece32820bd9e820e04559bba0682833d380ec03355fb790",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0017-browse.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0018-actual-worker-http.json",
+      "sha256": "2e9b8b3575f9b435ab87588433b062c9f72a367746312065e06dc41d2bfab5c0",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0018-actual-worker-http.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0019-actual-worker-http.json",
+      "sha256": "51d73e8e367c6c2550ee97a57fede289d54b36ebba49ec69fbdd4e6a1aa58d57",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0019-actual-worker-http.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0020-actual-worker-http.json",
+      "sha256": "690c8d7a94410c8419d0aec32dfd258f36268971f67fbaf1d6ee7d78e794b480",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0020-actual-worker-http.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0021-browse.json",
+      "sha256": "35718d8b34b4145bd6e6c087d6c25fe9730f47bf25184540e5704ddd06dfc70c",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0021-browse.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0022-browse.json",
+      "sha256": "27eca704059c78a9274ab1c0087b5d0f6e2cd3431accc4435e7b3d9539b3f9be",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0022-browse.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0023-browse.json",
+      "sha256": "fa24d2b205e772f8ce2b0befa30894572b0c351107942f90d0c605f230eeb922",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0023-browse.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0024-browse.json",
+      "sha256": "00453a2241f02c8dfd1365bc75a58579d2381aac2e025df68473ad5c6e8687e6",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0024-browse.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0025-browse.json",
+      "sha256": "2bac2c0786183fe5d464c826340c8e716f66cd3c60403cbec433b900e436aa1b",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0025-browse.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0026-browse.json",
+      "sha256": "652947c45776c80669b6d2f8509778cffbb424d7371dee828822ce5b870d3ae5",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0026-browse.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0027-browse.json",
+      "sha256": "d1690628c4aa1c96e794884eb237b82cacb022dc8977281fe51eeba5bbd42fb0",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0027-browse.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0028-browse.json",
+      "sha256": "ab90c5c01164bc9bb680c6e81c45c4e2be3d19472d75d04ab2bab2b5c425027e",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0028-browse.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0029-browse.json",
+      "sha256": "147ad25449c5116bcc9d4c1bdc482aefcb9694104c15f90046c6fddc92f419c1",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0029-browse.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0030-browse.json",
+      "sha256": "730a2c0c0b1a221bf78be0d6039790375cfb51d321e8b70da209c670dd503e75",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0030-browse.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0031-browse.json",
+      "sha256": "109b5f5429bf93b0b7ad12d2d5aaa26b0322e74dbeefd9b3b8b497e68733dfbf",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0031-browse.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0032-browse.json",
+      "sha256": "e3620e5a258b9341e8deefe9ad0586d9549d81553bc07fc9b02c0e4eca6d87c8",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0032-browse.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0033-browse.json",
+      "sha256": "e36ff3931514c0511db70dbcb8ec4bf91145d4f83769083947c1e285aeee0e6e",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0033-browse.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0034-browse.json",
+      "sha256": "eaba6aaa4ed358dd48b6faedcc42f4f61774f7e3c9933ae78975077d3430c049",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0034-browse.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0035-browse.json",
+      "sha256": "4cd7d7c28e456ffee27d4bbdf42930299832c69625ef29b5adf8b76def82b6ac",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0035-browse.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0036-browse.json",
+      "sha256": "ec082b89c5bda0f109cad09cf8f289d7a5c8f5680a810d9c5f2dc8706d58226d",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0036-browse.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0037-browse.json",
+      "sha256": "553bd3e99f787634cbfe7956d633ec887ca95328445e3cbbdf3e0716b0e00d45",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0037-browse.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0038-browse.json",
+      "sha256": "63438669c95104e4a395d05d3b4aa2e3caf5261edc35e7c246b860011406b860",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0038-browse.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0039-browse.json",
+      "sha256": "ca03fe72e9a3fe1433f9b2c7847fe23daa3f94d6415c8ef6ecc11721995a3a58",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0039-browse.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0040-browse.json",
+      "sha256": "80b4b3ee628dc6de10a37e79338f1bfb6ff802b5d1074bc3ef746ff532288666",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0040-browse.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0041-browse.json",
+      "sha256": "c18fc2971ae47b043ad76c0951a4b8ce701d0c276aa6ff5ff7646456e452ef9d",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0041-browse.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0042-native-normalization.json",
+      "sha256": "10a57d03374f26e5dcf8072624ffab6227d7179adff4eaed8060148dfc040a32",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0042-native-normalization.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0043-browse.json",
+      "sha256": "8498eb970f0cc143e35bfca330dcf99975992786f68bd80f7619743fc0e963ec",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0043-browse.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0044-native-normalization.json",
+      "sha256": "b50291d3c1003489104e959a77f369ff195cfcc7da23fe737fa40e8701825918",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0044-native-normalization.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0045-browse.json",
+      "sha256": "17bfaa03f2c49d0619b398f9930d0b4cac5c04c74b104b63c30a288babc7daa2",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0045-browse.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0046-native-normalization.json",
+      "sha256": "4080dbbfc433d15ed95a7d28a72347e90417976665ded3a7c43f52adaf79cc79",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0046-native-normalization.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0047-browse.json",
+      "sha256": "dd79b80decbd333b65b9cff5243c75f3d7df4ffa7cef6d2c2a430cda986d6a7c",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0047-browse.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0048-native-normalization.json",
+      "sha256": "24344989fc5dfb6354855f3349f7e09e414d14b892a24af8eb23cf09e71685b1",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0048-native-normalization.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0049-browse.json",
+      "sha256": "66ac3ed6eef50ff545e52d49d26d510f7c8369b71718e4bf3d2973823580d04c",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0049-browse.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0050-native-normalization.json",
+      "sha256": "364ef3998db7f48e33f891802dd28f3807048dc8cb7c32521f92fd4af90da048",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0050-native-normalization.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0051-browse.json",
+      "sha256": "d474b6323c72a17a27c7f4b5616a5b6ea7c659498bbae365b1e84789742e4dbb",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0051-browse.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0052-native-normalization.json",
+      "sha256": "835917ff27fb92e59c3822e56d94cca27a2c1c6bc6834ae3c8596f63182f260f",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0052-native-normalization.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0053-browse.json",
+      "sha256": "0a0e4c688e64120f00e7e9e0d7a7af7705f6a1b086ad3d4264dc01abbb435c1c",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0053-browse.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0054-native-normalization.json",
+      "sha256": "f3f4d90aabba171641a0afd9873f9f711c2508b351e57394e896a2026c7a0808",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0054-native-normalization.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0055-profile-refusal.json",
+      "sha256": "5702c4270c6823d28534212e2632a87144b56817cd631e67aa6e89721fa59918",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0055-profile-refusal.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0056-profile-refusal.json",
+      "sha256": "3b534b65cff9936851fb1212adfe31510ab3914c4c0c9af18a2243e32ae97f0d",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0056-profile-refusal.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0057-actual-worker-http.json",
+      "sha256": "19bcb1d52e5e0fa4a2599c37e68cb3e132c31d2b492c6728370bf7c55fb1ad48",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0057-actual-worker-http.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0058-bounded-plan.json",
+      "sha256": "8ac0c9e994cf58749d6fa83b04d8e7922d0b3d08ec421ef04ad8602beed2da90",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0058-bounded-plan.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0059-all-public-table-hashes.json",
+      "sha256": "76b768fecc5316e974d8543d2e942ed8087f665911f599d35d697381fd6ac5c1",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0059-all-public-table-hashes.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0060-raw-operational-attribution-before-assertions.json",
+      "sha256": "ca603c1dfea151b2072eab6aefcd4c521fae2580619bebde22f0fc866b526f94",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0060-raw-operational-attribution-before-assertions.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0061-actual-public-http-operational-attribution.json",
+      "sha256": "572bda234af9fa84021c31493ad17258a17719f525e917bef8377ebc279daf3a",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0061-actual-public-http-operational-attribution.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0062-raw-operational-attribution-before-assertions.json",
+      "sha256": "fde18cbfd099791b51a898046b072aef2db4b15740e0fa5f1953f1bc7f0e8344",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0062-raw-operational-attribution-before-assertions.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0063-actual-public-http-operational-attribution.json",
+      "sha256": "787460afa8bb990a81127fa9704f00b1865322e59ae22cecca9665b05c954c51",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0063-actual-public-http-operational-attribution.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0064-all-public-table-hashes.json",
+      "sha256": "76b768fecc5316e974d8543d2e942ed8087f665911f599d35d697381fd6ac5c1",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0064-all-public-table-hashes.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0065-all-public-table-hashes.json",
+      "sha256": "76b768fecc5316e974d8543d2e942ed8087f665911f599d35d697381fd6ac5c1",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0065-all-public-table-hashes.json"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/provenance/0066-qualification-terminal.json",
+      "sha256": "004e4e16b72a7ce92a308ea25315d02f40eebd9ef804362baf0fd92be72bc7ee",
+      "originalPath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-circuit-facets-786c7515c57a-pHj9kI/0066-qualification-terminal.json"
+    }
+  ]
+}

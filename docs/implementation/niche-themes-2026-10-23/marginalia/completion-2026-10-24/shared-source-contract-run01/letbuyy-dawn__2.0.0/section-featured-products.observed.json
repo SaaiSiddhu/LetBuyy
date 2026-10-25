@@ -1,0 +1,98 @@
+{
+  "id": "section-featured-products",
+  "status": "PASS_SOURCE_DATA_CONTRACT",
+  "observed": {
+    "type": "featured-products",
+    "group": "template",
+    "firstId": "section-c9050569-e045-4e40-bd03-4269d6358f8c",
+    "finalId": "section-5420ad50-0b32-41b9-af81-d84c3db1e172",
+    "phases": [
+      {
+        "phase": "edited",
+        "data": {
+          "type": "featured-products",
+          "settings": {
+            "title": "Source fixture title",
+            "subtitle": "Source fixture subtitle",
+            "columns": 2,
+            "productLimit": 1,
+            "collectionId": "22222222-2222-4222-8222-222222222222",
+            "product1": "22222222-2222-4222-8222-222222222222",
+            "product2": "22222222-2222-4222-8222-222222222222",
+            "product3": "22222222-2222-4222-8222-222222222222",
+            "requireSelection": false
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      {
+        "phase": "hidden-reordered",
+        "data": {
+          "type": "featured-products",
+          "settings": {
+            "title": "Source fixture title",
+            "subtitle": "Source fixture subtitle",
+            "columns": 2,
+            "productLimit": 1,
+            "collectionId": "22222222-2222-4222-8222-222222222222",
+            "product1": "22222222-2222-4222-8222-222222222222",
+            "product2": "22222222-2222-4222-8222-222222222222",
+            "product3": "22222222-2222-4222-8222-222222222222",
+            "requireSelection": false
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": true
+        }
+      },
+      {
+        "phase": "shown",
+        "data": {
+          "type": "featured-products",
+          "settings": {
+            "title": "Source fixture title",
+            "subtitle": "Source fixture subtitle",
+            "columns": 2,
+            "productLimit": 1,
+            "collectionId": "22222222-2222-4222-8222-222222222222",
+            "product1": "22222222-2222-4222-8222-222222222222",
+            "product2": "22222222-2222-4222-8222-222222222222",
+            "product3": "22222222-2222-4222-8222-222222222222",
+            "requireSelection": false
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      {
+        "phase": "removed",
+        "pinnedGroupSectionRetained": false
+      },
+      {
+        "phase": "readded",
+        "data": {
+          "type": "featured-products",
+          "settings": {
+            "title": "Source fixture title",
+            "subtitle": "Source fixture subtitle",
+            "columns": 2,
+            "productLimit": 1,
+            "collectionId": "22222222-2222-4222-8222-222222222222",
+            "product1": "22222222-2222-4222-8222-222222222222",
+            "product2": "22222222-2222-4222-8222-222222222222",
+            "product3": "22222222-2222-4222-8222-222222222222",
+            "requireSelection": false
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      }
+    ],
+    "actualUICallbacksExecuted": false,
+    "resourceAuthorityProved": false
+  }
+}

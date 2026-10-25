@@ -1,0 +1,562 @@
+{
+  "body": {
+    "background": "rgb(255, 255, 255)",
+    "color": "rgb(0, 0, 0)",
+    "font": "Inter, sans-serif",
+    "fontSize": "14px"
+  },
+  "controls": [
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Menu",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Cart",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "FILTER",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "SHOP",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "ASK",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "CONNECT",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Email address",
+      "tag": "INPUT",
+      "type": "email"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Sign up",
+      "tag": "BUTTON",
+      "type": "submit"
+    }
+  ],
+  "headings": [
+    {
+      "font": "\"Barlow Condensed\", sans-serif",
+      "height": 26.3984375,
+      "line": "26.4px",
+      "size": "24px",
+      "tag": "H3",
+      "text": "WE SEND TASTY EMAILS",
+      "weight": "600",
+      "width": 358,
+      "x": 16,
+      "y": 4683.203125
+    }
+  ],
+  "links": [
+    {
+      "text": "Skip to content",
+      "url": "https://savor-theme-demo.myshopify.com/collections/all-products#MainContent"
+    },
+    {
+      "text": "",
+      "url": "https://savor-theme-demo.myshopify.com/collections/all-products"
+    },
+    {
+      "text": "",
+      "url": "https://savor-theme-demo.myshopify.com/collections/barbecue-sauces"
+    },
+    {
+      "text": "",
+      "url": "https://savor-theme-demo.myshopify.com/collections/dipping-sauces"
+    },
+    {
+      "text": "",
+      "url": "https://savor-theme-demo.myshopify.com/collections/gifts"
+    },
+    {
+      "text": "",
+      "url": "https://savor-theme-demo.myshopify.com/collections/merch"
+    },
+    {
+      "text": "",
+      "url": "https://savor-theme-demo.myshopify.com/pages/about-us"
+    },
+    {
+      "text": "",
+      "url": "https://savor-theme-demo.myshopify.com/blogs/news"
+    },
+    {
+      "text": "",
+      "url": "https://savor-theme-demo.myshopify.com/collections/all-products"
+    },
+    {
+      "text": "",
+      "url": "https://savor-theme-demo.myshopify.com/"
+    },
+    {
+      "text": "Skip to results list",
+      "url": "https://savor-theme-demo.myshopify.com/collections/all-products#ResultsList"
+    },
+    {
+      "text": "Sweet Pineapple",
+      "url": "https://savor-theme-demo.myshopify.com/products/sweet-pineapple?variant=43258130333747"
+    },
+    {
+      "text": "Octo Tee",
+      "url": "https://savor-theme-demo.myshopify.com/products/copy-of-umami-tee?variant=43258139770931"
+    },
+    {
+      "text": "Octo Hoodie",
+      "url": "https://savor-theme-demo.myshopify.com/products/circle-octo-hoodie-1?variant=43258139312179"
+    },
+    {
+      "text": "Hot & Spicy",
+      "url": "https://savor-theme-demo.myshopify.com/products/hot-spicy-japanese-barbecue-sauce?variant=43258152976435"
+    },
+    {
+      "text": "Miso",
+      "url": "https://savor-theme-demo.myshopify.com/products/miso-japanese-barbecue-sauce?variant=43258140852275"
+    },
+    {
+      "text": "Half Gallon",
+      "url": "https://savor-theme-demo.myshopify.com/products/the-original-japanese-barbecue-sauce-half-gallon?variant=43258152321075"
+    },
+    {
+      "text": "Hella Hot",
+      "url": "https://savor-theme-demo.myshopify.com/products/hella-hot?variant=43258135248947"
+    },
+    {
+      "text": "Gluten-Free",
+      "url": "https://savor-theme-demo.myshopify.com/products/gluten-free-japanese-barbecue-sauce?variant=43258158383155"
+    },
+    {
+      "text": "Family Affair Tee",
+      "url": "https://savor-theme-demo.myshopify.com/products/family-affair-tee?variant=43258140426291"
+    },
+    {
+      "text": "Emblem Hoodie",
+      "url": "https://savor-theme-demo.myshopify.com/products/emblem-hoodie?variant=43258138755123"
+    },
+    {
+      "text": "Dip Mix & Match",
+      "url": "https://savor-theme-demo.myshopify.com/products/mix-save-dipping-sauces?variant=43258132660275"
+    },
+    {
+      "text": "Dip & Drizzle Box",
+      "url": "https://savor-theme-demo.myshopify.com/products/dip-drizzle-box?variant=43219132809267"
+    },
+    {
+      "text": "Cruisin Tee",
+      "url": "https://savor-theme-demo.myshopify.com/products/cruisin-tee?variant=43258144981043"
+    },
+    {
+      "text": "Campfire Tee",
+      "url": "https://savor-theme-demo.myshopify.com/products/campfire-tee?variant=43258145308723"
+    },
+    {
+      "text": "The Original Mini Bottle",
+      "url": "https://savor-theme-demo.myshopify.com/products/original-mini?variant=43258134921267"
+    },
+    {
+      "text": "The Original Gift Box",
+      "url": "https://savor-theme-demo.myshopify.com/products/4-bottle-bachans-gift-set?variant=43258137346099"
+    },
+    {
+      "text": "The Original",
+      "url": "https://savor-theme-demo.myshopify.com/products/the-original-japanese-barbecue-sauce?variant=43258165428275"
+    },
+    {
+      "text": "The Flavor Explorer Box",
+      "url": "https://savor-theme-demo.myshopify.com/products/flavor-explorer-box?variant=43258148519987"
+    },
+    {
+      "text": "The Big Dipper Box",
+      "url": "https://savor-theme-demo.myshopify.com/products/the-big-dipper-box?variant=43219147587635"
+    },
+    {
+      "text": "Sweet Honey Mini Case",
+      "url": "https://savor-theme-demo.myshopify.com/products/sweet-honey-mini-bottle-48-ct?variant=43258130890803"
+    },
+    {
+      "text": "Sweet Honey Mini Bottle",
+      "url": "https://savor-theme-demo.myshopify.com/products/sweet-honey-mini?variant=43258134134835"
+    },
+    {
+      "text": "Sweet Honey",
+      "url": "https://savor-theme-demo.myshopify.com/products/sweet-honey?variant=43258135576627"
+    },
+    {
+      "text": "Sweet & Spicy",
+      "url": "https://savor-theme-demo.myshopify.com/products/sweet-spicy-dipping?variant=43258133413939"
+    },
+    {
+      "text": "Saucy Dog Toy",
+      "url": "https://savor-theme-demo.myshopify.com/products/squeaky-sauce-dog-toy?variant=43258138230835"
+    },
+    {
+      "text": "Barbecue",
+      "url": "https://savor-theme-demo.myshopify.com/collections/barbecue-sauces"
+    },
+    {
+      "text": "Dipping",
+      "url": "https://savor-theme-demo.myshopify.com/collections/dipping-sauces"
+    },
+    {
+      "text": "Gifts",
+      "url": "https://savor-theme-demo.myshopify.com/collections/gifts"
+    },
+    {
+      "text": "Merch",
+      "url": "https://savor-theme-demo.myshopify.com/collections/merch"
+    },
+    {
+      "text": "Shipping",
+      "url": "https://savor-theme-demo.myshopify.com/pages/shipping-policy"
+    },
+    {
+      "text": "Returns",
+      "url": "https://savor-theme-demo.myshopify.com/pages/return-policy"
+    },
+    {
+      "text": "FAQ",
+      "url": "https://savor-theme-demo.myshopify.com/pages/faq"
+    },
+    {
+      "text": "About us",
+      "url": "https://savor-theme-demo.myshopify.com/pages/about-us"
+    },
+    {
+      "text": "Contact us",
+      "url": "https://savor-theme-demo.myshopify.com/pages/contact"
+    },
+    {
+      "text": "Savor",
+      "url": "https://savor-theme-demo.myshopify.com/"
+    }
+  ],
+  "sections": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--18561684439091__section",
+      "rect": {
+        "height": 288.3984375,
+        "width": 390,
+        "x": 0,
+        "y": 0
+      },
+      "tag": "DIV",
+      "text": "ALL PRODUCTS"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--18561684439091__main",
+      "rect": {
+        "height": 3889.3125,
+        "width": 390,
+        "x": 0,
+        "y": 288.3984375
+      },
+      "tag": "DIV",
+      "text": "Skip to results list\nFILTER\nSweet Pineapple\n\nSWEET PINEAPPLE\n\n$9.49 CAD\n\nThe perfect hit of tropical brightness\n\nOcto Tee\n\nOCTO TEE\n\n$25.00 CAD\n\nClassic, soft & lightweight logo te"
+    }
+  ],
+  "title": "All Products – Savor",
+  "url": "https://savor-theme-demo.myshopify.com/collections/all-products",
+  "viewport": {
+    "dpr": 1,
+    "height": 844,
+    "width": 390
+  },
+  "formGroups": [],
+  "grids": [
+    {
+      "className": "collection-wrapper grid gap-style collection-wrapper--grid-full-width",
+      "columns": "none",
+      "display": "flex",
+      "gap": "normal",
+      "height": 3888.3125,
+      "tag": "DIV",
+      "width": 390
+    },
+    {
+      "className": "\n    grid main-collection-grid\n collection-wrapper--full-width\n collection-wrapper--full-width-on-mobile\n    spacing-style\n  ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "normal",
+      "height": 3844.3125,
+      "tag": "DIV",
+      "width": 390
+    },
+    {
+      "className": "product-grid product-grid--template--18561684439091__main product-grid--grid ",
+      "columns": "194.5px 194.5px",
+      "display": "grid",
+      "gap": "1px",
+      "height": 3844.3125,
+      "tag": "UL",
+      "width": 390
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n       color-scheme-2\n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 309.578125,
+      "tag": "DIV",
+      "width": 194.5
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n       color-scheme-2\n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 309.578125,
+      "tag": "DIV",
+      "width": 194.5
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n       color-scheme-2\n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 309.578125,
+      "tag": "DIV",
+      "width": 194.5
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n       color-scheme-2\n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 309.578125,
+      "tag": "DIV",
+      "width": 194.5
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n       color-scheme-2\n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 309.578125,
+      "tag": "DIV",
+      "width": 194.5
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n       color-scheme-2\n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 309.578125,
+      "tag": "DIV",
+      "width": 194.5
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n       color-scheme-2\n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 329.171875,
+      "tag": "DIV",
+      "width": 194.5
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n       color-scheme-2\n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 329.171875,
+      "tag": "DIV",
+      "width": 194.5
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n       color-scheme-2\n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 309.578125,
+      "tag": "DIV",
+      "width": 194.5
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n       color-scheme-2\n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 309.578125,
+      "tag": "DIV",
+      "width": 194.5
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n       color-scheme-2\n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 309.578125,
+      "tag": "DIV",
+      "width": 194.5
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n       color-scheme-2\n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 309.578125,
+      "tag": "DIV",
+      "width": 194.5
+    }
+  ],
+  "images": [
+    {
+      "alt": "All Products",
+      "complete": true,
+      "naturalWidth": 390,
+      "rect": {
+        "height": 288.3984375,
+        "width": 390
+      }
+    },
+    {
+      "alt": "Sweet Pineapple",
+      "complete": true,
+      "naturalWidth": 390,
+      "rect": {
+        "height": 195,
+        "width": 195
+      }
+    },
+    {
+      "alt": "Sweet Pineapple",
+      "complete": true,
+      "naturalWidth": 194,
+      "rect": {
+        "height": 195,
+        "width": 195
+      }
+    },
+    {
+      "alt": "Sweet Pineapple",
+      "complete": true,
+      "naturalWidth": 194,
+      "rect": {
+        "height": 195,
+        "width": 195
+      }
+    },
+    {
+      "alt": "Octo Tee",
+      "complete": true,
+      "naturalWidth": 389,
+      "rect": {
+        "height": 195,
+        "width": 195
+      }
+    },
+    {
+      "alt": "Octo Tee",
+      "complete": true,
+      "naturalWidth": 194,
+      "rect": {
+        "height": 195,
+        "width": 195
+      }
+    },
+    {
+      "alt": "Octo Tee",
+      "complete": true,
+      "naturalWidth": 194,
+      "rect": {
+        "height": 195,
+        "width": 195
+      }
+    },
+    {
+      "alt": "Octo Tee",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 195,
+        "width": 195
+      }
+    },
+    {
+      "alt": "Octo Hoodie",
+      "complete": true,
+      "naturalWidth": 389,
+      "rect": {
+        "height": 195,
+        "width": 195
+      }
+    },
+    {
+      "alt": "Octo Hoodie",
+      "complete": true,
+      "naturalWidth": 194,
+      "rect": {
+        "height": 195,
+        "width": 195
+      }
+    },
+    {
+      "alt": "Octo Hoodie",
+      "complete": true,
+      "naturalWidth": 194,
+      "rect": {
+        "height": 195,
+        "width": 195
+      }
+    },
+    {
+      "alt": "Octo Hoodie",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 195,
+        "width": 195
+      }
+    }
+  ],
+  "bodyText": "Skip to content\nTotal items in cart: 0\n\nALL PRODUCTS\n\nSkip to results list\nFILTER\nSweet Pineapple\n\nSWEET PINEAPPLE\n\n$9.49 CAD\n\nThe perfect hit of tropical brightness\n\nOcto Tee\n\nOCTO TEE\n\n$25.00 CAD\n\nClassic, soft & lightweight logo tee\n\nOcto Hoodie\n\nOCTO HOODIE\n\n$60.00 CAD\n\nUltra soft and heavyweight\n\nHot & Spicy\n\nHOT & SPICY\n\n$9.49 CAD\n\nThe perfect amount of sweet heat\n\nMiso\n\nMISO\n\n$9.49 CAD\n\nBold & savory, with red and white miso\n\nHalf Gallon\n\nHALF GALLON\n\n$44.99 CAD\n\nMore of our original family recipe\n\nHella Hot\n\nHELLA HOT\n\n$9.49 CAD\n\nYour tastebuds will rejoice—they will also cry\n\nGluten-Free\n\nGLUTEN-FREE\n\n$9.49 CAD\n\nFeaturing gluten-free tamari, same bold flavor\n\nFamily Affair Tee\n\nFAMILY AFFAIR TEE\n\n$25.00 CAD\n\nSoft & lightweight tee, bottle graphic\n\nEmblem Hoodie\n\nEMBLEM HOODIE\n\n$60.00 CAD\n\nSuper cozy, ultra heavyweight\n\nDip Mix & Match\n\nDIP MIX & MATCH\n\n$9.99 CAD\n\nThe more you mix the more you save\n\nDip & Drizzle Box\n\nDIP & DRIZZLE BOX\n\n$49.99 CAD\n\nDip, drizzle, marinate, and grill\n\nCruisin Tee\n\nCRUISIN TEE\n\n$25.00 CAD\n\nUnique Lost in the Sauce design\n\nCampfire Tee\n\nCAMPFIRE TEE\n\n$25.00 CAD\n\nUnique Lost in the Sauce design\n\nThe Original Mini Bottle\n\nTHE ORIGINAL MINI BOTTLE\n\n$1.00 CAD\n\nBold, fresh and filled with umami flavor— in a mini size\n\nThe Original Gift Box\n\nTHE ORIGINAL GIFT BOX\n\n$49.99 CAD\n\nTry all four flavors, recipe book & octo pin\n\nThe Original\n\nTHE ORIGINAL\n\n$9.49 CAD\n\nBold, fresh and filled with umami flavor\n\nThe Flavor Explorer Box\n\nTHE FLAVOR EXPLORER BOX\n\n$44.99 CAD\n\nTry our full range of flavors\n\nThe Big Dipper Box\n\nTHE BIG DIPPER BOX\n\n$34.99 CAD\n\nDip like you've never dipped before\n\nSweet Honey Mini Case\n\nSWEET HONEY MINI CASE\n\n$50.00 CAD\n\n48 mini sauce bottles\n\nSweet Honey Mini Bottle\n\nSWEET HONEY MINI BOTTLE\n\n$1.00 CAD\n\nSmooth & sweet, with organic golden honey— in a mini size\n\nSweet Honey\n\nSWEET HONEY\n\n$9.49 CAD\n\nSmooth & sweet, with organic golden honey\n\nSweet & Spicy\n\nSWEET & SPICY\n\n$9.99 CAD\n\nCreamy, Savory, and Umami with a Kick\n\nSaucy Dog Toy\n\nSAUCY DOG TOY\n\n$15.00 CAD\n\nDog-friendly bottle of Bachan’s\n\nSHOP\nBarbecue\nDipping\nGifts\nMerch\nASK\nShipping\nReturns\nFAQ\nAbout us\nCONNECT\nContact us\nInstagram\nYouTube\nTikTok\nWE SEND TASTY EMAILS\nEmail\n© 2026 Savor, Powered by Shopify"
+}

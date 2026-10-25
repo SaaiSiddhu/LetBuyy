@@ -8,6 +8,7 @@ import {
 
 const cartRouteSource = readFileSync(new URL('../routes/storefront/cart-routes.ts', import.meta.url), 'utf8');
 const checkoutRouteSource = readFileSync(new URL('../routes/checkout.ts', import.meta.url), 'utf8');
+const commandSource = readFileSync(new URL('../lib/hosted-checkout-order-command.ts', import.meta.url), 'utf8');
 const paymentAdapterSource = readFileSync(new URL('../execution/payment-execution.adapter.ts', import.meta.url), 'utf8');
 const queueWorkerSource = readFileSync(new URL('../../../../services/queue-workers/src/index.ts', import.meta.url), 'utf8');
 const inventorySweeperSource = readFileSync(new URL('../../../../services/queue-workers/src/inventory-reservations.ts', import.meta.url), 'utf8');
@@ -100,8 +101,8 @@ test('marketplace cart admission and checkout preserve listing identity through 
     assert.match(cartRouteSource, /String\(listing\.site_id\) !== store\.id/);
     assert.match(cartRouteSource, /SALES_ORIGIN_IMMUTABLE/);
     assert.match(cartRouteSource, /salesOrigin: cart\.sales_origin/);
-    assert.match(checkoutRouteSource, /MARKETPLACE_LISTING_REQUIRED/);
-    assert.match(checkoutRouteSource, /marketplace_listing_id: stringValue\(line\.marketplace_listing_id\)/);
+    assert.match(commandSource, /MARKETPLACE_LISTING_REQUIRED/);
+    assert.match(commandSource, /marketplace_listing_id: stringValue\(line\.marketplace_listing_id\)/);
     assert.match(checkoutRouteSource, /salesOrigin: cartRow\.sales_origin/);
     const orderAdapterSource = readFileSync(new URL('../execution/order-execution.adapter.ts', import.meta.url), 'utf8');
     const orderMigrationSource = readFileSync(new URL('../../../../database/supabase/migrations/278_marketplace_order_listing_binding.sql', import.meta.url), 'utf8');

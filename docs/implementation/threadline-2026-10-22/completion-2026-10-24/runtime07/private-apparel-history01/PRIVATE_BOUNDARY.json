@@ -1,0 +1,17 @@
+{
+  "classification": "PRIVATE_SOURCE_PROPOSAL_NOT_APPLY_READY_OR_INSTALLED",
+  "coreSourceFilesCopied": 16,
+  "modifiedBusinessSourcePaths": [
+    "packages/commerce-core/src/product-fact-snapshot.ts",
+    "packages/commerce-core/src/product-facts-summary.ts",
+    "packages/theme-engine/src/niche-order-presentation.ts"
+  ],
+  "privateImportRebind": "Onlypresentationhelperrelative./theme-bundle reboundtoexactcurrentsealedcandidate schema module; no businesslogicrebind",
+  "schema": "ExistingApparelFactsSchemaonly; no secondapparelschema/stock/priceauthority",
+  "remainingIntegration": [
+    "Gatewaycatalog_source.product_facts NAMES andactualcurrentSQLwriterprovenance whitelistmustjoinapparel; noSQLproposalornumberallocatedhere",
+    "Published210immutable;Rootmustadmitexplicitnewversion/capture/childqualification/promotion beforeuse",
+    "Nativecanonicalwriter/concurrency/stalecart/rollback andactualUIhistory retestrequired;oldpaidorderneverbackfilled"
+  ],
+  "MainCandidateDBProviderMutations": 0
+}

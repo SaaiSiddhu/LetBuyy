@@ -1,0 +1,55 @@
+{
+  "recordedAt": "2026-10-24T00:31:43.513825+00:00",
+  "classification": "READ_ONLY_ACTUAL_NORMAL_UI_AND_GUARDED_SAVED_RECEIPT_AUDIT",
+  "runId": "f6074d90e894",
+  "candidateRoot": "/private/tmp/theme-editor-recovery-20261024-01",
+  "sourceProofSha256": "702b3a632462cff507993e80b58171fb8d0c246c2913de643bfbe4cf3438522f",
+  "sourceChangesByPantry": [],
+  "caseId": "P10",
+  "status": "PASS",
+  "orderNumber": "ORD-20261023-10001",
+  "checks": {
+    "normalOwnOrderBuyerAndMerchantExpandedDetailsAndReloadAgree": true,
+    "quantity2HistoricalUnit180Line360Grand380AndPack250g": true,
+    "immutablePerItem250gIngredientsAndUnknownAllergenStatement": true,
+    "buyerRenderedDetailsDoNotExposeRawSnapshotSkuOrCostFields": true,
+    "validOwnOrderPositivePrecedesMissingOrderUiDenial": true,
+    "otherSiteRouteAlsoShowsPageNotFound": true
+  },
+  "evidence": [
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-P10-buyer-old-order-before-edit.ax.txt",
+      "sha256": "e908b02ddb4e091f297054befbfeef1d504dea4af223939015dbd96db91c023f"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-P10-buyer-old-order-reloaded.ax.txt",
+      "sha256": "e908b02ddb4e091f297054befbfeef1d504dea4af223939015dbd96db91c023f"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-P10-merchant-old-order-before-edit.ax.txt",
+      "sha256": "72e8c8f2184a8371909ca3ebbee9235d64e6177af0283f4c8ee410dd2c7bb261"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-P10-merchant-old-order-reloaded.ax.txt",
+      "sha256": "5b89cf57182a78f0183efe4894c2cddc18ef90d0d4e0afe26c0b22a215087bb4"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-P10-missing-order-denied.ax.txt",
+      "sha256": "c5b7bd3e3f7ab2f64687f1bf32e439c211ac7b377191256a296ee21c412044c2"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-P10-other-site-order-denied.ax.txt",
+      "sha256": "2c3c8becea74a2a3282f1ec57ab398032bc26d70d708a0ee30857023d8026191"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-lifecycle-before-edit.json",
+      "sha256": "bc563a5d8f9e92ba8e0975f1a54b941068746506a7ff12b214d3f5fffdd13b75"
+    }
+  ],
+  "limits": [
+    "Missing-order denial is actual native UI Order not found, not a retained raw API403/404 claim.",
+    "Other-site generic404 alone is not claimed as complete cross-tenant red-team proof.",
+    "Merchant privileged order line includes its SKU outside the public saved-facts panel; no buyer SKU leak observed.",
+    "Saved artifacts audited, no browser/API/DB reexecution by Pantry."
+  ]
+}

@@ -1,0 +1,209 @@
+{
+  "body": {
+    "background": "rgb(223, 223, 216)",
+    "color": "rgba(17, 21, 28, 0.75)",
+    "font": "system_ui, -apple-system, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"Noto Sans\", \"Liberation Sans\", Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+    "fontSize": "15px"
+  },
+  "controls": [
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Email",
+      "tag": "INPUT",
+      "type": "email"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Subscribe",
+      "tag": "BUTTON",
+      "type": "submit"
+    }
+  ],
+  "headings": [
+    {
+      "font": "Platypi, serif",
+      "height": 29,
+      "line": "29px",
+      "size": "23px",
+      "tag": "H2",
+      "text": "",
+      "weight": "500",
+      "width": 329,
+      "x": 406,
+      "y": 396.5
+    },
+    {
+      "font": "Platypi, serif",
+      "height": 43.5,
+      "line": "43.5px",
+      "size": "34.5px",
+      "tag": "H1",
+      "text": "Collection:\nProducts",
+      "weight": "500",
+      "width": 360,
+      "x": 15,
+      "y": 190.09375
+    },
+    {
+      "font": "Platypi, serif",
+      "height": 17.390625,
+      "line": "17.4px",
+      "size": "13.8px",
+      "tag": "H3",
+      "text": "2Unfold Bag",
+      "weight": "500",
+      "width": 360,
+      "x": 15,
+      "y": 795.765625
+    },
+    {
+      "font": "Platypi, serif",
+      "height": 17.390625,
+      "line": "17.4px",
+      "size": "13.8px",
+      "tag": "H3",
+      "text": "Stuff it case",
+      "weight": "500",
+      "width": 360,
+      "x": 15,
+      "y": 1090.7265625
+    },
+    {
+      "font": "Platypi, serif",
+      "height": 116,
+      "line": "58px",
+      "size": "46px",
+      "tag": "H2",
+      "text": "Stay in the know",
+      "weight": "500",
+      "width": 310,
+      "x": 40,
+      "y": 1244.1171875
+    }
+  ],
+  "links": [
+    {
+      "text": "Skip to content",
+      "url": "https://theme-origin-demo.myshopify.com/collections/all#MainContent"
+    },
+    {
+      "text": "",
+      "url": "https://theme-origin-demo.myshopify.com/collections/all"
+    },
+    {
+      "text": "",
+      "url": "https://theme-origin-demo.myshopify.com/"
+    },
+    {
+      "text": "Cart",
+      "url": "https://theme-origin-demo.myshopify.com/cart"
+    },
+    {
+      "text": "2Unfold Bag",
+      "url": "https://theme-origin-demo.myshopify.com/products/2unfold-bag-copy"
+    },
+    {
+      "text": "Stuff it case",
+      "url": "https://theme-origin-demo.myshopify.com/products/stuffitboxcase-classic"
+    },
+    {
+      "text": "Shop",
+      "url": "https://theme-origin-demo.myshopify.com/"
+    },
+    {
+      "text": "Journal",
+      "url": "https://theme-origin-demo.myshopify.com/blogs/news"
+    },
+    {
+      "text": "Contact",
+      "url": "https://theme-origin-demo.myshopify.com/pages/about"
+    },
+    {
+      "text": "Shipping",
+      "url": "https://theme-origin-demo.myshopify.com/pages/shipping-and-returns"
+    },
+    {
+      "text": "theme-origin-demo",
+      "url": "https://theme-origin-demo.myshopify.com/"
+    }
+  ],
+  "sections": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715923234838__main-collection-banner",
+      "rect": {
+        "height": 93.5,
+        "width": 390,
+        "x": 0,
+        "y": 165.09375
+      },
+      "tag": "DIV",
+      "text": "Collection:\nProducts"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715923234838__main-collection-product-grid",
+      "rect": {
+        "height": 920.5234375,
+        "width": 390,
+        "x": 0,
+        "y": 258.59375
+      },
+      "tag": "DIV",
+      "text": "2Unfold Bag\nRegular price\n$995.00 CAD\nSale\nStuff it case\nRegular price\n$115.00 CAD \nSale price\nFrom $105.00 CAD"
+    }
+  ],
+  "title": "Products – theme-origin-demo",
+  "url": "https://theme-origin-demo.myshopify.com/collections/all",
+  "viewport": {
+    "dpr": 1,
+    "height": 844,
+    "width": 390
+  },
+  "formGroups": [],
+  "grids": [
+    {
+      "className": "\n                grid product-grid grid--1-col-tablet-down\n                grid--2-col-desktop\n                \n              ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "20px",
+      "height": 851.5234375,
+      "tag": "UL",
+      "width": 360
+    }
+  ],
+  "images": [
+    {
+      "alt": "2Unfold Bag",
+      "complete": true,
+      "naturalWidth": 177,
+      "rect": {
+        "height": 482.171875,
+        "width": 360
+      }
+    },
+    {
+      "alt": "Stuff it case",
+      "complete": true,
+      "naturalWidth": 177,
+      "rect": {
+        "height": 200.5703125,
+        "width": 360
+      }
+    }
+  ],
+  "bodyText": "Skip to content\n\nSale on now — use \"OriginSale\" at checkout.\n\nCart\nCollection:\nProducts\n2Unfold Bag\nRegular price\n$995.00 CAD\nSale\nStuff it case\nRegular price\n$115.00 CAD \nSale price\nFrom $105.00 CAD\n\nTHE UPDATES\n\nStay in the know\nEmail\nShop\nJournal\nContact\nShipping\nFacebook\nInstagram\nYouTube\nTikTok\nX (Twitter)\nSnapchat\nPayment methods\n© 2026, theme-origin-demo Powered by Shopify"
+}

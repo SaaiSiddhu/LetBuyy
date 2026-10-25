@@ -673,7 +673,7 @@ export function Select({
                         'w-full appearance-none border bg-[var(--lb-color-surface)] px-[var(--lb-space-3)] pr-[var(--lb-space-7)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text)] transition-colors duration-[var(--lb-motion-fast)] ease-[var(--lb-ease-standard)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] disabled:cursor-not-allowed disabled:opacity-50',
                         selectControlSizeStyles[controlSize],
                         hasPrefixContent && 'pl-[var(--lb-space-7)]',
-                        error ? 'border-[var(--lb-color-critical)]' : 'border-[var(--lb-color-border)]',
+                        error ? 'border-[var(--lb-color-critical)]' : 'border-[var(--lb-component-input-border)]',
                         className,
                     )}
                     aria-invalid={Boolean(error)}
@@ -852,7 +852,7 @@ export function Combobox({
                 disabled={disabled}
                 className={cx(
                     'h-[var(--lb-size-control-md)] rounded-[var(--lb-radius-lg)] border bg-[var(--lb-color-surface)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text)] placeholder:text-[color:var(--lb-color-text-subdued)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] disabled:cursor-not-allowed disabled:opacity-50',
-                    error ? 'border-[var(--lb-color-critical)]' : 'border-[var(--lb-color-border)]',
+                    error ? 'border-[var(--lb-color-critical)]' : 'border-[var(--lb-component-input-border)]',
                     inputClassName,
                 )}
                 placeholder={placeholder}

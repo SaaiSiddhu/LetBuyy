@@ -1,0 +1,170 @@
+{
+  "schemaVersion": 1,
+  "recordedAtUtc": "2026-10-24 12:49:49 UTC",
+  "classification": "NEW_NATIVE06_TERMINAL_FAILURE_EVIDENCE_NOT_INSTALLED_ACCEPTANCE",
+  "nativeRunId": "9a1393559a57",
+  "nativeAttempt": "06",
+  "actualOutcome": {
+    "qualified": false,
+    "reportedTAP": {
+      "tests": 5,
+      "PASS": 3,
+      "FAIL": 2,
+      "parentIncluded": true
+    },
+    "phaseCoverage": {
+      "PASS": [
+        1,
+        2,
+        3
+      ],
+      "FAIL": [
+        4
+      ],
+      "NOT_RUN": [
+        5,
+        6,
+        7,
+        8
+      ]
+    },
+    "cleanupRemaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "actualFailure": {
+    "case": "Revoked/deleted immutable target denial in phase4 update-preview",
+    "source": "services/api-gateway/src/__tests__/owned-db/playfield201-catalog394-qualification.manual.ts",
+    "assertionLine": 392,
+    "expectedHttpStatus": 404,
+    "actualHttpStatus": 422,
+    "sanitizedResponse": {
+      "error": {
+        "code": "VALIDATION_ERROR",
+        "message": "The target theme package version is unavailable"
+      }
+    },
+    "specificLoopIteration": "Not identified independently; do not guess revoked versus deleted.",
+    "followingNoEffectsAssertion": "Not reached after failed status assertion; do not promote this denial control to no-effect PASS.",
+    "precedingOwnedPreview": "Execution reached this later assertion after the earlier normal owned preview/status200/read-only assertions; no whole-phase PASS."
+  },
+  "scopeLimits": {
+    "negativeVersion202And203LabelsAreNotAdmittedPlayfield202Release": true,
+    "installedJourneysExecutedHere": 0,
+    "screenshotsCapturedHere": 0,
+    "sharedSourceChangesHere": 0,
+    "nativeStartsRestartsHere": 0,
+    "unavailableTargetCodeRepairOwner": "Themes existing exact allocation",
+    "oldFailuresRetained": true
+  },
+  "observationFailure": {
+    "tool": "exec_command read-only Python ps probe",
+    "result": "OS denied process inspection; reader stopped before terminal-result read",
+    "recovery": "Reread authoritative native06 result.json and log without process inspection; terminal failure and cleanup confirmed.",
+    "verifiedLiveProcessWaitClaimed": false
+  },
+  "ownerFollowup": {
+    "prompt": "New read-only Playfield evidence from native06 (run9a1393559a57): the recorded suite failed phase4, with reported TAP3pass/2fail including the parent; owned cleanup is empty. The log is docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/native-runs/06/logs/playfield201-catalog394-qualification.manual.ts.log.\n\nThe failure has advanced beyond the former preview500: the normal owned update-preview returned200 and its read-only fullState assertion passed. The unavailable target control at manual.ts:392 returned HTTP422 with VALIDATION_ERROR “The target theme package version is unavailable”, where the existing revoked/deleted target oracle requires404. The source loop inserts immutable negative captures in their final unavailable state. Please retain the full eight-phase oracle and all failures while resolving the canonical unavailable-target status/contract in your owned allocation; no test weakening or reinterpretation as an installed pass.\n\nThe negative fixture’s synthetic2.0.2/2.0.3 labels do not constitute an admitted active Playfield2.0.2 release. Main dispatch remains exactly c240566161f45b1875caf65b68b9d7eae9be38bf9ec0b8390ead3eadb6d21757, but no separate current202 release/fixture/sole Editor browser grant exists. All PF-I01–PF-I14, including05/06 retests, remain NOT_RUN on the corrected target.\n\nThis supplies the actual next failure detail under the human’s existing instruction to have Themes resolve qualification and apply202. Playfield has made no shared/frozen source change, native restart, browser or database action. Please provide the separate current202 handoff once accepted.",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"threadId\":\"01a164a4-a342-76d3-ab33-65e021ed57db\"}"
+        }
+      ],
+      "isError": false
+    }
+  },
+  "goalAudit": {
+    "freshResumedBlockedAuditCount": 2,
+    "previousGoalTurnClassification": "NO_PROGRESS: prior direct human resume found the same absent202 admission.",
+    "currentGoalTurnClassification": "PROGRESS: actual native06 terminal evidence advances the blocker from previewHTTP500 to unavailable-target422/404; exact evidence sent to the canonical owner under existing human authorization.",
+    "fullObjectivePreserved": true,
+    "goalComplete": false,
+    "blockedThresholdReached": false
+  },
+  "currentInstalled14": {
+    "PASS": 0,
+    "FAIL": 0,
+    "NOT_RUN": 14,
+    "cases": [
+      {
+        "id": "PF-I01",
+        "status": "NOT_RUN",
+        "historicalFailureRetestRequired": false
+      },
+      {
+        "id": "PF-I02",
+        "status": "NOT_RUN",
+        "historicalFailureRetestRequired": false
+      },
+      {
+        "id": "PF-I03",
+        "status": "NOT_RUN",
+        "historicalFailureRetestRequired": false
+      },
+      {
+        "id": "PF-I04",
+        "status": "NOT_RUN",
+        "historicalFailureRetestRequired": false
+      },
+      {
+        "id": "PF-I05",
+        "status": "NOT_RUN",
+        "historicalFailureRetestRequired": true
+      },
+      {
+        "id": "PF-I06",
+        "status": "NOT_RUN",
+        "historicalFailureRetestRequired": true
+      },
+      {
+        "id": "PF-I07",
+        "status": "NOT_RUN",
+        "historicalFailureRetestRequired": false
+      },
+      {
+        "id": "PF-I08",
+        "status": "NOT_RUN",
+        "historicalFailureRetestRequired": false
+      },
+      {
+        "id": "PF-I09",
+        "status": "NOT_RUN",
+        "historicalFailureRetestRequired": false
+      },
+      {
+        "id": "PF-I10",
+        "status": "NOT_RUN",
+        "historicalFailureRetestRequired": false
+      },
+      {
+        "id": "PF-I11",
+        "status": "NOT_RUN",
+        "historicalFailureRetestRequired": false
+      },
+      {
+        "id": "PF-I12",
+        "status": "NOT_RUN",
+        "historicalFailureRetestRequired": false
+      },
+      {
+        "id": "PF-I13",
+        "status": "NOT_RUN",
+        "historicalFailureRetestRequired": false
+      },
+      {
+        "id": "PF-I14",
+        "status": "NOT_RUN",
+        "historicalFailureRetestRequired": false
+      }
+    ]
+  },
+  "current202Runtime": null,
+  "current202ReleaseAdmission": null,
+  "current202BrowserLease": null,
+  "frozenArtifactsWritten": [],
+  "automationChanges": []
+}

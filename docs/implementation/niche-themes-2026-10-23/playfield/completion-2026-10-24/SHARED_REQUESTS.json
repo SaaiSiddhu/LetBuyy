@@ -1,0 +1,723 @@
+{
+  "recordedAt": "2026-10-25T01:42:09.259082+00:00",
+  "classification": "FILE_BASED_REQUESTS_NOT_GRANTS",
+  "requests": [
+    {
+      "id": "PF-DEP-RUNTIME",
+      "owner": "Themes allocator 01a164a4-a342-76d3-ab33-65e021ed57db / Editor controller 01a166eb-66bb-7042-bb47-2aaafef26f53",
+      "status": "PRESERVATION_MAINTENANCE; ROOT_QUALIFIED_RECOVERY_THEN_EDITOR_SLOT_REQUIRED",
+      "request": "Consume current Runtime07/qualified210 prerequisite evidence, then execute only the remaining theme-specific requirements in currentRuntime07QueueSubmission. Do not repeat old shared repairs or adopt expired fixtures.",
+      "baseRecords": [
+        {
+          "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/EXECUTION_STATE.json",
+          "sha256": "e025bb69eb3fb0d05e495b9ad4c4166c07487318374e6f28fe7d4546475c8ef5"
+        },
+        {
+          "path": "docs/implementation/niche-theme-programme/capture-schedule.json",
+          "sha256": "76ae11ac82babd2c665a8a8d7a5bf887eaaee6356799dd2ee5074531ad8090b4"
+        }
+      ],
+      "sharedEditsRequested": [],
+      "dependencies": [
+        "Successful catalogue/native admission",
+        "Shared checkout/editor prerequisite qualification",
+        "No old936 lease assumed"
+      ],
+      "retainedOriginalStatus": "AWAITING_CURRENT_EXPLICIT_ALLOCATION",
+      "retainedOriginalRequest": "Record direct resumption, admitted current runtime/source/build/package/native/TLS/common-smoke lineage, origin/expiry, sole UI tab/session, existing toys fixture bindings and approved observability/cleanup for finite PF-I01/I02/I05/I06 slice. Queue10 is reservation only.",
+      "retainedOriginalOwner": "Themes allocator 01a164a4-a342-76d3-ab33-65e021ed57db / Editor controller 01a166eb-66bb-7042-bb47-2aaafef26f53",
+      "currentOwner": "Playfield evidence owner / sole Editor controller; shared metadata/source allocation remains Themes",
+      "currentEvidence": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/SHARED_READINESS_GATE.json"
+    },
+    {
+      "id": "PF-DEP-CATALOG",
+      "owner": "Existing catalogue/native owner 01a161c9-36d1-7802-af70-d346f524bff3 via allocator",
+      "status": "CURRENT210_ADMITTED; DO_NOT_RERUN_OLD394_QUALIFIERS",
+      "request": "Consume current Runtime07/qualified210 prerequisite evidence, then execute only the remaining theme-specific requirements in currentRuntime07QueueSubmission. Do not repeat old shared repairs or adopt expired fixtures.",
+      "baseRecords": [
+        {
+          "path": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/candidate-index.json",
+          "sha256": "d321659ca365f716d72e1b0c1d87fa7cbb67152f02514f6b77960db4e26231b6"
+        },
+        {
+          "path": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/native-attempt01-interruption.json",
+          "sha256": "5799b43817bafa8c91fc03246ae7f0e399146b969f16f6064c02f04b4266ac2b"
+        }
+      ],
+      "dependencies": [
+        "Existing owner release and exact native allocation"
+      ],
+      "duplicateImplementation": false,
+      "retainedOriginalStatus": "NATIVE394_ATTEMPT01_UNQUALIFIED",
+      "retainedOriginalRequest": "Finish existing runtime-module inventory correction and actual fresh qualification before catalogue emission/admission. Bind resulting current 2.0.1 package, source epoch and exact release. Preserve every earlier artifact.",
+      "retainedOriginalOwner": "Existing catalogue/native owner 01a161c9-36d1-7802-af70-d346f524bff3 via allocator",
+      "currentOwner": "Playfield evidence owner / sole Editor controller; shared metadata/source allocation remains Themes",
+      "currentEvidence": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/SHARED_READINESS_GATE.json"
+    },
+    {
+      "id": "PF-DEP-CHECKOUT",
+      "owner": "MadeYours 01a164ba-e017-7b90-9053-efc5357459a6 via allocator",
+      "status": "SHARED_CURRENT_BACKEND_AND_REAL_PROVIDER_SMOKE_PASS; OWN_THEME_CASES_REQUIRED",
+      "request": "Consume current Runtime07/qualified210 prerequisite evidence, then execute only the remaining theme-specific requirements in currentRuntime07QueueSubmission. Do not repeat old shared repairs or adopt expired fixtures.",
+      "baseRecords": [
+        {
+          "path": "docs/implementation/niche-theme-programme/current-work-handoff.json",
+          "sha256": "e2bc461fb43eb63420d6587cfcf03b4a425f18e22c4479f0f3e40288bd9bbb5f"
+        }
+      ],
+      "dependencies": [
+        "Existing exact shared writer and native qualification"
+      ],
+      "duplicateImplementation": false,
+      "retainedOriginalStatus": "EXISTING_SHARED_PROPOSAL_NOT_DUPLICATED",
+      "retainedOriginalRequest": "Provide admitted CAS/reentry/provider-readiness source/native release and candidate integration before Playfield COD/Razorpay/history attempts. Do not retry held cart or replace session as workaround.",
+      "retainedOriginalOwner": "MadeYours 01a164ba-e017-7b90-9053-efc5357459a6 via allocator",
+      "currentOwner": "Playfield evidence owner / sole Editor controller; shared metadata/source allocation remains Themes",
+      "currentEvidence": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/SHARED_READINESS_GATE.json"
+    },
+    {
+      "id": "PF-DEP-COUNT",
+      "owner": "Circuit 01a164ba-a97f-7d80-9430-57924218664b via allocator",
+      "status": "SHARED_NATIVE_FACETS_PASS; PLAYFIELD_DISCOVERY_UI_REQUIRED",
+      "request": "Consume current Runtime07/qualified210 prerequisite evidence, then execute only the remaining theme-specific requirements in currentRuntime07QueueSubmission. Do not repeat old shared repairs or adopt expired fixtures.",
+      "baseRecords": [
+        {
+          "path": "docs/implementation/niche-theme-programme/collection-count-native/native-runs/02/root-qualification.json",
+          "sha256": "b99237b975a1fc7cf82ba81b6e508af7751f086d80dcef784e5563afcbfe7d1a"
+        }
+      ],
+      "duplicateImplementation": false,
+      "retainedOriginalStatus": "NATIVE_QUALIFIED_BROWSER_RETEST_PENDING",
+      "retainedOriginalRequest": "Include qualified count02 exact inputs in candidate and complete common normal browser retest. Reference native proof rather than rerunning it unchanged.",
+      "retainedOriginalOwner": "Circuit 01a164ba-a97f-7d80-9430-57924218664b via allocator",
+      "currentOwner": "Playfield evidence owner / sole Editor controller; shared metadata/source allocation remains Themes",
+      "currentEvidence": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/SHARED_READINESS_GATE.json"
+    },
+    {
+      "id": "PF-DEP-EDITOR",
+      "owner": "Existing allocated Editor/shared-preview owner via allocator",
+      "status": "SAVED_PLAYFIELD_LOCAL_EDITOR_SUBCHECKS_PARTIAL; REMAINING_EXISTING_MATRIX_REQUIRED",
+      "request": "Consume current Runtime07/qualified210 prerequisite evidence, then execute only the remaining theme-specific requirements in currentRuntime07QueueSubmission. Do not repeat old shared repairs or adopt expired fixtures.",
+      "baseRecords": [
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-kindred-finite-nonorder-boundary.json",
+          "sha256": "1d70a3cf27f72c9b53dcd8028707c59ad657b42d35eae5f69026d35f5cf1bc70"
+        }
+      ],
+      "duplicateImplementation": false,
+      "retainedOriginalStatus": "AWAITING_SHARED_QUALIFIED_PREVIEW",
+      "retainedOriginalRequest": "Resolve existing Kindred Tablet failure, admit actual controls/preview context and pass common smoke before Playfield. Preserve saved failure; no independent editor fork.",
+      "retainedOriginalOwner": "Existing allocated Editor/shared-preview owner via allocator",
+      "currentOwner": "Playfield evidence owner / sole Editor controller; shared metadata/source allocation remains Themes",
+      "currentEvidence": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/SHARED_READINESS_GATE.json"
+    },
+    {
+      "id": "PF-CAP-001",
+      "owner": "Playfield proposal owner; shared apply/catalogue only after allocator grant",
+      "status": "SOURCE_FIXED202_INCLUDED210; CURRENT_UI_RETEST_REQUIRED",
+      "request": "Consume current Runtime07/qualified210 prerequisite evidence, then execute only the remaining theme-specific requirements in currentRuntime07QueueSubmission. Do not repeat old shared repairs or adopt expired fixtures.",
+      "baseFiles": [
+        {
+          "path": "packages/theme-engine/src/playfield-theme-v201.ts",
+          "sha256": "f2d428503df3630bcb79141488d109e10284412a2a523fa8ad77343aa47ae132"
+        },
+        {
+          "path": "packages/theme-engine/src/playfield-theme.ts",
+          "sha256": "00493cb361c8fc796941524d9673ee4c1bfa3a12785017e2397e408b924edb63"
+        }
+      ],
+      "proposal": "PRIVATE_PROPOSAL.json",
+      "preserve": [
+        "Frozen 2.0.0 source",
+        "M1 visuals",
+        "All original accepted/proposal/archive artifacts",
+        "Existing shared order presentation"
+      ],
+      "dependencies": [
+        "Catalogue owner coordinates new epoch",
+        "No writer currently held"
+      ],
+      "retainedOriginalStatus": "SOURCE_GAP_PRIVATE_MINIMAL_PROPOSAL_READY",
+      "retainedOriginalRequest": "Allocate exact append-only 2.0.1 subtitle connection and focused tests/new artifact qualification; private proposal remains unapplied.",
+      "retainedOriginalOwner": "Playfield proposal owner; shared apply/catalogue only after allocator grant",
+      "currentOwner": "Playfield evidence owner / sole Editor controller; shared metadata/source allocation remains Themes",
+      "currentEvidence": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/SHARED_READINESS_GATE.json"
+    },
+    {
+      "id": "PF-CAP-002",
+      "owner": "Canonical theme section/order-presentation owner via allocator",
+      "status": "SOURCE_CONFIGURED_HEADING_INCLUDED210; CURRENT_UI_RETEST_REQUIRED",
+      "request": "Consume current Runtime07/qualified210 prerequisite evidence, then execute only the remaining theme-specific requirements in currentRuntime07QueueSubmission. Do not repeat old shared repairs or adopt expired fixtures.",
+      "baseFiles": [
+        {
+          "path": "packages/theme-engine/src/theme-bundle.ts",
+          "sha256": "cdbad4b28277431a3ab06e56ed0ce16539e04837bb107f5f951a3df39a92ed76"
+        },
+        {
+          "path": "packages/theme-engine/src/niche-order-presentation.ts",
+          "sha256": "6c5f89356bab085cc8a3a359c5caad4503dc8442176df0b8a1558b849d651ac3"
+        }
+      ],
+      "artifactPointer": "/document/liquidBundle/sections/customer-order-detail",
+      "dependencies": [
+        "Shared source allocation",
+        "Current editor schema/control semantics"
+      ],
+      "privateDuplicateImplementation": false,
+      "retainedOriginalStatus": "DECLARED_HEADING_HAS_NO_LIQUID_OUTPUT",
+      "retainedOriginalRequest": "Reconcile customer-order-detail.heading descriptor and supported presentation at canonical owner. Preserve order number/status/facts and identity enforcement; prove field reaches output or explicitly correct unsupported promise under the existing contract.",
+      "retainedOriginalOwner": "Canonical theme section/order-presentation owner via allocator",
+      "currentOwner": "Playfield evidence owner / sole Editor controller; shared metadata/source allocation remains Themes",
+      "currentEvidence": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/SHARED_READINESS_GATE.json"
+    },
+    {
+      "id": "PF-CAP-003",
+      "owner": "Canonical block/editor owner via allocator",
+      "status": "SUPPORTED_BADGE_ATTACHMENT_RAW_LABEL_BINDING_PASS; BROADER_LIFECYCLE_PARTIAL",
+      "request": "Consume current Runtime07/qualified210 prerequisite evidence, then execute only the remaining theme-specific requirements in currentRuntime07QueueSubmission. Do not repeat old shared repairs or adopt expired fixtures.",
+      "baseFiles": [
+        {
+          "path": "apps/merchant/web/src/components/theme-editor/SectionTreePanel.tsx",
+          "sha256": "fa4e30236d9f00af2276bcc0ed7c75a6e010923035bc678770ac74288e8ea0c5"
+        },
+        {
+          "path": "packages/theme-engine/src/theme-bundle.ts",
+          "sha256": "cdbad4b28277431a3ab06e56ed0ce16539e04837bb107f5f951a3df39a92ed76"
+        }
+      ],
+      "artifactPointer": "/document/liquidBundle/blocks/badge",
+      "dependencies": [
+        "Actual supported palette/adapter readback"
+      ],
+      "retainedOriginalStatus": "BADGE_ATTACHMENT_PATH_UNPROVEN",
+      "retainedOriginalRequest": "Demonstrate supported standalone badge add/attachment path for declared badge.label or specify exact canonical owner correction. Do not invent a block type, remove security boundaries or declare generic N/A.",
+      "retainedOriginalOwner": "Canonical block/editor owner via allocator",
+      "currentOwner": "Playfield evidence owner / sole Editor controller; shared metadata/source allocation remains Themes",
+      "currentEvidence": {
+        "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/PLAYFIELD_LOCAL_EDITOR_CYCLE_RESUME02.json",
+        "sha256": "4e4383302da574b7b21d230b7d4431e12b675a57790a593c04e725a989641878",
+        "bytes": 8778
+      },
+      "remaining": "Grandchild/depth/guards, private preview, inline contexts and remaining recovery/field obligations. Do not repeat demonstrated subchecks."
+    },
+    {
+      "id": "PF-DEP-PROVIDER",
+      "owner": "Programme/provider authorized owner",
+      "status": "OLD_CALLBACK_EXPIRED; FRESH_ROOT_ADMISSION_REQUIRED; OWN_PLAYFIELD_PURCHASE_NOT_RUN",
+      "request": "Consume current Runtime07/qualified210 prerequisite evidence, then execute only the remaining theme-specific requirements in currentRuntime07QueueSubmission. Do not repeat old shared repairs or adopt expired fixtures.",
+      "baseFiles": [],
+      "dependencies": [
+        "Current provider account verification",
+        "Secure existing adapter configuration",
+        "Explicit provider execution allocation"
+      ],
+      "secretsInEvidence": false,
+      "retainedOriginalStatus": "PREREQUISITES_NOT_ESTABLISHED",
+      "retainedOriginalRequest": "Securely establish authorized Razorpay TEST account/method/capture capability, provision keys/webhook secret outside chat/Git, bind owned accepted public HTTPS test webhook ingress and shared adversarial cohort. Allocate actual per-theme Playfield browser purchase.",
+      "retainedOriginalOwner": "Programme/provider authorized owner",
+      "currentOwner": "Playfield evidence owner / sole Editor controller; shared metadata/source allocation remains Themes",
+      "currentEvidence": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/SHARED_READINESS_GATE.json"
+    },
+    {
+      "id": "PF-DEP-PERF",
+      "owner": "Existing programme quality owner",
+      "status": "PROPOSAL_BUDGET_EMPTY",
+      "request": "Bind current approved readiness/interaction request/byte budgets and measurement workload. Do not invent a performance PASS threshold.",
+      "artifactPointer": "/persistence/rendererManifest/performance_budget",
+      "dependencies": [
+        "Current compiled candidate and stated workload"
+      ]
+    }
+  ],
+  "outgoingMessagesSent": false,
+  "retainedPriorRequests": {
+    "path": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/runtime07-reconciliation-20261025-01/before/SHARED_REQUESTS.json",
+    "sha256": "435caf863a401fe2aeabd975ea8bc423cb6e91e95636a76c9115759670891a78",
+    "bytes": 8715
+  },
+  "currentRuntime07QueueSubmission": {
+    "id": "PF-R07-PURCHASE-FIRST",
+    "recordedAt": "2026-10-24T20:08:44.630454+00:00",
+    "status": "SAVED_EDITOR_CYCLE_RECONCILED; HELD_FOR_QUALIFIED_PRESERVED_RECOVERY",
+    "sharedQueue": "docs/implementation/niche-theme-programme/capture-schedule.json#/buyerQueue/theme=Playfield",
+    "queuePosition": 10,
+    "allocator": "01a164a4-a342-76d3-ab33-65e021ed57db",
+    "controller": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+    "runtime": {
+      "runId": "49ada80bc494",
+      "candidate": "/private/tmp/letbuyy-shared-completion-20261024-06",
+      "runnerPid": 54685,
+      "identityOrigin": "http://accounts.threadline-49ada80bc494.localhost:64593",
+      "merchantOrigin": "http://admin.threadline-49ada80bc494.localhost:64594",
+      "commerceOrigin": "http://syn-threadline-ui-ae3f0477.localhost:64595",
+      "checkoutOrigin": "https://checkout.localhost:64597",
+      "apiOrigin": "http://127.0.0.1:64598",
+      "site": {
+        "siteId": "02049de4-41c3-4b10-b5b2-a60a6b5e82bf",
+        "locationId": "6e4baabc-b0c7-46ce-8be0-98395d9ef30c",
+        "subdomain": "syn-threadline-ui-ae3f0477",
+        "tag": "threadline-ui"
+      },
+      "sharedGate": {
+        "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/SHARED_READINESS_GATE.json",
+        "sha256": "4ade007d9b12f9694f73c540bc331c404f7474c01a0934885d38cb8895c66ffb",
+        "bytes": 4458
+      },
+      "sourceSeal": {
+        "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/source-runtime-admission.json",
+        "sha256": "60a841b2282aa75b9244586203b784ba7f90c46c7ab11ea0e921c16318ea3071",
+        "bytes": 609
+      },
+      "readyReceipt": {
+        "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/RUNTIME_READY_REDACTED.json",
+        "sha256": "135ec6e3129b2eb1fe8e4e0364f785586ab527be780ce376bc0a113e27875bf3",
+        "bytes": 1135
+      },
+      "publicReceiverExpiresAt": "2026-10-24T22:20:00+00:00",
+      "themeController": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+      "themeSliceLease": null,
+      "queuePosition": 10,
+      "providerSecretsReadHere": false,
+      "independentRuntimeProbeHere": false,
+      "initialIntendedThemeController": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+      "availability": "PRESERVATION_MAINTENANCE_REQUIRES_QUALIFIED_RECOVERY",
+      "oldOriginsRequireQualifiedRecovery": true
+    },
+    "artifact": {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/child-customization-integration01/customization210.up.proposal.sql",
+      "sha256": "2266fe0f95b7fcb1364dfded188b318a311d91c7431c67af7c0c78d3707cfa29",
+      "bytes": 7051832,
+      "embeddedJsonDelimiter": "$customization210$",
+      "arrayIndex": 7,
+      "bundlePointer": "/document/liquidBundle",
+      "canonicalBundleSha256": "c720f1d47f00195932049753eff978ac268926834ebe514c785dbe79578b467e",
+      "version": "2.1.0",
+      "version_number": 5,
+      "slug": "letbuyy-bloom",
+      "libraryIdentityFromQualifiedDistribution": "7b669c70-0000-4000-8000-000000000008",
+      "runtimeInstalledInstanceReadback": {
+        "siteId": "02049de4-41c3-4b10-b5b2-a60a6b5e82bf",
+        "instanceId": "8ea2f23b-ce43-4844-b1e2-34e160c089fd",
+        "packageId": "7c7de805-fea8-4961-9548-1701cd6d8825",
+        "packageVersionId": "872503f4-2734-4a46-b982-843c4e391394",
+        "draftId": "8b0e2977-cd6b-443d-8c02-74f210652303",
+        "draftVersion": 17,
+        "draftManifestSha256": "777603760fd718f490d26870fc120f1a2f736954bb4fa9498657031f483ac277",
+        "releaseId": "1a53db11-eda2-45db-8ba7-077fac56cdfa",
+        "releaseSourceDraftVersion": 15,
+        "releaseSnapshotSha256": "777603760fd718f490d26870fc120f1a2f736954bb4fa9498657031f483ac277",
+        "siteCurrentTheme": {
+          "slug": "letbuyy-bloom",
+          "releaseId": "1a53db11-eda2-45db-8ba7-077fac56cdfa"
+        },
+        "readbackReceipt": {
+          "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/PLAYFIELD_EDITOR_BINDINGS_CLEAN_FINAL.json",
+          "sha256": "b1bcb0aec9da719cb5b9d2d59632c3c73b9141c3f1e7caaf3ca78387c9ce9210",
+          "bytes": 3964
+        },
+        "scope": "Retained canonical saved-cycle readback; not fresh post-recovery health or product/variant proof."
+      },
+      "qualification": "Existing admitted immutable distribution, parsed without executing SQL or builders."
+    },
+    "deadline": null,
+    "priorityRequest": "Controller may batch actual theme Test purchases first within the existing HTTPS window; no queue jump or exposure extension assumed.",
+    "inputs": {
+      "existingToysPlan": "docs/implementation/niche-themes-2026-10-23/playfield/installed-fixture-preparation/toys-fixture-proposal.json",
+      "existingPrimaryProductOnly": true,
+      "productId": "c73ce017-bf8c-420d-9d92-9a3980df6d37",
+      "productVersion": null,
+      "variantIds": {
+        "Inherited": null,
+        "Unknown facts": null,
+        "Paper": null
+      },
+      "collectionId": null,
+      "shippingRateId": null,
+      "cartIdAndVersion": null,
+      "acceptedFacts": null,
+      "bindingRule": "Controller fills only from current normal canonical readbacks; do not reuse9cd/936 IDs or manufacture snapshots.",
+      "missingEditionSetupRule": "If current canonical readback lacks the required3 Editions, request the sole fixture owner’s approved normal merchant setup on the SAME existing toys product, preserving any existing variantUUIDs and consumed stock. Read back acknowledged bindings before purchase; no second primary product, directSQL setup or invented IDs.",
+      "observedPublicCatalogue": {
+        "themeId": "7b669c70-0000-4000-8000-000000000008",
+        "slug": "letbuyy-bloom",
+        "version": "2.1.0",
+        "category": "toys",
+        "evidence": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/runtime07-reconciliation-20261025-01/PUBLIC_CATALOGUE_READ02.json",
+        "installedInstanceId": "8ea2f23b-ce43-4844-b1e2-34e160c089fd",
+        "productAndVariantBindingsStillRequireNormalControllerReadback": true
+      },
+      "productIdProvenance": {
+        "recordedAt": "2026-10-25T00:03:42.407857+00:00",
+        "classification": "RETAINED_RUNTIME07_PUBLIC_UI_BINDING_NOT_RECOVERED_CANONICAL_READBACK",
+        "runId": "49ada80bc494",
+        "source": {
+          "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/dewdrop-published-home.ax.txt",
+          "sha256": "1397830859e55cd44e8953a4c9381a7e9cea282c230203c8d84397417825324f",
+          "bytes": 9795
+        },
+        "observedProductId": "c73ce017-bf8c-420d-9d92-9a3980df6d37",
+        "observedRelativeBuyerPath": "/product/c73ce017-bf8c-420d-9d92-9a3980df6d37",
+        "observedTitle": "Playfield lifecycle activity kit",
+        "observedDisplayPriceINR": 480,
+        "observationContext": "Normal public product card captured under Dewdrop presentation in the same Runtime07 synthetic site. This supplies product identity/title/display price only, not Playfield rendered-facts or stock proof.",
+        "siteFromLastAdmission": {
+          "siteId": "02049de4-41c3-4b10-b5b2-a60a6b5e82bf",
+          "locationId": "6e4baabc-b0c7-46ce-8be0-98395d9ef30c",
+          "subdomain": "syn-threadline-ui-ae3f0477",
+          "tag": "threadline-ui"
+        },
+        "libraryThemeFromPriorPublic200": {
+          "id": "7b669c70-0000-4000-8000-000000000008",
+          "slug": "letbuyy-bloom",
+          "version": "2.1.0",
+          "source": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/runtime07-reconciliation-20261025-01/PUBLIC_CATALOGUE_READ02.json"
+        },
+        "requiredPostRecoveryReadbacks": {
+          "productVersion": null,
+          "variantIds": {
+            "Inherited": null,
+            "Unknown facts": null,
+            "Paper": null
+          },
+          "actualRemainingVariantStock": null,
+          "actualRemainingProductStock": null,
+          "collectionId": null,
+          "shippingRateId": null,
+          "installedInstanceId": null,
+          "draftRevision": null,
+          "releaseId": null,
+          "cartIdAndVersion": null,
+          "orderId": null
+        },
+        "bindingRules": [
+          "Find this actual retained UUID after recovery; do not recreate/reseed a replacement product if it is absent. Escalate the recovery proof to the sole owner.",
+          "Bind each Edition UUID from acknowledged canonical readback and option values, never SKU/index/title identity inference.",
+          "Retained public display price is not a current checkout quote. All prices/stock/versions must be reread.",
+          "Do not open earlier origins or signed checkout URLs before fresh coordinator recovery admission."
+        ]
+      },
+      "actualRemainingStock": null,
+      "stockExpectations": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/resume02-runtime07-recovery-20261025-01/FACTS_AND_STOCK_EXPECTATIONS.json"
+    },
+    "purchaseFirstSteps": [
+      {
+        "ids": [
+          "PF-I01"
+        ],
+        "action": "Read current site/product/version, all3 Edition durable IDs/options/resolved facts/stock, collection, shipping and installed210 instance/release. Bind canonical create/edit schema; keep product8 versus edition4/2/3 as recipe expectations, never actual stock guesses.",
+        "expected": "One actual existing toys product; current immutable210 package digest and real durable bindings; no second primary product."
+      },
+      {
+        "ids": [
+          "PF-I02"
+        ],
+        "action": "Normal current210 activation in owned theme context, real manifest/preview/public output; record existing draft/release before changing. The full A/B seven-check/recovery clause remains required after purchase if batching.",
+        "expected": "Actual Playfield210 presentation and intended toys PDP; no prior theme/cart reused implicitly; component evidence only until full case closes."
+      },
+      {
+        "ids": [
+          "PF-I05"
+        ],
+        "action": "Inherited -> Unknown facts -> Paper -> Inherited; exact selected-ID URL/full reload/back/forward. Read all current facts, no prior common age/warning/content/dimension/material leakage.",
+        "expected": "Unknown materials inherit Wood beforePF-I06; no unknown warning becomes safety certification; actual selected UUID and server price."
+      },
+      {
+        "ids": [
+          "PF-X-RAZORPAY-THEME",
+          "PF-I11"
+        ],
+        "action": "Buy exactly1 available Inherited edition with blue finish through normal canonical product/cart/reload/quote/trusted checkout -> actual Razorpay TEST -> provider-created popup -> Test Success. Preserve this real blue order for later history; separate active blue cart forPF-I11 is prepared later, before the blue->green edit.",
+        "expected": "Current intended toy/variant/cart; actual server amounts (500INR only if480+20+0 confirmed), real authorized/captured signature-valid callbacks, one paid/confirmed local order, one balanced capture ledger, buyer+merchant views, exact stock/effect readbacks. Existing-buyer SSO may support this purchase but does not close new signup."
+      }
+    ],
+    "remainingOrderedSlices": [
+      {
+        "ids": [
+          "PF-I02",
+          "PF-I03",
+          "PF-I04",
+          "PF-I06"
+        ],
+        "action": "Finish A/B save/reload/preview/publish/rollback; canonical age/interest/query/empty recovery; normal Unknown materials clear Save/readback/reopen. Keep every original clause."
+      },
+      {
+        "ids": [
+          "PF-I07",
+          "PF-I08",
+          "PF-I09",
+          "PF-I10"
+        ],
+        "action": "Two actual edition lines/reload; actual overstock and later Paper0 with named restoration; normal local COD and identical-key/lost-reply exactly-once effects under approved observer scope."
+      },
+      {
+        "ids": [
+          "PF-I11",
+          "PF-I12",
+          "PF-I13"
+        ],
+        "action": "Keep real old blue order plus separately acknowledged active blue cart, then same-UUID blue->green edit omitting untouched stock. Submit old accepted cart: actual CART_FACTS_CHANGED plus no forbidden effects. Reread/reaccept, create new green order, compare old/new buyer+merchant immutable histories."
+      },
+      {
+        "ids": [
+          "PF-I14"
+        ],
+        "action": "Version conflict/invalid facts/no-session/actual foreign positive control/lost-save original-intent recovery. Use only allocated canonical observation/fault controls; preserve failures."
+      },
+      {
+        "ids": [
+          "PF-X-IDENTITY-NEW",
+          "PF-X-IDENTITY-STORE",
+          "PF-X-IDENTITY-DENIAL"
+        ],
+        "action": "Normal new synthetic signup/local verification/signin/consent and supported customer profile/address/logout/recovery and cross-realm/site/buyer denial; existing fixture login is separate."
+      },
+      {
+        "ids": [
+          "PF-B-standalone-badge",
+          "PF-X-210-BADGE-LIFECYCLE",
+          "PF-X-210-CHILD-banner-carousel-slide",
+          "PF-X-210-CHILD-brand-marquee-brand",
+          "PF-X-210-CHILD-experience-timeline-experience",
+          "PF-X-210-CHILD-faq-accordion-faq-item",
+          "PF-X-210-CHILD-footer-link",
+          "PF-X-210-CHILD-header-link",
+          "PF-X-210-CHILD-portfolio-grid-project",
+          "PF-X-210-CHILD-services-grid-service",
+          "PF-X-210-CHILD-skills-section-skill",
+          "PF-X-210-CHILD-testimonials-testimonial"
+        ],
+        "action": "Full declared field/module/resource matrix in existingCOVERAGE, including root/inline/nested add/edit/reorder/hide/save/reload/preview/publish/remove/readd and recovery, source-backed limits/security and actual responsive/keyboard/locale/performance checks."
+      }
+    ],
+    "evidenceAndEffects": [
+      "Sanitized canonical response/status/code/requestId and durable versions before/after each command",
+      "Actual order/inventory/payment/ledger/outbox effects scoped to the owned intent; telemetry or legitimate callbacks must not be mistaken for prohibited business effects",
+      "Screenshots and exact package/source/runtime identity per result; retain failed attempts",
+      "No browser-result/session injection, secret read, direct unallocated SQL/provider operation or fake snapshot"
+    ],
+    "preserve": [
+      "All frozen200/201/M1 and existing accepted/archive evidence",
+      "All variants UUIDs/options/consumed stock and old orders",
+      "Other themes shared state and existing user9001/Marketplace9015/9022 apps/drafts/data"
+    ],
+    "certification": {
+      "LOCAL_E2E_VERIFIED": false,
+      "RAZORPAY_TEST_VERIFIED": false,
+      "REVIEW_ACCEPTED": false,
+      "FULL_THEME_CERTIFIED": false,
+      "PRODUCTION_DEPLOYED": "NOT_REQUESTED"
+    },
+    "initialIntendedController": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+    "temporaryControllerHandoff": {
+      "recordedAt": "2026-10-24T20:25:23.733274+00:00",
+      "runId": "49ada80bc494",
+      "currentAuthoritativeControl": {
+        "owner": "01a16ce5-e5ba-7191-ab2c-a1b76947d2b5",
+        "status": "TEMPORARY_ROOT_CONTROLLER_DIRECT_HUMAN_AUTHORIZATION",
+        "runId": "49ada80bc494",
+        "candidate": "/private/tmp/letbuyy-shared-completion-20261024-06",
+        "reason": "Editor sender-context automatic approval rejected fresh storefront under superseded pause; Editor instructed browser-idle. Root will try same ordinary UI under actual direct human resume; approval controls unchanged."
+      },
+      "sharedReview": {
+        "status": "ACCEPT_SHARED_GATES_FOR_CONTROLLED_THEME_EXECUTION_WITH_FOUR_THEME_HEADING_DEFECTS",
+        "reviewPath": "docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/INDEPENDENT_SHARED_GATE_REVIEW.json",
+        "reviewSha256": "430f22509661fa546d8fdb6edfa843eb363325ffa0b9f74643afd10250ff31a1",
+        "acceptedSharedGates": 10,
+        "fullThemeCertificatesGranted": 0
+      },
+      "editorHandoffEvidence": {
+        "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/CURRENT_BROWSER_HANDOFF.json",
+        "sha256": "53ab05bdbf2a918f3c1ee0b2206e8c7b07e740c126ba006dc70fa98b514fae60"
+      },
+      "reason": "Editor sender-context approval review rejected storefront action under superseded pause. Current programme record transfers ordinary buyer UI temporarily to the coordinator; no approval control changed and Playfield drives no browser.",
+      "queuePositionUnchanged": 10,
+      "noOutgoingMessageAuthorizationAssumed": true,
+      "nextAction": "Current sole controller consumes existing Playfield SHARED_REQUESTS purchase-first slice. Metadataowner needs exact canonical correction lease; no Main/DB mutation by Playfield."
+    },
+    "latestAuthority": "docs/implementation/niche-theme-programme/completion-2026-10-24/HUMAN_RESUME_20261025_02.json",
+    "latestRecoveryRecipe": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/resume02-runtime07-recovery-20261025-01/UI_ONLY_RECIPE.json",
+    "historicalProviderDeadline": "2026-10-24T22:20:00+00:00",
+    "currentProviderAdmission": "REQUIRED; NO_CURRENT_CALLBACK_LEASE; ROOT_ONLY",
+    "savedEditorCycle": {
+      "matrix": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/COVERAGE.json",
+      "pointer": "/editorCycleReconciliation",
+      "receipt": {
+        "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/PLAYFIELD_LOCAL_EDITOR_CYCLE_RESUME02.json",
+        "sha256": "4e4383302da574b7b21d230b7d4431e12b675a57790a593c04e725a989641878",
+        "bytes": 8778
+      },
+      "wholeOriginalCasesClosed": 0,
+      "partialOriginalCases": [
+        "PF-I01",
+        "PF-I02"
+      ]
+    },
+    "currentThemeBindings": {
+      "siteId": "02049de4-41c3-4b10-b5b2-a60a6b5e82bf",
+      "instanceId": "8ea2f23b-ce43-4844-b1e2-34e160c089fd",
+      "packageId": "7c7de805-fea8-4961-9548-1701cd6d8825",
+      "packageVersionId": "872503f4-2734-4a46-b982-843c4e391394",
+      "draftId": "8b0e2977-cd6b-443d-8c02-74f210652303",
+      "draftVersion": 17,
+      "draftManifestSha256": "777603760fd718f490d26870fc120f1a2f736954bb4fa9498657031f483ac277",
+      "releaseId": "1a53db11-eda2-45db-8ba7-077fac56cdfa",
+      "releaseSourceDraftVersion": 15,
+      "releaseSnapshotSha256": "777603760fd718f490d26870fc120f1a2f736954bb4fa9498657031f483ac277",
+      "siteCurrentTheme": {
+        "slug": "letbuyy-bloom",
+        "releaseId": "1a53db11-eda2-45db-8ba7-077fac56cdfa"
+      },
+      "readbackReceipt": {
+        "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/PLAYFIELD_EDITOR_BINDINGS_CLEAN_FINAL.json",
+        "sha256": "b1bcb0aec9da719cb5b9d2d59632c3c73b9141c3f1e7caaf3ca78387c9ce9210",
+        "bytes": 3964
+      },
+      "scope": "Retained canonical saved-cycle readback; not fresh post-recovery health or product/variant proof."
+    },
+    "executionHold": {
+      "recordedAt": "2026-10-25T01:42:09.259082+00:00",
+      "status": "PRESERVATION_MAINTENANCE_REQUIRES_QUALIFIED_RECOVERY",
+      "runId": "49ada80bc494",
+      "receipt": {
+        "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/PRESERVATION_STOP_EXECUTION_20261025_01.json",
+        "sha256": "996da731d7150632928bb0c7d5f9214906f62c4f2e063a6e9e9900067710cdaf",
+        "bytes": 1313
+      },
+      "finalStoppedBackupReceipt": {
+        "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/FINAL_DATA_BACKUP_FINAL_STOPPED_20261025_01.json",
+        "sha256": "e62d01583a374b090678ffe75ab2295a9609bb5d0513ed9e7bf1e629feffe4b1",
+        "bytes": 1892
+      },
+      "savedFence": {
+        "draftVersion": 17,
+        "releaseSourceDraftVersion": 15,
+        "buyerCartCount": 0,
+        "unsavedChanges": false,
+        "paymentInFlight": false
+      },
+      "recoveryOwner": "01a16ce5-e5ba-7191-ab2c-a1b76947d2b5",
+      "soleBrowserController": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+      "automaticContinuationAllowed": false,
+      "servingAvailable": false,
+      "restoreVerified": false,
+      "projectPausedByMaintenance": false,
+      "restriction": "No browser/API/DB/provider tests, reset/reseed, SIGCONT, adoption or alternate stack. Root qualifies preserved recovery; Editor retains the sole browser queue. Separate native cohort approvals do not admit runtime07 recovery."
+    },
+    "nextExecutableOriginalCase": {
+      "id": "PF-I01",
+      "status": "HELD_FOR_QUALIFIED_PRESERVED_RECOVERY_AND_EDITOR_ALLOCATION",
+      "action": "Next original case after qualified preserved recovery and Editor allocation: PF-I01. Read SAME retained toys product/version, all3 durable Edition IDs/facts/options/actual stock, collection and shipping; validate bound canonical CreateProductSchema and preserved theme binding. No second product, stock inference or old9cd/936 binding.",
+      "noDemonstratedEditorSubcheckReexecution": true
+    }
+  },
+  "runtime07SupersedesOldDependencyStatuses": {
+    "PF-DEP-RUNTIME": "SHARED_GATE_READY; SINGLE_EDITOR_THEME_SLOT_PENDING",
+    "PF-DEP-CATALOG": "CURRENT210_ADMITTED; DO_NOT_RERUN_OLD394_QUALIFIERS",
+    "PF-DEP-CHECKOUT": "SHARED_CURRENT_BACKEND_AND_REAL_PROVIDER_SMOKE_PASS; OWN_THEME_CASES_REQUIRED",
+    "PF-DEP-COUNT": "SHARED_NATIVE_FACETS_PASS; PLAYFIELD_DISCOVERY_UI_REQUIRED",
+    "PF-DEP-EDITOR": "SHARED210_SOURCE_AND_CANARY_READY; ALL_PLAYFIELD_CONTROLS_REQUIRED",
+    "PF-DEP-PROVIDER": "SHARED_TEST_BINDING_AND_HMAC_CALLBACKS_PASS_UNTIL_CURRENT_EXPIRY; OWN_PURCHASE_REQUIRED",
+    "PF-CAP-001": "SOURCE_FIXED202_INCLUDED210; CURRENT_UI_RETEST_REQUIRED",
+    "PF-CAP-002": "SOURCE_CONFIGURED_HEADING_INCLUDED210; CURRENT_UI_RETEST_REQUIRED",
+    "PF-CAP-003": "SOURCE_TRUST_BADGES_HOST_AND_CHILD_OUTLETS_INCLUDED210; CURRENT_UI_LIFECYCLE_REQUIRED"
+  },
+  "runtime07MetadataRequest": {
+    "id": "PF-META-001",
+    "owner": "Themes shared metadata allocator",
+    "status": "ACTUAL_RUNTIME07_API_DESCRIPTION_MISMATCH_CONFIRMED_CORRECTION_LEASE_REQUIRED",
+    "sourceCause": "firstPartyThemeListings uses experience.description; Bloom legacy preset is pet-specific. Accepted210 promotion updates themes.name/category/version but omits themes.description.",
+    "currentBundleDescriptionAlreadyCorrect": "An activity-first toy storefront for adults choosing by age, interest, contents and measured product facts.",
+    "requestedCorrection": "Use existing canonical versioned/catalogue metadata owner to reconcile only the current Playfield listing description to its already accepted package description. Keep legacy Bloom/default and frozen200/201/210 captures, package checksums, saved instances, UUIDs and all history unchanged. Bind actual supported metadata command/CAS and exact lease before Main or DB writes; do not invent an endpoint, DTO or migration number.",
+    "sourceLocations": [
+      "packages/theme-engine/src/theme-presets.ts:312",
+      "packages/theme-engine/src/first-party-theme-catalog.ts:60",
+      "docs/implementation/niche-theme-programme/completion-2026-10-24/child-customization-integration01/customization210.up.proposal.sql"
+    ],
+    "acceptance": [
+      "Actual current catalog API/UI description is toys/activity-specific",
+      "Immutable capture/payload/source snapshots remain byte-identical",
+      "Old default/200/201 and unrelated catalogue rows unchanged",
+      "Normal version-conflict/replay/private/public permissions preserved"
+    ],
+    "runtimeWritesHere": 0,
+    "currentRuntimeMetadataReadback": "HTTP200_UNAUTHENTICATED_PUBLIC_GET; no browser/auth/cart/DB mutation",
+    "observedCurrentRow": {
+      "id": "7b669c70-0000-4000-8000-000000000008",
+      "slug": "letbuyy-bloom",
+      "name": "Playfield",
+      "version": "2.1.0",
+      "category": "toys",
+      "description": "Warm and playful for pet food, accessories, and veterinary products. Sunny tangerine and leaf green — the colours of a happy pet store.",
+      "is_active": true
+    },
+    "readbackEvidence": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/runtime07-reconciliation-20261025-01/PUBLIC_CATALOGUE_READ02.json",
+    "desiredOneFieldDelta": {
+      "field": "themes.description",
+      "before": "Warm and playful for pet food, accessories, and veterinary products. Sunny tangerine and leaf green — the colours of a happy pet store.",
+      "after": "An activity-first toy storefront for adults choosing by age, interest, contents and measured product facts."
+    },
+    "doNotChange": [
+      "immutable package/version manifests or checksums",
+      "frozen200/201/210 captures",
+      "existing instances/drafts/releases",
+      "legacyBloom pet preset or unknown-industry fallback",
+      "UUIDs/options/stock/carts/orders/ledger",
+      "other themes"
+    ],
+    "postRecoveryReadback": "NOT_RUN; retain actual20:17HTTP200 mismatch and exact correction request, no write or re-observation during recovery."
+  },
+  "retainedRoot210CanaryReview": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/runtime07-reconciliation-20261025-01/HISTORICAL_CANARY_REVIEW.json",
+  "currentSharedReview": {
+    "status": "ACCEPT_SHARED_GATES_FOR_CONTROLLED_THEME_EXECUTION_WITH_FOUR_THEME_HEADING_DEFECTS",
+    "reviewPath": "docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/INDEPENDENT_SHARED_GATE_REVIEW.json",
+    "reviewSha256": "430f22509661fa546d8fdb6edfa843eb363325ffa0b9f74643afd10250ff31a1",
+    "acceptedSharedGates": 10,
+    "fullThemeCertificatesGranted": 0
+  },
+  "latestHumanResume02": {
+    "recordedAt": "2026-10-25T00:03:42.407857+00:00",
+    "authority": "docs/implementation/niche-theme-programme/completion-2026-10-24/HUMAN_RESUME_20261025_02.json",
+    "rootOnlyRecovery": true,
+    "noExtraStackOrProviderWork": true,
+    "packet": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/resume02-runtime07-recovery-20261025-01/UI_ONLY_RECIPE.json"
+  },
+  "savedEditorCycleReconciliation": {
+    "matrix": "docs/implementation/niche-themes-2026-10-23/playfield/completion-2026-10-24/COVERAGE.json",
+    "pointer": "/editorCycleReconciliation",
+    "cycle": {
+      "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/PLAYFIELD_LOCAL_EDITOR_CYCLE_RESUME02.json",
+      "sha256": "4e4383302da574b7b21d230b7d4431e12b675a57790a593c04e725a989641878",
+      "bytes": 8778
+    },
+    "nextCase": "PF-I01",
+    "maintenance": {
+      "recordedAt": "2026-10-25T01:42:09.259082+00:00",
+      "status": "PRESERVATION_MAINTENANCE_REQUIRES_QUALIFIED_RECOVERY",
+      "runId": "49ada80bc494",
+      "receipt": {
+        "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/PRESERVATION_STOP_EXECUTION_20261025_01.json",
+        "sha256": "996da731d7150632928bb0c7d5f9214906f62c4f2e063a6e9e9900067710cdaf",
+        "bytes": 1313
+      },
+      "finalStoppedBackupReceipt": {
+        "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/FINAL_DATA_BACKUP_FINAL_STOPPED_20261025_01.json",
+        "sha256": "e62d01583a374b090678ffe75ab2295a9609bb5d0513ed9e7bf1e629feffe4b1",
+        "bytes": 1892
+      },
+      "savedFence": {
+        "draftVersion": 17,
+        "releaseSourceDraftVersion": 15,
+        "buyerCartCount": 0,
+        "unsavedChanges": false,
+        "paymentInFlight": false
+      },
+      "recoveryOwner": "01a16ce5-e5ba-7191-ab2c-a1b76947d2b5",
+      "soleBrowserController": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+      "automaticContinuationAllowed": false,
+      "servingAvailable": false,
+      "restoreVerified": false,
+      "projectPausedByMaintenance": false,
+      "restriction": "No browser/API/DB/provider tests, reset/reseed, SIGCONT, adoption or alternate stack. Root qualifies preserved recovery; Editor retains the sole browser queue. Separate native cohort approvals do not admit runtime07 recovery."
+    }
+  }
+}

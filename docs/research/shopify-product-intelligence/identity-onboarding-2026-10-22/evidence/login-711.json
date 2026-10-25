@@ -1,0 +1,999 @@
+{
+  "elements": [
+    {
+      "rect": {
+        "height": 1034,
+        "width": 711,
+        "x": 0,
+        "y": 0
+      },
+      "selector": "body",
+      "styles": {
+        "backgroundColor": "rgb(10, 19, 20)",
+        "backgroundImage": "radial-gradient(53.91% 53.91% at 50% 22.36%, rgb(10, 19, 20) 50%, rgb(2, 9, 10) 100%)",
+        "border": "0px none rgb(32, 34, 35)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(32, 34, 35)",
+        "fontFamily": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "20px",
+        "margin": "0px",
+        "maxWidth": "none",
+        "minHeight": "0px",
+        "outline": "rgb(32, 34, 35) none 3px",
+        "outlineOffset": "0px",
+        "padding": "0px"
+      },
+      "text": "Log in\nContinue to Shopify\nEmail\n\nPassword\nContinue with email\nor\n\nSign in with passkey\n\nC",
+      "type": null
+    },
+    {
+      "rect": {
+        "height": 61,
+        "width": 89,
+        "x": 311,
+        "y": 0
+      },
+      "selector": "header",
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(32, 34, 35)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(32, 34, 35)",
+        "fontFamily": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "24px",
+        "lineHeight": "20px",
+        "margin": "0px",
+        "maxWidth": "none",
+        "minHeight": "auto",
+        "outline": "rgb(32, 34, 35) none 3px",
+        "outlineOffset": "0px",
+        "padding": "30px 0px 0px"
+      },
+      "text": "",
+      "type": null
+    },
+    {
+      "rect": {
+        "height": 32,
+        "width": 133.5234375,
+        "x": 157.5,
+        "y": 141
+      },
+      "selector": "h1",
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(48, 48, 48)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(48, 48, 48)",
+        "fontFamily": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "24px",
+        "fontWeight": "700",
+        "gap": "normal",
+        "lineHeight": "32px",
+        "margin": "0px 0px 2px",
+        "maxWidth": "none",
+        "minHeight": "0px",
+        "outline": "rgb(48, 48, 48) none 3px",
+        "outlineOffset": "0px",
+        "padding": "0px"
+      },
+      "text": "Log in",
+      "type": null
+    },
+    {
+      "rect": {
+        "height": 20,
+        "width": 133.5234375,
+        "x": 157.5,
+        "y": 175
+      },
+      "selector": "h3",
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(97, 97, 97)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(97, 97, 97)",
+        "fontFamily": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "14px",
+        "fontWeight": "550",
+        "gap": "normal",
+        "lineHeight": "20px",
+        "margin": "0px",
+        "maxWidth": "none",
+        "minHeight": "0px",
+        "outline": "rgb(97, 97, 97) none 3px",
+        "outlineOffset": "0px",
+        "padding": "0px"
+      },
+      "text": "Continue to Shopify",
+      "type": null
+    },
+    {
+      "rect": {
+        "height": 117.5,
+        "width": 396,
+        "x": 157.5,
+        "y": 219
+      },
+      "selector": "form",
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(32, 34, 35)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(32, 34, 35)",
+        "fontFamily": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "20px",
+        "margin": "0px",
+        "maxWidth": "none",
+        "minHeight": "0px",
+        "outline": "rgb(32, 34, 35) none 3px",
+        "outlineOffset": "0px",
+        "padding": "0px"
+      },
+      "text": "Email\n\nPassword\nContinue with email",
+      "type": null
+    },
+    {
+      "rect": {
+        "height": 0,
+        "width": 396,
+        "x": 157.5,
+        "y": 388.5
+      },
+      "selector": "form",
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(32, 34, 35)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(32, 34, 35)",
+        "fontFamily": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "20px",
+        "margin": "0px",
+        "maxWidth": "none",
+        "minHeight": "0px",
+        "outline": "rgb(32, 34, 35) none 3px",
+        "outlineOffset": "0px",
+        "padding": "0px"
+      },
+      "text": "",
+      "type": null
+    },
+    {
+      "rect": {
+        "height": 20,
+        "width": 396,
+        "x": 157.5,
+        "y": 219
+      },
+      "selector": "label",
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(32, 34, 35)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(32, 34, 35)",
+        "fontFamily": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "20px",
+        "margin": "0px 0px 4px",
+        "maxWidth": "none",
+        "minHeight": "auto",
+        "outline": "rgb(32, 34, 35) none 3px",
+        "outlineOffset": "0px",
+        "padding": "0px"
+      },
+      "text": "Email",
+      "type": null
+    },
+    {
+      "rect": {
+        "height": 20,
+        "width": 220,
+        "x": 491,
+        "y": 1034
+      },
+      "selector": "label",
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(32, 34, 35)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(32, 34, 35)",
+        "fontFamily": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "20px",
+        "margin": "0px 0px 4px",
+        "maxWidth": "none",
+        "minHeight": "auto",
+        "outline": "rgb(32, 34, 35) none 3px",
+        "outlineOffset": "0px",
+        "padding": "0px"
+      },
+      "text": "Password",
+      "type": null
+    },
+    {
+      "rect": {
+        "height": 0,
+        "width": 0,
+        "x": 0,
+        "y": 0
+      },
+      "selector": "input",
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(0, 0, 0)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(0, 0, 0)",
+        "fontFamily": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "24px",
+        "margin": "0px",
+        "maxWidth": "none",
+        "minHeight": "0px",
+        "outline": "rgb(0, 0, 0) none 3px",
+        "outlineOffset": "0px",
+        "padding": "0px"
+      },
+      "text": "",
+      "type": "hidden"
+    },
+    {
+      "rect": {
+        "height": 37.5,
+        "width": 396,
+        "x": 157.5,
+        "y": 243
+      },
+      "selector": "input",
+      "styles": {
+        "backgroundColor": "rgb(243, 243, 243)",
+        "backgroundImage": "none",
+        "border": "1px solid rgb(26, 26, 26)",
+        "borderRadius": "8px",
+        "boxShadow": "none",
+        "color": "rgb(48, 48, 48)",
+        "fontFamily": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "16px",
+        "fontWeight": "450",
+        "gap": "normal",
+        "lineHeight": "normal",
+        "margin": "0px",
+        "maxWidth": "none",
+        "minHeight": "auto",
+        "outline": "rgb(0, 91, 211) solid 2px",
+        "outlineOffset": "1px",
+        "padding": "8px 12px"
+      },
+      "text": "",
+      "type": "email"
+    },
+    {
+      "rect": {
+        "height": 37.5,
+        "width": 220,
+        "x": 491,
+        "y": 1058
+      },
+      "selector": "input",
+      "styles": {
+        "backgroundColor": "rgb(255, 255, 255)",
+        "backgroundImage": "none",
+        "border": "1px solid rgb(26, 26, 26)",
+        "borderRadius": "8px",
+        "boxShadow": "none",
+        "color": "rgb(48, 48, 48)",
+        "fontFamily": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "16px",
+        "fontWeight": "450",
+        "gap": "normal",
+        "lineHeight": "normal",
+        "margin": "0px",
+        "maxWidth": "none",
+        "minHeight": "auto",
+        "outline": "rgb(48, 48, 48) none 3px",
+        "outlineOffset": "0px",
+        "padding": "8px 12px"
+      },
+      "text": "",
+      "type": "password"
+    },
+    {
+      "rect": {
+        "height": 0,
+        "width": 0,
+        "x": 0,
+        "y": 0
+      },
+      "selector": "input",
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(0, 0, 0)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(0, 0, 0)",
+        "fontFamily": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "24px",
+        "margin": "0px",
+        "maxWidth": "none",
+        "minHeight": "0px",
+        "outline": "rgb(0, 0, 0) none 3px",
+        "outlineOffset": "0px",
+        "padding": "0px"
+      },
+      "text": "",
+      "type": "hidden"
+    },
+    {
+      "rect": {
+        "height": 0,
+        "width": 0,
+        "x": 0,
+        "y": 0
+      },
+      "selector": "input",
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(0, 0, 0)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(0, 0, 0)",
+        "fontFamily": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "24px",
+        "margin": "0px",
+        "maxWidth": "none",
+        "minHeight": "0px",
+        "outline": "rgb(0, 0, 0) none 3px",
+        "outlineOffset": "0px",
+        "padding": "0px"
+      },
+      "text": "",
+      "type": "hidden"
+    },
+    {
+      "rect": {
+        "height": 0,
+        "width": 0,
+        "x": 0,
+        "y": 0
+      },
+      "selector": "input",
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(0, 0, 0)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(0, 0, 0)",
+        "fontFamily": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "24px",
+        "margin": "0px",
+        "maxWidth": "none",
+        "minHeight": "0px",
+        "outline": "rgb(0, 0, 0) none 3px",
+        "outlineOffset": "0px",
+        "padding": "0px"
+      },
+      "text": "",
+      "type": "hidden"
+    },
+    {
+      "rect": {
+        "height": 0,
+        "width": 0,
+        "x": 0,
+        "y": 0
+      },
+      "selector": "input",
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(0, 0, 0)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(0, 0, 0)",
+        "fontFamily": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "24px",
+        "margin": "0px",
+        "maxWidth": "none",
+        "minHeight": "0px",
+        "outline": "rgb(0, 0, 0) none 3px",
+        "outlineOffset": "0px",
+        "padding": "0px"
+      },
+      "text": "",
+      "type": "hidden"
+    },
+    {
+      "rect": {
+        "height": 0,
+        "width": 0,
+        "x": 0,
+        "y": 0
+      },
+      "selector": "input",
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(0, 0, 0)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(0, 0, 0)",
+        "fontFamily": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "24px",
+        "margin": "0px",
+        "maxWidth": "none",
+        "minHeight": "0px",
+        "outline": "rgb(0, 0, 0) none 3px",
+        "outlineOffset": "0px",
+        "padding": "0px"
+      },
+      "text": "",
+      "type": "hidden"
+    },
+    {
+      "rect": {
+        "height": 0,
+        "width": 0,
+        "x": 0,
+        "y": 0
+      },
+      "selector": "input",
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(0, 0, 0)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(0, 0, 0)",
+        "fontFamily": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "24px",
+        "margin": "0px",
+        "maxWidth": "none",
+        "minHeight": "0px",
+        "outline": "rgb(0, 0, 0) none 3px",
+        "outlineOffset": "0px",
+        "padding": "0px"
+      },
+      "text": "",
+      "type": "hidden"
+    },
+    {
+      "rect": {
+        "height": 0,
+        "width": 0,
+        "x": 0,
+        "y": 0
+      },
+      "selector": "input",
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(0, 0, 0)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(0, 0, 0)",
+        "fontFamily": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "24px",
+        "margin": "0px",
+        "maxWidth": "none",
+        "minHeight": "0px",
+        "outline": "rgb(0, 0, 0) none 3px",
+        "outlineOffset": "0px",
+        "padding": "0px"
+      },
+      "text": "",
+      "type": "hidden"
+    },
+    {
+      "rect": {
+        "height": 0,
+        "width": 0,
+        "x": 0,
+        "y": 0
+      },
+      "selector": "input",
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(0, 0, 0)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(0, 0, 0)",
+        "fontFamily": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "24px",
+        "margin": "0px",
+        "maxWidth": "none",
+        "minHeight": "0px",
+        "outline": "rgb(0, 0, 0) none 3px",
+        "outlineOffset": "0px",
+        "padding": "0px"
+      },
+      "text": "",
+      "type": "hidden"
+    },
+    {
+      "rect": {
+        "height": 0,
+        "width": 0,
+        "x": 0,
+        "y": 0
+      },
+      "selector": "button",
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(227, 229, 231)",
+        "borderRadius": "8px",
+        "boxShadow": "none",
+        "color": "rgb(227, 229, 231)",
+        "fontFamily": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "14px",
+        "fontWeight": "550",
+        "gap": "normal",
+        "lineHeight": "20px",
+        "margin": "0px",
+        "maxWidth": "none",
+        "minHeight": "28px",
+        "outline": "rgb(227, 229, 231) none 0px",
+        "outlineOffset": "0px",
+        "padding": "6px 12px"
+      },
+      "text": "  ",
+      "type": "button"
+    },
+    {
+      "rect": {
+        "height": 0,
+        "width": 0,
+        "x": 0,
+        "y": 0
+      },
+      "selector": "button",
+      "styles": {
+        "backgroundColor": "rgb(255, 255, 255)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(48, 48, 48)",
+        "borderRadius": "8px",
+        "boxShadow": "rgba(0, 0, 0, 0.05) 0px 1px 0px 0px",
+        "color": "rgb(48, 48, 48)",
+        "fontFamily": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "16px",
+        "fontWeight": "500",
+        "gap": "normal",
+        "lineHeight": "normal",
+        "margin": "8px 0px 0px",
+        "maxWidth": "none",
+        "minHeight": "28px",
+        "outline": "rgb(48, 48, 48) none 3px",
+        "outlineOffset": "0px",
+        "padding": "6px 12px"
+      },
+      "text": "\n        Refresh\n      ",
+      "type": null
+    },
+    {
+      "rect": {
+        "height": 0,
+        "width": 0,
+        "x": 0,
+        "y": 0
+      },
+      "selector": "button",
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(0, 91, 211)",
+        "borderRadius": "8px",
+        "boxShadow": "none",
+        "color": "rgb(0, 91, 211)",
+        "fontFamily": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "13px",
+        "fontWeight": "550",
+        "gap": "normal",
+        "lineHeight": "20px",
+        "margin": "0px",
+        "maxWidth": "none",
+        "minHeight": "0px",
+        "outline": "rgb(0, 91, 211) none 0px",
+        "outlineOffset": "0px",
+        "padding": "0px"
+      },
+      "text": "\n    @.\n  ",
+      "type": "button"
+    },
+    {
+      "rect": {
+        "height": 44,
+        "width": 396,
+        "x": 157.5,
+        "y": 292.5
+      },
+      "selector": "button",
+      "styles": {
+        "backgroundColor": "rgb(11, 19, 20)",
+        "backgroundImage": "none",
+        "border": "0px none rgba(0, 0, 0, 0)",
+        "borderRadius": "8px",
+        "boxShadow": "rgba(26, 26, 26, 0.07) 0px 3px 1px -1px",
+        "color": "rgb(250, 252, 252)",
+        "fontFamily": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "16px",
+        "fontWeight": "500",
+        "gap": "normal",
+        "lineHeight": "normal",
+        "margin": "12px 0px",
+        "maxWidth": "none",
+        "minHeight": "32px",
+        "outline": "rgb(250, 252, 252) none 3px",
+        "outlineOffset": "0px",
+        "padding": "12px 16px"
+      },
+      "text": "Continue with email",
+      "type": "submit"
+    },
+    {
+      "rect": {
+        "height": 41,
+        "width": 396,
+        "x": 157.5,
+        "y": 388.5
+      },
+      "selector": "button",
+      "styles": {
+        "backgroundColor": "rgb(241, 241, 241)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(48, 48, 48)",
+        "borderRadius": "8px",
+        "boxShadow": "none",
+        "color": "rgb(48, 48, 48)",
+        "fontFamily": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "14px",
+        "fontWeight": "500",
+        "gap": "normal",
+        "lineHeight": "normal",
+        "margin": "4px 0px 8px",
+        "maxWidth": "none",
+        "minHeight": "32px",
+        "outline": "rgb(48, 48, 48) none 3px",
+        "outlineOffset": "0px",
+        "padding": "12px 16px"
+      },
+      "text": "Sign in with passkey",
+      "type": "button"
+    },
+    {
+      "rect": {
+        "height": 44,
+        "width": 91.5,
+        "x": 157.5,
+        "y": 437.5
+      },
+      "selector": "a",
+      "styles": {
+        "backgroundColor": "rgb(241, 241, 241)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(48, 48, 48)",
+        "borderRadius": "8px",
+        "boxShadow": "none",
+        "color": "rgb(48, 48, 48)",
+        "fontFamily": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "16px",
+        "fontWeight": "500",
+        "gap": "normal",
+        "lineHeight": "normal",
+        "margin": "0px",
+        "maxWidth": "none",
+        "minHeight": "32px",
+        "outline": "rgb(48, 48, 48) none 3px",
+        "outlineOffset": "0px",
+        "padding": "12px"
+      },
+      "text": "Continue with Google",
+      "type": null
+    },
+    {
+      "rect": {
+        "height": 44,
+        "width": 91.5,
+        "x": 259,
+        "y": 437.5
+      },
+      "selector": "a",
+      "styles": {
+        "backgroundColor": "rgb(241, 241, 241)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(48, 48, 48)",
+        "borderRadius": "8px",
+        "boxShadow": "none",
+        "color": "rgb(48, 48, 48)",
+        "fontFamily": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "16px",
+        "fontWeight": "500",
+        "gap": "normal",
+        "lineHeight": "normal",
+        "margin": "0px",
+        "maxWidth": "none",
+        "minHeight": "32px",
+        "outline": "rgb(48, 48, 48) none 3px",
+        "outlineOffset": "0px",
+        "padding": "12px"
+      },
+      "text": "Continue with Apple",
+      "type": null
+    },
+    {
+      "rect": {
+        "height": 44,
+        "width": 91.5,
+        "x": 360.5,
+        "y": 437.5
+      },
+      "selector": "a",
+      "styles": {
+        "backgroundColor": "rgb(241, 241, 241)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(48, 48, 48)",
+        "borderRadius": "8px",
+        "boxShadow": "none",
+        "color": "rgb(48, 48, 48)",
+        "fontFamily": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "16px",
+        "fontWeight": "500",
+        "gap": "normal",
+        "lineHeight": "normal",
+        "margin": "0px",
+        "maxWidth": "none",
+        "minHeight": "32px",
+        "outline": "rgb(48, 48, 48) none 3px",
+        "outlineOffset": "0px",
+        "padding": "12px"
+      },
+      "text": "Continue with Facebook",
+      "type": null
+    },
+    {
+      "rect": {
+        "height": 44,
+        "width": 91.5,
+        "x": 462,
+        "y": 437.5
+      },
+      "selector": "a",
+      "styles": {
+        "backgroundColor": "rgb(241, 241, 241)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(48, 48, 48)",
+        "borderRadius": "8px",
+        "boxShadow": "none",
+        "color": "rgb(48, 48, 48)",
+        "fontFamily": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "16px",
+        "fontWeight": "500",
+        "gap": "normal",
+        "lineHeight": "normal",
+        "margin": "0px",
+        "maxWidth": "none",
+        "minHeight": "32px",
+        "outline": "rgb(48, 48, 48) none 3px",
+        "outlineOffset": "0px",
+        "padding": "12px"
+      },
+      "text": "Continue with WhatsApp",
+      "type": null
+    },
+    {
+      "rect": {
+        "height": 20,
+        "width": 90.21875,
+        "x": 264.34375,
+        "y": 513.5
+      },
+      "selector": "a",
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(0, 91, 211)",
+        "borderRadius": "8px",
+        "boxShadow": "none",
+        "color": "rgb(0, 91, 211)",
+        "fontFamily": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "13px",
+        "fontWeight": "550",
+        "gap": "normal",
+        "lineHeight": "20px",
+        "margin": "0px",
+        "maxWidth": "none",
+        "minHeight": "0px",
+        "outline": "rgb(0, 91, 211) none 0px",
+        "outlineOffset": "0px",
+        "padding": "0px"
+      },
+      "text": "Get started",
+      "type": null
+    },
+    {
+      "rect": {
+        "height": 14.5,
+        "width": 62.734375,
+        "x": 324.1328125,
+        "y": 954.5
+      },
+      "selector": "a",
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(255, 255, 255)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(255, 255, 255)",
+        "fontFamily": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "12px",
+        "fontWeight": "420",
+        "gap": "normal",
+        "lineHeight": "16px",
+        "margin": "0px",
+        "maxWidth": "none",
+        "minHeight": "0px",
+        "outline": "rgb(255, 255, 255) none 3px",
+        "outlineOffset": "0px",
+        "padding": "0px"
+      },
+      "text": "Need Help?",
+      "type": null
+    },
+    {
+      "rect": {
+        "height": 14.5,
+        "width": 33.5546875,
+        "x": 281.7109375,
+        "y": 986.5
+      },
+      "selector": "a",
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(255, 255, 255)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(255, 255, 255)",
+        "fontFamily": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "12px",
+        "fontWeight": "420",
+        "gap": "normal",
+        "lineHeight": "16px",
+        "margin": "0px",
+        "maxWidth": "none",
+        "minHeight": "0px",
+        "outline": "rgb(255, 255, 255) none 3px",
+        "outlineOffset": "0px",
+        "padding": "0px"
+      },
+      "text": "Terms",
+      "type": null
+    },
+    {
+      "rect": {
+        "height": 14.5,
+        "width": 74.2109375,
+        "x": 341.3828125,
+        "y": 986.5
+      },
+      "selector": "a",
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(255, 255, 255)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(255, 255, 255)",
+        "fontFamily": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "12px",
+        "fontWeight": "420",
+        "gap": "normal",
+        "lineHeight": "16px",
+        "margin": "0px",
+        "maxWidth": "none",
+        "minHeight": "0px",
+        "outline": "rgb(255, 255, 255) none 3px",
+        "outlineOffset": "0px",
+        "padding": "0px"
+      },
+      "text": "Privacy Policy",
+      "type": null
+    },
+    {
+      "rect": {
+        "height": 96,
+        "width": 711,
+        "x": 0,
+        "y": 938
+      },
+      "selector": "footer",
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(32, 34, 35)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(32, 34, 35)",
+        "fontFamily": "ShopifyInter, \"Noto Sans Arabic\", \"Noto Sans Hebrew\", ui-sans-serif, system-ui, sans-serif",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "gap": "16px",
+        "lineHeight": "20px",
+        "margin": "352.5px 0px 0px",
+        "maxWidth": "none",
+        "minHeight": "auto",
+        "outline": "rgb(32, 34, 35) none 3px",
+        "outlineOffset": "0px",
+        "padding": "16px 20px"
+      },
+      "text": "Need Help?\nBy clicking create account, you agree to the Terms and Privacy Policy, and to r",
+      "type": null
+    }
+  ],
+  "viewport": {
+    "dpr": 2,
+    "height": 1034,
+    "width": 711
+  }
+}

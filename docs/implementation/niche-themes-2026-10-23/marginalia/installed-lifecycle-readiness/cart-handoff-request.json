@@ -1,0 +1,33 @@
+{
+  "recordedAt": "2026-10-23T17:13:03.726428+00:00",
+  "classification": "FUTURE_ALLOCATION_COORDINATION_NOT_RUNTIME_AUTHORITY",
+  "ownerReportedBaseline": "Two Pink Clay cart quantity; exact runtime line IDs/variant IDs/stock are not read or assigned here.",
+  "marginaliaRequiredAcceptedLines": [
+    {
+      "binding": "books.en_hardback",
+      "quantity": 1,
+      "unitPriceInr": 590
+    },
+    {
+      "binding": "product.stationery",
+      "quantity": 2,
+      "unitPriceInr": 320
+    }
+  ],
+  "itemSubtotalOracleInr": 1230,
+  "serverCharges": "Use actual server tax/shipping/discount and total; never client-supplied accepted totals.",
+  "requiredHandoff": [
+    "Acknowledged complete existing shared-cart baseline and ownership",
+    "Explicit bounded product/cart/browser allocation and preservation/restoration handling",
+    "No unrelated cart line or inventory consumed in Marginalia order",
+    "Normal UI only; no second fixture/seed/cart system or origin/API bypass"
+  ],
+  "messagesSentTo": [
+    "01a166eb-66bb-7042-bb47-2aaafef26f53",
+    "01a164a4-a342-76d3-ab33-65e021ed57db"
+  ],
+  "replyOrGrantReceived": false,
+  "currentRuntimeAuthority": false,
+  "resourceEffects": 0,
+  "all16InstalledCases": "NOT_RUN"
+}

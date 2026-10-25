@@ -1,0 +1,63 @@
+{
+  "recordedAt": "2026-10-23T13:57:28.136612+00:00",
+  "classification": "OWNED_FIXTURE_OBSERVABILITY_SOURCE_ONLY_NOT_REAL_REPLAY",
+  "source": [
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/threadline-browser-fixture.ts",
+      "sha256": "0a8677cc7036fa773e66782a4d9772887897cc762ed88975fd9309afea9aecc4"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/theme-editor-fixture-observation.ts",
+      "sha256": "8e83deb402f138bace7ed37630f4212108e9fa121f02b0b31054e1cf4a32a44f"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/theme-editor-fixture-observation.test.ts",
+      "sha256": "db98902418414fb178afe4493aaa98c3e5597fc82c9c2d7f1c6b0ec8137f4275"
+    }
+  ],
+  "unchanged14Baseline": {
+    "source": [
+      {
+        "path": "services/api-gateway/src/__tests__/owned-db/threadline-qa-fixture.ts",
+        "sha256": "bf03f1efae9b2be53e0808a8b92b22b9ae435f1c7ccd24ac08d07f1799c051dd"
+      },
+      {
+        "path": "services/api-gateway/src/__tests__/threadline-fixture-origins.test.ts",
+        "sha256": "d0be4e07406e2b29e9304acb6cb217c623a670f66edcba3d0c84643affa88d10"
+      }
+    ],
+    "plan": {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/fresh-fixture-data.plan.json",
+      "sha256": "eefebbda07c13ebbdf5dd1a7f40d53ecdbe98c8af23ce464ffcdc5191deb4864"
+    },
+    "recipes": 14,
+    "collections": 13,
+    "wrapper": "UNCHANGED"
+  },
+  "validation": {
+    "focusedPassed": 17,
+    "failed": 0,
+    "skipped": 0,
+    "gatewayNoEmitExit": 0,
+    "diffCheckExit": 0
+  },
+  "memoryOnly": true,
+  "journalCreated": false,
+  "authOrCookieOrTokenOutput": false,
+  "controls": {
+    "existingProof": "GET /__threadline_proof (summary) or UUID-only order_id/product_id selectors",
+    "replay": "POST /__threadline_editor_replay_confirm body only {index:number}, existing private nonce required",
+    "acceptance": "Require inner responseStatus200, sameOrder=true, effectsUnchanged=true; hashes/counts are fixture evidence, not browser login proof"
+  },
+  "limits": {
+    "successfulCodConfirmRecords": 32,
+    "confirmBodyBytes": 4096,
+    "headerBytes": 16384,
+    "replaysPerRecord": 3,
+    "controlBodyBytes": 128,
+    "inventoryRows": 200,
+    "proofOrderLines": 1000
+  },
+  "runtimeSQLHealth": "Existing setup checks own product proof200 then unknown product404 before app builds; NOT EXECUTED yet.",
+  "resourcesStarted": []
+}

@@ -1,0 +1,546 @@
+{
+  "recordedAt": "2026-10-24T12:56:53.350666+00:00",
+  "files": [
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/404-page-edited.wire.json",
+      "sha256": "f0904b8748ac6f34d65ea8794db9590d92857c7714dad6b5123f4f98b976aede",
+      "bytes": 190492
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/about-section-edited.wire.json",
+      "sha256": "4e09b82f92629c0be542a0d8115458b3b4856f44ef8ccff903b63ab16f112ec8",
+      "bytes": 191100
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/adapters-source.json",
+      "sha256": "9139c13f0196f5c27c2de8fdff75d64e77e10e8c002b6decd7a054fe3f3c7b6d",
+      "bytes": 1543
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/announcement-bar-edited.wire.json",
+      "sha256": "5e76ae9e3a6a083df46e479bf9bb367b043bd9dc4503ea77759465adf2a5108e",
+      "bytes": 190868
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/article-content-edited.wire.json",
+      "sha256": "cf3147862ac043666a103ed3d22debd28316139ac54231cf88809ccfa8309665",
+      "bytes": 190506
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/banner-carousel-edited.wire.json",
+      "sha256": "1e1f56a3faafd912ee1bbb06ee144135afd6ad6aaa5f73919a823a3f12e21068",
+      "bytes": 192519
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/blog-listing-edited.wire.json",
+      "sha256": "f26ebdf505bccad2278ebf4ca7a3ffb86fb1393264764b8105b9a062ad99bf7c",
+      "bytes": 190614
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/brand-marquee-edited.wire.json",
+      "sha256": "db3bd80e031437bd87b260d42804b3ae99b02b494f1ab5440382407e5d14b525",
+      "bytes": 191839
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/cart-summary-edited.wire.json",
+      "sha256": "3fe183964a14cb3bbbda7d60446cdbd8c591c5751618b0e1e480b75a6957868e",
+      "bytes": 190614
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/category-grid-edited.wire.json",
+      "sha256": "fe604bb661029e91d41b0437844cf4ce8b41651d516a4cc0c3784b9312c92e3c",
+      "bytes": 191104
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/collection-banner-edited.wire.json",
+      "sha256": "ef42dcd60a49b40cd94f9da187f5f0563eba1c7d6a7936da98267a60ab15ad75",
+      "bytes": 190602
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/collection-filter-edited.wire.json",
+      "sha256": "f9e2db788a34e7cda52c4bbf2c3c783f1e6dad7a96a1f85f528fdd177c1178dc",
+      "bytes": 190510
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/collection-product-list-edited.wire.json",
+      "sha256": "d94a0de8017e29c44cc9ad4c7a7cdd82e5a728bd4d5b0e079a3bdf3a92a1417c",
+      "bytes": 190628
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/contact-form-edited.wire.json",
+      "sha256": "682a265a389f82c7ceaa4dc45b2cc77f2b063460ff05bc02e148c4ae6a61f293",
+      "bytes": 190768
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/cta-section-edited.wire.json",
+      "sha256": "80090b973eba5d99d2e8017c820f307938bc96cafbc47034178352856d643e71",
+      "bytes": 190966
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/customer-account-edited.wire.json",
+      "sha256": "02a4425bda7fe3509644b0f2c9bb099e8e398bdb361c80f38395738c5f219c11",
+      "bytes": 190622
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/customer-addresses-edited.wire.json",
+      "sha256": "7c25afb6067540f7bec1ac19ba1e172fcad84cddad303669572644f7c023b6ea",
+      "bytes": 190626
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/customer-login-edited.wire.json",
+      "sha256": "54e72f7e5b4c859de66bfebd2d8917d6562ba1223dfa9a1c4d20e6be33863e5b",
+      "bytes": 190618
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/customer-order-detail-edited.wire.json",
+      "sha256": "3b8ca4a69e616da64e9816ea97da2d0567a79299f6837879c3615910335d816b",
+      "bytes": 190632
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/customer-orders-edited.wire.json",
+      "sha256": "e3a096ee7f5a46b516e7f7d28c2fee90ba51ed9ca6c0d352398c8ba30f9e1035",
+      "bytes": 190620
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/customer-register-edited.wire.json",
+      "sha256": "1f44a28d924dcad225dde36251a7ed291973316a034a551558008cb0323e66fb",
+      "bytes": 190624
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/customer-settings-edited.wire.json",
+      "sha256": "d391330137e27a0f13e9434862c7c77afb2841e6faca87a688b9f102a559128a",
+      "bytes": 190624
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/customer-wishlist-edited.wire.json",
+      "sha256": "1ae122dd824d2160dca03be98273b41cdb6f01addc0f6f180efe0fa0d8a57e6a",
+      "bytes": 190624
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/editor.snapshot.tsx",
+      "sha256": "c5fd47e41702e760889a505bd19927fd7345a4e3e2a3a8323decc53bae59a8d0",
+      "bytes": 107185
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/experience-timeline-edited.wire.json",
+      "sha256": "5d3e3c9ab960ec2e7b0a509abd15f9c833bfa061c5cb8158d486b83c31dabdf3",
+      "bytes": 192287
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/extracted-editor.js",
+      "sha256": "88701568876ccadd48b4b96e466d33e58218427b443b8c496ae04e6092ac9634",
+      "bytes": 17349
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/faq-accordion-edited.wire.json",
+      "sha256": "9866781d3b3c284bb680bd36da389ed21023f9d8fa7e6e700dc7630310b72e1a",
+      "bytes": 192161
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/featured-products-edited.wire.json",
+      "sha256": "ce55343cb5ca99c6a9dacc53e79b9f669bc62728eb88b38bb725320f6606881a",
+      "bytes": 191372
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/footer-edited.wire.json",
+      "sha256": "af8aaf8b9929d3daacfe4d36d8241446b1203892f366d617c43a970cd7f68ca8",
+      "bytes": 192449
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/header-edited.wire.json",
+      "sha256": "7969dd5a5b6a2f5406716dad68cdacb81f1eb46b8614da29f7d70374238bf8d9",
+      "bytes": 191018
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/hero-banner-edited.wire.json",
+      "sha256": "a194392b1db69d1381551f225dca251e55f6b25a56fdc97ef45a9b9f4e9d01f5",
+      "bytes": 191728
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/input.json",
+      "sha256": "d562e724fce272c0b92d8e388bce9da072bb5c0fc4ef1263d391e38015a864ad",
+      "bytes": 31016
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/marquee-edited.wire.json",
+      "sha256": "43f41bc70310fadfc8522a207f421cec199b32b8ddddcd409add2d4143a1fc71",
+      "bytes": 190592
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/newsletter-signup-edited.wire.json",
+      "sha256": "9525b68fe6717ddef16411997c408c60fd55d9df52671c25934e9c718c976a6f",
+      "bytes": 190828
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/page-content-edited.wire.json",
+      "sha256": "bc74dfa8c31c34c3b2e93ebf88f7f50aec05fba58bccddd65380dc14b1b77788",
+      "bytes": 190500
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/password-gate-edited.wire.json",
+      "sha256": "584d99e82cefb02388b9c0c162efe4476ec6cae2e37c27460d67a9ee04a2d330",
+      "bytes": 190616
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/policy-content-edited.wire.json",
+      "sha256": "755cd60d90ec9309388a8b3e688239d97080d42e3ecff87708a611da90df15dc",
+      "bytes": 190504
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/portfolio-grid-edited.wire.json",
+      "sha256": "cdea6aa87139d75042601e97a91b83ced9d36c168e7ba9c1ecf32b2e56077a56",
+      "bytes": 192357
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/product-detail-edited.wire.json",
+      "sha256": "b9ad8e2cff4295c63aa9df7bc0207f7301775360ab0e992ad82aadec07d58ca9",
+      "bytes": 190868
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/product-grid-edited.wire.json",
+      "sha256": "7aa83065383fde9b50ebec524a54cb3cf371c481285443dac2df7a9603e4da9b",
+      "bytes": 190950
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/protected-seams.observed.json",
+      "sha256": "a79d836aab378eb20f232b10ce3955fce6550818b4479bd32404b25a0ae01176",
+      "bytes": 228
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/registry.snapshot.ts",
+      "sha256": "a742187900a03f2c1c74745c06bf46d797653d4e1309d98762332286972d5a43",
+      "bytes": 34535
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json",
+      "sha256": "fe925446e05f7409db2d7ad0aaa12c5111ef4b456b88563a36e8055219e0e0fb",
+      "bytes": 142617
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/rich-content-edited.wire.json",
+      "sha256": "0acaa1fd84e0c1af6c46c959417c1e66c79516f52b3d666546448d0eb53519a4",
+      "bytes": 190690
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/search-box-edited.wire.json",
+      "sha256": "bcb6e0d2c812201183cc6f6765aed7e65a69c20115a1bd06dc9c3623137ced5a",
+      "bytes": 190626
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/section-404-page.observed.json",
+      "sha256": "00d055e4a67ac57136bc6e55272227a9215dc815c0d296dd5f3c1be36fe6fb14",
+      "bytes": 1301
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/section-about-section.observed.json",
+      "sha256": "5ad700233f312830e92580f1411f76f2fbd923563c8551452133483445636be9",
+      "bytes": 2551
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/section-announcement-bar.observed.json",
+      "sha256": "82615771741604296ea2a2cc361a476ed49092aa0f377e109468c145a84392dd",
+      "bytes": 2085
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/section-article-content.observed.json",
+      "sha256": "12054e055c890f4ca65e0a9473a6e3b9dac4e2667546af82da1e5fb371cede5f",
+      "bytes": 1343
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/section-banner-carousel.observed.json",
+      "sha256": "c9d3fa0e1e7c1d7de2dcd8b0236ac43dfa7da39a52f1765db9d633df4f7befb2",
+      "bytes": 5797
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/section-blog-listing.observed.json",
+      "sha256": "329edb1e8fce200b2f4e10a8d99f53d18e4e80f0c87002b9a403f613c1952266",
+      "bytes": 1561
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/section-brand-marquee.observed.json",
+      "sha256": "986602c4ff5441f79be06d3a826e7c371bc00a70f83a2309e93a05b4a2ef5378",
+      "bytes": 4413
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/section-cart-summary.observed.json",
+      "sha256": "7273b812d438642fdc832059f597a0512fbfd730a46dbce7ac86c332ae1bb804",
+      "bytes": 1561
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/section-category-grid.observed.json",
+      "sha256": "22ee496a353e08b2f835c0a794a7c945ad2c6a58a87f893b1511c2e98958cd9b",
+      "bytes": 2559
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/section-collection-banner.observed.json",
+      "sha256": "20a84a1c4872152bb520b5ac3bb66c1593522aa9b195e0c1f69a075136f63456",
+      "bytes": 1547
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/section-collection-filter.observed.json",
+      "sha256": "ce58e72308cffcb2298827d85c7e5a6d8f38c2697deb113f0c2ab5f29a750258",
+      "bytes": 1355
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/section-collection-product-list.observed.json",
+      "sha256": "b8b52fa1f51a3560d255b30091c3af104e406f8f8767af65384327bc647ad93e",
+      "bytes": 1611
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/section-contact-form.observed.json",
+      "sha256": "85e06a9a6c1e9023e9a45b16722481ccde96489d928208b97fe5a7d29bb024b4",
+      "bytes": 1877
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/section-cta-section.observed.json",
+      "sha256": "1b9f8a8b664b895e3878fd490155b515dc88ca78d168b1a06df5f992cfa739ff",
+      "bytes": 2275
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/section-customer-account.observed.json",
+      "sha256": "a7fb57004118841a4491b4c9c31bcaa1d6f1d990ce4f488561b8f66164a4293d",
+      "bytes": 1585
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/section-customer-addresses.observed.json",
+      "sha256": "eacd7a97c6692f8e47d039da8a505a17388305282da2d8ce5693c3e7b44c9e21",
+      "bytes": 1597
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/section-customer-login.observed.json",
+      "sha256": "6640117efb8c2e8209ae687087c0a64a47ffb1ea2fd3a578e65c0de274e724c3",
+      "bytes": 1573
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/section-customer-order-detail.observed.json",
+      "sha256": "7854a28f592878106477b5532bb0094bbfd08685f8a13648711d2418d79e8f75",
+      "bytes": 1615
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/section-customer-orders.observed.json",
+      "sha256": "4e4db2f3f0b8ccc40c0391ae2d7a0987ed2d1be482df869b4712b2dcb08d8fc5",
+      "bytes": 1579
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/section-customer-register.observed.json",
+      "sha256": "106552f8a795203db8f1776e6d9b7c8ee5390cf5d47fdeac60cf9736b74ca960",
+      "bytes": 1591
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/section-customer-settings.observed.json",
+      "sha256": "9b4c26cb504a1a3b8b2d36b01e13816c4bdccc24e32c609a16191b43cae74513",
+      "bytes": 1591
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/section-customer-wishlist.observed.json",
+      "sha256": "28cd0ff85526e93cd51eaf7f3282aa2d9876677b6f194669936c4ee4b771b98f",
+      "bytes": 1591
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/section-experience-timeline.observed.json",
+      "sha256": "494fad18276a99fe42a67d72b2d85ceaab705af8f0ad33a4faf159b8b72862bc",
+      "bytes": 5337
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/section-faq-accordion.observed.json",
+      "sha256": "88a0dc9aa81d98c08927e27c7ab735e2fdb52672fbff17007e8c60d5a8260f4a",
+      "bytes": 5069
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/section-featured-products.observed.json",
+      "sha256": "571b75f6bc734fe01af5649110c853b725156f1d067a274d1f244620cf148eb2",
+      "bytes": 3115
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/section-footer.observed.json",
+      "sha256": "d35b0f5d9b9b3528a5b8f1ab9d1cd9a397d943742f22c2932bae8f7e932ddf6b",
+      "bytes": 6616
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/section-header.observed.json",
+      "sha256": "8a32acd4a6e792825a1704c6e77862009f75149a9a1ce0355cfdedb67ae389ab",
+      "bytes": 5608
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/section-hero-banner.observed.json",
+      "sha256": "a974ae076ae4ed6e038129a295438c9a16b720ef4cd2e847f18811992e1afd0d",
+      "bytes": 3823
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/section-marquee.observed.json",
+      "sha256": "c0407b29164fa95076c9223b0d3ef081b429cdb23e1e8027940e5b7a02b28d05",
+      "bytes": 1507
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/section-newsletter-signup.observed.json",
+      "sha256": "59c00ee56ae01ffad5e2aa39374792f4f4d737e453eef5fafd3e7619fc27a75a",
+      "bytes": 2007
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/section-page-content.observed.json",
+      "sha256": "0faf1f4e74480f38d5d5ae070406f03138548e234beee365bb20e4e76a4b8041",
+      "bytes": 1325
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/section-password-gate.observed.json",
+      "sha256": "51a4773c06b0c7ced138a7f6e96e4198dbe5cdfa86aaa784ef1b966a6fa086ba",
+      "bytes": 1567
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/section-policy-content.observed.json",
+      "sha256": "2fbd3d80d41cb605922a87b6134549c1430191a9ecfa671b86e45891ecdf999b",
+      "bytes": 1337
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/section-portfolio-grid.observed.json",
+      "sha256": "8fbe2901d3d9f4bf5c2bead0a1d52303eb7da48ca842632a31f68ab8ba816349",
+      "bytes": 5467
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/section-product-detail.observed.json",
+      "sha256": "2286f38b5cbc9df3afa8c053fc43446b32fd66cb6c4293055483dbc9ec70a853",
+      "bytes": 2089
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/section-product-grid.observed.json",
+      "sha256": "ae35d40f2d2a71703740c76c19c2b106c4dfc8d943e4a64e21cd35ea69be3221",
+      "bytes": 2249
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/section-rich-content.observed.json",
+      "sha256": "ffcaa62f1ec9f40dd4c0db67cda92c9dff15d1bdb0edfc9fa09beb66d4dacccf",
+      "bytes": 1717
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/section-search-box.observed.json",
+      "sha256": "5a23421efe95429cdd48739df75e47cc18f551843efd561b0a26a453ed398431",
+      "bytes": 1581
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/section-services-grid.observed.json",
+      "sha256": "d2a96b511026b0d5ec1df74654c17c930ab53a25ded09cee5c319d043599a33b",
+      "bytes": 5525
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/section-skills-section.observed.json",
+      "sha256": "eea1db10d528cf48c4159b08a2de756e2c207a52d37e822fa28d26bf935bfb44",
+      "bytes": 4643
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/section-spotlight.observed.json",
+      "sha256": "ea2929910c54ddbb7be1f4357970fc09f9d25c70f7cdbceb79b5eb81be01fcb6",
+      "bytes": 4641
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/section-testimonials.observed.json",
+      "sha256": "b1846dfd72b817c2a3f3428c80b35eda342325aaa7e068b47e8e9a64b3db945b",
+      "bytes": 4879
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/section-trust-badges.observed.json",
+      "sha256": "0f9a9a421235f62dd53a62f6b869385208f0ed8ac5aa58ecd8dc168d70cdc5c7",
+      "bytes": 2017
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/section-video-hero.observed.json",
+      "sha256": "77bae459bd27dcedd13d4c9a25d290672ac071b25a9677e4b4217394fad3f13c",
+      "bytes": 2081
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/services-grid-edited.wire.json",
+      "sha256": "0c9a3341218d5cfe1cc8489b18690fe7d49eaeea2557d8e0b63c8ae58a502ff6",
+      "bytes": 192387
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/skills-section-edited.wire.json",
+      "sha256": "5623a0f2147312cd634d442105ea76d7e0234277d02b5954f69bec1e52d3f95f",
+      "bytes": 191949
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/source-pins-after.json",
+      "sha256": "4fcf846491c511a2102cc1a9fd50554351efd2f23141bab3854b442a0ae3ab4a",
+      "bytes": 41888
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/source-pins-before.json",
+      "sha256": "4fcf846491c511a2102cc1a9fd50554351efd2f23141bab3854b442a0ae3ab4a",
+      "bytes": 41888
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/spotlight-edited.wire.json",
+      "sha256": "7b4c7311f426c05cde5eda125529bbaf09ec998ffd6f5f33f59bd2811ca17225",
+      "bytes": 191955
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/testimonials-edited.wire.json",
+      "sha256": "70db54b7df18fd2b4b0e7b42e5bd7a046ef4512bbbbe3f11cca0cea0731541af",
+      "bytes": 192069
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/theme-settings.observed.json",
+      "sha256": "3ec2f1f4f81f9dfe05fd161f18010d7e1b3216a8de5c90ea004c8cb75bc459cc",
+      "bytes": 680
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/theme-settings.wire.json",
+      "sha256": "9cc81c06675a51372be51960f4ca0c547af13e8e8975555d4ae9763fb0083b9b",
+      "bytes": 190443
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/trust-badges-edited.wire.json",
+      "sha256": "90ffef3bf95798715c148e11eb0ac1b962cee1c20a9b59142c9a3a8457434d35",
+      "bytes": 190838
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/video-hero-edited.wire.json",
+      "sha256": "133e7c57323a5b5bd1a0eb89eddbf55b317c29fe4c72362259337c1d3a119928",
+      "bytes": 190872
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/summary.json",
+      "sha256": "e0400b7c015dc739bfcabb8b6a11ab22b755983195be176c68d2e9112238c66d",
+      "bytes": 440
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01-intake/MAPPING_ATTEMPT01_FAILURE.json",
+      "sha256": "f64436d3549323b9aa50fc8c8de4229ca1a8dc9b73c1c4336d108fa9f8eeb614",
+      "bytes": 581
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01-intake/README.md",
+      "sha256": "ff2446e57b109f1837aacba47b5fef2834829566d8a3b0ad9e26b392c823a67c",
+      "bytes": 927
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01-intake/SEALED_HANDOFF.json",
+      "sha256": "44c1d78632d7cdacbd2247ef55b7d9247175fcb1950237a9a42dcf5a55c52bf9",
+      "bytes": 3417
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01-intake/SOURCE_COVERAGE_ADDENDUM.json",
+      "sha256": "fe31556edb058bd40c054c84523e20cf4faabb7b15b564a1e06de2ce7f2456f7",
+      "bytes": 62944
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01-intake/before-admission.json",
+      "sha256": "c548dc1f3379f267387be7054a2a7c7810fddd725e8ddcf59a3a4f4136ae14b9",
+      "bytes": 50284
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01-intake/execution-receipt.json",
+      "sha256": "174cf439ff4ade26beafa2966a6f278b7b94800146e50d13d783f170a1d2cead",
+      "bytes": 986
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01-intake/runner.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01-intake/runner.stdout",
+      "sha256": "30e98b581601465a624a4e9cf44bffbdf8f21f036765b56869f56548f5e067ae",
+      "bytes": 258
+    }
+  ],
+  "manifestSelfExcluded": true
+}

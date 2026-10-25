@@ -1,0 +1,56 @@
+Browser tab: 70, Title: "Lifecycle accessories | Threadline", URL: "http://syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/collections/01f56eb8-89fa-4fc5-be47-02f3ec591f2f?collection_id=01f56eb8-89fa-4fc5-be47-02f3ec591f2f&search=Circuit+no+such+fixture+936&category=Accessories&country_of_origin=India".
+1 AXWebArea Lifecycle accessories | Threadline, URL: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/collections/01f56eb8-89fa-4fc5-be47-02f3ec591f2f?collection_id=01f56eb8-89fa-4fc5-be47-02f3ec591f2f&search=Circuit+no+such+fixture+936&category=Accessories&country_of_origin=India
+	2 container
+		3 text Circuit 936 B — saved recovery draft.
+		4 container Description: Primary, ID: lb-nav-panel-header-default
+		5 link Description: Threadline, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b
+		6 container
+			7 text Search products, models and connectors
+			8 search text field (settable) Search products, models and connectors, Value: Circuit no such fixture 936, ID: ct-header-search-header-default
+			9 button Search
+		10 link Description: Log in, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/customers/login
+		11 link Description: Cart ( 2 ), Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/cart
+		12 container Filter products by country of origin
+			13 container
+				14 text Country of origin
+				15 text field (settable) Country of origin, Value: India, ID: lb-product-origin-filter
+				16 button Apply filter
+				17 link Description: Clear origin filter, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/collections/01f56eb8-89fa-4fc5-be47-02f3ec591f2f?limit=20&search=Circuit+no+such+fixture+936&category=Accessories&sort=display_order&collection_id=01f56eb8-89fa-4fc5-be47-02f3ec591f2f
+		18 text THE CONNECTION DESK
+		19 heading Lifecycle accessories, Value: 1
+			20 text Lifecycle accessories
+		21 text 0 products
+		22 container
+			23 text Search products, models and connectors
+			24 search text field (settable) Search products, models and connectors, Value: Circuit no such fixture 936, ID: ct-search-forge-discovery-collection
+			25 button Search
+		26 text Results for “Circuit no such fixture 936”
+		27 container
+			28 text Sort by
+			29 pop up button (collapsed, settable) Sort by, Value: Featured, ID: ct-sort-forge-results-collection, Secondary Actions: Expand
+				30 menu
+					31 (selected) Featured
+					32 Price: low to high
+					33 Price: high to low
+					34 Newest
+					35 Name
+			36 button Sort
+		37 container Applied filters
+			38 link Description: Remove Category: Accessories, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/collections/01f56eb8-89fa-4fc5-be47-02f3ec591f2f?limit=20&search=Circuit+no+such+fixture+936&country_of_origin=India&sort=display_order&collection_id=01f56eb8-89fa-4fc5-be47-02f3ec591f2f
+			39 link Description: Remove Country of origin: India, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/collections/01f56eb8-89fa-4fc5-be47-02f3ec591f2f?limit=20&search=Circuit+no+such+fixture+936&category=Accessories&sort=display_order&collection_id=01f56eb8-89fa-4fc5-be47-02f3ec591f2f
+		40 heading No products match this selection., Value: 2
+			41 text No products match this selection.
+		42 text Your query is kept above. Try another model or a broader category.
+		43 link Description: Explore all products, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/products
+		44 container Product pages
+			45 text Page 1 of 0
+		46 heading Threadline, Value: 3
+			47 text Threadline
+		48 text Circuit 936 B footer saved
+		49 heading CONTACT, Value: 4
+			50 text CONTACT
+		51 link Description: Contact us, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/contact
+		52 text © Threadline. All rights reserved.
+		53 link Description: Powered by LetBuyy, Value: letbuyy.com/
+
+The focused UI element is 1 AXWebArea Lifecycle accessories | Threadline, URL: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/collections/01f56eb8-89fa-4fc5-be47-02f3ec591f2f?collection_id=01f56eb8-89fa-4fc5-be47-02f3ec591f2f&search=Circuit+no+such+fixture+936&category=Accessories&country_of_origin=India

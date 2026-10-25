@@ -1,0 +1,55 @@
+{
+  "scope": "Pure canonical API witnesses only; no database execution",
+  "variantOnlyRollbackFixture": {
+    "product_metadata": {},
+    "variant_metadata": {
+      "food": {
+        "netQuantity": {
+          "value": 250,
+          "unit": "g"
+        }
+      }
+    },
+    "accepted": true,
+    "frozenFacts": {
+      "food": {
+        "ingredients": null,
+        "allergens": {
+          "status": "not_supplied"
+        },
+        "storage": null,
+        "preparation": null,
+        "nutritionText": null,
+        "netQuantity": {
+          "value": 250,
+          "unit": "g"
+        }
+      }
+    },
+    "parentNamespaceGuardMatches": false,
+    "activeAcceptedCartRequired": false
+  },
+  "sameVariantConfigurations": {
+    "product_id": "11111111-1111-4111-8111-111111111111",
+    "variant_id": "22222222-2222-4222-8222-222222222222",
+    "names": [
+      "Asha",
+      "Kabir"
+    ],
+    "configuration_fingerprints": [
+      "a127b04b0bd180ff9643aac83d6193ebaab2b354e7bc336ec7dcc51d17066159",
+      "a08cb975a738ac53f1e84e8bccfd6804be6db6f9ec6dce1b8f21d120046bfc69"
+    ],
+    "distinctFingerprints": true,
+    "marketplace278DuplicateGroupingKeys": [
+      [
+        "11111111-1111-4111-8111-111111111111",
+        "22222222-2222-4222-8222-222222222222"
+      ],
+      [
+        "11111111-1111-4111-8111-111111111111",
+        "22222222-2222-4222-8222-222222222222"
+      ]
+    ]
+  }
+}

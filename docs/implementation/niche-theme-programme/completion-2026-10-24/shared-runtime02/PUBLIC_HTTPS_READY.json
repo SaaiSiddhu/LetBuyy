@@ -1,0 +1,44 @@
+{
+  "status": "PUBLIC_TLS_AND_CALLBACK_DENIALS_PASS",
+  "recordedAt": "2026-10-24T15:00:47.298321+00:00",
+  "runId": "2fa5bebb00bb",
+  "tunnelId": "28a6ed7e-2ee5-449a-8d2a-1724dff9c045",
+  "tunnelName": "letbuyy-theme-e2e-20261024",
+  "publicCallbackUrl": "https://theme-e2e-rzp-20261024.letbuyy.com/razorpay",
+  "source": "Canonical webhook-service through owned local receiver",
+  "checks": [
+    {
+      "method": "GET",
+      "path": "/razorpay",
+      "status": 404,
+      "body": ""
+    },
+    {
+      "method": "POST",
+      "path": "/razorpay",
+      "status": 400,
+      "body": "{\"error\":\"Missing signature\"}"
+    },
+    {
+      "method": "POST",
+      "path": "/unrelated",
+      "status": 404,
+      "body": ""
+    }
+  ],
+  "credentialsInReceipt": false,
+  "providerDashboardConfigured": true,
+  "providerWebhookDeliveryProven": false,
+  "productionDeployment": false,
+  "providerWebhookId": "TrnCZjQxuqQsMn",
+  "providerWebhookStatus": "Enabled",
+  "providerWebhookEvents": [
+    "payment.authorized",
+    "payment.failed",
+    "payment.captured"
+  ],
+  "dashboardTestModeVerified": true,
+  "dashboardKeyFingerprintMatchesRuntime": true,
+  "newCredentialEnteredAndSubmittedBy": "human user",
+  "pending": "Actual provider delivery, signature match and canonical durable event/ledger readback; fresh browser candidate must include confirmation repair."
+}

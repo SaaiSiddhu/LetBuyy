@@ -1,0 +1,172 @@
+TAP version 13
+# Subtest: one known request claim/log/metric passes with exact default or monthly partition copies, including409/403
+ok 1 - one known request claim/log/metric passes with exact default or monthly partition copies, including409/403
+  ---
+  duration_ms: 19.157792
+  type: 'test'
+  ...
+# Subtest: commerce/site/draft/audit/outbox and every unclassified table mutation fails
+ok 2 - commerce/site/draft/audit/outbox and every unclassified table mutation fails
+  ---
+  duration_ms: 12.257583
+  type: 'test'
+  ...
+# Subtest: an unrelated request/actor/route/status/IP/auth-source or extra request count is never exempted
+ok 3 - an unrelated request/actor/route/status/IP/auth-source or extra request count is never exempted
+  ---
+  duration_ms: 14.787959
+  type: 'test'
+  ...
+# Subtest: an unrelated/extra metric, altered dimensions, count/value, or actor binding fails
+ok 4 - an unrelated/extra metric, altered dimensions, count/value, or actor binding fails
+  ---
+  duration_ms: 20.246167
+  type: 'test'
+  ...
+# Subtest: existing operational rows cannot change or disappear even when the new request is valid
+ok 5 - existing operational rows cannot change or disappear even when the new request is valid
+  ---
+  duration_ms: 4.893417
+  type: 'test'
+  ...
+# Subtest: claim hash/type/count/TTL/time and bounded request timestamps are enforced
+ok 6 - claim hash/type/count/TTL/time and bounded request timestamps are enforced
+  ---
+  duration_ms: 8.610458
+  type: 'test'
+  ...
+# Subtest: real mirror topology, physical aliases and untouched leaf hashes are mandatory
+ok 7 - real mirror topology, physical aliases and untouched leaf hashes are mandatory
+  ---
+  duration_ms: 7.056833
+  type: 'test'
+  ...
+# Subtest: complete table hashes and all operational rows are required; no unknown-family allowance
+ok 8 - complete table hashes and all operational rows are required; no unknown-family allowance
+  ---
+  duration_ms: 1.367
+  type: 'test'
+  ...
+# Subtest: canonical auth cleanup admits exactly the oldest up-to100 expired rows and preserves active claims
+ok 9 - canonical auth cleanup admits exactly the oldest up-to100 expired rows and preserves active claims
+  ---
+  duration_ms: 6.984583
+  type: 'test'
+  ...
+# Subtest: dedicated native source has one parent/seven ordered phases and fails closed before its owned boundary
+ok 10 - dedicated native source has one parent/seven ordered phases and fails closed before its owned boundary
+  ---
+  duration_ms: 2.594083
+  type: 'test'
+  ...
+# Subtest: pair changes one fixed ACL only; DOWN is exact owned historical inverse and no writer is replaced
+ok 11 - pair changes one fixed ACL only; DOWN is exact owned historical inverse and no writer is replaced
+  ---
+  duration_ms: 0.601083
+  type: 'test'
+  ...
+# Subtest: both directions pin definition/context/ordinary dependency and exact ACL shared-dependency conservation
+ok 12 - both directions pin definition/context/ordinary dependency and exact ACL shared-dependency conservation
+  ---
+  duration_ms: 0.231833
+  type: 'test'
+  ...
+# Subtest: native obligations include real route publish/rollback, positive-first42501, raw profiles, atomic refusals and final re-UP
+ok 13 - native obligations include real route publish/rollback, positive-first42501, raw profiles, atomic refusals and final re-UP
+  ---
+  duration_ms: 0.317625
+  type: 'test'
+  ...
+# Subtest: pure admission prefix accepts only current exact source via an in-memory simulated grant
+ok 14 - pure admission prefix accepts only current exact source via an in-memory simulated grant
+  ---
+  duration_ms: 283.207917
+  type: 'test'
+  ...
+# Subtest: missing/pending/wrong source/manifest/allocation/closure admissions fail before any owned code
+ok 15 - missing/pending/wrong source/manifest/allocation/closure admissions fail before any owned code
+  ---
+  duration_ms: 13.313084
+  type: 'test'
+  ...
+# Subtest: candidate/dependency tampering and newly emitted393/394 fail the pure boundary
+ok 16 - candidate/dependency tampering and newly emitted393/394 fail the pure boundary
+  ---
+  duration_ms: 655.774166
+  type: 'test'
+  ...
+# Subtest: Root allocation and observed baseline data remain exact; old catalog history is unchanged
+ok 17 - Root allocation and observed baseline data remain exact; old catalog history is unchanged
+  ---
+  duration_ms: 17.023334
+  type: 'test'
+  ...
+# Subtest: actual own-row parser reads typed positive1 between transaction command tags
+ok 18 - actual own-row parser reads typed positive1 between transaction command tags
+  ---
+  duration_ms: 0.342625
+  type: 'test'
+  ...
+# Subtest: actual own-row parser rejects zero and untyped/noninteger counts
+ok 19 - actual own-row parser rejects zero and untyped/noninteger counts
+  ---
+  duration_ms: 0.541875
+  type: 'test'
+  ...
+# Subtest: actual own-row parser rejects missing malformed and duplicate markers
+ok 20 - actual own-row parser rejects missing malformed and duplicate markers
+  ---
+  duration_ms: 0.23475
+  type: 'test'
+  ...
+# Subtest: closed native01 admission cannot qualify the repaired source
+ok 21 - closed native01 admission cannot qualify the repaired source
+  ---
+  duration_ms: 0.866917
+  type: 'test'
+  ...
+# Subtest: versioned pair differs only by three scalar CASE parentheses per direction
+ok 22 - versioned pair differs only by three scalar CASE parentheses per direction
+  ---
+  duration_ms: 0.41575
+  type: 'test'
+  ...
+# Subtest: limited PostgreSQL16 IF-THEN boundary tripwire rejects original truncated CASE and accepts grouped operands
+ok 23 - limited PostgreSQL16 IF-THEN boundary tripwire rejects original truncated CASE and accepts grouped operands
+  ---
+  duration_ms: 10.750917
+  type: 'test'
+  ...
+# Subtest: dedicated one-attempt SQL error context retains position and redacts bounded sensitive content
+ok 24 - dedicated one-attempt SQL error context retains position and redacts bounded sensitive content
+  ---
+  duration_ms: 1.518875
+  type: 'test'
+  ...
+# Subtest: HTTP correction preserves exact SQL-stage functions and all case1–3/5–7 bodies
+ok 25 - HTTP correction preserves exact SQL-stage functions and all case1–3/5–7 bodies
+  ---
+  duration_ms: 12.027958
+  type: 'test'
+  ...
+# Subtest: each HTTP no-effect request has its own full snapshot, exact observation and bounded classifier
+ok 26 - each HTTP no-effect request has its own full snapshot, exact observation and bounded classifier
+  ---
+  duration_ms: 2.126667
+  type: 'test'
+  ...
+# Subtest: actual request helper preserves signed credentials by default and only captures a hashed JTI for one observed call
+ok 27 - actual request helper preserves signed credentials by default and only captures a hashed JTI for one observed call
+  ---
+  duration_ms: 45.719333
+  type: 'test'
+  ...
+1..27
+# tests 27
+# suites 0
+# pass 27
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1881.686416

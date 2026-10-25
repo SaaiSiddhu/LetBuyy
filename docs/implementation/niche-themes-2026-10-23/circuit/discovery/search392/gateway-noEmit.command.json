@@ -1,0 +1,15 @@
+{
+  "command": [
+    "node",
+    "node_modules/typescript/bin/tsc",
+    "--project",
+    "services/api-gateway/tsconfig.json",
+    "--noEmit",
+    "--incremental",
+    "false"
+  ],
+  "exitCode": 0,
+  "durationSeconds": 13.661,
+  "nativeExecuted": false,
+  "nativeSuiteSha256": "c75705b8d13c909286930140462530f11fcbe9192815e2ada9949151acdff407"
+}

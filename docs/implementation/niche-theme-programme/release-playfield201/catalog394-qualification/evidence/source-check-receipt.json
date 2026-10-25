@@ -1,0 +1,14 @@
+{
+  "status": "PRIVATE394_STATIC_AND_NOEMIT_SEMANTIC_PASS_NOT_NATIVE",
+  "phases": 8,
+  "expectedTap": 9,
+  "phaseBodiesExactAfterSequenceMapping": true,
+  "publicArtifactByteExact": true,
+  "sqlPayloadsByteExact": true,
+  "sourceBaselineMaximum": 393,
+  "sourceBaselineCount": 322,
+  "semanticDiagnostics": 0,
+  "ownedNativeImportedOrExecuted": false,
+  "buildOutputProduced": false,
+  "mainWritten": false
+}

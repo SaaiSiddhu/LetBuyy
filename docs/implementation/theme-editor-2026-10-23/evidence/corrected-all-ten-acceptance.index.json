@@ -1,0 +1,149 @@
+{
+  "recordedAt": "2026-10-24T02:20:59.443722+00:00",
+  "classification": "ALL_TEN_ACCEPTANCE_CURRENT_INDEX_RETIRED_F607_EVIDENCE_NEW_FIXTURE_PENDING",
+  "themes": [
+    {
+      "name": "Dewdrop",
+      "matrix": "docs/implementation/niche-themes-2026-10-23/dewdrop/installed-beauty-lifecycle-matrix.md",
+      "matrixSha256": "e6f1ff8c303e5b8b3b7dd9e1ec10dcc360a37a3bec11656e69542dfbf3b15edc",
+      "requiredRowsOrStages": 30,
+      "countScope": "Per-owner frozen matrix obligations; no historical source-test credit",
+      "freshRunStatus": "PENDING_NEW_GENUINELY_ADMITTED_FIXTURE_BINDINGS",
+      "retiredF607Outcome": "HISTORICAL_F607_4PASS_B00INCOMPLETE_25UNRUN",
+      "retiredF607Evidence": "corrected-dewdrop-editor-cycle.json"
+    },
+    {
+      "name": "Pantry",
+      "matrix": "docs/implementation/niche-themes-2026-10-23/pantry/installed-buyer-lifecycle-matrix.md",
+      "matrixSha256": "87f2e8b22cef3d32c3bdf0228170d36b89ff41e22f96e5c526aae66996119dbd",
+      "requiredRowsOrStages": 13,
+      "countScope": "Per-owner frozen matrix obligations; no historical source-test credit",
+      "freshRunStatus": "PENDING_NEW_GENUINELY_ADMITTED_FIXTURE_BINDINGS",
+      "retiredF607Outcome": "HISTORICAL_F607_11PASS_2PARTIAL_ALL13ATTEMPTED",
+      "retiredF607Evidence": "corrected-pantry-browser-diagnostics-after-lifecycle.json"
+    },
+    {
+      "name": "Habitat",
+      "matrix": "docs/implementation/niche-themes-2026-10-23/habitat/installed-lifecycle-matrix.md",
+      "matrixSha256": "46941565c11dd5fa8cbab5a4e406efe610dc24afdf782a18dc5c8e430f7c3ddc",
+      "requiredRowsOrStages": 26,
+      "countScope": "Per-owner frozen matrix obligations; no historical source-test credit",
+      "freshRunStatus": "PENDING_NEW_GENUINELY_ADMITTED_FIXTURE_BINDINGS",
+      "retiredF607Outcome": "HISTORICAL_F607_23PASS_2PARTIAL_1CONDITIONAL_NOTRUN",
+      "retiredF607Evidence": "corrected-habitat-browser-diagnostics-final-finite26.json"
+    },
+    {
+      "name": "Circuit",
+      "matrix": "docs/implementation/niche-themes-2026-10-23/circuit/installed-lifecycle/installed-lifecycle-matrix.json",
+      "matrixSha256": "540aafc86046df34b92502efcab1edcbee7247057c7268db5d5f2427b147af0c",
+      "requiredRowsOrStages": 25,
+      "countScope": "Per-owner frozen matrix obligations; no historical source-test credit",
+      "freshRunStatus": "PENDING_NEW_GENUINELY_ADMITTED_FIXTURE_BINDINGS",
+      "retiredF607Outcome": "HISTORICAL_F607_2PASS_4PARTIAL_19NOTRUN",
+      "retiredF607Evidence": "corrected-circuit-browser-diagnostics-finite-before-timeout.json"
+    },
+    {
+      "name": "Playfield",
+      "matrix": "docs/implementation/niche-themes-2026-10-23/playfield/installed-fixture-preparation/LIFECYCLE_MATRIX.md",
+      "matrixSha256": "fb31da307a1320a1210f14a340cd3253aec8064172d2ea44e03dc4d46d576c7b",
+      "requiredRowsOrStages": 14,
+      "countScope": "Per-owner frozen matrix obligations; no historical source-test credit",
+      "freshRunStatus": "PENDING_NEW_GENUINELY_ADMITTED_FIXTURE_BINDINGS",
+      "retiredF607Outcome": "NOT_RUN; earlier9cd results remain separate historical evidence"
+    },
+    {
+      "name": "Kindred",
+      "matrix": "docs/implementation/niche-themes-2026-10-23/kindred/responsive-shopping-2026-10-23/installed-gifts-lifecycle.plan.json",
+      "matrixSha256": "700a60f8a97b0a0336860bc3b2c4262c2c3cd9749fa287c9b8c5af65c600c9ae",
+      "requiredRowsOrStages": 19,
+      "countScope": "Per-owner frozen matrix obligations; no historical source-test credit",
+      "freshRunStatus": "PENDING_NEW_GENUINELY_ADMITTED_FIXTURE_BINDINGS",
+      "retiredF607Outcome": "NOT_RUN; earlier9cd results remain separate historical evidence"
+    },
+    {
+      "name": "MadeYours",
+      "matrix": "docs/implementation/niche-themes-2026-10-23/madeyours/installed-buyer-lifecycle-matrix.md",
+      "matrixSha256": "2e4f9e28d9f2a92efed75fd1696bc594f650edbba5f3c3389d2c440932adf573",
+      "requiredRowsOrStages": 23,
+      "countScope": "Per-owner frozen matrix obligations; no historical source-test credit",
+      "freshRunStatus": "PENDING_NEW_GENUINELY_ADMITTED_FIXTURE_BINDINGS",
+      "retiredF607Outcome": "NOT_RUN; earlier9cd results remain separate historical evidence",
+      "reservedQueuePosition": 7,
+      "reservationMeaning": "Existing serialized programme position retained; no current browser/data/runtime allocation.",
+      "remainingPrerequisites": [
+        "Root admits stable conforming source epoch and genuinely new owned runtime; no f607 reuse.",
+        "Owner-recorded actual runner deadline or explicit lifetime policy at startup, with remaining window for the23-case cohort; no expiry estimate from state mtime.",
+        "Actual new origins/run/site/owner/buyers/product/variant/collection/theme/release bindings.",
+        "Normal merchant and BuyerA/BuyerB authorization plus real trusted hosted HTTPS in that context.",
+        "Normal semantic twoPink cart baseline and safe current inventory readback.",
+        "Personalization revision1\u21922 normalUI setup with actual same variant UUID; first committed order and separate accepted pre-edit cart before later revision3 edit.",
+        "Actual canonical omission receipt for unchanged post-purchase stock; product version distinct from facts revision.",
+        "Run MY21 network-recovery before MY20 destructive removal; restore engrave/sans/front after MY04 before MY09/MY15; preserve all23 outcomes with actual case evidence."
+      ],
+      "executedOnRetiredF607": false
+    },
+    {
+      "name": "Trailmark",
+      "matrix": "docs/implementation/niche-themes-2026-10-23/trailmark/installed-lifecycle/installed-lifecycle-matrix.md",
+      "matrixSha256": "6fae6cc883d2734d24213119dc6489a424b94fa7729dceaba5ce9a35d90dddc6",
+      "requiredRowsOrStages": 29,
+      "countScope": "17 discovery recipes plus 12 lifecycle stages",
+      "freshRunStatus": "PENDING_NEW_GENUINELY_ADMITTED_FIXTURE_BINDINGS",
+      "retiredF607Outcome": "NOT_RUN; earlier9cd results remain separate historical evidence"
+    },
+    {
+      "name": "Marginalia",
+      "matrix": "docs/implementation/niche-themes-2026-10-23/marginalia/installed-book-stationery-lifecycle.matrix.json",
+      "matrixSha256": "f65557129858ac0906fd6f7dfd78fc00c6124e30fbd2a52187cb82b8913bed82",
+      "requiredRowsOrStages": 16,
+      "countScope": "Per-owner frozen matrix obligations; no historical source-test credit",
+      "freshRunStatus": "PENDING_NEW_GENUINELY_ADMITTED_FIXTURE_BINDINGS",
+      "retiredF607Outcome": "NOT_RUN; earlier9cd results remain separate historical evidence"
+    },
+    {
+      "name": "Threadline",
+      "freshRunStatus": "PENDING_NEW_GENUINELY_ADMITTED_FIXTURE_BINDINGS",
+      "note": "Do not message Threadline directly; Root routes ownership. Native/sharedgroups tests are separate from actual browser lifecycle.",
+      "sharedMeasurementContextOnly": "docs/implementation/threadline-2026-10-22/measurement-discovery/browser-acceptance-plan.json",
+      "correction": "Inspected context contains Trailmark/ Habitat cases only; NOT a Threadline lifecycle matrix. Root-routed exact Threadline case list pending.",
+      "matrix": "docs/implementation/threadline-2026-10-22/installed-lifecycle-index/installed-threadline-lifecycle.index.json",
+      "countScope": "Per-owner frozen matrix obligations; no historical source-test credit",
+      "requiredRowsOrStages": 26,
+      "retiredF607Outcome": "NOT_RUN; earlier9cd results remain separate historical evidence"
+    }
+  ],
+  "startupSmokeOrder": [
+    "Bind actual new private state/source manifest; verify manual-os-trusted selected and canonical synthetic Enterprise allowance; no oldrun IDs reused",
+    "Normal merchant identity login; installed2.0 theme save/reload; normal productSave plus fullreload; sameUUID optionRename readback",
+    "Actual shared announcement/header/footer save/reload thenpublish/publicreadback (391)",
+    "Actual parent preview READY/selection/retry and privateCMS/resource behavior with corrected platformorigin/CSP; screenshot/responsive only if real viewport nonzero",
+    "Normal cartCheckout link to trusted https://checkout.localhost actual port; no interstitial or TLS override; hostedcontact/delivery positive",
+    "Circuit actual model/connector canonical discovery392 and platformoriginApply/Clearstate repair; real witnesses before ownerquery matrices",
+    "Execute all10 installed commoncycle+pertheme frozen cases, originalprimaryUIorders/stalecart-before-edit/history/security/recovery; retain failures/retests, no partialpromotion"
+  ],
+  "queue": [
+    "Dewdrop",
+    "Pantry",
+    "Habitat",
+    "Circuit",
+    "Playfield",
+    "Kindred",
+    "MadeYours",
+    "Trailmark",
+    "Marginalia",
+    "Threadline"
+  ],
+  "primaryCartContract": "Next genuine run must establish its own normalUI semantic twoPink baseline and actualnewIDs. Old59/Pantryfb5355 converted legitimately beforecleanup; old387retainedA1/new7baempty atlastnativeaction; twoPink NOT restored beforetimeout. No oldcart resurrection/storage/token copy.",
+  "sourceFreeze": "No extra mainfixture/ownerfactory/themeartifact edits fromEditor. Rootallocates controlled copy/startup after releasedsourceleases. Old9cd held intact.",
+  "copyAdmission": "docs/implementation/niche-theme-programme/editor-latest392-copy-admission.json",
+  "sourceCopyStatus": "F607_RETIRED_AFTER_TIMEOUT_DATABASE_CLEANED_UP",
+  "currentRuntime": "NO_CURRENT_ALLOCATION; Root prepares next genuine fixture",
+  "currentEvidenceIndex": "corrected-current-evidence.index.json",
+  "remainingExecutionOrder": "Root will bind next runtime; pending Circuit full cohort/discovery/cart/order/history, explicit Dewdropreturn, all remaining themes. Completed retired-run component evidence is retained but no ID/session adoption.",
+  "nextCandidate": "/private/tmp/theme-editor-stable392-20261024-02",
+  "nextCandidateRuntimeStatus": "PENDING_ACTUAL_ROOT_RUNTIME_GRANT",
+  "nextCandidateEvidence": [
+    "stable392-02-independent-copy-audit.json",
+    "stable392-02-lineage-addendum.json"
+  ]
+}

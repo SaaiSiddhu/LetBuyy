@@ -1,0 +1,12 @@
+{
+  "recordedAt": "2026-10-23T19:19:53.949005+00:00",
+  "firstReceipt": "marketplace555-install-readback.json",
+  "correctedReceipt": "marketplace555-install-draft-readback-addendum.json",
+  "clarification": "First query used absent JSON key template_config on theme_editor_drafts, producing MD5 of fallback emptystring d41d. It does not prove an empty draft. Actual canonical draft_config is hash899a958a04d16dcee424fc95e2985f14, captures Threadline2.0.0/Liquid/themeIdletbuyy-sense. Original receipt retained unchanged.",
+  "normalAddCommittedOnce": true,
+  "normalMarketplaceSuccessCriterion": "FAILED_UNCONFIRMED",
+  "instanceId": "a2caf52b-67c4-4d8c-b46e-c6b36e8553b3",
+  "orders": 0,
+  "published": false,
+  "next": "Scoped app transport fresh canonical one-use proof per actualSDKrequest; source review then one ordinary idempotent confirmation with protected-state equality"
+}

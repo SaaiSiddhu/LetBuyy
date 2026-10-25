@@ -1,0 +1,87 @@
+{
+  "recordedAt": "2026-10-25T01:04:10.103Z",
+  "classification": "NO_EMIT_TYPESCRIPT_SOURCE_PROGRAM_NOT_BUILD_OR_NATIVE",
+  "rootPaths": [
+    "packages/theme-engine/src/first-party-theme-catalog.ts",
+    "packages/theme-engine/test/first-party-five-theme-v211.test.ts",
+    "docs/implementation/niche-theme-programme/completion-2026-10-24/five-theme211-integration01/generate-sense211-proposal.ts"
+  ],
+  "sourceFiles": 510,
+  "diagnostics": [
+    {
+      "file": "packages/theme-engine/test/first-party-five-theme-v211.test.ts",
+      "line": 6,
+      "code": 1192,
+      "category": "Error",
+      "message": "Module '\"/private/tmp/letbuyy-five-theme211-prep-20261025-01/docs/implementation/niche-theme-programme/release-v2/generate-release\"' has no default export."
+    },
+    {
+      "file": "packages/theme-engine/test/first-party-five-theme-v211.test.ts",
+      "line": 15,
+      "code": 2322,
+      "category": "Error",
+      "message": "Type '{ [k: string]: unknown; }' is not assignable to type 'Record<string, ThemeBundleJson>'.\n  'string' index signatures are incompatible.\n    Type 'unknown' is not assignable to type 'ThemeBundleJson'."
+    },
+    {
+      "file": "packages/theme-engine/test/first-party-five-theme-v211.test.ts",
+      "line": 18,
+      "code": 2339,
+      "category": "Error",
+      "message": "Property 'close' does not exist on type 'Pick<typeof globalThis, \"DocumentFragment\" | \"HTMLTemplateElement\" | \"Node\" | \"Element\" | \"NodeFilter\" | \"NamedNodeMap\" | \"HTMLFormElement\" | \"DOMParser\"> & { ...; } & Pick<...> & { ...; }'."
+    },
+    {
+      "file": "packages/theme-engine/test/first-party-five-theme-v211.test.ts",
+      "line": 26,
+      "code": 2339,
+      "category": "Error",
+      "message": "Property 'close' does not exist on type 'Pick<typeof globalThis, \"DocumentFragment\" | \"HTMLTemplateElement\" | \"Node\" | \"Element\" | \"NodeFilter\" | \"NamedNodeMap\" | \"HTMLFormElement\" | \"DOMParser\"> & { ...; } & Pick<...> & { ...; }'."
+    },
+    {
+      "file": "packages/theme-engine/test/first-party-five-theme-v211.test.ts",
+      "line": 28,
+      "code": 2339,
+      "category": "Error",
+      "message": "Property 'close' does not exist on type 'Pick<typeof globalThis, \"DocumentFragment\" | \"HTMLTemplateElement\" | \"Node\" | \"Element\" | \"NodeFilter\" | \"NamedNodeMap\" | \"HTMLFormElement\" | \"DOMParser\"> & { ...; } & Pick<...> & { ...; }'."
+    }
+  ],
+  "touchedDiagnostics": [
+    {
+      "file": "packages/theme-engine/test/first-party-five-theme-v211.test.ts",
+      "line": 6,
+      "code": 1192,
+      "category": "Error",
+      "message": "Module '\"/private/tmp/letbuyy-five-theme211-prep-20261025-01/docs/implementation/niche-theme-programme/release-v2/generate-release\"' has no default export."
+    },
+    {
+      "file": "packages/theme-engine/test/first-party-five-theme-v211.test.ts",
+      "line": 15,
+      "code": 2322,
+      "category": "Error",
+      "message": "Type '{ [k: string]: unknown; }' is not assignable to type 'Record<string, ThemeBundleJson>'.\n  'string' index signatures are incompatible.\n    Type 'unknown' is not assignable to type 'ThemeBundleJson'."
+    },
+    {
+      "file": "packages/theme-engine/test/first-party-five-theme-v211.test.ts",
+      "line": 18,
+      "code": 2339,
+      "category": "Error",
+      "message": "Property 'close' does not exist on type 'Pick<typeof globalThis, \"DocumentFragment\" | \"HTMLTemplateElement\" | \"Node\" | \"Element\" | \"NodeFilter\" | \"NamedNodeMap\" | \"HTMLFormElement\" | \"DOMParser\"> & { ...; } & Pick<...> & { ...; }'."
+    },
+    {
+      "file": "packages/theme-engine/test/first-party-five-theme-v211.test.ts",
+      "line": 26,
+      "code": 2339,
+      "category": "Error",
+      "message": "Property 'close' does not exist on type 'Pick<typeof globalThis, \"DocumentFragment\" | \"HTMLTemplateElement\" | \"Node\" | \"Element\" | \"NodeFilter\" | \"NamedNodeMap\" | \"HTMLFormElement\" | \"DOMParser\"> & { ...; } & Pick<...> & { ...; }'."
+    },
+    {
+      "file": "packages/theme-engine/test/first-party-five-theme-v211.test.ts",
+      "line": 28,
+      "code": 2339,
+      "category": "Error",
+      "message": "Property 'close' does not exist on type 'Pick<typeof globalThis, \"DocumentFragment\" | \"HTMLTemplateElement\" | \"Node\" | \"Element\" | \"NodeFilter\" | \"NamedNodeMap\" | \"HTMLFormElement\" | \"DOMParser\"> & { ...; } & Pick<...> & { ...; }'."
+    }
+  ],
+  "noEmit": true,
+  "modulesExecuted": false,
+  "nativeOrBuild": false
+}

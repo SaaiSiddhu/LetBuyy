@@ -589,7 +589,8 @@ export default function PurchaseOrdersPage() {
 
     return (
         <Page>
-            <PageHeader
+            <PageHeader identity="products"
+                recipe="index"
                 title="Purchase orders"
                 description="Plan inbound stock from suppliers and receive it into inventory."
                 breadcrumbs={[{ label: 'Purchasing' }, { label: 'Purchase orders' }]}

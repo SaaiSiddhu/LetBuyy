@@ -1,0 +1,120 @@
+--- a/packages/theme-engine/src/theme-renderer.ts
++++ b/packages/theme-engine/src/theme-renderer.ts
+@@ -1210,30 +1210,23 @@
+     }
+ 
+     const blockFile = input.bundle.blocks[block.type];
+-    if (!blockFile) {
+-      const sectionFile = input.bundle.sections[input.sectionType];
+-      const inlineBlockAllowed = sectionFile?.schema.blocks.some((candidate) => candidate.type === block.type) === true;
+-      if (inlineBlockAllowed) {
+-        blocks.push({
+-          id: blockId,
+-          type: block.type,
+-          settings: block.settings,
+-          html: '',
+-          isAppBlock: false,
+-          editorAttributes,
+-        });
+-      }
+-      continue;
+-    }
++    const sectionFile = input.bundle.sections[input.sectionType];
++    const inlineBlockAllowed = sectionFile?.schema.blocks.some((candidate) => candidate.type === block.type) === true;
++    if (!blockFile && !inlineBlockAllowed) continue;
+ 
+     // C1: block-level try/catch — a broken block source must not crash the enclosing section render.
+     // On error the block is included with empty html so the section template can still render its structure.
+     let blockHtml = '';
++    // Existing reusable parents retain their canonical child path. Newly exposed inline
++    // child drops include installed first-party reusable definitions only; app seams stay dormant.
++    const nestedBlocks = blockFile ? block.blocks ?? {} : Object.fromEntries(
++      Object.entries(block.blocks ?? {}).filter(([, child]) => !isLiquidAppBlockType(child.type) && Object.hasOwn(input.bundle.blocks, child.type)),
++    );
+     // Phase T: render child blocks first (before the parent) so sub_blocks is available in the
+     // parent block's Liquid scope.  Depth guard: stop at RENDERER_MAX_BLOCK_DEPTH silently.
+     let subBlockResults: LiquidRenderedBlock[] = [];
+     try {
+-      if (depth < RENDERER_MAX_BLOCK_DEPTH && Object.keys(block.blocks ?? {}).length > 0) {
++      if (depth < RENDERER_MAX_BLOCK_DEPTH && Object.keys(nestedBlocks).length > 0) {
+         // Treat the block's nested children as a pseudo-section for the recursive call.
+         // Per-child crash isolation is provided by the inner try/catch in the recursive invocation.
+         subBlockResults = await renderLiquidSectionBlocks(
+@@ -1246,8 +1239,8 @@
+             section: {
+               type: block.type,
+               settings: block.settings,
+-              blocks: block.blocks ?? {},
+-              block_order: block.block_order ?? [],
++              blocks: nestedBlocks,
++              block_order: (block.block_order ?? []).filter(id => Object.hasOwn(nestedBlocks, id)),
+               disabled: false,
+             },
+           },
+@@ -1255,35 +1248,37 @@
+         );
+       }
+ 
+-      const rawBlockHtml = await input.engine.parseAndRender(
+-        blockFile.source,
+-        buildLiquidScope(input.input, input.bundle, {
+-          section: {
+-            id: input.sectionId,
+-            type: input.sectionType,
+-            settings: input.section.settings,
+-          },
+-          block: {
+-            id: blockId,
+-            type: block.type,
+-            settings: block.settings,
+-            schema: blockFile.schema,
+-            editor_attributes: editorAttributes,
+-            // Phase T: thread rendered child blocks into the parent block's Liquid drop
+-            sub_blocks: subBlockResults.map((child) => ({
+-              id: child.id,
+-              type: child.type,
+-              settings: child.settings,
+-              content: child.html,
+-              html: child.html,
+-              is_app_block: child.isAppBlock,
+-              editor_attributes: child.editorAttributes ?? '',
+-            })),
+-          },
+-        }),
+-        liquidRenderOptions,
+-      );
+-      blockHtml = await sanitizeRenderedHtml(String(rawBlockHtml));
++      if (blockFile) {
++        const rawBlockHtml = await input.engine.parseAndRender(
++          blockFile.source,
++          buildLiquidScope(input.input, input.bundle, {
++            section: {
++              id: input.sectionId,
++              type: input.sectionType,
++              settings: input.section.settings,
++            },
++            block: {
++              id: blockId,
++              type: block.type,
++              settings: block.settings,
++              schema: blockFile.schema,
++              editor_attributes: editorAttributes,
++              // Phase T: thread rendered child blocks into the parent block's Liquid drop
++              sub_blocks: subBlockResults.map((child) => ({
++                id: child.id,
++                type: child.type,
++                settings: child.settings,
++                content: child.html,
++                html: child.html,
++                is_app_block: child.isAppBlock,
++                editor_attributes: child.editorAttributes ?? '',
++              })),
++            },
++          }),
++          liquidRenderOptions,
++        );
++        blockHtml = await sanitizeRenderedHtml(String(rawBlockHtml));
++      }
+     } catch (blockErr: unknown) {
+       const msg = blockErr instanceof Error ? blockErr.message : String(blockErr);
+       // Push warning into the input.input context is not available here; we swallow and leave html=''.

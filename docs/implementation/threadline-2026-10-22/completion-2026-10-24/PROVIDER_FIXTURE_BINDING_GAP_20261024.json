@@ -1,0 +1,75 @@
+{
+  "recordedAt": "2026-10-24T13:13:48.484179+00:00",
+  "classification": "READ_ONLY_CURRENT_FIXTURE_PROVIDER_BINDING_WITNESS_NOT_EXECUTION",
+  "sourcePins": [
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/theme-editor-browser.manual.ts",
+      "sha256": "722a170a86cdaaabd3503f3360d810d0e59b55f58dc1cc39cfc95f399a5df177",
+      "bytes": 988
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/threadline-browser-fixture.ts",
+      "sha256": "b17600512a50d3be39338325cc4baf83bdfd89508486a821b00328bb3d22e4b8",
+      "bytes": 23081
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/gateway-harness.ts",
+      "sha256": "8ea080a22eda42ad030a849c9aed109d2224ad52a346081d3a0466c1f8b648f7",
+      "bytes": 14309
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/owned-db-support.ts",
+      "sha256": "bd87cee74313edf0842c275a944814c6f63b2a6e90353d5428fbef30c8301f12",
+      "bytes": 37692
+    }
+  ],
+  "actualCallChain": [
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/theme-editor-browser.manual.ts",
+      "witness": "holdThreadlineBrowserFixture(owned, proxy.env())"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/owned-db-support.ts",
+      "witness": "proxy.env returns onlyHYPERDRIVE/STOREFRONT_POOLED_SQL;owned.restEnv returns onlySUPABASE_URL/SUPABASE_SERVICE_ROLE_KEY"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/threadline-browser-fixture.ts",
+      "witness": "gatewayEnv(owned, keys, {...pooledEnv, ENVIRONMENT:local, syntheticResendKey, identityIssuer, storeRootDomain, checkoutOrigin, checkoutSigningSecret})"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/gateway-harness.ts",
+      "witness": "gatewayEnv builds explicit {...owned.restEnv(),ENVIRONMENT:test,identityJWKS/issuer,INTERNAL_API_SECRET,...extra}; no process.env spread"
+    }
+  ],
+  "providerBindingsInThisCurrentFixture": {
+    "RAZORPAY_KEY_ID": "NOT_PASSED",
+    "RAZORPAY_KEY_SECRET": "NOT_PASSED",
+    "LETBUYY_RAZORPAY_MODE": "NOT_PASSED",
+    "LETBUYY_PAYMENT_MODE": "NOT_PASSED",
+    "RAZORPAY_WEBHOOK_SECRET": "NOT_PASSED",
+    "HOSTED_RAZORPAY_TEST_ADAPTER": "ABSENT; do not addfakeadapter",
+    "canonicalWebhookReceiver": "NOT_CREATED_BY_THIS_FIXTURE"
+  },
+  "actualConsequence": "SettingkeysinrunnerprocessenvironmentalonecannotbindthegatewayEnvobjectinthisexistingmanualentry. Thisisstaticcall-chainproof; noactualpaymentattempt/runorclaimthatCODEXprocesscontainskeys.",
+  "singleOwnerNextAction": "Themesrelaysactualfour-sourcefixturebindingseamtodesignatedMadeYoursproviderbindingowner. AdmitoneprotectedallowlistedrealTestbindinginexistingcanonicalgatewayfixtureandcanonicalwebhook-service/sameownedDB+actualownedpublicHTTPSreceiver. No newprovideradapter/runtime/auth/publisher or broadambientenvinheritance.",
+  "requiredAdmission": [
+    "Exactsourcefixture/gateway/receiver/DBrunidentity andallowlistedbindingmechanism",
+    "Useonlyalreadyhuman-authorizedCSVafterconcreteruntimegrant, once, nosecretoutput/copies",
+    "ExplicitTestmode andactualkeyaccountmatch; HOSTED_RAZORPAY_TEST_ADAPTER absent",
+    "Separatematchingwebhooksecretandfreshmatchinginternalgateway/receiverbinding; noambientstaging/prodfallback",
+    "ActualownedHTTPSroute+rawbody/signature/eventidpreservation+provideracceptedTestwebhook; noexposurebythiswitness",
+    "ActualperThreadlinebrowserTestpurchase/providerverify/durablewebhookdedup/canonicalledgerinventoryhistory/reconciliationevidence"
+  ],
+  "currentProviderProposal": "docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/RAZORPAY_RUNTIME_BINDING_PROPOSAL02.json",
+  "notACODBlocker": "EligibleoriginalCOD/editorlanecanproceedunderitsownRootcompiled/security/TLS/actor/smokeadmission; realproviderisadditionalfullgoalgate.",
+  "operations": {
+    "sourceImports": 0,
+    "tests": 0,
+    "credentialsRead": 0,
+    "providerCalls": 0,
+    "runtimeOrBrowser": 0,
+    "MainWrites": 0,
+    "userDataChanges": 0
+  },
+  "FULL_THEME_CERTIFIED": false
+}

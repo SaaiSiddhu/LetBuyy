@@ -1,0 +1,80 @@
+{
+  "recordedAt": "2026-10-23T19:56:17.179291+00:00",
+  "classification": "READ_ONLY_AUDIT_OF_ACTUAL_EDITOR_UI_AND_SAVED_CANONICAL_RECEIPTS",
+  "runId": "f6074d90e894",
+  "candidate": "/private/tmp/theme-editor-candidate-20261023-latest392-manualtls01",
+  "sourceManifestSha256": "3875d08aab8f5cc335287f3fa6b31c9dd9c9c940e458e512332429404ccb1203",
+  "caseId": "P08",
+  "status": "FAIL",
+  "independentlyCheckedSavedArtifacts": {
+    "valid250Quantity2PositiveControlAcceptedAtAvailable4": true,
+    "attempt5LeavesTwoGuardedActualCartObjectsExactlyEqualAtQuantity4Total720": true,
+    "settledNativeRowShows5WhileServerQuantity4AndTotal720": true,
+    "normalValidRetry2NativeAndCanonicalReceiptRecovered": true,
+    "exactWhitelistedOriginalPink2CartActualObjectRestored": true,
+    "ordersAtAllFailureAndRestorationReceipts": 0,
+    "noActivePantry250CartPreservedForP12": true
+  },
+  "evidence": [
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-cart-pantry-stock.json",
+      "sha256": "6d0dcccefa3e81c1bc74353f66c555cd6f0216349e4ce20ead60c1bacf4614db"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-cart-pantry-stock-2.json",
+      "sha256": "a5128d3064a682312afbfc01a2bb85e086773168927d0e925ab18505851ad5b5"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-cart-pantry-cart.json",
+      "sha256": "3c27aaa782c5b7953a2bbfb95147583dace5709316354417de24c864d7df4755"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-cart-pantry-cart-2.json",
+      "sha256": "a620465837976889513086a5e1978a27bc6f0359bd8027f31b59734f1c78c9e9"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-cart-pantry-cart-3.json",
+      "sha256": "9166d5a0c5c017230e586eb92763784e24f14dcada490ced071bb36e5f373db9"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-P08-stock-stale-quantity.ax.txt",
+      "sha256": "79bc393cb82c1931f1fb0e21d751bf5ccc9e6d3c45f4fe0a92f1e95adb153d64"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-P08-valid-retry-two.ax.txt",
+      "sha256": "0fb5d53313a18541732404c40f08e227069d9e3d8e27be135dd7651b71e250b2"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-cart-pantry-before.json",
+      "sha256": "2e98bb2a15d1d2bae4f1590c89e27cf55f1e3ac6554d812ecb8c6d2147992ec6"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-cart-pantry-restored.json",
+      "sha256": "a79df63b745056d64128b05af9b06f1cfdb6db22e9206a6f3da3b705eedfae8b"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-P08-pink-baseline-restored.ax.txt",
+      "sha256": "6ffcc4259701bf97d792b8df3f5bed947962aa527970589c7fae9764e15da4c3"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-browser-diagnostics.json",
+      "sha256": "94323a82527e497b0821af11f39321316fa08d62e40d64e5746324abb24ee569"
+    }
+  ],
+  "limits": [
+    "Actual HTTP409/INSUFFICIENT_INVENTORY response was not retained; no exact HTTP status/code claim.",
+    "Owner reports no useful visible error; saved settled AX independently proves quantity/total mismatch.",
+    "Reservation-table invariance and complete cart DB timestamps/private capability fields not captured.",
+    "Recovery to valid2 does not turn the actual hidden failure/stale5 behavior into PASS.",
+    "Pantry screenshot not visually audited; native AX plus guarded saved rows establish the failure."
+  ],
+  "sourceChangesByPantry": [],
+  "failureId": "PANTRY-P08-CART-RECOVERY-F607-01",
+  "owningChat": {
+    "title": "Circuit — Electronics Theme",
+    "threadId": "01a164ba-a97f-7d80-9430-57924218664b"
+  },
+  "pinnedCommerceHydrationSourceSha256": "9e87ff6b8b18a8e2208ca770fc44c282a03632d575973e26f1cd34f1656088b4",
+  "reproduction": "Normal Pantry250g Add count2; increase through3/4 then attempt total5. Server remains4/720; settled native row5/no useful error. Normal decreases recover2/360. Remove Pantry line and restore exact original Pink2 baseline.",
+  "requiredReverification": "Owner-integrated existing cart recovery fix must be tested through the same normal Pantry overstock/retry path with actual request/receipt/reload and required inventory/no-order checks."
+}

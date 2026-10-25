@@ -1,0 +1,17 @@
+{
+  "command": [
+    "node",
+    "--import",
+    "tsx",
+    "--test",
+    "--test-concurrency=1",
+    "apps/commerce/web/src/lib/theme-engine/liquid-cart-island.test.ts",
+    "apps/commerce/web/src/lib/theme-engine/liquid-buy-now.test.ts",
+    "apps/commerce/web/src/lib/theme-engine/madeyours-cart-island.test.ts",
+    "apps/commerce/web/src/lib/theme-engine/variant-facts-controller.test.ts",
+    "apps/commerce/web/src/lib/theme-engine/variant-options-carrier.test.ts",
+    "apps/commerce/web/src/lib/theme-engine/madeyours-personalization.test.ts"
+  ],
+  "exitCode": 0,
+  "durationSeconds": 13.835
+}

@@ -1,0 +1,753 @@
+{
+  "body": {
+    "background": "rgba(0, 0, 0, 0)",
+    "color": "rgba(46, 42, 57, 0.75)",
+    "font": "Poppins, sans-serif",
+    "fontSize": "15px"
+  },
+  "controls": [
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Menu",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Search",
+      "tag": "INPUT",
+      "type": "search"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": true,
+      "expanded": null,
+      "label": "Slide left",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Slide right",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": true,
+      "expanded": null,
+      "label": "Slide left",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Slide right",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Email",
+      "tag": "INPUT",
+      "type": "email"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Subscribe",
+      "tag": "BUTTON",
+      "type": "submit"
+    }
+  ],
+  "headings": [
+    {
+      "font": "Poppins, sans-serif",
+      "height": 30,
+      "line": "0px",
+      "size": "36px",
+      "tag": "H1",
+      "text": "",
+      "weight": "500",
+      "width": 85,
+      "x": 152.5,
+      "y": 73.984375
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 19.5,
+      "line": "19.5px",
+      "size": "13px",
+      "tag": "H2",
+      "text": "",
+      "weight": "400",
+      "width": 306,
+      "x": 35,
+      "y": -19.515625
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 135,
+      "line": "45px",
+      "size": "36px",
+      "tag": "H2",
+      "text": "Glowing skin, naturally",
+      "weight": "500",
+      "width": 244,
+      "x": 73,
+      "y": 452.578125
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 60,
+      "line": "30px",
+      "size": "24px",
+      "tag": "H2",
+      "text": "Shop our most trusted formulas",
+      "weight": "500",
+      "width": 360,
+      "x": 15,
+      "y": 912.578125
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 17.9921875,
+      "line": "18px",
+      "size": "14.4px",
+      "tag": "H3",
+      "text": "Lip Balm",
+      "weight": "500",
+      "width": 105,
+      "x": 35,
+      "y": 1195.578125
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 35.984375,
+      "line": "18px",
+      "size": "14.4px",
+      "tag": "H3",
+      "text": "Monoi Conditioner",
+      "weight": "500",
+      "width": 105,
+      "x": 200,
+      "y": 1195.578125
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 53.9765625,
+      "line": "18px",
+      "size": "14.4px",
+      "tag": "H3",
+      "text": "Turmeric Konjac Sponge",
+      "weight": "500",
+      "width": 105,
+      "x": 365,
+      "y": 1195.578125
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 35.984375,
+      "line": "18px",
+      "size": "14.4px",
+      "tag": "H3",
+      "text": "Nail Polish: Atwater",
+      "weight": "500",
+      "width": 105,
+      "x": 530,
+      "y": 1195.578125
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 180,
+      "line": "30px",
+      "size": "24px",
+      "tag": "H2",
+      "text": "“Our mission is to provide high quality products that are not tested on animals and are completely safe for the environment.”",
+      "weight": "500",
+      "width": 310,
+      "x": 40,
+      "y": 1511.7578125
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 17.9921875,
+      "line": "18px",
+      "size": "14.4px",
+      "tag": "H3",
+      "text": "Body Lotion",
+      "weight": "500",
+      "width": 320,
+      "x": 35,
+      "y": 2230.7578125
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 17.9921875,
+      "line": "18px",
+      "size": "14.4px",
+      "tag": "H3",
+      "text": "Everything Body Soap",
+      "weight": "500",
+      "width": 320,
+      "x": 35,
+      "y": 2711.546875
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 17.9921875,
+      "line": "18px",
+      "size": "14.4px",
+      "tag": "H3",
+      "text": "Monoi Shampoo",
+      "weight": "500",
+      "width": 320,
+      "x": 35,
+      "y": 3191.1640625
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 28.890625,
+      "line": "28.9px",
+      "size": "20.4px",
+      "tag": "H3",
+      "text": "Vegan",
+      "weight": "500",
+      "width": 310,
+      "x": 40,
+      "y": 3447.203125
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 28.890625,
+      "line": "28.9px",
+      "size": "20.4px",
+      "tag": "H3",
+      "text": "Natural",
+      "weight": "500",
+      "width": 310,
+      "x": 40,
+      "y": 3719.34375
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 28.890625,
+      "line": "28.9px",
+      "size": "20.4px",
+      "tag": "H3",
+      "text": "Recyclable",
+      "weight": "500",
+      "width": 310,
+      "x": 40,
+      "y": 3991.484375
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 28.890625,
+      "line": "28.9px",
+      "size": "20.4px",
+      "tag": "H3",
+      "text": "Compostable",
+      "weight": "500",
+      "width": 310,
+      "x": 40,
+      "y": 4263.625
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 25.4921875,
+      "line": "25.5px",
+      "size": "20.4px",
+      "tag": "H3",
+      "text": "Skin Care",
+      "weight": "500",
+      "width": 320,
+      "x": 35,
+      "y": 4855.515625
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 25.4921875,
+      "line": "25.5px",
+      "size": "20.4px",
+      "tag": "H3",
+      "text": "Body Care",
+      "weight": "500",
+      "width": 320,
+      "x": 415,
+      "y": 4855.515625
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 25.4921875,
+      "line": "25.5px",
+      "size": "20.4px",
+      "tag": "H3",
+      "text": "Nail Polish",
+      "weight": "500",
+      "width": 320,
+      "x": 795,
+      "y": 4855.515625
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 90,
+      "line": "45px",
+      "size": "36px",
+      "tag": "H2",
+      "text": "Get 20% off your first order",
+      "weight": "500",
+      "width": 310,
+      "x": 40,
+      "y": 5097.0078125
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 24,
+      "line": "24px",
+      "size": "19.2px",
+      "tag": "H2",
+      "text": "Menu",
+      "weight": "500",
+      "width": 310,
+      "x": 40,
+      "y": 5379.0078125
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 24,
+      "line": "24px",
+      "size": "19.2px",
+      "tag": "H2",
+      "text": "Our Store",
+      "weight": "500",
+      "width": 310,
+      "x": 40,
+      "y": 5734.1796875
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 24,
+      "line": "24px",
+      "size": "19.2px",
+      "tag": "H2",
+      "text": "Our Promise",
+      "weight": "500",
+      "width": 310,
+      "x": 40,
+      "y": 6159.84375
+    }
+  ],
+  "links": [
+    {
+      "text": "Skip to content",
+      "url": "https://theme-sense-demo.myshopify.com/#MainContent"
+    },
+    {
+      "text": "",
+      "url": "https://theme-sense-demo.myshopify.com/collections/skin"
+    },
+    {
+      "text": "",
+      "url": "https://theme-sense-demo.myshopify.com/collections/hair"
+    },
+    {
+      "text": "",
+      "url": "https://theme-sense-demo.myshopify.com/collections/body"
+    },
+    {
+      "text": "",
+      "url": "https://theme-sense-demo.myshopify.com/collections/nail-polish"
+    },
+    {
+      "text": "",
+      "url": "https://theme-sense-demo.myshopify.com/blogs/news"
+    },
+    {
+      "text": "",
+      "url": "https://theme-sense-demo.myshopify.com/pages/about-us"
+    },
+    {
+      "text": "",
+      "url": "https://theme-sense-demo.myshopify.com/"
+    },
+    {
+      "text": "Cart",
+      "url": "https://theme-sense-demo.myshopify.com/cart"
+    },
+    {
+      "text": "Shop now",
+      "url": "https://theme-sense-demo.myshopify.com/collections/skin"
+    },
+    {
+      "text": "Lip Balm",
+      "url": "https://theme-sense-demo.myshopify.com/products/natural-vegan-lip-balm-lemon-lime"
+    },
+    {
+      "text": "Monoi Conditioner",
+      "url": "https://theme-sense-demo.myshopify.com/products/monoi-conditioner-moisture-and-brightness"
+    },
+    {
+      "text": "Turmeric Konjac Sponge",
+      "url": "https://theme-sense-demo.myshopify.com/products/natural-konjac-sponge-turmeric"
+    },
+    {
+      "text": "Nail Polish: Atwater",
+      "url": "https://theme-sense-demo.myshopify.com/products/non-toxic-nail-polish-atwater"
+    },
+    {
+      "text": "Body Lotion",
+      "url": "https://theme-sense-demo.myshopify.com/products/body-lotion-passionfruit"
+    },
+    {
+      "text": "Everything Body Soap",
+      "url": "https://theme-sense-demo.myshopify.com/products/the-everything-soap"
+    },
+    {
+      "text": "Monoi Shampoo",
+      "url": "https://theme-sense-demo.myshopify.com/products/monoi-shampoo-moisture-brightness"
+    },
+    {
+      "text": "Skin Care",
+      "url": "https://theme-sense-demo.myshopify.com/collections/skin"
+    },
+    {
+      "text": "Body Care",
+      "url": "https://theme-sense-demo.myshopify.com/collections/body"
+    },
+    {
+      "text": "Nail Polish",
+      "url": "https://theme-sense-demo.myshopify.com/collections/nail-polish"
+    },
+    {
+      "text": "Skin Care",
+      "url": "https://theme-sense-demo.myshopify.com/collections/skin"
+    },
+    {
+      "text": "Hair Care",
+      "url": "https://theme-sense-demo.myshopify.com/collections/hair"
+    },
+    {
+      "text": "Body Care",
+      "url": "https://theme-sense-demo.myshopify.com/collections/body"
+    },
+    {
+      "text": "Nail Polish",
+      "url": "https://theme-sense-demo.myshopify.com/collections/nail-polish"
+    },
+    {
+      "text": "Blog",
+      "url": "https://theme-sense-demo.myshopify.com/blogs/news"
+    },
+    {
+      "text": "About Us",
+      "url": "https://theme-sense-demo.myshopify.com/pages/about-us"
+    },
+    {
+      "text": "theme-sense-demo",
+      "url": "https://theme-sense-demo.myshopify.com/"
+    }
+  ],
+  "sections": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--16716093817040__163718571786d8faf0",
+      "rect": {
+        "height": 706.59375,
+        "width": 390,
+        "x": 0,
+        "y": 138.984375
+      },
+      "tag": "DIV",
+      "text": "Glowing skin, naturally\n\nIndulge in plant-based skin care for naturally radiant results.\n\nShop now"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--16716093817040__1637185625de94893a",
+      "rect": {
+        "height": 550.1796875,
+        "width": 390,
+        "x": 0,
+        "y": 870.578125
+      },
+      "tag": "SECTION",
+      "text": "Shop our most trusted formulas\nSale\nLip Balm\nRegular price\n$19.00 CAD \nSale price\n$16.00 CAD\nMonoi Conditioner\nRegular price\n$28.00 CAD\nTurmeric Konjac Sponge\nRegular price\n$16.00 "
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--16716093817040__1639585772d06490a7",
+      "rect": {
+        "height": 332,
+        "width": 390,
+        "x": 0,
+        "y": 1445.7578125
+      },
+      "tag": "SECTION",
+      "text": "“Our mission is to provide high quality products that are not tested on animals and are completely safe for the environment.”\n\nMarilyne, Founder"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--16716093817040__1638808293015b1f16",
+      "rect": {
+        "height": 1478.1953125,
+        "width": 390,
+        "x": 0,
+        "y": 1802.7578125
+      },
+      "tag": "SECTION",
+      "text": "Sold out\nBody Lotion\nRegular price\n$36.00 CAD\nEverything Body Soap\nRegular price\n$10.00 CAD\nSale\nMonoi Shampoo\nRegular price\n$32.00 CAD \nSale price\n$28.00 CAD"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--16716093817040__163890167571c9785d",
+      "rect": {
+        "height": 1095.5625,
+        "width": 390,
+        "x": 0,
+        "y": 3305.953125
+      },
+      "tag": "SECTION",
+      "text": "Vegan\n\nOur entire collection is vegan and cruelty free.\n\nNatural\n\nWe only use the finest\nnatural ingredients.\n\nRecyclable\n\nAll packaging is recyclable and eco conscious.\n\nCompostab"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--16716093817040__16371861472fe64fed",
+      "rect": {
+        "height": 594.4921875,
+        "width": 390,
+        "x": 0,
+        "y": 4426.515625
+      },
+      "tag": "SECTION",
+      "text": "Skin Care\nBody Care\nNail Polish\n1\n/\nof\n3"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--16716093817040__1638808989162cd290",
+      "rect": {
+        "height": 321,
+        "width": 390,
+        "x": 0,
+        "y": 5046.0078125
+      },
+      "tag": "SECTION",
+      "text": "Get 20% off your first order\n\nJoin our email list for exclusive offers and the latest news.\n\nEmail"
+    }
+  ],
+  "title": "theme-sense-demo",
+  "url": "https://theme-sense-demo.myshopify.com/",
+  "viewport": {
+    "dpr": 1,
+    "height": 844,
+    "width": 390
+  },
+  "formGroups": [],
+  "grids": [
+    {
+      "className": "image-with-text__grid grid grid--gapless grid--1-col grid--3-col-tablet image-with-text__grid--reverse",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 706.59375,
+      "tag": "DIV",
+      "width": 360
+    },
+    {
+      "className": "grid grid--2-col product-grid grid--2-col-tablet grid--4-col-desktop slider slider--tablet grid--peek",
+      "columns": "none",
+      "display": "flex",
+      "gap": "20px",
+      "height": 356.1796875,
+      "tag": "UL",
+      "width": 390
+    },
+    {
+      "className": "multicolumn-list grid grid--1-col grid--2-col-tablet grid--4-col-desktop",
+      "columns": "none",
+      "display": "flex",
+      "gap": "20px",
+      "height": 1068.5625,
+      "tag": "UL",
+      "width": 390
+    },
+    {
+      "className": "collection-list grid grid--1-col grid--3-col-tablet slider slider--tablet grid--peek collection-list--3-items",
+      "columns": "none",
+      "display": "flex",
+      "gap": "20px",
+      "height": 501.4921875,
+      "tag": "UL",
+      "width": 390
+    }
+  ],
+  "images": [
+    {
+      "alt": "Woman applying cream on her cheek using her fingertips",
+      "complete": true,
+      "naturalWidth": 170,
+      "rect": {
+        "height": 303.59375,
+        "width": 360
+      }
+    },
+    {
+      "alt": "Lip Balm - Lemon and lime bkind",
+      "complete": true,
+      "naturalWidth": 177,
+      "rect": {
+        "height": 145,
+        "width": 145
+      }
+    },
+    {
+      "alt": "Lip Balm - Lemon and lime bkind",
+      "complete": true,
+      "naturalWidth": 177,
+      "rect": {
+        "height": 145,
+        "width": 145
+      }
+    },
+    {
+      "alt": "Monoi Conditioner",
+      "complete": true,
+      "naturalWidth": 177,
+      "rect": {
+        "height": 145,
+        "width": 145
+      }
+    },
+    {
+      "alt": "Monoi Conditioner",
+      "complete": true,
+      "naturalWidth": 177,
+      "rect": {
+        "height": 145,
+        "width": 145
+      }
+    },
+    {
+      "alt": "Brightening Konjac Sponge - Turmeric bkind",
+      "complete": true,
+      "naturalWidth": 177,
+      "rect": {
+        "height": 145,
+        "width": 145
+      }
+    },
+    {
+      "alt": "Brightening Konjac Sponge - Turmeric bkind",
+      "complete": true,
+      "naturalWidth": 177,
+      "rect": {
+        "height": 145,
+        "width": 145
+      }
+    },
+    {
+      "alt": "Nail Polish: Atwater",
+      "complete": true,
+      "naturalWidth": 177,
+      "rect": {
+        "height": 145,
+        "width": 145
+      }
+    },
+    {
+      "alt": "Nail Polish: Atwater",
+      "complete": true,
+      "naturalWidth": 177,
+      "rect": {
+        "height": 145,
+        "width": 145
+      }
+    },
+    {
+      "alt": "Body Lotion",
+      "complete": true,
+      "naturalWidth": 177,
+      "rect": {
+        "height": 360,
+        "width": 360
+      }
+    },
+    {
+      "alt": "Body Lotion",
+      "complete": true,
+      "naturalWidth": 177,
+      "rect": {
+        "height": 360,
+        "width": 360
+      }
+    },
+    {
+      "alt": "Everything Body Soap",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 360,
+        "width": 360
+      }
+    }
+  ],
+  "bodyText": "Skip to content\n\nSave 15% on orders over $50 ♡ Use code 15OFF at checkout\n\nCart\nGlowing skin, naturally\n\nIndulge in plant-based skin care for naturally radiant results.\n\nShop now\nShop our most trusted formulas\nSale\nLip Balm\nRegular price\n$19.00 CAD \nSale price\n$16.00 CAD\nMonoi Conditioner\nRegular price\n$28.00 CAD\nTurmeric Konjac Sponge\nRegular price\n$16.00 CAD\nSale\nNail Polish: Atwater\nRegular price\n$20.00 CAD \nSale price\n$16.00 CAD\n1\n/\nof\n3\n“Our mission is to provide high quality products that are not tested on animals and are completely safe for the environment.”\n\nMarilyne, Founder\n\nSold out\nBody Lotion\nRegular price\n$36.00 CAD\nEverything Body Soap\nRegular price\n$10.00 CAD\nSale\nMonoi Shampoo\nRegular price\n$32.00 CAD \nSale price\n$28.00 CAD\nVegan\n\nOur entire collection is vegan and cruelty free.\n\nNatural\n\nWe only use the finest\nnatural ingredients.\n\nRecyclable\n\nAll packaging is recyclable and eco conscious.\n\nCompostable\n\nOrders are shipped with biodegradable peanuts.\n\nSkin Care\nBody Care\nNail Polish\n1\n/\nof\n3\nGet 20% off your first order\n\nJoin our email list for exclusive offers and the latest news.\n\nEmail\nMenu\nSkin Care\nHair Care\nBody Care\nNail Polish\nBlog\nAbout Us\nOur Store\n\n3455 St Laurent Blvd\nMontreal, Quebec H2X 2T6\nMon - Fri 9 a.m. - 7 p.m.\nSat - Sun 10a.m. - 6p.m.\n\n\nOur Promise\n\nTo create high quality, plant-based products that are safe for people and the planet.\n\nTwitter\nFacebook\nPinterest\nInstagram\nTikTok\n© 2026, theme-sense-demo Powered by Shopify"
+}

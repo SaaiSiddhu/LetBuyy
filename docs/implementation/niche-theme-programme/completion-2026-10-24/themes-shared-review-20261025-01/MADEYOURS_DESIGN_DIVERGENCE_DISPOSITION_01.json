@@ -1,0 +1,15 @@
+{
+  "recordedAt": "2026-10-25T01:56:42.911073+00:00",
+  "status": "RETAIN_UNEXPLAINED_FROZEN_DESIGN_DIVERGENCE_FOR_VISUAL_CERTIFICATION_DISPOSITION_CAPTURE_COHORT_BOUNDARY_UNAFFECTED",
+  "observation": {
+    "path": "docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/hosted-capture-native-preparation01/FROZEN_ARTIFACT_DIVERGENCE_OBSERVATION01.json",
+    "sha256": "c1a2b68415a91d7b3195b861091771ef2e1f8d1a5597451a590856f63f892c5d",
+    "divergent": 8,
+    "matched": 95,
+    "allFourSourcePinsExact": true
+  },
+  "dependencyBasis": "NativeAPI/capturecohorthasexactsealed6545source/2175links each, allfourtrackedMYsourcepins exact; nonimported design-board/image/HTML/build/capture-script/zip artifacts are not substituted as captureproof. No buyer/browser/visualcredit from shared25tests.",
+  "sourceClaims": "103designartifactcheck reports95matches/8divergences, cause/timeunknown; preservebytes and historicalbaseline. No repair/reseal/reset authorized.",
+  "fullMadeYoursThemeCertificate": false,
+  "captureNativeGreen": "Allowedonlyunderseparateexactactivation01/acceptedsource/query/witness/cleanup; designobservationnoterased."
+}

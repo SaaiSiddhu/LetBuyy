@@ -1,0 +1,15 @@
+{
+  "recordedAt": "2026-10-23T19:19:53.949005+00:00",
+  "source": "DIRECT_HUMAN_USER_MESSAGE_IN_ROOT",
+  "rootThreadId": "01a164a4-a342-76d3-ab33-65e021ed57db",
+  "questionItemId": [
+    "request_user_input_async",
+    "call_bf8d64c8f1654c76a882f6b0081ce091",
+    0
+  ],
+  "answer": "Approve synthetic local sign-in",
+  "scope": "Editor normal visible synthetic account form at accounts.threadline-555b91e19691.localhost:65375, isolatedMarketplace555 Add to owned library",
+  "priorAutomaticRejections": "Preserved; no alternate actor or auth bypass used",
+  "actualOutcome": "Normal sign-in succeeded; one Add committed privately, Marketplace confirmation criterion still failed",
+  "separateEditorDirectApproval": "Actual Editor receipt also records call_2139684057274724b75dd2f15cd576f6"
+}

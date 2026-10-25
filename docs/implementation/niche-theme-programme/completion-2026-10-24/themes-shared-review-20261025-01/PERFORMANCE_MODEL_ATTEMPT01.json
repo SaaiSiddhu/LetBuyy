@@ -1,0 +1,7 @@
+{
+  "status": "MODEL_PROBE_STARTUP_REFUSAL_DEPENDENCY_SCOPE",
+  "error": "ERR_MODULE_NOT_FOUND zod under documentation/root module scope",
+  "correction": "Resolve declared zod through api-gateway package.json for this source-only model probe; no install or production change",
+  "functionsExecuted": 0,
+  "nativeDatabaseProviderActions": 0
+}

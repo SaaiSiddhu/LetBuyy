@@ -1,0 +1,102 @@
+{
+  "recordedAt": "2026-10-24T05:11:58.498Z",
+  "runId": "936e5f577646",
+  "guardVerified": true,
+  "actual": {
+    "packageVersion": "2.0.0",
+    "releaseId": "f1a1d5ac-47b6-4084-abc1-50859f8a1355",
+    "sourceDraftVersion": 9,
+    "releaseSha256": "b369f8a33718f7187e58012f6eb10110ff09beef2ecd77bb64910983d31bbfd2",
+    "orders": 2,
+    "installed": 2,
+    "editorObservations": {
+      "captureFailures": 0,
+      "failedCaptureFailures": 0,
+      "failedRequests": [
+        {
+          "operation": "cart-replace",
+          "cartId": "c0f9b1fd-07b9-4ecf-9f4e-740aa656c0c2",
+          "status": 409,
+          "responseCode": "INSUFFICIENT_INVENTORY",
+          "requestId": "6cc725e3-10d3-4241-b3fb-eee0a5f46f6a",
+          "commandSha256": "7e0de349ce7e50f15180493b41ebc9faf3cdd22525c4e55731a71ca701c99619",
+          "responseSha256": "dc052ee27d92c2d159484eb4bb2847c415e6676d60ae206a0479f4c8b7d1bcba"
+        },
+        {
+          "operation": "cart-replace",
+          "cartId": "c0f9b1fd-07b9-4ecf-9f4e-740aa656c0c2",
+          "status": 409,
+          "responseCode": "VARIANT_REQUIRED",
+          "requestId": "070d6237-e54f-47d6-b8dd-a7a0ef071b12",
+          "commandSha256": "6f9e932c658e887f1e399fe5715130b3050d1c1bfae879aa1ce57aad730b41a9",
+          "responseSha256": "5a32fac76d020562a3a6ecd15c184637bd853c4a73da91467620b44c28f874bc"
+        },
+        {
+          "operation": "cart-replace",
+          "cartId": "c0f9b1fd-07b9-4ecf-9f4e-740aa656c0c2",
+          "status": 400,
+          "responseCode": "VARIANT_NOT_FOUND",
+          "requestId": "876dff82-2656-47d6-8ee2-8e6b0871cdc7",
+          "commandSha256": "3745431f9348c628a5ae198ec4702c0b5a9c4f0463966d0cd8f1028b1d3cf3c8",
+          "responseSha256": "89a263be07174a3d145e15c827f7fa6ed3cd39949a8772f9bb54b26f74e3bb27"
+        },
+        {
+          "operation": "cart-replace",
+          "cartId": "c0f9b1fd-07b9-4ecf-9f4e-740aa656c0c2",
+          "status": 400,
+          "responseCode": "VALIDATION_ERROR",
+          "requestId": "98d20603-baaf-4b1e-b5fd-812ffc4589b4",
+          "commandSha256": "c42737b6327023bca38bc1246d2601041351e84d99272cbc64f0128f9e886512",
+          "responseSha256": "35875704e1b91e4d0f55df21386e899c7f42e50943d76f4d819bc6d48f73b6a2"
+        },
+        {
+          "operation": "cart-replace",
+          "cartId": "c0f9b1fd-07b9-4ecf-9f4e-740aa656c0c2",
+          "status": 400,
+          "responseCode": "VALIDATION_ERROR",
+          "requestId": "1fb62204-85ea-493d-8f56-c201abe27080",
+          "commandSha256": "25bcbffd9807f21b56e3898e17c0e9976b74c28372b41d52e775161bc7acd5a4",
+          "responseSha256": "950ce9b59c9704d9528e07fdd5eecb7bc5bc196f5175368877e35319bb56cd06"
+        },
+        {
+          "operation": "cart-replace",
+          "cartId": "c0f9b1fd-07b9-4ecf-9f4e-740aa656c0c2",
+          "status": 400,
+          "responseCode": "VALIDATION_ERROR",
+          "requestId": "9d32805f-a2f7-4143-a039-f5361b46cfd4",
+          "commandSha256": "b22d854eb34300504e3a5cb77f75ae2eeee903c81caabfebe9b24f98d997e024",
+          "responseSha256": "dd7c9ac8f65c4096135da180c88916fb7fbd07ba22abd761040de0f661e6a68c"
+        },
+        {
+          "operation": "checkout-confirm",
+          "cartId": "6284ebe8-98d4-41db-9272-292417bd41e5",
+          "status": 409,
+          "responseCode": "CHECKOUT_PRODUCT_CHANGED",
+          "requestId": "b66c120f-97ce-4527-bbf1-939801fcaa58",
+          "commandSha256": "b3728af89bd22e37c1b680b47171b33ae4f0329eee124a5433b87f96e139f7f5",
+          "responseSha256": "915ceac02a5c6e30a4b06cf8486d894d72309e829672f2e31fff504f5829a94d"
+        },
+        {
+          "operation": "cart-replace",
+          "cartId": "6284ebe8-98d4-41db-9272-292417bd41e5",
+          "status": 409,
+          "responseCode": "INSUFFICIENT_INVENTORY",
+          "requestId": "a09af1b0-6c43-4e2c-93c9-a8bba0b8db08",
+          "commandSha256": "83da4cc4a71b773312841361d4eea60a3c8582465a0498813b9fbb4e7ed55421",
+          "responseSha256": "dc052ee27d92c2d159484eb4bb2847c415e6676d60ae206a0479f4c8b7d1bcba"
+        }
+      ],
+      "records": [
+        {
+          "index": 0,
+          "orderId": "84a52d92-6cb4-46bb-b941-8d7f37e8cb74",
+          "commandSha256": "b5d0aeb12d02938b7cc1467d5c48c33876a37eeb0f3810767233ae2464d6718c",
+          "responseSha256": "3f6db09ae59e39fd21706de462050896d2225df7a35662c9ac2c6607cf5c0146",
+          "requestId": "8e81b7ad-508c-4b13-b7b3-1a0658feace6",
+          "status": 200,
+          "replays": 2
+        }
+      ]
+    }
+  }
+}

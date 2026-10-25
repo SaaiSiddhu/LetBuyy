@@ -1,0 +1,7 @@
+{
+  "NodeCompilerAndTestProcessesWereExecuted": true,
+  "ApplicationWorkerNextBuildStageDatabaseDockerNetworkProviderBrowserProcessesOrActions": 0,
+  "stageChildHandles": "Recordingfake EventEmitters only",
+  "logStreams": "Realin-memory Node Writable, recordingfake FDs; noOSlogFD opened bytheextractedfunction",
+  "sourceBehavior": "ActualTypeScriptstagefunction fragment, not fullfixture/Worker evaluation"
+}

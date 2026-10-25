@@ -1,0 +1,452 @@
+{
+  "schemaVersion": 1,
+  "theme": "Kindred",
+  "date": "2026-10-23",
+  "scope": "Read-only implementation impact preparation; not permission to edit production",
+  "observedBranch": "letbuyy/theme-release-performance-resume",
+  "observedHead": "85aac99043d8dc10469e12cbb810609a3b6f1b0d",
+  "baselineCaveat": "Shared dirty working tree contains necessary existing changes; HEAD alone is incomplete",
+  "mockupReview": {
+    "individual": "Previously passed; scene12 correction1.2 now ready for coordinator final re-review",
+    "portfolio405Gate": "pending",
+    "frozenManifest": "frozen-visual-manifest.json"
+  },
+  "implementationDispatched": false,
+  "stableIdentity": {
+    "preset": "summit",
+    "slug": "letbuyy-summit",
+    "catalogId": "7b669c70-0000-4000-8000-000000000010",
+    "packageVersion": "Unallocated; deliberate new version after current catalog readback;2.0.0 conditional candidate only",
+    "neutralFallback": "Preserve General/unknown Core/Summit internal behavior; exact explicit artifact is gifts discriminator; no eleventh marketed design"
+  },
+  "owners": [
+    {
+      "domain": "Catalog and stable identity",
+      "files": [
+        {
+          "path": "packages/theme-engine/src/first-party-theme-catalog.ts",
+          "exists": true,
+          "sha256": "2a735a06458b23db335bf1374496a5be1985fe05ce0c6e0fa7a0768bf321be25"
+        },
+        {
+          "path": "packages/theme-engine/src/theme-presets.ts",
+          "exists": true,
+          "sha256": "283028890199a34e67863c337ebd0c788c830c60ddaa87854c3bad28f9581e82"
+        },
+        {
+          "path": "packages/theme-engine/src/industry-experience-map.ts",
+          "exists": true,
+          "sha256": "e647df5605fc6bac525c6104a0f60e67cfc6b6f0ba6ea6db323e1e795fc404b3"
+        }
+      ],
+      "action": "Versioned explicit Kindred selection; protect neutral fallback",
+      "writer": "Unallocated; coordinator assignment required after all-nine gate"
+    },
+    {
+      "domain": "Fallback callers",
+      "files": [
+        {
+          "path": "services/api-gateway/src/routes/stores.ts",
+          "exists": true,
+          "sha256": "f4726f2427477b8433c6ab883913f379056f7cd7e2f045e81fe528fd75a545d8"
+        },
+        {
+          "path": "packages/theme-engine/src/ai-personalization.ts",
+          "exists": true,
+          "sha256": "55905619b2fe0d4bd3f972e785de53d00f542c1a886dc40f418c35387787339b"
+        },
+        {
+          "path": "packages/theme-engine/src/ai-theme-generator.ts",
+          "exists": true,
+          "sha256": "0d48c1920b7035456f0d0a064368f67dbf5c27d1dca2a0b90912069e651c6d68"
+        },
+        {
+          "path": "packages/theme-engine/src/theme-ai-sdk.ts",
+          "exists": true,
+          "sha256": "36d3be49894dfffd8a484e69b23ad782963f3c5b027385705603bc3f3cf06afb"
+        }
+      ],
+      "action": "Preserve resolver fallback/source distinction across consumers",
+      "writer": "Unallocated; coordinator assignment required after all-nine gate"
+    },
+    {
+      "domain": "Package and Liquid composition",
+      "files": [
+        {
+          "path": "packages/theme-engine/src/experience-compositions.ts",
+          "exists": true,
+          "sha256": "25b73068b7a4fcce5b4bad3768a376e08c7e384e843f707c3cf8f8fb361abc68"
+        },
+        {
+          "path": "packages/theme-engine/src/experience-apply.ts",
+          "exists": true,
+          "sha256": "fcf62ca230b604f6dd4d33cc34a1b0d990caa131f815fc3666dae4fbce15f6b4"
+        },
+        {
+          "path": "packages/theme-engine/src/theme-document.ts",
+          "exists": true,
+          "sha256": "7ba285a54d71a01545c4cb1e4a3c1540a30caae2db793079b2b3cb32b8612412"
+        },
+        {
+          "path": "packages/theme-engine/src/theme-bundle.ts",
+          "exists": true,
+          "sha256": "27c6a778e76c190ea25d6dffc940804c9f741488b908f0d960f6285644fc8e25"
+        },
+        {
+          "path": "packages/theme-engine/src/built-in-section-schemas.ts",
+          "exists": true,
+          "sha256": "5e44b89d7ebc3d40b82e7d12dfccf399f7a336d39e1a1b04c7deaf4c57486734"
+        },
+        {
+          "path": "packages/theme-engine/src/experience-fonts.ts",
+          "exists": true,
+          "sha256": "9bebd089e4468f8c50f6e9b86bafbbb125025dc7fc42770a83584527d65988e4"
+        }
+      ],
+      "action": "Complete canonical package; no renderer fork",
+      "writer": "Unallocated; coordinator assignment required after all-nine gate"
+    },
+    {
+      "domain": "Typed facts",
+      "files": [
+        {
+          "path": "packages/commerce-core/src/apparel.ts",
+          "exists": true,
+          "sha256": "0afb1cf478a8279f3fa709403560b55c70f39d9c58f22c52f4a1e7bb4ac8b786"
+        },
+        {
+          "path": "packages/commerce-core/src/index.ts",
+          "exists": true,
+          "sha256": "56086dcc293402694149d9b3c537039ff7e3bd42bc0b5a33ceb2b1d1d681b984"
+        },
+        {
+          "path": "packages/shared-types/src/index.ts",
+          "exists": true,
+          "sha256": "d050c4e49249332f6026fc8fdfabf62021c7659bbbdd4070a944f04d41384362"
+        },
+        {
+          "path": "services/api-gateway/src/routes/products.ts",
+          "exists": true,
+          "sha256": "2b7c02e074499856a27a7b767702141c44aae3b3ba2e5ad56e2d01e3a5c54176"
+        }
+      ],
+      "action": "Bounded proposed gift namespace through existing create/update metadata owner",
+      "writer": "Unallocated; coordinator assignment required after all-nine gate"
+    },
+    {
+      "domain": "Safe public projection",
+      "files": [
+        {
+          "path": "services/api-gateway/src/lib/public-product-view.ts",
+          "exists": true,
+          "sha256": "4989ca6f90bc7d3af54d660fe841f7da46e2d9c7e2fbfd3aa67e514d0562ec5b"
+        },
+        {
+          "path": "apps/commerce/web/src/lib/product-service.ts",
+          "exists": true,
+          "sha256": "4120e280ebaa7dde6b971153053de29fdee1f47754eaf03a62a00267bdb57ee3"
+        },
+        {
+          "path": "apps/commerce/web/src/lib/theme-engine/composition-engine.tsx",
+          "exists": true,
+          "sha256": "bdc509e3f1bc91e8422cb52d893ba56d2912c8de9e84450513f408f87b1e6b86"
+        }
+      ],
+      "action": "Whitelist validated gift facts only; preserve anonymous SKU/barcode/private metadata exclusions",
+      "writer": "Unallocated; coordinator assignment required after all-nine gate"
+    },
+    {
+      "domain": "Discovery",
+      "files": [
+        {
+          "path": "services/api-gateway/src/routes/storefront/public-routes.ts",
+          "exists": true,
+          "sha256": "5f1611e958f6710ddcc8bf3c3ea828db549a7cb17f34c6ec94658e6fb6e7924e"
+        },
+        {
+          "path": "services/api-gateway/src/routes/storefront.ts",
+          "exists": true,
+          "sha256": "36e48fdbbc7a64e47848bc14d6f92bc471ea3c4047b47471f7855a0b9f85b469"
+        },
+        {
+          "path": "packages/typescript/api-client/src/index.ts",
+          "exists": true,
+          "sha256": "41224133f1b318b5a77575a0742d5a818edc24006e22386b91407eeb0b981894"
+        },
+        {
+          "path": "apps/commerce/web/src/lib/theme-engine/data-binding-engine.ts",
+          "exists": true,
+          "sha256": "ce2cdc4d6bb618996600ecf9417ca980fa893732ac98060ce223ea4e8158c656"
+        },
+        {
+          "path": "apps/commerce/web/src/lib/theme-engine/apparel-route-query.ts",
+          "exists": true,
+          "sha256": "cfa5e2963e8cd41ae0768a0315681b3ae42f7a374b2b6ce56bcda9cc23741a71"
+        }
+      ],
+      "action": "Composable occasion/recipient/price/pagination through one existing query owner",
+      "writer": "Unallocated; coordinator assignment required after all-nine gate"
+    },
+    {
+      "domain": "Merchant product/editor",
+      "files": [
+        {
+          "path": "apps/merchant/web/src/app/[store]/products/new/page.tsx",
+          "exists": true,
+          "sha256": "361e52083c5de29a8483d334114d5a462a5a36cb001317c838aae02c3facc580"
+        },
+        {
+          "path": "apps/merchant/web/src/app/[store]/products/[productId]/page.tsx",
+          "exists": true,
+          "sha256": "8bb91993b68cdf4833083c47b2bc3a24535e235aa5932e779f67564cf4fbe612"
+        },
+        {
+          "path": "apps/merchant/web/src/components/products/ApparelFactsEditor.tsx",
+          "exists": true,
+          "sha256": "4c1b151de0031c77b6bad1abd905a03c3afcd9f0ce37a62e21817ce5358980ba"
+        },
+        {
+          "path": "apps/merchant/web/src/components/theme-editor/ExperiencePicker.tsx",
+          "exists": true,
+          "sha256": "9d78aa5a584813fb03f50c7418e554bb8197ca580d3fc0f0884df0ebcd376e07"
+        },
+        {
+          "path": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+          "exists": true,
+          "sha256": "12727338b7e86814c7cb8d57ad58bc59806483a365e94e369792a51932a0fcfb"
+        },
+        {
+          "path": "services/api-gateway/src/routes/resource-search.ts",
+          "exists": true,
+          "sha256": "c6998e1c756636fc4af373d7eab4e4e6f13184b5f10487acb214f1eedc80f223"
+        }
+      ],
+      "action": "Reuse existing forms, metadata preservation, resource binding and draft recovery",
+      "writer": "Unallocated; coordinator assignment required after all-nine gate"
+    },
+    {
+      "domain": "Preview and lifecycle",
+      "files": [
+        {
+          "path": "apps/commerce/web/src/app/theme-preview/[slug]/page.tsx",
+          "exists": true,
+          "sha256": "4e29a900bad7795fe310a332eb000e26d9928c61a04a3c5415ba97777dbb90ec"
+        },
+        {
+          "path": "apps/commerce/web/src/app/preview/preview-content.tsx",
+          "exists": true,
+          "sha256": "79d1ab50703aa3ac2e258b512e035c7cd0a509990e84550c741b9c61891800b3"
+        },
+        {
+          "path": "apps/commerce/web/src/components/CatalogPreviewNavigation.tsx",
+          "exists": true,
+          "sha256": "43b645f697c85d9977a540fbd91f2cb24681c3804217a0dbd4cc489a9df0d8aa"
+        },
+        {
+          "path": "services/api-gateway/src/execution/theme-execution.adapter.ts",
+          "exists": true,
+          "sha256": "13fb51d862f2a7ce90879fe102bcf3bf9cf9a4f351fa305a9158842b73f0beae"
+        },
+        {
+          "path": "services/api-gateway/src/lib/theme-release-bundle.ts",
+          "exists": true,
+          "sha256": "e7c2023c7b7706fcad832a44c120567ee5bfbf9d21d592b21da742fae4003f59"
+        }
+      ],
+      "action": "Actual selected package with labelled gift fixtures; private saved preview and immutable releases preserved",
+      "writer": "Unallocated; coordinator assignment required after all-nine gate"
+    },
+    {
+      "domain": "Cart and checkout",
+      "files": [
+        {
+          "path": "packages/checkout-core/src/index.ts",
+          "exists": true,
+          "sha256": "14a4902f18f950246b87123890ff8c7759ed6d1ce6c404fde3471526e24ab26f"
+        },
+        {
+          "path": "services/api-gateway/src/routes/storefront/cart-routes.ts",
+          "exists": true,
+          "sha256": "2c18fa503468d8642438e4b349078d5a6afc014ae1409f77483b4bf844c3a82d"
+        },
+        {
+          "path": "apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx",
+          "exists": true,
+          "sha256": "867c33363c17cc5b3583f8f0bafd0e7712638ab3bde3ade4cfc0b233862c6755"
+        },
+        {
+          "path": "apps/commerce/web/src/app/checkout-origin/branding.ts",
+          "exists": true,
+          "sha256": "df60079eee4264607ebf925b14a583059624cebbbcf2e4111f2222d00e8181bf"
+        },
+        {
+          "path": "apps/commerce/web/src/app/checkout-origin/checkout/page.tsx",
+          "exists": true,
+          "sha256": "46ee9de23dc13f263ee473cc92f2752915ed8f7a334ccf1d71ae9ab57bffb75c"
+        }
+      ],
+      "action": "Existing variant UUID/options and server quote; no message/custom payment contract",
+      "writer": "Unallocated; coordinator assignment required after all-nine gate"
+    },
+    {
+      "domain": "Buyer and account",
+      "files": [
+        {
+          "path": "apps/platform/identity/src/app/buyer/authorize/authorize-client.tsx",
+          "exists": true,
+          "sha256": "2dde0d20974c75a1ef76e5a9dfd4ef3800a95bfb9b5502baa5b77f6d93e4e98e"
+        },
+        {
+          "path": "apps/platform/identity/src/app/api/buyer/register/route.ts",
+          "exists": true,
+          "sha256": "1c8c3997c1390f1889670f6bb8a983d0405c4d440f242aa7ef53d6325e68c7e6"
+        },
+        {
+          "path": "apps/commerce/web/src/app/api/buyer-auth/start/route.ts",
+          "exists": true,
+          "sha256": "845fa0f8008e5d75f65b4e48afb8e6cc8b2fa63d3ed5184a620a5f1550bfa251"
+        },
+        {
+          "path": "apps/commerce/web/src/app/api/buyer-auth/callback/route.ts",
+          "exists": true,
+          "sha256": "fcab3c4285496e7d8942a707fca92d99e7a992551402e05af14ae896124dabf4"
+        },
+        {
+          "path": "services/api-gateway/src/routes/storefront/buyer-order-routes.ts",
+          "exists": true,
+          "sha256": "0aceb52671a428d2f5eda8036771fa53fa609a61e0c446cc9db0dfbd3a47f546"
+        }
+      ],
+      "action": "Canonical identity, explicit Continue, owned-order access; separate optional email proof",
+      "writer": "Unallocated; coordinator assignment required after all-nine gate"
+    },
+    {
+      "domain": "Assets and mobile",
+      "files": [
+        {
+          "path": "apps/commerce/web/src/proxy.ts",
+          "exists": true,
+          "sha256": "5a03c59a8d72c32b7a8e9437515ae0232138d51b5fb53a331ac191bbfd9f24a8"
+        },
+        {
+          "path": "apps/merchant/mobile/lib/services/theme_service.dart",
+          "exists": true,
+          "sha256": "e8db30bbfffe4c5be21d4a39915bc1fa968346a4e1a0f0af813082b2033edeee"
+        },
+        {
+          "path": "apps/merchant/mobile/lib/screens/customize/theme_screen.dart",
+          "exists": true,
+          "sha256": "19ed5ab4bf613590b25bd082366ff5119867f92aa8680606f6d14205062eddad"
+        }
+      ],
+      "action": "Versioned actual-artifact previews/assets through existing consumers",
+      "writer": "Unallocated; coordinator assignment required after all-nine gate"
+    }
+  ],
+  "contracts": [
+    {
+      "name": "gift facts",
+      "classification": "C proposed",
+      "namespace": "metadata.gift",
+      "publicDrop": "product.gift",
+      "fields": [
+        "version",
+        "occasions",
+        "recipients",
+        "suitabilityNote",
+        "contents(label,quantity,detail?,care?)",
+        "optional existing-media role references"
+      ],
+      "excludes": [
+        "prices/stock",
+        "recipient PII",
+        "messages",
+        "executable HTML"
+      ],
+      "path": "merchant command -> persisted metadata -> public whitelist -> ProductModel -> Liquid"
+    },
+    {
+      "name": "gift discovery",
+      "classification": "C proposed",
+      "queryKeys": [
+        "occasion",
+        "recipient",
+        "min_price",
+        "max_price",
+        "sort",
+        "page",
+        "limit",
+        "search",
+        "collection_id"
+      ],
+      "invariant": "AND across selected facets; clear-one retains others; eligible variant-price match; server counts/pagination"
+    },
+    {
+      "name": "packaging",
+      "classification": "A/B existing primitive, end-to-end verification needed",
+      "model": "existing product option/variant UUID; server price/availability; immutable selected-variant readback",
+      "newCheckoutSchemaRequired": false
+    }
+  ],
+  "excluded": [
+    "gift notes/messages",
+    "build-a-box",
+    "personalization",
+    "uploads/proofs",
+    "recipient accounts/returns",
+    "guaranteed arrival dates"
+  ],
+  "fixture": {
+    "gift": "Little Pause",
+    "selectedVariant": "Blush gift box",
+    "selectedAmountINR": 1790,
+    "secondSet": "Desk Companion",
+    "secondAmountINR": 1290,
+    "quantityEach": 1,
+    "subtotalINR": 3080,
+    "syntheticShippingINR": 80,
+    "totalINR": 3160,
+    "providerMode": "mock/sandbox only",
+    "resources": "new owned Kindred tenant/buyer; never Threadline resources"
+  },
+  "acceptance": [
+    "metadata save/readback and privacy sentinel exclusion",
+    "occasion+recipient+budget query with retained state",
+    "eligible variant-budget selection and stock race",
+    "catalog->private install->editor save/reload->signed preview->explicit publish->immutable anonymous release",
+    "neutral unknown/general fallback and existing Summit draft/release preservation",
+    "cart packaging/quantity/server total->checkout->owned order and merchant readback",
+    "canonical identity and buyer/address/order isolation",
+    "keyboard/reflow/zoom/script/reduced motion and actual performance",
+    "failed save/publish and release restoration preserving newer draft"
+  ],
+  "testsExecutedForThisInventory": [],
+  "productionWrites": false,
+  "sourceOrImagesChanged": false,
+  "verification": {
+    "referencedOwnerFilesExist": true,
+    "missingFiles": [],
+    "frozenFilesChecked": 91,
+    "changedFrozenFiles": []
+  },
+  "nonOwnerCaution": {
+    "file": "services/api-gateway/src/routes/gift-cards.ts",
+    "reason": "Financial stored-value/redemption domain; unrelated to physical ready-made sets; no work proposed there"
+  },
+  "profileContract": {
+    "email": "display-only",
+    "editableFields": [
+      "full_name",
+      "phone"
+    ],
+    "emailChangeWorkflow": "not supported by the inspected buyer profile PATCH; no work proposed",
+    "source": "apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx:1599"
+  },
+  "visualAmendment": {
+    "revision": "1.2",
+    "reason": "Coordinator profile contract finding",
+    "proof": "profile-correction.json",
+    "priorFreeze": "frozen-visual-manifest-v1.1.json",
+    "other42PngsUnchanged": true
+  }
+}

@@ -7,6 +7,7 @@
 // ============================================================
 
 import 'server-only';
+import { orderItemFactsText, readOrderItemFactSnapshot, savedOrderOptions } from './order-fact-readback';
 import { getSession } from './session';
 import { getCustomerByEmail, getCustomerWishlist, getCustomerOrders, type StoreCustomer, type StoreCustomerAddress } from './customer-service';
 
@@ -30,6 +31,7 @@ export interface LiquidCustomerOrderDetail {
     status: string;
     currency: string;
     created_at: string | null;
+    /** Monetary fields use minor units, as required by Liquid money filters. */
     subtotal: number;
     discount_total: number;
     shipping_total: number;
@@ -47,6 +49,7 @@ export interface LiquidCustomerOrderDetail {
         line_price: number;
         image: string | null;
         variant: Record<string, string> | null;
+        niche_facts_text: string | null;
     }>;
     shipping_address: {
         name: string;
@@ -62,6 +65,7 @@ export interface LiquidCustomerOrder {
     id: string;
     number: string;
     status: string;
+    /** Server major-unit receipt adapted once for Liquid money filters. */
     total: number;
     currency: string;
     created_at: string | null;
@@ -148,12 +152,19 @@ function mapCustomerDrop(
     };
 }
 
-function mapOrderDrop(order: Record<string, unknown>): LiquidCustomerOrder {
+function liquidOrderMoney(value: unknown): number {
+    const amount = typeof value === 'number' || (typeof value === 'string' && value.trim()) ? Number(value) : NaN;
+    const minor = Math.round(amount * 100);
+    if (!Number.isFinite(amount) || !Number.isSafeInteger(minor)) throw new TypeError('Order amount is unavailable');
+    return minor;
+}
+
+export function mapOrderDrop(order: Record<string, unknown>): LiquidCustomerOrder {
     return {
         id: String(order.id ?? ''),
         number: String(order.order_number ?? order.number ?? ''),
         status: typeof order.status === 'string' ? order.status : 'pending',
-        total: Number(order.total) || 0,
+        total: liquidOrderMoney(order.total),
         currency: typeof order.currency === 'string' ? order.currency : 'INR',
         created_at: typeof order.created_at === 'string' ? order.created_at : null,
     };
@@ -187,14 +198,11 @@ function mapDefaultAddress(addresses: StoreCustomerAddress[], fullName?: string 
 const ORDER_TIMELINE_STATUSES = ['pending', 'confirmed', 'processing', 'shipped', 'delivered'] as const;
 
 function buildOrderTimeline(status: string): Array<{ label: string; reached: boolean }> {
-    const reached = new Set<string>();
-    for (const s of ORDER_TIMELINE_STATUSES) {
-        reached.add(s);
-        if (s === status) break;
-    }
-    return ORDER_TIMELINE_STATUSES.map((s) => ({
+    const progressStatus = status === 'pending_cod' ? 'pending' : status;
+    const reachedIndex = ORDER_TIMELINE_STATUSES.findIndex(step => step === progressStatus);
+    return ORDER_TIMELINE_STATUSES.map((s, index) => ({
         label: s.charAt(0).toUpperCase() + s.slice(1),
-        reached: reached.has(s),
+        reached: index <= reachedIndex,
     }));
 }
 
@@ -210,33 +218,40 @@ export function mapOrderDetailDrop(row: Record<string, unknown>): LiquidCustomer
         status: typeof row.status === 'string' ? row.status : 'pending',
         currency: typeof row.currency === 'string' ? row.currency : 'INR',
         created_at: typeof row.created_at === 'string' ? row.created_at : null,
-        subtotal: Number(row.subtotal) || 0,
-        discount_total: Number(row.discount) || 0,
-        shipping_total: Number(row.shipping_cost) || 0,
-        tax_total: Number(row.tax) || 0,
-        total: Number(row.total) || 0,
+        subtotal: liquidOrderMoney(row.subtotal),
+        discount_total: liquidOrderMoney(row.discount),
+        shipping_total: liquidOrderMoney(row.shipping_cost),
+        tax_total: liquidOrderMoney(row.tax),
+        total: liquidOrderMoney(row.total),
         gst_invoice_number: typeof row.gst_invoice_number === 'string' ? row.gst_invoice_number : null,
         payment_method: typeof row.payment_method === 'string' ? row.payment_method : 'cod',
         payment_status: typeof row.payment_status === 'string' ? row.payment_status : 'pending',
         tracking_number: typeof row.tracking_number === 'string' ? row.tracking_number : null,
         carrier: typeof row.carrier === 'string' ? row.carrier : null,
         line_items: items.map((item: Record<string, unknown>) => {
-            const price = Number(item.price) || 0;
-            const qty = Number(item.quantity) || 0;
-            const variant = item.variant && typeof item.variant === 'object' && !Array.isArray(item.variant)
+            const price = liquidOrderMoney(item.price ?? item.unit_price);
+            const qty = Number(item.quantity);
+            if (!Number.isSafeInteger(qty) || qty < 1) throw new TypeError('Order quantity is unavailable');
+            const linePrice = item.total !== undefined && item.total !== null ? liquidOrderMoney(item.total) : price * qty;
+            if (!Number.isSafeInteger(linePrice)) throw new TypeError('Order line amount is unavailable');
+            const savedOptions = savedOrderOptions(readOrderItemFactSnapshot(item));
+            // Exact immutable choices win. Legacy receipts may still supply a flat saved variant map.
+            const variant = Object.keys(savedOptions).length ? savedOptions : item.variant && typeof item.variant === 'object' && !Array.isArray(item.variant)
                 ? Object.fromEntries(
-                    Object.entries(item.variant as Record<string, unknown>).map(([k, v]) => [k, String(v)])
+                    Object.entries(Object.getOwnPropertyDescriptors(item.variant)).flatMap(([key, field]) =>
+                        'value' in field && typeof field.value === 'string' ? [[key, field.value]] : [])
                 )
                 : null;
             return {
-                title: typeof item.name === 'string' ? item.name : 'Product',
+                title: typeof item.name === 'string' ? item.name : typeof item.title === 'string' ? item.title : 'Product',
                 quantity: qty,
                 price,
-                line_price: price * qty,
+                line_price: linePrice,
                 image: typeof (item.image || item.image_url) === 'string'
                     ? (item.image || item.image_url) as string
                     : null,
                 variant,
+                niche_facts_text: orderItemFactsText(item),
             };
         }),
         shipping_address: shippingAddr ? {

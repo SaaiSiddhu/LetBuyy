@@ -1,0 +1,76 @@
+{
+  "recordedAt": "2026-10-23T14:28:59.734446+00:00",
+  "candidateRoot": "/private/tmp/theme-editor-candidate-20261023-final01",
+  "status": "COPY_GREEN_ACTUAL_FIXTURE_SETUP_RED",
+  "sourceFiles": 15834,
+  "sourceStableDuringCopy": true,
+  "workspaceLinks": 256,
+  "workspaceImportResolutions": 40,
+  "admittedHashes": [
+    {
+      "path": "database/supabase/migrations/390_storefront_measurement_capabilities.sql",
+      "sha256": "6e5eb5e50cecd43acc9a663dd79c505db6c7bfdbe4e559b34d998065f88e9027"
+    },
+    {
+      "path": "database/supabase/rollback/390_storefront_measurement_capabilities.rollback.sql",
+      "sha256": "1aca479d735539ec3d92974da0eed7b8e48e83e874d8612ea78dba7acc91cb7a"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx",
+      "sha256": "9e87ff6b8b18a8e2208ca770fc44c282a03632d575973e26f1cd34f1656088b4"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/threadline-browser-fixture.ts",
+      "sha256": "0a8677cc7036fa773e66782a4d9772887897cc762ed88975fd9309afea9aecc4"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/threadline-qa-fixture.ts",
+      "sha256": "bf03f1efae9b2be53e0808a8b92b22b9ae435f1c7ccd24ac08d07f1799c051dd"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/theme-editor-fixture-observation.ts",
+      "sha256": "8e83deb402f138bace7ed37630f4212108e9fa121f02b0b31054e1cf4a32a44f"
+    },
+    {
+      "path": "database/supabase/migrations/389_niche_theme_catalog_v2.sql",
+      "sha256": "3d9a5e0344db7537558554b723ffc134707bf7b98fe4941bc6bf268bd7330e61"
+    },
+    {
+      "path": "database/supabase/rollback/389_niche_theme_catalog_v2.rollback.sql",
+      "sha256": "aecbd647393ac9dcec1466d8b7f80e21cd89a1522b6956bd0c9c479529e45927"
+    }
+  ],
+  "sourceManifest": {
+    "path": "/private/tmp/theme-editor-candidate-20261023-final01/theme-editor-candidate-source.json",
+    "sha256": "7764f28d1d75e6913dae72cc6262200723454c7295b6132bde10ccc9d1149839"
+  },
+  "dependencyProof": {
+    "path": "/private/tmp/theme-editor-candidate-20261023-final01/theme-editor-candidate-dependency-proof.json",
+    "sha256": "56cf6ebc4f008d9058be0de34f627c503874d337d44d0c6ae88ccdbe6ef47d31"
+  },
+  "requiredRootAdmission": "docs/implementation/niche-theme-programme/native389390-final-admission.json",
+  "runner": {
+    "sessionId": 8872,
+    "kind": "gateway-db",
+    "suite": "services/api-gateway/src/__tests__/owned-db/theme-editor-browser.manual.ts",
+    "production": true,
+    "throughMigration": 390,
+    "preparedTransactions": 2,
+    "jobs": 1,
+    "noReap": true,
+    "logs": "/private/tmp/theme-editor-final02-suite-logs",
+    "result": "/private/tmp/theme-editor-final02-runner.json",
+    "privateStateReference": null,
+    "status": "FAILED_BEFORE_APP_BUILDS_CLEANUP_EMPTY",
+    "runId": "38c91baf36ee"
+  },
+  "firstAttempt": {
+    "runId": "f302f1378163",
+    "result": "/private/tmp/theme-editor-final01-runner.json",
+    "status": "SANDBOX_DOCKER_SOCKET_PERMISSION_DENIED_BEFORE_START",
+    "ownedResourcesStarted": false,
+    "cleanupEmpty": true
+  },
+  "browserAccepted": false,
+  "failureEvidence": "fresh-launch02-collection-idempotency-red.json"
+}

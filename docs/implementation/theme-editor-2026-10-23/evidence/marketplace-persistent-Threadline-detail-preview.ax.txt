@@ -1,0 +1,395 @@
+Browser tab: 47, Title: "Threadline | LetBuyy Themes", URL: "http://themes.letbuyy-local.localhost:9015/themes/letbuyy-sense".
+1 AXWebArea Threadline | LetBuyy Themes, URL: themes.letbuyy-local.localhost:9015/themes/letbuyy-sense
+	2 container
+		3 link Description: LetBuyy Themes home, Value: themes.letbuyy-local.localhost:9015/
+		4 container Main navigation
+			5 button (collapsed) Browse, Secondary Actions: Expand
+			6 button (collapsed) Build, Secondary Actions: Expand
+			7 link Description: Pricing, Value: themes.letbuyy-local.localhost:9015/pricing
+			8 link Description: Support, Value: themes.letbuyy-local.localhost:9015/support
+		9 button Search themes
+		10 button Toggle color theme
+		11 link Description: Log in, Value: accounts.letbuyy-local.localhost:9021/lookup
+		12 link Description: Start for free, Value: accounts.letbuyy-local.localhost:9021/signup
+	13 container
+		14 container Breadcrumb
+			15 content list
+				16 link Description: Themes, Value: themes.letbuyy-local.localhost:9015/themes
+				17 link Description: Store, Value: themes.letbuyy-local.localhost:9015/themes/category/store
+				18 text Threadline
+		19 text THEME MARKETPLACE
+		20 heading Threadline, Value: 1
+			21 text Threadline
+		22 text Editorial apparel with silhouette discovery, garment measurements and size-aware shopping.
+		23 link Description: Sandbox preview, Value: themes.letbuyy-local.localhost:9015/preview/letbuyy-sense
+		24 link Description: Compare, Value: themes.letbuyy-local.localhost:9015/themes/compare
+		25 link Description: Add to library, Value: themes.letbuyy-local.localhost:9015/install
+		26 heading Live demo, Value: 2
+			27 text Live demo
+		28 text Preview this theme inside the marketplace before installing it.
+		29 container
+			30 text Embedded preview
+			31 link Description: Open preview, Value: localhost:9023/theme-preview/letbuyy-sense
+			32 container Threadline live demo
+				274 AXWebArea LetBuyy Store, URL: localhost:9023/theme-preview/letbuyy-sense
+					275 container
+						276 heading Threadline, Value: 1
+							277 text Threadline
+						278 text Version 2.0.0 ·  Sample store
+						279 container Preview device
+							280 checkbox Description: desktop preview, Value: 1
+							281 checkbox Description: tablet preview, Value: 0
+							282 checkbox Description: mobile preview, Value: 0
+						283 button Demo home
+						284 button Reload demo page
+						285 link Description: Open sample store separately, Value: localhost:9023/theme-preview/letbuyy-sense
+						286 text Your store is unchanged.
+						287 container Current demo page
+							288 text /
+						289 text 1440 px viewport
+						290 container Threadline desktop sample store
+							291 AXWebArea LetBuyy Store, URL: localhost:9023/theme-preview/letbuyy-sense
+								292 container
+									293 text Threadline  theme · Read-only sample store. Purchases, accounts and messages are disabled. Your store is unchanged.
+								294 container Sample store navigation
+									295 link Description: Sample home, Value: localhost:9023/theme-preview/letbuyy-sense
+									296 link Description: Products, Value: localhost:9023/theme-preview/letbuyy-sense
+									297 link Description: Collections, Value: localhost:9023/theme-preview/letbuyy-sense
+									298 link Description: Journal, Value: localhost:9023/theme-preview/letbuyy-sense
+									299 container
+										300 text field (settable) Search sample products
+										301 button Search sample store
+								302 text Meet the new everyday collection
+								303 container
+									304 container Description: Primary, ID: lb-nav-panel-header-default
+										305 link Description: New, Value: localhost:9023/theme-preview/letbuyy-sense
+										306 link Description: Clothing, Value: localhost:9023/theme-preview/letbuyy-sense
+										307 link Description: Collections, Value: localhost:9023/theme-preview/letbuyy-sense
+										308 link Description: Fit guide, Value: localhost:9023/theme-preview/letbuyy-sense
+									309 link Description: THREADLINE, Value: localhost:9023/theme-preview/letbuyy-sense
+									310 button (disabled, collapsed) Description: Search, Help: Sample shopping and form controls are unavailable in this preview., Secondary Actions: Expand
+									311 link Description: Log in, Value: localhost:9023/theme-preview/letbuyy-sense
+									312 link Description: Cart ( 0 ), Value: localhost:9023/theme-preview/letbuyy-sense
+								313 container
+									314 image Made to move with you.
+									315 text THE EVERYDAY EDIT
+									316 heading Made to move with you., Value: 1
+										317 text Made to move with you.
+									318 text Considered clothing for your everyday.
+									319 link Description: Explore new arrivals, Value: localhost:9023/theme-preview/letbuyy-sense
+									320 link Description: Find your fit, Value: localhost:9023/theme-preview/letbuyy-sense
+								321 container
+									322 heading Find your silhouette, Value: 2
+										323 text Find your silhouette
+									324 link Description: Relaxed Relaxed, Value: localhost:9023/theme-preview/letbuyy-sense
+									325 link Description: Straight Straight, Value: localhost:9023/theme-preview/letbuyy-sense
+									326 link Description: Easy Easy, Value: localhost:9023/theme-preview/letbuyy-sense
+								327 container
+									328 heading New arrivals, Value: 2
+										329 text New arrivals
+									330 link Description: The Everyday Linen Shirt The Everyday Linen Shirt INR 2,490.00, Value: localhost:9023/theme-preview/letbuyy-sense
+									331 text Color: Oat
+									332 text Size: XS, S, M, L, XL
+									333 link Description: Choose your size →, Value: localhost:9023/theme-preview/letbuyy-sense
+									334 link Description: Tailored Straight Trouser Tailored Straight Trouser INR 3,290.00, Value: localhost:9023/theme-preview/letbuyy-sense
+									335 text Color: Ink
+									336 text Size: S, M, L
+									337 link Description: Choose your size →, Value: localhost:9023/theme-preview/letbuyy-sense
+									338 link Description: The Everyday Cotton Dress The Everyday Cotton Dress INR 3,990.00, Value: localhost:9023/theme-preview/letbuyy-sense
+									339 text Color: Rust
+									340 text Size: S, M, L
+									341 link Description: Choose your size →, Value: localhost:9023/theme-preview/letbuyy-sense
+									342 container Product pages
+								343 container
+									344 image Wear it your way.
+									345 text THE EVERYDAY PAIRING
+									346 heading Wear it your way., Value: 2
+										347 text Wear it your way.
+									348 text Every piece, individually chosen. Each piece is sold separately.
+									349 link Description: The Everyday Linen Shirt The Everyday Linen Shirt INR 2,490.00 Choose your size →, Value: localhost:9023/theme-preview/letbuyy-sense
+									350 link Description: Tailored Straight Trouser Tailored Straight Trouser INR 3,290.00 Choose your size →, Value: localhost:9023/theme-preview/letbuyy-sense
+								351 container
+									352 image Good things take a little care.
+									353 text THE DETAILS, CONSIDERED
+									354 heading Good things take a little care., Value: 2
+										355 text Good things take a little care.
+									356 text Know the fabric. Understand the fit. Find the small details that make a piece feel like yours.
+								357 container
+									358 heading A fit you can understand, Value: 3
+										359 text A fit you can understand
+									360 text Garment measurements, clearly explained.
+									361 heading The details, before you buy, Value: 3
+										362 text The details, before you buy
+									363 text Fabric and care information, before you buy.
+									364 heading Here when you need us, Value: 3
+										365 text Here when you need us
+									366 text Your store’s contact and policies, in one place.
+								367 container
+									368 heading Threadline, Value: 3
+										369 text Threadline
+									370 heading QUICK LINKS, Value: 4
+										371 text QUICK LINKS
+									372 link Description: Explore clothing, Value: localhost:9023/theme-preview/letbuyy-sense
+									373 link Description: About this sample shop, Value: localhost:9023/theme-preview/letbuyy-sense
+									374 link Description: Sample journal, Value: localhost:9023/theme-preview/letbuyy-sense
+									375 link Description: Contact, Value: localhost:9023/theme-preview/letbuyy-sense
+									376 heading POLICIES, Value: 4
+										377 text POLICIES
+									378 link Description: Privacy policy, Value: localhost:9023/theme-preview/letbuyy-sense
+									379 link Description: Terms of service, Value: localhost:9023/theme-preview/letbuyy-sense
+									380 link Description: Shipping policy, Value: localhost:9023/theme-preview/letbuyy-sense
+									381 link Description: Returns policy, Value: localhost:9023/theme-preview/letbuyy-sense
+									382 heading CONTACT, Value: 4
+										383 text CONTACT
+									384 link Description: Contact us, Value: localhost:9023/theme-preview/letbuyy-sense
+									385 text © Threadline. All rights reserved.
+									386 link Description: Powered by LetBuyy, Value: localhost:9023/theme-preview/letbuyy-sense
+								387 pop up button (collapsed) Description: Open Next.js Dev Tools, ID: next-logo, Secondary Actions: Expand
+									388 image
+					389 pop up button (collapsed) Description: Open Next.js Dev Tools, ID: next-logo, Secondary Actions: Expand
+						390 image
+		33 container
+			34 image Threadline full-width preview
+			35 container
+				36 text STORE  THEME
+			37 text Threadline
+			38 text Free
+		39 container Theme screenshots
+			40 image Threadline screenshot 1
+		41 heading Overview, Value: 2
+			42 text Overview
+		43 text Built by LetBuyy. Version 2.0.0.
+		44 text Threadline 2.0.0. Configure your own campaign media, collections, independently sold outfit products and garment facts. Shared LetBuyy checkout and buyer identity.
+		45 heading Quality facts, Value: 2
+			46 text Quality facts
+		47 text Performance, accessibility, compatibility, and version history from marketplace data.
+		48 container
+			49 heading Measured scores, Value: 3
+				50 text Measured scores
+			51 definition list
+				52 container Performance
+					53 text Performance
+				54 text No recorded score
+				55 container Accessibility
+					56 text Accessibility
+				57 text No recorded score
+			58 text Score appears after the local measurement job records data for this theme.
+		59 container
+			60 heading Compatibility matrix, Value: 3
+				61 text Compatibility matrix
+			62 definition list
+				63 container Browsers
+					64 text Browsers
+				65 text Not specified
+				66 container Locales
+					67 text Locales
+				68 text Not specified
+				69 container Platforms
+					70 text Platforms
+				71 text letbuyy
+				72 container Minimum viewport
+					73 text Minimum viewport
+				74 text Not specified
+		75 heading Changelog, Value: 2
+			76 text Changelog
+		77 text Version history published with the theme listing.
+		78 text Changelog entries are not published for this theme yet.
+		79 heading Features, Value: 2
+			80 text Features
+		81 text Responsive layouts
+		82 text Visual editor
+		83 text Free
+		84 heading Tags, Value: 2
+			85 text Tags
+		86 container
+			87 link Description: first-party, Value: themes.letbuyy-local.localhost:9015/themes
+			88 link Description: sense, Value: themes.letbuyy-local.localhost:9015/themes
+		89 heading Reviews, Value: 2
+			90 text Reviews
+		91 container
+			92 text 0.0 0 published reviews 5  star 0  ·  0 % 4  star 0  ·  0 % 3  star 0  ·  0 % 2  star 0  ·  0 % 1  star 0  ·  0 % No published reviews yet.
+			93 container
+				94 text Rating
+				95 pop up button (collapsed, settable) Rating, Value: 5, Secondary Actions: Expand
+					96 menu
+						97 (selected) 5
+						98 4
+						99 3
+						100 2
+						101 1
+			102 container
+				103 text Title
+				104 text field (settable) Title
+			105 container
+				106 text Review
+				107 text entry area (settable) Review
+			108 button Submit verified review
+		109 container Theme actions and details
+			110 container
+				111 text Free Free to add to a LetBuyy store library.
+				112 link Description: Add to library, Value: themes.letbuyy-local.localhost:9015/install
+				113 link Description: Add to compare, Value: themes.letbuyy-local.localhost:9015/themes/compare
+				114 link Description: Open sandbox preview, Value: themes.letbuyy-local.localhost:9015/preview/letbuyy-sense
+			115 container
+				116 heading Shortlist, Value: 2
+					117 text Shortlist
+				118 text Save this theme privately on this device or add it to a side-by-side comparison.
+				119 checkbox Save favorite, Value: 0
+				120 checkbox Add to compare, Value: 0
+			121 container
+				122 heading Share, Value: 2
+					123 text Share
+				124 text Copy a canonical marketplace link for this theme.
+				125 button Copy Threadline marketplace link
+			126 container
+				127 heading Report this theme, Value: 2
+					128 text Report this theme
+				129 text Report quality, abuse, or listing accuracy concerns to the marketplace review queue.
+				130 container
+					131 text Reason
+					132 text field (settable) Reason
+				133 container
+					134 text Details
+					135 text entry area (settable) Details
+				136 button Submit report
+			137 container
+				138 text MARKETPLACE PROOF 1 Installs
+			139 container
+				140 heading Theme info, Value: 2
+					141 text Theme info
+				142 definition list
+					143 container Category
+						144 text Category
+					145 text Store
+					146 container Version
+						147 text Version
+					148 text v2.0.0
+					149 container Author
+						150 text Author
+					151 text LetBuyy
+					152 container Published
+						153 text Published
+					154 text Publication date unavailable
+					155 container Platforms
+						156 text Platforms
+					157 text letbuyy
+		158 heading Similar themes, Value: 2
+			159 text Similar themes
+		160 text More store themes from the LetBuyy marketplace.
+		161 container
+			162 link Description: Open Dewdrop theme details, Value: themes.letbuyy-local.localhost:9015/themes/letbuyy-aura
+			163 heading Dewdrop, Value: 3
+				164 link Description: Dewdrop, Value: themes.letbuyy-local.localhost:9015/themes/letbuyy-aura
+			165 text v 2.0.0 Soft and luxurious for beauty, skincare, and cosmetics. Muted rose with a champagne accent — the aesthetic of a premium beauty brand. Updated date unavailable
+			166 container Dewdrop facets
+				167 link Description: first-party, Value: themes.letbuyy-local.localhost:9015/themes
+				168 link Description: aura, Value: themes.letbuyy-local.localhost:9015/themes
+				169 link Description: Responsive layouts, Value: themes.letbuyy-local.localhost:9015/themes
+				170 link Description: Visual editor, Value: themes.letbuyy-local.localhost:9015/themes
+			171 text Free No purchase required
+			172 container 0 reviews
+				173 text 0 reviews
+			174 text Install data unavailable LetBuyy
+			175 link Description: Preview, Value: themes.letbuyy-local.localhost:9015/preview/letbuyy-aura
+			176 link Description: Compare, Value: themes.letbuyy-local.localhost:9015/themes/compare
+			177 pop up button Quick look
+			178 checkbox Save, Value: 0
+			179 checkbox Compare, Value: 0
+		180 container
+			181 link Description: Open Playfield theme details, Value: themes.letbuyy-local.localhost:9015/themes/letbuyy-bloom
+			182 heading Playfield, Value: 3
+				183 link Description: Playfield, Value: themes.letbuyy-local.localhost:9015/themes/letbuyy-bloom
+			184 text v 2.0.0 Warm and playful for pet food, accessories, and veterinary products. Sunny tangerine and leaf green — the colours of a happy pet store. Updated date unavailable
+			185 container Playfield facets
+				186 link Description: first-party, Value: themes.letbuyy-local.localhost:9015/themes
+				187 link Description: bloom, Value: themes.letbuyy-local.localhost:9015/themes
+				188 link Description: Responsive layouts, Value: themes.letbuyy-local.localhost:9015/themes
+				189 link Description: Visual editor, Value: themes.letbuyy-local.localhost:9015/themes
+			190 text Free No purchase required
+			191 container 0 reviews
+				192 text 0 reviews
+			193 text Install data unavailable LetBuyy
+			194 link Description: Preview, Value: themes.letbuyy-local.localhost:9015/preview/letbuyy-bloom
+			195 link Description: Compare, Value: themes.letbuyy-local.localhost:9015/themes/compare
+			196 pop up button Quick look
+			197 checkbox Save, Value: 0
+			198 checkbox Compare, Value: 0
+		199 container
+			200 link Description: Open Circuit theme details, Value: themes.letbuyy-local.localhost:9015/themes/letbuyy-forge
+			201 heading Circuit, Value: 3
+				202 link Description: Circuit, Value: themes.letbuyy-local.localhost:9015/themes/letbuyy-forge
+			203 text v 2.0.0 A precise, technical look for electronics, gadgets, and tech accessories. Deep navy authority with electric-cyan accents — built for spec-heavy products. Updated date unavailable
+			204 container Circuit facets
+				205 link Description: first-party, Value: themes.letbuyy-local.localhost:9015/themes
+				206 link Description: forge, Value: themes.letbuyy-local.localhost:9015/themes
+				207 link Description: Responsive layouts, Value: themes.letbuyy-local.localhost:9015/themes
+				208 link Description: Visual editor, Value: themes.letbuyy-local.localhost:9015/themes
+			209 text Free No purchase required
+			210 container 0 reviews
+				211 text 0 reviews
+			212 text Install data unavailable LetBuyy
+			213 link Description: Preview, Value: themes.letbuyy-local.localhost:9015/preview/letbuyy-forge
+			214 link Description: Compare, Value: themes.letbuyy-local.localhost:9015/themes/compare
+			215 pop up button Quick look
+			216 checkbox Save, Value: 0
+			217 checkbox Compare, Value: 0
+	218 container LetBuyy Themes footer
+		219 heading LetBuyy Themes footer, Value: 2, ID: site-footer-heading
+			220 text LetBuyy Themes footer
+		221 link Description: LetBuyy Themes home, Value: themes.letbuyy-local.localhost:9015/
+		222 text Reviewed themes for LetBuyy stores, portfolios, resumes, landing pages and SaaS consoles — previewed with your own products before you install.
+		223 container Browse
+			224 heading Browse, Value: 3
+				225 text Browse
+			226 content list
+				227 link Description: All themes, Value: themes.letbuyy-local.localhost:9015/themes
+				228 link Description: Store themes, Value: themes.letbuyy-local.localhost:9015/themes/category/store
+				229 link Description: Portfolio themes, Value: themes.letbuyy-local.localhost:9015/themes/category/portfolio
+				230 link Description: Landing pages, Value: themes.letbuyy-local.localhost:9015/themes/category/landing
+				231 link Description: Compare themes, Value: themes.letbuyy-local.localhost:9015/themes/compare
+		232 container Build
+			233 heading Build, Value: 3
+				234 text Build
+			235 content list
+				236 link Description: Theme docs, Value: themes.letbuyy-local.localhost:9015/docs
+				237 link Description: API reference, Value: themes.letbuyy-local.localhost:9015/docs/api
+				238 link Description: Developer console, Value: themes.letbuyy-local.localhost:9015/developer
+				239 link Description: Submit a theme, Value: themes.letbuyy-local.localhost:9015/developer/listings/new
+		240 container Platform
+			241 heading Platform, Value: 3
+				242 text Platform
+			243 content list
+				244 link Description: LetBuyy, Value: letbuyy.com/
+				245 link Description: Platform pricing, Value: letbuyy.com/pricing
+				246 link Description: App Marketplace, Value: letbuyy.com/sitemap
+				247 link Description: Theme pricing, Value: themes.letbuyy-local.localhost:9015/pricing
+		248 container Support
+			249 heading Support, Value: 3
+				250 text Support
+			251 content list
+				252 link Description: Help centre, Value: themes.letbuyy-local.localhost:9015/support
+				253 link Description: Contact us, Value: …
+				254 link Description: About Themes, Value: …
+				255 link Description: Your account, Value: …
+		256 container Region and language
+			257 button Change region and language
+				258 text India
+				259 text English
+		260 container Legal links
+			261 link Description: Terms, Value: …
+			262 link Description: Privacy, Value: …
+			263 link Description: Refunds, Value: …
+			264 link Description: Licence, Value: …
+			265 link Description: support@letbuyy.com, Value: …
+			266 button Your Privacy Choices
+		267 container Social links
+			268 link Description: Facebook, Value: …
+			269 link Description: X, Value: …
+			270 link Description: YouTube, Value: …
+			271 link Description: Instagram, Value: …
+		272 container
+			273 text ©  2026  LetBuyy. All rights reserved.
+	391 pop up button (collapsed) Description: Open Next.js Dev Tools, ID: next-logo, Secondary Actions: Expand
+		392 image
+
+The focused UI element is 1 AXWebArea Threadline | LetBuyy Themes, URL: themes.letbuyy-local.localhost:9015/themes/letbuyy-sense

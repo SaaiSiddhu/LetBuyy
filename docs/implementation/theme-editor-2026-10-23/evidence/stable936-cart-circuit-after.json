@@ -1,0 +1,134 @@
+{
+  "recordedAt": "2026-10-24T06:31:39.474Z",
+  "runId": "936e5f577646",
+  "phase": "circuit-after",
+  "guardVerified": true,
+  "readOnly": true,
+  "scope": "Whitelisted owned active cart line/facts/fingerprints/image only; no session/token/handoff/catalog_source/customer",
+  "actual": {
+    "orders": 2,
+    "siteId": "2f958a36-71bf-4e8f-89fd-d3363f4fe42c",
+    "activeCarts": [
+      {
+        "id": "6284ebe8-98d4-41db-9272-292417bd41e5",
+        "items": [
+          {
+            "id": "c3740e30-8c62-45f8-9ba4-0d21caabafdf:56dec2f4-52ea-4210-bd65-334a7c52f0d0",
+            "image": null,
+            "title": "Pantry lifecycle red lentils",
+            "currency": "INR",
+            "imageUrl": null,
+            "quantity": 2,
+            "lineTotal": 360,
+            "productId": "c3740e30-8c62-45f8-9ba4-0d21caabafdf",
+            "unitPrice": 180,
+            "variantId": "56dec2f4-52ea-4210-bd65-334a7c52f0d0",
+            "properties": {
+              "Pack": "250 g"
+            },
+            "nicheSnapshot": {
+              "facts": {
+                "food": {
+                  "storage": "Keep cool and dry.",
+                  "allergens": {
+                    "status": "not_supplied"
+                  },
+                  "ingredients": "Split red lentils (100%).",
+                  "netQuantity": {
+                    "unit": "g",
+                    "value": 250
+                  },
+                  "preparation": "Rinse before cooking.",
+                  "nutritionText": null
+                }
+              },
+              "version": 1,
+              "selected_options": [
+                {
+                  "name": "Pack",
+                  "value": "250 g"
+                }
+              ]
+            },
+            "productVersion": 17,
+            "snapshotFingerprint": "bb2e547c4e6d9e9c0bc64a2a42ee9d3e8a3e14eab3ecda31eceb1bd9d51eaa2f",
+            "configurationFingerprint": null
+          }
+        ],
+        "status": "active"
+      },
+      {
+        "id": "c0f9b1fd-07b9-4ecf-9f4e-740aa656c0c2",
+        "items": [
+          {
+            "id": "f04c5a94-8f0c-48ae-a450-e2374caa5c7e:3f4e08a8-bf2e-4899-bbeb-06c7283af499",
+            "image": null,
+            "title": "Fixture Soft Colour",
+            "currency": "INR",
+            "imageUrl": "http://syn-threadline-ui-6815276b.localhost:50494/theme-assets/dewdrop/v2/lip-tint.webp",
+            "quantity": 1,
+            "lineTotal": 560,
+            "productId": "f04c5a94-8f0c-48ae-a450-e2374caa5c7e",
+            "unitPrice": 560,
+            "variantId": "3f4e08a8-bf2e-4899-bbeb-06c7283af499",
+            "properties": {
+              "Shade name": "Rosewater"
+            },
+            "nicheSnapshot": {
+              "facts": {
+                "beauty": {
+                  "format": "Lip tint",
+                  "shades": [
+                    {
+                      "code": "RW01",
+                      "color": "#a36a65",
+                      "value": "Rosewater",
+                      "ingredients": "Rosewater v1: fixture oil, CI 77491."
+                    },
+                    {
+                      "code": "PC02",
+                      "color": "#a36a65",
+                      "value": "Pink Clay",
+                      "ingredients": "Pink Clay v1: fixture oil, CI 77492."
+                    },
+                    {
+                      "code": "TC03",
+                      "color": "#89534a",
+                      "value": "Terracotta",
+                      "ingredients": null
+                    }
+                  ],
+                  "warnings": "Fixture warning v1: external use only.",
+                  "directions": "Fixture directions v1: use as supplied.",
+                  "ingredients": "Common tint v1: fixture oil and wax; see named shade ingredients.",
+                  "netQuantity": {
+                    "unit": "ml",
+                    "value": 6
+                  },
+                  "routineStage": "colour",
+                  "schemaVersion": 1,
+                  "shadeOptionName": "Shade name"
+                }
+              },
+              "version": 1,
+              "selected_options": [
+                {
+                  "name": "Shade name",
+                  "value": "Pink Clay"
+                },
+                {
+                  "name": "पैक आकार",
+                  "value": "एक इकाई"
+                }
+              ]
+            },
+            "productVersion": 15,
+            "snapshotFingerprint": "3cf6d6af4a528f588b8a4d75fe0ab2dfab2855fbc031866982a8a2c043dc9124",
+            "configurationFingerprint": null
+          }
+        ],
+        "status": "active"
+      }
+    ]
+  }
+}

@@ -1,0 +1,358 @@
+--- before/apps/merchant/web/src/components/theme-editor/editor-block-actions.ts
++++ after/apps/merchant/web/src/components/theme-editor/editor-block-actions.ts
+@@ -5,6 +5,7 @@
+ /** A view of installed definitions, never another document or draft store. */
+ export type EditorBlockCatalog = {
+     schemas: Record<string, ExtendedBlockSchema>
++    reusableSchemas: Record<string, ExtendedBlockSchema>
+     rootTypes: string[]
+     childTypes: Record<string, string[]>
+     rootLimits: Record<string, number>
+@@ -16,20 +17,30 @@
+         if (isLiquidAppBlockType(type)) continue
+         schemas[type] = { name: file.schema.name, fields: Object.fromEntries(file.schema.settings.map(field => [field.id, normalizeEditorSchemaField(field, field.id)])) }
+     }
++    const reusableSchemas = { ...schemas }
+     for (const [type, definition] of Object.entries(schema.blocks_schema || {})) {
+         if (!isLiquidAppBlockType(type)) schemas[type] = definition
+     }
+     const childTypes: Record<string, string[]> = {}
+-    for (const [type, file] of Object.entries(bundle?.blocks || {})) {
+-        // Absence is deliberately not an invitation to invent a nesting control.
+-        childTypes[type] = (file.schema.allowed_child_types || []).filter(child => Object.hasOwn(schemas, child) && !isLiquidAppBlockType(child))
++    const reusableTypes = Object.keys(bundle?.blocks || {}).filter(type => !isLiquidAppBlockType(type))
++    for (const type of reusableTypes) {
++        // Canonical undefined means unrestricted; [] means no children. The
++        // renderer recurses only through installed reusable parent definitions;
++        // section-inline parents return before nested rendering.
++        const allowed = bundle?.blocks[type]?.schema.allowed_child_types
++        childTypes[type] = allowed === undefined ? [...reusableTypes] : reusableTypes.filter(child => allowed.includes(child))
+     }
+     return {
+         schemas,
++        reusableSchemas,
+         rootTypes: Object.keys(schema.blocks_schema || {}).filter(type => !isLiquidAppBlockType(type)),
+         childTypes,
+         rootLimits: Object.fromEntries((bundle?.sections[schema.type]?.schema.blocks || []).flatMap(block => 'limit' in block && block.limit !== undefined ? [[block.type, block.limit]] : [])),
+     }
++}
++
++export function editorBlockSchema(catalog: EditorBlockCatalog | undefined, type: string, depth: number): ExtendedBlockSchema | undefined {
++    return depth > 1 ? catalog?.reusableSchemas[type] : catalog?.schemas[type]
+ }
+ 
+ export function findEditorBlock(blocks: BlockEntry[], id: string, depth = 1): { block: BlockEntry; depth: number } | null {
+--- before/apps/merchant/web/src/components/theme-editor/editor-block-actions.test.ts
++++ after/apps/merchant/web/src/components/theme-editor/editor-block-actions.test.ts
+@@ -1,30 +1,73 @@
+ import assert from 'node:assert/strict'
+ import test from 'node:test'
++import { readFileSync } from 'node:fs'
+ import { createLetbuyyCoreLiquidThemeBundleFixture, buildLiquidThemePackagePersistencePayload, parseLiquidThemePackageBundle } from '@letbuyy/theme-engine'
+ import type { ExtendedSectionSchema } from '@letbuyy/theme-engine'
+-import { addEditorBlock, canAddEditorBlock, editorBlockCatalog, editorBlockSiblings, findEditorBlock, moveEditorBlock, toggleEditorBlock } from './editor-block-actions'
++import { addEditorBlock, canAddEditorBlock, editorBlockCatalog, editorBlockSchema, editorBlockSiblings, findEditorBlock, moveEditorBlock, toggleEditorBlock } from './editor-block-actions'
+ import type { BlockEntry, SectionEntry } from './editor-view-state'
+ 
+ const block = (id: string, type = 'badge', children?: BlockEntry[]): BlockEntry => ({ id, type, order: 10, visible: true, settings: { text: 'Same label' }, ...(children ? { children } : {}) })
+ const section = (blocks: BlockEntry[] = []): SectionEntry => ({ id: 'owned', type: 'trust-badges', order: 10, visible: true, settings: {}, blocks })
+ function fixture() {
+     const bundle = createLetbuyyCoreLiquidThemeBundleFixture()
+-    bundle.blocks.badge.schema.allowed_child_types = ['badge', '@app', 'app:forbidden', 'missing']
+     const schema = buildLiquidThemePackagePersistencePayload(bundle).schemaManifest.section_schemas['trust-badges'] as ExtendedSectionSchema
+     return { bundle, schema, catalog: editorBlockCatalog(schema, bundle) }
+ }
+ 
+-test('installed definitions alone permit first-party nesting and keep app seams/unknown types dormant', () => {
++test('unmodified installed definitions preserve canonical unrestricted first-party nesting and keep app seams/unknown types dormant', () => {
+     const { bundle, schema, catalog } = fixture()
+     assert.deepEqual(catalog.childTypes.badge, ['badge'])
+     assert.equal(canAddEditorBlock(section(), catalog, 'owned', '@app'), false)
+     assert.equal(canAddEditorBlock(section(), catalog, 'owned', 'app:forbidden'), false)
+     assert.equal(canAddEditorBlock(section(), catalog, 'owned', 'missing'), false)
+     assert.equal(canAddEditorBlock(section([block('parent')]), catalog, 'absent', 'badge'), false)
+-    delete bundle.blocks.badge.schema.allowed_child_types
+-    assert.deepEqual(editorBlockCatalog(schema, bundle).childTypes.badge, [])
++    assert.equal(bundle.blocks.badge.schema.allowed_child_types, undefined)
++    assert.deepEqual(editorBlockCatalog(schema, bundle).childTypes.badge, ['badge'])
++    assert.equal(canAddEditorBlock(section([block('parent')]), catalog, 'parent', 'badge'), true)
+     assert.equal(canAddEditorBlock(section([block('parent')]), editorBlockCatalog(schema), 'parent', 'badge'), false)
+     assert.equal(parseLiquidThemePackageBundle(bundle).blocks.badge.schema.allowed_child_types, undefined)
++})
++
++
++test('canonical explicit empty and allowlist definitions restrict only eligible reusable children', () => {
++    const { bundle, schema } = fixture()
++    bundle.blocks.notice = { ...structuredClone(bundle.blocks.badge), path: 'blocks/notice.liquid' }
++    bundle.blocks.badge.schema.allowed_child_types = []
++    const empty = editorBlockCatalog(schema, bundle), parent = section([block('parent')])
++    assert.deepEqual(empty.childTypes.badge, [])
++    assert.equal(canAddEditorBlock(parent, empty, 'parent', 'badge'), false)
++    bundle.blocks.badge.schema.allowed_child_types = ['badge', '@app', 'app:forbidden', 'missing', 'faq-item']
++    const restricted = editorBlockCatalog(schema, bundle)
++    assert.deepEqual(restricted.childTypes.badge, ['badge'])
++    assert.equal(canAddEditorBlock(parent, restricted, 'parent', 'badge'), true)
++    assert.equal(canAddEditorBlock(parent, restricted, 'parent', 'notice'), false)
++    assert.equal(canAddEditorBlock(parent, restricted, 'parent', 'faq-item'), false)
++    assert.deepEqual(editorBlockCatalog(schema, bundle).childTypes.notice, ['badge', 'notice'])
++})
++
++test('section-inline parents do not offer children the actual renderer cannot recurse into', () => {
++    const { bundle } = fixture()
++    const schema = buildLiquidThemePackagePersistencePayload(bundle).schemaManifest.section_schemas['banner-carousel'] as ExtendedSectionSchema
++    const catalog = editorBlockCatalog(schema, bundle)
++    const inline = { ...section([block('slide-parent', 'slide')]), type: 'banner-carousel' }
++    assert.ok(catalog.rootTypes.includes('slide'))
++    assert.equal(bundle.blocks.slide, undefined)
++    assert.equal(canAddEditorBlock(inline, catalog, 'slide-parent', 'badge'), false)
++})
++
++test('actual captured Marginalia/MadeYours collision keeps root inline and nested reusable descriptors separate', () => {
++    const sql = readFileSync(new URL('../../../../../../database/supabase/migrations/389_niche_theme_catalog_v2.sql', import.meta.url), 'utf8')
++    const artifacts = JSON.parse(sql.match(/\$liquidbundle\$([\s\S]*?)\$liquidbundle\$/)![1]) as Array<{ slug: string; document: { liquidBundle: unknown } }>
++    for (const slug of ['letbuyy-dawn', 'letbuyy-nova']) {
++        const bundle = parseLiquidThemePackageBundle(artifacts.find(row => row.slug === slug)!.document.liquidBundle)
++        const schema = buildLiquidThemePackagePersistencePayload(bundle).schemaManifest.section_schemas['trust-badges'] as ExtendedSectionSchema
++        const catalog = editorBlockCatalog(schema, bundle)
++        assert.equal(bundle.blocks.badge.schema.allowed_child_types, undefined)
++        assert.ok(editorBlockSchema(catalog, 'badge', 1)?.fields.description)
++        assert.equal(editorBlockSchema(catalog, 'badge', 2)?.fields.description, undefined)
++        assert.equal(editorBlockSchema(catalog, 'badge', 3)?.fields.description, undefined)
++        assert.deepEqual(Object.keys(catalog.reusableSchemas.badge.fields), ['label'])
++    }
+ })
+ 
+ test('adding preserves instance IDs and history and rejects duplicate or prebuilt hidden subtrees', () => {
+--- before/apps/merchant/web/tests/theme-editor-block-actions.test.mjs
++++ after/apps/merchant/web/tests/theme-editor-block-actions.test.mjs
+@@ -10,10 +10,10 @@
+ const actions = require('../src/components/theme-editor/editor-block-actions.ts');
+ const pagePath = new URL('../src/app/[store]/online-store/themes/[themeId]/editor/page.tsx', import.meta.url);
+ const page = ts.createSourceFile(pagePath.pathname, readFileSync(pagePath, 'utf8'), ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
+-function expression(name) {
++function expression(name, callback = true) {
+     let found;
+     function visit(node) {
+-        if (ts.isVariableDeclaration(node) && node.name.getText(page) === name && ts.isCallExpression(node.initializer)) found = node.initializer.arguments[0];
++        if (ts.isVariableDeclaration(node) && node.name.getText(page) === name) found = callback && ts.isCallExpression(node.initializer) ? node.initializer.arguments[0] : !callback ? node.initializer : undefined;
+         ts.forEachChild(node, visit);
+     }
+     visit(page); assert.ok(found, `Missing production callback ${name}`); return found.getText(page);
+@@ -27,9 +27,9 @@
+     assert.ok(node); return execute(`${node.getText(page)}; return ${name}`, dependencies);
+ }
+ function document() {
+-    // This definition is owned test data; no installed theme acquires nesting.
++    // Use the real unmodified reusable definition for the positive roundtrip.
+     const bundle = domain.createLetbuyyCoreLiquidThemeBundleFixture();
+-    bundle.blocks.badge.schema.allowed_child_types = ['badge'];
++    assert.equal(bundle.blocks.badge.schema.allowed_child_types, undefined);
+     bundle.templates.index.sections.actions = { type: 'trust-badges', settings: {}, blocks: {}, block_order: [], disabled: false };
+     bundle.templates.index.order.push('actions');
+     const adapterPath = new URL('../../../../services/api-gateway/src/execution/schema-registry-execution.adapter.ts', import.meta.url);
+@@ -139,3 +139,56 @@
+     assert.equal(nested.some(button => button['aria-label']?.startsWith('Add child block:')), false);
+     assert.equal(nested.find(button => button['aria-label'] === 'Move child block down').disabled, true);
+ });
++
++test('actual389 inline/reusable collisions reload and compile without inventing child defaults or dropping saved unknown values', () => {
++    const sql = readFileSync(new URL('../../../../database/supabase/migrations/389_niche_theme_catalog_v2.sql', import.meta.url), 'utf8');
++    const artifacts = JSON.parse(sql.match(/\$liquidbundle\$([\s\S]*?)\$liquidbundle\$/)[1]);
++    for (const slug of ['letbuyy-dawn', 'letbuyy-nova']) {
++        const original = artifacts.find(row => row.slug === slug), base = structuredClone(original.document);
++        const bundle = domain.parseLiquidThemePackageBundle(base.liquidBundle), definitions = JSON.stringify(bundle.blocks);
++        const manifest = domain.buildLiquidThemePackagePersistencePayload(bundle).schemaManifest;
++        const settings = helpers.normalizeSettingsSchema(manifest.settings_schema), catalog = actions.editorBlockCatalog(manifest.section_schemas['trust-badges'], bundle);
++        base.templates.index.sections['collision-probe'] = { type: 'trust-badges', settings: {}, blocks: {}, block_order: [], disabled: false };
++        base.templates.index.order.push('collision-probe');
++        const state = helpers.normalizeEditorState(base, slug, 'index', manifest.section_schemas, settings);
++        const initial = helpers.getAllSections(state).find(section => section.id === 'collision-probe');
++        const parent = helpers.createBlockFromSchema('badge', actions.editorBlockSchema(catalog, 'badge', 1), 10);
++        parent.settings.description = 'Root inline description';
++        const child = helpers.createBlockFromSchema('badge', actions.editorBlockSchema(catalog, 'badge', 2), 10);
++        child.settings.savedFutureValue = 'Retain existing unknown data';
++        assert.equal(Object.hasOwn(child.settings, 'description'), false);
++        const added = actions.addEditorBlock(initial, catalog, initial.id, parent);
++        const nested = actions.addEditorBlock(added, catalog, parent.id, child);
++        const next = helpers.updateSectionById(state, initial.id, () => nested);
++        const saved = helpers.buildDraftConfig(base, slug, next, 'index');
++        const reload = helpers.normalizeEditorState(saved, slug, 'index', manifest.section_schemas, settings);
++        const section = helpers.getAllSections(reload).find(section => section.id === initial.id);
++        const reloadedChild = helpers.getBlockById(section, child.id);
++        assert.equal(helpers.getBlockById(section, parent.id).settings.description, 'Root inline description');
++        assert.equal(Object.hasOwn(reloadedChild.settings, 'description'), false, 'reload must not inject an inline default into a reusable child');
++        assert.equal(reloadedChild.settings.savedFutureValue, 'Retain existing unknown data');
++        const selectedDescriptor = selectedBlock => execute(`return (${expression('selectedBlockSchema', false)})`, {
++            selectedSection: section, selectedBlock, blockCatalogs: { 'trust-badges': catalog }, ...actions,
++        });
++        assert.equal(selectedDescriptor(reloadedChild).fields.description, undefined);
++        assert.ok(selectedDescriptor(helpers.getBlockById(section, parent.id)).fields.description);
++        let controlWrites = 0;
++        const update = execute(`return (${expression('updateBlockSetting')})`, {
++            editorState: reload, blockCatalogs: { 'trust-badges': catalog }, ...actions, ...helpers,
++            getSectionById: local('getSectionById', { getAllSections: helpers.getAllSections }),
++            coerceFieldValue: local('coerceFieldValue', { numberValue: local('numberValue') }),
++            applyChange: updater => { controlWrites++; updater(reload); },
++        });
++        update(initial.id, child.id, 'description', 'Unsupported child field');
++        assert.equal(controlWrites, 0, 'the actual callback rejects an unsupported child control');
++        update(initial.id, parent.id, 'description', 'Supported root field');
++        assert.equal(controlWrites, 1);
++        const compiled = domain.compilePortableToLiquidBundle(helpers.buildDraftConfig(saved, slug, reload, 'index'), { baseBundle: bundle }).bundle;
++        const final = domain.fromThemeDocumentV2(domain.toThemeDocumentV2(compiled));
++        const persisted = final.templates.index.sections[initial.id].blocks[parent.id];
++        assert.equal(persisted.settings.description, 'Root inline description');
++        assert.equal(Object.hasOwn(persisted.blocks[child.id].settings, 'description'), false);
++        assert.equal(persisted.blocks[child.id].settings.savedFutureValue, 'Retain existing unknown data');
++        assert.equal(JSON.stringify(bundle.blocks), definitions, 'actual captured definitions remain unchanged');
++    }
++});
+--- before/apps/merchant/web/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx
++++ after/apps/merchant/web/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx
+@@ -68,7 +68,7 @@
+ import ConflictDialog from '@/components/theme-editor/ConflictDialog'
+ import { ThemeDraftClient, ThemeDraftConflictError, ThemeDraftValidationError } from '@/lib/theme-draft-client'
+ import SectionTreePanel, { TreeGroup } from '@/components/theme-editor/SectionTreePanel'
+-import { addEditorBlock, canAddEditorBlock, editorBlockCatalog, editorBlockSiblings, moveEditorBlock, toggleEditorBlock } from '@/components/theme-editor/editor-block-actions'
++import { addEditorBlock, canAddEditorBlock, editorBlockCatalog, editorBlockSchema, editorBlockSiblings, findEditorBlock, moveEditorBlock, toggleEditorBlock } from '@/components/theme-editor/editor-block-actions'
+ import type { BlockEntry, SectionEntry, EditorState, EditorSelection } from '@/components/theme-editor/editor-view-state'
+ import type { ExtendedBlockSchema as BlockSchema, ExtendedSchemaField as SchemaField, ExtendedSectionSchema as SectionSchema, ExtendedThemeSettingsGroup as ThemeSettingsGroup, ExtendedThemeSettingsSchema as ThemeSettingsSchema } from '@letbuyy/theme-engine'
+ 
+@@ -399,13 +399,27 @@
+     })
+ }
+ 
+-function normalizeBlock(value: unknown, index: number, blockSchemas?: Record<string, BlockSchema>, depth = 1): BlockEntry | null {
++/** Reusable definitions own nested defaults; section inline descriptors own roots. */
++function reusableSchemasFromBundle(bundle: unknown): Record<string, BlockSchema> {
++    return Object.fromEntries(Object.entries(asRecord(asRecord(bundle).blocks)).map(([type, value]) => {
++        const schema = asRecord(asRecord(value).schema)
++        const settings = Array.isArray(schema.settings) ? schema.settings : []
++        const fields = Object.fromEntries(settings.flatMap(value => {
++            const field = asRecord(value)
++            return typeof field.id === 'string' ? [[field.id, normalizeEditorSchemaField(field, field.id)]] : []
++        }))
++        return [type, { name: stringValue(schema.name, type), fields }]
++    }))
++}
++
++function normalizeBlock(value: unknown, index: number, blockSchemas?: Record<string, BlockSchema>, depth = 1, reusableSchemas?: Record<string, BlockSchema>): BlockEntry | null {
+     const record = asRecord(value)
+     const type = stringValue(record.type)
+     if (!type) return null
+     if (depth > MAX_BUNDLE_BLOCK_NESTING_DEPTH) throw new Error('This block tree exceeds the supported nesting limit. Your saved document has been kept.')
+ 
+-    const defaults = blockSchemas?.[type]?.fields ? defaultSettingsForFields(blockSchemas[type].fields) : {}
++    const blockSchema = (depth > 1 && reusableSchemas ? reusableSchemas : blockSchemas)?.[type]
++    const defaults = blockSchema?.fields ? defaultSettingsForFields(blockSchema.fields) : {}
+     const children = Array.isArray(record.children) ? record.children : portableBlocksToArray(record)
+ 
+     return {
+@@ -418,7 +432,7 @@
+             ...asRecord(record.settings),
+         },
+         children: children.flatMap((child, childIndex) => {
+-            const normalized = normalizeBlock(child, childIndex, blockSchemas, depth + 1)
++            const normalized = normalizeBlock(child, childIndex, blockSchemas, depth + 1, reusableSchemas)
+             return normalized ? [normalized] : []
+         }),
+     }
+@@ -430,6 +444,7 @@
+     fallbackId: string,
+     index: number,
+     schemas: Record<string, SectionSchema>,
++    reusableSchemas?: Record<string, BlockSchema>,
+ ): SectionEntry | null {
+     const record = asRecord(value)
+     const type = stringValue(record.type, fallbackType)
+@@ -438,7 +453,7 @@
+     const schema = schemas[type]
+     const blocks = Array.isArray(record.blocks)
+         ? record.blocks.flatMap((block, blockIndex) => {
+-            const normalized = normalizeBlock(block, blockIndex, schema?.blocks_schema)
++            const normalized = normalizeBlock(block, blockIndex, schema?.blocks_schema, 1, reusableSchemas)
+             return normalized ? [normalized] : []
+         })
+         : sampleBlocksForSchema(schema)
+@@ -491,6 +506,7 @@
+     const fallbackConfig = fallback as unknown as JsonRecord
+     const candidate = hasRenderableThemeTemplate(templateConfig) ? asRecord(templateConfig) : fallbackConfig
+     const isLiquid = candidate.rendererEngine === 'liquid' || asRecord(asRecord(candidate.liquidBundle).renderer).engine === 'liquid'
++    const reusableSchemas = isLiquid ? reusableSchemasFromBundle(candidate.liquidBundle) : undefined
+     const root = getSectionRoot(candidate, templateKey)
+     const fallbackRoot = getSectionRoot(fallbackConfig, templateKey)
+     const templateEntries = Array.isArray(root.template) ? root.template : []
+@@ -504,14 +520,14 @@
+             ? portableTemplateSectionsToArray(asRecord(templates[key])) || []
+             : [root[key] || (!isLiquid ? fallbackRoot[key] : null)].filter(Boolean)
+         return group.flatMap((section, index) => {
+-            const normalized = normalizeSection(section, key, `${key}-${index + 1}`, index, sectionSchemas)
++            const normalized = normalizeSection(section, key, `${key}-${index + 1}`, index, sectionSchemas, reusableSchemas)
+             return normalized ? [normalized] : []
+         })
+     }
+     const header = normalizeGroup('header')
+     const footer = normalizeGroup('footer')
+     const template = templateEntries.flatMap((section, index) => {
+-        const normalized = normalizeSection(section, `section_${index + 1}`, `section-${index + 1}`, index + 1, sectionSchemas)
++        const normalized = normalizeSection(section, `section_${index + 1}`, `section-${index + 1}`, index + 1, sectionSchemas, reusableSchemas)
+         if (normalized && isFirstPartyCoreBundleSlug(asRecord(asRecord(candidate.liquidBundle).package).slug, asRecord(asRecord(candidate.liquidBundle).package).version)
+             && ['categoryGrid', 'category-grid'].includes(normalized.type) && isUnchangedCoreDemoCategoryBlocks(normalized.blocks)) {
+             return [{ ...normalized, blocks: [] }]
+@@ -806,7 +822,7 @@
+     }, [baseConfig.liquidBundle])
+     const blockCatalogs = useMemo(() => Object.fromEntries(Object.entries(sectionSchemas).map(([type, schema]) => [type, editorBlockCatalog(schema, installedBlockBundle)])), [sectionSchemas, installedBlockBundle])
+     const selectedBlockSchema = selectedSection && selectedBlock
+-        ? blockCatalogs[selectedSection.type]?.schemas[selectedBlock.type]
++        ? editorBlockSchema(blockCatalogs[selectedSection.type], selectedBlock.type, findEditorBlock(selectedSection.blocks, selectedBlock.id)?.depth || 1)
+         : undefined
+     const addableSections = useMemo(() => {
+         const existingPinned = new Set(['header', 'footer'])
+@@ -1326,8 +1342,9 @@
+ 
+     const updateBlockSetting = useCallback((sectionId: string, blockId: string, key: string, value: unknown) => {
+         const section = getSectionById(editorState, sectionId)
+-        const block = getBlockById(section, blockId)
+-        const field = section && block ? blockCatalogs[section.type]?.schemas[block.type]?.fields?.[key] : undefined
++        const location = section ? findEditorBlock(section.blocks, blockId) : null
++        const field = section && location ? editorBlockSchema(blockCatalogs[section.type], location.block.type, location.depth)?.fields[key] : undefined
++        if (!field) return
+         applyChange((current) => updateSectionById(current, sectionId, (targetSection) => ({
+             ...targetSection,
+             blocks: updateBlockInTree(targetSection.blocks, blockId, (targetBlock) => ({
+@@ -1406,7 +1423,7 @@
+         const section = getSectionById(editorState, sectionId)
+         const catalog = section && blockCatalogs[section.type]
+         if (!section || !catalog || !canAddEditorBlock(section, catalog, parentBlockId, blockType)) return
+-        const nextBlock = createBlockFromSchema(blockType, catalog.schemas[blockType], 0)
++        const nextBlock = createBlockFromSchema(blockType, editorBlockSchema(catalog, blockType, parentBlockId === sectionId ? 1 : 2), 0)
+         applyChange(current => updateSectionById(current, sectionId, target => addEditorBlock(target, catalog, parentBlockId, nextBlock)))
+         setSelection({ kind: 'block', sectionId, blockId: nextBlock.id })
+     }, [applyChange, editorState, blockCatalogs])
+--- before/apps/merchant/web/src/components/theme-editor/BlockChildRow.tsx
++++ after/apps/merchant/web/src/components/theme-editor/BlockChildRow.tsx
+@@ -240,13 +240,13 @@
+                     key={childType}
+                     unstyled
+                     type="button"
+-                    aria-label={`Add child block: ${blockCatalog?.schemas[childType]?.name || childType}`}
++                    aria-label={`Add child block: ${blockCatalog?.reusableSchemas[childType]?.name || childType}`}
+                     className="theme-os-tree-block__add-child"
+                     disabled={(block.children?.length || 0) >= 100}
+                     onClick={() => onAddChildBlock(sectionId, block.id, childType)}
+                 >
+                     <Plus size={12} aria-hidden="true" />
+-                    <span>{blockCatalog?.schemas[childType]?.name || childType}</span>
++                    <span>{blockCatalog?.reusableSchemas[childType]?.name || childType}</span>
+                 </Button>
+             )) : null}
+ 
+@@ -266,7 +266,7 @@
+                             sectionId={sectionId}
+                             parentBlockId={block.id}
+                             selectedBlockId={selectedBlockId}
+-                            blockLabel={blockCatalog?.schemas[child.type]?.name}
++                            blockLabel={blockCatalog?.reusableSchemas[child.type]?.name}
+                             blockCatalog={blockCatalog}
+                             siblingIndex={childIndex}
+                             siblingCount={block.children!.length}

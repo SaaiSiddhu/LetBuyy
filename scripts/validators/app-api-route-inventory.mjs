@@ -124,7 +124,7 @@ export function classifyAppApiRoute(file) {
 // MERCHANT-PERFORMANCE (2026-10-21): three reviewed export gateway proxies.
 // They translate session/owned-store scope and stream canonical stored bytes;
 // generation, current job access, expiry and R2 writes remain Gateway-owned.
-export const APP_API_ROUTE_RATCHET = 226;
+export const APP_API_ROUTE_RATCHET = 227;
 
 export function ownershipCounts(routes) {
   const counts = new Map();

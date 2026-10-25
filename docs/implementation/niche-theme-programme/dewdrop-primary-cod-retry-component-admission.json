@@ -1,0 +1,48 @@
+{
+  "recordedAt": "2026-10-24T03:23:42.848435+00:00",
+  "status": "ROOT_ACTUAL_PRIMARY_COD_AND_RETRY_COMPONENTS_ACCEPTED_FULL30_NOT_ACCEPTED",
+  "runId": "936e5f577646",
+  "primaryOrderId": "84a52d92-6cb4-46bb-b941-8d7f37e8cb74",
+  "orderNumber": "ORD-20261024-10000",
+  "totalINR": 1140,
+  "payment": "PENDING_COD_UNPAID_NO_REAL_PSP_OR_FULFILLMENT",
+  "exactRetry": {
+    "status": 200,
+    "sameOrder": true,
+    "all22FullTableHashesExact": true,
+    "responseByteIdentityClaimed": false
+  },
+  "alteredSameKey": {
+    "status": 409,
+    "code": "CONFLICT",
+    "all22FullTableHashesExact": true
+  },
+  "rootIndependentReadback": "dewdrop-s02-actual-boundary-grant.json",
+  "separateAcceptedV1Cart": "6284ebe8-98d4-41db-9272-292417bd41e5",
+  "sourceProductOpaqueVersionAtBoundary": 15,
+  "currentLiveOrderCountBeforeS02": 1,
+  "s02SyntheticLegacyStatus": "ONE_EXACT_SETUP_GRANTED_NOT_YET_VERIFIED_EXECUTED",
+  "B00": "Functional installation/save/publication/rollback/retainedB/reapply receipt provided; initial readbacks verified. Visual parity observation separate and unresolved.",
+  "visualObservation": "Public JPG heading serif vs Editorpreview JPG heading sans; cause notyetproved. SoleEditoronefinite settledread and Marketplace read-onlysourceinvestigation allocated.",
+  "M01": "ActualsixfieldCloudsave/reopen/restorestockexact. EmptybeforeprivateMetadata meansprivate-siblingpreservationunproved; boundedlaterCloudsetup+missingnormalUIsubcaseallocated.",
+  "componentD02": "20independentexistingcomponentchecksaccepted; notlivemissingmetadatabranch/fullD02PASS",
+  "evidence": [
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-dewdrop-primary-boundary.json",
+      "sha256": "3cc9b89ce9f54b9f767ce0c7d59d367d2bd2497a8903ec6b6fa8705e6ccd6b38"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-dewdrop-H02-exact-confirm-retry.json",
+      "sha256": "7a92a6011b1df83f21e51966b1115a6ebc3c1c4f182a709cfbf3b9ee59618280"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-dewdrop-H02-same-key-conflict-result.json",
+      "sha256": "db3440a5a2718c95c9f615108f7fc1b0879330571444f555776e0f500404baea"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-B00-completed.json",
+      "sha256": "374dbd996eea3ed957444f7c82c8fed5c458e7cd5b54d2f2e6cb1914e3f2b5e7"
+    }
+  ],
+  "allTenAccepted": false
+}

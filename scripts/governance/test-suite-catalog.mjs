@@ -30,6 +30,17 @@ export const LIVE_EXTERNAL_SUITES = [];
 export const EXPLICIT_RUNTIME_SUITES = ['tests/runtime/reel-private-r2.workerd.test.mjs'];
 
 export const GATEWAY_DB_SUITE_DIR = 'services/api-gateway/src/__tests__/owned-db';
+// These suites intentionally qualify an exact predecessor and then apply/retire
+// its next migration. Newer current-stack journeys stay on the full chain.
+export const HISTORICAL_GATEWAY_MIGRATION_CEILINGS = Object.freeze({
+    'services/api-gateway/src/__tests__/owned-db/storefront-discovery.postgres.test.ts': 387,
+    'services/api-gateway/src/__tests__/owned-db/storefront-measurement-discovery.postgres.test.ts': 388,
+    'services/api-gateway/src/__tests__/owned-db/storefront-electronics-search.postgres.test.ts': 391,
+    'services/api-gateway/src/__tests__/owned-db/theme-draft-cas.postgres.test.ts': 390,
+    'services/api-gateway/src/__tests__/owned-db/theme-editor-template-keys.postgres.test.ts': 390,
+    'services/api-gateway/src/__tests__/owned-db/pantry-variant-facts.postgres.test.ts': 387,
+});
+
 export const ROOT_GATEWAY_DB_SUITE_DIR = 'tests/owned-db';
 // Explicit reviewed ownership inventory; new root suites must be registered,
 // never silently admitted as pure tests or provider/runtime code.
@@ -59,6 +70,7 @@ export const ROOT_GATEWAY_DB_SUITES = [
     'tests/owned-db/merchant-product-edit-browser.postgres.test.ts',
     'tests/owned-db/merchant-product-status-browser.postgres.test.ts',
     'tests/owned-db/merchant-public-signup-browser.postgres.test.ts',
+    'tests/owned-db/merchant-push-preferences.postgres.test.ts',
     'tests/owned-db/merchant-smart-collection-preview-browser.postgres.test.ts',
     'tests/owned-db/merchant-staff-invitation-delivery.postgres.test.ts',
     'tests/owned-db/money-ledger-reconciliation-traversal.postgres.test.ts',

@@ -1,0 +1,124 @@
+{
+  "classification": "STABLE_SOURCE_EPOCH_NOT_INSTALLED_ACCEPTANCE",
+  "sourcePins": {
+    "apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx": "5f0b2659f1fcfe65d651f248a2c052dba4201bf7c5caa36907a20aa527463bdd",
+    "apps/commerce/web/src/lib/theme-engine/variant-selection-url.ts": "290b94804e758325f8262a4dd53bdc81ddbbf30b4ae1a811f7affacde5158ed1",
+    "apps/commerce/web/src/lib/theme-engine/variant-selection-url.test.ts": "1d4febedd0d6babf2cd0a3146f758adf082293a5bb8065291034bfdc8b6b477f"
+  },
+  "cohorts": [
+    {
+      "name": "source-regression",
+      "command": [
+        "node",
+        "--conditions=react-server",
+        "--import",
+        "tsx",
+        "--test",
+        "--test-concurrency=1",
+        "apps/commerce/web/src/lib/theme-engine/variant-selection-url.test.ts",
+        "apps/commerce/web/src/lib/theme-engine/liquid-add-to-cart-acceptance.test.ts",
+        "apps/commerce/web/src/lib/theme-engine/liquid-cart-island.test.ts",
+        "apps/commerce/web/src/lib/theme-engine/madeyours-cart-island.test.ts",
+        "apps/commerce/web/src/lib/theme-engine/variant-facts-controller.test.ts",
+        "apps/commerce/web/src/lib/theme-engine/variant-options-carrier.test.ts",
+        "apps/commerce/web/src/lib/theme-engine/madeyours-personalization.test.ts",
+        "apps/commerce/web/src/lib/theme-engine/product-liquid-drop.test.ts",
+        "apps/commerce/web/src/lib/theme-engine/playfield-v201-facts.test.ts",
+        "packages/theme-engine/test/playfield-v201.test.ts",
+        "packages/theme-engine/test/playfield.test.ts",
+        "packages/theme-engine/test/niche-catalog-dispatch.test.ts",
+        "packages/theme-engine/test/qi-security.test.ts",
+        "packages/theme-engine/test/liquid-s1-w5-adversarial-security.test.ts"
+      ],
+      "expectedPass": 123,
+      "exitCode": 0,
+      "log": "source-regression.tap"
+    },
+    {
+      "name": "buy-now-client-mode",
+      "command": [
+        "node",
+        "--import",
+        "tsx",
+        "--test",
+        "apps/commerce/web/src/lib/theme-engine/liquid-buy-now.test.ts"
+      ],
+      "expectedPass": 19,
+      "exitCode": 0,
+      "log": "buy-now-client-mode.tap"
+    }
+  ],
+  "uniquePassed": 142,
+  "checks": [
+    {
+      "name": "commerce-noemit",
+      "command": [
+        "pnpm",
+        "--filter",
+        "@letbuyy/customer-web",
+        "exec",
+        "tsc",
+        "--noEmit",
+        "--incremental",
+        "false"
+      ],
+      "exitCode": 0,
+      "log": "commerce-noemit.log"
+    },
+    {
+      "name": "eslint-hydration",
+      "command": [
+        "pnpm",
+        "--filter",
+        "@letbuyy/customer-web",
+        "exec",
+        "eslint",
+        "--format",
+        "json",
+        "src/lib/theme-engine/liquid-hydration-islands.tsx"
+      ],
+      "exitCode": 1,
+      "log": "eslint-hydration.log"
+    },
+    {
+      "name": "eslint-url-helper-test",
+      "command": [
+        "pnpm",
+        "--filter",
+        "@letbuyy/customer-web",
+        "exec",
+        "eslint",
+        "--format",
+        "json",
+        "src/lib/theme-engine/variant-selection-url.ts",
+        "src/lib/theme-engine/variant-selection-url.test.ts"
+      ],
+      "exitCode": 0,
+      "log": "eslint-url-helper-test.log"
+    }
+  ],
+  "lint": {
+    "baselineErrors": 1,
+    "baselineWarnings": 23,
+    "currentErrors": 1,
+    "currentWarnings": 23,
+    "introducedDiagnostics": 0,
+    "normalizedRuleMessageSourceLineEquality": true,
+    "entireHydrationLint": "BASELINE_FAILURE_RETAINED_OUTSIDE_ALLOCATED_PICKER",
+    "helperAndTestsLintExitCode": 0
+  },
+  "preservation": {
+    "pinnedFilesUnchanged": 684,
+    "onlyExistingPickerAndTestChanged": true,
+    "urlHelperUnchanged": true,
+    "previous141ReceiptUnchanged": true,
+    "previous73SourceAndEvidenceUnchanged": true,
+    "retainedInstalledAuditUnchanged": true,
+    "originalM1AndStaticBrowserArtifactsUnchanged": true,
+    "bothNamedRuntimeCandidateHydrationFilesUnchanged": true
+  },
+  "sourceUnchangedDuringQualification": true,
+  "browserRuntimeDatabaseBuildStarted": false,
+  "candidateWrites": false,
+  "installedLifecycleStatusAdvanced": false
+}

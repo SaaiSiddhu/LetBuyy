@@ -1,0 +1,75 @@
+{
+  "recordedAt": "2026-10-24T00:34:14.818565+00:00",
+  "classification": "ACTUAL_STALE_CHECKOUT_ATTEMPT_NO_EFFECT_AND_CURRENT_REACCEPTANCE_AUDIT_WITH_UNCAPTURED_ERROR_MAPPING",
+  "runId": "f6074d90e894",
+  "candidateRoot": "/private/tmp/theme-editor-recovery-20261024-01",
+  "sourceProofSha256": "702b3a632462cff507993e80b58171fb8d0c246c2913de643bfbe4cf3438522f",
+  "caseId": "P12",
+  "status": "BLOCKED",
+  "checks": {
+    "distinctNormalAccepted250gCartBeforeP11ProvenSeparately": true,
+    "old250g180CartStillExactlyEqualAfterLater300gEditAndStaleAttempt": true,
+    "normalHostedCODStaleAttemptShowsActualGenericRejection": true,
+    "beforeAfterProductAndAllOrderObjectsIncludingHashesExactlyEqual": true,
+    "ordersInventoryMoneyAnd20Of22ProtectedGroupsExactlyUnchanged": true,
+    "normalCurrentPdp300g240ReacceptanceCanonicalReceiptAtV37": true
+  },
+  "changedProtectedGroups": [
+    "checkout_sessions",
+    "outbox_events"
+  ],
+  "outboxEventClassification": "One new checkout.started, not a new order; checkout_sessions hash changes recorded separately.",
+  "observedUiMessage": "Checkout could not continue.",
+  "actualHttpStatus": "NOT_CAPTURED",
+  "actualServerErrorCode": "NOT_CAPTURED",
+  "sourceExpectedCanonicalStaleCode": "CART_FACTS_CHANGED_NOT_OBSERVED_AS_LIVE_RESPONSE",
+  "evidence": [
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-P12-stale-before-confirm.ax.txt",
+      "sha256": "a8d0d7f3413a6fa48038080ac054dcabf58ceb9c2a09a40021f87d701c0c9d50"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-P12-stale-confirm-result.ax.txt",
+      "sha256": "f5b25cf093cf5db086fd62bbcd09072a54a50f6309b30c1a1b43f4c12cb121c7"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-lifecycle-before-stale-confirm.json",
+      "sha256": "0d29f64a04a4b87af1ee749736d32ef4bb31ecf5ca21c6fbff33d8b39dd33dae"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-lifecycle-after-stale.json",
+      "sha256": "9873f2d8a35e0ea55bff0eeaa154c57bca94eb20b7fcc7ed376077707d81e852"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-P12-stale-window-event-classification.json",
+      "sha256": "d35177152d15ea7ee818297174cf2666aacc4937a877e44958b87a9f21389265"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-cart-pantry-cart-5.json",
+      "sha256": "3995de1d3cca1875588ac63c6249a5f0aca537eb2d4ebfef4933682d2d322ec9"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-cart-pantry-cart-6.json",
+      "sha256": "c6ef545c667f858229b2cc71c035078033f528b6a7967a22a19400f0600c05c9"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-cart-pantry-cart-7.json",
+      "sha256": "a3f303a21abee1e7e6bc465b7513a1e637695f8a4b47e1a9472e4209fa03ac65"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-P12-current-300g-reaccepted.ax.txt",
+      "sha256": "f32eeeefee44e47fd460ea5cdb1954f6019b7a747dd2466b5e37fb1af68e6a63"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-P12-current-line-removed.ax.txt",
+      "sha256": "18186aa6ba023a13bb5763c0c4836d2f0d07745908b9fb8e82cf4fce35b8b1db"
+    }
+  ],
+  "limits": [
+    "No exact HTTP status/code is retained; cannot attribute the generic rejection to CART_FACTS_CHANGED solely from source expectation.",
+    "Owner reports final two-Pink baseline was not restored before runner timeout; no conservation claim for that final baseline.",
+    "Database and all f607 leases are now gone; retained orders/carts are historical evidence, not live reusable bindings.",
+    "Saved native and canonical artifacts audited only; no own runtime/API/browser/DB reexecution."
+  ],
+  "sourceChangesByPantry": []
+}

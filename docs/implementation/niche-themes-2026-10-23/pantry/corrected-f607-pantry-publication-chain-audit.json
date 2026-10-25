@@ -1,0 +1,71 @@
+{
+  "recordedAt": "2026-10-23T19:31:03.165158+00:00",
+  "classification": "ACTUAL_EDITOR_UI_RECEIPTS_AND_SAVED_PUBLIC_READBACKS_AUDITED",
+  "runId": "f6074d90e894",
+  "candidate": "/private/tmp/theme-editor-candidate-20261023-latest392-manualtls01",
+  "sourceManifestSha256": "3875d08aab8f5cc335287f3fa6b31c9dd9c9c940e458e512332429404ccb1203",
+  "componentStatus": "PASS_PUBLICATION_AND_RECOVERY_CHAIN",
+  "fullP00Status": "NOT RUN_PENDING_REMAINING_IDENTITY_AND_ANONYMOUS_PDP_EVIDENCE",
+  "packageVersion": "2.0.0",
+  "draftVersions": {
+    "A": 3,
+    "B": 6,
+    "restored-A": null,
+    "reapplied-B": 8
+  },
+  "releaseHashes": {
+    "A": "82d2dcb0da8bb5656ac034845080d906090024aaf24226fc03a635b04d45ef1f",
+    "B": "322b04957cdf672934509c0a933786501d41f65413a05ae0665427cf62fc8695",
+    "restoredA": "82d2dcb0da8bb5656ac034845080d906090024aaf24226fc03a635b04d45ef1f",
+    "reappliedB": "322b04957cdf672934509c0a933786501d41f65413a05ae0665427cf62fc8695"
+  },
+  "checks": {
+    "allPublicReadbacks200ExpectedHeadingOnly": true,
+    "unpublishedBDidNotChangePublishedA": true,
+    "reloadSavedAAndBVisible": true,
+    "savedBDraftRetainedAfterRestoreA": true,
+    "restoreAExactReleaseContentHash": true,
+    "reapplyBExactReleaseContentHash": true,
+    "ordersAtAllFourPublicationReadbacks": 0
+  },
+  "evidence": [
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-publication-A-proof.json",
+      "sha256": "2cd7b1aabca922e98d5b15f50e2848035903caa58e6ec3ca7c844a946df3b92d"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-publication-B-proof.json",
+      "sha256": "c787e28eb2a39b9587da993dac09ec67805ac7472083d5517a61a3c353685d7b"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-publication-restored-A-proof.json",
+      "sha256": "5c31aa365b52b9dacd0a4c7d0ca43d47ea3c89d2c99d61a97b349e99debb3182"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-publication-reapplied-B-proof.json",
+      "sha256": "b1ebde36b5dead793b33e21bb493e8270a33c320f5c3ac8dd897ee0b2339ac09"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-B-draft-public-isolation.json",
+      "sha256": "f9f6ea03f93fa43ba0a7a2460d7497c721fba5e9aa49f1e689a71a85d18464a3"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-A-reloaded.ax.txt",
+      "sha256": "96a8201152c32e0cdcc62b558b6284440f8a745f0362a7c7badeba1639011cb9"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-B-reloaded-unpublished.ax.txt",
+      "sha256": "923a5971f383eb2399148efc7288f4e9a70de3572499b2ab0325db8417e407b1"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-retained-B-after-restore.ax.txt",
+      "sha256": "1b03bed7e253cf1395ee86fadba2dd4b4ea33936dc76c1346bfc7465b43b5781"
+    }
+  ],
+  "limits": [
+    "Audited saved owner-generated requests/readbacks and AX; no browser or network reexecution by Pantry.",
+    "Full P00 also requires actual installed identity/bindings and anonymous Pantry buyer home/PDP proof; no whole-row acceptance from this component alone.",
+    "No merchant/cart/order/history/P12 acceptance inferred."
+  ],
+  "sourceChangesByPantry": []
+}

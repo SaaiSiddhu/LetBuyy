@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "theme": "Kindred",
+  "tool": "built-in image_gen",
+  "assets": [
+    {
+      "file": "assets/little-pause-open.png",
+      "prompt": "Use case: product-mockup\nAsset type: original e-commerce gift catalog photography, image only, not a UI\nPrimary request: photograph a ready-made \"Little Pause\" gift set opened on an ivory tabletop. A rigid rectangular pale blush gift box with its lid set beside it, exactly one speckled ivory ceramic mug (no saucer), one small closed plain sage green linen notebook and one slim brass ballpoint pen. Three products in total nestled in off-white shredded paper; show all three completely.\nStyle: premium but approachable realistic studio product photography, tactile paper and ceramic, soft natural side light, no excessive styling.\nComposition: landscape 4:3, top-down three-quarter camera, entire box, detached lid, all three contents fully visible and legible as objects, room around edges for crop. Warm ivory background, dusty rose box, muted sage notebook, subtle natural shadows.\nConstraints: no words, no lettering, no logos, no gift message or card, no food, no candle, no extra products, no people, no text, no watermark. This is original fictional product imagery.",
+      "tool": "built-in image_gen",
+      "mode": "generation",
+      "created": "2026-10-22",
+      "purpose": "Fixed-set contents and exterior",
+      "fictional": true
+    },
+    {
+      "file": "assets/little-pause-closed.png",
+      "prompt": "Use case: product-mockup\nAsset type: original catalog packaging photograph, not a UI\nPrimary request: a closed rectangular rigid dusty blush gift box made from finely textured paper, lid fitted flush. A single unprinted ivory cotton ribbon tied neatly around it. Box on a warm ivory tabletop, soft natural side lighting, real tactile paper grain. Match the quiet photographic art direction of a fictional set containing an ivory mug, sage notebook and brass pen, but show ONLY the closed box.\nComposition: complete object with generous margin, 4:3 horizontal, three-quarter view slightly overhead.\nConstraints: no words, logo, labels, greeting card, people, extra objects or watermarks. No opened contents.",
+      "tool": "built-in image_gen",
+      "mode": "generation",
+      "created": "2026-10-22",
+      "purpose": "Fixed-set contents and exterior",
+      "fictional": true
+    },
+    {
+      "file": "assets/desk-companion.png",
+      "prompt": "Use case: product-mockup\nAsset type: original e-commerce catalog photograph\nPrimary request: a ready-made stationery gift called Desk Companion. Exactly one plain terracotta linen A5 notebook with no text, one slim brass ballpoint pen, and one off-white cotton zip pouch. Three objects fully visible, arranged in an open shallow unprinted kraft paper gift box on warm ivory tabletop. No writing, logos, card, people or extra objects.\nStyle: realistic premium approachable studio product photo; tactile paper, woven linen, soft daylight and subtle shadows.\nComposition: three-quarter top down, entire box with comfortable margins, landscape 4:3, muted earthy palette. Objects easy to count.\nConstraints: only notebook, pen and pouch, one of each. Original fictional products, no watermarks or text.",
+      "tool": "built-in image_gen",
+      "mode": "generation",
+      "created": "2026-10-22",
+      "purpose": "Independent related set",
+      "fictional": true
+    }
+  ],
+  "note": "Only original product images were generated. All interface text and layout are native HTML/CSS. Original outputs preserved in CODEX_HOME; selected files copied into this project."
+}

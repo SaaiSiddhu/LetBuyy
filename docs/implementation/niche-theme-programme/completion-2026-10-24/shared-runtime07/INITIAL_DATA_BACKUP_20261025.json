@@ -1,0 +1,33 @@
+{
+  "recordedAt": "2026-10-25T00:36:33.841207+00:00",
+  "status": "PRIVATE_CONSISTENT_FULL_DATABASE_ARCHIVE_FULL_READ_VERIFIED_RESTORE_NOT_RUN",
+  "runId": "49ada80bc494",
+  "container": "letbuyy-exec-54685-mvmssydy-fe81e9",
+  "database": "letbuyy_exec_theme_completion_razorpay_browser_manual_ts",
+  "volume": "letbuyy-exec-49ada80bc494-1-data",
+  "verifiedOriginalRunnerLabels": true,
+  "verifiedDatabaseMarker": true,
+  "archive": "/private/tmp/letbuyy-runtime07-backups/20261025T003632Z-runtime07-initial.dump",
+  "archiveBytes": 14264655,
+  "archiveSha256": "85da4fdcc4713387d38ee482e96d4331e74ebc077f7f00e99844ca5a62843087",
+  "archiveMode": "0o600",
+  "directoryMode": "0o700",
+  "pgDumpExit": 0,
+  "fullArchiveReadExit": 0,
+  "ownersAndAcls": "Retained in archive; no --no-owner/--no-acl",
+  "transactionConsistency": "pg_dump single consistent database snapshot",
+  "classification": "Initial safety backup while Editor may continue. Final fence/backup required before any restore; no restoration over later accepted work.",
+  "mutations": "No application/database state changed; private backup files only",
+  "secretsPrinted": false,
+  "sourceRuntimeRestarted": false,
+  "durablePrivateCopy": {
+    "path": "/Volumes/Projects/LetBuyy/.letbuyy-private/runtime07/20261025T003632Z-runtime07-initial.dump",
+    "sha256": "85da4fdcc4713387d38ee482e96d4331e74ebc077f7f00e99844ca5a62843087",
+    "bytes": 14264655,
+    "fileMode": "0o600",
+    "directoryMode": "0o700",
+    "gitIgnoredVerified": true,
+    "copiedAt": "2026-10-25T00:49:06.503387+00:00",
+    "originalTmpCopyRetained": true
+  }
+}

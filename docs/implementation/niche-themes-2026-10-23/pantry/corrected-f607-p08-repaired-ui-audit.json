@@ -1,0 +1,48 @@
+{
+  "recordedAt": "2026-10-23T21:06:34.691300+00:00",
+  "runId": "f6074d90e894",
+  "candidateRoot": "/private/tmp/theme-editor-recovery-20261024-01",
+  "sourceProofSha256": "702b3a632462cff507993e80b58171fb8d0c246c2913de643bfbe4cf3438522f",
+  "classification": "READ_ONLY_ACTUAL_UI_AND_SAVED_CANONICAL_RECEIPT_AUDIT",
+  "sourceChangesByPantry": [],
+  "caseId": "P08",
+  "componentStatus": "PASS_REPAIRED_REJECTION_UI_RECONCILIATION_VALID_RETRY_AND_FULL_RELOAD",
+  "fullCaseStatus": "OPEN_PENDING_REQUIRED_RETAINED_409_CODE_AND_NO_EFFECT_RECEIPTS",
+  "checks": {
+    "overstockSettledNative4ErrorVisibleTotal720": true,
+    "normalRetry2AndReloadTotal360": true,
+    "canonicalAccepted2VariantPerItem250g": true
+  },
+  "evidence": [
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-P08-recovery-client-accepted-four.ax.txt",
+      "sha256": "515d83215cb411b93dc460d294c0f22c94c917e171ce8f2cc9e0b58369aa1a6e"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-P08-recovery-client-overstock-hydrated-error.ax.txt",
+      "sha256": "3382cb5a776ae043ba9f2583ed8b245e0e2c087eef49b3512e5e9f9af7bfefe0"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-P08-recovery-client-two-reloaded.ax.txt",
+      "sha256": "cf60286eda0d6b3ee283c0bf5e3eb1ad24d37b98df0a3e5afadfdd483ab7545a"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-cart-pantry-cart-4.json",
+      "sha256": "7b58d473e81e2a84f03632627a030ef3135566e747dbfddff10133deb75ad546"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-cart-pantry-stock-3.json",
+      "sha256": "07fba506f43c9b7d07d964e635e0b549a64b6e4916123f4caa6eae9f63a3aa3c"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-cart-pantry-stock-4.json",
+      "sha256": "d3e387ec6c5a0283e7548862ddd719fdf8527ffe4b59c58204273ea14884b2fe"
+    }
+  ],
+  "limits": [
+    "Exact HTTP409/INSUFFICIENT_INVENTORY response is not present in the current saved packet; requested from Editor without inventing status.",
+    "stock-4 receipt is an intermediate quantity3 after a decrease, not immediate after-overstock quantity4.",
+    "No full P08 PASS or reservation-table invariance claimed from AX or source tests.",
+    "Original failure remains immutable in corrected-f607-p08-cart-recovery-failure.json."
+  ]
+}

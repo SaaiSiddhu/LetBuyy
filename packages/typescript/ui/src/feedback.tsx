@@ -1,6 +1,7 @@
 'use client';
 
-import React, { createContext, useCallback, useContext, useMemo, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { useFormProtection } from './navigation/form-protection';
 import {
     AlertCircle,
     AlertTriangle,
@@ -304,7 +305,7 @@ export function Banner({ title, children, variant = 'info', action, className = 
                         {title}
                     </h3>
                 )}
-                <div className="text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] opacity-90">
+                <div className="text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] opacity-[var(--lb-component-feedback-description-opacity,0.9)]">
                     {children}
                 </div>
             </div>
@@ -439,7 +440,7 @@ export function ToastProvider({ children, duration = 5000, placement = 'top-righ
                                             {toast.title}
                                         </p>
                                         {toast.description && (
-                                            <p className="m-0 mt-[2px] text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] opacity-90">
+                                            <p className="m-0 mt-[2px] text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] opacity-[var(--lb-component-feedback-description-opacity,0.9)]">
                                                 {toast.description}
                                             </p>
                                         )}
@@ -732,10 +733,14 @@ export function EmptyState({ icon, illustration, illustrationMotifs, kind = 'gen
 
 export interface SaveBarProps extends React.HTMLAttributes<HTMLDivElement> {
     state: 'saved' | 'unsaved' | 'saving';
-    onSave?: () => void;
+    onSave?: () => void | Promise<void>;
     onDiscard?: () => void;
     saveLabel?: string;
     discardLabel?: string;
+    /** A domain editor may register a richer guard independently of the visual bar. */
+    protectNavigation?: boolean;
+    discardDisabled?: boolean;
+    saveDisabled?: boolean;
 }
 
 export function SaveBar({
@@ -744,41 +749,65 @@ export function SaveBar({
     onDiscard,
     saveLabel = 'Save',
     discardLabel = 'Discard',
+    protectNavigation = true,
+    discardDisabled = false,
+    saveDisabled = false,
     className = '',
+    onFocusCapture,
+    onBlurCapture,
     ...props
 }: SaveBarProps) {
     const isSaved = state === 'saved';
+    const focusReturn = useRef<HTMLElement | null>(null);
+    useFormProtection(protectNavigation ? { dirty: !isSaved, saving: state === 'saving', onSave, onDiscard, canSave: !saveDisabled && Boolean(onSave), canDiscard: !discardDisabled && Boolean(onDiscard) } : null);
+    useEffect(() => {
+        if (!isSaved || !focusReturn.current) return;
+        const target = focusReturn.current;
+        focusReturn.current = null;
+        if (target.isConnected && document.activeElement === document.body) {
+            target.tabIndex = -1;
+            target.focus({ preventScroll: true });
+        }
+    }, [isSaved]);
+    if (isSaved) return null;
 
     return (
         <div
             className={cx(
-                'sticky bottom-[var(--lb-space-0)] z-[var(--lb-z-sticky)] mx-auto flex w-full flex-col items-stretch justify-between gap-[var(--lb-space-3)] rounded-none border border-x-0 border-[var(--lb-color-border)] bg-[var(--lb-color-surface-raised)] p-[var(--lb-space-3)] shadow-[var(--lb-shadow-lg)] sm:bottom-[var(--lb-space-4)] sm:w-[min(var(--lb-size-save-bar-width),calc(100vw-var(--lb-space-6)))] sm:flex-row sm:items-center sm:gap-[var(--lb-space-4)] sm:rounded-[var(--lb-radius-lg)] sm:border-x',
-                isSaved ? 'opacity-0 pointer-events-none' : 'opacity-100',
+                'sticky bottom-[var(--lb-space-0)] z-[var(--lb-z-sticky)] mx-auto flex w-full flex-col items-stretch justify-between gap-[var(--lb-space-3)] rounded-none border border-x-0 border-[var(--lb-component-save-bar-border,var(--lb-color-border))] bg-[var(--lb-component-save-bar-bg,var(--lb-color-surface-raised))] p-[var(--lb-space-3)] shadow-[var(--lb-shadow-lg)] max-sm:pb-[max(var(--lb-space-3),env(safe-area-inset-bottom))] sm:bottom-[var(--lb-space-4)] sm:w-[min(var(--lb-size-save-bar-width),calc(100vw-var(--lb-space-6)))] sm:flex-row sm:items-center sm:gap-[var(--lb-space-4)] sm:rounded-[var(--lb-radius-lg)] sm:border-x',
                 className,
             )}
             aria-live="polite"
+            onFocusCapture={event => {
+                focusReturn.current = event.currentTarget.closest('main')?.querySelector<HTMLElement>('h1') ?? null;
+                onFocusCapture?.(event);
+            }}
+            onBlurCapture={event => {
+                if (event.relatedTarget && !event.currentTarget.contains(event.relatedTarget as Node)) focusReturn.current = null;
+                onBlurCapture?.(event);
+            }}
             {...props}
         >
-            <div className="flex items-center gap-[var(--lb-space-2)] text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text)]">
+            <div className="flex items-center gap-[var(--lb-space-2)] text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-component-save-bar-text,var(--lb-color-text))]">
                 {state === 'saving' ? <Loader2 className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] animate-spin" aria-hidden="true" /> : <AlertCircle className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
                 {state === 'saving' ? 'Saving changes' : 'Unsaved changes'}
             </div>
-            <div className="flex items-center gap-[var(--lb-space-2)] [&>button]:flex-1 sm:[&>button]:flex-none">
+            <div className="flex items-center gap-[var(--lb-space-2)] [&>button]:flex-1 max-sm:[&>button]:min-h-[var(--lb-size-touch-target)] sm:[&>button]:flex-none">
                 <Button
                     unstyled
                     type="button"
-                    className="h-[var(--lb-size-control-sm)] rounded-[var(--lb-radius-md)] border border-[var(--lb-color-border)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-color-text)] hover:bg-[var(--lb-color-surface-subdued)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] disabled:opacity-50"
+                    className="h-[var(--lb-size-control-sm)] rounded-[var(--lb-radius-md)] border border-transparent px-[var(--lb-space-3)] text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-component-save-bar-text,var(--lb-color-text))] hover:bg-[var(--lb-component-save-bar-discard-hover,var(--lb-color-surface-subdued))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-component-save-bar-focus,var(--lb-color-focus-ring))] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--lb-component-save-bar-bg,var(--lb-color-surface-raised))] disabled:opacity-50"
                     onClick={onDiscard}
-                    disabled={state === 'saving'}
+                    disabled={state === 'saving' || discardDisabled || !onDiscard}
                 >
                     {discardLabel}
                 </Button>
                 <Button
                     unstyled
                     type="button"
-                    className="h-[var(--lb-size-control-sm)] rounded-[var(--lb-radius-md)] border border-[var(--lb-component-button-primary-border)] bg-[var(--lb-component-button-primary-bg)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-component-button-primary-text)] hover:bg-[var(--lb-component-button-primary-hover)] active:bg-[var(--lb-component-button-primary-active)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] disabled:opacity-50"
+                    className="h-[var(--lb-size-control-sm)] rounded-[var(--lb-radius-md)] border border-transparent bg-[var(--lb-component-save-bar-action-bg,var(--lb-component-button-primary-bg))] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-component-save-bar-action-text,var(--lb-component-button-primary-text))] hover:bg-[var(--lb-component-save-bar-action-hover,var(--lb-component-button-primary-hover))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-component-save-bar-focus,var(--lb-color-focus-ring))] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--lb-component-save-bar-bg,var(--lb-color-surface-raised))] disabled:opacity-50"
                     onClick={onSave}
-                    disabled={state === 'saving'}
+                    disabled={state === 'saving' || saveDisabled || !onSave}
                 >
                     {state === 'saving' ? 'Saving' : saveLabel}
                 </Button>

@@ -101,6 +101,10 @@ export async function POST(request: NextRequest) {
             if (typeof value !== 'string' || value.length === 0 || value.length > 2048) return safeFailure(401, 'A valid secure checkout handoff is required');
             handoffQuery.set(key, value);
         }
+        if (handoff.buyer_binding !== undefined) {
+            if (typeof handoff.buyer_binding !== 'string' || !/^[a-f0-9]{64}$/.test(handoff.buyer_binding)) return safeFailure(401, 'A valid secure checkout handoff is required');
+            handoffQuery.set('buyer_binding', handoff.buyer_binding);
+        }
         if (!UUID.test(handoffQuery.get('site_id') || '')) return safeFailure(401, 'A valid secure checkout handoff is required');
 
         let handoffResponse: Response;

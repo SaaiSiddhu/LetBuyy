@@ -52,7 +52,7 @@ test('CSV import BFF refuses invalid or oversized envelopes before forwarding a 
     assert.deepEqual(forwarded, [[{ store_id: storeId, csv }]], 'preserve bytes and the existing command lifetime without retry/deadline arguments');
 });
 
-test('shell starts independent store and switcher reads together after session validation', async () => {
+test('shell authorizes the current store and renders before its optional switcher settles', async () => {
     const current = deferred(), switcher = deferred(), calls = [];
     const { default: layout } = load('../src/app/[store]/layout.tsx', {
         'react/jsx-runtime': jsx,
@@ -64,15 +64,43 @@ test('shell starts independent store and switcher reads together after session v
             isQueryCostRateLimited: () => false,
         },
         '@/components/AdminShell': { default: () => null },
-        '@/lib/public-urls': { getAccountsUrl: () => '/login' },
+        '@/lib/public-urls': { getMerchantSignInUrl: () => '/login' },
+        'next/headers': { headers: async () => new Headers() },
     });
     const result = layout({ children: null, params: Promise.resolve({ store: 'alpha' }) });
     await tick();
     const started = [...calls];
-    current.resolve(store); switcher.resolve([store]);
-    const rendered = await result;
+    let rendered;
+    result.then(value => { rendered = value; });
+    current.resolve(store);
+    await tick();
+    try {
+        assert.ok(rendered, 'an unresolved optional switcher must not block the authorized shell');
+    } finally { switcher.resolve([store]); }
+    rendered = await result;
     assert.deepEqual(started.sort(), ['store', 'switcher'], 'the switcher must not add another network waterfall');
     assert.equal(rendered.props.storeData.id, store.id);
+    assert.deepEqual(await rendered.props.userStoresPromise, { stores: [store], unavailable: false });
+});
+
+test('optional switcher failure is explicit and sanitized without bypassing current-store authorization', async () => {
+    let authorized = 0;
+    const { default: layout } = load('../src/app/[store]/layout.tsx', {
+        'react/jsx-runtime': jsx,
+        'next/navigation': { notFound() { throw new Error('not-found'); }, redirect() { throw new Error('redirect'); } },
+        '@/lib/auth/session': {
+            getSessionUser: async () => ({ id: 'actor-a' }),
+            getStoreForUser: async () => { authorized++; return store; },
+            getUserStores: async () => { throw new Error('Private backend diagnostic'); },
+        },
+        '@/components/AdminShell': { default: () => null },
+        '@/lib/public-urls': { getMerchantSignInUrl: () => '/login' },
+        'next/headers': { headers: async () => new Headers() },
+    });
+    const rendered = await layout({ children: null, params: Promise.resolve({ store: 'alpha' }) });
+    assert.equal(authorized, 1);
+    assert.deepEqual(await rendered.props.userStoresPromise, { stores: [], unavailable: true });
+    assert.doesNotMatch(JSON.stringify(await rendered.props.userStoresPromise), /Private backend/);
 });
 
 test('dashboard launches setup and metrics together and shares its recent product read', async () => {
@@ -421,14 +449,93 @@ test('literal loopback origins survive actual NextURL normalization while aliase
     assert.equal(validateMerchantMutationRequest(publicRequest), null);
 });
 
+function publicUrls() {
+    return load('../src/lib/public-urls.ts', {
+        '@letbuyy/tenant-core': {},
+    }, { process: { env: { NEXT_PUBLIC_ADMIN_URL: 'http://127.0.0.1:9141', NEXT_PUBLIC_ACCOUNTS_URL: 'http://127.0.0.1:9162' } } });
+}
+
 test('sign-in return uses the configured app origin and preserves the merchant path/query', () => {
     const { proxy } = load('../src/proxy.ts', {
         'next/server': { NextResponse: { redirect: value => Response.redirect(value, 307), next: () => new Response() } },
         '@letbuyy/auth-core': { LETBUYY_MERCHANT_SESSION_COOKIE: 'lb_session', verifyLetbuyySessionCookieValue: () => ({ accepted: false }) },
-        '@/lib/public-urls': { getAccountsUrl: path => 'http://127.0.0.1:9162' + path, getAdminUrl: () => 'http://127.0.0.1:9141' },
+        '@/lib/public-urls': publicUrls(),
     });
     const request = new NextRequest('http://127.0.0.1:9141/snazz/products?status=draft', { headers: { host: 'untrusted.example.invalid', 'x-forwarded-host': 'untrusted.example.invalid' } });
     const location = new URL(proxy(request).headers.get('Location'));
     assert.equal(location.origin, 'http://127.0.0.1:9162');
     assert.equal(location.searchParams.get('return_to'), 'http://127.0.0.1:9141/snazz/products?status=draft');
+});
+
+test('sign-in resume rejects external and protocol-relative paths', () => {
+    const { getMerchantSignInUrl } = publicUrls();
+    for (const path of [null, 'https://foreign.example.invalid/a', '//foreign.example.invalid/a', '/\\foreign.example.invalid/a', 'javascript:alert(1)']) {
+        const login = new URL(getMerchantSignInUrl(path, '/alpha/dashboard'));
+        assert.equal(login.searchParams.get('return_to'), 'http://127.0.0.1:9141/alpha/dashboard');
+    }
+    const query = '/alpha/products?query=shirt%20%26%20trousers&page=2';
+    assert.equal(new URL(getMerchantSignInUrl(query)).searchParams.get('return_to'), 'http://127.0.0.1:9141' + query);
+});
+
+test('private proxy overwrites forged return context with the actual route', () => {
+    const urls = publicUrls();
+    const { proxy } = load('../src/proxy.ts', {
+        'next/server': { NextResponse: { next: value => value } },
+        '@letbuyy/auth-core': { LETBUYY_MERCHANT_SESSION_COOKIE: 'lb_session', verifyLetbuyySessionCookieValue: () => ({ accepted: true }) },
+        '@/lib/public-urls': urls,
+    });
+    const request = new NextRequest('http://127.0.0.1:9141/alpha/products?status=draft', { headers: { [urls.MERCHANT_RETURN_PATH_HEADER]: '//foreign.example.invalid' } });
+    assert.equal(proxy(request).request.headers.get(urls.MERCHANT_RETURN_PATH_HEADER), '/alpha/products?status=draft');
+});
+
+test('shell starts both mandatory reads concurrently and still refuses a store without access', async () => {
+    const user = deferred(), current = deferred(), calls = [];
+    const { default: layout } = load('../src/app/[store]/layout.tsx', {
+        'react/jsx-runtime': jsx,
+        'next/navigation': { notFound() { throw new Error('not-found'); }, redirect() { throw new Error('redirect'); } },
+        '@/lib/auth/session': {
+            getSessionUser: () => { calls.push('session'); return user.promise; },
+            getStoreForUser: () => { calls.push('store'); return current.promise; },
+            getUserStores: async () => [],
+        },
+        '@/components/AdminShell': { default: () => null },
+        '@/lib/public-urls': publicUrls(), 'next/headers': { headers: async () => new Headers() },
+    });
+    const pending = layout({ children: null, params: Promise.resolve({ store: 'alpha' }) });
+    await tick();
+    assert.deepEqual(calls, ['session', 'store']);
+    user.resolve({ id: 'actor-a' }); current.resolve(null);
+    await assert.rejects(pending, /not-found/);
+});
+
+test('a revoked session resumes the original path and never renders authorized store data', async () => {
+    const urls = publicUrls();
+    const { default: layout } = load('../src/app/[store]/layout.tsx', {
+        'react/jsx-runtime': jsx,
+        'next/navigation': { notFound() { throw new Error('not-found'); }, redirect(url) { throw new Error(url); } },
+        '@/lib/auth/session': { getSessionUser: async () => null, getStoreForUser: async () => store, getUserStores: () => { throw new Error('must not load for a signed-out actor'); } },
+        '@/components/AdminShell': { default: () => null },
+        '@/lib/public-urls': urls,
+        'next/headers': { headers: async () => new Headers({ [urls.MERCHANT_RETURN_PATH_HEADER]: '/alpha/products?status=draft' }) },
+    });
+    await assert.rejects(layout({ children: null, params: Promise.resolve({ store: 'alpha' }) }), error => {
+        assert.equal(new URL(error.message).searchParams.get('return_to'), 'http://127.0.0.1:9141/alpha/products?status=draft');
+        return true;
+    });
+});
+
+test('store reads share the React request cache despite different compatibility user hints', async () => {
+    let reads = 0;
+    const makeRequest = () => load('../src/lib/auth/session.ts', {
+        react: { cache: fn => { const entries = new Map(); return key => { if (!entries.has(key)) entries.set(key, fn(key)); return entries.get(key); }; } },
+        '@letbuyy/api-client': { LetbuyyApiError: ApiError },
+        '@/lib/api/client': { MerchantApiRequestError: MerchantError, createMerchantApiClient: () => ({ stores: { getByHandle: async handle => { reads++; return { ...store, subdomain: handle }; } } }) },
+    });
+    const first = makeRequest();
+    await Promise.all([first.getStoreForUser('alpha'), first.getStoreForUser('alpha', 'actor-a'), first.getStoreForUser('alpha', 'forged-actor')]);
+    assert.equal(reads, 1, 'user hints neither split the current-cookie read nor grant access');
+    await first.getStoreForUser('beta', 'actor-a');
+    assert.equal(reads, 2, 'a different handle still requires its own authorized read');
+    await makeRequest().getStoreForUser('alpha');
+    assert.equal(reads, 3, 'a different request cannot reuse private data');
 });

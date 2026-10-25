@@ -1,0 +1,38 @@
+import assert from 'node:assert/strict';
+import { test } from 'node:test';
+
+const nextConfigModules = [
+  ['app-marketplace', '../../apps/frozen/app-store/next.config.ts'],
+  ['developer-portal', '../../apps/frozen/developer-portal/next.config.ts'],
+  ['identity-platform', '../../apps/platform/identity/next.config.ts'],
+  ['marketing-site', '../../apps/marketing/web/next.config.ts'],
+  ['merchant-web', '../../apps/merchant/web/next.config.ts'],
+  ['admin-web', '../../apps/internal/console/next.config.ts'],
+  ['platform-operations-portal', '../../apps/frozen/operations-portal/next.config.ts'],
+  ['customer-web', '../../apps/commerce/web/next.config.ts'],
+  ['theme-marketplace', '../../apps/frozen/theme-store/next.config.ts'],
+] as const;
+
+function headerMap(headers: Array<{ key: string; value: string }>): Map<string, string> {
+  return new Map(headers.map((header) => [header.key.toLowerCase(), header.value]));
+}
+
+test('every Next app emits shared HSTS and CSP security headers', async () => {
+  for (const [appName, modulePath] of nextConfigModules) {
+    const config = (await import(modulePath)).default;
+    assert.equal(typeof config.headers, 'function', `${appName} must define headers()`);
+
+    const entries = await config.headers();
+    const allHeaders = entries.flatMap((entry: { headers?: Array<{ key: string; value: string }> }) => entry.headers || []);
+    const headers = headerMap(allHeaders);
+    const csp = headers.get('content-security-policy') || headers.get('content-security-policy-report-only') || '';
+
+    assert.match(headers.get('strict-transport-security') || '', /max-age=31536000/, `${appName} must emit HSTS`);
+    assert.match(headers.get('x-content-type-options') || '', /^nosniff$/, `${appName} must emit nosniff`);
+    assert.match(headers.get('referrer-policy') || '', /strict-origin-when-cross-origin/, `${appName} must emit referrer policy`);
+    assert.match(headers.get('permissions-policy') || '', /camera=\(\)/, `${appName} must emit permissions policy`);
+    assert.match(csp, /default-src 'self'/, `${appName} CSP must include default-src`);
+    assert.match(csp, /script-src /, `${appName} CSP must include script-src`);
+    assert.match(csp, /frame-ancestors /, `${appName} CSP must include frame-ancestors`);
+  }
+});

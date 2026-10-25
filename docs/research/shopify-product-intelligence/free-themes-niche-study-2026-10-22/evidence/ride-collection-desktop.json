@@ -1,0 +1,742 @@
+{
+  "body": {
+    "background": "rgb(31, 31, 33)",
+    "color": "rgba(255, 255, 255, 0.75)",
+    "font": "Figtree, sans-serif",
+    "fontSize": "16px"
+  },
+  "controls": [
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "SHOP",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "EXPLORE",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Search",
+      "tag": "INPUT",
+      "type": "search"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Filter",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "true",
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "INPUT",
+      "type": "checkbox"
+    },
+    {
+      "disabled": true,
+      "expanded": null,
+      "label": "",
+      "tag": "INPUT",
+      "type": "checkbox"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "true",
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "0",
+      "tag": "INPUT",
+      "type": "number"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "220.00",
+      "tag": "INPUT",
+      "type": "number"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Featured\nMost relevant\nBest selling\nAlphabetically, A-Z\nAlphabetically, Z-A\nPrice, low to ",
+      "tag": "SELECT",
+      "type": "select-one"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "PERFORMER FINS",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "ACCELERATOR FINS",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "NEOGLASS FINS",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Email",
+      "tag": "INPUT",
+      "type": "email"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Subscribe",
+      "tag": "BUTTON",
+      "type": "submit"
+    }
+  ],
+  "headings": [
+    {
+      "font": "Figtree, sans-serif",
+      "height": 19.5,
+      "line": "19.5px",
+      "size": "13px",
+      "tag": "H2",
+      "text": "",
+      "weight": "500",
+      "width": 282,
+      "x": 1068,
+      "y": 5.8046875
+    },
+    {
+      "font": "Oswald, sans-serif",
+      "height": 68,
+      "line": "68px",
+      "size": "56px",
+      "tag": "H1",
+      "text": "Collection:\nFINS",
+      "weight": "500",
+      "width": 1340,
+      "x": 50,
+      "y": 644.1015625
+    },
+    {
+      "font": "Oswald, sans-serif",
+      "height": 23.796875,
+      "line": "23.8px",
+      "size": "19.6px",
+      "tag": "H2",
+      "text": "",
+      "weight": "500",
+      "width": 57.6328125,
+      "x": 1658.3515625,
+      "y": 809.1015625
+    },
+    {
+      "font": "Figtree, sans-serif",
+      "height": 21,
+      "line": "21px",
+      "size": "14px",
+      "tag": "H2",
+      "text": "Sort by:",
+      "weight": "500",
+      "width": 52.875,
+      "x": 1061.2109375,
+      "y": 801.1015625
+    },
+    {
+      "font": "Figtree, sans-serif",
+      "height": 21,
+      "line": "21px",
+      "size": "14px",
+      "tag": "H2",
+      "text": "8 products",
+      "weight": "500",
+      "width": 74.9140625,
+      "x": 1315.0859375,
+      "y": 801.1015625
+    },
+    {
+      "font": "Oswald, sans-serif",
+      "height": 44.203125,
+      "line": "22.1px",
+      "size": "18.2px",
+      "tag": "H3",
+      "text": "FCS II PERFORMER NEO GLASS TRI FINS",
+      "weight": "500",
+      "width": 265,
+      "x": 70,
+      "y": 1177.1015625
+    },
+    {
+      "font": "Oswald, sans-serif",
+      "height": 22.1015625,
+      "line": "22.1px",
+      "size": "18.2px",
+      "tag": "H3",
+      "text": "FCS PC TRI FINS",
+      "weight": "500",
+      "width": 265,
+      "x": 415,
+      "y": 1177.1015625
+    },
+    {
+      "font": "Oswald, sans-serif",
+      "height": 44.203125,
+      "line": "22.1px",
+      "size": "18.2px",
+      "tag": "H3",
+      "text": "FCS II PERFORMER SOFTFLEX TRI FINS",
+      "weight": "500",
+      "width": 265,
+      "x": 760,
+      "y": 1177.1015625
+    },
+    {
+      "font": "Oswald, sans-serif",
+      "height": 22.1015625,
+      "line": "22.1px",
+      "size": "18.2px",
+      "tag": "H3",
+      "text": "FCS PC QUAD FINS",
+      "weight": "500",
+      "width": 265,
+      "x": 1105,
+      "y": 1177.1015625
+    },
+    {
+      "font": "Oswald, sans-serif",
+      "height": 44.203125,
+      "line": "22.1px",
+      "size": "18.2px",
+      "tag": "H3",
+      "text": "FCS II PERFORMER NEO GLASS TRI QUAD FINS",
+      "weight": "500",
+      "width": 265,
+      "x": 70,
+      "y": 1651.3046875
+    },
+    {
+      "font": "Oswald, sans-serif",
+      "height": 22.1015625,
+      "line": "22.1px",
+      "size": "18.2px",
+      "tag": "H3",
+      "text": "FCS II MR TWIN FIN",
+      "weight": "500",
+      "width": 265,
+      "x": 415,
+      "y": 1651.3046875
+    },
+    {
+      "font": "Oswald, sans-serif",
+      "height": 44.203125,
+      "line": "22.1px",
+      "size": "18.2px",
+      "tag": "H3",
+      "text": "FCS II PERFORMER NEO GLASS QUAD FINS",
+      "weight": "500",
+      "width": 265,
+      "x": 760,
+      "y": 1651.3046875
+    },
+    {
+      "font": "Oswald, sans-serif",
+      "height": 22.1015625,
+      "line": "22.1px",
+      "size": "18.2px",
+      "tag": "H3",
+      "text": "FCS II ACCELERATOR PC TRI FINS",
+      "weight": "500",
+      "width": 265,
+      "x": 1105,
+      "y": 1651.3046875
+    },
+    {
+      "font": "Oswald, sans-serif",
+      "height": 68,
+      "line": "68px",
+      "size": "56px",
+      "tag": "H2",
+      "text": "DISCOVER YOUR PERFECT FIN",
+      "weight": "500",
+      "width": 1340,
+      "x": 50,
+      "y": 1827.5078125
+    },
+    {
+      "font": "Oswald, sans-serif",
+      "height": 28,
+      "line": "25.5px",
+      "size": "21px",
+      "tag": "H3",
+      "text": "PERFORMER FINS",
+      "weight": "500",
+      "width": 152.359375,
+      "x": 797,
+      "y": 1940.5078125
+    },
+    {
+      "font": "Oswald, sans-serif",
+      "height": 28,
+      "line": "25.5px",
+      "size": "21px",
+      "tag": "H3",
+      "text": "ACCELERATOR FINS",
+      "weight": "500",
+      "width": 169.4296875,
+      "x": 797,
+      "y": 2013.5078125
+    },
+    {
+      "font": "Oswald, sans-serif",
+      "height": 28,
+      "line": "25.5px",
+      "size": "21px",
+      "tag": "H3",
+      "text": "NEOGLASS FINS",
+      "weight": "500",
+      "width": 136.4609375,
+      "x": 797,
+      "y": 2086.5078125
+    },
+    {
+      "font": "Oswald, sans-serif",
+      "height": 68,
+      "line": "68px",
+      "size": "56px",
+      "tag": "H2",
+      "text": "RIDE WITH US",
+      "weight": "500",
+      "width": 1260,
+      "x": 90,
+      "y": 2448.71875
+    },
+    {
+      "font": "Oswald, sans-serif",
+      "height": 30.6015625,
+      "line": "30.6px",
+      "size": "25.2px",
+      "tag": "H2",
+      "text": "ABOUT RIDE",
+      "weight": "500",
+      "width": 420,
+      "x": 50,
+      "y": 2712.515625
+    }
+  ],
+  "links": [
+    {
+      "text": "Skip to content",
+      "url": "https://theme-ride-demo.myshopify.com/collections/fins#MainContent"
+    },
+    {
+      "text": "NEW FINS HAVE LANDED 🏄 SHOP NOW",
+      "url": "https://theme-ride-demo.myshopify.com/collections/fins"
+    },
+    {
+      "text": "",
+      "url": "https://theme-ride-demo.myshopify.com/"
+    },
+    {
+      "text": "",
+      "url": "https://theme-ride-demo.myshopify.com/collections/frontpage"
+    },
+    {
+      "text": "",
+      "url": "https://theme-ride-demo.myshopify.com/collections/performance-boards"
+    },
+    {
+      "text": "",
+      "url": "https://theme-ride-demo.myshopify.com/collections/fins"
+    },
+    {
+      "text": "",
+      "url": "https://theme-ride-demo.myshopify.com/pages/meet-the-team"
+    },
+    {
+      "text": "",
+      "url": "https://theme-ride-demo.myshopify.com/pages/contact"
+    },
+    {
+      "text": "",
+      "url": "https://theme-ride-demo.myshopify.com/blogs/stories"
+    },
+    {
+      "text": "Cart",
+      "url": "https://theme-ride-demo.myshopify.com/cart"
+    },
+    {
+      "text": "",
+      "url": "https://theme-ride-demo.myshopify.com/collections/fins"
+    },
+    {
+      "text": "",
+      "url": "https://theme-ride-demo.myshopify.com/collections/fins"
+    },
+    {
+      "text": "",
+      "url": "https://theme-ride-demo.myshopify.com/collections/fins"
+    },
+    {
+      "text": "FCS II PERFORMER NEO GLASS TRI FINS",
+      "url": "https://theme-ride-demo.myshopify.com/products/fcs-ii-performer-neo-glass-tri-fins"
+    },
+    {
+      "text": "FCS PC TRI FINS",
+      "url": "https://theme-ride-demo.myshopify.com/products/fcs-pc-medium-tri-fins"
+    },
+    {
+      "text": "FCS II PERFORMER SOFTFLEX TRI FINS",
+      "url": "https://theme-ride-demo.myshopify.com/products/fcs-ii-performer-softflex-tri-fins"
+    },
+    {
+      "text": "FCS PC QUAD FINS",
+      "url": "https://theme-ride-demo.myshopify.com/products/fcs-pc-large-tri-fins"
+    },
+    {
+      "text": "FCS II PERFORMER NEO GLASS TRI QUAD FINS",
+      "url": "https://theme-ride-demo.myshopify.com/products/fcs-ii-performer-neo-glass-tri-quad-fins"
+    },
+    {
+      "text": "FCS II MR TWIN FIN",
+      "url": "https://theme-ride-demo.myshopify.com/products/fcs-ii-mr-twin-fin"
+    },
+    {
+      "text": "FCS II PERFORMER NEO GLASS QUAD FINS",
+      "url": "https://theme-ride-demo.myshopify.com/products/fcs-ii-performer-neo-glass-quad-fins"
+    },
+    {
+      "text": "FCS II ACCELERATOR PC TRI FINS",
+      "url": "https://theme-ride-demo.myshopify.com/products/fcs-ii-accelerator-pc-tri-fins"
+    },
+    {
+      "text": "STORIES",
+      "url": "https://theme-ride-demo.myshopify.com/blogs/stories"
+    },
+    {
+      "text": "RIDE TEAM",
+      "url": "https://theme-ride-demo.myshopify.com/pages/meet-the-team"
+    },
+    {
+      "text": "CONTACT",
+      "url": "https://theme-ride-demo.myshopify.com/pages/contact"
+    },
+    {
+      "text": "theme-ride-demo",
+      "url": "https://theme-ride-demo.myshopify.com/"
+    }
+  ],
+  "sections": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--17836803260584__1646858577be4a75e0",
+      "rect": {
+        "height": 420,
+        "width": 1440,
+        "x": 0,
+        "y": 147.1015625
+      },
+      "tag": "SECTION",
+      "text": ""
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--17836803260584__banner",
+      "rect": {
+        "height": 118,
+        "width": 1440,
+        "x": 0,
+        "y": 619.1015625
+      },
+      "tag": "DIV",
+      "text": "Collection:\nFINS"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--17836803260584__product-grid",
+      "rect": {
+        "height": 964.40625,
+        "width": 1440,
+        "x": 0,
+        "y": 789.1015625
+      },
+      "tag": "DIV",
+      "text": "Filter\nSort by:\nFeatured\nMost relevant\nBest selling\nAlphabetically, A-Z\nAlphabetically, Z-A\nPrice, low to high\nPrice, high to low\nDate, old to new\nDate, new to old\n8 products\nFCS I"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--17836803260584__16475590839fb6c38a",
+      "rect": {
+        "height": 551.2109375,
+        "width": 1440,
+        "x": 0,
+        "y": 1805.5078125
+      },
+      "tag": "SECTION",
+      "text": "FINS FOR ALL RIDERS AND CONDITIONS\n\nDISCOVER YOUR PERFECT FIN\nPERFORMER FINS\nACCELERATOR FINS\nNEOGLASS FINS"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--17836803260584__16466214903951b46f",
+      "rect": {
+        "height": 263.796875,
+        "width": 1440,
+        "x": 0,
+        "y": 2408.71875
+      },
+      "tag": "SECTION",
+      "text": "RIDE WITH US\n\nBe the first to know about new collections and exclusive offers.\n\nEmail"
+    }
+  ],
+  "title": "FINS – theme-ride-demo",
+  "url": "https://theme-ride-demo.myshopify.com/collections/fins",
+  "viewport": {
+    "dpr": 1,
+    "height": 1000,
+    "width": 1440
+  },
+  "formGroups": [],
+  "grids": [
+    {
+      "className": "\n              grid product-grid grid--1-col-tablet-down\n              grid--4-col-desktop",
+      "columns": "none",
+      "display": "flex",
+      "gap": "40px",
+      "height": 908.40625,
+      "tag": "UL",
+      "width": 1340
+    },
+    {
+      "className": "grid grid--1-col grid--2-col-tablet collapsible-content__grid",
+      "columns": "none",
+      "display": "flex",
+      "gap": "40px",
+      "height": 391.2109375,
+      "tag": "DIV",
+      "width": 1340
+    }
+  ],
+  "images": [
+    {
+      "alt": "",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 420,
+        "width": 720
+      }
+    },
+    {
+      "alt": "",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 420,
+        "width": 720
+      }
+    },
+    {
+      "alt": "FCS II PERFORMER NEO GLASS TRI FINS",
+      "complete": true,
+      "naturalWidth": 327,
+      "rect": {
+        "height": 305,
+        "width": 305
+      }
+    },
+    {
+      "alt": "FCS II PERFORMER NEO GLASS TRI FINS",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 305,
+        "width": 305
+      }
+    },
+    {
+      "alt": "FCS PC TRI FINS",
+      "complete": true,
+      "naturalWidth": 327,
+      "rect": {
+        "height": 305,
+        "width": 305
+      }
+    },
+    {
+      "alt": "FCS PC TRI FINS",
+      "complete": true,
+      "naturalWidth": 327,
+      "rect": {
+        "height": 305,
+        "width": 305
+      }
+    },
+    {
+      "alt": "FCS II PERFORMER SOFTFLEX TRI FINS",
+      "complete": true,
+      "naturalWidth": 327,
+      "rect": {
+        "height": 305,
+        "width": 305
+      }
+    },
+    {
+      "alt": "FCS II PERFORMER SOFTFLEX TRI FINS",
+      "complete": true,
+      "naturalWidth": 327,
+      "rect": {
+        "height": 305,
+        "width": 305
+      }
+    },
+    {
+      "alt": "FCS PC QUAD FINS",
+      "complete": true,
+      "naturalWidth": 327,
+      "rect": {
+        "height": 305,
+        "width": 305
+      }
+    },
+    {
+      "alt": "FCS PC QUAD FINS",
+      "complete": true,
+      "naturalWidth": 327,
+      "rect": {
+        "height": 305,
+        "width": 305
+      }
+    },
+    {
+      "alt": "FCS II PERFORMER NEO GLASS TRI QUAD FINS",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 305,
+        "width": 305
+      }
+    },
+    {
+      "alt": "FCS II PERFORMER NEO GLASS TRI QUAD FINS",
+      "complete": true,
+      "naturalWidth": 327,
+      "rect": {
+        "height": 305,
+        "width": 305
+      }
+    }
+  ],
+  "bodyText": "Skip to content\n\nNEW FINS HAVE LANDED 🏄 SHOP NOW \n\nSHOP\nEXPLORE\nCart\nCollection:\nFINS\nFilter\nSort by:\nFeatured\nMost relevant\nBest selling\nAlphabetically, A-Z\nAlphabetically, Z-A\nPrice, low to high\nPrice, high to low\nDate, old to new\nDate, new to old\n8 products\nFCS II PERFORMER NEO GLASS TRI FINS\nRegular price\n$85.00 USD\nFCS PC TRI FINS\nRegular price\n$220.00 USD\nFCS II PERFORMER SOFTFLEX TRI FINS\nRegular price\n$45.00 USD\nFCS PC QUAD FINS\nRegular price\n$90.00 USD\nFCS II PERFORMER NEO GLASS TRI QUAD FINS\nRegular price\n$140.00 USD\nFCS II MR TWIN FIN\nRegular price\n$90.00 USD\nFCS II PERFORMER NEO GLASS QUAD FINS\nRegular price\n$110.00 USD\nFCS II ACCELERATOR PC TRI FINS\nRegular price\n$105.00 USD\n\nFINS FOR ALL RIDERS AND CONDITIONS\n\nDISCOVER YOUR PERFECT FIN\nPERFORMER FINS\nACCELERATOR FINS\nNEOGLASS FINS\nRIDE WITH US\n\nBe the first to know about new collections and exclusive offers.\n\nEmail\nABOUT RIDE\nSTORIES\nRIDE TEAM\nCONTACT\n\nWe find freedom in the waves, and our journey to find those waves is half the fun.\n\nFacebook\nInstagram\nYouTube\nPayment methods\n© 2026, theme-ride-demo Powered by Shopify"
+}

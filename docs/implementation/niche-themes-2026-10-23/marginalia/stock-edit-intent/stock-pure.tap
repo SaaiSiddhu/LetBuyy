@@ -1,0 +1,70 @@
+TAP version 13
+# Subtest: metadata-only EDIT loaded at four omits stock and preserves server-consumed two
+ok 1 - metadata-only EDIT loaded at four omits stock and preserves server-consumed two
+  ---
+  duration_ms: 0.995292
+  type: 'test'
+  ...
+# Subtest: reordered sparse EDIT emits only a changed existing quantity and new rows including zero
+ok 2 - reordered sparse EDIT emits only a changed existing quantity and new rows including zero
+  ---
+  duration_ms: 0.700708
+  type: 'test'
+  ...
+# Subtest: tracking-only EDIT preserves quantities, CREATE still supplies all quantities
+ok 3 - tracking-only EDIT preserves quantities, CREATE still supplies all quantities
+  ---
+  duration_ms: 0.172417
+  type: 'test'
+  ...
+# Subtest: untouched retained quantities rebase by UUID after purchase without hidden inventory intent
+ok 4 - untouched retained quantities rebase by UUID after purchase without hidden inventory intent
+  ---
+  duration_ms: 1.12725
+  type: 'test'
+  ...
+# Subtest: explicit retained zero survives when baseline is current; changed server inventory requires review
+ok 5 - explicit retained zero survives when baseline is current; changed server inventory requires review
+  ---
+  duration_ms: 0.477167
+  type: 'test'
+  ...
+# Subtest: legacy drafts retain their fields and require review instead of inferring stock intent
+ok 6 - legacy drafts retain their fields and require review instead of inferring stock intent
+  ---
+  duration_ms: 0.266292
+  type: 'test'
+  ...
+# Subtest: unreadable inventory evidence is refused and missing UUIDs cannot inherit another row baseline
+ok 7 - unreadable inventory evidence is refused and missing UUIDs cannot inherit another row baseline
+  ---
+  duration_ms: 0.150334
+  type: 'test'
+  ...
+# Subtest: acknowledgement clears only sent stock intent and retains newer zero or reverted quantities by UUID
+ok 8 - acknowledgement clears only sent stock intent and retains newer zero or reverted quantities by UUID
+  ---
+  duration_ms: 0.099125
+  type: 'test'
+  ...
+# Subtest: an omitted pending command rebases old untouched quantities to acknowledgement, preserving newer facts
+ok 9 - an omitted pending command rebases old untouched quantities to acknowledgement, preserving newer facts
+  ---
+  duration_ms: 0.177959
+  type: 'test'
+  ...
+# Subtest: the canonical edit schema and planner retain omitted stock, explicit zero and idless new stock
+ok 10 - the canonical edit schema and planner retain omitted stock, explicit zero and idless new stock
+  ---
+  duration_ms: 2.234292
+  type: 'test'
+  ...
+1..10
+# tests 10
+# suites 0
+# pass 10
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 467.893042

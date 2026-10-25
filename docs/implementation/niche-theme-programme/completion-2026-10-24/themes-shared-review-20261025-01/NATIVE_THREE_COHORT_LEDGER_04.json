@@ -1,0 +1,50 @@
+{
+  "recordedAt": "2026-10-25T03:48:36.568608+00:00",
+  "humanApprovalReceipt": "../NATIVE_EXECUTION_HUMAN_APPROVAL_20261025_04.json",
+  "maximumCohorts": 3,
+  "maxAttemptsEach": 1,
+  "jobs": 1,
+  "secondsEach": 600,
+  "currentActualNativeStarts": 3,
+  "physicalExecutorByLane": {
+    "capture": "01a164ba-e017-7b90-9053-efc5357459a6",
+    "apparel": "01a16d03-613e-71b0-a591-07d4d24347d4"
+  },
+  "cohorts": {
+    "captureRED": {
+      "status": "TERMINAL_ACCEPTED_EXPECTED_RED_AND_EMPTY_CLEANUP",
+      "activation": "HOSTED_CAPTURE_NATIVE_RED_ACTIVATION_01.json",
+      "activationSha256": "b2ae3e18927faa992edc016e76d2797d742522fd1967301a9a8e68aeee45fa43",
+      "runId": "487161ab7e7c",
+      "tests": 25,
+      "passCount": 18,
+      "failCount": 7,
+      "wholeParentSeconds": 35.798577542000004,
+      "review": "HOSTED_CAPTURE_NATIVE_RED_REVIEW_01.json"
+    },
+    "captureGREEN": {
+      "status": "TERMINAL_ACCEPTED_PASS_AND_EMPTY_CLEANUP",
+      "activation": "HOSTED_CAPTURE_NATIVE_GREEN_ACTIVATION_01.json",
+      "activationSha256": "d4c025461286e9f4226445eefc5e2001ca72da57ebdf48d573de8455395a03f9",
+      "runId": "0c9598fabf75",
+      "tests": 25,
+      "passCount": 25,
+      "failCount": 0,
+      "wholeParentSeconds": 36.813115208999996,
+      "review": "HOSTED_CAPTURE_NATIVE_GREEN_REVIEW_01.json"
+    },
+    "apparelFINAL04": {
+      "status": "TERMINAL_INFRASTRUCTURE_SPAWN_ELOOP_0TAP_CLEANUP_EMPTY",
+      "activation": "APPAREL_FINAL04_NATIVE_ACTIVATION_01.json",
+      "activationSha256": "82c24b9532f9cd498e54efc48223e7b012affc9149a27e06bf6aaf4411c04000",
+      "runId": "15caf68f859f",
+      "runnerPid": 50458,
+      "tests": 0,
+      "passCount": 0,
+      "actualMigrationCount": 322,
+      "review": "APPAREL_FINAL04_INFRASTRUCTURE_REVIEW_01.json"
+    }
+  },
+  "original07": "PreservedSTOPped, no adoption/recovery/read/write permission under this ledger",
+  "budgetStatus": "EXHAUSTED_NO_FOURTH_NATIVE_OR_RETRY"
+}

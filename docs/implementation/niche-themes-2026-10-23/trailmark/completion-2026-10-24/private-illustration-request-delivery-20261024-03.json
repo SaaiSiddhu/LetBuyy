@@ -1,0 +1,14 @@
+{
+  "recordedAt": "2026-10-24T12:41:18.395425+00:00",
+  "classification": "PRIVATE_SCOPE_REQUEST_DELIVERED_NOT_SOURCE_GRANT",
+  "targetThreadId": "01a164a4-a342-76d3-ab33-65e021ed57db",
+  "delivery": "SUCCESS_TOOL_RETURNED_TARGET_THREAD_ID",
+  "request": {
+    "path": "docs/implementation/niche-themes-2026-10-23/trailmark/completion-2026-10-24/PRIVATE_ILLUSTRATION_SCOPE_REQUEST_20261024_03.json",
+    "sha256": "53bbd95d390bcfccfb11e80bd6cafcf89ec59fff89f5f9665d7878c67d110719"
+  },
+  "currentOwnerDisposition": "AWAITING_EXACT_GRANT",
+  "currentTrailmarkRuntimeLease": null,
+  "sourceEdits": [],
+  "testsRun": 0
+}

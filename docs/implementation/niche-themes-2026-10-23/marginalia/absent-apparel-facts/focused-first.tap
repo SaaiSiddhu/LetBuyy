@@ -1,0 +1,106 @@
+TAP version 13
+# Subtest: absent apparel stays absent in actual beauty save, recovered draft and immutable retry
+ok 1 - absent apparel stays absent in actual beauty save, recovered draft and immutable retry
+  ---
+  duration_ms: 450.158833
+  type: 'test'
+  ...
+# Subtest: existing garment authoring and explicit clear retain niche/private siblings in the real form
+ok 2 - existing garment authoring and explicit clear retain niche/private siblings in the real form
+  ---
+  duration_ms: 164.805041
+  type: 'test'
+  ...
+# Subtest: untouched empty garment draft preserves absent apparel on the actual beauty-shaped save
+ok 3 - untouched empty garment draft preserves absent apparel on the actual beauty-shaped save
+  ---
+  duration_ms: 2.460375
+  type: 'test'
+  ...
+# Subtest: absent apparel survives toys hydration and retained-facts roundtrip with private and niche siblings
+ok 4 - absent apparel survives toys hydration and retained-facts roundtrip with private and niche siblings
+  ---
+  duration_ms: 1.040167
+  type: 'test'
+  ...
+# Subtest: absent apparel survives electronics hydration and retained-facts roundtrip with private and niche siblings
+ok 5 - absent apparel survives electronics hydration and retained-facts roundtrip with private and niche siblings
+  ---
+  duration_ms: 0.980667
+  type: 'test'
+  ...
+# Subtest: absent apparel survives food hydration and retained-facts roundtrip with private and niche siblings
+ok 6 - absent apparel survives food hydration and retained-facts roundtrip with private and niche siblings
+  ---
+  duration_ms: 0.641625
+  type: 'test'
+  ...
+# Subtest: absent apparel survives furniture hydration and retained-facts roundtrip with private and niche siblings
+ok 7 - absent apparel survives furniture hydration and retained-facts roundtrip with private and niche siblings
+  ---
+  duration_ms: 0.369958
+  type: 'test'
+  ...
+# Subtest: absent apparel survives gifts hydration and retained-facts roundtrip with private and niche siblings
+ok 8 - absent apparel survives gifts hydration and retained-facts roundtrip with private and niche siblings
+  ---
+  duration_ms: 0.429333
+  type: 'test'
+  ...
+# Subtest: absent apparel survives personalization hydration and retained-facts roundtrip with private and niche siblings
+ok 9 - absent apparel survives personalization hydration and retained-facts roundtrip with private and niche siblings
+  ---
+  duration_ms: 1.160334
+  type: 'test'
+  ...
+# Subtest: absent apparel survives beauty hydration and retained-facts roundtrip with private and niche siblings
+ok 10 - absent apparel survives beauty hydration and retained-facts roundtrip with private and niche siblings
+  ---
+  duration_ms: 0.3
+  type: 'test'
+  ...
+# Subtest: absent apparel survives sports hydration and retained-facts roundtrip with private and niche siblings
+ok 11 - absent apparel survives sports hydration and retained-facts roundtrip with private and niche siblings
+  ---
+  duration_ms: 0.418125
+  type: 'test'
+  ...
+# Subtest: absent apparel survives books hydration and retained-facts roundtrip with private and niche siblings
+ok 12 - absent apparel survives books hydration and retained-facts roundtrip with private and niche siblings
+  ---
+  duration_ms: 0.280458
+  type: 'test'
+  ...
+# Subtest: empty new metadata and stationery facts stay free of invented garment facts
+ok 13 - empty new metadata and stationery facts stay free of invented garment facts
+  ---
+  duration_ms: 0.238417
+  type: 'test'
+  ...
+# Subtest: meaningful existing apparel roundtrips and deliberate garment edit and clear keep their established semantics
+ok 14 - meaningful existing apparel roundtrips and deliberate garment edit and clear keep their established semantics
+  ---
+  duration_ms: 0.295792
+  type: 'test'
+  ...
+# Subtest: explicit new garment facts and intentionally supplied empty fields remain authored values
+ok 15 - explicit new garment facts and intentionally supplied empty fields remain authored values
+  ---
+  duration_ms: 1.756542
+  type: 'test'
+  ...
+# Subtest: absence preservation never bypasses malformed JSON, arrays, unknown garment fields or invalid measurements
+ok 16 - absence preservation never bypasses malformed JSON, arrays, unknown garment fields or invalid measurements
+  ---
+  duration_ms: 1.024083
+  type: 'test'
+  ...
+1..16
+# tests 16
+# suites 0
+# pass 16
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1940.498167

@@ -1,0 +1,7 @@
+{
+  "extends": "./editor-typecheck.json",
+  "include": [
+    "../../../../apps/merchant/web/src/components/products/niche-facts/marginalia-variant-facts-editor.tsx",
+    "../../../../apps/merchant/web/src/components/products/niche-facts/marginalia-variant-facts-editor.test.tsx"
+  ]
+}

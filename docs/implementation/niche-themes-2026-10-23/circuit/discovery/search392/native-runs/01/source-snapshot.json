@@ -1,0 +1,22 @@
+[
+  {
+    "path": "services/api-gateway/src/__tests__/owned-db/storefront-electronics-search.postgres.test.ts",
+    "copy": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/01/source-snapshot/services/api-gateway/src/__tests__/owned-db/storefront-electronics-search.postgres.test.ts",
+    "sha256": "f0893696d1104c7f46e382eab4eb44ea48758eceeed223e52a6f052385ce1617"
+  },
+  {
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/admission.json",
+    "copy": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/01/source-snapshot/docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/admission.json",
+    "sha256": "7365adc5beeb9a86c2b05f43e1aefde8a7342fa2384579da0a971f21625b6afe"
+  },
+  {
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/evidence-writer-release.json",
+    "copy": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/01/source-snapshot/docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/evidence-writer-release.json",
+    "sha256": "5b45fb36212709435dfb387ad9c76703f04e46d96f34b7ffb5c6a786f816144b"
+  },
+  {
+    "path": "docs/implementation/niche-theme-programme/circuit-search392-evidence-source-admission.json",
+    "copy": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-runs/01/source-snapshot/docs/implementation/niche-theme-programme/circuit-search392-evidence-source-admission.json",
+    "sha256": "40e56b9e2f6ac9f8a2c8a05edd77f66b94524cb3cd7d0c19ba671c173a996e2e"
+  }
+]

@@ -1,0 +1,267 @@
+{
+  "recordedAt": "2026-10-23T17:43:39.182Z",
+  "classification": "READONLY_COPY_ADMISSION_AND_CANDIDATE_DEPENDENCIES_REVERIFIED_NO_RUNTIME_ACCEPTANCE",
+  "copyAdmission": {
+    "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/editor-latest392-copy-admission.json",
+    "sha256": "d92a292c805bb9f16827f89af9e898481d5bb0db271cc4d2ece6dbff23a7f2dd",
+    "bytes": 2100
+  },
+  "candidateRoot": "/private/tmp/theme-editor-candidate-20261023-latest392-manualtls01",
+  "manifestReferencesVerified": 3,
+  "rootRecordedSourceFiles": 17233,
+  "allSourceFilesRehashedByThisAudit": false,
+  "workspaceLinksCurrentlyContained": 256,
+  "workspaceImportResolutionsRecomputedAndContained": 40,
+  "resolutions": [
+    {
+      "consumer": "apps/platform/identity",
+      "name": "@letbuyy/api-client",
+      "resolved": "packages/typescript/api-client/src/index.ts"
+    },
+    {
+      "consumer": "apps/platform/identity",
+      "name": "@letbuyy/auth-core",
+      "resolved": "packages/auth-core/src/index.ts"
+    },
+    {
+      "consumer": "apps/platform/identity",
+      "name": "@letbuyy/tenant-core",
+      "resolved": "packages/tenant-core/src/index.ts"
+    },
+    {
+      "consumer": "apps/platform/identity",
+      "name": "@letbuyy/ui",
+      "resolved": "packages/typescript/ui/src/index.ts"
+    },
+    {
+      "consumer": "apps/merchant/web",
+      "name": "@letbuyy/api-client",
+      "resolved": "packages/typescript/api-client/src/index.ts"
+    },
+    {
+      "consumer": "apps/merchant/web",
+      "name": "@letbuyy/auth-core",
+      "resolved": "packages/auth-core/src/index.ts"
+    },
+    {
+      "consumer": "apps/merchant/web",
+      "name": "@letbuyy/cms-core",
+      "resolved": "packages/cms-core/src/index.ts"
+    },
+    {
+      "consumer": "apps/merchant/web",
+      "name": "@letbuyy/shared-types",
+      "resolved": "packages/shared-types/src/index.ts"
+    },
+    {
+      "consumer": "apps/merchant/web",
+      "name": "@letbuyy/tenant-core",
+      "resolved": "packages/tenant-core/src/index.ts"
+    },
+    {
+      "consumer": "apps/merchant/web",
+      "name": "@letbuyy/theme-engine",
+      "resolved": "packages/theme-engine/src/index.ts"
+    },
+    {
+      "consumer": "apps/merchant/web",
+      "name": "@letbuyy/ui",
+      "resolved": "packages/typescript/ui/src/index.ts"
+    },
+    {
+      "consumer": "apps/merchant/web",
+      "name": "@letbuyy/commerce-core",
+      "resolved": "packages/commerce-core/src/index.ts"
+    },
+    {
+      "consumer": "apps/commerce/web",
+      "name": "@letbuyy/api-client",
+      "resolved": "packages/typescript/api-client/src/index.ts"
+    },
+    {
+      "consumer": "apps/commerce/web",
+      "name": "@letbuyy/auth-core",
+      "resolved": "packages/auth-core/src/index.ts"
+    },
+    {
+      "consumer": "apps/commerce/web",
+      "name": "@letbuyy/checkout-core",
+      "resolved": "packages/checkout-core/src/index.ts"
+    },
+    {
+      "consumer": "apps/commerce/web",
+      "name": "@letbuyy/cms-core",
+      "resolved": "packages/cms-core/src/index.ts"
+    },
+    {
+      "consumer": "apps/commerce/web",
+      "name": "@letbuyy/commerce-core",
+      "resolved": "packages/commerce-core/src/index.ts"
+    },
+    {
+      "consumer": "apps/commerce/web",
+      "name": "@letbuyy/shared-types",
+      "resolved": "packages/shared-types/src/index.ts"
+    },
+    {
+      "consumer": "apps/commerce/web",
+      "name": "@letbuyy/tenant-core",
+      "resolved": "packages/tenant-core/src/index.ts"
+    },
+    {
+      "consumer": "apps/commerce/web",
+      "name": "@letbuyy/theme-engine",
+      "resolved": "packages/theme-engine/src/index.ts"
+    },
+    {
+      "consumer": "apps/commerce/web",
+      "name": "@letbuyy/ui",
+      "resolved": "packages/typescript/ui/src/index.ts"
+    },
+    {
+      "consumer": "services/api-gateway",
+      "name": "@letbuyy/api-types",
+      "resolved": "packages/typescript/api-types/src/index.ts"
+    },
+    {
+      "consumer": "services/api-gateway",
+      "name": "@letbuyy/audit-core",
+      "resolved": "packages/audit-core/src/index.ts"
+    },
+    {
+      "consumer": "services/api-gateway",
+      "name": "@letbuyy/auth-core",
+      "resolved": "packages/auth-core/src/index.ts"
+    },
+    {
+      "consumer": "services/api-gateway",
+      "name": "@letbuyy/billing-core",
+      "resolved": "packages/billing-core/src/index.ts"
+    },
+    {
+      "consumer": "services/api-gateway",
+      "name": "@letbuyy/checkout-core",
+      "resolved": "packages/checkout-core/src/index.ts"
+    },
+    {
+      "consumer": "services/api-gateway",
+      "name": "@letbuyy/cms-core",
+      "resolved": "packages/cms-core/src/index.ts"
+    },
+    {
+      "consumer": "services/api-gateway",
+      "name": "@letbuyy/commerce-core",
+      "resolved": "packages/commerce-core/src/index.ts"
+    },
+    {
+      "consumer": "services/api-gateway",
+      "name": "@letbuyy/event-core",
+      "resolved": "packages/event-core/src/index.ts"
+    },
+    {
+      "consumer": "services/api-gateway",
+      "name": "@letbuyy/identity-core",
+      "resolved": "packages/identity-core/src/index.ts"
+    },
+    {
+      "consumer": "services/api-gateway",
+      "name": "@letbuyy/infrastructure",
+      "resolved": "packages/infrastructure/src/index.ts"
+    },
+    {
+      "consumer": "services/api-gateway",
+      "name": "@letbuyy/notification-core",
+      "resolved": "packages/notification-core/src/index.ts"
+    },
+    {
+      "consumer": "services/api-gateway",
+      "name": "@letbuyy/organization-core",
+      "resolved": "packages/organization-core/src/index.ts"
+    },
+    {
+      "consumer": "services/api-gateway",
+      "name": "@letbuyy/payments",
+      "resolved": "packages/payments/src/index.ts"
+    },
+    {
+      "consumer": "services/api-gateway",
+      "name": "@letbuyy/permission-core",
+      "resolved": "packages/permission-core/src/index.ts"
+    },
+    {
+      "consumer": "services/api-gateway",
+      "name": "@letbuyy/session-core",
+      "resolved": "packages/session-core/src/index.ts"
+    },
+    {
+      "consumer": "services/api-gateway",
+      "name": "@letbuyy/shared-types",
+      "resolved": "packages/shared-types/src/index.ts"
+    },
+    {
+      "consumer": "services/api-gateway",
+      "name": "@letbuyy/tenant-core",
+      "resolved": "packages/tenant-core/src/index.ts"
+    },
+    {
+      "consumer": "services/api-gateway",
+      "name": "@letbuyy/theme-engine",
+      "resolved": "packages/theme-engine/src/index.ts"
+    },
+    {
+      "consumer": "services/api-gateway",
+      "name": "@letbuyy/token-core",
+      "resolved": "packages/token-core/src/index.ts"
+    }
+  ],
+  "requiredSourcePinsCurrentlyExact": 25,
+  "startupHandoffCopiedExact": [
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/candidate-handoff/STARTUP-REVIEW.md",
+      "sha256": "85551615aaa9bbeeec49be887a92f9383ccf2ed3d8eb82fb57dfaffe5469a2fb"
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/candidate-handoff/startup-handoff.json",
+      "sha256": "a1c9ec0264452627f52a95634f1331bdbc021777241ac628ce9ced0c8a3b4806"
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/candidate-handoff/handoff-release.json",
+      "sha256": "82c952e3a3a5d918e256980855143264df715925e6d5430bdd34d25f9aacac66"
+    }
+  ],
+  "threadlineLifecycleIndex": {
+    "workspaceReference": {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/threadline-2026-10-22/installed-lifecycle-index/installed-threadline-lifecycle.index.json",
+      "sha256": "5a7d3f7116a7ce4cc815c89ef988741a93b8a15f1648fbb628e2144634628094",
+      "bytes": 27518
+    },
+    "includedInCandidateSnapshot": false,
+    "newPendingObligations": 26,
+    "freshPass": 0,
+    "instruction": "Root routes existing workspace index to Editor. No runtime requirement to copy this docs file into already running candidate."
+  },
+  "preservedAuditAssumptionFailure": {
+    "path": "/Volumes/Projects/LetBuyy/docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/candidate-handoff/postcopy-audit-initial-assumption.json",
+    "sha256": "3a39dac68e5fb2b86559525c45f6dfd1569eca57e16e4cac2ab2ed61e41af9ee",
+    "bytes": 853
+  },
+  "actualMigrationFiles": 321,
+  "actualMigrationMax": 392,
+  "rootRecordedStartup": {
+    "session": 79090,
+    "timeoutSeconds": 24000,
+    "kind": "gateway-db",
+    "jobs": 1,
+    "noReap": true,
+    "preparedTransactions": 2,
+    "migrationCeiling": null,
+    "tlsMode": "manual-os-trusted"
+  },
+  "runtimeReadiness": "NOT_OBSERVED_BY_THIS_AUDIT",
+  "browserAcceptance": false,
+  "copyOrBuildOrDatabaseOrAppOrBrowserStartedByThisAudit": false,
+  "privateStateOrCredentialsRead": false,
+  "candidateWrites": false,
+  "retainedFixturesTabsLoginsTouched": false,
+  "next": "Editor sole browser controller after coordinator readiness handoff; no save/preview/search/HTTPS/COD acceptance inferred from copy/start"
+}

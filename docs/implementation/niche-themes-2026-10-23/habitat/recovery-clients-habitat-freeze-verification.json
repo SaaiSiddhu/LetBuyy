@@ -1,0 +1,55 @@
+{
+  "recordedAt": "2026-10-23T20:48:58.705575+00:00",
+  "runId": "f6074d90e894",
+  "candidate": "/private/tmp/theme-editor-recovery-20261024-01",
+  "status": "PASS_HABITAT_FROZEN_INPUTS_AND_ASSETS_NEW_RECOVERY_CLIENT_COPY",
+  "checks": [
+    {
+      "manifest": "source-manifest.json",
+      "checked": 11,
+      "mismatches": []
+    },
+    {
+      "manifest": "measurement-consumer-source-manifest.json",
+      "checked": 7,
+      "mismatches": []
+    },
+    {
+      "manifest": "installed-matrix-preparation-receipt.json",
+      "checked": 5,
+      "mismatches": []
+    }
+  ],
+  "assetPins": [
+    {
+      "path": "apps/commerce/web/public/theme-assets/habitat/v2/ASSETS.json",
+      "sha256": "0e6d049233ae4c01010817e7668028d9d153954834bc28072324f7bc6375f9f1",
+      "bytes": 1752
+    },
+    {
+      "path": "apps/commerce/web/public/theme-assets/habitat/v2/chair-smoked.webp",
+      "sha256": "972a2874558252ea556d2f3730520dbb7367fed238fcb685ce5f0b8bbe6ed225",
+      "bytes": 35000
+    },
+    {
+      "path": "apps/commerce/web/public/theme-assets/habitat/v2/chair.webp",
+      "sha256": "264557d00e0e3e10550b5018db473c8ca165a785e043431dc43b9e2a57102be8",
+      "bytes": 41922
+    },
+    {
+      "path": "apps/commerce/web/public/theme-assets/habitat/v2/room.webp",
+      "sha256": "0b6714688cd5062c2dde7c101e219a9f1d7a3c15effbcd3180ce4d7ac7731a67",
+      "bytes": 162906
+    },
+    {
+      "path": "apps/commerce/web/public/theme-assets/habitat/v2/table.webp",
+      "sha256": "23ca0bc9525d295f4d3f8cc01bfac40b8ad3bfc5ecb7d4c2ac9fd20d9ebf61ed",
+      "bytes": 23314
+    }
+  ],
+  "sourceProofSha256": "702b3a632462cff507993e80b58171fb8d0c246c2913de643bfbe4cf3438522f",
+  "merchantOrigin": "http://admin.threadline-f6074d90e894.localhost:49943",
+  "commerceOrigin": "http://syn-threadline-ui-33be9d94.localhost:49944",
+  "role": "One offline domain freeze check for newly changed shared client epoch; no browser/DB/API/build/test action",
+  "caseAcceptance": false
+}

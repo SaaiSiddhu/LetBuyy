@@ -1,3 +1,5 @@
+import '../../services/api_client.dart';
+import '../../widgets/shared/merchant_export_share.dart';
 // ============================================================
 // ORDERS SCREEN v2
 // Enhanced order management with toolbar, filters, and bulk actions
@@ -342,10 +344,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
         if (status == 'completed' &&
             downloadUrl != null &&
             downloadUrl.isNotEmpty) {
-          await Share.share(
-            downloadUrl,
-            subject: latest['filename']?.toString() ?? 'orders.csv',
-          );
+          await shareMerchantExport(api: context.read<ApiClient>(), job: latest);
           _showSnackBar('Order CSV export ready to share.');
         } else {
           _showSnackBar('Order CSV export $status. Try again shortly.');

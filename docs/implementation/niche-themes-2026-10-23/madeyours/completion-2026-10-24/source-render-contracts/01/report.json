@@ -1,0 +1,145 @@
+{
+  "classification": "ACTUAL_IN_PROCESS_LIQUID_SOURCE_CONTRACT_NOT_BROWSER_OR_NATIVE_ACCEPTANCE",
+  "createdAt": "2026-10-24T08:46:50.911Z",
+  "inputs": [
+    {
+      "path": "packages/theme-engine/src/madeyours-theme.ts",
+      "sha256": "c56bdba5b9e9376c4a296cadc2d4f31a33598a033692d2f6c21daa71b3e98193"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-bundle-core.ts",
+      "sha256": "0e1650a4d71ef358792c0f877f4ae678794fb6d2cfdebbb30d79563e4a2f452f"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-bundle.ts",
+      "sha256": "cdbad4b28277431a3ab06e56ed0ce16539e04837bb107f5f951a3df39a92ed76"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-renderer.ts",
+      "sha256": "794cbc6ff9ae71f995560f302e1b0d5f0d4ff4da59fa31191585851b1e822164"
+    },
+    {
+      "path": "packages/theme-engine/src/niche-order-presentation.ts",
+      "sha256": "6c5f89356bab085cc8a3a359c5caad4503dc8442176df0b8a1558b849d651ac3"
+    },
+    {
+      "path": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "sha256": "48e8126f5681d91fb1780b521bd5d53c4bf933156ca2b97c64932d95e0800605"
+    }
+  ],
+  "baselineBundleSha256": "a06efcb494f2d8b47d901b57388743de7a1bece20afe818255e8c03ae60597f8",
+  "cases": [
+    {
+      "id": "SRC-ORDER-HEADING",
+      "requirement": "Declared customer-order-detail.heading changes the rendered owned-order heading.",
+      "status": "FAIL",
+      "pass": false,
+      "expected": "Exact escaped edited heading plus retained immutable order number; no executable markup.",
+      "observed": {
+        "beforeHeading": "Order #SOURCE-ONLY-1",
+        "afterHeading": "Order #SOURCE-ONLY-1",
+        "markupNodes": 0
+      },
+      "binding": "templates[customers/order].sections[customer-order-detail-default].settings.heading",
+      "beforeHtmlSha256": "be3c90b2472d8f0762a60c8eb2fe635279f5a72dc836cbb4fe6535671b459578",
+      "afterHtmlSha256": "be3c90b2472d8f0762a60c8eb2fe635279f5a72dc836cbb4fe6535671b459578",
+      "outputByteIdentical": true
+    },
+    {
+      "id": "SRC-FAVICON",
+      "requirement": "Declared global faviconUrl produces an actual safe head icon link.",
+      "status": "FAIL",
+      "pass": false,
+      "expected": "One safe rel=icon link to https://assets.example.invalid/madeyours-source-only-icon.png.",
+      "observed": {
+        "icons": []
+      },
+      "beforeHtmlSha256": "b5c4c40c5a09d9c1d711dd50f23d6ece1e05d3d8a51976cfa320d94636130d49",
+      "afterHtmlSha256": "b5c4c40c5a09d9c1d711dd50f23d6ece1e05d3d8a51976cfa320d94636130d49",
+      "outputByteIdentical": true
+    },
+    {
+      "id": "SRC-TOKEN-primaryColor",
+      "requirement": "Global token is consumed by the actual CSS serializer despite no direct Liquid setting read.",
+      "status": "PASS",
+      "pass": true,
+      "expected": "--primary:#123456;",
+      "observed": {
+        "tokenPresent": true,
+        "outputChanged": true
+      },
+      "beforeHtmlSha256": "b5c4c40c5a09d9c1d711dd50f23d6ece1e05d3d8a51976cfa320d94636130d49",
+      "afterHtmlSha256": "3062ddfb8decae3cbd2a47eb2aea3ce01eb8e6c71817c6490528155d2274ab5c"
+    },
+    {
+      "id": "SRC-TOKEN-headingFontFamily",
+      "requirement": "Global token is consumed by the actual CSS serializer despite no direct Liquid setting read.",
+      "status": "FAIL",
+      "pass": false,
+      "expected": "--font-display:Georgia;",
+      "observed": {
+        "tokenPresent": false,
+        "outputChanged": true
+      },
+      "beforeHtmlSha256": "b5c4c40c5a09d9c1d711dd50f23d6ece1e05d3d8a51976cfa320d94636130d49",
+      "afterHtmlSha256": "f884b4c2676929370bd49c5f32e5f51ffa67a9a8e5a59b7f011d090da7faa8b5"
+    },
+    {
+      "id": "SRC-TOKEN-bodyFontFamily",
+      "requirement": "Global token is consumed by the actual CSS serializer despite no direct Liquid setting read.",
+      "status": "PASS",
+      "pass": true,
+      "expected": "--font-body:serif;",
+      "observed": {
+        "tokenPresent": true,
+        "outputChanged": true
+      },
+      "beforeHtmlSha256": "b5c4c40c5a09d9c1d711dd50f23d6ece1e05d3d8a51976cfa320d94636130d49",
+      "afterHtmlSha256": "eb1289883cd7b3c89fe34b275ed7fb5c68cff0233b79dbef1f149766324bbdf8"
+    },
+    {
+      "id": "SRC-HERO-HEADING",
+      "requirement": "Owned hero heading is an escaped functional field (positive control).",
+      "status": "PASS",
+      "pass": true,
+      "expected": "Own heading <script>attack()</script> தமிழ்",
+      "observed": {
+        "h1": "Own heading <script>attack()</script> தமிழ்",
+        "scriptNodes": 0
+      },
+      "htmlSha256": "805e7425d531074098927be6f68ba1150d75f3ff54fba81e57f5b32d4f619cb1"
+    },
+    {
+      "id": "SRC-META-DESCRIPTION",
+      "requirement": "Declared metadata text reaches the actual head through escaped output (positive control).",
+      "status": "FAIL",
+      "pass": false,
+      "expected": "Synthetic description <b>literal</b> आशा",
+      "observed": {
+        "description": "Synthetic description literal आशा"
+      },
+      "htmlSha256": "fbbe7e89cd0d5043b24e3c67d1b96a314f782455636dccad795526ebc55699e1"
+    }
+  ],
+  "summary": {
+    "total": 7,
+    "pass": 3,
+    "fail": 4,
+    "error": 0
+  },
+  "fetchCalls": 0,
+  "sourceFactoryUnmutated": true,
+  "resources": {
+    "appsStarted": 0,
+    "builds": 0,
+    "database": 0,
+    "browser": 0,
+    "providerCalls": 0,
+    "mainSourceWrites": 0
+  },
+  "limits": [
+    "Direct actual Liquid input, not editor persistence, Next metadata, installed release or browser rendering.",
+    "No source patch applied.",
+    "Resource-picker consumption belongs to the data-binding plan and is not inferred absent from missing Liquid references."
+  ]
+}

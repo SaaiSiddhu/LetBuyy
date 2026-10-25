@@ -286,7 +286,8 @@ export default function TestimonialsPage() {
     if (loading) {
         return (
             <Page>
-                <PageHeader
+                <PageHeader identity="content"
+                    recipe="index"
                     title="Testimonials"
                     description="Collect and curate customer quotes for your portfolio pages."
                     breadcrumbs={[{ label: 'Content' }, { label: 'Testimonials' }]}
@@ -302,7 +303,8 @@ export default function TestimonialsPage() {
 
     return (
         <Page>
-            <PageHeader
+            <PageHeader identity="content"
+                recipe="index"
                 title="Testimonials"
                 description="Collect and curate customer quotes for your portfolio pages."
                 breadcrumbs={[{ label: 'Content' }, { label: 'Testimonials' }]}

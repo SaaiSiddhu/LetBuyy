@@ -1,0 +1,79 @@
+Browser tab: 7, Title: "LetBuyy Admin", URL: "http://admin.threadline-9cd50e893016.localhost:57225/syn-threadline-ui-d11a8917/online-store/themes/letbuyy-forge/editor".
+1 AXWebArea LetBuyy Admin, URL: admin.threadline-9cd50e893016.localhost:57225/syn-threadline-ui-d11a8917/online-store/themes/letbuyy-forge/editor
+	2 container
+		3 link Description: Back to themes, Value: admin.threadline-9cd50e893016.localhost:57225/syn-threadline-ui-d11a8917/online-store/themes
+		4 checkbox Description: Toggle navigation panel, Value: 1
+		5 button Sections
+		6 button Theme settings
+		7 button Theme styles
+		8 button Versions
+		9 container
+			10 text Circuit Active
+			11 text Saved
+			12 container Template
+				13 pop up button (collapsed, settable) Description: Template, Value: Circuit home, Secondary Actions: Expand
+					14 menu
+						15 (selected) Circuit home
+						16 Circuit product
+						17 Circuit collection
+						18 Page
+						19 LetBuyy Core cart
+						20 Blog
+						21 Article
+						22 Policy page
+						23 Circuit search
+						24 Contact
+						25 Password
+						26 404 Not Found
+						27 Login
+						28 Order detail
+						29 Order history
+						30 All collections
+						31 Account
+						32 Register
+						33 Account settings
+						34 Wishlist
+						35 Addresses
+		36 button (disabled) Save
+		37 button Publish
+		54 container Theme properties
+			55 text Selected section
+			56 heading Task and category discovery, Value: 2
+				57 text Task and category discovery
+			58 container
+				59 container Smart defaults
+					60 button (collapsed) Smart defaults, Secondary Actions: Expand
+						61 text Smart defaults
+				62 container
+					63 text Heading
+					64 text field (settable) Heading, Value: Circuit saved heading B 9cd50e893016
+				65 container
+					66 text Task label 1
+					67 text field (settable) Task label 1, Value: Charge
+				68 container
+					69 text Task label 2
+					70 text field (settable) Task label 2, Value: Connect
+				71 container
+					72 text Task label 3
+					73 text field (settable) Task label 3, Value: Listen
+				74 container
+					75 text Task label 4
+					76 text field (settable) Task label 4, Value: Work
+				77 container
+					78 text Description
+					79 text field (settable) Description, Value: Start with the task. Finish with the right model.
+				80 text Task collection 1
+				81 combo box (collapsed, settable) Task collection 1, Secondary Actions: Expand
+				82 text Task collection 2
+				83 combo box (collapsed, settable) Task collection 2, Secondary Actions: Expand
+				84 text Task collection 3
+				85 combo box (collapsed, settable) Task collection 3, Secondary Actions: Expand
+				86 text Task collection 4
+				87 combo box (collapsed, settable) Task collection 4, Secondary Actions: Expand
+				88 text BLOCKS
+		50 container Editor panels
+			51 checkbox Sections, Value: 0
+			52 checkbox Preview, Value: 0
+			53 checkbox Settings, Value: 1
+
+The focused UI element is 1 AXWebArea LetBuyy Admin, URL: admin.threadline-9cd50e893016.localhost:57225/syn-threadline-ui-d11a8917/online-store/themes/letbuyy-forge/editor

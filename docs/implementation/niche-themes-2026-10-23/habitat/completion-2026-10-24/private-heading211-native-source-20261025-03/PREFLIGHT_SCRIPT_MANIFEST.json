@@ -1,0 +1,53 @@
+{
+  "classification": "PRE_TERMINAL_SOURCE_PREFLIGHT_ARTIFACT_PINS",
+  "files": [
+    {
+      "path": "inventory.mjs",
+      "sha256": "affc88aa6e2f07a1f725fc565d61ebec3830c2650f214b8c96d0b008990579d5"
+    },
+    {
+      "path": "preflight-source.mjs",
+      "sha256": "cf4684735559460c32c9e222b4ec40653331aad4fdfe7444ba5d14ef4b77294e"
+    },
+    {
+      "path": "resource-preflight.plan.mjs",
+      "sha256": "eb39a6185fb15cd9671aedeaeceb63054698211fed584e1a4424805569cd5f4d"
+    },
+    {
+      "path": "verify-parent-result.plan.mjs",
+      "sha256": "accdb00edb7ee207a87ac9cc02175013b6958268aace5ec12ad7c15a8597032b"
+    },
+    {
+      "path": "MATERIALIZATION.json",
+      "sha256": "41677723a957969838dc9b6d41dcf4ccba486d86d2caddb89479496e60861526"
+    },
+    {
+      "path": "ALLOCATION.json",
+      "sha256": "401ab6cd7137a954b5ead4225f59ce6df8159262511054fbbe5ee63b92f8a003"
+    },
+    {
+      "path": "native-source-closure.json",
+      "sha256": "27a621aed16e2fd6e801bf3891ac8ed67e4809ffdcd1c4969d2587ec0bc7f7a1"
+    },
+    {
+      "path": "SOURCE_VENDOR_TOOL_INVENTORY.json",
+      "sha256": "a07bef5ab2640f0cad71686091f6c31fce28228ad7ab71f23d2804d9e56fe005"
+    },
+    {
+      "path": "EXPECTED_MIGRATION_ORDER.json",
+      "sha256": "3e7d34112aa4cab8b72d26b390da42f4bb8c09df97ac37c261eac131b3427de9"
+    },
+    {
+      "path": "ENVIRONMENT_EXCLUSIONS.json",
+      "sha256": "08f4693bdcd3c5a5c4126d6dfcd0bc9cf57d788de0ea31db802ddb4598234067"
+    },
+    {
+      "path": "NATIVE_PREFLIGHT_PLAN.json",
+      "sha256": "cd4a8dffddb819ef5272826ef8d7bf48f63639306b815cdceafe27014ebde579"
+    },
+    {
+      "path": "README.md",
+      "sha256": "a59f54b1ef41f15eb4401ae72d9804e181f05a3fd530a29c8ebfb88e937e9347"
+    }
+  ]
+}

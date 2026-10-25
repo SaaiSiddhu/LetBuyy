@@ -1,0 +1,25 @@
+{
+  "status": "RETAINED_ACTUAL04_INFRASTRUCTURE_FAILURE_NO_NATIVE_TEST_CREDIT",
+  "runId": "15caf68f859f",
+  "tests": 0,
+  "expectedTestsNotRun": 4,
+  "cause": "spawn ELOOP before TAP; frozen04 self-symlinked .bin unchanged",
+  "result": {
+    "path": "/Volumes/Projects/LetBuyy/docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-provenance04/future-native-one-cohort/result.json",
+    "sha256": "3ae876e5b67bef67b0e66837f0bc31e15f5c687ea312ba58e7dcc6d5b66b10bc"
+  },
+  "receipt": {
+    "path": "/Volumes/Projects/LetBuyy/docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-provenance04/future-native-one-cohort/run-receipt.json",
+    "sha256": "a40c31d0d1acdea38a3405b1c05922e3c14dece59e3b7602f979d9a03b4164c5"
+  },
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "reaped": [],
+  "budget": "All three approved cohorts consumed. This05 preparation is no fourth cohort."
+}

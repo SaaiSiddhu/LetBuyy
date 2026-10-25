@@ -1,0 +1,1053 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-24T12:22:53.449253+00:00",
+  "classification": "FULL_OBJECTIVE_REQUIREMENT_EVIDENCE_AUDIT_NOT_CERTIFICATION_OR_NEW_EXECUTION",
+  "objective": "Complete Kindred end to end on existing canonical systems, including every declared editor capability, normal identity, cart/COD, actual Razorpay Test purchase, immutable history/security/recovery/quality and independent full review; preserve original19/design/artifacts/KQA-01OPEN and use existing allocator/sole controller only.",
+  "goalStatus": "ACTIVE",
+  "previousGoalTurnClassification": "PROGRESS: direct-human-authorized allocator/controller requests delivered and recorded; frozen input identity verified; original outcomes retained.",
+  "thisGoalTurnProgress": [
+    "Consumed concrete frozen200original-lane allocation decision; separated it from successor/expanded capability admission",
+    "Independently checked all92recorded source controls,113actualcompiledsource identities and10current editor eligibility gaps",
+    "Reconciled every one of the12certification gates with the entire original19 and297basecohort/2807operation+110additivechild scope"
+  ],
+  "certificationContract": {
+    "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/CERTIFICATION_CONTRACT.json",
+    "sha256": "b636edf851358f24253ba48e4038bd76f190c163655cdd5f5e4e2d8e21fd77e4"
+  },
+  "gateAudit": [
+    {
+      "id": "capability_inventory_complete",
+      "status": "PARTIAL",
+      "evidence": [
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/kindred/completion-2026-10-24/CAPABILITY_INVENTORY.json",
+          "sha256": "57eebc2670cd84b1e7d9458111f65d51a0afbae283c9bea7c978d7395d596774"
+        },
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/kindred/completion-2026-10-24/CHILD_COVERAGE_ADDENDUM_02.json",
+          "sha256": "5a0c48555d62191ff0b29cf887192780ef91bf6137d4b7ea8cea79864d8f687c"
+        }
+      ],
+      "finding": "Frozen200 declaration inventory has23templates/45sectiontypes/103sectionfields/13inlineblockdeclarations/23inlinefields/one reusablebadge/12globalsettings. The earlier absence-means-disabled child inference is corrected additively; current UI/resource admission remains unverified."
+    },
+    {
+      "id": "all_declared_editor_sections_blocks_fields",
+      "status": "PARTIAL",
+      "evidence": [
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/kindred/completion-2026-10-24/COVERAGE.json",
+          "sha256": "2ef6c09d5ce19ea40a0121ae6f927c771d4d15e5d984647fc66ed5b802c719fc"
+        },
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/kindred/completion-2026-10-24/CHILD_COVERAGE_ADDENDUM_02.json",
+          "sha256": "5a0c48555d62191ff0b29cf887192780ef91bf6137d4b7ea8cea79864d8f687c"
+        },
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/kindred/completion-2026-10-24/heading-control-audit-20261024/REVIEW.json",
+          "sha256": "cf430cc664317280ddb4ce4db76754ef63d10610f6fb883a55e56adb3a1843ae"
+        }
+      ],
+      "finding": "297basecohorts/2807operationrows and110additivechildUIrows remain NOT_RUN. Source witnesses show3copy-control gaps and10inlineparent child-add eligibility gaps; private candidate/source results are not installed verification."
+    },
+    {
+      "id": "normal_buyer_signup_signin_and_store_customer_entry",
+      "status": "NOT_RUN",
+      "evidence": [
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/kindred/completion-2026-10-24/AUDIT_19_CASES.md",
+          "sha256": "6c40349dee0d1480ccf33f90209257f503e14c4b3ead956d4be0663828e69e7f"
+        },
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/kindred/completion-2026-10-24/COVERAGE.json",
+          "sha256": "2ef6c09d5ce19ea40a0121ae6f927c771d4d15e5d984647fc66ed5b802c719fc"
+        }
+      ],
+      "finding": "G11 and expanded identity paths need actual normal signup/verification/signin/customer entry and store-scoped checkout continuation. No minted or copied identity may substitute."
+    },
+    {
+      "id": "product_and_discovery",
+      "status": "PARTIAL",
+      "evidence": [
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/kindred/completion-2026-10-24/AUDIT_19_CASES.md",
+          "sha256": "6c40349dee0d1480ccf33f90209257f503e14c4b3ead956d4be0663828e69e7f"
+        },
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/kindred/completion-2026-10-24/BASELINE_AUDIT.json",
+          "sha256": "c7ae58f0c2977cb16313a52bc25b3a4bbe7b189ad7a07c869603933dcafa5abb"
+        }
+      ],
+      "finding": "HistoricalG03/G05/G07PASS; G04/G06partial, including missing negative/discovery branches.20canonicalGET controls are not a full lifecycle or purchase."
+    },
+    {
+      "id": "canonical_cart_and_hosted_COD",
+      "status": "NOT_RUN",
+      "evidence": [
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/kindred/completion-2026-10-24/AUDIT_19_CASES.md",
+          "sha256": "6c40349dee0d1480ccf33f90209257f503e14c4b3ead956d4be0663828e69e7f"
+        },
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/kindred/completion-2026-10-24/COVERAGE.json",
+          "sha256": "2ef6c09d5ce19ea40a0121ae6f927c771d4d15e5d984647fc66ed5b802c719fc"
+        }
+      ],
+      "finding": "G09-G13 need actual accepted cart/server-authority controls, normal buyer and hosted COD purchase plus original-intent same-key retry. PlannedINR1120 is an oracle, not an observed purchase."
+    },
+    {
+      "id": "actual_Razorpay_Test_Mode_purchase_and_provider_evidence",
+      "status": "NOT_RUN",
+      "evidence": [
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/kindred/completion-2026-10-24/SHARED_RAZORPAY_SECURE_READINESS_02.json",
+          "sha256": "6c770b07c2cc829c28e59ce15afcd453681c3194b1dab565aca5fa53cb32b9b5"
+        },
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/kindred/completion-2026-10-24/COVERAGE.json",
+          "sha256": "2ef6c09d5ce19ea40a0121ae6f927c771d4d15e5d984647fc66ed5b802c719fc"
+        }
+      ],
+      "finding": "Only authorized read-only Test API authentication is verified. Real-adapter bindings, owned publicHTTPS receiver/matching Test secret, actual captured purchase and real provider delivery/reconciliation remain unverified."
+    },
+    {
+      "id": "immutable_buyer_merchant_order_history_after_catalog_edit",
+      "status": "NOT_RUN",
+      "evidence": [
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/kindred/completion-2026-10-24/AUDIT_19_CASES.md",
+          "sha256": "6c40349dee0d1480ccf33f90209257f503e14c4b3ead956d4be0663828e69e7f"
+        },
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/kindred/completion-2026-10-24/COVERAGE.json",
+          "sha256": "2ef6c09d5ce19ea40a0121ae6f927c771d4d15e5d984647fc66ed5b802c719fc"
+        }
+      ],
+      "finding": "G14-G16 and expanded history need the same accepted Kindred purchase read in buyer/merchant/Liquid UI before and after normal catalogue edits. Beauty control orders cannot substitute."
+    },
+    {
+      "id": "negative_security_concurrency_and_recovery",
+      "status": "NOT_RUN",
+      "evidence": [
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/kindred/completion-2026-10-24/AUDIT_19_CASES.md",
+          "sha256": "6c40349dee0d1480ccf33f90209257f503e14c4b3ead956d4be0663828e69e7f"
+        },
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/kindred/completion-2026-10-24/COVERAGE.json",
+          "sha256": "2ef6c09d5ce19ea40a0121ae6f927c771d4d15e5d984647fc66ed5b802c719fc"
+        },
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/kindred/completion-2026-10-24/OPERATION_CONTRACTS.json",
+          "sha256": "1a2707996da02ae3b31a62fe0f428f2b425f986ea7118956f8ab9647752d4fb8"
+        }
+      ],
+      "finding": "G10/G13/G17/G18/G19 and expanded obligations need positive owned controls, real allocated foreign identities/site, exact retry/conflict/stale-cart outcomes and canonical effects. Source/native model tests alone are insufficient."
+    },
+    {
+      "id": "responsive_accessibility_and_performance",
+      "status": "FAIL",
+      "evidence": [
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/kindred/completion-2026-10-24/AUDIT_19_CASES.md",
+          "sha256": "6c40349dee0d1480ccf33f90209257f503e14c4b3ead956d4be0663828e69e7f"
+        },
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/kindred/completion-2026-10-24/g08-log-diagnostic-20261024/DIAGNOSTIC.json",
+          "sha256": "1b26478f5fd90b4ff53a3bbe0096ec39ac93d49abdde2e17ac1bdcf2eabb2069"
+        },
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/kindred/completion-2026-10-24/COVERAGE.json",
+          "sha256": "2ef6c09d5ce19ea40a0121ae6f927c771d4d15e5d984647fc66ed5b802c719fc"
+        }
+      ],
+      "finding": "G08Tablet820preview failed. Actual installed320/768/1440 focus/activation/content/quality/performance remain unproved. KQA-01OPEN P2 original768long-brand failure is preserved; finite-launch nonblocking disposition is not blanket full-quality acceptance."
+    },
+    {
+      "id": "exact_source_installed_runtime_lineage",
+      "status": "PARTIAL",
+      "evidence": [
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/kindred/completion-2026-10-24/AUDIT_19_CASES.md",
+          "sha256": "6c40349dee0d1480ccf33f90209257f503e14c4b3ead956d4be0663828e69e7f"
+        },
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/kindred/completion-2026-10-24/g02-offline-lineage-20261024/RESULT.json",
+          "sha256": "bf819645bf83254a6f6b8a72cd256a3e714136b1bd9f2409755cabe1f5c03e9f"
+        }
+      ],
+      "finding": "Two historical offline digests reproduce; full collector/catalogue join remains incomplete. Latest allocator decision conditionally admits original frozen200 lane but grants no actual runtime/browser lease."
+    },
+    {
+      "id": "independent_review_accepted",
+      "status": "PARTIAL",
+      "evidence": [
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/kindred/completion-2026-10-24/child-contract-correction-20261024/PRIVATE_CHILD_OUTPUT_HANDOFF_02.json",
+          "sha256": "b2abb902cce8760ad1057dcd87a69145873d6ae7902698126225bc2d3ee81a0f"
+        }
+      ],
+      "finding": "Editor independently passed92source controls on the private child-render component;113actualcompiled-source hashes match at this audit. It confirms10inline parent editor eligibility gaps. Full installed-theme/identity/commerce/provider/history/security/quality review is not accepted."
+    },
+    {
+      "id": "preservation_and_owned_cleanup",
+      "status": "PARTIAL",
+      "evidence": [
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/kindred/completion-2026-10-24/BASELINE_AUDIT.json",
+          "sha256": "c7ae58f0c2977cb16313a52bc25b3a4bbe7b189ad7a07c869603933dcafa5abb"
+        },
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/kindred/completion-2026-10-24/AUDIT_19_CASES.md",
+          "sha256": "6c40349dee0d1480ccf33f90209257f503e14c4b3ead956d4be0663828e69e7f"
+        }
+      ],
+      "finding": "Frozen design/source/artifact/prior evidence retained; Kindred has no current acquired browser/runtime lease or persistent job. Upstream native05cleanup is empty only for that qualification run. Shared936teardown/current final G19lease release/protected-state conservation remain unproved."
+    }
+  ],
+  "staticCounts": {
+    "templates": 23,
+    "sectionTypes": 45,
+    "defaultSectionInstances": 32,
+    "sectionSettings": 103,
+    "inlineBlockDeclarations": 13,
+    "inlineBlockSettings": 23,
+    "globalBlockTypes": 1,
+    "globalBlockSettings": 1,
+    "globalSettings": 12,
+    "sourceDeclaredCompatibilityPairs": 1035,
+    "catalogueFieldGroups": 13,
+    "expandedCaseCohorts": 297,
+    "requiredOperationRows": 2807
+  },
+  "coverage": {
+    "baseCohorts": 297,
+    "baseOperations": 2807,
+    "baseCohortStatuses": {
+      "NOT_RUN": 297
+    },
+    "baseOperationStatuses": {
+      "NOT_RUN": 2807
+    },
+    "cohortLanes": {
+      "editor": 263,
+      "catalogue": 13,
+      "identity": 2,
+      "security": 2,
+      "buyer": 2,
+      "checkout": 2,
+      "provider": 4,
+      "history": 2,
+      "quality": 4,
+      "lineage": 1,
+      "preservation": 1,
+      "review": 1
+    },
+    "additionalChildContexts": 11,
+    "additionalChildUiOperationRows": 110,
+    "additionalChildUiStatuses": {
+      "NOT_RUN": 110
+    },
+    "overlap": "Additive rows may overlap lifecycle obligations; these counts are inventory, never unique executed tests or passing totals.",
+    "original19": {
+      "PASS": 3,
+      "FAIL": 1,
+      "NOT_RUN": 15
+    }
+  },
+  "sourceComponentReview": {
+    "owner": "Existing Theme Editor; independent reviewer of Kindred private implementation",
+    "receipt": {
+      "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/editor-child-render-review02/RESULT.json",
+      "sha256": "01da4e22feeb85a49425d426d738ee3ce8184e33a6f2ecec510545bd1990dccb"
+    },
+    "PASS": 92,
+    "FAIL": 0,
+    "sourceIdentityChecks": [
+      {
+        "path": "/private/tmp/editor-child-render-review02-5kuvsm93/src/app-block-model.ts",
+        "expectedSourceSha256": "11d98cf696bb9e635348233b10c685295f4ea6f2c4e263fa3a7fc3f47290866d",
+        "actualSourceSha256": "11d98cf696bb9e635348233b10c685295f4ea6f2c4e263fa3a7fc3f47290866d"
+      },
+      {
+        "path": "/private/tmp/editor-child-render-review02-5kuvsm93/src/built-in-section-schemas.ts",
+        "expectedSourceSha256": "5e44b89d7ebc3d40b82e7d12dfccf399f7a336d39e1a1b04c7deaf4c57486734",
+        "actualSourceSha256": "5e44b89d7ebc3d40b82e7d12dfccf399f7a336d39e1a1b04c7deaf4c57486734"
+      },
+      {
+        "path": "/private/tmp/editor-child-render-review02-5kuvsm93/src/custom-css-sanitizer.ts",
+        "expectedSourceSha256": "2a958ce9b14aea26277a79b8024dcd359dd84836785543abf435e48ad20f321c",
+        "actualSourceSha256": "2a958ce9b14aea26277a79b8024dcd359dd84836785543abf435e48ad20f321c"
+      },
+      {
+        "path": "/private/tmp/editor-child-render-review02-5kuvsm93/src/dynamic-source-binding.ts",
+        "expectedSourceSha256": "28b23de56c2069bb02f73ddb444b8d8c266f66714e45a820d3a738060771e421",
+        "actualSourceSha256": "28b23de56c2069bb02f73ddb444b8d8c266f66714e45a820d3a738060771e421"
+      },
+      {
+        "path": "/private/tmp/editor-child-render-review02-5kuvsm93/src/execution-runtime.ts",
+        "expectedSourceSha256": "9fee29e7031948e9a27640c2bbb9a78de00207965fd2da1c9ca1f0b3afef168e",
+        "actualSourceSha256": "9fee29e7031948e9a27640c2bbb9a78de00207965fd2da1c9ca1f0b3afef168e"
+      },
+      {
+        "path": "/private/tmp/editor-child-render-review02-5kuvsm93/src/experience-fonts.ts",
+        "expectedSourceSha256": "3ee9bdb23a8c18410fd36ee6302f0f8fae929484a7c2dbfd9bc6a424e30f64be",
+        "actualSourceSha256": "3ee9bdb23a8c18410fd36ee6302f0f8fae929484a7c2dbfd9bc6a424e30f64be"
+      },
+      {
+        "path": "/private/tmp/editor-child-render-review02-5kuvsm93/src/schema-field-extensions.ts",
+        "expectedSourceSha256": "a5c53fdfc687bc9c7913ff64c1af1d51e496b70fd74b2a78e2b000bb66ee4d71",
+        "actualSourceSha256": "a5c53fdfc687bc9c7913ff64c1af1d51e496b70fd74b2a78e2b000bb66ee4d71"
+      },
+      {
+        "path": "/private/tmp/editor-child-render-review02-5kuvsm93/src/server-dom-runtime.ts",
+        "expectedSourceSha256": "309b16baf1fb3b51c45358f6569e1b02277a403d16728023a7ff57fad1d01184",
+        "actualSourceSha256": "309b16baf1fb3b51c45358f6569e1b02277a403d16728023a7ff57fad1d01184"
+      },
+      {
+        "path": "/private/tmp/editor-child-render-review02-5kuvsm93/src/theme-bundle.ts",
+        "expectedSourceSha256": "cdbad4b28277431a3ab06e56ed0ce16539e04837bb107f5f951a3df39a92ed76",
+        "actualSourceSha256": "cdbad4b28277431a3ab06e56ed0ce16539e04837bb107f5f951a3df39a92ed76"
+      },
+      {
+        "path": "/private/tmp/editor-child-render-review02-5kuvsm93/src/theme-locale.ts",
+        "expectedSourceSha256": "11e94cc5be985504989cb805b28a0017e14966b61460f5d7922a9aaac0d584e9",
+        "actualSourceSha256": "11e94cc5be985504989cb805b28a0017e14966b61460f5d7922a9aaac0d584e9"
+      },
+      {
+        "path": "/private/tmp/editor-child-render-review02-5kuvsm93/src/theme-presets.ts",
+        "expectedSourceSha256": "283028890199a34e67863c337ebd0c788c830c60ddaa87854c3bad28f9581e82",
+        "actualSourceSha256": "283028890199a34e67863c337ebd0c788c830c60ddaa87854c3bad28f9581e82"
+      },
+      {
+        "path": "/private/tmp/editor-child-render-review02-5kuvsm93/src/theme-registry.ts",
+        "expectedSourceSha256": "df47c3ff4a6bfb0b4dfb56a49559249ab69d44f876bf1d422ecda385f09533ce",
+        "actualSourceSha256": "df47c3ff4a6bfb0b4dfb56a49559249ab69d44f876bf1d422ecda385f09533ce"
+      },
+      {
+        "path": "/private/tmp/editor-child-render-review02-5kuvsm93/src/theme-renderer.ts",
+        "expectedSourceSha256": "1d21dea29e120b076c911efe2ca303616c279ac3af94ad3e86adfd2f281d38c2",
+        "actualSourceSha256": "1d21dea29e120b076c911efe2ca303616c279ac3af94ad3e86adfd2f281d38c2"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/apps/merchant/web/src/components/theme-editor/editor-block-actions.ts",
+        "expectedSourceSha256": "b287ef171ab4ae6df11683b5068e8ae787aa78e063d19c081adb21da142aef0f",
+        "actualSourceSha256": "b287ef171ab4ae6df11683b5068e8ae787aa78e063d19c081adb21da142aef0f"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/shared-types/src/app-platform.ts",
+        "expectedSourceSha256": "c4fb04c2a5b51aae411c9278afad83066e97e409ee0a6a0d1e14ade1950c3e53",
+        "actualSourceSha256": "c4fb04c2a5b51aae411c9278afad83066e97e409ee0a6a0d1e14ade1950c3e53"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/shared-types/src/brand.ts",
+        "expectedSourceSha256": "690f5c841fea49f10e058c2d650e339beff58b05d2f2be7185668c1b0ebcdde9",
+        "actualSourceSha256": "690f5c841fea49f10e058c2d650e339beff58b05d2f2be7185668c1b0ebcdde9"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/shared-types/src/buyer-assistant.ts",
+        "expectedSourceSha256": "5f65872b44703247cad136ebaf6f1d3c107f97bb159e917c9fc89f6b9fabe60c",
+        "actualSourceSha256": "5f65872b44703247cad136ebaf6f1d3c107f97bb159e917c9fc89f6b9fabe60c"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/shared-types/src/console-overview.ts",
+        "expectedSourceSha256": "f8edd75ee0520169beefa38d5f89e5ef3d745054c2530ef483a14fb37abb1ec8",
+        "actualSourceSha256": "f8edd75ee0520169beefa38d5f89e5ef3d745054c2530ef483a14fb37abb1ec8"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/shared-types/src/contact.ts",
+        "expectedSourceSha256": "8e3f27a3987be33e1b149a42e6c16d482137a46fe019e27200fd2a78d0d038d6",
+        "actualSourceSha256": "8e3f27a3987be33e1b149a42e6c16d482137a46fe019e27200fd2a78d0d038d6"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/shared-types/src/foundation-execution-contracts.ts",
+        "expectedSourceSha256": "b10e8da5e57532fee919e3b2253354f0d8932e75e64e2b8c6cccd9e4229a9cd2",
+        "actualSourceSha256": "b10e8da5e57532fee919e3b2253354f0d8932e75e64e2b8c6cccd9e4229a9cd2"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/shared-types/src/gst-amounts.ts",
+        "expectedSourceSha256": "1635f9e37fbc0fe39510b9c07d5dc9d1de0babc08f84d7646618ee6b4b993273",
+        "actualSourceSha256": "1635f9e37fbc0fe39510b9c07d5dc9d1de0babc08f84d7646618ee6b4b993273"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/shared-types/src/index.ts",
+        "expectedSourceSha256": "5066e39b4fd20c9ae55b4de93118a41dcd29b4fa3025fed2398226066d3ac1ba",
+        "actualSourceSha256": "5066e39b4fd20c9ae55b4de93118a41dcd29b4fa3025fed2398226066d3ac1ba"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/shared-types/src/reel-review.ts",
+        "expectedSourceSha256": "840cf11c9c6a6cb6c0f17f4e9d4cca6c09b8303d855f65b87921807998a0d6e6",
+        "actualSourceSha256": "840cf11c9c6a6cb6c0f17f4e9d4cca6c09b8303d855f65b87921807998a0d6e6"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/shared-types/src/reel-upload.ts",
+        "expectedSourceSha256": "aa18d3d3d514f1512568cd033ba2ac85ebb4aa70365c562fb4775ebc9ecadb3f",
+        "actualSourceSha256": "aa18d3d3d514f1512568cd033ba2ac85ebb4aa70365c562fb4775ebc9ecadb3f"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/shared-types/src/status-presentation.ts",
+        "expectedSourceSha256": "26de8b043e2cc7f19554f9d5f2165bc0212db199cb56cb52e5ce1f875aef0136",
+        "actualSourceSha256": "26de8b043e2cc7f19554f9d5f2165bc0212db199cb56cb52e5ce1f875aef0136"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/ai-accessibility.ts",
+        "expectedSourceSha256": "b3bd3cdf32f0060c6f683cd8b0e181a738f72dba2372e209ee44e40a370daaa5",
+        "actualSourceSha256": "b3bd3cdf32f0060c6f683cd8b0e181a738f72dba2372e209ee44e40a370daaa5"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/ai-color-system.ts",
+        "expectedSourceSha256": "00998c3d696b59f5dd7d3f12df15b57d0132929a72cc2774fafad6481489d81f",
+        "actualSourceSha256": "00998c3d696b59f5dd7d3f12df15b57d0132929a72cc2774fafad6481489d81f"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/ai-intent-parser.ts",
+        "expectedSourceSha256": "056e07ef9b9ffec32b6f10a28f6db48581b2b8ee0ff604a8f1a5fae97f9b19b7",
+        "actualSourceSha256": "056e07ef9b9ffec32b6f10a28f6db48581b2b8ee0ff604a8f1a5fae97f9b19b7"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/ai-layout.ts",
+        "expectedSourceSha256": "585a53ab5cfc99a34f1137f5877acbc8be418824e5b3a28fb11b78d972217747",
+        "actualSourceSha256": "585a53ab5cfc99a34f1137f5877acbc8be418824e5b3a28fb11b78d972217747"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/ai-optimizer.ts",
+        "expectedSourceSha256": "335b041aa174eeb280ab648c0813aa7b098eb6af608e7bd95f021bd3ea888bdf",
+        "actualSourceSha256": "335b041aa174eeb280ab648c0813aa7b098eb6af608e7bd95f021bd3ea888bdf"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/ai-personalization.ts",
+        "expectedSourceSha256": "55905619b2fe0d4bd3f972e785de53d00f542c1a886dc40f418c35387787339b",
+        "actualSourceSha256": "55905619b2fe0d4bd3f972e785de53d00f542c1a886dc40f418c35387787339b"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/ai-theme-generator.ts",
+        "expectedSourceSha256": "0d48c1920b7035456f0d0a064368f67dbf5c27d1dca2a0b90912069e651c6d68",
+        "actualSourceSha256": "0d48c1920b7035456f0d0a064368f67dbf5c27d1dca2a0b90912069e651c6d68"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/ai-typography.ts",
+        "expectedSourceSha256": "13a318f2e0ce76904bb3eb12deff2d05dc5bc894cd9ae1c8db25061411e9003e",
+        "actualSourceSha256": "13a318f2e0ce76904bb3eb12deff2d05dc5bc894cd9ae1c8db25061411e9003e"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/app-block-model.ts",
+        "expectedSourceSha256": "11d98cf696bb9e635348233b10c685295f4ea6f2c4e263fa3a7fc3f47290866d",
+        "actualSourceSha256": "11d98cf696bb9e635348233b10c685295f4ea6f2c4e263fa3a7fc3f47290866d"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/built-in-section-schemas.ts",
+        "expectedSourceSha256": "5e44b89d7ebc3d40b82e7d12dfccf399f7a336d39e1a1b04c7deaf4c57486734",
+        "actualSourceSha256": "5e44b89d7ebc3d40b82e7d12dfccf399f7a336d39e1a1b04c7deaf4c57486734"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/circuit-discovery.ts",
+        "expectedSourceSha256": "160c6a61a567f87bbcab20bf337336ede6e748c1326110ab977f61ec9c14523b",
+        "actualSourceSha256": "160c6a61a567f87bbcab20bf337336ede6e748c1326110ab977f61ec9c14523b"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/circuit-styles.ts",
+        "expectedSourceSha256": "09c1be83d56d1640770bcf8c76df249f4fa309aa227d81a3d46d0f81879911c2",
+        "actualSourceSha256": "09c1be83d56d1640770bcf8c76df249f4fa309aa227d81a3d46d0f81879911c2"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/circuit-theme-v201.ts",
+        "expectedSourceSha256": "ec2d68c29434e96404496cec44b10c2c293364cbfa98da113d2efa6f21c7c9be",
+        "actualSourceSha256": "ec2d68c29434e96404496cec44b10c2c293364cbfa98da113d2efa6f21c7c9be"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/circuit-theme.ts",
+        "expectedSourceSha256": "44f78cdaa4d9241723b7bc9ae0f0952d946e72b11775c05160c9949f87a69d2a",
+        "actualSourceSha256": "44f78cdaa4d9241723b7bc9ae0f0952d946e72b11775c05160c9949f87a69d2a"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/custom-css-sanitizer.ts",
+        "expectedSourceSha256": "2a958ce9b14aea26277a79b8024dcd359dd84836785543abf435e48ad20f321c",
+        "actualSourceSha256": "2a958ce9b14aea26277a79b8024dcd359dd84836785543abf435e48ad20f321c"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/dewdrop-discovery.ts",
+        "expectedSourceSha256": "a9d866eeb5dedc2b123bdf2a287b9a0be23789b39c93c1e1872471c975de1fe1",
+        "actualSourceSha256": "a9d866eeb5dedc2b123bdf2a287b9a0be23789b39c93c1e1872471c975de1fe1"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/dewdrop-styles.ts",
+        "expectedSourceSha256": "693a0be116d404baac41ef0b044ce69f6c8dcf35d4dfe26b02ac507678ba129e",
+        "actualSourceSha256": "693a0be116d404baac41ef0b044ce69f6c8dcf35d4dfe26b02ac507678ba129e"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/dewdrop-theme-v201.ts",
+        "expectedSourceSha256": "3b276b6513f0860092a8f2bdf03217c9f8d8a1fa27de9d7318e886d3bb8ea10c",
+        "actualSourceSha256": "3b276b6513f0860092a8f2bdf03217c9f8d8a1fa27de9d7318e886d3bb8ea10c"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/dewdrop-theme.ts",
+        "expectedSourceSha256": "ec0cf0890c607056c1da13087b1c51ee6931d120c46370802360b740f0693190",
+        "actualSourceSha256": "ec0cf0890c607056c1da13087b1c51ee6931d120c46370802360b740f0693190"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/dynamic-source-binding.ts",
+        "expectedSourceSha256": "28b23de56c2069bb02f73ddb444b8d8c266f66714e45a820d3a738060771e421",
+        "actualSourceSha256": "28b23de56c2069bb02f73ddb444b8d8c266f66714e45a820d3a738060771e421"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/editor-bridge-protocol.ts",
+        "expectedSourceSha256": "7cff1ccbb9725ece155a9d1c08c9fee7706c3f8dc9ea27a860f9a23bd3c8ca66",
+        "actualSourceSha256": "7cff1ccbb9725ece155a9d1c08c9fee7706c3f8dc9ea27a860f9a23bd3c8ca66"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/execution-runtime.ts",
+        "expectedSourceSha256": "9fee29e7031948e9a27640c2bbb9a78de00207965fd2da1c9ca1f0b3afef168e",
+        "actualSourceSha256": "9fee29e7031948e9a27640c2bbb9a78de00207965fd2da1c9ca1f0b3afef168e"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/experience-apply.ts",
+        "expectedSourceSha256": "fcf62ca230b604f6dd4d33cc34a1b0d990caa131f815fc3666dae4fbce15f6b4",
+        "actualSourceSha256": "fcf62ca230b604f6dd4d33cc34a1b0d990caa131f815fc3666dae4fbce15f6b4"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/experience-compositions.ts",
+        "expectedSourceSha256": "25b73068b7a4fcce5b4bad3768a376e08c7e384e843f707c3cf8f8fb361abc68",
+        "actualSourceSha256": "25b73068b7a4fcce5b4bad3768a376e08c7e384e843f707c3cf8f8fb361abc68"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/experience-fonts.ts",
+        "expectedSourceSha256": "3ee9bdb23a8c18410fd36ee6302f0f8fae929484a7c2dbfd9bc6a424e30f64be",
+        "actualSourceSha256": "3ee9bdb23a8c18410fd36ee6302f0f8fae929484a7c2dbfd9bc6a424e30f64be"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/first-party-theme-catalog.ts",
+        "expectedSourceSha256": "ec2166ba230387d152fbd0629d12c19de6281b451c651166918adcd47c48eaf3",
+        "actualSourceSha256": "ec2166ba230387d152fbd0629d12c19de6281b451c651166918adcd47c48eaf3"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/habitat-discovery.ts",
+        "expectedSourceSha256": "342843da57a6eef8488d906218d4225338f9f3c0afe2bbcc49073f3f34a1f873",
+        "actualSourceSha256": "342843da57a6eef8488d906218d4225338f9f3c0afe2bbcc49073f3f34a1f873"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/habitat-styles.ts",
+        "expectedSourceSha256": "e4b89a41c526cc9a96e0e3106e084124717eb56d9837bcf09214045d7fa817e6",
+        "actualSourceSha256": "e4b89a41c526cc9a96e0e3106e084124717eb56d9837bcf09214045d7fa817e6"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/habitat-theme.ts",
+        "expectedSourceSha256": "0144fdf830ab3c5ddf42ebfcb86258b99e74ed8a8d724469012479705352e8c3",
+        "actualSourceSha256": "0144fdf830ab3c5ddf42ebfcb86258b99e74ed8a8d724469012479705352e8c3"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/index.ts",
+        "expectedSourceSha256": "1544081a6b4e1c7c276ed6cbfd1a9bd39fdbe10fca6406cd72b7ba1eb1d584e5",
+        "actualSourceSha256": "1544081a6b4e1c7c276ed6cbfd1a9bd39fdbe10fca6406cd72b7ba1eb1d584e5"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/industry-experience-map.ts",
+        "expectedSourceSha256": "e647df5605fc6bac525c6104a0f60e67cfc6b6f0ba6ea6db323e1e795fc404b3",
+        "actualSourceSha256": "e647df5605fc6bac525c6104a0f60e67cfc6b6f0ba6ea6db323e1e795fc404b3"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/kindred-discovery.ts",
+        "expectedSourceSha256": "14dd29777737158a61287bf54e98571c6b3abf1e07ec542d2e7f678180ad473f",
+        "actualSourceSha256": "14dd29777737158a61287bf54e98571c6b3abf1e07ec542d2e7f678180ad473f"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/kindred-styles.ts",
+        "expectedSourceSha256": "15e6670f6556a7b9cfd8e56891088f0abe9a8ffa1105822be1a1902ecd7282cf",
+        "actualSourceSha256": "15e6670f6556a7b9cfd8e56891088f0abe9a8ffa1105822be1a1902ecd7282cf"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/kindred-theme.ts",
+        "expectedSourceSha256": "3a47dc979dbdf5dce395fd44a858e007567820f4fac569fade603ff6da4fd551",
+        "actualSourceSha256": "3a47dc979dbdf5dce395fd44a858e007567820f4fac569fade603ff6da4fd551"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/madeyours-discovery.ts",
+        "expectedSourceSha256": "d1fc0993efd1d876e67c60f997e6cea53efd65a4fd7aba69bafe377f02803eda",
+        "actualSourceSha256": "d1fc0993efd1d876e67c60f997e6cea53efd65a4fd7aba69bafe377f02803eda"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/madeyours-styles.ts",
+        "expectedSourceSha256": "5253e57fcb217526d7bf46e8ddc54b921a5f64ec42f69c7c0dae177eadb5ee6e",
+        "actualSourceSha256": "5253e57fcb217526d7bf46e8ddc54b921a5f64ec42f69c7c0dae177eadb5ee6e"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/madeyours-theme.ts",
+        "expectedSourceSha256": "c56bdba5b9e9376c4a296cadc2d4f31a33598a033692d2f6c21daa71b3e98193",
+        "actualSourceSha256": "c56bdba5b9e9376c4a296cadc2d4f31a33598a033692d2f6c21daa71b3e98193"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/marginalia-discovery.ts",
+        "expectedSourceSha256": "a1c2c75b3497fc3f0edc1280686b75c7434e1a400c0944154c462561b62cc8d3",
+        "actualSourceSha256": "a1c2c75b3497fc3f0edc1280686b75c7434e1a400c0944154c462561b62cc8d3"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/marginalia-styles.ts",
+        "expectedSourceSha256": "112747bc358f7fb1fcaafbec32d2bc4f866cec76f0a4324003650bf4dd80e88d",
+        "actualSourceSha256": "112747bc358f7fb1fcaafbec32d2bc4f866cec76f0a4324003650bf4dd80e88d"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/marginalia-theme.ts",
+        "expectedSourceSha256": "a109aa33018aa786dffaea7a067415b13fe73ddc17beca7ef18a83f58301b7e9",
+        "actualSourceSha256": "a109aa33018aa786dffaea7a067415b13fe73ddc17beca7ef18a83f58301b7e9"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/niche-order-presentation.ts",
+        "expectedSourceSha256": "5683e413e48bc11d6b0906dc344ec6c3b0c7413113172b11bda91c49d08cb444",
+        "actualSourceSha256": "5683e413e48bc11d6b0906dc344ec6c3b0c7413113172b11bda91c49d08cb444"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/pantry-discovery.ts",
+        "expectedSourceSha256": "d9c09fe8097123623d26cde25ec9951233792adadbdf8d0eb6628659234759d0",
+        "actualSourceSha256": "d9c09fe8097123623d26cde25ec9951233792adadbdf8d0eb6628659234759d0"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/pantry-styles.ts",
+        "expectedSourceSha256": "3a7e53583942a5188970d4f5e2901ce4e894ab3b4da55a30176073eaa03db278",
+        "actualSourceSha256": "3a7e53583942a5188970d4f5e2901ce4e894ab3b4da55a30176073eaa03db278"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/pantry-theme-v201.ts",
+        "expectedSourceSha256": "e08e3d16b831a7cb8fd7ca3d5ada6fda75a5e21f48c38ff40563541f7ccfca22",
+        "actualSourceSha256": "e08e3d16b831a7cb8fd7ca3d5ada6fda75a5e21f48c38ff40563541f7ccfca22"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/pantry-theme.ts",
+        "expectedSourceSha256": "9c440d32f146b8155ba78f522da52979fd09a0f3d32c4b25e5c3e289ef390925",
+        "actualSourceSha256": "9c440d32f146b8155ba78f522da52979fd09a0f3d32c4b25e5c3e289ef390925"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/playfield-discovery.ts",
+        "expectedSourceSha256": "876769a92360a5cc8cd89ab69a436c12c1eda6df32eb4466bdda10111ef297a8",
+        "actualSourceSha256": "876769a92360a5cc8cd89ab69a436c12c1eda6df32eb4466bdda10111ef297a8"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/playfield-styles.ts",
+        "expectedSourceSha256": "7cb3da13790ec83dcb4bcf6a837abc68e53ebf9a8a49f44b5582af55b1d59243",
+        "actualSourceSha256": "7cb3da13790ec83dcb4bcf6a837abc68e53ebf9a8a49f44b5582af55b1d59243"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/playfield-theme-v201.ts",
+        "expectedSourceSha256": "f2d428503df3630bcb79141488d109e10284412a2a523fa8ad77343aa47ae132",
+        "actualSourceSha256": "f2d428503df3630bcb79141488d109e10284412a2a523fa8ad77343aa47ae132"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/playfield-theme.ts",
+        "expectedSourceSha256": "00493cb361c8fc796941524d9673ee4c1bfa3a12785017e2397e408b924edb63",
+        "actualSourceSha256": "00493cb361c8fc796941524d9673ee4c1bfa3a12785017e2397e408b924edb63"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/portable-to-liquid.ts",
+        "expectedSourceSha256": "c981e822ec3f51bd7975e72862a957fc011b14a7f8984cdd0b38f8ba9a27803b",
+        "actualSourceSha256": "c981e822ec3f51bd7975e72862a957fc011b14a7f8984cdd0b38f8ba9a27803b"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/schema-field-extensions.ts",
+        "expectedSourceSha256": "a5c53fdfc687bc9c7913ff64c1af1d51e496b70fd74b2a78e2b000bb66ee4d71",
+        "actualSourceSha256": "a5c53fdfc687bc9c7913ff64c1af1d51e496b70fd74b2a78e2b000bb66ee4d71"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/section-schema-migrations.ts",
+        "expectedSourceSha256": "e28f3f3e3835aa5fa0d0c6418ff9e773f0a077c7ed46c0d001749f2d93e87523",
+        "actualSourceSha256": "e28f3f3e3835aa5fa0d0c6418ff9e773f0a077c7ed46c0d001749f2d93e87523"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/section-type-map.ts",
+        "expectedSourceSha256": "b262e6d801be599399f18a53944507ab6886c6d9488784381297f72658331d94",
+        "actualSourceSha256": "b262e6d801be599399f18a53944507ab6886c6d9488784381297f72658331d94"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/server-dom-runtime.ts",
+        "expectedSourceSha256": "309b16baf1fb3b51c45358f6569e1b02277a403d16728023a7ff57fad1d01184",
+        "actualSourceSha256": "309b16baf1fb3b51c45358f6569e1b02277a403d16728023a7ff57fad1d01184"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/settings-schema-canonical.ts",
+        "expectedSourceSha256": "ed5f84c47a5beebf26385d11b67f7068aadfcc09ba40f0f5e0fa693f564b8f86",
+        "actualSourceSha256": "ed5f84c47a5beebf26385d11b67f7068aadfcc09ba40f0f5e0fa693f564b8f86"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/template-registry.ts",
+        "expectedSourceSha256": "2ab00379414a40769d793175dac97d4b795668587a48f081414326cfbb1555c7",
+        "actualSourceSha256": "2ab00379414a40769d793175dac97d4b795668587a48f081414326cfbb1555c7"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/theme-ai-sdk.ts",
+        "expectedSourceSha256": "36d3be49894dfffd8a484e69b23ad782963f3c5b027385705603bc3f3cf06afb",
+        "actualSourceSha256": "36d3be49894dfffd8a484e69b23ad782963f3c5b027385705603bc3f3cf06afb"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/theme-analytics.ts",
+        "expectedSourceSha256": "62aa70aafea1e7413a9ff71fdae81a3242fa77aa8c89082dc1b7d18170af1442",
+        "actualSourceSha256": "62aa70aafea1e7413a9ff71fdae81a3242fa77aa8c89082dc1b7d18170af1442"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/theme-artifact-exporter.ts",
+        "expectedSourceSha256": "a1e0728346eecc15c39d80a3b26b1209f2b3406b97171dbd2ea8215eb7fb41a1",
+        "actualSourceSha256": "a1e0728346eecc15c39d80a3b26b1209f2b3406b97171dbd2ea8215eb7fb41a1"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/theme-bundle-core.ts",
+        "expectedSourceSha256": "0e1650a4d71ef358792c0f877f4ae678794fb6d2cfdebbb30d79563e4a2f452f",
+        "actualSourceSha256": "0e1650a4d71ef358792c0f877f4ae678794fb6d2cfdebbb30d79563e4a2f452f"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/theme-bundle.ts",
+        "expectedSourceSha256": "cdbad4b28277431a3ab06e56ed0ce16539e04837bb107f5f951a3df39a92ed76",
+        "actualSourceSha256": "cdbad4b28277431a3ab06e56ed0ce16539e04837bb107f5f951a3df39a92ed76"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/theme-document-migrations.ts",
+        "expectedSourceSha256": "1e402455eae328a2d57d87ec6d440fd17e29a9329016953033056ad3ade8e573",
+        "actualSourceSha256": "1e402455eae328a2d57d87ec6d440fd17e29a9329016953033056ad3ade8e573"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/theme-document.ts",
+        "expectedSourceSha256": "7ba285a54d71a01545c4cb1e4a3c1540a30caae2db793079b2b3cb32b8612412",
+        "actualSourceSha256": "7ba285a54d71a01545c4cb1e4a3c1540a30caae2db793079b2b3cb32b8612412"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/theme-governance.ts",
+        "expectedSourceSha256": "3f1eb0be28d36a16f058d7623f396a9224e4ae7be787e906f9ec3880f03b0004",
+        "actualSourceSha256": "3f1eb0be28d36a16f058d7623f396a9224e4ae7be787e906f9ec3880f03b0004"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/theme-install-receipt.ts",
+        "expectedSourceSha256": "278368a657420943e69bd955649e962ae88327736ce8abf1ae12cde69d905d71",
+        "actualSourceSha256": "278368a657420943e69bd955649e962ae88327736ce8abf1ae12cde69d905d71"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/theme-install.ts",
+        "expectedSourceSha256": "28fb25bebc530a2aa27624060b96c31a2ec631ea30dfe13233806bfcf3c9112d",
+        "actualSourceSha256": "28fb25bebc530a2aa27624060b96c31a2ec631ea30dfe13233806bfcf3c9112d"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/theme-library-schemas.ts",
+        "expectedSourceSha256": "7839ac1a705e0c6132b6e79a13d0984de12d24bd437ba10035b1de692d6087af",
+        "actualSourceSha256": "7839ac1a705e0c6132b6e79a13d0984de12d24bd437ba10035b1de692d6087af"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/theme-linter.ts",
+        "expectedSourceSha256": "e79f69b0435203c1bafd19730f7641f03a47e9ee4474dd10372a40b4087027e9",
+        "actualSourceSha256": "e79f69b0435203c1bafd19730f7641f03a47e9ee4474dd10372a40b4087027e9"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/theme-locale.ts",
+        "expectedSourceSha256": "11e94cc5be985504989cb805b28a0017e14966b61460f5d7922a9aaac0d584e9",
+        "actualSourceSha256": "11e94cc5be985504989cb805b28a0017e14966b61460f5d7922a9aaac0d584e9"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/theme-marketplace-contract.ts",
+        "expectedSourceSha256": "65dd0aca7f44aca7fbb38d90a9810db525fc371d7ea27ce2e5046742b200478f",
+        "actualSourceSha256": "65dd0aca7f44aca7fbb38d90a9810db525fc371d7ea27ce2e5046742b200478f"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/theme-packager.ts",
+        "expectedSourceSha256": "0347bc39a986e673ad0ee90ab10dd884eb4ed195535da5aa01aeb52d58c01601",
+        "actualSourceSha256": "0347bc39a986e673ad0ee90ab10dd884eb4ed195535da5aa01aeb52d58c01601"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/theme-presets.ts",
+        "expectedSourceSha256": "283028890199a34e67863c337ebd0c788c830c60ddaa87854c3bad28f9581e82",
+        "actualSourceSha256": "283028890199a34e67863c337ebd0c788c830c60ddaa87854c3bad28f9581e82"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/theme-publish.ts",
+        "expectedSourceSha256": "763c73ba074ec2a5654d5a7a2c7a4ab5faac6281c5e321f7f525aa0eb4472be8",
+        "actualSourceSha256": "763c73ba074ec2a5654d5a7a2c7a4ab5faac6281c5e321f7f525aa0eb4472be8"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/theme-registry.ts",
+        "expectedSourceSha256": "df47c3ff4a6bfb0b4dfb56a49559249ab69d44f876bf1d422ecda385f09533ce",
+        "actualSourceSha256": "df47c3ff4a6bfb0b4dfb56a49559249ab69d44f876bf1d422ecda385f09533ce"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/theme-renderer.ts",
+        "expectedSourceSha256": "794cbc6ff9ae71f995560f302e1b0d5f0d4ff4da59fa31191585851b1e822164",
+        "actualSourceSha256": "794cbc6ff9ae71f995560f302e1b0d5f0d4ff4da59fa31191585851b1e822164"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/theme-safe-update.ts",
+        "expectedSourceSha256": "10a4b866dbe3167e879d9af43fd61b8c3d751d605ca181e5b2c65adfaa39f539",
+        "actualSourceSha256": "10a4b866dbe3167e879d9af43fd61b8c3d751d605ca181e5b2c65adfaa39f539"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/theme-sdk.ts",
+        "expectedSourceSha256": "e1f39b4262a24f046b914b752e522160c79f811a0a37523e6e136eb677bb7786",
+        "actualSourceSha256": "e1f39b4262a24f046b914b752e522160c79f811a0a37523e6e136eb677bb7786"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/theme-settings.ts",
+        "expectedSourceSha256": "3ac7b069b156f89d8f412103cbe6003775524fe4660f47c16a82b13c6a1a2e00",
+        "actualSourceSha256": "3ac7b069b156f89d8f412103cbe6003775524fe4660f47c16a82b13c6a1a2e00"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/theme-upgrade.ts",
+        "expectedSourceSha256": "82ed19d6f3004eda81be013ae49f4d6813b5109faf37aae82c698d7c35ded280",
+        "actualSourceSha256": "82ed19d6f3004eda81be013ae49f4d6813b5109faf37aae82c698d7c35ded280"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/theme-version.ts",
+        "expectedSourceSha256": "69042dfc322608cfa34a7f3a370defabe0e10978b2881aa7988e3aad7598f84e",
+        "actualSourceSha256": "69042dfc322608cfa34a7f3a370defabe0e10978b2881aa7988e3aad7598f84e"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/threadline-discovery.ts",
+        "expectedSourceSha256": "a3fba143d1217f0da83cf70ab335da66e82bc79cb883a9ad0e3b48773459e4b8",
+        "actualSourceSha256": "a3fba143d1217f0da83cf70ab335da66e82bc79cb883a9ad0e3b48773459e4b8"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/threadline-styles.ts",
+        "expectedSourceSha256": "19927c48340b3ff3403b13a945ebe186bf928de638f47281b0fe0421ded48385",
+        "actualSourceSha256": "19927c48340b3ff3403b13a945ebe186bf928de638f47281b0fe0421ded48385"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/threadline-theme-v201.ts",
+        "expectedSourceSha256": "a8bba702d94d8e5719ba50058d0e70229c1b261fdc5d49d258df99532b521de7",
+        "actualSourceSha256": "a8bba702d94d8e5719ba50058d0e70229c1b261fdc5d49d258df99532b521de7"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/threadline-theme.ts",
+        "expectedSourceSha256": "1e922e6c056de5017f35dfe08827eef0b41212b96bbff5b6695ab087422d523b",
+        "actualSourceSha256": "1e922e6c056de5017f35dfe08827eef0b41212b96bbff5b6695ab087422d523b"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/trailmark-discovery.ts",
+        "expectedSourceSha256": "f69edf5815a19e513416ebb970e661793a88994a12f70e1e0e6d214f021741cb",
+        "actualSourceSha256": "f69edf5815a19e513416ebb970e661793a88994a12f70e1e0e6d214f021741cb"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/trailmark-styles.ts",
+        "expectedSourceSha256": "5dc2ae055b560a56842f4d3399f5b3b88b59c37ab5ede6c62731e44da3d1c4b0",
+        "actualSourceSha256": "5dc2ae055b560a56842f4d3399f5b3b88b59c37ab5ede6c62731e44da3d1c4b0"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/trailmark-theme-v201.ts",
+        "expectedSourceSha256": "9b70794b7bd71f8d0e83bc63e2eba0da46a888491985198fa52e0c157536c763",
+        "actualSourceSha256": "9b70794b7bd71f8d0e83bc63e2eba0da46a888491985198fa52e0c157536c763"
+      },
+      {
+        "path": "/Volumes/Projects/LetBuyy/packages/theme-engine/src/trailmark-theme.ts",
+        "expectedSourceSha256": "ec412bcee2940769612323c2155ac807cef8d73bd1a06caa754cbb1fd11e90b5",
+        "actualSourceSha256": "ec412bcee2940769612323c2155ac807cef8d73bd1a06caa754cbb1fd11e90b5"
+      }
+    ],
+    "reviewScope": [
+      "Private source-library rendering with synthetic values only",
+      "No editor UI Save/reload/preview/publish or installed case promotion",
+      "No successor version/package emitted or accepted",
+      "Full shared sandbox/other-theme/performance gates remain allocation-owned",
+      "All10 certification false; historical58 and initial50 are not additive"
+    ],
+    "componentOnly": true,
+    "fullThemeReviewAccepted": false,
+    "counting": "Historical58/initial50/independent92overlap; never sum."
+  },
+  "openEditorContexts": [
+    {
+      "sectionType": "banner-carousel",
+      "parentType": "slide",
+      "reusableParent": false,
+      "currentEditorCanAdd": false,
+      "candidateChildVisible": true,
+      "remainingIntegration": true
+    },
+    {
+      "sectionType": "brand-marquee",
+      "parentType": "brand",
+      "reusableParent": false,
+      "currentEditorCanAdd": false,
+      "candidateChildVisible": true,
+      "remainingIntegration": true
+    },
+    {
+      "sectionType": "experience-timeline",
+      "parentType": "experience",
+      "reusableParent": false,
+      "currentEditorCanAdd": false,
+      "candidateChildVisible": true,
+      "remainingIntegration": true
+    },
+    {
+      "sectionType": "faq-accordion",
+      "parentType": "faq-item",
+      "reusableParent": false,
+      "currentEditorCanAdd": false,
+      "candidateChildVisible": true,
+      "remainingIntegration": true
+    },
+    {
+      "sectionType": "footer",
+      "parentType": "link",
+      "reusableParent": false,
+      "currentEditorCanAdd": false,
+      "candidateChildVisible": true,
+      "remainingIntegration": true
+    },
+    {
+      "sectionType": "header",
+      "parentType": "link",
+      "reusableParent": false,
+      "currentEditorCanAdd": false,
+      "candidateChildVisible": true,
+      "remainingIntegration": true
+    },
+    {
+      "sectionType": "portfolio-grid",
+      "parentType": "project",
+      "reusableParent": false,
+      "currentEditorCanAdd": false,
+      "candidateChildVisible": true,
+      "remainingIntegration": true
+    },
+    {
+      "sectionType": "services-grid",
+      "parentType": "service",
+      "reusableParent": false,
+      "currentEditorCanAdd": false,
+      "candidateChildVisible": true,
+      "remainingIntegration": true
+    },
+    {
+      "sectionType": "skills-section",
+      "parentType": "skill",
+      "reusableParent": false,
+      "currentEditorCanAdd": false,
+      "candidateChildVisible": true,
+      "remainingIntegration": true
+    },
+    {
+      "sectionType": "spotlight",
+      "parentType": "badge",
+      "reusableParent": true,
+      "currentEditorCanAdd": true,
+      "candidateChildVisible": true,
+      "remainingIntegration": false
+    },
+    {
+      "sectionType": "testimonials",
+      "parentType": "testimonial",
+      "reusableParent": false,
+      "currentEditorCanAdd": false,
+      "candidateChildVisible": true,
+      "remainingIntegration": true
+    }
+  ],
+  "openCopyControlFindings": [
+    {
+      "id": "KCOMP-COPY-01",
+      "status": "OPEN_SOURCE_RENDER_FINDING",
+      "sectionType": "collection-filter",
+      "field": "title",
+      "caseId": "KSET-collection-filter-title",
+      "sourcePointer": "/document/liquidBundle/sections/collection-filter/schema/settings/0",
+      "observed": "CONDITIONAL_FALLBACK_ONLY",
+      "browserAcceptance": "NOT_RUN"
+    },
+    {
+      "id": "KCOMP-COPY-02",
+      "status": "OPEN_SOURCE_RENDER_FINDING",
+      "sectionType": "collection-product-list",
+      "field": "title",
+      "caseId": "KSET-collection-product-list-title",
+      "sourcePointer": "/document/liquidBundle/sections/collection-product-list/schema/settings/0",
+      "observed": "DECLARED_FIELD_UNUSED_IN_BODY",
+      "browserAcceptance": "NOT_RUN"
+    },
+    {
+      "id": "KCOMP-COPY-03",
+      "status": "OPEN_SOURCE_RENDER_FINDING",
+      "sectionType": "customer-order-detail",
+      "field": "heading",
+      "caseId": "KSET-customer-order-detail-heading",
+      "sourcePointer": "/document/liquidBundle/sections/customer-order-detail/schema/settings/0",
+      "observed": "HARDCODED_PREFIX_IGNORES_DECLARED_FIELD",
+      "browserAcceptance": "NOT_RUN"
+    }
+  ],
+  "frozenInputChecks": [
+    {
+      "path": "docs/implementation/niche-theme-programme/release-v2/proposals/81e91859ebc8c497a49da337d064e1885a76964839d14e39f4a0a3de2283f47f/letbuyy-summit-2.0.0.json",
+      "sha256": "54f9d916749d64f80b6bd5dd6ec85a7e50b5e17bef765e61fffe727d94c8d411",
+      "expectedSha256": "54f9d916749d64f80b6bd5dd6ec85a7e50b5e17bef765e61fffe727d94c8d411",
+      "match": true
+    },
+    {
+      "path": "packages/theme-engine/src/kindred-theme.ts",
+      "sha256": "3a47dc979dbdf5dce395fd44a858e007567820f4fac569fade603ff6da4fd551",
+      "expectedSha256": "3a47dc979dbdf5dce395fd44a858e007567820f4fac569fade603ff6da4fd551",
+      "match": true
+    },
+    {
+      "path": "packages/theme-engine/src/kindred-discovery.ts",
+      "sha256": "14dd29777737158a61287bf54e98571c6b3abf1e07ec542d2e7f678180ad473f",
+      "expectedSha256": "14dd29777737158a61287bf54e98571c6b3abf1e07ec542d2e7f678180ad473f",
+      "match": true
+    },
+    {
+      "path": "packages/theme-engine/src/kindred-styles.ts",
+      "sha256": "15e6670f6556a7b9cfd8e56891088f0abe9a8ffa1105822be1a1902ecd7282cf",
+      "expectedSha256": "15e6670f6556a7b9cfd8e56891088f0abe9a8ffa1105822be1a1902ecd7282cf",
+      "match": true
+    },
+    {
+      "path": "apps/commerce/web/src/app/store/[subdomain]/liquid-theme.css",
+      "sha256": "f7f31610c85bf37430fe96fe5cbde8366d3fd9b30e0e43fe7ebfa0ecf3d2f24b",
+      "expectedSha256": "f7f31610c85bf37430fe96fe5cbde8366d3fd9b30e0e43fe7ebfa0ecf3d2f24b",
+      "match": true
+    },
+    {
+      "path": "packages/theme-engine/src/theme-renderer.ts",
+      "sha256": "794cbc6ff9ae71f995560f302e1b0d5f0d4ff4da59fa31191585851b1e822164",
+      "expectedSha256": "794cbc6ff9ae71f995560f302e1b0d5f0d4ff4da59fa31191585851b1e822164",
+      "match": true
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/kindred/responsive-shopping-2026-10-23/installed-gifts-lifecycle.plan.json",
+      "sha256": "700a60f8a97b0a0336860bc3b2c4262c2c3cd9749fa287c9b8c5af65c600c9ae",
+      "expectedSha256": "700a60f8a97b0a0336860bc3b2c4262c2c3cd9749fa287c9b8c5af65c600c9ae",
+      "match": true
+    }
+  ],
+  "allocatorOriginalLaneDecision": {
+    "path": "docs/implementation/niche-theme-programme/completion-original-matrix-runtime-admission-decision-20261024-01.json",
+    "sha256": "f18ae81fdad71443ac3ef8619c9d522ee417f9139ab8d00ec77a659e1da69be2"
+  },
+  "runtimeAdmission": {
+    "originalFrozen200": "Conditionally admissible, independently of larger child proposal",
+    "actualRuntime": null,
+    "actualBrowserLease": null,
+    "controller": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+    "blockingOwner": "Themes shared source/native/fixture admission; Editor prepares one coherent current393/frozen200candidate",
+    "priority": "Common smoke; Dewdrop original matrix; Kindred G08+remainingoriginal19; existing subsequent owner queue. Do not displace allocated owner.",
+    "native05": {
+      "path": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/native-runs/05/root-result-review.json",
+      "sha256": "f1c18a2793f63311c95c088afcf0f2e348dcffd045fdd19565bd76cbe693872c"
+    }
+  },
+  "g08TruthRule": "A recovered signed preview is only a sub-result. Full G08 still requires actual installed320/768/1440 keyboard/responsive evidence and separately observed long-brand branch. Never infer KQA-01closure or full-casePASS from preview recovery alone.",
+  "nonGrantedActions": [
+    "Main source/schema/accepted artifact or default-factory changes",
+    "Private child/heading/KQA proposal application",
+    "Stale936/runtime/token reuse",
+    "Duplicate runtime/build/seed/database",
+    "Production or real-money operations",
+    "Unallocated provider account/configuration/callback changes",
+    "New schedules or duplicate goal"
+  ],
+  "cleanup": {
+    "newKindredExternalResources": [],
+    "newKindredCasesExecuted": 0,
+    "leaseAcquired": false,
+    "leaseReturned": false,
+    "sourceProbesRerun": 0,
+    "priorEvidenceWrites": 0,
+    "sharedResourceActions": 0,
+    "retained": "All prior evidence, private source snapshots and shared runtime/database/browser state retained; no new cleanup claim."
+  },
+  "KQA01": "OPEN P2 unchanged; full-quality acceptance not inferred from finite diagnostic launch exception.",
+  "LOCAL_E2E_VERIFIED": false,
+  "RAZORPAY_TEST_VERIFIED": false,
+  "REVIEW_ACCEPTED": false,
+  "FULL_THEME_CERTIFIED": false,
+  "PRODUCTION_DEPLOYED": "NOT_REQUESTED",
+  "completionProven": false,
+  "next": "Existing allocator admits current qualified shared source/runtime/TLS/actors/protected baseline and serialized lease. Existing Editor then executes original cases, plus separately admitted declared-capability/identity/payment/history/security/quality scope. Source-dependent expanded gaps stay open under the freeze; no capability is removed to obtain green."
+}

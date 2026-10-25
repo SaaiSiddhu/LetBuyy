@@ -112,7 +112,7 @@ test('W1: the Liquid render-FAILURE -> React fallback safety net is untouched (n
   );
 });
 
-test('W1: preview/editor-mode callers are unaffected (a real merchant preview still always requests the index/customers-account template which always exists in a valid bundle)', () => {
+test('W1: authenticated editor context selects its validated route; ordinary previews default to index', () => {
   const preview = read('apps/commerce/web/src/app/preview/preview-content.tsx');
   const layout = read(`${STORE_ROOT}/layout.tsx`);
   const accountLayout = read(`${STORE_ROOT}/account/layout.tsx`);
@@ -124,8 +124,8 @@ test('W1: preview/editor-mode callers are unaffected (a real merchant preview st
   assert.match(preview, /:\s*\{\s*\n\s*type: 'index',\s*\n\s*path: '\/preview',/);
   assert.match(
     preview,
-    /const routeType = isDemoPreview \? resolveDemoRouteType\(singleParam\(query\?\.route_type\)\) : 'index';/,
-    'the product/collection override must be gated on isDemoPreview — a real merchant preview must never resolve anything but index',
+    /const routeType = editorPreview\?\.route\.type \|\| \(isDemoPreview \? resolveDemoRouteType\(singleParam\(query\?\.route_type\)\) : 'index'\);/,
+    'only validated editor context or an explicit demo may override the index default',
   );
   assert.match(layout, /resolveStorefrontTemplate\(store, \{\s*type: 'index',/);
   assert.match(accountLayout, /templateKey: 'customers\/account',/);
@@ -202,8 +202,8 @@ test('W2: the search route matches the exact path + query param the lb-search is
   assert.match(routesDrop, /^routes: \(\(\) => \{\s*const basePath = `\/store\/\$\{input\.context\.subdomain\}`;/);
   assert.match(routesDrop, /\bsearch_url: `\$\{basePath\}\/search`,/);
   const searchPage = read(`${STORE_ROOT}/search/page.tsx`);
-  assert.match(searchPage, /searchParams\?: Promise<\{ search\?: string/);
-  assert.match(searchPage, /const term = query\?\.search\?\.trim\(\) \|\| '';/);
+  assert.match(searchPage, /searchParams\?: Promise<Record<string, string \| string\[\] \| undefined>>/);
+  assert.match(searchPage, /const term = discoveryQuery\.search \|\| '';/);
 });
 
 test('W2: the password route documents that the live gate is enforced by proxy.ts, not by this page', () => {

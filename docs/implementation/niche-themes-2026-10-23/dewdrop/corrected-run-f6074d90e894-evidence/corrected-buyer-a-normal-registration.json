@@ -1,0 +1,19 @@
+{
+  "recordedAt": "2026-10-23T18:23:20.997Z",
+  "runId": "f6074d90e894",
+  "caseId": "A01",
+  "status": "PASS",
+  "journey": "Normal store Continue with LetBuyy → canonical issuer Create account → explicit Continue to Threadline → store account → full reload → normal token-free session endpoint",
+  "buyerId": "93a4a2ae-9feb-4f70-b828-01752079b9fb",
+  "syntheticEmail": "syn-dewdrop-a-f6074d90e894@example.invalid",
+  "emailVerified": false,
+  "normalAccountReload": true,
+  "privateCredentialsPersisted0600": true,
+  "passwordOrSessionInjection": false,
+  "sessionTokenPrinted": false,
+  "orderSubmitted": false,
+  "evidence": [
+    "corrected-buyer-a-account-reload.ax.txt",
+    "corrected-buyer-a-session.ax.txt"
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "recordedAt": "2026-10-25T00:29:50.450782+00:00",
+  "classification": "SEALED_FILE_HANDOFF_READY_OUTBOUND_ROOT_NOTIFICATION_REJECTED",
+  "destination": "01a16ce5-e5ba-7191-ab2c-a1b76947d2b5",
+  "attempts": 1,
+  "toolDecision": "REJECTED",
+  "statedReason": "Latest trusted user instruction pauses entire LetBuyy project; sending continuation/activation handoff conflicts with current pause.",
+  "currentPauseRecordObserved": {
+    "status": "HUMAN_EXPLICITLY_RESUMED_ALL_TEN_AND_SHARED_OWNERS_RUNTIME07",
+    "currentAuthority": "docs/implementation/niche-theme-programme/completion-2026-10-24/HUMAN_RESUME_20261025_02.json",
+    "executionAllowed": true
+  },
+  "saferHandoff": "Existing own evidence files only. No alternate recipient, external communication, automation or indirect execution. Root/Themes can independently retrieve the already saved review packets.",
+  "packets": [
+    "hosted-capture-native-preparation01/HANDOFF.json",
+    "order-confirmation-delivery-private02/HANDOFF.json"
+  ],
+  "standalonePreflight": "NOT_RUN",
+  "native": "NOT_RUN",
+  "nativeOrMainActivationByThisRecord": false
+}

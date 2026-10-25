@@ -1,0 +1,18 @@
+{
+  "recordedAt": "2026-10-24T21:06:29.019741+00:00",
+  "classification": "FINAL_OWNED_EVIDENCE_CONSISTENCY_NOT_RUNTIME_TESTS",
+  "original26": {
+    "PASS": 0,
+    "FAIL": 0,
+    "PARTIAL": 2,
+    "NOT_RUN": 24
+  },
+  "expanded339": {
+    "PARTIAL": 4,
+    "NOT_RUN": 335
+  },
+  "sourceSealArtifactsStillExact": 31,
+  "privateSourceUnchangedAfterHandoff": true,
+  "sharedQueueOrAllocationWritten": false,
+  "fullCertificate": false
+}

@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-23T18:20:50.140970+00:00",
+  "runId": "f6074d90e894",
+  "classification": "DISPLAY_EXPECTATION_FROM_ACTUAL_PUBLIC_RESPONSE_AND_PLANNED_ARITHMETIC_NOT_ORDER_OR_CART_AUTHORITY",
+  "source": {
+    "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-public-product-binding-f6074d90e894.json",
+    "sha256": "904a1ee3948b3d96c7d73beb3d8803e43ffc8d57bf6d4d2f508258e67100ed56",
+    "requestId": "914fa3cf-b81b-44cc-8d43-9e8bbee9cccf"
+  },
+  "actualV1PublicProduct": {
+    "productId": "2bcbdf71-270c-40ac-8819-82d8921e35f0",
+    "productTitle": "Fixture Soft Colour",
+    "productBasePriceINR": 520,
+    "variantId": "f5adb52e-2e20-442a-b607-cc1b5c52ce88",
+    "genericVariantTitle": "Fixture shade SKU",
+    "identityBinding": "Public variant.option1=Pink Clay at product_options.position0 named Shade name; option2=एक इकाई at position1 named पैक आकार. No title/price/RGB identity inference.",
+    "selectedOptions": [
+      {
+        "name": "Shade name",
+        "value": "Pink Clay"
+      },
+      {
+        "name": "पैक आकार",
+        "value": "एक इकाई"
+      }
+    ],
+    "variantUnitPriceINR": 560,
+    "prePurchasePublicVariantStock": 4,
+    "selectedShadeCode": "PC02",
+    "selectedShadeIngredients": "Pink Clay v1: fixture oil, CI 77492.",
+    "commonBeauty": {
+      "schemaVersion": 1,
+      "routineStage": "colour",
+      "format": "Lip tint",
+      "netQuantity": {
+        "value": 6,
+        "unit": "ml"
+      },
+      "ingredients": "Common tint v1: fixture oil and wax; see named shade ingredients.",
+      "directions": "Fixture directions v1: use as supplied.",
+      "warnings": "Fixture warning v1: external use only.",
+      "shadeOptionName": "Shade name",
+      "shades": [
+        {
+          "value": "Rosewater",
+          "code": "RW01",
+          "color": "#a36a65",
+          "ingredients": "Rosewater v1: fixture oil, CI 77491."
+        },
+        {
+          "value": "Pink Clay",
+          "code": "PC02",
+          "color": "#a36a65",
+          "ingredients": "Pink Clay v1: fixture oil, CI 77492."
+        },
+        {
+          "value": "Terracotta",
+          "code": "TC03",
+          "color": "#89534a",
+          "ingredients": null
+        }
+      ]
+    },
+    "distinctRosewaterVariantId": "addb01d7-5ba6-4387-81b5-0144b9e55859",
+    "sameRgbDoesNotIdentifyVariant": true
+  },
+  "plannedCheckoutOracleNotReceipt": {
+    "quantity": 2,
+    "subtotalINR": 1120,
+    "shippingINR": 20,
+    "totalINR": 1140,
+    "taxINR": 0,
+    "discountINR": 0,
+    "paymentMethod": "cod",
+    "paymentStatus": "pending",
+    "orderState": "pending_cod",
+    "shippingRateId": null,
+    "actualHostedDeliverySelection": "PENDING",
+    "netQuantityRule": "6ml per item, never an invented12ml order fact."
+  },
+  "notKnownOrManufactured": {
+    "cartToken": null,
+    "cartId": null,
+    "cartFactRef": null,
+    "productVersion": null,
+    "factFingerprint": null,
+    "buyerId": null,
+    "orderId": null,
+    "confirmedOrder": null
+  },
+  "historicalReadbackRule": "After an actual UI order exists, compare saved buyer/Liquid/merchant readbacks against v1 and independently compare persisted snapshot digest before/after O03/O04. Current product data must not supply historical facts.",
+  "networkRequestsForThisDerivation": 0,
+  "casePassesCredited": 0
+}

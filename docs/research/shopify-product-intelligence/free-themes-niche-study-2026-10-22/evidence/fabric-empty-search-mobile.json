@@ -1,0 +1,1093 @@
+{
+  "body": {
+    "background": "rgb(255, 255, 255)",
+    "color": "rgba(3, 3, 2, 0.76)",
+    "font": "Geist, sans-serif",
+    "fontSize": "14px"
+  },
+  "controls": [
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Menu",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Cart",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "INPUT",
+      "type": "search"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Sycamore",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Plum",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Black",
+      "tag": "INPUT",
+      "type": "radio"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Add",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Add",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Email address",
+      "tag": "INPUT",
+      "type": "email"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Sign up",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Shop",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Customer care",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "About us",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Connect",
+      "tag": "SUMMARY",
+      "type": ""
+    }
+  ],
+  "headings": [],
+  "links": [
+    {
+      "text": "Skip to content",
+      "url": "https://theme-fabric-demo.myshopify.com/search?q=zzresearchnomatch2026&options%5Bprefix%5D=last#MainContent"
+    },
+    {
+      "text": "",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/womenswear-children-only"
+    },
+    {
+      "text": "",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/womens-tshirts-tanks"
+    },
+    {
+      "text": "",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/women-tops"
+    },
+    {
+      "text": "",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/women-bottoms"
+    },
+    {
+      "text": "",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/women-dresses"
+    },
+    {
+      "text": "",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/women-loungewear"
+    },
+    {
+      "text": "",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/socks-accessories"
+    },
+    {
+      "text": "",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/mens-children-only"
+    },
+    {
+      "text": "",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/men-tshirts-tanks"
+    },
+    {
+      "text": "",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/men-tops"
+    },
+    {
+      "text": "",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/men-bottoms"
+    },
+    {
+      "text": "",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/men-loungewear"
+    },
+    {
+      "text": "",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/socks-accessories"
+    },
+    {
+      "text": "",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/men-lightweight-knitwear"
+    },
+    {
+      "text": "",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/home-new"
+    },
+    {
+      "text": "",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/bath-new"
+    },
+    {
+      "text": "",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/bedding-new"
+    },
+    {
+      "text": "",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/apothecary-new"
+    },
+    {
+      "text": "",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/womenswear-children-only"
+    },
+    {
+      "text": "",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/mens-children-only"
+    },
+    {
+      "text": "",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/home-new"
+    },
+    {
+      "text": "",
+      "url": "https://theme-fabric-demo.myshopify.com/"
+    },
+    {
+      "text": "Reset search",
+      "url": "https://theme-fabric-demo.myshopify.com/search?type=product&q="
+    },
+    {
+      "text": "Skip to results list",
+      "url": "https://theme-fabric-demo.myshopify.com/search?q=zzresearchnomatch2026&options%5Bprefix%5D=last#ResultsList"
+    },
+    {
+      "text": "Tefnut Beach Shorts",
+      "url": "https://theme-fabric-demo.myshopify.com/products/mens-tefnut-beach-shorts-in-sycamore?variant=44434296799285"
+    },
+    {
+      "text": "Women's Hamatah Sweater",
+      "url": "https://theme-fabric-demo.myshopify.com/products/womens-hamatah-sweater-in-golden-oak?variant=44434438881333"
+    },
+    {
+      "text": "Women's Hamatah Sweater",
+      "url": "https://theme-fabric-demo.myshopify.com/products/womens-hamatah-sweater-in-racing-green?variant=44434451660853"
+    },
+    {
+      "text": "Women's Hamatah Sweater",
+      "url": "https://theme-fabric-demo.myshopify.com/products/womens-hamatah-sweater-in-fuchsia?variant=44434455429173"
+    },
+    {
+      "text": "Fitted Turtleneck",
+      "url": "https://theme-fabric-demo.myshopify.com/products/fitted-turtleneck-in-charcoal-melange?variant=44434589057077"
+    },
+    {
+      "text": "Fitted Turtleneck",
+      "url": "https://theme-fabric-demo.myshopify.com/products/fitted-turtleneck-in-dijon?variant=44434711347253"
+    },
+    {
+      "text": "Fitted Turtleneck",
+      "url": "https://theme-fabric-demo.myshopify.com/products/fitted-turtleneck-in-coriander?variant=44434712133685"
+    },
+    {
+      "text": "Fitted Turtleneck",
+      "url": "https://theme-fabric-demo.myshopify.com/products/womens-fitted-turtleneck-in-pinot?variant=44434472009781"
+    },
+    {
+      "text": "Fitted Turtleneck",
+      "url": "https://theme-fabric-demo.myshopify.com/products/womens-fitted-turtleneck-in-umber?variant=44434610257973"
+    },
+    {
+      "text": "Fitted Turtleneck",
+      "url": "https://theme-fabric-demo.myshopify.com/products/womens-fitted-turtleneck-in-ochre?variant=44434596069429"
+    },
+    {
+      "text": "Fitted Turtleneck",
+      "url": "https://theme-fabric-demo.myshopify.com/products/fitted-turtleneck-in-natural?variant=44434712330293"
+    },
+    {
+      "text": "Racer Tank",
+      "url": "https://theme-fabric-demo.myshopify.com/products/womens-rib-racer-tank-in-violet?variant=44434538201141"
+    },
+    {
+      "text": "Racer Tank",
+      "url": "https://theme-fabric-demo.myshopify.com/products/womens-rib-racer-tank-in-storm?variant=44434538496053"
+    },
+    {
+      "text": "Racer Tank",
+      "url": "https://theme-fabric-demo.myshopify.com/products/womens-rib-racer-tank-in-faded-apple?variant=44434538758197"
+    },
+    {
+      "text": "Racer Tank",
+      "url": "https://theme-fabric-demo.myshopify.com/products/womens-rib-racer-tank-in-dijon?variant=44435112525877"
+    },
+    {
+      "text": "Women's Sabah Polo",
+      "url": "https://theme-fabric-demo.myshopify.com/products/womens-sabah-polo-in-apple-butter-birch?variant=44434376884277"
+    },
+    {
+      "text": "Women's Sabah Polo",
+      "url": "https://theme-fabric-demo.myshopify.com/products/womens-sabah-polo-in-birch-chardonnay-maritime?variant=44434377211957"
+    },
+    {
+      "text": "Men's Hamatah Sweater",
+      "url": "https://theme-fabric-demo.myshopify.com/products/mens-ham-tah-sweater-in-racing-green?variant=44434448744501"
+    },
+    {
+      "text": "Men's Heavyweight Box Crew",
+      "url": "https://theme-fabric-demo.myshopify.com/products/mens-heavyweight-box-crew-in-silver-pine?variant=44434390417461"
+    },
+    {
+      "text": "Men's Heavyweight Box Crew",
+      "url": "https://theme-fabric-demo.myshopify.com/products/mens-heavyweight-box-crew-in-apple-butter?variant=44434390646837"
+    },
+    {
+      "text": "Men's Heavyweight Box Crew",
+      "url": "https://theme-fabric-demo.myshopify.com/products/mens-heavyweight-box-crew-in-iron?variant=44434391007285"
+    },
+    {
+      "text": "Men's Heavyweight Box Crew",
+      "url": "https://theme-fabric-demo.myshopify.com/products/mens-heavyweight-box-crew-in-birch-silver-pine?variant=44434415353909"
+    },
+    {
+      "text": "Men's Heavyweight Box Crew",
+      "url": "https://theme-fabric-demo.myshopify.com/products/mens-heavyweight-box-crew-in-white?variant=44434457165877"
+    },
+    {
+      "text": "Men's Heavyweight Box Crew",
+      "url": "https://theme-fabric-demo.myshopify.com/products/mens-heavyweight-box-crew-in-dune?variant=44434459951157"
+    },
+    {
+      "text": "Men's Heavyweight Box Crew",
+      "url": "https://theme-fabric-demo.myshopify.com/products/mens-heavyweight-box-crew-in-racing-green?variant=44434462244917"
+    },
+    {
+      "text": "Men's Heavyweight Box Crew",
+      "url": "https://theme-fabric-demo.myshopify.com/products/mens-heavyweight-box-crew-in-black?variant=44434475253813"
+    },
+    {
+      "text": "Men's Heavyweight Box Crew",
+      "url": "https://theme-fabric-demo.myshopify.com/products/mens-heavyweight-box-crew-in-acorn?variant=44434475483189"
+    },
+    {
+      "text": "Men's Essential Sweatpant",
+      "url": "https://theme-fabric-demo.myshopify.com/products/essential-sweatpant-in-navy?variant=44435485884469"
+    },
+    {
+      "text": "Essential Crew",
+      "url": "https://theme-fabric-demo.myshopify.com/products/womens-essential-crew-sale-in-black?variant=44435458457653"
+    },
+    {
+      "text": "Essential Crew",
+      "url": "https://theme-fabric-demo.myshopify.com/products/mens-essential-crew-in-black?variant=44435457441845"
+    },
+    {
+      "text": "Essential Crew",
+      "url": "https://theme-fabric-demo.myshopify.com/products/mens-essential-crew-in-white?variant=44435457179701"
+    },
+    {
+      "text": "Men's Essential Sweatpant",
+      "url": "https://theme-fabric-demo.myshopify.com/products/essential-sweatpant-in-heather-grey?variant=44435393871925"
+    },
+    {
+      "text": "Duvet Cover and Sham Set in Aluminum",
+      "url": "https://theme-fabric-demo.myshopify.com/products/duvet-set-in-aluminum?variant=44435306315829"
+    },
+    {
+      "text": "Racer Tank",
+      "url": "https://theme-fabric-demo.myshopify.com/products/womens-rib-racer-tank-in-white?variant=44435235799093"
+    },
+    {
+      "text": "Racer Tank",
+      "url": "https://theme-fabric-demo.myshopify.com/products/womens-rib-racer-tank-in-black?variant=44435235569717"
+    },
+    {
+      "text": "Essential Sweatshirt",
+      "url": "https://theme-fabric-demo.myshopify.com/products/womens-essential-sweatshirt-in-black-1?variant=44435233570869"
+    },
+    {
+      "text": "Essential Sweatshirt",
+      "url": "https://theme-fabric-demo.myshopify.com/products/mens-essential-sweatshirt-in-black-1?variant=44435233046581"
+    },
+    {
+      "text": "Women's Nile Rib Tank in Black",
+      "url": "https://theme-fabric-demo.myshopify.com/products/womens-rib-crop-tank-in-black?variant=44435230228533"
+    },
+    {
+      "text": "Men's Fisherman Sweater in Moon",
+      "url": "https://theme-fabric-demo.myshopify.com/products/mens-fisherman-sweater-1-in-moon?variant=44435210666037"
+    },
+    {
+      "text": "Unisex French Terry Sweatshirt in Black",
+      "url": "https://theme-fabric-demo.myshopify.com/products/unisex-sweatshirt-in-black?variant=44435193331765"
+    },
+    {
+      "text": "Linen Fitted Sheet and Pillowcase Set",
+      "url": "https://theme-fabric-demo.myshopify.com/products/linen-fitted-sheet-and-pillow-sets-in-natural?variant=44435175768117"
+    },
+    {
+      "text": "Linen Fitted Sheet and Pillowcase Set",
+      "url": "https://theme-fabric-demo.myshopify.com/products/linen-fitted-sheet-and-pillow-sets-in-white?variant=44435175407669"
+    },
+    {
+      "text": "Linen Duvet Cover and Pillow Sham Set",
+      "url": "https://theme-fabric-demo.myshopify.com/products/linen-duvet-cover-and-pillow-sham-sets-in-natural?variant=44435175309365"
+    },
+    {
+      "text": "Linen Duvet Cover and Pillow Sham Set",
+      "url": "https://theme-fabric-demo.myshopify.com/products/linen-duvet-cover-and-pillow-sham-sets-in-white?variant=44435175047221"
+    },
+    {
+      "text": "Women's 90's Tee",
+      "url": "https://theme-fabric-demo.myshopify.com/products/womens-90s-tee-in-black?variant=44435156009013"
+    },
+    {
+      "text": "Quilted Throw",
+      "url": "https://theme-fabric-demo.myshopify.com/products/quilted-throw-in-natural-with-raven-stitch-1?variant=44435153453109"
+    },
+    {
+      "text": "Women's Cozy Mockneck",
+      "url": "https://theme-fabric-demo.myshopify.com/products/womens-cozy-mockneck-in-natural?variant=44435145621557"
+    },
+    {
+      "text": "Women's Cozy Polo in Natural",
+      "url": "https://theme-fabric-demo.myshopify.com/products/womens-cozy-polo-in-natural?variant=44435145326645"
+    },
+    {
+      "text": "Port Trouser in Turkish Coffee",
+      "url": "https://theme-fabric-demo.myshopify.com/products/womens-port-trouser-1-in-turkish-coffee?variant=44435110985781"
+    },
+    {
+      "text": "Hammam Towel",
+      "url": "https://theme-fabric-demo.myshopify.com/products/hammam-towel-in-aluminum-border-stripe?variant=44435100663861"
+    },
+    {
+      "text": "Search",
+      "url": "https://theme-fabric-demo.myshopify.com/search"
+    },
+    {
+      "text": "Womenswear",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/womenswear-children-only"
+    },
+    {
+      "text": "Menswear",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/mens-children-only"
+    },
+    {
+      "text": "Sale",
+      "url": "https://theme-fabric-demo.myshopify.com/collections/sale"
+    },
+    {
+      "text": "FAQ",
+      "url": "https://theme-fabric-demo.myshopify.com/pages/faq"
+    },
+    {
+      "text": "Fit guide",
+      "url": "https://theme-fabric-demo.myshopify.com/pages/fit-guide"
+    },
+    {
+      "text": "Contact us",
+      "url": "https://theme-fabric-demo.myshopify.com/pages/contact"
+    },
+    {
+      "text": "Our story",
+      "url": "https://theme-fabric-demo.myshopify.com/pages/our-story"
+    },
+    {
+      "text": "Blog",
+      "url": "https://theme-fabric-demo.myshopify.com/blogs/news"
+    },
+    {
+      "text": "Materials & care",
+      "url": "https://theme-fabric-demo.myshopify.com/pages/materials-care"
+    },
+    {
+      "text": "Fabric",
+      "url": "https://theme-fabric-demo.myshopify.com/"
+    }
+  ],
+  "sections": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--19138330656821__search",
+      "rect": {
+        "height": 132.3828125,
+        "width": 390,
+        "x": 0,
+        "y": 60
+      },
+      "tag": "DIV",
+      "text": "Search\n\nNo results found for \"zzresearchnomatch2026\". Check the spelling or use a different word or phrase."
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--19138330656821__main",
+      "rect": {
+        "height": 8480.828125,
+        "width": 390,
+        "x": 0,
+        "y": 192.3828125
+      },
+      "tag": "DIV",
+      "text": "Skip to results list\nBest Sellers\nTefnut Beach Shorts\nChoose\nTefnut Beach Shorts\n$128.00 CAD\nWomen's Hamatah Sweater\nSALE\nChoose\nWomen's Hamatah Sweater\nSale price \n$100.00 CAD \nRe"
+    }
+  ],
+  "title": "Search: 0 results found for \"zzresearchnomatch2026\" – Fabric",
+  "url": "https://theme-fabric-demo.myshopify.com/search?q=zzresearchnomatch2026&options%5Bprefix%5D=last",
+  "viewport": {
+    "dpr": 1,
+    "height": 844,
+    "width": 390
+  },
+  "formGroups": [
+    ""
+  ],
+  "grids": [
+    {
+      "className": "collection-wrapper grid gap-style",
+      "columns": "none",
+      "display": "flex",
+      "gap": "normal",
+      "height": 8400.828125,
+      "tag": "DIV",
+      "width": 390
+    },
+    {
+      "className": "\n    grid main-collection-grid\n collection-wrapper--full-width\n collection-wrapper--full-width-on-mobile\n    spacing-style\n  ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "normal",
+      "height": 8400.828125,
+      "tag": "DIV",
+      "width": 390
+    },
+    {
+      "className": "product-grid product-grid--template--19138330656821__main product-grid--grid ",
+      "columns": "195px 195px",
+      "display": "grid",
+      "gap": "12px 0px",
+      "height": 8366.8125,
+      "tag": "UL",
+      "width": 390
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "8px",
+      "height": 334.125,
+      "tag": "DIV",
+      "width": 195
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "8px",
+      "height": 334.125,
+      "tag": "DIV",
+      "width": 195
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "8px",
+      "height": 334.125,
+      "tag": "DIV",
+      "width": 195
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "8px",
+      "height": 334.125,
+      "tag": "DIV",
+      "width": 195
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "8px",
+      "height": 314.53125,
+      "tag": "DIV",
+      "width": 195
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "8px",
+      "height": 314.53125,
+      "tag": "DIV",
+      "width": 195
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "8px",
+      "height": 314.53125,
+      "tag": "DIV",
+      "width": 195
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "8px",
+      "height": 314.53125,
+      "tag": "DIV",
+      "width": 195
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "8px",
+      "height": 314.53125,
+      "tag": "DIV",
+      "width": 195
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "8px",
+      "height": 314.53125,
+      "tag": "DIV",
+      "width": 195
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "8px",
+      "height": 314.53125,
+      "tag": "DIV",
+      "width": 195
+    },
+    {
+      "className": "\n      product-card__content\n      layout-panel-flex\n      layout-panel-flex--column\n      product-grid__card\n      spacing-style\n      border-style\n      gap-style\n      \n    ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "8px",
+      "height": 314.53125,
+      "tag": "DIV",
+      "width": 195
+    }
+  ],
+  "images": [
+    {
+      "alt": "Raphael is 6ft is a regular 30, and is wearing an 32.",
+      "complete": true,
+      "naturalWidth": 389,
+      "rect": {
+        "height": 243.75,
+        "width": 195
+      }
+    },
+    {
+      "alt": "Tefnut Beach Shorts",
+      "complete": true,
+      "naturalWidth": 194,
+      "rect": {
+        "height": 243.75,
+        "width": 195
+      }
+    },
+    {
+      "alt": "Tefnut Beach Shorts",
+      "complete": true,
+      "naturalWidth": 194,
+      "rect": {
+        "height": 243.75,
+        "width": 195
+      }
+    },
+    {
+      "alt": "Tefnut Beach Shorts",
+      "complete": true,
+      "naturalWidth": 194,
+      "rect": {
+        "height": 243.75,
+        "width": 195
+      }
+    },
+    {
+      "alt": "Tefnut Beach Shorts",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 243.75,
+        "width": 195
+      }
+    },
+    {
+      "alt": "Jonathan is 6’2, a regular 32 and is wearing a 34.",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 0,
+        "width": 0
+      }
+    },
+    {
+      "alt": "Raphael is 6ft is a regular 30, and is wearing an 32.",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 0,
+        "width": 0
+      }
+    },
+    {
+      "alt": "Elizabeth is 5ft 9in, a regular size S and is wearing a S.",
+      "complete": true,
+      "naturalWidth": 389,
+      "rect": {
+        "height": 243.75,
+        "width": 195
+      }
+    },
+    {
+      "alt": "Women's Hamatah Sweater",
+      "complete": true,
+      "naturalWidth": 194,
+      "rect": {
+        "height": 243.75,
+        "width": 195
+      }
+    },
+    {
+      "alt": "Women's Hamatah Sweater",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 243.75,
+        "width": 195
+      }
+    },
+    {
+      "alt": "Women's Hamatah Sweater",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 243.75,
+        "width": 195
+      }
+    },
+    {
+      "alt": "Women's Hamatah Sweater",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 243.75,
+        "width": 195
+      }
+    }
+  ],
+  "bodyText": "Skip to content\nTotal items in cart: 0\nSearch\n\nNo results found for \"zzresearchnomatch2026\". Check the spelling or use a different word or phrase.\n\nSkip to results list\nBest Sellers\nTefnut Beach Shorts\nChoose\nTefnut Beach Shorts\n$128.00 CAD\nWomen's Hamatah Sweater\nSALE\nChoose\nWomen's Hamatah Sweater\nSale price \n$100.00 CAD \nRegular price \n$138.00 CAD\nWomen's Hamatah Sweater\nSALE\nChoose\nWomen's Hamatah Sweater\nSale price \n$100.00 CAD \nRegular price \n$138.00 CAD\nWomen's Hamatah Sweater\nSALE\nChoose\nWomen's Hamatah Sweater\nSale price \n$128.00 CAD \nRegular price \n$138.00 CAD\nFitted Turtleneck\nSALE\nChoose\nFitted Turtleneck\nSale price \n$39.00 CAD \nRegular price \n$45.00 CAD\nFitted Turtleneck\nSALE\nChoose\nFitted Turtleneck\nSale price \n$40.00 CAD \nRegular price \n$45.00 CAD\nFitted Turtleneck\nSALE\nChoose\nFitted Turtleneck\nSale price \n$40.00 CAD \nRegular price \n$45.00 CAD\nFitted Turtleneck\nSALE\nChoose\nFitted Turtleneck\nSale price \n$39.00 CAD \nRegular price \n$48.00 CAD\nFitted Turtleneck\nSALE\nChoose\nFitted Turtleneck\nSale price \n$40.00 CAD \nRegular price \n$45.00 CAD\nFitted Turtleneck\nSALE\nChoose\nFitted Turtleneck\nSale price \n$40.00 CAD \nRegular price \n$45.00 CAD\nFitted Turtleneck\nSALE\nChoose\nFitted Turtleneck\nSale price \n$28.00 CAD \nRegular price \n$48.00 CAD\nRacer Tank\nSALE\nChoose\nRacer Tank\nSale price \n$30.00 CAD \nRegular price \n$35.00 CAD\nRacer Tank\nSALE\nChoose\nRacer Tank\nSale price \n$30.00 CAD \nRegular price \n$35.00 CAD\nRacer Tank\nSALE\nChoose\nRacer Tank\nSale price \n$30.00 CAD \nRegular price \n$35.00 CAD\nRacer Tank\nSALE\nChoose\nRacer Tank\nSale price \n$25.00 CAD \nRegular price \n$35.00 CAD\nWomen's Sabah Polo\nSALE\nChoose\nWomen's Sabah Polo\nSale price \n$80.00 CAD \nRegular price \n$108.00 CAD\nWomen's Sabah Polo\nSALE\nChoose\nWomen's Sabah Polo\nSale price \n$78.00 CAD \nRegular price \n$108.00 CAD\nMen's Hamatah Sweater\nSALE\nChoose\nMen's Hamatah Sweater\nSale price \n$109.00 CAD \nRegular price \n$138.00 CAD\nMen's Heavyweight Box Crew\nSALE\nChoose\nMen's Heavyweight Box Crew\nSale price \n$38.00 CAD \nRegular price \n$55.00 CAD\nMen's Heavyweight Box Crew\nSALE\nChoose\nMen's Heavyweight Box Crew\nSale price \n$38.00 CAD \nRegular price \n$55.00 CAD\nMen's Heavyweight Box Crew\nSALE\nChoose\nMen's Heavyweight Box Crew\nSale price \n$40.00 CAD \nRegular price \n$55.00 CAD\nMen's Heavyweight Box Crew\nSALE\nChoose\nMen's Heavyweight Box Crew\nSale price \n$40.00 CAD \nRegular price \n$60.00 CAD\nMen's Heavyweight Box Crew\nSALE\nChoose\nMen's Heavyweight Box Crew\nSale price \n$40.00 CAD \nRegular price \n$55.00 CAD\nMen's Heavyweight Box Crew\nSALE\nChoose\nMen's Heavyweight Box Crew\nSale price \n$39.00 CAD \nRegular price \n$55.00 CAD\nMen's Heavyweight Box Crew\nSALE\nChoose\nMen's Heavyweight Box Crew\nSale price \n$42.00 CAD \nRegular price \n$55.00 CAD\nMen's Heavyweight Box Crew\nSALE\nChoose\nMen's Heavyweight Box Crew\nSale price \n$40.00 CAD \nRegular price \n$55.00 CAD\nMen's Heavyweight Box Crew\nSALE\nChoose\nMen's Heavyweight Box Crew\nSale price \n$40.00 CAD \nRegular price \n$55.00 CAD\nMen's Essential Sweatpant\nSALE\nChoose\nMen's Essential Sweatpant\nSale price \n$53.00 CAD \nRegular price \n$88.00 CAD\nEssential Crew\nChoose\nEssential Crew\nSale price \n$30.00 CAD \nRegular price \n$38.00 CAD\nEssential Crew\nChoose\nEssential Crew\n$38.00 CAD\nEssential Crew\nChoose\nEssential Crew\n$38.00 CAD\nMen's Essential Sweatpant\nSALE\nChoose\nMen's Essential Sweatpant\nSale price \n$54.00 CAD \nRegular price \n$90.00 CAD\nDuvet Cover and Sham Set in Aluminum\nChoose\nDuvet Cover and Sham Set in Aluminum\n$178.00 CAD\nRacer Tank\nChoose\nRacer Tank\n$38.00 CAD\nRacer Tank\nChoose\nRacer Tank\n$38.00 CAD\nEssential Sweatshirt\nChoose\nEssential Sweatshirt\n$88.00 CAD\nEssential Sweatshirt\nChoose\nEssential Sweatshirt\n$88.00 CAD\nWomen's Nile Rib Tank in Black\nSALE\nChoose\nWomen's Nile Rib Tank in Black\nSale price \n$15.00 CAD \nRegular price \n$35.00 CAD\nMen's Fisherman Sweater in Moon\nSALE\nChoose\nMen's Fisherman Sweater in Moon\nSale price \n$138.00 CAD \nRegular price \n$198.00 CAD\nUnisex French Terry Sweatshirt in Black\nSALE\nChoose\nUnisex French Terry Sweatshirt in Black\nSale price \n$25.00 CAD \nRegular price \n$80.00 CAD\nLinen Fitted Sheet and Pillowcase Set\nChoose\nLinen Fitted Sheet and Pillowcase Set\n$225.00 CAD\nLinen Fitted Sheet and Pillowcase Set\nChoose\nLinen Fitted Sheet and Pillowcase Set\n$225.00 CAD\nLinen Duvet Cover and Pillow Sham Set\nChoose\nLinen Duvet Cover and Pillow Sham Set\n$325.00 CAD\nLinen Duvet Cover and Pillow Sham Set\nChoose\nLinen Duvet Cover and Pillow Sham Set\n$325.00 CAD\nWomen's 90's Tee\nChoose\nWomen's 90's Tee\n$40.00 CAD\nQuilted Throw\nAdd\nQuilted Throw\n$198.00 CAD\nWomen's Cozy Mockneck\nSALE\nChoose\nWomen's Cozy Mockneck\nSale price \n$40.00 CAD \nRegular price \n$88.00 CAD\nWomen's Cozy Polo in Natural\nSALE\nChoose\nWomen's Cozy Polo in Natural\nSale price \n$60.00 CAD \nRegular price \n$88.00 CAD\nPort Trouser in Turkish Coffee\nSALE\nChoose\nPort Trouser in Turkish Coffee\nSale price \n$70.00 CAD \nRegular price \n$178.00 CAD\nHammam Towel\nAdd\nHammam Towel\n$75.00 CAD\nEmail\nShop\nSearch\nWomenswear\nMenswear\nSale\nCustomer care\nFAQ\nFit guide\nContact us\nAbout us\nOur story\nBlog\nMaterials & care\nConnect\nInstagram\nTikTok\nYoutube\nFacebook\n© 2026 Fabric, Powered by Shopify"
+}

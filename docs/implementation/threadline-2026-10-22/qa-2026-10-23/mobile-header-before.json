@@ -1,0 +1,47 @@
+{
+  "actions": [
+    {
+      "class": "lb-header__toggle",
+      "height": 44,
+      "label": "Menu",
+      "left": 20,
+      "right": 42,
+      "width": 22
+    },
+    {
+      "class": "lb-header__brand",
+      "height": 29.7578125,
+      "label": "Threadline",
+      "left": 66,
+      "right": 219.625,
+      "width": 153.625
+    },
+    {
+      "class": "lb-header__search-toggle",
+      "height": 44,
+      "label": "Search",
+      "left": 243.625,
+      "right": 287.625,
+      "width": 44
+    },
+    {
+      "class": "lb-header__account",
+      "height": 44,
+      "label": "Log in",
+      "left": 295.625,
+      "right": 339.625,
+      "width": 44
+    },
+    {
+      "class": "lb-header__cart",
+      "height": 44,
+      "label": "Cart (0)",
+      "left": 347.625,
+      "right": 414.1015625,
+      "width": 66.4765625
+    }
+  ],
+  "bodyWidth": 414,
+  "documentWidth": 314,
+  "viewport": 320
+}

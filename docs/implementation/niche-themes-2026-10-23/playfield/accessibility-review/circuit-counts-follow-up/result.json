@@ -1,0 +1,32 @@
+{
+  "findingId": "FILTER-A11Y-001",
+  "status": "CLOSED_FOR_RELEASED_HTML_COMPUTED_NAME_SCOPE",
+  "primaryControlsReviewed": 32,
+  "countVariantControlsReviewed": 64,
+  "totalComputedNames": 96,
+  "artifacts": 6,
+  "countFixtures": [
+    0,
+    1,
+    4
+  ],
+  "routes": [
+    "collection",
+    "search"
+  ],
+  "panels": [
+    "desktop",
+    "mobile"
+  ],
+  "networkCalls": 0,
+  "sourceEdits": false,
+  "historical24HtmlAndReviewUnchanged": true,
+  "conclusion": "Every targeted native choice retains its identity, checked state and named fieldset. Bare visual count is aria-hidden; meaningful singular/plural count is exposed with a separating text node. Computed names match the independent baseline facet label plus an unambiguous count phrase.",
+  "limits": [
+    "No browser or assistive-technology run; exact speech, visual layout and responsive focus exposure remain unqualified",
+    "The clipped helper declaration is inside CSS @layer; JSDOM does not apply that layer in computed style here, so visual clipping is not verified by this name computation",
+    "Previous R01 visible-purpose candidates and R02 responsive focus review remain open; they were not re-reviewed here",
+    "Count fixtures are rendered contract artifacts, not real merchant counts or SQL qualification",
+    "Post390 functional55 receipt is recorded as context, not rerun by this review"
+  ]
+}

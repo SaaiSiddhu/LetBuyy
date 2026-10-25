@@ -1,0 +1,30 @@
+[
+  [
+    "~1 AXWebArea Search results for \"Fixture\" | Threadline, URL: syn-threadline-ui-d11a8917.localhost:57226/search?search=Fixture&sort=newest&limit=1&category=Care&country_of_origin=India&connector=usb-c&connector=hdmi",
+    "~\t\t\t35 link Description: Remove Connector: usb-c, Value: syn-threadline-ui-d11a8917.localhost:57226/search?limit=1&search=Fixture&category=Care&country_of_origin=India&sort=newest&connector=hdmi",
+    "~\t\t\t36 link Description: Remove Connector: hdmi, Value: syn-threadline-ui-d11a8917.localhost:57226/search?limit=1&search=Fixture&category=Care&country_of_origin=India&sort=newest&connector=usb-c",
+    "The focused UI element is 1 AXWebArea Search results for \"Fixture\" | Threadline, URL: syn-threadline-ui-d11a8917.localhost:57226/search?search=Fixture&sort=newest&limit=1&category=Care&country_of_origin=India&connector=usb-c&connector=hdmi"
+  ],
+  [
+    "~1 AXWebArea Search results for \"Fixture\" | Threadline, URL: syn-threadline-ui-d11a8917.localhost:57226/search?limit=1&search=Fixture&category=Care&country_of_origin=India&sort=newest&connector=hdmi",
+    "~\t\t\t35 link Description: Remove Connector: hdmi, Value: syn-threadline-ui-d11a8917.localhost:57226/search?limit=1&search=Fixture&category=Care&country_of_origin=India&sort=newest",
+    "~\t\t37 text 0 products",
+    "+\t\t40 heading No products found., Value: 2",
+    "+\t\t\t41 text No products found.",
+    "~\t\t43 link Description: Explore all products, Value: syn-threadline-ui-d11a8917.localhost:57226/store/syn-threadline-ui-d11a8917/products",
+    "The focused UI element is 1 AXWebArea Search results for \"Fixture\" | Threadline, URL: syn-threadline-ui-d11a8917.localhost:57226/search?limit=1&search=Fixture&category=Care&country_of_origin=India&sort=newest&connector=hdmi"
+  ],
+  [
+    "1 AXWebArea Search results for \"Fixture\" | Threadline, URL: syn-threadline-ui-d11a8917.localhost:57226/search?limit=1&search=Fixture&category=Care&country_of_origin=India&sort=newest",
+    "\t\t10 container Filter products by country of origin",
+    "\t\t17 heading Search products, Value: 1",
+    "\t\t\t18 text Search products",
+    "\t\t\t21 text Search care products",
+    "\t\t\t22 search text field (settable) Search care products, Value: Fixture",
+    "\t\t56 text 4 products",
+    "\t\t\t60 heading More products, Value: 2",
+    "\t\t\t\t61 text More products",
+    "\t\t\t70 text Page 1",
+    "The focused UI element is 1 AXWebArea Search results for \"Fixture\" | Threadline, URL: syn-threadline-ui-d11a8917.localhost:57226/search?limit=1&search=Fixture&category=Care&country_of_origin=India&sort=newest"
+  ]
+]

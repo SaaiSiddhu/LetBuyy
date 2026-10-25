@@ -1,0 +1,135 @@
+{
+  "recordedAt": "2026-10-23T13:39:53.273Z",
+  "classification": "EXACT_ACCEPTED_389_PAIRED_SOURCE_EMISSION_NOT_DATABASE_EXECUTION",
+  "status": "EMITTED_SOURCE_ONLY_NATIVE_QUALIFICATION_PENDING",
+  "admission": {
+    "path": "docs/implementation/niche-theme-programme/release-v2-final-admission.json",
+    "sha256": "6e026f1adc4be82414e174a92e125d846aad4fab9119d48841350db14f22b1b6"
+  },
+  "manifest": {
+    "path": "docs/implementation/niche-theme-programme/release-v2/proposals/81e91859ebc8c497a49da337d064e1885a76964839d14e39f4a0a3de2283f47f/manifest.json",
+    "manifestSha256": "81e91859ebc8c497a49da337d064e1885a76964839d14e39f4a0a3de2283f47f",
+    "fileSha256": "c0e8d5b7338a70a797a2acc24976700a146f8df4f9a3716d55fab4c03e8cf515"
+  },
+  "generator": {
+    "path": "docs/implementation/niche-theme-programme/release-v2/generate-release.ts",
+    "sha256": "ccbd78a2b0b47e8a6cfb33390965a32ddc611711cc4c369772199db5adb389b3"
+  },
+  "generatorTests": {
+    "path": "docs/implementation/niche-theme-programme/release-v2/generate-release.test.ts",
+    "sha256": "569485559353562215f96529f4e486e4216b64b0a676930c9b913a5f56163ca0"
+  },
+  "sourceAdmission": {
+    "path": "docs/implementation/niche-theme-programme/editor-post390-source-admission-checkpoint04.json",
+    "sha256": "57965788d4f04d221ecd7b944a8f4cc8812f6e8fb1cb31f3a3feccd53cf074e5"
+  },
+  "catalog387Admission": {
+    "path": "docs/implementation/niche-theme-programme/marketplace387-final-native-admission.json",
+    "sha256": "6284b8c2fa536807c04c4987582b702269b7d72dc5a851a2e7ea8218caf8490a"
+  },
+  "up": {
+    "path": "database/supabase/migrations/389_niche_theme_catalog_v2.sql",
+    "sha256": "3d9a5e0344db7537558554b723ffc134707bf7b98fe4941bc6bf268bd7330e61",
+    "bytes": 5824537
+  },
+  "down": {
+    "path": "database/supabase/rollback/389_niche_theme_catalog_v2.rollback.sql",
+    "sha256": "aecbd647393ac9dcec1466d8b7f80e21cd89a1522b6956bd0c9c479529e45927",
+    "bytes": 2744
+  },
+  "rendering": {
+    "source": "Accepted actual disk manifest and nine artifact files; current approved generator",
+    "freshProposalGenerated": false,
+    "sqlBytesUnchanged": true,
+    "exclusiveCreation": "wx",
+    "postWriteByteEquality": true
+  },
+  "migrationScanBefore": [
+    {
+      "directory": "database/supabase/migrations",
+      "max": 388,
+      "prefix389": [],
+      "count": 317
+    },
+    {
+      "directory": "database/supabase/rollback",
+      "max": 388,
+      "prefix389": [],
+      "count": 237
+    }
+  ],
+  "migrationScanAfter": [
+    {
+      "directory": "database/supabase/migrations",
+      "max": 389,
+      "prefix389": [
+        "389_niche_theme_catalog_v2.sql"
+      ],
+      "count": 318
+    },
+    {
+      "directory": "database/supabase/rollback",
+      "max": 389,
+      "prefix389": [
+        "389_niche_theme_catalog_v2.rollback.sql"
+      ],
+      "count": 238
+    }
+  ],
+  "sourceGuards": {
+    "generatorInputs": 47,
+    "editor04Inputs": 88,
+    "generatorInputDrift": [],
+    "editorInputDrift": [],
+    "allActualArtifactFilesVerified": 9,
+    "source387FilesVerified": 6
+  },
+  "preserved": {
+    "proposalFiles": 50,
+    "proposalDirectories": 5,
+    "allEarlierProposalsAndOriginalFailuresExact": true,
+    "proofFileHashes": {
+      "docs/implementation/niche-theme-programme/release-v2/DRY-RUN-CHECKPOINT-03-REVIEW.md": "4a7f8ed02774115cd5965df4f444a1a2c7a3546c0da1424d3dfb01a10b513d5f",
+      "docs/implementation/niche-theme-programme/release-v2/dry-run-checkpoint-03-source-before.json": "a1c733b953d73be5fb6ecdb58aeddbef5569ccaff528a41dde6c46171746b3bf",
+      "docs/implementation/niche-theme-programme/release-v2/dry-run-checkpoint-03-verification.json": "24a5a2d63367925b7f29dfed2be379daa09768f4a25942df7eae2e9ba8cb9dd0",
+      "docs/implementation/niche-theme-programme/release-v2/dry-run-checkpoint-03.stdout.json": "7ab6b894824cd47a9a701e1fc45af668ca0439b771675afce06a26d448f93629",
+      "docs/implementation/niche-theme-programme/release-v2/dry-run-checkpoint-03.tests.tap": "03fd1d83dce1cbf453a7bf06fd695c9a7fcc336e3ea1912d50ec7c6b379d0f0a",
+      "docs/implementation/niche-theme-programme/release-v2/PROPOSAL.json": "0fe16ddf7bd8c4e7fddfe82aca3a96919ac4dd315746fb20aad64ddb516515e2",
+      "docs/implementation/niche-theme-programme/release-v2/wire-correction-before.tests.tap": "dcb7abed43922a21eda7765788c3c7b335996395d8c6625f19499a379f33685a",
+      "docs/implementation/niche-theme-programme/release-v2/wire-correction-after.tests.tap": "c1406460065463a865b3884a98ffd748f1dbb56bc6ffe60fc2524fc13fbadf1d",
+      "docs/implementation/niche-theme-programme/release-v2/wire-correction.typecheck.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "docs/implementation/niche-theme-programme/release-v2/wire-correction-before.json": "5ec5363420a4683758a467933a6757c829aba18ad1c84190f22bf4a771e544d8",
+      "docs/implementation/niche-theme-programme/release-v2/wire-correction-source-before-proposal.json": "65af112d039d31b5c65df6bf09de7cdc2a42a281817c8a9c6de9ab31391295a7",
+      "docs/implementation/niche-theme-programme/release-v2/wire-correction-verification.json": "e39ab8b1c3456cd5de72b5860a0301c6d838ead8220ba4a23152a09868568e4b",
+      "docs/implementation/niche-theme-programme/release-v2/WIRE-CORRECTION-REVIEW.md": "fb2df5126d5241cb45dc2a37ef079e1d49b138712beab780fa9d55aaed9c9fb1"
+    },
+    "defaultV1And372ProtectedManifestUnchanged": true,
+    "threadline": {
+      "bundleSha256": "61082be647eadae9b6e42002be241a82ba6c3627427568f6e64e2cf961c3742e",
+      "excludedFromPromotion": true,
+      "fileSha256": "475717e0f7afd78327ce89b55768e0a13347394a98a2bfcf8bfad19ed088b9dc",
+      "path": "database/supabase/migrations/382_threadline_catalog_v2.sql",
+      "payloadSha256": "e3b97f84ac1d2472eebd853946e548002fde1f2daf6bb5277004a6b8884aac8a",
+      "rawBundleJsonSha256": "61082be647eadae9b6e42002be241a82ba6c3627427568f6e64e2cf961c3742e"
+    }
+  },
+  "qualification": {
+    "databaseExecuted": false,
+    "owner": "Threadline, separately allocated by root",
+    "pending": [
+      "Native389 application/identity/capture conflict qualification",
+      "Installed theme save/publication/recovery",
+      "Paired rollback qualification",
+      "390 native qualification and programme buyer acceptance"
+    ]
+  },
+  "sideEffects": {
+    "newMigrationSourceFiles": 1,
+    "newRollbackSourceFiles": 1,
+    "databaseTouched": false,
+    "buildStarted": false,
+    "browserStarted": false,
+    "deployment": false,
+    "crossChatMessageSent": false
+  }
+}

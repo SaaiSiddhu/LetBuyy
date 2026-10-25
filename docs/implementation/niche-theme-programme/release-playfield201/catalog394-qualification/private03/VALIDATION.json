@@ -1,0 +1,17 @@
+{
+  "status": "PRIVATE_SOURCE_AND_FROZEN_BUILDER_WITNESS_PASS_NOT_RUNTIME_ADMISSION",
+  "archiveFiles": 61,
+  "tamperControls": 3,
+  "eightPhaseLabelsPreserved": true,
+  "strictPublicationContextOracleRetained": true,
+  "newOwnerFixtureSetupSourceOrderVerified": true,
+  "currentRuntimeFullHashCheckRetained": true,
+  "currentPlayfieldFactoryAndPersistenceEqualImmutableCapture": true,
+  "rawFactorySha256": "91dd7e6239aefa6a341dfc04ba5d8cc79d8136f1c4d46b48fda66799ecbbe9d7",
+  "sourceParseDiagnostics": 0,
+  "networkCalls": 0,
+  "nativeExecuted": false,
+  "databaseAccessed": false,
+  "MainSuiteChanged": false,
+  "runtimeClosureRebind": "STILL_REQUIRED_AFTER_SHARED_SOURCE_SEALS"
+}

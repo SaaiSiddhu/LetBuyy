@@ -1,0 +1,496 @@
+TAP version 13
+# Subtest: structured public carrier uses canonical whole-group resolution, explicit clears and exact owned UUIDs
+ok 1 - structured public carrier uses canonical whole-group resolution, explicit clears and exact owned UUIDs
+  ---
+  duration_ms: 7.948833
+  type: 'test'
+  ...
+# Subtest: real 2.0.1 Liquid SSR does not show common facts as an unselected edition; old 2.0.0 remains reproducible
+ok 2 - real 2.0.1 Liquid SSR does not show common facts as an unselected edition; old 2.0.0 remains reproducible
+  ---
+  duration_ms: 237.73275
+  type: 'test'
+  ...
+# Subtest: actual mapper → Liquid → native picker updates every declared consumer Inherited → Unknown → Paper → Inherited
+ok 3 - actual mapper → Liquid → native picker updates every declared consumer Inherited → Unknown → Paper → Inherited
+  ---
+  duration_ms: 168.630375
+  type: 'test'
+  ...
+# Subtest: explicit materials empty and replacement partial contents never resurrect inherited Wood or completeness
+ok 4 - explicit materials empty and replacement partial contents never resurrect inherited Wood or completeness
+  ---
+  duration_ms: 79.578666
+  type: 'test'
+  ...
+# Subtest: unavailable, nonexistent and incomplete native selections remove prior facts and retain Add authority
+ok 5 - unavailable, nonexistent and incomplete native selections remove prior facts and retain Add authority
+  ---
+  duration_ms: 78.494958
+  type: 'test'
+  ...
+# Subtest: product-only actual Add island initializes validated common facts; setting off creates no presentation or generic fallback
+ok 6 - product-only actual Add island initializes validated common facts; setting off creates no presentation or generic fallback
+  ---
+  duration_ms: 134.458166
+  type: 'test'
+  ...
+# Subtest: declared targets scope by actual product/section, dispose restores original nodes and reconnect renders once
+ok 7 - declared targets scope by actual product/section, dispose restores original nodes and reconnect renders once
+  ---
+  duration_ms: 137.817541
+  type: 'test'
+  ...
+# Subtest: warning attribution, content labels and materials remain inert text through actual Liquid and hydration
+ok 8 - warning attribution, content labels and materials remain inert text through actual Liquid and hydration
+  ---
+  duration_ms: 62.4525
+  type: 'test'
+  ...
+# Subtest: structured facts reject private/invalid/accessor/sparse data and preserve valid picker IDs when unavailable
+ok 9 - structured facts reject private/invalid/accessor/sparse data and preserve valid picker IDs when unavailable
+  ---
+  duration_ms: 2.181875
+  type: 'test'
+  ...
+# Subtest: a foreign UUID or foreign presentation root cannot acquire another product selection
+ok 10 - a foreign UUID or foreign presentation root cannot acquire another product selection
+  ---
+  duration_ms: 4.304167
+  type: 'test'
+  ...
+# Subtest: unknown product-only SSR and hydrated facts retain honest absence without an empty warning claim
+ok 11 - unknown product-only SSR and hydrated facts retain honest absence without an empty warning claim
+  ---
+  duration_ms: 58.427958
+  type: 'test'
+  ...
+# Subtest: existing flat facts keep their reservation; combined structured+flat per-row/aggregate budgets do not increase
+ok 12 - existing flat facts keep their reservation; combined structured+flat per-row/aggregate budgets do not increase
+  ---
+  duration_ms: 21.046417
+  type: 'test'
+  ...
+# Subtest: actual application mapper preserves all nine derived namespaces through collection depth4
+ok 13 - actual application mapper preserves all nine derived namespaces through collection depth4
+  ---
+  duration_ms: 171.902709
+  type: 'test'
+  ...
+# Subtest: actual PDP keeps exact inert personalization JSON and UUID-specific variant display facts
+ok 14 - actual PDP keeps exact inert personalization JSON and UUID-specific variant display facts
+  ---
+  duration_ms: 54.695375
+  type: 'test'
+  ...
+# Subtest: anonymous Liquid variant projection cannot copy arbitrary metadata, supplier cost or SKU
+ok 15 - anonymous Liquid variant projection cannot copy arbitrary metadata, supplier cost or SKU
+  ---
+  duration_ms: 2.314125
+  type: 'test'
+  ...
+# Subtest: two actual mapper→Liquid→native picker product sections scope food facts/counts by durable UUID with spaces/Hindi labels
+ok 16 - two actual mapper→Liquid→native picker product sections scope food facts/counts by durable UUID with spaces/Hindi labels
+  ---
+  duration_ms: 247.753292
+  type: 'test'
+  ...
+# Subtest: missing, nonexistent, incomplete and unavailable selections cannot retain prior pack facts; fallback comparison remains
+ok 17 - missing, nonexistent, incomplete and unavailable selections cannot retain prior pack facts; fallback comparison remains
+  ---
+  duration_ms: 65.125583
+  type: 'test'
+  ...
+# Subtest: unvarianted contents initialize per-pack/unit value and quantity context without a fabricated variant
+ok 18 - unvarianted contents initialize per-pack/unit value and quantity context without a fabricated variant
+  ---
+  duration_ms: 45.2765
+  type: 'test'
+  ...
+# Subtest: selected furniture/sports/toy/book measurements retain resolved whole-group overrides and hostile text stays inert
+ok 19 - selected furniture/sports/toy/book measurements retain resolved whole-group overrides and hostile text stays inert
+  ---
+  duration_ms: 65.43225
+  type: 'test'
+  ...
+# Subtest: actual Habitat hook restores common facts for incomplete/unknown options and shows exact unavailable finish facts
+ok 20 - actual Habitat hook restores common facts for incomplete/unknown options and shows exact unavailable finish facts
+  ---
+  duration_ms: 84.6185
+  type: 'test'
+  ...
+# Subtest: disconnect restores no-JS fallback and removes listeners; reconnect initializes retained selected UUID once
+ok 21 - disconnect restores no-JS fallback and removes listeners; reconnect initializes retained selected UUID once
+  ---
+  duration_ms: 101.947708
+  type: 'test'
+  ...
+# Subtest: fact carrier is inert, strict and bounded; invalid facts never discard a valid picker UUID/options
+ok 22 - fact carrier is inert, strict and bounded; invalid facts never discard a valid picker UUID/options
+  ---
+  duration_ms: 0.502209
+  type: 'test'
+  ...
+# Subtest: mapper bounds aggregate display facts and excludes all private variant fields
+ok 23 - mapper bounds aggregate display facts and excludes all private variant fields
+  ---
+  duration_ms: 9.550583
+  type: 'test'
+  ...
+# Subtest: bounded option carrier preserves spaces, Unicode and prototype-like labels as inert own data
+ok 24 - bounded option carrier preserves spaces, Unicode and prototype-like labels as inert own data
+  ---
+  duration_ms: 0.716875
+  type: 'test'
+  ...
+# Subtest: malformed, oversized or accessor options fail closed; valid legacy carriers retain compatibility
+ok 25 - malformed, oversized or accessor options fail closed; valid legacy carriers retain compatibility
+  ---
+  duration_ms: 0.791333
+  type: 'test'
+  ...
+# Subtest: actual Liquid depth/key scrub retains option labels and the real picker resolves availability
+ok 26 - actual Liquid depth/key scrub retains option labels and the real picker resolves availability
+  ---
+  duration_ms: 219.946333
+  type: 'test'
+  ...
+# Subtest: W5-XSS-text: a "text" field with a <script> payload is neutralised
+ok 27 - W5-XSS-text: a "text" field with a <script> payload is neutralised
+  ---
+  duration_ms: 119.543917
+  type: 'test'
+  ...
+# Subtest: W5-XSS-textarea: a "textarea" field with a <script> payload is neutralised
+ok 28 - W5-XSS-textarea: a "textarea" field with a <script> payload is neutralised
+  ---
+  duration_ms: 19.238167
+  type: 'test'
+  ...
+# Subtest: W5-XSS-richtext: a "richtext" field with a <script> payload is neutralised (no `| raw` on settings values)
+ok 29 - W5-XSS-richtext: a "richtext" field with a <script> payload is neutralised (no `| raw` on settings values)
+  ---
+  duration_ms: 17.655792
+  type: 'test'
+  ...
+# Subtest: W5-XSS-select: a "select" field value is escaped even when it does not match a declared option
+ok 30 - W5-XSS-select: a "select" field value is escaped even when it does not match a declared option
+  ---
+  duration_ms: 16.839417
+  type: 'test'
+  ...
+# Subtest: W5-XSS-url: a "url" field with a javascript: scheme does not produce an executable href
+ok 31 - W5-XSS-url: a "url" field with a javascript: scheme does not produce an executable href
+  ---
+  duration_ms: 12.839
+  type: 'test'
+  ...
+# Subtest: W5-XSS-image: an "image" field with an attribute-breakout payload does not create a live onerror handler
+ok 32 - W5-XSS-image: an "image" field with an attribute-breakout payload does not create a live onerror handler
+  ---
+  duration_ms: 19.894333
+  type: 'test'
+  ...
+# Subtest: W5-block-xss: a block setting with a <script> payload is neutralised in the block's own render
+ok 33 - W5-block-xss: a block setting with a <script> payload is neutralised in the block's own render
+  ---
+  duration_ms: 15.976375
+  type: 'test'
+  ...
+# Subtest: W5-block-ssti: a block setting value is never re-evaluated as a Liquid template (mirrors SEC-3a for blocks)
+ok 34 - W5-block-ssti: a block setting value is never re-evaluated as a Liquid template (mirrors SEC-3a for blocks)
+  ---
+  duration_ms: 11.450417
+  type: 'test'
+  ...
+# Subtest: W5-app-block-xss: a malicious liquidAppBlocks HTML payload is neutralised through resolveLiquidAppBlockHtml
+ok 35 - W5-app-block-xss: a malicious liquidAppBlocks HTML payload is neutralised through resolveLiquidAppBlockHtml
+  ---
+  duration_ms: 18.412042
+  type: 'test'
+  ...
+# Subtest: W5-app-block-settings-filtered: credential-adjacent app block settings never reach the Liquid drop
+ok 36 - W5-app-block-settings-filtered: credential-adjacent app block settings never reach the Liquid drop
+  ---
+  duration_ms: 10.703834
+  type: 'test'
+  ...
+# Subtest: W5-head-style-breakout: a </style> breakout with an injected <script> cannot escape the extracted CSS text
+ok 37 - W5-head-style-breakout: a </style> breakout with an injected <script> cannot escape the extracted CSS text
+  ---
+  duration_ms: 1.792625
+  type: 'test'
+  ...
+# Subtest: W5-head-style-jsurl: a javascript: URL smuggled into head-asset HTML cannot become a live href/src
+ok 38 - W5-head-style-jsurl: a javascript: URL smuggled into head-asset HTML cannot become a live href/src
+  ---
+  duration_ms: 1.123625
+  type: 'test'
+  ...
+# Subtest: W5-head-style-expression: a CSS expression()/onerror payload smuggled via an event handler attribute cannot execute
+ok 39 - W5-head-style-expression: a CSS expression()/onerror payload smuggled via an event handler attribute cannot execute
+  ---
+  duration_ms: 0.772166
+  type: 'test'
+  ...
+# Subtest: W5-head-style-real-pipeline: sanitizeLiquidHeadStyleText over the REAL buildLiquidThemeHeadAssets output stays safe end to end
+ok 40 - W5-head-style-real-pipeline: sanitizeLiquidHeadStyleText over the REAL buildLiquidThemeHeadAssets output stays safe end to end
+  ---
+  duration_ms: 10.147875
+  type: 'test'
+  ...
+# Subtest: all nine v2 packages require explicit distribution version and retain stable catalog identities
+ok 41 - all nine v2 packages require explicit distribution version and retain stable catalog identities
+  ---
+  duration_ms: 160.06675
+  type: 'test'
+  ...
+# Subtest: Threadline keeps the same bundle and unknown catalog slugs fail closed
+ok 42 - Threadline keeps the same bundle and unknown catalog slugs fail closed
+  ---
+  duration_ms: 29.074875
+  type: 'test'
+  ...
+# Subtest: the distribution builder includes historical order facts only in the nine explicit v2 packages
+ok 43 - the distribution builder includes historical order facts only in the nine explicit v2 packages
+  ---
+  duration_ms: 135.788875
+  type: 'test'
+  ...
+# Subtest: decoration is pure and idempotent for all nine explicit v2 designs
+ok 44 - decoration is pure and idempotent for all nine explicit v2 designs
+  ---
+  duration_ms: 113.240042
+  type: 'test'
+  ...
+# Subtest: Core, pinned Threadline, v1 captures, other versions and third-party bundles retain exact bytes
+ok 45 - Core, pinned Threadline, v1 captures, other versions and third-party bundles retain exact bytes
+  ---
+  duration_ms: 31.292209
+  type: 'test'
+  ...
+# Subtest: actual Liquid preserves bounded scalar facts through depth four with escaped text and existing order money
+ok 46 - actual Liquid preserves bounded scalar facts through depth four with escaped text and existing order money
+  ---
+  duration_ms: 131.517041
+  type: 'test'
+  ...
+# Subtest: missing legacy scalar stays a brief neutral fallback instead of invented namespace facts
+ok 47 - missing legacy scalar stays a brief neutral fallback instead of invented namespace facts
+  ---
+  duration_ms: 46.364708
+  type: 'test'
+  ...
+# Subtest: a missing canonical line seam refuses decoration instead of modifying unrelated markup
+ok 48 - a missing canonical line seam refuses decoration instead of modifying unrelated markup
+  ---
+  duration_ms: 6.362583
+  type: 'test'
+  ...
+# Subtest: Playfield 2.0.1 retains exact historical order markup and CSS with only PDP and version differences
+ok 49 - Playfield 2.0.1 retains exact historical order markup and CSS with only PDP and version differences
+  ---
+  duration_ms: 16.315917
+  type: 'test'
+  ...
+# Subtest: Playfield 2.0.1 decoration is pure, idempotent and renders saved facts as inert text with existing order money
+ok 50 - Playfield 2.0.1 decoration is pure, idempotent and renders saved facts as inert text with existing order money
+  ---
+  duration_ms: 40.208041
+  type: 'test'
+  ...
+# Subtest: only exact Playfield 2.0.1 joins the existing opt-in; unknown versions and every other 2.0.1 identity remain byte-exact
+ok 51 - only exact Playfield 2.0.1 joins the existing opt-in; unknown versions and every other 2.0.1 identity remain byte-exact
+  ---
+  duration_ms: 28.965333
+  type: 'test'
+  ...
+# Subtest: all twenty previous default/v2 builder outputs remain byte-identical
+ok 52 - all twenty previous default/v2 builder outputs remain byte-identical
+  ---
+  duration_ms: 190.083208
+  type: 'test'
+  ...
+# Subtest: 2.0.1 requires both explicit niche-v2 and Playfield opt-in; the other nine listings/builders are unchanged
+ok 53 - 2.0.1 requires both explicit niche-v2 and Playfield opt-in; the other nine listings/builders are unchanged
+  ---
+  duration_ms: 269.437834
+  type: 'test'
+  ...
+# Subtest: append-only factory changes only package version and declared PDP contract; original input/styles/routes remain unchanged
+ok 54 - append-only factory changes only package version and declared PDP contract; original input/styles/routes remain unchanged
+  ---
+  duration_ms: 12.586167
+  type: 'test'
+  ...
+# Subtest: Playfield is a distinct v2 package and leaves its supplied v1 release untouched
+ok 55 - Playfield is a distinct v2 package and leaves its supplied v1 release untouched
+  ---
+  duration_ms: 30.587292
+  type: 'test'
+  ...
+# Subtest: fresh inherited buyer templates contain only supported replacement settings and survive JSON-wire documents
+ok 56 - fresh inherited buyer templates contain only supported replacement settings and survive JSON-wire documents
+  ---
+  duration_ms: 234.542458
+  type: 'test'
+  ...
+# Subtest: retained editable inline blocks expose the preview attribute hook on their existing root
+ok 57 - retained editable inline blocks expose the preview attribute hook on their existing root
+  ---
+  duration_ms: 6.628958
+  type: 'test'
+  ...
+# Subtest: actual inline FAQ roots expose stable block identity only in editor preview
+ok 58 - actual inline FAQ roots expose stable block identity only in editor preview
+  ---
+  duration_ms: 71.707833
+  type: 'test'
+  ...
+# Subtest: actual Liquid home, collection and product render real merchandise and scoped styles
+ok 59 - actual Liquid home, collection and product render real merchandise and scoped styles
+  ---
+  duration_ms: 120.780583
+  type: 'test'
+  ...
+# Subtest: an unconfigured announcement has no empty focusable link
+ok 60 - an unconfigured announcement has no empty focusable link
+  ---
+  duration_ms: 42.342208
+  type: 'test'
+  ...
+# Subtest: contents and measured dimensions are exact, escaped and present before purchase
+ok 61 - contents and measured dimensions are exact, escaped and present before purchase
+  ---
+  duration_ms: 40.752333
+  type: 'test'
+  ...
+# Subtest: missing media, age, contents, dimensions and warnings remain visibly unknown
+ok 62 - missing media, age, contents, dimensions and warnings remain visibly unknown
+  ---
+  duration_ms: 66.895667
+  type: 'test'
+  ...
+# Subtest: age and interest selectors preserve both choices and each clear action removes one
+ok 63 - age and interest selectors preserve both choices and each clear action removes one
+  ---
+  duration_ms: 78.247625
+  type: 'test'
+  ...
+# Subtest: query attributes and merchant warning text cannot introduce active markup
+ok 64 - query attributes and merchant warning text cannot introduce active markup
+  ---
+  duration_ms: 76.539583
+  type: 'test'
+  ...
+# Subtest: editor mutation changes the rendered campaign and clearing media removes the image
+ok 65 - editor mutation changes the rendered campaign and clearing media removes the image
+  ---
+  duration_ms: 71.656042
+  type: 'test'
+  ...
+# Subtest: empty collections expose recovery and do not fabricate products or counts
+ok 66 - empty collections expose recovery and do not fabricate products or counts
+  ---
+  duration_ms: 31.280291
+  type: 'test'
+  ...
+# Subtest: a resolved selected-edition DTO renders explicit clears and different measured objects without stale kit facts
+ok 67 - a resolved selected-edition DTO renders explicit clears and different measured objects without stale kit facts
+  ---
+  duration_ms: 67.622916
+  type: 'test'
+  ...
+# Subtest: SEC-1a DOMPurify sanitizer strips <base> tags (FORBID_TAGS)
+ok 68 - SEC-1a DOMPurify sanitizer strips <base> tags (FORBID_TAGS)
+  ---
+  duration_ms: 649.932958
+  type: 'test'
+  ...
+# Subtest: SEC-1b DOMPurify sanitizer strips <embed> tags (FORBID_TAGS)
+ok 69 - SEC-1b DOMPurify sanitizer strips <embed> tags (FORBID_TAGS)
+  ---
+  duration_ms: 3.217292
+  type: 'test'
+  ...
+# Subtest: SEC-1c DOMPurify sanitizer strips <object> tags (FORBID_TAGS)
+ok 70 - SEC-1c DOMPurify sanitizer strips <object> tags (FORBID_TAGS)
+  ---
+  duration_ms: 2.180625
+  type: 'test'
+  ...
+# Subtest: SEC-2 DOMPurify sanitizer strips inline style= attributes (FORBID_ATTR)
+ok 71 - SEC-2 DOMPurify sanitizer strips inline style= attributes (FORBID_ATTR)
+  ---
+  duration_ms: 5.69925
+  type: 'test'
+  ...
+# Subtest: SEC-3a SSTI probe {{ 7 | times: 7 }} in section settings is not re-evaluated (must not output 49)
+ok 72 - SEC-3a SSTI probe {{ 7 | times: 7 }} in section settings is not re-evaluated (must not output 49)
+  ---
+  duration_ms: 38.200459
+  type: 'test'
+  ...
+# Subtest: SEC-3b SSTI probe {{ shop.id }} in liquidContext.settings is not re-evaluated
+ok 73 - SEC-3b SSTI probe {{ shop.id }} in liquidContext.settings is not re-evaluated
+  ---
+  duration_ms: 11.161333
+  type: 'test'
+  ...
+# Subtest: SEC-4 toLiquidDrop drops nested objects at depth >= 4 but passes primitive values at that depth
+ok 74 - SEC-4 toLiquidDrop drops nested objects at depth >= 4 but passes primitive values at that depth
+  ---
+  duration_ms: 12.952083
+  type: 'test'
+  ...
+# Subtest: SEC-5 toLiquidDrop drops product keys beyond the 80-key slice (MAX_LIQUID_DROP_KEYS=80)
+ok 75 - SEC-5 toLiquidDrop drops product keys beyond the 80-key slice (MAX_LIQUID_DROP_KEYS=80)
+  ---
+  duration_ms: 10.698791
+  type: 'test'
+  ...
+# Subtest: SEC-6 prototype-pollution keys (__proto__, constructor, prototype) are blocked in product drop
+ok 76 - SEC-6 prototype-pollution keys (__proto__, constructor, prototype) are blocked in product drop
+  ---
+  duration_ms: 10.353416
+  type: 'test'
+  ...
+# Subtest: SEC-6b __proto__ from JSON.parse (own-enumerable) is blocked by the key-regex defense in toLiquidDrop
+ok 77 - SEC-6b __proto__ from JSON.parse (own-enumerable) is blocked by the key-regex defense in toLiquidDrop
+  ---
+  duration_ms: 10.203583
+  type: 'test'
+  ...
+# Subtest: SEC-7 BLOCKED_DROP_KEYS contains exactly the 13 required credential-adjacent keys
+ok 78 - SEC-7 BLOCKED_DROP_KEYS contains exactly the 13 required credential-adjacent keys
+  ---
+  duration_ms: 0.213125
+  type: 'test'
+  ...
+# Subtest: SEC-8 buildLiquidThemeHeadAssets neutralises CSS injection in settings_data token values
+ok 79 - SEC-8 buildLiquidThemeHeadAssets neutralises CSS injection in settings_data token values
+  ---
+  duration_ms: 3.837958
+  type: 'test'
+  ...
+# Subtest: SEC-9 DOMPurify hook removes data-* attributes whose values contain < or > (XSS via data attribute)
+ok 80 - SEC-9 DOMPurify hook removes data-* attributes whose values contain < or > (XSS via data attribute)
+  ---
+  duration_ms: 1.625
+  type: 'test'
+  ...
+# Subtest: SEC-10 DOMPurify hook blocks javascript: href and data:text/html src
+ok 81 - SEC-10 DOMPurify hook blocks javascript: href and data:text/html src
+  ---
+  duration_ms: 0.945208
+  type: 'test'
+  ...
+1..81
+# tests 81
+# suites 0
+# pass 81
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 14425.4075

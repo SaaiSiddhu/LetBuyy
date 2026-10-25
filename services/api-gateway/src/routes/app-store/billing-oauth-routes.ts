@@ -1,6 +1,6 @@
 import type { Hono } from 'hono';
 import type { Env } from '../../index';
-import { findFirstOwnedSiteId, resolveCustomUser, verifySiteOwnership } from '../../lib/auth-user';
+import { findFirstOwnedSiteId, resolveCustomUser, resolveOwnedSiteId, verifySiteOwnership } from '../../lib/auth-user';
 import { readAppSpendSnapshot } from '../../lib/app-spend-controls';
 import { isInternalApiSecretRequest } from '../../lib/internal-secret';
 import { getSupabaseAdmin, success } from '../../lib/supabase';
@@ -1094,6 +1094,7 @@ export function registerAppStoreBillingOAuthRoutes(router: Hono<{ Bindings: Env 
             .from('app_installations')
             .update({ config: finalConfig })
             .eq('id', installation.id)
+            .eq('store_id', storeId)
             .select()
             .single();
 
@@ -1232,7 +1233,8 @@ export function registerAppStoreBillingOAuthRoutes(router: Hono<{ Bindings: Env 
             const { error: updateError } = await db
                 .from('app_installations')
                 .update({ config: finalConfig })
-                .eq('id', installation.id);
+                .eq('id', installation.id)
+                .eq('store_id', installation.store_id);
 
             if (updateError) {
                 return c.json({ error: { code: 'DB_ERROR', message: updateError.message } }, 500);
@@ -1325,13 +1327,21 @@ export function registerAppStoreBillingOAuthRoutes(router: Hono<{ Bindings: Env 
                 redeemed_at: now.toISOString(),
             },
         });
-        const { error: updateError } = await db
+        const { data: redeemed, error: updateError } = await db
             .from('app_installations')
             .update({ config: finalConfig })
-            .eq('id', installation.id);
+            .eq('id', installation.id)
+            .eq('store_id', installation.store_id)
+            .eq('config->oauth->authorization_code->>code_hash', expectedCodeHash)
+            .is('config->oauth->authorization_code->>redeemed_at', null)
+            .select('id')
+            .maybeSingle();
 
         if (updateError) {
             return c.json({ error: { code: 'DB_ERROR', message: updateError.message } }, 500);
+        }
+        if (!redeemed) {
+            return c.json({ error: { code: 'INVALID_GRANT', message: 'Authorization code has already been redeemed or replaced' } }, 400);
         }
 
         return c.json(success({
@@ -1362,6 +1372,7 @@ export function registerAppStoreBillingOAuthRoutes(router: Hono<{ Bindings: Env 
             .from('app_installations')
             .select('id, app_id, store_id, installed_by, status, scopes_granted, config')
             .eq('id', installationId)
+            .eq('store_id', await resolveOwnedSiteId(db, customUser.id, storeId, auth.user.storeId))
             .eq('status', 'active')
             .maybeSingle();
 
@@ -1409,7 +1420,8 @@ export function registerAppStoreBillingOAuthRoutes(router: Hono<{ Bindings: Env 
         const { error: updateError } = await db
             .from('app_installations')
             .update({ config: finalConfig })
-            .eq('id', installation.id);
+            .eq('id', installation.id)
+            .eq('store_id', installation.store_id);
 
         if (updateError) {
             return c.json({ error: { code: 'DB_ERROR', message: updateError.message } }, 500);

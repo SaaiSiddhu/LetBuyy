@@ -1,0 +1,148 @@
+TAP version 13
+# Subtest: pure admission SHAPE positive control is not a real file/resource admission
+ok 1 - pure admission SHAPE positive control is not a real file/resource admission
+  ---
+  duration_ms: 3.552
+  type: 'test'
+  ...
+# Subtest: pure admission shape refuses wrongStatus
+ok 2 - pure admission shape refuses wrongStatus
+  ---
+  duration_ms: 0.922125
+  type: 'test'
+  ...
+# Subtest: pure admission shape refuses expired
+ok 3 - pure admission shape refuses expired
+  ---
+  duration_ms: 3.835042
+  type: 'test'
+  ...
+# Subtest: pure admission shape refuses wrongBudget
+ok 4 - pure admission shape refuses wrongBudget
+  ---
+  duration_ms: 0.259416
+  type: 'test'
+  ...
+# Subtest: pure admission shape refuses multipleAttempts
+ok 5 - pure admission shape refuses multipleAttempts
+  ---
+  duration_ms: 0.219334
+  type: 'test'
+  ...
+# Subtest: pure admission shape refuses wrongEffect
+ok 6 - pure admission shape refuses wrongEffect
+  ---
+  duration_ms: 0.143458
+  type: 'test'
+  ...
+# Subtest: pure admission shape refuses longParentDeadline
+ok 7 - pure admission shape refuses longParentDeadline
+  ---
+  duration_ms: 0.667416
+  type: 'test'
+  ...
+# Subtest: pure admission shape refuses emptyClosure
+ok 8 - pure admission shape refuses emptyClosure
+  ---
+  duration_ms: 0.289542
+  type: 'test'
+  ...
+# Subtest: pure admission shape refuses duplicateSource
+ok 9 - pure admission shape refuses duplicateSource
+  ---
+  duration_ms: 0.351916
+  type: 'test'
+  ...
+# Subtest: pure admission shape refuses parentEscape
+ok 10 - pure admission shape refuses parentEscape
+  ---
+  duration_ms: 1.382833
+  type: 'test'
+  ...
+# Subtest: pure admission shape refuses absoluteSource
+ok 11 - pure admission shape refuses absoluteSource
+  ---
+  duration_ms: 0.365584
+  type: 'test'
+  ...
+# Subtest: pure admission shape refuses environmentDeclaration
+ok 12 - pure admission shape refuses environmentDeclaration
+  ---
+  duration_ms: 0.42725
+  type: 'test'
+  ...
+# Subtest: pure admission shape refuses corruptPin
+ok 13 - pure admission shape refuses corruptPin
+  ---
+  duration_ms: 0.292209
+  type: 'test'
+  ...
+# Subtest: pure admission shape refuses unexpectedField
+ok 14 - pure admission shape refuses unexpectedField
+  ---
+  duration_ms: 0.972625
+  type: 'test'
+  ...
+# Subtest: pure admission shape refuses extraEntryField
+ok 15 - pure admission shape refuses extraEntryField
+  ---
+  duration_ms: 0.238834
+  type: 'test'
+  ...
+# Subtest: all runtime application imports are deferred after builtin admission/input checks
+ok 16 - all runtime application imports are deferred after builtin admission/input checks
+  ---
+  duration_ms: 0.068042
+  type: 'test'
+  ...
+# Subtest: actual combined UP/DOWN constructors have one outer transaction and both immutable payloads
+ok 17 - actual combined UP/DOWN constructors have one outer transaction and both immutable payloads
+  ---
+  duration_ms: 31.752584
+  type: 'test'
+  ...
+# Subtest: prepared refusal matrix has84 real future transactions, no executed native controls
+ok 18 - prepared refusal matrix has84 real future transactions, no executed native controls
+  ---
+  duration_ms: 6.769583
+  type: 'test'
+  ...
+# Subtest: actual pure telemetry reconciler accepts exactly10 attributed reads and retains old complete mirrors
+ok 19 - actual pure telemetry reconciler accepts exactly10 attributed reads and retains old complete mirrors
+  ---
+  duration_ms: 5.692667
+  type: 'test'
+  ...
+# Subtest: actual telemetry predicate refuses changedOld
+ok 20 - actual telemetry predicate refuses changedOld
+  ---
+  duration_ms: 0.748084
+  type: 'test'
+  ...
+# Subtest: actual telemetry predicate refuses wrongActor
+ok 21 - actual telemetry predicate refuses wrongActor
+  ---
+  duration_ms: 0.446334
+  type: 'test'
+  ...
+# Subtest: actual telemetry predicate refuses unattributed
+ok 22 - actual telemetry predicate refuses unattributed
+  ---
+  duration_ms: 0.472917
+  type: 'test'
+  ...
+# Subtest: actual telemetry predicate refuses missingLeaf
+ok 23 - actual telemetry predicate refuses missingLeaf
+  ---
+  duration_ms: 0.710917
+  type: 'test'
+  ...
+1..23
+# tests 23
+# suites 0
+# pass 23
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 270.549708

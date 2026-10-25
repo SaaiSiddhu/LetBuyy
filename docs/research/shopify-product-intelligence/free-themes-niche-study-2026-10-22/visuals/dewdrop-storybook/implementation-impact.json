@@ -1,0 +1,534 @@
+{
+  "status": "read_only_inventory_complete_no_implementation_dispatch",
+  "observedAt": "2026-10-23T04:32:23.966970+00:00",
+  "workspace": "/Volumes/Projects/LetBuyy",
+  "branch": "letbuyy/theme-release-performance-resume",
+  "head": "85aac99043d8dc10469e12cbb810609a3b6f1b0d",
+  "reviewState": {
+    "individualMockupArtifactAndDesign": "passed_by_coordinator_message",
+    "portfolioGate": "pending_not_passed",
+    "implementationStarted": false
+  },
+  "identity": {
+    "presetId": "aura",
+    "slug": "letbuyy-aura",
+    "catalogUuid": "7b669c70-0000-4000-8000-000000000003",
+    "existingNiche": "beauty",
+    "proposedDisplayName": "Dewdrop",
+    "proposedPackageVersion": "2.0.0",
+    "preserve": [
+      "installed documents",
+      "private drafts",
+      "immutable releases",
+      "previous package versions"
+    ]
+  },
+  "existingFiles": [
+    {
+      "path": "packages/commerce-core/src/apparel.ts",
+      "line": 41,
+      "allocation": "coordinator_shared_writer_required",
+      "observed_or_required_action": "ProductMetadataSchema currently validates apparel only; central owner adds care without duplicating the metadata validator.",
+      "observedSha256": "0afb1cf478a8279f3fa709403560b55c70f39d9c58f22c52f4a1e7bb4ac8b786"
+    },
+    {
+      "path": "packages/commerce-core/src/index.ts",
+      "line": 2,
+      "allocation": "coordinator_shared_writer_required",
+      "observed_or_required_action": "Export the care schema/reader and extend ProductModel through the canonical domain owner.",
+      "observedSha256": "56086dcc293402694149d9b3c537039ff7e3bd42bc0b5a33ceb2b1d1d681b984"
+    },
+    {
+      "path": "services/api-gateway/src/lib/public-product-view.ts",
+      "line": 130,
+      "allocation": "coordinator_shared_writer_required",
+      "observed_or_required_action": "Deliberately publish validated care facts alongside apparel; never expose generic private metadata.",
+      "observedSha256": "4989ca6f90bc7d3af54d660fe841f7da46e2d9c7e2fbfd3aa67e514d0562ec5b"
+    },
+    {
+      "path": "services/api-gateway/src/routes/products.ts",
+      "line": 978,
+      "allocation": "coordinator_shared_writer_required",
+      "observed_or_required_action": "Existing create/update endpoints must validate and preserve facts and option mappings within their save lifecycle.",
+      "observedSha256": "2b7c02e074499856a27a7b767702141c44aae3b3ba2e5ad56e2d01e3a5c54176"
+    },
+    {
+      "path": "services/api-gateway/src/routes/storefront.ts",
+      "line": 1130,
+      "allocation": "coordinator_shared_writer_required",
+      "observed_or_required_action": "Canonical product query currently calls apparel-specific discovery; extend once for care filters.",
+      "observedSha256": "36e48fdbbc7a64e47848bc14d6f92bc471ea3c4047b47471f7855a0b9f85b469"
+    },
+    {
+      "path": "services/api-gateway/src/routes/storefront/public-routes.ts",
+      "line": 929,
+      "allocation": "coordinator_shared_writer_required",
+      "observed_or_required_action": "Validate/pass care filters for public and signed-preview list/detail/collection paths.",
+      "observedSha256": "5f1611e958f6710ddcc8bf3c3ea828db549a7cb17f34c6ec94658e6fb6e7924e"
+    },
+    {
+      "path": "packages/typescript/api-client/src/index.ts",
+      "line": 2873,
+      "allocation": "coordinator_shared_writer_required",
+      "observed_or_required_action": "StorefrontProductQuery lacks routine_stage/format/shade; extend the same typed contract.",
+      "observedSha256": "41224133f1b318b5a77575a0742d5a818edc24006e22386b91407eeb0b981894"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/product-service.ts",
+      "line": 195,
+      "allocation": "coordinator_shared_writer_required",
+      "observed_or_required_action": "Map validated care facts into ProductModel and pass typed filter parameters.",
+      "observedSha256": "4120e280ebaa7dde6b971153053de29fdee1f47754eaf03a62a00267bdb57ee3"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/data-binding-engine.ts",
+      "line": 120,
+      "allocation": "coordinator_shared_writer_required",
+      "observed_or_required_action": "Currently parses apparel filters; preserve care query state and server pagination through the same binder.",
+      "observedSha256": "ce2cdc4d6bb618996600ecf9417ca980fa893732ac98060ce223ea4e8158c656"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/composition-engine.tsx",
+      "line": 278,
+      "allocation": "coordinator_shared_writer_required",
+      "observed_or_required_action": "productToLiquidDrop needs an explicit care projection; keep metadata private.",
+      "observedSha256": "bdc509e3f1bc91e8422cb52d893ba56d2912c8de9e84450513f408f87b1e6b86"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/apparel-route-query.ts",
+      "line": 2,
+      "allocation": "coordinator_shared_writer_required",
+      "observed_or_required_action": "Current allowlist drops care keys; shared owner should extend/generalize route query handling once.",
+      "observedSha256": "cfa5e2963e8cd41ae0768a0315681b3ae42f7a374b2b6ce56bcda9cc23741a71"
+    },
+    {
+      "path": "apps/commerce/web/src/app/store/[subdomain]/products/page.tsx",
+      "line": 55,
+      "allocation": "coordinator_shared_writer_required",
+      "observed_or_required_action": "Pass the shared validated route query; no new browsing route.",
+      "observedSha256": "9d5ade3bac9fd9ed2cb9b8d738bae9393d1fc83ad8771570a28cf33ffac192ed"
+    },
+    {
+      "path": "apps/commerce/web/src/app/store/[subdomain]/shop/page.tsx",
+      "line": 51,
+      "allocation": "coordinator_shared_writer_required",
+      "observed_or_required_action": "Pass the same query contract without a parallel shop implementation.",
+      "observedSha256": "0c1aec075ad6b01a335e880721ed4890d6091dcdb89c14503a0260e7586c996c"
+    },
+    {
+      "path": "apps/commerce/web/src/app/store/[subdomain]/collections/[slug]/page.tsx",
+      "line": 69,
+      "allocation": "coordinator_shared_writer_required",
+      "observed_or_required_action": "Keep collection/search/sort/filter state in paging and clear-one links.",
+      "observedSha256": "38a80310f7a6a8a8b28789f0d74176c785592ac735b0fd10a015cf47dfddcaad"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx",
+      "line": 768,
+      "allocation": "coordinator_shared_writer_required",
+      "observed_or_required_action": "Reuse the variant island, real UUID selection/stock and cart. Add reviewed native radio/presentation support if required.",
+      "observedSha256": "2504907f5e4f060969685bcfebe1d850c8db38726b923c9b1e1c3b390f50776c"
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/products/new/page.tsx",
+      "line": 907,
+      "allocation": "coordinator_shared_writer_required",
+      "observed_or_required_action": "Integrate care facts in the current create/edit snapshot, metadata preservation, conflict and retry path.",
+      "observedSha256": "361e52083c5de29a8483d334114d5a462a5a36cb001317c838aae02c3facc580"
+    },
+    {
+      "path": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "line": 43,
+      "allocation": "coordinator_shared_writer_required",
+      "observed_or_required_action": "Coordinator-owned versioned Dewdrop dispatch; keep stable aura identity and current Sense builder.",
+      "observedSha256": "2a735a06458b23db335bf1374496a5be1985fe05ce0c6e0fa7a0768bf321be25"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-presets.ts",
+      "line": 203,
+      "allocation": "coordinator_shared_writer_required",
+      "observed_or_required_action": "Coordinator-owned display name, palette, description and supported default settings.",
+      "observedSha256": "283028890199a34e67863c337ebd0c788c830c60ddaa87854c3bad28f9581e82"
+    },
+    {
+      "path": "packages/theme-engine/src/experience-compositions.ts",
+      "line": 131,
+      "allocation": "coordinator_shared_writer_required",
+      "observed_or_required_action": "Version-aware factual Dewdrop composition; do not mutate saved merchant documents or retain invented default promises.",
+      "observedSha256": "25b73068b7a4fcce5b4bad3768a376e08c7e384e843f707c3cf8f8fb361abc68"
+    },
+    {
+      "path": "packages/theme-engine/src/built-in-section-schemas.ts",
+      "line": null,
+      "allocation": "coordinator_shared_writer_required",
+      "observed_or_required_action": "Single schema authority for bounded care card/routine/detail settings; avoid parallel schema sources.",
+      "observedSha256": "5e44b89d7ebc3d40b82e7d12dfccf399f7a336d39e1a1b04c7deaf4c57486734"
+    },
+    {
+      "path": "packages/theme-engine/src/section-type-map.ts",
+      "line": null,
+      "allocation": "coordinator_shared_writer_required",
+      "observed_or_required_action": "Shared section mapping remains the same owner when approved settings/layout variants are added.",
+      "observedSha256": "b262e6d801be599399f18a53944507ab6886c6d9488784381297f72658331d94"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-bundle.ts",
+      "line": 1537,
+      "allocation": "coordinator_shared_writer_required",
+      "observed_or_required_action": "Reuse the canonical product/gallery/variant/card responsibility; bounded reusable layout contracts belong here if needed.",
+      "observedSha256": "27c6a778e76c190ea25d6dffc940804c9f741488b908f0d960f6285644fc8e25"
+    },
+    {
+      "path": "packages/theme-engine/src/portable-to-liquid.ts",
+      "line": null,
+      "allocation": "coordinator_shared_writer_required",
+      "observed_or_required_action": "Preserve actual schema-to-Liquid settings and renderer contracts for the added layout choices.",
+      "observedSha256": "c981e822ec3f51bd7975e72862a957fc011b14a7f8984cdd0b38f8ba9a27803b"
+    },
+    {
+      "path": "packages/theme-engine/src/index.ts",
+      "line": null,
+      "allocation": "coordinator_shared_writer_required",
+      "observed_or_required_action": "Coordinator-owned public exports only for approved active theme/domain contracts.",
+      "observedSha256": "b8101bfdbf5f9563f7cdbb7c5de0fb0a06828f941b3880ec150ec4fed6011df8"
+    },
+    {
+      "path": "apps/commerce/web/src/app/theme-preview/[slug]/page.tsx",
+      "line": null,
+      "allocation": "coordinator_shared_writer_required",
+      "observed_or_required_action": "Retain existing public catalog preview and signed-private-preview separation.",
+      "observedSha256": "4e29a900bad7795fe310a332eb000e26d9928c61a04a3c5415ba97777dbb90ec"
+    },
+    {
+      "path": "apps/commerce/web/src/app/preview/preview-content.tsx",
+      "line": 371,
+      "allocation": "coordinator_shared_writer_required",
+      "observed_or_required_action": "Currently special-cases Threadline, otherwise shoe fixtures; shared sample dispatch must select care fixtures for aura.",
+      "observedSha256": "79d1ab50703aa3ac2e258b512e035c7cd0a509990e84550c741b9c61891800b3"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-library/ThemeWorkspace.tsx",
+      "line": 141,
+      "allocation": "coordinator_shared_writer_required",
+      "observed_or_required_action": "Display actual version/capability guidance and artifact thumbnail; do not add another library.",
+      "observedSha256": "964845ea2261b2694b35980a6a5962c7ff84b72caffb1da6d153461e8ca6df47"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/ExperiencePicker.tsx",
+      "line": null,
+      "allocation": "coordinator_shared_writer_required",
+      "observed_or_required_action": "Keep current reviewed style/additive/full application and exact selected version.",
+      "observedSha256": "9d78aa5a584813fb03f50c7418e554bb8197ca580d3fc0f0884df0ebcd376e07"
+    },
+    {
+      "path": "scripts/liquid-parity/build-first-party-catalog.mjs",
+      "line": 7,
+      "allocation": "coordinator_shared_writer_required",
+      "observed_or_required_action": "READ ONLY frozen migration-372 generator. Shared new promotion generator/input is a coordinator decision, not an edit of this old output.",
+      "observedSha256": "6234cd40055fe75931336ee47e262da61ccf59ffb780b1dc56ba8b2ffea1f49d"
+    },
+    {
+      "path": "scripts/liquid-parity/build-threadline-catalog.mjs",
+      "line": 51,
+      "allocation": "coordinator_shared_writer_required",
+      "observed_or_required_action": "READ ONLY Threadline 382 reference. Do not rewrite its migrations/generator for Dewdrop.",
+      "observedSha256": "8d1942f3c16059e7d8af880de05e7b501949e99344be025040ef12d8c1c30360"
+    },
+    {
+      "path": "packages/shared-types/src/index.ts",
+      "line": 1362,
+      "allocation": "reuse_and_verify_no_default_edit",
+      "observed_or_required_action": "Canonical Product/Variant/metadata base; no app-local Product DTO.",
+      "observedSha256": "d050c4e49249332f6026fc8fdfabf62021c7659bbbdd4070a944f04d41384362"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/ApparelFactsEditor.tsx",
+      "line": 18,
+      "allocation": "reuse_and_verify_no_default_edit",
+      "observed_or_required_action": "Reference existing form lifecycle and shared UI primitives; keep garment editor focused on apparel.",
+      "observedSha256": "4c1b151de0031c77b6bad1abd905a03c3afcd9f0ce37a62e21817ce5358980ba"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx",
+      "line": null,
+      "allocation": "reuse_and_verify_no_default_edit",
+      "observed_or_required_action": "Existing resource/settings editor; verify actual save/render effects.",
+      "observedSha256": "12727338b7e86814c7cb8d57ad58bc59806483a365e94e369792a51932a0fcfb"
+    },
+    {
+      "path": "packages/theme-engine/src/experience-fonts.ts",
+      "line": 33,
+      "allocation": "reuse_and_verify_no_default_edit",
+      "observed_or_required_action": "Cormorant Garamond/Lato already registered; verify actual loading and script fallback.",
+      "observedSha256": "9bebd089e4468f8c50f6e9b86bafbbb125025dc7fc42770a83584527d65988e4"
+    },
+    {
+      "path": "packages/theme-engine/src/industry-experience-map.ts",
+      "line": 26,
+      "allocation": "reuse_and_verify_no_default_edit",
+      "observed_or_required_action": "Beauty already maps to aura; preserve unknown-industry behavior.",
+      "observedSha256": "e647df5605fc6bac525c6104a0f60e67cfc6b6f0ba6ea6db323e1e795fc404b3"
+    },
+    {
+      "path": "apps/commerce/web/src/components/CatalogPreviewFrame.tsx",
+      "line": null,
+      "allocation": "reuse_and_verify_no_default_edit",
+      "observed_or_required_action": "Actual 1440/834/390 iframe viewports already exist; retain measured inner widths.",
+      "observedSha256": "fd16bc77cfd9aa091babcf342639e8605651995cbe909e25f97d839d0f9de3ff"
+    },
+    {
+      "path": "services/api-gateway/src/execution/theme-execution.adapter.ts",
+      "line": null,
+      "allocation": "reuse_and_verify_no_default_edit",
+      "observed_or_required_action": "Existing install/save/preview/publish/rollback authority; no alternate draft store.",
+      "observedSha256": "13fb51d862f2a7ce90879fe102bcf3bf9cf9a4f351fa305a9158842b73f0beae"
+    },
+    {
+      "path": "services/api-gateway/src/routes/themes.ts",
+      "line": null,
+      "allocation": "reuse_and_verify_no_default_edit",
+      "observed_or_required_action": "Existing theme API and ownership boundary.",
+      "observedSha256": "01ec865cb8d878485dee67c5665df1091b514bd822ddc036d5b99bdbcaf54f8d"
+    },
+    {
+      "path": "services/api-gateway/src/routes/themes/theme-library-routes.ts",
+      "line": null,
+      "allocation": "reuse_and_verify_no_default_edit",
+      "observed_or_required_action": "Existing private library operations and limits.",
+      "observedSha256": "b8fb88e0d9f029bac7b0cfec746b37d5fc5a7e344396acb68e580853f9bcbee2"
+    },
+    {
+      "path": "services/api-gateway/src/lib/theme-release-bundle.ts",
+      "line": null,
+      "allocation": "reuse_and_verify_no_default_edit",
+      "observed_or_required_action": "Immutable captured bundle/release behavior.",
+      "observedSha256": "e7c2023c7b7706fcad832a44c120567ee5bfbf9d21d592b21da742fae4003f59"
+    },
+    {
+      "path": "services/api-gateway/src/routes/storefront/cart-routes.ts",
+      "line": null,
+      "allocation": "reuse_and_verify_no_default_edit",
+      "observed_or_required_action": "Server cart, variant UUID identity, pricing and mutation semantics.",
+      "observedSha256": "2c18fa503468d8642438e4b349078d5a6afc014ae1409f77483b4bf844c3a82d"
+    },
+    {
+      "path": "services/api-gateway/src/routes/storefront/buyer-account-routes.ts",
+      "line": null,
+      "allocation": "reuse_and_verify_no_default_edit",
+      "observed_or_required_action": "Canonical buyer/store relationship and profile owner.",
+      "observedSha256": "f2df7f84fcb4180e42adec63f4db85e0267613e5b85d573a213b403224325e38"
+    },
+    {
+      "path": "services/api-gateway/src/routes/storefront/buyer-order-routes.ts",
+      "line": null,
+      "allocation": "reuse_and_verify_no_default_edit",
+      "observed_or_required_action": "Owned store order authority; preserve cross-buyer denial.",
+      "observedSha256": "0aceb52671a428d2f5eda8036771fa53fa609a61e0c446cc9db0dfbd3a47f546"
+    },
+    {
+      "path": "services/api-gateway/src/routes/storefront/buyer-address-routes.ts",
+      "line": null,
+      "allocation": "reuse_and_verify_no_default_edit",
+      "observed_or_required_action": "Canonical saved address lifecycle and ownership.",
+      "observedSha256": "f97be3f3d69441ab1798ab5cbbd02200ada866b61de1b342faf2730e1b86f838"
+    },
+    {
+      "path": "apps/commerce/web/src/app/checkout-origin/branding.ts",
+      "line": 237,
+      "allocation": "reuse_and_verify_no_default_edit",
+      "observed_or_required_action": "Permitted data-only merchant theme branding; no theme CSS injection or payment authority.",
+      "observedSha256": "df60079eee4264607ebf925b14a583059624cebbbcf2e4111f2222d00e8181bf"
+    },
+    {
+      "path": "apps/platform/identity/src/app/buyer/authorize/authorize-client.tsx",
+      "line": null,
+      "allocation": "reuse_and_verify_no_default_edit",
+      "observed_or_required_action": "Current email/password then explicit Continue; no credential palette fork or invented verification-link screen.",
+      "observedSha256": "2dde0d20974c75a1ef76e5a9dfd4ef3800a95bfb9b5502baa5b77f6d93e4e98e"
+    },
+    {
+      "path": "apps/platform/identity/src/app/api/buyer/register/route.ts",
+      "line": null,
+      "allocation": "reuse_and_verify_no_default_edit",
+      "observed_or_required_action": "Existing session issuance; not a mandatory verification-link dispatch.",
+      "observedSha256": "1c8c3997c1390f1889670f6bb8a983d0405c4d440f242aa7ef53d6325e68c7e6"
+    },
+    {
+      "path": "apps/platform/identity/src/app/globals.css",
+      "line": null,
+      "allocation": "reuse_and_verify_no_default_edit",
+      "observed_or_required_action": "Canonical admin/light identity semantic aliases.",
+      "observedSha256": "5f5da9624cfada3b38a58268a1dcd690a94b437c8e2a6adf6548e4bf5f245e15"
+    },
+    {
+      "path": "packages/typescript/ui/src/tokens.ts",
+      "line": 1236,
+      "allocation": "reuse_and_verify_no_default_edit",
+      "observed_or_required_action": "Canonical identity brand-ink tokens, unchanged by storefront theme.",
+      "observedSha256": "0016d74e707c0173e4e1ff5422e558ebeff3de12b12ba74241774201d46c0918"
+    },
+    {
+      "path": "apps/merchant/mobile/lib/services/theme_service.dart",
+      "line": null,
+      "allocation": "reuse_and_verify_no_default_edit",
+      "observed_or_required_action": "Existing catalog/installation consumer; verify version, thumbnail and relative asset compatibility.",
+      "observedSha256": "e8db30bbfffe4c5be21d4a39915bc1fa968346a4e1a0f0af813082b2033edeee"
+    }
+  ],
+  "proposedPathsNotCreated": [
+    {
+      "path": "packages/commerce-core/src/personal-care.ts",
+      "allocation": "shared_domain_writer",
+      "purpose": "Strict PersonalCareFactsSchema/reader and bounded query contract, using existing metadata and ordinary options."
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/PersonalCareFactsEditor.tsx",
+      "allocation": "shared_product_editor_writer",
+      "purpose": "Care facts within existing product draft/conflict/save lifecycle; no detached theme facts store."
+    },
+    {
+      "path": "packages/theme-engine/src/dewdrop-theme.ts",
+      "allocation": "theme_writer_after_dispatch",
+      "purpose": "Versioned canonical Liquid package builder selecting approved existing/shared section layouts."
+    },
+    {
+      "path": "packages/theme-engine/src/dewdrop-styles.ts",
+      "allocation": "theme_writer_after_dispatch",
+      "purpose": "Approved care presentation through the existing storefront settings and Liquid package style mechanism."
+    },
+    {
+      "path": "packages/theme-engine/test/dewdrop.test.ts",
+      "allocation": "theme_writer_after_dispatch",
+      "purpose": "Actual home/collection/PDP structure, escaping, absence, sections/settings, variants and version preservation."
+    },
+    {
+      "path": "packages/commerce-core/test/personal-care.test.ts",
+      "allocation": "shared_domain_writer",
+      "purpose": "Strict fact limits, unknown keys, Unicode, missing facts and option presentation validation."
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/personal-care-public-facts.test.ts",
+      "allocation": "shared_gateway_writer",
+      "purpose": "Public projection, denied private metadata, invalid/missing care facts and query contracts."
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/dewdrop-lifecycle.postgres.test.ts",
+      "allocation": "acceptance_writer_after_dispatch",
+      "purpose": "Owned worker/PG fixture and lifecycle/tenant/query/rollback evidence."
+    },
+    {
+      "path": "apps/commerce/web/src/lib/demo/dewdrop-demo.ts",
+      "allocation": "theme_or_shared_preview_writer",
+      "purpose": "Care fixture data only through the existing common sample preview dispatch."
+    },
+    {
+      "path": "apps/commerce/web/public/theme-assets/dewdrop/v2/",
+      "allocation": "asset_writer_after_dispatch",
+      "purpose": "Optimized originals from the frozen four source assets; no fake merchant content."
+    },
+    {
+      "path": "apps/commerce/web/public/theme-previews/dewdrop-2.0.0.webp",
+      "allocation": "asset_writer_after_dispatch",
+      "purpose": "Preview derived from the actual versioned artifact."
+    },
+    {
+      "path": "apps/merchant/web/public/theme-previews/dewdrop-2.0.0.webp",
+      "allocation": "asset_writer_after_dispatch",
+      "purpose": "Matching thumbnail for the existing merchant catalog consumer."
+    }
+  ],
+  "migration": {
+    "observedMaximumFilenamePrefix": 383,
+    "allocation": "coordinator only at dispatch; re-read actual maximum then",
+    "requiredIfSqlChanges": [
+      "forward migration",
+      "paired rollback",
+      "existing query compatibility",
+      "role/GUC positive and negative controls"
+    ],
+    "catalogPromotion": "Versioned reversible public aura catalog update; never overwrite installed artifacts",
+    "frozenGenerators": [
+      "scripts/liquid-parity/build-first-party-catalog.mjs",
+      "scripts/liquid-parity/build-threadline-catalog.mjs"
+    ]
+  },
+  "minimalContractSummary": {
+    "facts": "Strict namespaced personalCare metadata: schemaVersion, optional routine stage/format/net quantity/ingredients/directions/warnings and option presentation tied to canonical Shade values. Field limits and naming are proposals in implementation-impact.md.",
+    "publicPipeline": [
+      "ProductMetadataSchema",
+      "toPublicProduct",
+      "ProductModel",
+      "mapSupabaseToProduct",
+      "productToLiquidDrop"
+    ],
+    "queryKeysProposed": [
+      "routine_stage",
+      "format",
+      "shade"
+    ],
+    "queryRules": [
+      "predicates before count/pagination",
+      "same real available variant for Shade",
+      "names/UUIDs identify selection; hex never does",
+      "clear-one preserves other query keys and resets page",
+      "no ingredient inference or health classification"
+    ],
+    "existingPrimitives": "Canonical options/variants/cart/checkout/buyer accounts are reused, with target integration still required."
+  },
+  "existingTestsToReuseOrExtend": [
+    "packages/commerce-core/test/apparel.test.ts",
+    "packages/theme-engine/test/threadline.test.ts",
+    "packages/theme-engine/test/theme-presets.test.ts",
+    "services/api-gateway/src/__tests__/threadline-public-facts.test.ts",
+    "services/api-gateway/src/__tests__/storefront-product-detail.test.ts",
+    "services/api-gateway/src/__tests__/owned-db/threadline-lifecycle.postgres.test.ts",
+    "services/api-gateway/src/__tests__/owned-db/theme-catalog-install.postgres.test.ts",
+    "services/api-gateway/src/__tests__/owned-db/authenticated-checkout.postgres.test.ts",
+    "services/api-gateway/src/__tests__/owned-db/hosted-checkout-buyer-ownership.postgres.test.ts",
+    "services/api-gateway/src/__tests__/owned-db/storefront-buyer-data.postgres.test.ts",
+    "services/api-gateway/src/__tests__/owned-db/storefront-buyer-orders.postgres.test.ts",
+    "services/api-gateway/src/__tests__/owned-db/storefront-customer-address-atomicity.postgres.test.ts",
+    "services/api-gateway/src/__tests__/owned-db/identity-buyer-browser.postgres.test.ts",
+    "apps/commerce/web/src/app/checkout-origin/branding.test.ts",
+    "apps/commerce/web/src/lib/theme-engine/liquid-cart-island.test.ts",
+    "apps/commerce/web/tests/storefront-static-assets.test.ts",
+    "apps/merchant/mobile/test/theme_catalog_assets_test.dart"
+  ],
+  "verificationPlan": {
+    "executedNow": "Read-only source/path/hash checks only; no implementation tests claimed.",
+    "commandsAfterDispatch": [
+      "pnpm --filter @letbuyy/theme-engine test",
+      "pnpm --filter @letbuyy/theme-engine typecheck",
+      "node --import tsx --test packages/commerce-core/test/personal-care.test.ts (proposed file after creation)",
+      "pnpm --filter @letbuyy/api-gateway run test:unit",
+      "node scripts/governance/run-executable-suites.mjs --suite services/api-gateway/src/__tests__/owned-db/dewdrop-lifecycle.postgres.test.ts --jobs 1 (proposed suite after creation)",
+      "pnpm --filter @letbuyy/customer-web test",
+      "pnpm --filter @letbuyy/customer-web typecheck",
+      "pnpm --filter @letbuyy/merchant-web test",
+      "pnpm --filter @letbuyy/merchant-web typecheck"
+    ],
+    "limits": [
+      "Inspect current package names/commands again at dispatch.",
+      "Commerce-core has no package test script at this snapshot.",
+      "Owned DB runner only; never use restored/shared merchant databases.",
+      "Governance cleanup in the established isolated snapshot, never the dirty shared checkout.",
+      "No overlapping test totals summed."
+    ]
+  },
+  "outOfScope": [
+    "medical claims or diagnosis",
+    "health recommendations/profiling",
+    "subscriptions",
+    "new auth/cart/checkout/order owner",
+    "microservices/reserved runtimes",
+    "production deployment",
+    "new migration allocation by this chat"
+  ],
+  "requiredAssignments": [
+    "shared product metadata/public projection/query writer",
+    "shared catalog/preview/section schema writer",
+    "Dewdrop package/assets writer",
+    "owned acceptance fixture/resource lease"
+  ],
+  "missingExistingPaths": []
+}

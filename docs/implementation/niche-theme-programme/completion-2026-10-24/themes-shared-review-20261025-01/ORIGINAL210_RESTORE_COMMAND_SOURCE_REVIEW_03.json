@@ -1,0 +1,39 @@
+{
+  "recordedAt": "2026-10-25T05:42:24.362132+00:00",
+  "status": "ACCEPT_EXACT_CORRECTED_RESTORE02_COMMAND_FOR_NEW_HUMAN_PERMISSION_NOT_EXECUTION_AUTHORITY",
+  "command": {
+    "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/original210-recovery-candidate02/RESTORE_REHEARSAL_COMMAND02.json",
+    "sha256": "5ad4cfa97c47c6c3e81358f910f4e12c141061e93ea6f857bf383e3e7f6e3585"
+  },
+  "sourceReview": {
+    "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/ORIGINAL210_RECOVERY_CANDIDATE_SOURCE_REVIEW_02.json",
+    "sha256": "e6803aa1f9d3a1ee60447e8f82aeb5d7e1a599b342ea2c63b4088286db5ff197"
+  },
+  "sourceHandoff": {
+    "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/original210-recovery-candidate02/HANDOFF.json",
+    "sha256": "2198dfab3dda68408f0e6f0a5fd6d606a1dd71ff845cf54430b812e9c36a650b"
+  },
+  "monitor": {
+    "path": "/private/tmp/letbuyy-original210-restore-monitor02.py",
+    "sha256": "951f414dbf5151574dfb4107d0ca758aac2bb5a4014acdb1e1ae2c53eb919e80",
+    "sourceReview": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/ORIGINAL210_RESTORE_MONITOR_PATH_REVIEW_04.json",
+    "sourceReviewSha256": "d3ef666fb6ebc62f969c853505a2d6770933e9047fffab6ebca1f6b50c749728"
+  },
+  "cliPreflight": {
+    "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/original210-recovery-candidate02/SELECTED_CLI_PREFLIGHT02.json",
+    "sha256": "f2f81615b3170467d7fae7d2430ea4a8bbc4c22a7800bf742f7e2cec41e92073"
+  },
+  "capsuleReferenceOnly": {
+    "path": "/Volumes/Projects/LetBuyy/.letbuyy-private/runtime07/20261025-recovery-capsule-final02.json",
+    "sha256": "1d36a4015655c513a2b8caf28a4c5ac8a02291bfa6286c16a3f0a7b0ee2f3e87"
+  },
+  "independentBindingChecks": "Exactproposalargv retained; newRoot02/output02/capsule/source/monitor/review nonsecretfiles physicallybound/current, twofixedmanualoptins, oneexplicitgatewaymanualsuite/jobs1/no-reap/prepared2/rehearsal/600s/maxattempt1/noexistingattemptmarker. No oldsource/approvalreceipt binding silentlyreused.",
+  "allowedEffectProposal": "OneNEWprotectedemptyPG/network/volume+PostgREST/localRESTproxy, sameoriginalverifiedarchive/no322replay/newUP/reseed. SixactualDBsubtests+wrapper/fullrow+schema/role/sequence/orderwitness andverifieddurablecheckpointbeforenewcopycleanup. No originalorfailedb762write/adopt/reap, no realclientbuild/stage/serve/cutover/keygen/browser/provider/publiccallback.",
+  "sourceControls": "Defaultpublicpreserved, diagnosticprimary/completedTAPaccounting repaired, stagecleanupcodecoherentbutnotexecutedbyrehearsal. Prior20bootstrap+17stage arecontrolledfunction/sourcechecks, notactualrestoreproof.",
+  "monitorControls": "Exact951fnewpathmonitor matchesacceptedaa57behavior except2paths; earlier8behaviorproofreused and4newbindingfakespassed. Reviewtools ran hostPython/Nodecontrolprocesses, zeroapp/Native/Docker/DB resource actions.",
+  "cleanupClarification": "Unsafecheckpointfailure/death retainsnewprotectedresources. Testfailurewithsuccessfuldurableverifiedsafetycheckpoint cancleanonlynewcopypercanonicalrunner; actualreportmusttellwhich. Oldb762copyandoriginaldataalwaysretained.",
+  "requiredNewAuthority": "Approval04three+05oneconsumed; RootmustobtainNEWactualdirecthumanapprovalboundtoexact5ad4command+951fmonitor+thisreview/maxattempt1/whole600/expirybeforePopen. Thisreview grants no retry; previousgoal/autocontinuation isnotpermission.",
+  "freeze": "Keepexactcommandbytes unchangedafterthisreview. Approvalreceiptmayreferencecommand/reviewdigests separately; do not addcircularreviewfields intoalreadyreviewedcommand.",
+  "actualExecution": "NOT_RUN_NOT_GRANTED",
+  "fullThemeCertificates": 0
+}

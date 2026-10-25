@@ -1,0 +1,411 @@
+{
+  "schemaVersion": 2,
+  "recordedAt": "2026-10-24T11:35:21.554637+00:00",
+  "classification": "REVIEWABLE_CANONICAL_PAYMENT_RUNTIME_BINDING_AND_INGRESS_PROPOSAL_ONLY_NOT_EXECUTED",
+  "owner": "01a164ba-e017-7b90-9053-efc5357459a6",
+  "allocation": {
+    "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-resumed-owner-preparation-20261024-02.json",
+    "sha256": "291bf50ea129cb116182ebb20afc6e62a3d0f98afd1d6ad60881a36257bf2a6b"
+  },
+  "humanResume": {
+    "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/HUMAN_RESUME_20261024.json",
+    "sha256": "e47dbfde8b43ed5a49a5da8b10c84c1a3e252b23cbc24ec099640ec3e428d6f5"
+  },
+  "sourceInputs": [
+    {
+      "path": "/Volumes/Projects/LetBuyy/services/api-gateway/src/routes/checkout.ts",
+      "sha256": "d4600bb711dff02d00e3b77587a0b5d2e9c2020f22dcf065ad673171859aad9c"
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/services/api-gateway/src/lib/hosted-checkout-session.ts",
+      "sha256": "23d489f61d762497c1ecdbf445691c140fa698947161b17426c11bf2b1ae753b"
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/services/api-gateway/src/lib/provider-payment-verification.ts",
+      "sha256": "d8fe69118fd17f3a8710a222d57e7505d6af1c38b70b26f0a91d3e4d263a01a7"
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/services/api-gateway/src/lib/payment-route-support.ts",
+      "sha256": "c15154d48272cd712da5a420b83944192e13da383749a745dbace1078eebb268"
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/services/api-gateway/src/execution/payment-execution.adapter.ts",
+      "sha256": "39814aaec72ea747b732896b5a59587698ee6e5e2a4652abbda56268a48a82eb"
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/services/api-gateway/src/routes/storefront/internal-payment-routes.ts",
+      "sha256": "db60f66187b1ecb909a2a250289d658dbf66125d83d55a058e311e1d4266f295"
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/services/api-gateway/src/index.ts",
+      "sha256": "2e09544758421094c564d6629ef89b2abed4210b7a4a2f0d7743109521debb19"
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/services/api-gateway/wrangler.toml",
+      "sha256": "f18571bf3869a1b673a6376c25295a5dcd152f7dbf7ca0a9374a67c288921f04"
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/services/webhook-service/src/index.ts",
+      "sha256": "e6f64bfcbfba897aa59600f04e148e35488ee8da8f9b4d394230b7677f9449d5"
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/services/webhook-service/src/gateway-order-transitions.ts",
+      "sha256": "f688022f3978de2e2cee5acfe9e1659975348ada31570d6388d9ee24d053d9f6"
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/services/webhook-service/wrangler.toml",
+      "sha256": "ac7207ecaa9369d526dff0aec0ea984aea4d51cf0e59baa03fe524530d97ed27"
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/packages/infrastructure/razorpay-adapter/index.ts",
+      "sha256": "74d056c4f5ebfb57ee9de265ec380b85ace4d01d2680eec2c8462782fee2d2ff"
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/apps/commerce/web/src/app/store/[subdomain]/checkout/checkout-client.tsx",
+      "sha256": "4f32a47ef71ae9e51a4df644c957d6f1d53bffd217352546f7c57772abe6573b"
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/apps/commerce/web/src/app/checkout-origin/checkout/page.tsx",
+      "sha256": "f2ef023361a35610902db6e8671e9a115091c33c725357166a675dfacc7281cc"
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/apps/commerce/web/next.config.ts",
+      "sha256": "7dfdff73080fd82a194cfe7d516f8e765e38948726b4849bbe42187601dd0ced"
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/packages/checkout-core/src/index.ts",
+      "sha256": "2822a721bafd176241deaf274db2fdb0ab40fb687e738842f9ddd80912391560"
+    }
+  ],
+  "existingMain08Handoff": {
+    "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/main-integration-08/MAIN_SOURCE_HANDOFF08.json",
+    "sha256": "4155032c028be5be2ea422e3dc338801ce7745883c81b71f140caa5274ad9af8"
+  },
+  "acceptedProviderAuthentication": {
+    "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/razorpay-test-credential-preflight-network-20261024.json",
+    "sha256": "b90875dd1800d9f7ca68a4de69b4fc9ab2d3288f81a32a0bc7369d366ed283c8"
+  },
+  "authAccounting": "Existing read-only official API GET200 accepted; not repeated. Does not establish runtime binding, payment, webhook or theme certification.",
+  "currentStatus": {
+    "credentialAuthentication": "VERIFIED_HTTP200_BY_REQUESTING_CHAT",
+    "credentialReadHere": false,
+    "providerCallsHere": 0,
+    "runtimeBound": false,
+    "publicReceiverAllocated": false,
+    "webhookSecretBound": false,
+    "actualProviderPayment": false,
+    "all23MadeYours": "NOT_RUN",
+    "allTenCertified": false,
+    "production": "NOT_REQUESTED"
+  },
+  "canonicalTopology": {
+    "gatewayRoot": "services/api-gateway",
+    "receiverRoot": "services/webhook-service",
+    "buyerRoot": "apps/commerce/web",
+    "adapter": "@letbuyy/infrastructure/razorpay-adapter",
+    "moneyAuthority": "Existing PaymentExecutionAdapter/canonical ledger and order writer in api-gateway; receiver invokes existing internal gateway transitions; no receiver-owned order/ledger writer",
+    "newRuntimeRoots": [],
+    "scope": "Owned isolated verification instances of existing canonical roots only; no new payment service, provider adapter, auth system or production route"
+  },
+  "exactSourceSeams": [
+    {
+      "path": "services/api-gateway/src/routes/checkout.ts",
+      "lines": [
+        34,
+        829,
+        842,
+        929,
+        1070,
+        1074,
+        1102,
+        1264,
+        1310,
+        1319
+      ],
+      "contract": "Hosted signed buyer/cart continuity, sandbox-only payment-intent guard; current server order and exactINR amount; real createIntent/fetchPayment/searchByReceipt only when HOSTED_RAZORPAY_TEST_ADAPTER absent; server signature and stored provider order/payment/amount/currency binding; uncertain setup stays reconciliation-required"
+    },
+    {
+      "path": "packages/infrastructure/razorpay-adapter/index.ts",
+      "lines": [
+        1,
+        122,
+        141,
+        333,
+        342,
+        475
+      ],
+      "contract": "Official api.razorpay.com, server credentials; existing createIntent and webhookVerify adapter; no replacement adapter"
+    },
+    {
+      "path": "services/webhook-service/src/index.ts",
+      "lines": [
+        74,
+        98,
+        110,
+        131,
+        285,
+        352,
+        374,
+        503,
+        727,
+        738,
+        788
+      ],
+      "contract": "POST/razorpay reads raw body; dual HMAC/provider signature verification; payment_webhook_events durable event claim; terminal-only duplicate acknowledgement, failed/stale reclaim, in-progress409; canonical order lookup and gateway callback; API keys needed for order-note fallback"
+    },
+    {
+      "path": "services/webhook-service/src/gateway-order-transitions.ts",
+      "lines": [
+        25,
+        30,
+        34,
+        38,
+        59,
+        70,
+        80,
+        93
+      ],
+      "contract": "API_GATEWAY_SERVICE+matching INTERNAL_API_SECRET required; /v1/storefront/internal/payments/confirm/failure/event; exact owned gateway, never production fallback"
+    },
+    {
+      "path": "services/api-gateway/src/routes/storefront/internal-payment-routes.ts",
+      "lines": [
+        179,
+        192,
+        204
+      ],
+      "contract": "Existing internal-secret authorization and canonical capture outcome; unfulfillable capture is not announced as a fulfillable paid order"
+    },
+    {
+      "path": "apps/commerce/web/src/app/store/[subdomain]/checkout/checkout-client.tsx",
+      "lines": [
+        679,
+        698,
+        993
+      ],
+      "contract": "Hosted normal browser checkout loads official checkout.js; public KeyID/providerorder supplied by acknowledged server intent; signature response sent to same canonical checkoutconfirm. Never supply APIsecret or webhooksecret to client."
+    }
+  ],
+  "runtimeTargets": {
+    "gateway": {
+      "root": "services/api-gateway",
+      "exactRunId": null,
+      "workerOrLocalHandle": null,
+      "compiledDigest": null,
+      "status": "ALLOCATOR_MUST_ADMIT_FRESH_ISOLATED_INSTANCE"
+    },
+    "receiver": {
+      "root": "services/webhook-service",
+      "exactRunId": null,
+      "workerOrLocalHandle": null,
+      "compiledDigest": null,
+      "status": "ALLOCATOR_MUST_ADMIT_FRESH_ISOLATED_INSTANCE"
+    },
+    "database": {
+      "identity": null,
+      "postgrestOrigin": null,
+      "schemaDigest": null,
+      "status": "FRESH_OWNED_CANONICAL_SCHEMA_REQUIRED_NO_EXISTING_DB_ADOPTION",
+      "sameDbForGatewayAndReceiver": true,
+      "reachability": "Both runtimes must reach the exact same owned PostgREST endpoint. A public Worker cannot reach a loopback-only Docker PostgREST endpoint; a Cloudflare service binding is not a DB bridge. Prove this before exposure."
+    },
+    "buyerCheckout": {
+      "browserController": "Theme Editor",
+      "freshNormalBrowserHttps": false,
+      "compiledSourceIdentityRequired": true,
+      "identityCallbackAndCspAdmissionRequired": true
+    }
+  },
+  "publicIngress": {
+    "preferredReviewPath": "Allocator designates a fresh isolated slot of the existing canonical webhook-service and gateway, exact owned DB/PostgREST/service bindings and an owned public HTTPS custom domain. Select only after independent target/scope review; no default/staging/production deployment performed.",
+    "sourceDeclaredCandidates": [
+      {
+        "url": "https://webhooks-staging.letbuyy.com/razorpay",
+        "configuredWorker": "letbuyy-webhook-staging",
+        "configuredGateway": "letbuyy-api-staging",
+        "status": "CONFIG_DECLARED_ONLY_OWNERSHIP_DNS_TLS_PROVIDER_ACCEPTANCE_DB_AND_TRAFFIC_UNVERIFIED"
+      },
+      {
+        "url": "https://webhooks.staging.letbuyy.com/razorpay",
+        "configuredWorker": "letbuyy-webhook-staging",
+        "status": "SECOND_SOURCE_DECLARED_ALIAS_NOT_VERIFIED"
+      }
+    ],
+    "admittedPublicUrl": null,
+    "doNotUse": "Neither declared staging alias may be repointed or have its existing secrets/DB altered merely because it is in wrangler.toml. Production webhooks.letbuyy.com and existing persistent Marketplace/local apps are excluded. No localhost/private URL or invented hostname can be placed in Dashboard.",
+    "localAlternative": "If allocator keeps the coherent fixture local, first supply an explicitly approved owned public HTTPS ingress that terminates directly at the existing admitted webhook-service and preserves raw body/headers; gateway service binding and owned local DB stay private. No tunnel, DNS, newproxyWorker or public exposure has been provisioned or selected by this proposal. Provider Dashboard must accept the actual hostname; do not assume an unlisted tunnel works.",
+    "surface": "Exact POST/razorpay receiver only. Public transport must not forward arbitrary /webhook-deliveries/dispatch or internal gateway endpoints. If a full canonical receiver is exposed, its internal dispatch secret remains mandatory; qualify that denial. No human login/CloudflareAccess challenge may intercept provider POST.",
+    "requiredProof": [
+      "Actual allocator ownership/runId and expiry",
+      "PublicDNS and normal verifiedTLS to exactURL",
+      "POST body and x-razorpay-signature/event-id preserved without parse/re-encode",
+      "Razorpay TEST Dashboard accepts exactURL and selectedevents",
+      "Delivery belongs to supplied Test account and isolated runtime/db; no broad existing webhook modification"
+    ]
+  },
+  "bindingsContract": {
+    "gateway": {
+      "RAZORPAY_KEY_ID": "Protected injection from the one explicitly authorized CSV; existing receipt fingerprint must match",
+      "RAZORPAY_KEY_SECRET": "Protected server-only APIsecret from same pair",
+      "LETBUYY_RAZORPAY_MODE": "sandbox",
+      "LETBUYY_PAYMENT_MODE": "sandbox",
+      "ENVIRONMENT": "Nonproduction isolated runtime; pin exact classifier inputs, not only body.mode",
+      "HOSTED_RAZORPAY_TEST_ADAPTER": "MUST_BE_ABSENT_NOT_A_FAKE_OR_STUB",
+      "SUPABASE_URL": "Exact fresh owned PostgREST endpoint",
+      "SUPABASE_SERVICE_ROLE_KEY": "Exact owned DB role credential from allocator through protected channel",
+      "INTERNAL_API_SECRET": "Fresh isolated shared gateway/receiver secret, not production or ambient secret",
+      "CHECKOUT_ORIGIN": "Exact admitted normal browser trusted checkoutorigin",
+      "CHECKOUT_SIGNING_SECRET": "Fresh isolated gateway/BFF matching signingsecret via existing lifecycleowner",
+      "identity/CORS/CSP": "Existing canonical identity issuer/audience/store-scoped callbacks and buyerBFF boundaries for exactorigins; qualify actualcompiled checkout.js/frame/connect permission"
+    },
+    "receiver": {
+      "RAZORPAY_WEBHOOK_SECRET": "Separate strong TEST webhook secret, same exactvalue in owned Test Dashboard webhook and admitted receiver; not theAPIsecret",
+      "RAZORPAY_KEY_ID": "Same Test API account pair for canonical order-notes fallback",
+      "RAZORPAY_KEY_SECRET": "Same protected TestAPIsecret; no unrelated credentials",
+      "SUPABASE_URL": "Same exact owned isolated DB/PostgREST endpoint as gateway",
+      "SUPABASE_SERVICE_ROLE_KEY": "Owned matching role credential; service access only on receiver",
+      "API_GATEWAY_SERVICE": "Bound exclusively to admitted isolated gateway identity, never default/staging production fallback",
+      "INTERNAL_API_SECRET": "Exactsame isolated gateway secret",
+      "ENVIRONMENT": "Exact nonproduction isolatedenvironment"
+    },
+    "inheritance": "Generate an allowlisted per-run binding object from declared sources; do not inherit ambient process.env, production Wrangler servicebindings, crons or unknown secrets. Record only binding names/presence/account fingerprint/runtime digests. Existing vars are declarations, not proof of realbindings."
+  },
+  "protectedInjectionDesign": {
+    "credentialSource": "/Users/saai_mithra/Downloads/rzp-key.csv",
+    "readPermission": "NOT_EXERCISED_IN_PREPARATION. Only after allocator admits exact concrete runtime and explicitly authorizes this single role to bind it.",
+    "steps": [
+      "Read only designated CSV in a bounded owner process; validate one complete pair and Test prefix; compare nonsecret KeyID fingerprint to existing authreceipt. Do not enumerate directories, envfiles or otheraccounts.",
+      "Keep values in memory and pass directly into admitted runtime bindings or an approved encrypted Workers secret mechanism. Spawn owned local process with shell:false and an explicit allowlisted environment; no secret values in command arguments, echo, stdout, stderr, generatedconfig, snapshots or evidence. Do not copytheCSV or create.env/dev.vars/secretsjson.",
+      "For a remote canonical Worker, owner must choose and admit the exact protected secret-upload mechanism and target before invocation. Prefer protectedstdin/memory-to-API; no shell interpolation or secretsfile. Workers ordinary secretput can deploy immediately; secret configuration/version activation must remain a separately reviewed action with known rollback/version, not an assumed read-onlysetup.",
+      "Generate/provision the independent webhooksecret only in the protected runtime/Dashboard channel after setup admission; keep its reference/presence receipt separate from APIpair authentication. Preserve secret across pending providerretries; do not rotate midcohort.",
+      "Frontend may receive the expected public Razorpay KeyID as required by StandardCheckout. Redact it in exported HAR/logs/screenshots as requested; neither APIsecret nor webhooksecret ever reaches browser/Nextpublicvars.",
+      "Emit only runidentity, binding-name presence, adapter-path proof, Testaccountalias/fingerprint and runtimehashes; never serialize effective bindings. Disable/redact runtime diagnostic dumps that could include env/CSV/provider payloads."
+    ]
+  },
+  "webhookSetupProposal": {
+    "mode": "TEST_ONLY_SAME_ACCOUNT_AS_AUTH200",
+    "dashboardAction": "After exact publicURL admission: Accounts & Settings > Webhooks > Add New Webhook; create one owned scoped TEST webhook rather than modify unrelated existing entries",
+    "url": null,
+    "webhookSecretReference": null,
+    "alertEmail": "REQUIRED_OWNED_ADDRESS_NOT_YET_ALLOCATED",
+    "requiredPaymentEvents": [
+      "payment.authorized",
+      "payment.captured",
+      "payment.failed"
+    ],
+    "refundEventsIfAdversarialRefundScopeAdmitted": [
+      "refund.created",
+      "refund.processed",
+      "refund.failed"
+    ],
+    "excluded": "No subscriptions/payouts/live/Route activation from this checkout scope; preserve retired-provider wiring untouched",
+    "acceptance": "Actual Dashboard savedwebhook identity+TESTmode, matching secretbinding, actual serverdelivery and exact event-ID claim/transition evidence; a manually fabricated signedpayload is only a negative/unitcontrol, not providerdelivery."
+  },
+  "phasedPlan": [
+    {
+      "phase": "A concrete admission",
+      "action": "Allocator fills exact fresh source/schema/runtime/DB/origins/domain/Dashboardactor/secret references and gives distinct native/build/runtime/exposure/provider/browser scopes. Preserve original23/capabilitymatrix.",
+      "exit": "No nulltarget/account/route/DB ambiguity; independentreview approves exact runnablepacket."
+    },
+    {
+      "phase": "B build and protected bind",
+      "action": "One allocated build lane compiles realgateway+webhook+buyer from explicit source; source hashes validated immediately. Qualify realadapter and absenceofstub in actualruntime; bindTestpair/secret as above only afteradmission.",
+      "exit": "Runtime/compiledcode/DBidentity and allowedbindingpresence recorded; no production resources touched."
+    },
+    {
+      "phase": "C ingress and session admission",
+      "action": "Qualify publicHTTPS receiver and isolatedDBreachability; Editor qualifies normal browser HTTPS/identity/CSP and actual canonicalcheckoutform; configure ownedTestwebhook.",
+      "exit": "Actual receiver acceptedbyprovider, callback origins/currentcompiledbuyer admitted, expected guarddenials observed."
+    },
+    {
+      "phase": "D shared adversarial cohort",
+      "action": "Once on admitted candidate: invalid/missing/alteredrawsignature no businesschange; duplicate/in-progress/failedreclaim exactevent behavior; callback-vs-webhook race and out-of-order events; wrongbuyer/site/providerorder/amount/currency/replay rejection; server/provider uncertainoutcome reconciliation. Fresh native scope required, no unchanged08/15rerun.",
+      "exit": "RealDBeffects, paymentrows, ledgerbalance, reservation/outbox/idempotency conservation and cleanup/retention evidenced; failuresremainopen."
+    },
+    {
+      "phase": "E per-theme real purchases",
+      "action": "Single Editor queue performs actual normalbrowser TestMode purchase for each of10themes, with same-source sharedproof linked explicitly. MadeYours retains all23 and configurededit/facts/Unicode/history requirements.",
+      "exit": "For eachtheme actual providerorder/payment capturedstatus + matched localorder/payment/amountcurrency, buyermerchant immutablehistory, exactlyonce inventory/ledger/outbox and webhookreceipt; no COD/mock substitution."
+    },
+    {
+      "phase": "F safe close",
+      "action": "Reconcile every original economicintent/event before stop; disable only ownedTestwebhook/newentry when its callbacks are fullyaccounted; stop only ownedephemeralresources under allocatorreceipt. Preserve committed providerreferences and DB/evidence until agreedretention; do not use rollbacktoerase uncertaineffects.",
+      "exit": "No unaccounted payment/reservation/events; unrelatedapps/data preserved; independentacceptance required beforecertification."
+    }
+  ],
+  "exactMissingDecisions": [
+    {
+      "id": "PAY02-D1",
+      "owner": "Themes/lifecycleowner",
+      "decision": "Which fresh isolated gateway+webhook+sameDB/PostgREST run is admitted, and which exactsource/schema/browsercandidate?",
+      "blocks": "Any bind/start/nativeorprovideroperation"
+    },
+    {
+      "id": "PAY02-D2",
+      "owner": "Themes/ownedCloudflarehostnameowner",
+      "decision": "Allocate exact publicHTTPSreceiver origin and transport; prove ownership/no existingtraffic or data adoption. For remoteWorker prove same ownedPostgRESTreachability; for localfixture allocate approved raw-preserving ingress.",
+      "blocks": "Ingress/providercallbacksetup"
+    },
+    {
+      "id": "PAY02-D3",
+      "owner": "AuthorizedTestDashboardoperator",
+      "decision": "Actual Testaccount Dashboard context, one ownedwebhook, owned alertemail and matching separate secretchannel/reference.",
+      "blocks": "Real webhookdeliveryacceptance"
+    },
+    {
+      "id": "PAY02-D4",
+      "owner": "Themes",
+      "decision": "Exact protected binding implementation/target and bounded effect permission after review; no secretread merely fromthisplan.",
+      "blocks": "Reading designatedCSV/binding anysecret"
+    },
+    {
+      "id": "PAY02-D5",
+      "owner": "Theme Editor/independentreviewer",
+      "decision": "Fresh normal-browser HTTPS/currentcompiledsource/controllerlease and finite native/provideradversarialscope before per-theme purchases.",
+      "blocks": "All23 and actualTestMode themeacceptance"
+    }
+  ],
+  "recovery": {
+    "beforeProviderEffect": "Release only ownedadmission; no globalrestart/reset or DBadoption. Config/secretwrite uncertainack requires target/versionreadback before retry.",
+    "afterProviderOrderCreated": "Retain originalcart/checkout/localorder/providerreceipt/key/body. Reconcile existingcanonical receipt-search/providerpayment status; do not issue a new economicintent because transporttimedout.",
+    "afterCapturedPayment": "Code rollback cannot undo payment. Preserve originalproviderreferences and canonicalreceipt; use existingcaptured-but-unfulfillable/suspense/compensation policy under separatelyadmitted scope, never blindneworder/refund.",
+    "webhook": "Terminalprocessed/ignored only duplicateack; failed/stale reclaim and in-progressretry semantics fromexistingreceiver. Preserve matchingsecret for retries; no rotationwhileambiguous.",
+    "teardown": "Only exact ownedresources and Testwebhook may be disabled after boundedeffects reconciled; no persistentMarketplace/userapps/data/oldfixtures touched."
+  },
+  "evidenceRequired": {
+    "runtime": "Exact source/schema/module digests and targethandles, realadapter proof, credentialfingerprint and allowed bindingnames only",
+    "ingress": "Actual DNS/TLS/route, exactprovideracceptedURL, TESTwebhook identity, signature/delivery/event IDs withoutsecret/bearerpayload",
+    "money": "Bounded before/after ownedorder/payment/inventory/reservation/idempotency/ledger/outbox snapshots; expectedvsactual deltas and exactfailures, sumdebit=credit",
+    "browser": "Editor screenshots/network/status tiedto currentcompiledcandidate; providerKeyID/secrets/cookies/cartcapabilities redacted in export",
+    "certification": "Auth200 remains authonly; sharedcohort doesnot replace each actualtheme TestModepurchase or independentfullthemeacceptance"
+  },
+  "officialSourcesChecked": [
+    {
+      "url": "https://razorpay.com/docs/payments/payment-gateway/web-integration/standard/integration-steps/",
+      "supports": "Server-createdorder, canonical signatureverification and actualTestpayment integration."
+    },
+    {
+      "url": "https://razorpay.com/docs/webhooks/setup-edit-payments/",
+      "supports": "PublicURL, Dashboardsetup, separate webhooksecret and alertemail/eventselection."
+    },
+    {
+      "url": "https://razorpay.com/docs/webhooks/validate-test/",
+      "supports": "Rawbody HMAC, event-id duplicatehandling, out-of-order delivery and restrictedlocalhost/tunneldomains."
+    },
+    {
+      "url": "https://developers.cloudflare.com/workers/configuration/secrets/",
+      "supports": "Encrypted secretbindings rather than plaintextvars; secretmutation may create/activate a Workerversion."
+    }
+  ],
+  "noActionsPerformed": [
+    "Credentialread/copy",
+    "Providerrequest",
+    "Secretbinding",
+    "Workerupload/deploy/publicexposure",
+    "Build/native/DB/browser/runtime/apprestart",
+    "Mainorcanonicalschemawrite",
+    "Privatecartsourcewrite",
+    "Automationchange"
+  ],
+  "next": "Allocator independent review of exactmissingdecisions and fresh runtime scope. Continue separately allocated private cartedit source proposal; no provideraction implied."
+}

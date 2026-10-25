@@ -1,0 +1,38 @@
+{
+  "recordedAt": "2026-10-23T15:38:19.204571+00:00",
+  "sourceLease": "GRANTED_CANONICAL_OPTION_RENAME_COMPLETION_FOR_REQUIRED_SAME_UUID_BOOK_EDIT",
+  "files": {
+    "apps/merchant/web/src/app/[store]/products/new/page.tsx": {
+      "sha256": "42d7323cab8cc15549304f7e7c63cb9c46f7ea9634989a3c42bc69e0da47ab00",
+      "bytes": 84535
+    },
+    "apps/merchant/web/src/lib/product-form-state.ts": {
+      "sha256": "1babef7539a4e88b6f54fcb04e5990453391c71460a5760dc771bf8d69c2ffd2",
+      "bytes": 20238
+    },
+    "apps/merchant/web/src/components/products/product-conflict.test.tsx": {
+      "sha256": "4da421caaea0ccbcb528189a9fbd227939d6257bca781baae14532a95f7c9872",
+      "bytes": 62701
+    },
+    "apps/merchant/web/src/lib/product-facts-draft.ts": {
+      "sha256": "b583ab3cd95324f4185ecec375090b2a80a162eec233e5854cf5a2728bd42271",
+      "protected": true
+    },
+    "apps/merchant/web/src/lib/variant-facts-draft.ts": {
+      "sha256": "bb737af30a311b34128fb7d0d1d2b522e73898e889830d360c4d372c6b2af5e3",
+      "protected": true
+    },
+    "apps/merchant/web/src/lib/api/request-origin.ts": {
+      "sha256": "4e1671afcb62bba3dc1d93a3e588b92e58d0d9ba7a3c081e8df4ee6ddb174f96",
+      "protected": true
+    },
+    "apps/merchant/web/src/lib/api/request-origin.test.ts": {
+      "sha256": "ab75dacb0c38c276a443e54319d8bdbba2bace03d522fbc96693f9e6d789a09f",
+      "protected": true
+    },
+    "apps/merchant/web/src/lib/staff/request-origin.ts": {
+      "sha256": "39484b7ececbb61800d6e2b27bc19d8d03e36f952ff1a9d0b04342b9405b9318",
+      "protected": true
+    }
+  }
+}

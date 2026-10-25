@@ -1,0 +1,22 @@
+{
+  "recordedAt": "2026-10-24T08:34:52.497096+00:00",
+  "status": "PRIVATE_EVIDENCE_ONLY_NOT_SOURCE_ADMITTED_OR_APPLIED",
+  "target": "packages/theme-engine/src/threadline-theme.ts",
+  "baseSha256": "1e922e6c056de5017f35dfe08827eef0b41212b96bbff5b6695ab087422d523b",
+  "proposedTextSha256": "a184937a3353fa078b93bf3ce77c3fae2e22d54710030787d313f87b3367a76e",
+  "diff": "declared-copy-output.UNAPPLIED.diff",
+  "findings": [
+    "TL-F01",
+    "TL-F02"
+  ],
+  "exactChange": "Render category-grid.subtitle only when nonblank; use collection-product-list.title as fallback after actual collection.title, preserving real collection authority.",
+  "gates": [
+    "Original owner handoff and allocator lease with exact base hash.",
+    "Frozen 2.0.0 source/package/M1 bytes must not be overwritten: allocator must choose an approved versioned successor/dispatch before translating this proposed diff into source.",
+    "Render valid/blank/escaped subtitle; real collection title retains precedence; search heading uses configured fallback; all default screenshots preserve visual target.",
+    "Save/full reload/private preview/publish/public readback in owned sacrificial draft, exact version/install/release evidence and independent review."
+  ],
+  "executed": false,
+  "currentSourceModified": false,
+  "migrationNumberAllocated": false
+}

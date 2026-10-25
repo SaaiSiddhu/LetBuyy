@@ -320,7 +320,7 @@ export default function OnboardingPage() {
                 setDraftAttemptId(payload.data.attempt_id)
                 setDraftSaved(true)
                 setDraftUnavailable(false)
-                setDraftRestored(false)
+                // A background save does not undo the fact that this draft was restored.
                 return payload.data.attempt_id
             } catch {
                 setDraftSaved(false)

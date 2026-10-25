@@ -22,7 +22,6 @@ import {
     LogOut,
     MessageCircle,
     Monitor,
-    Moon,
     Package,
     Palette,
     RefreshCw,
@@ -32,10 +31,9 @@ import {
     ShieldCheck,
     Sparkles,
     Store,
-    Sun,
+    ThemeToggleButton,
     Upload,
     X,
-    useTheme,
 } from '@letbuyy/ui';
 import BrandLogo from '@/components/brand-logo';
 import { useAuth } from '@/hooks/useAuth';
@@ -418,23 +416,6 @@ function SearchTrigger({ onClick }: { onClick: () => void }) {
             <Search width={16} height={16} aria-hidden="true" />
             <span className="tm-search-label">Search themes</span>
             <kbd className="tm-kbd" aria-hidden="true">⌘K</kbd>
-        </Button>
-    );
-}
-
-function ThemeToggle() {
-    const { resolvedTheme, setTheme } = useTheme();
-    const isDark = resolvedTheme === 'dark';
-
-    return (
-        <Button
-            unstyled
-            type="button"
-            className="tm-icon-button"
-            onClick={() => setTheme(isDark ? 'light' : 'dark')}
-            aria-label={isDark ? 'Switch to light theme' : 'Switch to dark theme'}
-        >
-            {isDark ? <Sun width={18} height={18} aria-hidden="true" /> : <Moon width={18} height={18} aria-hidden="true" />}
         </Button>
     );
 }
@@ -823,7 +804,7 @@ export default function Navbar() {
 
                     <div className="header-actions">
                         <SearchTrigger onClick={() => setSearchOpen(true)} />
-                        <ThemeToggle />
+                        <ThemeToggleButton unstyled className="tm-icon-button" label="Toggle color theme" />
                         {isAuthenticated ? (
                             <UserMenu />
                         ) : (

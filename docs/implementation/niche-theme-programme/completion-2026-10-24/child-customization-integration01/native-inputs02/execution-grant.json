@@ -1,0 +1,22 @@
+{
+  "status": "ROOT_GRANTED_ONE_CUSTOMIZATION_NATIVE_QUALIFICATION",
+  "recordedAt": "2026-10-24T16:25:24.912604+00:00",
+  "authorizedBy": "Latest direct human shared-blocker-first mandate",
+  "sourceClosureSha256": "0dad89834cd21c7de5292f53db3019f8126d37d2d5c11d9c248e001b832ac17f",
+  "admissionSha256": "d773e1e2c63f56abea0919a71202a8e88e3724096f64893b6cb2759b7ed7309e",
+  "scope": "Fresh disposable current393 plus qualified394 and explicit210 proposal; no existing DB, browser or canonical migration emission",
+  "jobs": 1,
+  "noReap": true,
+  "preparedTransactions": 2,
+  "migrationCeiling": null,
+  "timeoutSeconds": 1200,
+  "expectedTAP": 1,
+  "phases": [
+    "UP/captures",
+    "all-table conservation",
+    "strict UP replay",
+    "paired DOWN/prior restoration/capture retention",
+    "strict DOWN replay",
+    "final UP/replay"
+  ]
+}

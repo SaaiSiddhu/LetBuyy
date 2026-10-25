@@ -1,0 +1,12 @@
+{
+  "command": [
+    "node",
+    "--import",
+    "tsx",
+    "docs/implementation/niche-themes-2026-10-23/circuit/installed-lifecycle/early-model-search-9cd50e893016/diagnostic.ts"
+  ],
+  "exitCode": 1,
+  "durationSeconds": 0.757,
+  "boundedGrant": "Root4SDK_GETs/max6HTTP",
+  "runId": "9cd50e893016"
+}

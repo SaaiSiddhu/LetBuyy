@@ -1,0 +1,316 @@
+TAP version 13
+# Subtest: storefront order creation requires idempotency and bounded cart lines
+ok 1 - storefront order creation requires idempotency and bounded cart lines
+  ---
+  duration_ms: 2.929042
+  type: 'test'
+  ...
+# Subtest: marketplace cart line binds listing identity independently from catalog product identity
+ok 2 - marketplace cart line binds listing identity independently from catalog product identity
+  ---
+  duration_ms: 0.590667
+  type: 'test'
+  ...
+# Subtest: Phase M1: the admin/draft order and hosted-checkout payment-intent schemas admit only canonical rails
+ok 3 - Phase M1: the admin/draft order and hosted-checkout payment-intent schemas admit only canonical rails
+  ---
+  duration_ms: 1.01725
+  type: 'test'
+  ...
+# Subtest: hosted checkout confirmation accepts explicit Razorpay proof fields and rejects generic payment IDs
+ok 4 - hosted checkout confirmation accepts explicit Razorpay proof fields and rejects generic payment IDs
+  ---
+  duration_ms: 0.175542
+  type: 'test'
+  ...
+# Subtest: GST invoice generation separates intra-state CGST/SGST from inter-state IGST
+ok 5 - GST invoice generation separates intra-state CGST/SGST from inter-state IGST
+  ---
+  duration_ms: 1.357583
+  type: 'test'
+  ...
+# Subtest: discount stack planner applies product, order, and shipping classes deterministically
+ok 6 - discount stack planner applies product, order, and shipping classes deterministically
+  ---
+  duration_ms: 0.973959
+  type: 'test'
+  ...
+# Subtest: discount stack planner rejects non-combinable discounts instead of reordering them
+ok 7 - discount stack planner rejects non-combinable discounts instead of reordering them
+  ---
+  duration_ms: 0.1505
+  type: 'test'
+  ...
+# Subtest: shipping serviceability planner enforces pincode, COD, amount, and weight limits
+ok 8 - shipping serviceability planner enforces pincode, COD, amount, and weight limits
+  ---
+  duration_ms: 0.109083
+  type: 'test'
+  ...
+# Subtest: checkout state transitions move forward and stop at terminal states
+ok 9 - checkout state transitions move forward and stop at terminal states
+  ---
+  duration_ms: 0.279542
+  type: 'test'
+  ...
+# Subtest: store branding is constrained to data, not executable checkout code
+ok 10 - store branding is constrained to data, not executable checkout code
+  ---
+  duration_ms: 0.433042
+  type: 'test'
+  ...
+# Subtest: order risk heuristic requests COD confirmation without fraud ML
+ok 11 - order risk heuristic requests COD confirmation without fraud ML
+  ---
+  duration_ms: 0.164042
+  type: 'test'
+  ...
+# Subtest: one strict cart schema accepts only reviewed buyer draft IDs/text and stale-review echo
+ok 12 - one strict cart schema accepts only reviewed buyer draft IDs/text and stale-review echo
+  ---
+  duration_ms: 14.134
+  type: 'test'
+  ...
+# Subtest: signed binding is order invariant across configurations and changes with facts, quantity or exact configuration
+ok 13 - signed binding is order invariant across configurations and changes with facts, quantity or exact configuration
+  ---
+  duration_ms: 5.18875
+  type: 'test'
+  ...
+# Subtest: normalized private order readback projects only the canonical saved snapshot and keeps legacy fallback honest
+ok 14 - normalized private order readback projects only the canonical saved snapshot and keeps legacy fallback honest
+  ---
+  duration_ms: 4.651916
+  type: 'test'
+  ...
+# Subtest: partial settings patches preserve omission, explicit clearing and false/zero values
+ok 15 - partial settings patches preserve omission, explicit clearing and false/zero values
+  ---
+  duration_ms: 3.245625
+  type: 'test'
+  ...
+# Subtest: toys: immutable accepted facts survive source catalog mutation and deletion
+ok 16 - toys: immutable accepted facts survive source catalog mutation and deletion
+  ---
+  duration_ms: 9.873541
+  type: 'test'
+  ...
+# Subtest: electronics: immutable accepted facts survive source catalog mutation and deletion
+ok 17 - electronics: immutable accepted facts survive source catalog mutation and deletion
+  ---
+  duration_ms: 1.788708
+  type: 'test'
+  ...
+# Subtest: food: immutable accepted facts survive source catalog mutation and deletion
+ok 18 - food: immutable accepted facts survive source catalog mutation and deletion
+  ---
+  duration_ms: 1.45575
+  type: 'test'
+  ...
+# Subtest: furniture: immutable accepted facts survive source catalog mutation and deletion
+ok 19 - furniture: immutable accepted facts survive source catalog mutation and deletion
+  ---
+  duration_ms: 1.290125
+  type: 'test'
+  ...
+# Subtest: gifts: immutable accepted facts survive source catalog mutation and deletion
+ok 20 - gifts: immutable accepted facts survive source catalog mutation and deletion
+  ---
+  duration_ms: 4.395167
+  type: 'test'
+  ...
+# Subtest: personalization: immutable accepted facts survive source catalog mutation and deletion
+ok 21 - personalization: immutable accepted facts survive source catalog mutation and deletion
+  ---
+  duration_ms: 5.977875
+  type: 'test'
+  ...
+# Subtest: beauty: immutable accepted facts survive source catalog mutation and deletion
+ok 22 - beauty: immutable accepted facts survive source catalog mutation and deletion
+  ---
+  duration_ms: 1.304375
+  type: 'test'
+  ...
+# Subtest: sports: immutable accepted facts survive source catalog mutation and deletion
+ok 23 - sports: immutable accepted facts survive source catalog mutation and deletion
+  ---
+  duration_ms: 1.07925
+  type: 'test'
+  ...
+# Subtest: books: immutable accepted facts survive source catalog mutation and deletion
+ok 24 - books: immutable accepted facts survive source catalog mutation and deletion
+  ---
+  duration_ms: 1.87175
+  type: 'test'
+  ...
+# Subtest: selected durable variant, not a matching option label, determines frozen dimensions and fingerprint
+ok 25 - selected durable variant, not a matching option label, determines frozen dimensions and fingerprint
+  ---
+  duration_ms: 1.450709
+  type: 'test'
+  ...
+# Subtest: per-pack food quantity stays unknown without a selected override and absent gift contents are never manufactured
+ok 26 - per-pack food quantity stays unknown without a selected override and absent gift contents are never manufactured
+  ---
+  duration_ms: 1.554625
+  type: 'test'
+  ...
+# Subtest: an explicit toy clear may remove the namespace and cannot retain an inherited completeness promise
+ok 27 - an explicit toy clear may remove the namespace and cannot retain an inherited completeness promise
+  ---
+  duration_ms: 0.68225
+  type: 'test'
+  ...
+# Subtest: same-RGB beauty names remain exact server-selected options with deterministic ordering
+ok 28 - same-RGB beauty names remain exact server-selected options with deterministic ordering
+  ---
+  duration_ms: 1.352916
+  type: 'test'
+  ...
+# Subtest: historical option selection cannot contain two values for the same named relational option
+ok 29 - historical option selection cannot contain two values for the same named relational option
+  ---
+  duration_ms: 0.460458
+  type: 'test'
+  ...
+# Subtest: saved option names stay exact across case and Hindi and remain within the canonical ten-option bound
+ok 30 - saved option names stay exact across case and Hindi and remain within the canonical ten-option bound
+  ---
+  duration_ms: 0.869875
+  type: 'test'
+  ...
+# Subtest: review echoes bind exact variant IDs and require explicit null instead of a product-only fallback
+ok 31 - review echoes bind exact variant IDs and require explicit null instead of a product-only fallback
+  ---
+  duration_ms: 6.328166
+  type: 'test'
+  ...
+# Subtest: forged, replayed and stale personalization reviews cannot manufacture an accepted configuration
+ok 32 - forged, replayed and stale personalization reviews cannot manufacture an accepted configuration
+  ---
+  duration_ms: 6.780958
+  type: 'test'
+  ...
+# Subtest: missing facts remain absent and private, unsupported or malformed fulfillment fields fail closed
+ok 33 - missing facts remain absent and private, unsupported or malformed fulfillment fields fail closed
+  ---
+  duration_ms: 1.076
+  type: 'test'
+  ...
+# Subtest: missing facts stay absent; private/accessor/inherited metadata never becomes an order fact
+ok 34 - missing facts stay absent; private/accessor/inherited metadata never becomes an order fact
+  ---
+  duration_ms: 9.410083
+  type: 'test'
+  ...
+# Subtest: canonical UUID/version and selected variant parent are mandatory server context
+ok 35 - canonical UUID/version and selected variant parent are mandatory server context
+  ---
+  duration_ms: 1.640042
+  type: 'test'
+  ...
+# Subtest: malformed declared facts and unknown variant namespaces fail rather than losing fulfillment details
+ok 36 - malformed declared facts and unknown variant namespaces fail rather than losing fulfillment details
+  ---
+  duration_ms: 1.563708
+  type: 'test'
+  ...
+# Subtest: food freezes the selected sellable pack quantity and never inherits an unselected parent pack
+ok 37 - food freezes the selected sellable pack quantity and never inherits an unselected parent pack
+  ---
+  duration_ms: 4.002625
+  type: 'test'
+  ...
+# Subtest: furniture and sports preserve whole measurement/unit groups without mixing parent dimensions
+ok 38 - furniture and sports preserve whole measurement/unit groups without mixing parent dimensions
+  ---
+  duration_ms: 2.279083
+  type: 'test'
+  ...
+# Subtest: book kinds cannot be mixed and toy edition clears retain the canonical clear/completeness semantics
+ok 39 - book kinds cannot be mixed and toy edition clears retain the canonical clear/completeness semantics
+  ---
+  duration_ms: 3.451
+  type: 'test'
+  ...
+# Subtest: required, stale, missing and forged personalization never produce an accepted snapshot or client-authoritative hash
+ok 40 - required, stale, missing and forged personalization never produce an accepted snapshot or client-authoritative hash
+  ---
+  duration_ms: 4.604541
+  type: 'test'
+  ...
+# Subtest: NFC requires explicit reviewed text; unsupported Unicode/control characters are rejected
+ok 41 - NFC requires explicit reviewed text; unsupported Unicode/control characters are rejected
+  ---
+  duration_ms: 14.923375
+  type: 'test'
+  ...
+# Subtest: SHA256 identity is deterministic, UUID-canonical, quantity-independent and distinguishes same-SKU configurations
+ok 42 - SHA256 identity is deterministic, UUID-canonical, quantity-independent and distinguishes same-SKU configurations
+  ---
+  duration_ms: 16.789875
+  type: 'test'
+  ...
+# Subtest: a product-version or frozen-facts change invalidates the snapshot binding without inventing a new config
+ok 43 - a product-version or frozen-facts change invalidates the snapshot binding without inventing a new config
+  ---
+  duration_ms: 3.330458
+  type: 'test'
+  ...
+# Subtest: accepted order data is cloned/frozen and cannot leak through anonymous product fact presentation
+ok 44 - accepted order data is cloned/frozen and cannot leak through anonymous product fact presentation
+  ---
+  duration_ms: 1.451084
+  type: 'test'
+  ...
+# Subtest: historical order readback validates frozen facts/labels and never falls back to current catalog facts
+ok 45 - historical order readback validates frozen facts/labels and never falls back to current catalog facts
+  ---
+  duration_ms: 1.569959
+  type: 'test'
+  ...
+# Subtest: revision transition permits no-effect resaves and requires advances for capability meaning changes
+ok 46 - revision transition permits no-effect resaves and requires advances for capability meaning changes
+  ---
+  duration_ms: 0.300667
+  type: 'test'
+  ...
+# Subtest: echoed server review digest rejects same-revision meaning changes, simulated races and removal/re-addition
+ok 47 - echoed server review digest rejects same-revision meaning changes, simulated races and removal/re-addition
+  ---
+  duration_ms: 2.639833
+  type: 'test'
+  ...
+# Subtest: saved canonical option names and values retain spaces and Hindi without label inference
+ok 48 - saved canonical option names and values retain spaces and Hindi without label inference
+  ---
+  duration_ms: 1.031709
+  type: 'test'
+  ...
+# Subtest: review echo requires explicit variant context and cannot move across variants or use the old product-only digest
+ok 49 - review echo requires explicit variant context and cannot move across variants or use the old product-only digest
+  ---
+  duration_ms: 1.945292
+  type: 'test'
+  ...
+# Subtest: actual SDK makes only the exact no-store review GET, with bounded canonical response and no price/version authority
+ok 50 - actual SDK makes only the exact no-store review GET, with bounded canonical response and no price/version authority
+  ---
+  duration_ms: 25.322709
+  type: 'test'
+  ...
+# Subtest: SDK rejects malformed facts and a valid but different product or variant context
+ok 51 - SDK rejects malformed facts and a valid but different product or variant context
+  ---
+  duration_ms: 2.362459
+  type: 'test'
+  ...
+1..51
+# tests 51
+# suites 0
+# pass 51
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 631.802542

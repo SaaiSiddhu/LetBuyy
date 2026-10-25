@@ -1,0 +1,21 @@
+{
+  "recordedAt": "2026-10-24T12:43:08.672Z",
+  "classification": "READ_ONLY_PUBLIC_CERT_PREFLIGHT_NO_KEY_READ_NO_FRESH_ORIGIN_PROOF",
+  "path": "/private/tmp/letbuyy-owned-checkout-manual-501/cert.pem",
+  "subjectAltNameExact": true,
+  "hostnameExact": true,
+  "validFrom": "Oct 23 17:21:29 2026 GMT",
+  "validTo": "Jan 23 17:21:29 2029 GMT",
+  "currentlyValid": true,
+  "serverAuthOnly": true,
+  "isCA": false,
+  "osTrustCheck": {
+    "exitCode": 1,
+    "signal": null,
+    "errorCode": null
+  },
+  "certificateFileUnchanged": true,
+  "keyRead": false,
+  "trustChanged": false,
+  "networkCall": false
+}

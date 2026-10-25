@@ -1,0 +1,545 @@
+{
+  "body": {
+    "background": "rgb(239, 236, 236)",
+    "color": "rgba(37, 37, 37, 0.75)",
+    "font": "\"Quattrocento Sans\", sans-serif",
+    "fontSize": "15px"
+  },
+  "controls": [
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Menu",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "true",
+      "label": "",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Search",
+      "tag": "INPUT",
+      "type": "search"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Filter and sort",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "true",
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "INPUT",
+      "type": "checkbox"
+    },
+    {
+      "disabled": true,
+      "expanded": null,
+      "label": "",
+      "tag": "INPUT",
+      "type": "checkbox"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "true",
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "0",
+      "tag": "INPUT",
+      "type": "number"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "525.00",
+      "tag": "INPUT",
+      "type": "number"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "true",
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "INPUT",
+      "type": "checkbox"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "SELECT",
+      "type": "select-one"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Email",
+      "tag": "INPUT",
+      "type": "email"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Subscribe",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Canada (CAD $)",
+      "tag": "BUTTON",
+      "type": "button"
+    }
+  ],
+  "headings": [
+    {
+      "font": "\"Quattrocento Sans\", sans-serif",
+      "height": 19.5,
+      "line": "19.5px",
+      "size": "13px",
+      "tag": "H2",
+      "text": "",
+      "weight": "400",
+      "width": 306,
+      "x": 35,
+      "y": 49.296875
+    },
+    {
+      "font": "Trirong, serif",
+      "height": 42,
+      "line": "42px",
+      "size": "33px",
+      "tag": "H1",
+      "text": "Collection:\nBundles",
+      "weight": "300",
+      "width": 360,
+      "x": 15,
+      "y": 214.796875
+    },
+    {
+      "font": "Trirong, serif",
+      "height": 58.78125,
+      "line": "19.6px",
+      "size": "15.4px",
+      "tag": "H2",
+      "text": "",
+      "weight": "300",
+      "width": 54.9296875,
+      "x": 583.8203125,
+      "y": 427.796875
+    },
+    {
+      "font": "\"Quattrocento Sans\", sans-serif",
+      "height": 21,
+      "line": "21px",
+      "size": "14px",
+      "tag": "H2",
+      "text": "3 products",
+      "weight": "400",
+      "width": 70.90625,
+      "x": 304.09375,
+      "y": 422.296875
+    },
+    {
+      "font": "Trirong, serif",
+      "height": 16.796875,
+      "line": "16.8px",
+      "size": "13.2px",
+      "tag": "H3",
+      "text": "Dinnerware Set",
+      "weight": "300",
+      "width": 133,
+      "x": 36,
+      "y": 703.046875
+    },
+    {
+      "font": "Trirong, serif",
+      "height": 16.796875,
+      "line": "16.8px",
+      "size": "13.2px",
+      "tag": "H3",
+      "text": "Dining Essentials",
+      "weight": "300",
+      "width": 133,
+      "x": 221,
+      "y": 703.046875
+    },
+    {
+      "font": "Trirong, serif",
+      "height": 16.796875,
+      "line": "16.8px",
+      "size": "13.2px",
+      "tag": "H3",
+      "text": "Serving Set",
+      "weight": "300",
+      "width": 133,
+      "x": 36,
+      "y": 1055.2890625
+    },
+    {
+      "font": "Trirong, serif",
+      "height": 42,
+      "line": "42px",
+      "size": "33px",
+      "tag": "H2",
+      "text": "Don't miss out",
+      "weight": "300",
+      "width": 310,
+      "x": 40,
+      "y": 1256.28125
+    },
+    {
+      "font": "Trirong, serif",
+      "height": 22.3984375,
+      "line": "22.4px",
+      "size": "17.6px",
+      "tag": "H2",
+      "text": "Get to know Craft",
+      "weight": "300",
+      "width": 310,
+      "x": 40,
+      "y": 1505.28125
+    },
+    {
+      "font": "Trirong, serif",
+      "height": 22.3984375,
+      "line": "22.4px",
+      "size": "17.6px",
+      "tag": "H2",
+      "text": "Our mission",
+      "weight": "300",
+      "width": 310,
+      "x": 40,
+      "y": 1678.0703125
+    },
+    {
+      "font": "\"Quattrocento Sans\", sans-serif",
+      "height": 19.5,
+      "line": "19.5px",
+      "size": "13px",
+      "tag": "H2",
+      "text": "Country/region",
+      "weight": "400",
+      "width": 155.8125,
+      "x": 117.09375,
+      "y": 1875.46875
+    }
+  ],
+  "links": [
+    {
+      "text": "Skip to content",
+      "url": "https://theme-craft-demo.myshopify.com/collections/bundles#MainContent"
+    },
+    {
+      "text": "Check out our latest bundled collections",
+      "url": "https://theme-craft-demo.myshopify.com/collections/bundles"
+    },
+    {
+      "text": "",
+      "url": "https://theme-craft-demo.myshopify.com/collections/speckled-white"
+    },
+    {
+      "text": "",
+      "url": "https://theme-craft-demo.myshopify.com/collections/dove-gray"
+    },
+    {
+      "text": "",
+      "url": "https://theme-craft-demo.myshopify.com/collections/blush-pink"
+    },
+    {
+      "text": "",
+      "url": "https://theme-craft-demo.myshopify.com/collections/beachgrass-green"
+    },
+    {
+      "text": "",
+      "url": "https://theme-craft-demo.myshopify.com/collections/midnight-blue"
+    },
+    {
+      "text": "",
+      "url": "https://theme-craft-demo.myshopify.com/collections/glassware"
+    },
+    {
+      "text": "",
+      "url": "https://theme-craft-demo.myshopify.com/collections/serveware"
+    },
+    {
+      "text": "",
+      "url": "https://theme-craft-demo.myshopify.com/collections/flatware"
+    },
+    {
+      "text": "",
+      "url": "https://theme-craft-demo.myshopify.com/collections/textiles"
+    },
+    {
+      "text": "",
+      "url": "https://theme-craft-demo.myshopify.com/collections/bundles"
+    },
+    {
+      "text": "",
+      "url": "https://theme-craft-demo.myshopify.com/"
+    },
+    {
+      "text": "Cart",
+      "url": "https://theme-craft-demo.myshopify.com/cart"
+    },
+    {
+      "text": "",
+      "url": "https://theme-craft-demo.myshopify.com/collections/bundles"
+    },
+    {
+      "text": "",
+      "url": "https://theme-craft-demo.myshopify.com/collections/bundles"
+    },
+    {
+      "text": "",
+      "url": "https://theme-craft-demo.myshopify.com/collections/bundles"
+    },
+    {
+      "text": "",
+      "url": "https://theme-craft-demo.myshopify.com/collections/bundles"
+    },
+    {
+      "text": "Dinnerware Set",
+      "url": "https://theme-craft-demo.myshopify.com/products/ceramic-bundle"
+    },
+    {
+      "text": "Dining Essentials",
+      "url": "https://theme-craft-demo.myshopify.com/products/the-dining-essentials"
+    },
+    {
+      "text": "Serving Set",
+      "url": "https://theme-craft-demo.myshopify.com/products/serving-bundle"
+    },
+    {
+      "text": "About",
+      "url": "https://theme-craft-demo.myshopify.com/pages/about-us"
+    },
+    {
+      "text": "Magazine",
+      "url": "https://theme-craft-demo.myshopify.com/blogs/magazine"
+    },
+    {
+      "text": "theme-craft-demo",
+      "url": "https://theme-craft-demo.myshopify.com/"
+    }
+  ],
+  "sections": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--18214084575486__banner",
+      "rect": {
+        "height": 203,
+        "width": 390,
+        "x": 0,
+        "y": 189.796875
+      },
+      "tag": "DIV",
+      "text": "Collection:\nBundles\nLooking to make the perfect set, but don’t know where to start? Look no further. We’ve bundled our collections to make it easy to set your table and save."
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--18214084575486__product-grid",
+      "rect": {
+        "height": 815.484375,
+        "width": 390,
+        "x": 0,
+        "y": 392.796875
+      },
+      "tag": "DIV",
+      "text": "Filter and sort\n3 products\nSale\nDinnerware Set\nRegular price\n$236.00 CAD \nSale price\n$215.00 CAD\nSale\nDining Essentials\nRegular price\n$593.00 CAD \nSale price\n$525.00 CAD\nSale\nServi"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--18214084575486__newsletter",
+      "rect": {
+        "height": 270,
+        "width": 390,
+        "x": 0,
+        "y": 1208.28125
+      },
+      "tag": "SECTION",
+      "text": "Don't miss out\n\nSubscribe to our mailing list for insider news, product launches, and more.\n\nEmail"
+    }
+  ],
+  "title": "Bundles – theme-craft-demo",
+  "url": "https://theme-craft-demo.myshopify.com/collections/bundles",
+  "viewport": {
+    "dpr": 1,
+    "height": 844,
+    "width": 390
+  },
+  "formGroups": [],
+  "grids": [
+    {
+      "className": "\n            grid grid--2-col product-grid\n             grid--3-col-tablet",
+      "columns": "none",
+      "display": "flex",
+      "gap": "10px",
+      "height": 694.484375,
+      "tag": "UL",
+      "width": 360
+    }
+  ],
+  "images": [
+    {
+      "alt": "Dinnerware Set",
+      "complete": true,
+      "naturalWidth": 177,
+      "rect": {
+        "height": 216.25,
+        "width": 173
+      }
+    },
+    {
+      "alt": "Dining Essentials",
+      "complete": true,
+      "naturalWidth": 177,
+      "rect": {
+        "height": 216.25,
+        "width": 173
+      }
+    },
+    {
+      "alt": "#speckledwhite/polishedsilver",
+      "complete": true,
+      "naturalWidth": 177,
+      "rect": {
+        "height": 216.25,
+        "width": 173
+      }
+    }
+  ],
+  "bodyText": "Skip to content\n\nCheck out our latest bundled collections \n\nCart\nCollection:\nBundles\nLooking to make the perfect set, but don’t know where to start? Look no further. We’ve bundled our collections to make it easy to set your table and save.\nFilter and sort\n3 products\nSale\nDinnerware Set\nRegular price\n$236.00 CAD \nSale price\n$215.00 CAD\nSale\nDining Essentials\nRegular price\n$593.00 CAD \nSale price\n$525.00 CAD\nSale\nServing Set\nRegular price\n$118.00 CAD \nSale price\n$105.00 CAD\nDon't miss out\n\nSubscribe to our mailing list for insider news, product launches, and more.\n\nEmail\nGet to know Craft\nAbout\nMagazine\nOur mission\n\nWe create products that are as enjoyable as they are ethical.\n\nCountry/region\nCanada (CAD $)\nPayment methods\n© 2026, theme-craft-demo Powered by Shopify"
+}

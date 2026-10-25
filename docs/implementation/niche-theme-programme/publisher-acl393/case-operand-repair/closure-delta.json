@@ -1,0 +1,52 @@
+{
+  "old": {
+    "path": "docs/implementation/niche-theme-programme/publisher-acl393/case-operand-repair/source-input-closure.json.before.snapshot",
+    "sha256": "97eb85f25d95449f1d9bc4e159c379aba37080566e58420447d25cbc9594ae08",
+    "bytes": 559493
+  },
+  "new": {
+    "path": "docs/implementation/niche-theme-programme/publisher-acl393/source-input-closure.json",
+    "sha256": "4bbc3fc6c81dfc8e1526063893facc97f5155c8bde17dcd0d81232aee0277bde",
+    "bytes": 561119
+  },
+  "changed": [
+    {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/capture-source-inputs.mjs",
+      "before": "b62f2a496e404e3972ea6c49496b2e457d65dc60d3670d2c5d3ae8a77f1dd1bd",
+      "after": "83ee5a638692dc1ed37d6f52cb5a5b2d6c8d15aa546f12219136b059b42f8cc7"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/source-contracts.test.mjs",
+      "before": "1d6ebdd0411840ec56c1508062c25a64de2aa1144908950f7ce84e0c700a3054",
+      "after": "145297fe1e7a639777e0206b5572f513cb179aa75ff6f3ff2318ecc9f0e82c3a"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/theme-publisher-acl.postgres.test.ts",
+      "before": "ae513731224bfe171786efd8283965734b200e8323f59c4a4bec07d9b0d94a0d",
+      "after": "e9586487f94eabf5438e8fe8a3be28d153be2ee8ef2a54f65d133dd678b8bc24"
+    }
+  ],
+  "added": [
+    {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/case-operand-repair/if-then-boundary.mjs",
+      "sha256": "bc59dfdf3af60411fd1dff576b4bb2e081af4498f85786c3933295de03fc839d"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/case-operand-repair/v2/393_publisher_tenant_execute.down.candidate.sql",
+      "sha256": "87aad2e369c43d457e2094d38b7fae13fe85c61bd50703fb9b5acfdfa057763a"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/case-operand-repair/v2/393_publisher_tenant_execute.up.candidate.sql",
+      "sha256": "f90aa5743b73ac639bf098533c0e025917572592c218892d8d7ae29eb6347869"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/case-operand-repair/v2/manifest.json",
+      "sha256": "e5db28e52ef55bb7da76d42a547a9d5b48c4969a138ea0ccfd24f201555d597d"
+    },
+    {
+      "path": "scripts/governance/definer-role-closure.mjs",
+      "sha256": "43db58daa16687a9fa72fda6898aa1651941d8f64728781c823a33a6aaef7abe"
+    }
+  ],
+  "removed": []
+}

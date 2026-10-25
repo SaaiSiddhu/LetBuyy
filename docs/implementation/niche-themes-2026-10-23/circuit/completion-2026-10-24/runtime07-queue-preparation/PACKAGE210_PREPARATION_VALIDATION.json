@@ -1,0 +1,21 @@
+{
+  "recordedAt": "2026-10-24T20:34:47.501424+00:00",
+  "classification": "PREPARATION_INTEGRITY_ONLY_NOT_RUNTIME_TESTS",
+  "script": {
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/runtime07-queue-preparation/reconcile-package210.py",
+    "sha256": "32a44ea46f35aef606131def19a68ea1d899ff58221a39d261b1f2e2b9aea3a3"
+  },
+  "checks": {
+    "pythonSyntax": "PASS",
+    "promotedSqlHash": "PASS",
+    "canonicalBundleHash": "PASS",
+    "allPinnedInputs": "PASS",
+    "original25And288RowsRetained": "PASS",
+    "new15RowsUniqueAndNotExecuted": "PASS",
+    "installedBindingStillRequired": "PASS",
+    "certificateFlagsRemainFalse": "PASS"
+  },
+  "newNativeRuns": 0,
+  "newUICasesPassed": 0,
+  "runtimeBuildBrowserDatabaseActions": 0
+}

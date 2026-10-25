@@ -1,0 +1,48 @@
+{
+  "scope": "Strict private suite/parser virtual overlays and three-file syntax only; dependencies inspected, never executed",
+  "inputPinsBefore": [
+    {
+      "name": "circuit-indexed-performance-qualification.manual.ts",
+      "sha256": "aaaceb50d5b55c1f33fd3338d29f48c96b9063a61c5545fdc7018e98415bce7b"
+    },
+    {
+      "name": "plan-parser.ts",
+      "sha256": "96b7ce8ba650f3e174d90e3bc457de510a23ad4a65904fb083b72bd2ac70a0b7"
+    },
+    {
+      "name": "plan-parser.test.ts",
+      "sha256": "e2a2ec927624d44f85cf87cc39627fb1be02c12046c3171930da60b99df5a219"
+    },
+    {
+      "name": "PERFORMANCE_PROTOCOL.json",
+      "sha256": "6d64fb6e70d14285dc67bcf7c00db56d3bb05b90ed1c75771c1c22926468c7db"
+    }
+  ],
+  "inputPinsAfter": [
+    {
+      "name": "circuit-indexed-performance-qualification.manual.ts",
+      "sha256": "aaaceb50d5b55c1f33fd3338d29f48c96b9063a61c5545fdc7018e98415bce7b"
+    },
+    {
+      "name": "plan-parser.ts",
+      "sha256": "96b7ce8ba650f3e174d90e3bc457de510a23ad4a65904fb083b72bd2ac70a0b7"
+    },
+    {
+      "name": "plan-parser.test.ts",
+      "sha256": "e2a2ec927624d44f85cf87cc39627fb1be02c12046c3171930da60b99df5a219"
+    },
+    {
+      "name": "PERFORMANCE_PROTOCOL.json",
+      "sha256": "6d64fb6e70d14285dc67bcf7c00db56d3bb05b90ed1c75771c1c22926468c7db"
+    }
+  ],
+  "effectiveProtocolMatches": true,
+  "virtualMainWrites": 0,
+  "programSourceFiles": 948,
+  "scopedDiagnostics": [],
+  "otherDependencyDiagnostics": 0,
+  "otherDependencyDiagnosticSample": [],
+  "transpileDiagnostics": [],
+  "wholeBackendTypecheckClaimed": false,
+  "nativeExecuted": false
+}

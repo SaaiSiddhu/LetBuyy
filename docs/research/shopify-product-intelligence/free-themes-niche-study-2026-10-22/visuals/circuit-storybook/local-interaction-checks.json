@@ -1,0 +1,23 @@
+{
+  "scope": "Visual reference only; does not certify production interactions",
+  "checks": [
+    {
+      "case": "local-disclosure-menu-Escape-focus-return",
+      "passed": true
+    },
+    {
+      "case": "mobile-full-summary-before-payment",
+      "summaryBottom": 904.1875,
+      "paymentTop": 1338.6875,
+      "passed": true
+    },
+    {
+      "case": "profile-sign-in-email-read-only",
+      "passed": true
+    },
+    {
+      "case": "owned-order-lines-no-cart-edit-controls",
+      "passed": true
+    }
+  ]
+}

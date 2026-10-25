@@ -29,6 +29,7 @@ class _BarcodeScannerSheet extends StatefulWidget {
 class _BarcodeScannerSheetState extends State<_BarcodeScannerSheet> {
   final MobileScannerController _controller = MobileScannerController();
   bool _handled = false;
+  bool _manualOpen = false;
 
   @override
   void dispose() {
@@ -37,7 +38,7 @@ class _BarcodeScannerSheetState extends State<_BarcodeScannerSheet> {
   }
 
   void _onDetect(BarcodeCapture capture) {
-    if (_handled) return;
+    if (_handled || _manualOpen) return;
     for (final barcode in capture.barcodes) {
       final value = barcode.rawValue?.trim();
       if (value == null || value.isEmpty) continue;
@@ -48,6 +49,15 @@ class _BarcodeScannerSheetState extends State<_BarcodeScannerSheet> {
   }
 
   Future<void> _enterManually() async {
+    if (_handled || _manualOpen) return;
+    _manualOpen = true;
+    final wasRunning = _controller.value.isRunning;
+    try {
+      await _controller.stop();
+    } catch (_) {
+      /* Manual entry also works without camera access. */
+    }
+    if (!mounted) return;
     final controller = TextEditingController();
     final code = await showDialog<String>(
       context: context,
@@ -73,7 +83,15 @@ class _BarcodeScannerSheetState extends State<_BarcodeScannerSheet> {
       ),
     );
     controller.dispose();
-    if (!mounted || code == null || code.isEmpty) return;
+    if (!mounted) return;
+    _manualOpen = false;
+    if (code == null || code.isEmpty) {
+      if (wasRunning && _controller.value.hasCameraPermission) {
+        unawaited(_controller.start().catchError((Object _) {}));
+      }
+      return;
+    }
+    _handled = true;
     Navigator.of(context).pop(code);
   }
 
@@ -113,7 +131,19 @@ class _BarcodeScannerSheetState extends State<_BarcodeScannerSheet> {
             child: Stack(
               fit: StackFit.expand,
               children: [
-                MobileScanner(controller: _controller, onDetect: _onDetect),
+                MobileScanner(
+                  controller: _controller,
+                  onDetect: _onDetect,
+                  errorBuilder: (_, _) => const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(24),
+                      child: Text(
+                        'Camera unavailable. Enter the barcode manually, or allow camera access in Settings.',
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+                ),
                 Center(
                   child: Container(
                     width: 240,

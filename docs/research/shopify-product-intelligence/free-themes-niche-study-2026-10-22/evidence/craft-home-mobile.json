@@ -1,0 +1,894 @@
+{
+  "body": {
+    "background": "rgb(239, 236, 236)",
+    "color": "rgba(37, 37, 37, 0.75)",
+    "font": "\"Quattrocento Sans\", sans-serif",
+    "fontSize": "15px"
+  },
+  "controls": [
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Menu",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "true",
+      "label": "",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Search",
+      "tag": "INPUT",
+      "type": "search"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": true,
+      "expanded": null,
+      "label": "Slide left",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Slide right",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": true,
+      "expanded": null,
+      "label": "Slide left",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Slide right",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Email",
+      "tag": "INPUT",
+      "type": "email"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Subscribe",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Canada (CAD $)",
+      "tag": "BUTTON",
+      "type": "button"
+    }
+  ],
+  "headings": [
+    {
+      "font": "Trirong, serif",
+      "height": 132,
+      "line": "0px",
+      "size": "33px",
+      "tag": "H1",
+      "text": "",
+      "weight": "300",
+      "width": 115,
+      "x": 137.5,
+      "y": 47.796875
+    },
+    {
+      "font": "\"Quattrocento Sans\", sans-serif",
+      "height": 19.5,
+      "line": "19.5px",
+      "size": "13px",
+      "tag": "H2",
+      "text": "",
+      "weight": "400",
+      "width": 306,
+      "x": 35,
+      "y": 49.296875
+    },
+    {
+      "font": "Trirong, serif",
+      "height": 126,
+      "line": "42px",
+      "size": "33px",
+      "tag": "H2",
+      "text": "Sustainably crafted goods to elevate your everyday.",
+      "weight": "300",
+      "width": 310,
+      "x": 40,
+      "y": 237.796875
+    },
+    {
+      "font": "Trirong, serif",
+      "height": 23.796875,
+      "line": "23.8px",
+      "size": "18.7px",
+      "tag": "H3",
+      "text": "Glassware",
+      "weight": "300",
+      "width": 133,
+      "x": 36,
+      "y": 662.140625
+    },
+    {
+      "font": "Trirong, serif",
+      "height": 23.796875,
+      "line": "23.8px",
+      "size": "18.7px",
+      "tag": "H3",
+      "text": "Textiles",
+      "weight": "300",
+      "width": 133,
+      "x": 221,
+      "y": 662.140625
+    },
+    {
+      "font": "Trirong, serif",
+      "height": 23.796875,
+      "line": "23.8px",
+      "size": "18.7px",
+      "tag": "H3",
+      "text": "Dinnerware",
+      "weight": "300",
+      "width": 318,
+      "x": 36,
+      "y": 1199.4375
+    },
+    {
+      "font": "Trirong, serif",
+      "height": 23.796875,
+      "line": "23.8px",
+      "size": "18.7px",
+      "tag": "H3",
+      "text": "Serveware",
+      "weight": "300",
+      "width": 318,
+      "x": 36,
+      "y": 1728.734375
+    },
+    {
+      "font": "Trirong, serif",
+      "height": 23.796875,
+      "line": "23.8px",
+      "size": "18.7px",
+      "tag": "H3",
+      "text": "Flatware",
+      "weight": "300",
+      "width": 318,
+      "x": 36,
+      "y": 2258.03125
+    },
+    {
+      "font": "Trirong, serif",
+      "height": 28,
+      "line": "28px",
+      "size": "22px",
+      "tag": "H2",
+      "text": "The details matter",
+      "weight": "300",
+      "width": 360,
+      "x": 15,
+      "y": 2353.828125
+    },
+    {
+      "font": "Trirong, serif",
+      "height": 84,
+      "line": "28px",
+      "size": "22px",
+      "tag": "H2",
+      "text": "We believe in simple, timeless, and responsible designs.",
+      "weight": "300",
+      "width": 310,
+      "x": 40,
+      "y": 2752.1484375
+    },
+    {
+      "font": "Trirong, serif",
+      "height": 108.8125,
+      "line": "27.2px",
+      "size": "18.7px",
+      "tag": "H3",
+      "text": "\"Such beautiful dishes that I have come to refer to as my shelf art! if you have open shelving these dishes are for you. They are unique.\"",
+      "weight": "300",
+      "width": 355,
+      "x": 20,
+      "y": 2898.1484375
+    },
+    {
+      "font": "Trirong, serif",
+      "height": 108.8125,
+      "line": "27.2px",
+      "size": "18.7px",
+      "tag": "H3",
+      "text": "\"I loved these dishes from the get-go! Knew I had to have them. I chose three colours and they go together beautifully.\"",
+      "weight": "300",
+      "width": 355,
+      "x": 390,
+      "y": 2898.1484375
+    },
+    {
+      "font": "Trirong, serif",
+      "height": 136.015625,
+      "line": "27.2px",
+      "size": "18.7px",
+      "tag": "H3",
+      "text": "\"If you've been contemplating purchasing these plates - go for it! They've elevated my dining experience and make meals so much more enjoyab",
+      "weight": "300",
+      "width": 355,
+      "x": 760,
+      "y": 2898.1484375
+    },
+    {
+      "font": "Trirong, serif",
+      "height": 28,
+      "line": "28px",
+      "size": "22px",
+      "tag": "H2",
+      "text": "Discover our bundled collections",
+      "weight": "300",
+      "width": 360,
+      "x": 15,
+      "y": 3187.1640625
+    },
+    {
+      "font": "Trirong, serif",
+      "height": 23.796875,
+      "line": "23.8px",
+      "size": "18.7px",
+      "tag": "H3",
+      "text": "Bundles",
+      "weight": "300",
+      "width": 318,
+      "x": 36,
+      "y": 3506.171875
+    },
+    {
+      "font": "Trirong, serif",
+      "height": 27.203125,
+      "line": "27.2px",
+      "size": "18.7px",
+      "tag": "H3",
+      "text": "Responsible Design",
+      "weight": "300",
+      "width": 310,
+      "x": 40,
+      "y": 3891.0625
+    },
+    {
+      "font": "Trirong, serif",
+      "height": 27.203125,
+      "line": "27.2px",
+      "size": "18.7px",
+      "tag": "H3",
+      "text": "Transparent Pricing",
+      "weight": "300",
+      "width": 310,
+      "x": 40,
+      "y": 4171.0625
+    },
+    {
+      "font": "Trirong, serif",
+      "height": 27.203125,
+      "line": "27.2px",
+      "size": "18.7px",
+      "tag": "H3",
+      "text": "Sustainable Sourcing",
+      "weight": "300",
+      "width": 310,
+      "x": 40,
+      "y": 4478.0625
+    },
+    {
+      "font": "Trirong, serif",
+      "height": 27.203125,
+      "line": "27.2px",
+      "size": "18.7px",
+      "tag": "H3",
+      "text": "Giving Back",
+      "weight": "300",
+      "width": 310,
+      "x": 40,
+      "y": 4758.0625
+    },
+    {
+      "font": "Trirong, serif",
+      "height": 28,
+      "line": "28px",
+      "size": "22px",
+      "tag": "H2",
+      "text": "From the magazine",
+      "weight": "300",
+      "width": 205.921875,
+      "x": 15,
+      "y": 4923.265625
+    },
+    {
+      "font": "Trirong, serif",
+      "height": 56,
+      "line": "28px",
+      "size": "22px",
+      "tag": "H3",
+      "text": "Sweet & Savory Comfort Food Recipes",
+      "weight": "300",
+      "width": 298,
+      "x": 46,
+      "y": 5225.921875
+    },
+    {
+      "font": "Trirong, serif",
+      "height": 28,
+      "line": "28px",
+      "size": "22px",
+      "tag": "H3",
+      "text": "Bringing Joy to Every Table",
+      "weight": "300",
+      "width": 298,
+      "x": 416,
+      "y": 5225.921875
+    },
+    {
+      "font": "Trirong, serif",
+      "height": 56,
+      "line": "28px",
+      "size": "22px",
+      "tag": "H3",
+      "text": "Preparing a Dinner Table for Success",
+      "weight": "300",
+      "width": 298,
+      "x": 786,
+      "y": 5225.921875
+    },
+    {
+      "font": "Trirong, serif",
+      "height": 42,
+      "line": "42px",
+      "size": "33px",
+      "tag": "H2",
+      "text": "Don't miss out",
+      "weight": "300",
+      "width": 310,
+      "x": 40,
+      "y": 5667.921875
+    },
+    {
+      "font": "Trirong, serif",
+      "height": 22.3984375,
+      "line": "22.4px",
+      "size": "17.6px",
+      "tag": "H2",
+      "text": "Get to know Craft",
+      "weight": "300",
+      "width": 310,
+      "x": 40,
+      "y": 5916.921875
+    },
+    {
+      "font": "Trirong, serif",
+      "height": 22.3984375,
+      "line": "22.4px",
+      "size": "17.6px",
+      "tag": "H2",
+      "text": "Our mission",
+      "weight": "300",
+      "width": 310,
+      "x": 40,
+      "y": 6089.7109375
+    },
+    {
+      "font": "\"Quattrocento Sans\", sans-serif",
+      "height": 19.5,
+      "line": "19.5px",
+      "size": "13px",
+      "tag": "H2",
+      "text": "Country/region",
+      "weight": "400",
+      "width": 155.8125,
+      "x": 117.09375,
+      "y": 6287.109375
+    }
+  ],
+  "links": [
+    {
+      "text": "Skip to content",
+      "url": "https://theme-craft-demo.myshopify.com/#MainContent"
+    },
+    {
+      "text": "Check out our latest bundled collections",
+      "url": "https://theme-craft-demo.myshopify.com/collections/bundles"
+    },
+    {
+      "text": "",
+      "url": "https://theme-craft-demo.myshopify.com/collections/speckled-white"
+    },
+    {
+      "text": "",
+      "url": "https://theme-craft-demo.myshopify.com/collections/dove-gray"
+    },
+    {
+      "text": "",
+      "url": "https://theme-craft-demo.myshopify.com/collections/blush-pink"
+    },
+    {
+      "text": "",
+      "url": "https://theme-craft-demo.myshopify.com/collections/beachgrass-green"
+    },
+    {
+      "text": "",
+      "url": "https://theme-craft-demo.myshopify.com/collections/midnight-blue"
+    },
+    {
+      "text": "",
+      "url": "https://theme-craft-demo.myshopify.com/collections/glassware"
+    },
+    {
+      "text": "",
+      "url": "https://theme-craft-demo.myshopify.com/collections/serveware"
+    },
+    {
+      "text": "",
+      "url": "https://theme-craft-demo.myshopify.com/collections/flatware"
+    },
+    {
+      "text": "",
+      "url": "https://theme-craft-demo.myshopify.com/collections/textiles"
+    },
+    {
+      "text": "",
+      "url": "https://theme-craft-demo.myshopify.com/collections/bundles"
+    },
+    {
+      "text": "",
+      "url": "https://theme-craft-demo.myshopify.com/"
+    },
+    {
+      "text": "Cart",
+      "url": "https://theme-craft-demo.myshopify.com/cart"
+    },
+    {
+      "text": "Glassware",
+      "url": "https://theme-craft-demo.myshopify.com/collections/glassware"
+    },
+    {
+      "text": "Textiles",
+      "url": "https://theme-craft-demo.myshopify.com/collections/textiles"
+    },
+    {
+      "text": "Dinnerware",
+      "url": "https://theme-craft-demo.myshopify.com/collections/dinnerware"
+    },
+    {
+      "text": "Serveware",
+      "url": "https://theme-craft-demo.myshopify.com/collections/serveware"
+    },
+    {
+      "text": "Flatware",
+      "url": "https://theme-craft-demo.myshopify.com/collections/flatware"
+    },
+    {
+      "text": "Bundles",
+      "url": "https://theme-craft-demo.myshopify.com/collections/bundles"
+    },
+    {
+      "text": "Sweet & Savory Comfort Food Recipes",
+      "url": "https://theme-craft-demo.myshopify.com/blogs/magazine/sweet-savory-comfort-food-recipes"
+    },
+    {
+      "text": "Bringing Joy to Every Table",
+      "url": "https://theme-craft-demo.myshopify.com/blogs/magazine/fable-s-mission-is-simple-bring-joy-to-every-table"
+    },
+    {
+      "text": "Preparing a Dinner Table for Success",
+      "url": "https://theme-craft-demo.myshopify.com/blogs/magazine/preparing-a-dinner-table-for-success"
+    },
+    {
+      "text": "About",
+      "url": "https://theme-craft-demo.myshopify.com/pages/about-us"
+    },
+    {
+      "text": "Magazine",
+      "url": "https://theme-craft-demo.myshopify.com/blogs/magazine"
+    },
+    {
+      "text": "theme-craft-demo",
+      "url": "https://theme-craft-demo.myshopify.com/"
+    }
+  ],
+  "sections": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--18214084870398__rich_text",
+      "rect": {
+        "height": 204,
+        "width": 390,
+        "x": 0,
+        "y": 189.796875
+      },
+      "tag": "SECTION",
+      "text": "Sustainably crafted goods to elevate your everyday."
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--18214084870398__163966533404a6fc60",
+      "rect": {
+        "height": 316.140625,
+        "width": 390,
+        "x": 0,
+        "y": 393.796875
+      },
+      "tag": "SECTION",
+      "text": "Glassware\nTextiles"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--18214084870398__1639595149acc048aa",
+      "rect": {
+        "height": 1622.890625,
+        "width": 390,
+        "x": 0,
+        "y": 709.9375
+      },
+      "tag": "SECTION",
+      "text": "Dinnerware\nServeware\nFlatware"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--18214084870398__1639595147aa46bf0c",
+      "rect": {
+        "height": 389.3203125,
+        "width": 390,
+        "x": 0,
+        "y": 2332.828125
+      },
+      "tag": "SECTION",
+      "text": "The details matter"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--18214084870398__1639597029092b0387",
+      "rect": {
+        "height": 147,
+        "width": 390,
+        "x": 0,
+        "y": 2722.1484375
+      },
+      "tag": "SECTION",
+      "text": "We believe in simple, timeless, and responsible designs."
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--18214084870398__16371707180d6ee8c7",
+      "rect": {
+        "height": 291.015625,
+        "width": 390,
+        "x": 0,
+        "y": 2869.1484375
+      },
+      "tag": "SECTION",
+      "text": "\"Such beautiful dishes that I have come to refer to as my shelf art! if you have open shelving these dishes are for you. They are unique.\"\n\nGlen, Niagara Falls, ON\n\n\"I loved these "
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--18214084870398__collage",
+      "rect": {
+        "height": 566.1015625,
+        "width": 390,
+        "x": 0,
+        "y": 3160.1640625
+      },
+      "tag": "SECTION",
+      "text": "Discover our bundled collections\nBundles"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--18214084870398__multi_column",
+      "rect": {
+        "height": 1179,
+        "width": 390,
+        "x": 0,
+        "y": 3726.265625
+      },
+      "tag": "SECTION",
+      "text": "Responsible Design\n\nDesigned with integrity and durably crafted for everyday use.\n\nTransparent Pricing\n\nWe believe in accessible pricing and full transparency. Our pricing model is"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--18214084870398__163717072176749f09",
+      "rect": {
+        "height": 714.65625,
+        "width": 390,
+        "x": 0,
+        "y": 4905.265625
+      },
+      "tag": "SECTION",
+      "text": "From the magazine\nSweet & Savory Comfort Food Recipes\nNOVEMBER 17, 2021\n\nComfort food doesn’t always look like mac ‘n cheese—it often looks like a memory in meal form, passed down "
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--18214084870398__1637170833db1b0e8f",
+      "rect": {
+        "height": 270,
+        "width": 390,
+        "x": 0,
+        "y": 5619.921875
+      },
+      "tag": "SECTION",
+      "text": "Don't miss out\n\nSubscribe to our mailing list for insider news, product launches, and more.\n\nEmail"
+    }
+  ],
+  "title": "theme-craft-demo",
+  "url": "https://theme-craft-demo.myshopify.com/",
+  "viewport": {
+    "dpr": 1,
+    "height": 844,
+    "width": 390
+  },
+  "formGroups": [],
+  "grids": [
+    {
+      "className": "collection-list grid grid--1-col grid--3-col-tablet collection-list--3-items",
+      "columns": "none",
+      "display": "flex",
+      "gap": "10px",
+      "height": 1577.890625,
+      "tag": "UL",
+      "width": 390
+    },
+    {
+      "className": "multicolumn-list grid grid--1-col grid--3-col-tablet slider slider--mobile grid--peek",
+      "columns": "none",
+      "display": "flex",
+      "gap": "10px",
+      "height": 193.015625,
+      "tag": "UL",
+      "width": 390
+    },
+    {
+      "className": "multicolumn-list grid grid--1-col grid--2-col-tablet grid--4-col-desktop",
+      "columns": "none",
+      "display": "flex",
+      "gap": "10px",
+      "height": 1137,
+      "tag": "UL",
+      "width": 390
+    },
+    {
+      "className": "blog__posts articles-wrapper grid grid--peek grid--2-col-tablet grid--4-col-desktop slider slider--tablet",
+      "columns": "none",
+      "display": "flex",
+      "gap": "10px",
+      "height": 518.65625,
+      "tag": "UL",
+      "width": 390
+    },
+    {
+      "className": "blog__post grid__item article slider__slide slider__slide--full-width",
+      "columns": "none",
+      "display": "flex",
+      "gap": "normal",
+      "height": 508.65625,
+      "tag": "LI",
+      "width": 375
+    },
+    {
+      "className": "blog__post grid__item article slider__slide slider__slide--full-width",
+      "columns": "none",
+      "display": "flex",
+      "gap": "normal",
+      "height": 508.65625,
+      "tag": "LI",
+      "width": 360
+    },
+    {
+      "className": "blog__post grid__item article slider__slide slider__slide--full-width",
+      "columns": "none",
+      "display": "flex",
+      "gap": "normal",
+      "height": 508.65625,
+      "tag": "LI",
+      "width": 375
+    }
+  ],
+  "images": [
+    {
+      "alt": "Glassware",
+      "complete": true,
+      "naturalWidth": 342,
+      "rect": {
+        "height": 217.34375,
+        "width": 173
+      }
+    },
+    {
+      "alt": "Textiles",
+      "complete": true,
+      "naturalWidth": 342,
+      "rect": {
+        "height": 217.34375,
+        "width": 173
+      }
+    },
+    {
+      "alt": "Dinnerware",
+      "complete": true,
+      "naturalWidth": 342,
+      "rect": {
+        "height": 447.5,
+        "width": 358
+      }
+    },
+    {
+      "alt": "Serveware",
+      "complete": true,
+      "naturalWidth": 342,
+      "rect": {
+        "height": 447.5,
+        "width": 358
+      }
+    },
+    {
+      "alt": "Flatware",
+      "complete": true,
+      "naturalWidth": 342,
+      "rect": {
+        "height": 447.5,
+        "width": 358
+      }
+    },
+    {
+      "alt": "Load video: Promotional video showing how Fable ceramics are crafted.",
+      "complete": true,
+      "naturalWidth": 390,
+      "rect": {
+        "height": 278.3203125,
+        "width": 358
+      }
+    },
+    {
+      "alt": "Bundles",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 237.0078125,
+        "width": 358
+      }
+    },
+    {
+      "alt": "Top-down view of gray, pink, and white dinnerware on a table.",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 133.296875,
+        "width": 173
+      }
+    },
+    {
+      "alt": "Top-down view of a table with a tablecloth, napkins, silverware, and speckled white plates.",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 133.296875,
+        "width": 173
+      }
+    },
+    {
+      "alt": "",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 118.796875,
+        "width": 118.796875
+      }
+    },
+    {
+      "alt": "",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 118.796875,
+        "width": 118.796875
+      }
+    },
+    {
+      "alt": "",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 118.796875,
+        "width": 118.796875
+      }
+    }
+  ],
+  "bodyText": "Skip to content\n\nCheck out our latest bundled collections \n\nCart\nSustainably crafted goods to elevate your everyday.\nGlassware\nTextiles\nDinnerware\nServeware\nFlatware\nThe details matter\nWe believe in simple, timeless, and responsible designs.\n\"Such beautiful dishes that I have come to refer to as my shelf art! if you have open shelving these dishes are for you. They are unique.\"\n\nGlen, Niagara Falls, ON\n\n\"I loved these dishes from the get-go! Knew I had to have them. I chose three colours and they go together beautifully.\"\n\nVanessa, Sherwood Park, AB\n\n\"If you've been contemplating purchasing these plates - go for it! They've elevated my dining experience and make meals so much more enjoyable!\"\n\nTobi, Vancouver, BC\n\n1\n/\nof\n3\nDiscover our bundled collections\nBundles\nResponsible Design\n\nDesigned with integrity and durably crafted for everyday use.\n\nTransparent Pricing\n\nWe believe in accessible pricing and full transparency. Our pricing model is an open book.\n\nSustainable Sourcing\n\nWe only partner with people who put the earth, and its people, first.\n\nGiving Back\n\nThanks to Mealshare, every purchase directly donates a meal to a youth in need.\n\nFrom the magazine\nSweet & Savory Comfort Food Recipes\nNOVEMBER 17, 2021\n\nComfort food doesn’t always look like mac ‘n cheese—it often looks like a memory in meal form, passed down from someone special. This Mother’s Day, we’re honouring all the women...\n\nBringing Joy to Every Table\nNOVEMBER 16, 2021\n\nFor many, it has become a daily routine to prepare nutritious meals for our families and friends, served on carefully chosen dinnerware. The food we eat becomes merely a second...\n\nPreparing a Dinner Table for Success\nNOVEMBER 16, 2021\n\nDecorating your dinner table is a fun task that can make or break your dinner party. Everyone who sits down for a meal is going to enjoy a beautifully decorated...\n\n1\n/\nof\n3\nDon't miss out\n\nSubscribe to our mailing list for insider news, product launches, and more.\n\nEmail\nGet to know Craft\nAbout\nMagazine\nOur mission\n\nWe create products that are as enjoyable as they are ethical.\n\nCountry/region\nCanada (CAD $)\nPayment methods\n© 2026, theme-craft-demo Powered by Shopify"
+}

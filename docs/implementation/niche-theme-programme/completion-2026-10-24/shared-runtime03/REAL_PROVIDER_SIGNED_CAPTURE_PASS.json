@@ -1,0 +1,57 @@
+{
+  "events": [
+    {
+      "id": "2d643aee-b664-495c-9c1b-198b3957e3cd",
+      "eventType": "payment.failed",
+      "signatureValid": true,
+      "canonicalEventId": "payment.failed:pay_TrpnvdOYsm6CPp",
+      "processingStatus": "processed"
+    },
+    {
+      "id": "b10379b9-ec84-4598-aa1a-a268e4908109",
+      "eventType": "payment.authorized",
+      "signatureValid": true,
+      "canonicalEventId": "payment.authorized:pay_TrpqpGbBhBzlMq",
+      "processingStatus": "processed"
+    },
+    {
+      "id": "a46c537e-eef3-497e-9e98-326aaaae7187",
+      "eventType": "payment.captured",
+      "signatureValid": true,
+      "canonicalEventId": "payment.captured:pay_TrpqpGbBhBzlMq",
+      "processingStatus": "processed"
+    }
+  ],
+  "captureOrder": {
+    "id": "180b13af-5711-465a-9e4b-e226bf660b81",
+    "total": 1220.0,
+    "number": "ORD-20261024-10004",
+    "status": "confirmed",
+    "currency": "INR",
+    "paymentStatus": "paid"
+  },
+  "captureLedger": [
+    {
+      "id": "77f61fea-a1d7-4352-92d5-36d82033433f",
+      "entries": 2,
+      "debit_minor": 122000,
+      "credit_minor": 122000
+    }
+  ],
+  "capturePayments": [
+    {
+      "id": "35a75dc5-9358-4fea-8c7e-f52b8bae01b3",
+      "amount": 1220.0,
+      "status": "captured",
+      "orderId": "180b13af-5711-465a-9e4b-e226bf660b81",
+      "currency": "INR",
+      "providerOrderId": "order_TrpqDum86zShky",
+      "providerPaymentId": "pay_TrpqpGbBhBzlMq"
+    }
+  ],
+  "observedAt": "2026-10-24T17:59:38.351649+00:00",
+  "runId": "20b861608061",
+  "providerSecretQualification": "PASS_ACTUAL_SIGNED_FAILED_AUTHORIZED_CAPTURED",
+  "buyerConfirmation": "FAIL_WEBHOOK_FIRST_REFERENCE_CHECK",
+  "fullCertificate": false
+}

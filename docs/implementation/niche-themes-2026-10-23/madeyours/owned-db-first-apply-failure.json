@@ -1,0 +1,73 @@
+{
+  "runId": "7e7f0c94707f",
+  "image": "postgres:16-alpine",
+  "restImage": "public.ecr.aws/supabase/postgrest:v16.2",
+  "limits": {
+    "postgres": {
+      "memory": "1g",
+      "cpus": "2",
+      "pids": "512"
+    },
+    "rest": {
+      "memory": "256m",
+      "cpus": "1",
+      "pids": "256"
+    }
+  },
+  "jobs": 1,
+  "containers": [
+    "letbuyy-exec-48064-mvkq12hx-cfc28a"
+  ],
+  "reaped": [],
+  "suites": 1,
+  "gatewayDbSuites": 1,
+  "failedSuites": 1,
+  "tests": 0,
+  "assertionsPassed": 0,
+  "assertionsFailed": 0,
+  "cancelled": 0,
+  "skipped": 0,
+  "todo": 0,
+  "wallSeconds": 22.5,
+  "suiteSeconds": 20.6,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "results": [
+    {
+      "name": "cart-order-fact-snapshots.postgres",
+      "path": "services/api-gateway/src/__tests__/owned-db/cart-order-fact-snapshots.postgres.test.ts",
+      "kind": "gateway-db",
+      "cluster": "letbuyy-exec-48064-mvkq12hx-cfc28a",
+      "code": 70,
+      "timedOut": false,
+      "hasSummary": false,
+      "tests": 0,
+      "pass": 0,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "seconds": 20.6,
+      "firstFailure": "infrastructure: migration 388_cart_order_fact_snapshots.sql failed in letbuyy-exec-48064-mvkq12h",
+      "failures": [
+        "infrastructure: migration 388_cart_order_fact_snapshots.sql failed in letbuyy-exec-48064-mvkq12hx-cfc28a/letbuyy_tpl_gateway: ERROR:  record \"a\" is not assigned yet"
+      ],
+      "skips": [],
+      "database": "letbuyy_exec_cart_order_fact_snapshots_postgres",
+      "templateSeconds": 0,
+      "provisionSeconds": 0,
+      "rest": null,
+      "ownership": "not verified",
+      "cleanup": {
+        "rest": null,
+        "database": null
+      }
+    }
+  ]
+}

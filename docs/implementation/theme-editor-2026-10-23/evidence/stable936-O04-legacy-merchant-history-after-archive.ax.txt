@@ -1,0 +1,83 @@
+Browser tab: 51, Title: "LetBuyy Admin", URL: "http://admin.threadline-936e5f577646.localhost:50493/syn-threadline-ui-6815276b/orders/36b89194-f491-49ab-b42c-401029a4a58c".
+1 AXWebArea LetBuyy Admin, URL: admin.threadline-936e5f577646.localhost:50493/syn-threadline-ui-6815276b/orders/36b89194-f491-49ab-b42c-401029a4a58c
+	2 container
+		3 link Description: LetBuyy dashboard, Value: admin.threadline-936e5f577646.localhost:50493/syn-threadline-ui-6815276b/dashboard
+		4 button Search
+		5 button Setup assistant
+		6 button Notifications
+		7 button (collapsed) Description: Switch store, current store Threadline, Secondary Actions: Expand
+			8 text TH
+			9 text Threadline
+	10 container admin-nav-drawer
+		11 container
+			12 container Primary navigation
+				13 content list
+					14 link Description: Home, Value: admin.threadline-936e5f577646.localhost:50493/syn-threadline-ui-6815276b/dashboard
+					15 link Description: Orders, Value: admin.threadline-936e5f577646.localhost:50493/syn-threadline-ui-6815276b/orders
+					16 container
+						17 link Description: Products, Value: admin.threadline-936e5f577646.localhost:50493/syn-threadline-ui-6815276b/products
+						18 button (collapsed) Description: Toggle Products section, Secondary Actions: Expand
+					19 container
+						20 link Description: Inventory, Value: admin.threadline-936e5f577646.localhost:50493/syn-threadline-ui-6815276b/products/inventory
+						21 button (collapsed) Description: Toggle Inventory section, Secondary Actions: Expand
+					22 container
+						23 link Description: Purchasing, Value: admin.threadline-936e5f577646.localhost:50493/syn-threadline-ui-6815276b/products/purchase-orders
+						24 button (collapsed) Description: Toggle Purchasing section, Secondary Actions: Expand
+					25 container
+						26 link Description: Customers, Value: admin.threadline-936e5f577646.localhost:50493/syn-threadline-ui-6815276b/customers
+						27 button (collapsed) Description: Toggle Customers section, Secondary Actions: Expand
+					28 container
+						29 link Description: Money, Value: admin.threadline-936e5f577646.localhost:50493/syn-threadline-ui-6815276b/settings/billing
+						30 button (collapsed) Description: Toggle Money section, Secondary Actions: Expand
+					31 container
+						32 link Description: Marketing, Value: admin.threadline-936e5f577646.localhost:50493/syn-threadline-ui-6815276b/coupons
+						33 button (collapsed) Description: Toggle Marketing section, Secondary Actions: Expand
+					34 container
+						35 link Description: Content, Value: admin.threadline-936e5f577646.localhost:50493/syn-threadline-ui-6815276b/pages
+						36 button (collapsed) Description: Toggle Content section, Secondary Actions: Expand
+					37 link Description: Analytics, Value: admin.threadline-936e5f577646.localhost:50493/syn-threadline-ui-6815276b/analytics
+			38 text Sales channels
+			39 container Sales channels
+				40 content list
+					41 container
+						42 link Description: Online Store, Value: admin.threadline-936e5f577646.localhost:50493/syn-threadline-ui-6815276b/online-store
+						43 button (collapsed) Description: Toggle Online Store section, Secondary Actions: Expand
+			44 text Apps
+			45 container Apps
+				46 content list
+					47 link Description: Add, Value: admin.threadline-936e5f577646.localhost:50493/syn-threadline-ui-6815276b/apps
+		48 container Settings navigation
+			49 content list
+				50 link Description: Settings, Value: admin.threadline-936e5f577646.localhost:50493/syn-threadline-ui-6815276b/settings
+	51 container admin-page-scroll
+		52 container
+			53 heading Order #ORD-20261024-10001, Value: 1
+				54 text Order #ORD-20261024-10001
+			55 link Description: All orders, Value: admin.threadline-936e5f577646.localhost:50493/syn-threadline-ui-6815276b/orders
+		56 container
+			57 heading Order summary, Value: 2
+				58 text Order summary
+			59 text Pending Cod Payment: Pending Fulfillment: Unfulfilled Refund: None Order number #ORD-20261024-10001 Placed 24 Oct 2026, 09:13 am Last updated 24 Oct 2026 Payment method COD Notes SYNTHETIC_LEGACY_READ_CONTROL; setup_only; no_checkout_or_payment
+		60 container
+			61 heading Customer, Value: 2
+				62 text Customer
+			63 text Name Synthetic legacy read control Email
+			64 button [synthetic-email-redacted]
+			65 text Phone —
+			66 button View customer profile
+		67 container
+			68 heading Line items, Value: 2
+				69 text Line items
+			70 text 1 item Synthetic legacy beauty control — 1  ×  ₹560.00 ₹560.00 Product details were not recorded with this order.
+		71 container
+			72 heading Addresses, Value: 2
+				73 text Addresses
+			74 heading No addresses on this order, Value: 3
+				75 text No addresses on this order
+			76 text Shipping and billing addresses will appear here when available.
+		77 container
+			78 heading Payment summary, Value: 2
+				79 text Payment summary
+			80 text Subtotal ₹560.00 Shipping ₹0.00 Tax (GST) ₹0.00 Total ₹560.00 Refund status None Return status None
+
+The focused UI element is 1 AXWebArea LetBuyy Admin, URL: admin.threadline-936e5f577646.localhost:50493/syn-threadline-ui-6815276b/orders/36b89194-f491-49ab-b42c-401029a4a58c

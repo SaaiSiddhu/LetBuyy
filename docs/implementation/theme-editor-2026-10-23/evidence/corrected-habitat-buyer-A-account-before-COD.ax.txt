@@ -1,0 +1,29 @@
+Browser tab: 31, Title: "Threadline", URL: "http://syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94/account".
+0 AXWebArea Threadline, URL: syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94/account
+	1 container
+		2 text Habitat shared header f6074d90e894
+		3 link syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94/account
+		4 container Description: Primary, ID: lb-nav-panel-header-default
+		5 link Description: THREADLINE, Value: syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94
+		6 button (collapsed) Description: Search, Secondary Actions: Expand
+		7 link Description: Log in, Value: syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94/customers/login
+		8 link Description: Cart ( 4 ), Value: syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94/cart
+		9 heading Your account, Value: 1
+			10 text Your account
+		11 text Signed in to LetBuyy as syn-dewdrop-a-f6074d90e894@example.invalid
+		12 container
+			13 link Description: Orders, Value: syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94/account/orders
+			14 link Description: Addresses, Value: syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94/account/addresses
+			15 link Description: Rewards, Value: syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94/account/loyalty
+			16 link Description: Settings, Value: syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94/account/settings
+			17 button Sign out at this store
+		18 heading Threadline, Value: 3
+			19 text Threadline
+		20 text Habitat shared footer f6074d90e894
+		21 heading CONTACT, Value: 4
+			22 text CONTACT
+		23 link Description: Contact us, Value: syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94/contact
+		24 text © Threadline. All rights reserved.
+		25 link Description: Powered by LetBuyy, Value: letbuyy.com/
+
+The focused UI element is 0 AXWebArea Threadline, URL: syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94/account

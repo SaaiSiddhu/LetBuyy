@@ -1,0 +1,59 @@
+{
+  "recordedAt": "2026-10-23T20:46:35.386094+00:00",
+  "status": "ROOT_BOTH_PROPER_SUPPLEMENTAL_PRODUCTION_CLIENTS_ADMITTED_NORMAL_UI_RETEST_NEXT",
+  "runId": "f6074d90e894",
+  "candidate": "/private/tmp/theme-editor-recovery-20261024-01",
+  "parentPid": 30132,
+  "execSession": 15581,
+  "sourceProof": {
+    "path": "/private/tmp/theme-editor-recovery-20261024-01/supplemental-recovery-source-proof.json",
+    "sha256": "702b3a632462cff507993e80b58171fb8d0c246c2913de643bfbe4cf3438522f"
+  },
+  "sourceAfterBothBuilds": {
+    "filesRehashed": 17243,
+    "changed": [],
+    "moduleConsumers": 55,
+    "dependencyLinksCopiedVerified": 2174,
+    "workspaceResolutionsContained": 45
+  },
+  "clients": [
+    {
+      "kind": "merchant-next-production",
+      "origin": "http://admin.threadline-f6074d90e894.localhost:49943",
+      "supervisorPid": 30240,
+      "startup": {
+        "path": "docs/implementation/niche-theme-programme/supplemental-recovery-merchant-next-production-startup.json",
+        "sha256": "3fc504156c19489171336c58baae1e78f56211d49f8c561a4d798e59ed1d344b"
+      },
+      "log": {
+        "path": "/private/tmp/theme-editor-recovery-f607-merchant-next-production-01.log",
+        "sha256": "369126a817913585190fbe7136f62500053941cf98af133aa7cd0c90e6fc7a26"
+      }
+    },
+    {
+      "kind": "commerce-next-production",
+      "origin": "http://syn-threadline-ui-33be9d94.localhost:49944",
+      "supervisorPid": 30406,
+      "startup": {
+        "path": "docs/implementation/niche-theme-programme/supplemental-recovery-commerce-next-production-startup.json",
+        "sha256": "0bc64af20d264ded3d6a0371d2c51355e8e44b8b1c1392e4ea7c0d6e554385d5"
+      },
+      "log": {
+        "path": "/private/tmp/theme-editor-recovery-f607-commerce-next-production-01.log",
+        "sha256": "64d663e61d9f8bfbbb557efd907644622b36d85b76cf8691fdb551f80ac1c95a"
+      }
+    }
+  ],
+  "noOriginalClientOrFixtureStopped": true,
+  "noDatabaseMutationFromCopyOrBuild": true,
+  "originalIssuerAndHostedCheckoutRetained": true,
+  "initialAttempt": "Sandbox denied ps preflight before guard/DB/client action; same unchanged script subsequently ran with approved process/owned-network access. No guard bypass.",
+  "normalUiStatus": "NOT_RUN",
+  "allocation": "Sole Editor natural merchant session/HabitatBreactivation/HI16 stock omission and conserved inventory; old387A1stalecheckout on alreadyloaded oldtab; normal buyer+merchant oldorderhistories. Then newCommerce natural session/newUIcart/stockrecovery; no token/storagecopy.",
+  "limits": [
+    "New-portSSOnotclaimed; originalnormalidentityflowifneeded.",
+    "Oldhostedcheckoutreturnlinksremain62076; no cross-port cart continuity claim.",
+    "CartUIFAILs remainopen pending actual retest.",
+    "No migration393 or new backend runtime; current Gateway392 unchanged."
+  ]
+}

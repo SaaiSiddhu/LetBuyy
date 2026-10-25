@@ -1,0 +1,50 @@
+Browser tab: 74, Title: "Trailmark fixture same-variant witnesses | Threadline", URL: "http://syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/collections/57ee45c9-a7a5-478e-ab8e-941a1a034bd1?collection_id=57ee45c9-a7a5-478e-ab8e-941a1a034bd1&search=Trailmark&size=L&length_value=10&length_unit=in".
+1 AXWebArea Trailmark fixture same-variant witnesses | Threadline, URL: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/collections/57ee45c9-a7a5-478e-ab8e-941a1a034bd1?collection_id=57ee45c9-a7a5-478e-ab8e-941a1a034bd1&search=Trailmark&size=L&length_value=10&length_unit=in
+	2 container
+		3 text Trailmark 936 B — saved recovery draft.
+		4 link syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/collections/57ee45c9-a7a5-478e-ab8e-941a1a034bd1?collection_id=57ee45c9-a7a5-478e-ab8e-941a1a034bd1&search=Trailmark&size=L&length_value=10&length_unit=in
+		5 container Description: Primary, ID: lb-nav-panel-header-default
+		6 link Description: THREADLINE, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b
+		7 button (collapsed) Description: Search, Secondary Actions: Expand
+		8 link Description: Log in, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/customers/login
+		9 link Description: Cart ( 2 ), Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/cart
+		10 container Filter products by country of origin
+			11 container
+				12 text Country of origin
+				13 text field (settable) Country of origin, ID: lb-product-origin-filter
+				14 button Apply filter
+		15 text ACTIVITY / EQUIPMENT
+		16 heading Trailmark fixture same-variant witnesses, Value: 1
+			17 text Trailmark fixture same-variant witnesses
+		18 text Synthetic owned Trailmark lifecycle collection.
+		19 text 0 products
+		20 container Equipment filters
+			21 container
+				22 text Search equipment
+				23 search text field (settable) Search equipment, Value: Trailmark
+				24 text Sort
+				25 pop up button (collapsed, settable) Sort, Value: Featured, Secondary Actions: Expand
+					26 menu
+						27 (selected) Featured
+						28 Price: low to high
+						29 Price: high to low
+						30 Newest
+						31 Name
+				32 button Apply
+				33 link Description: Clear all filters, Value: syn-threadline-ui-6815276b.localhost:50494/collections/57ee45c9-a7a5-478e-ab8e-941a1a034bd1?limit=20&search=Trailmark&sort=display_order&collection_id=57ee45c9-a7a5-478e-ab8e-941a1a034bd1
+		34 container Applied filters
+			35 link Description: Size: L ×, Value: syn-threadline-ui-6815276b.localhost:50494/collections/57ee45c9-a7a5-478e-ab8e-941a1a034bd1?limit=20&search=Trailmark&sort=display_order&collection_id=57ee45c9-a7a5-478e-ab8e-941a1a034bd1&length_value=10&length_unit=in
+			36 link Description: Equipment length: 10 in ×, Value: syn-threadline-ui-6815276b.localhost:50494/collections/57ee45c9-a7a5-478e-ab8e-941a1a034bd1?limit=20&search=Trailmark&sort=display_order&collection_id=57ee45c9-a7a5-478e-ab8e-941a1a034bd1&size=L
+		37 text No matching equipment. Your search is retained; clear a filter or browse a broader category.
+		38 container Product pages
+			39 text Page 1
+		40 heading Threadline, Value: 3
+			41 text Threadline
+		42 text Trailmark 936 B footer saved
+		43 heading CONTACT, Value: 4
+			44 text CONTACT
+		45 link Description: Contact us, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/contact
+		46 text © Threadline. All rights reserved.
+		47 link Description: Powered by LetBuyy, Value: letbuyy.com/
+
+The focused UI element is 1 AXWebArea Trailmark fixture same-variant witnesses | Threadline, URL: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/collections/57ee45c9-a7a5-478e-ab8e-941a1a034bd1?collection_id=57ee45c9-a7a5-478e-ab8e-941a1a034bd1&search=Trailmark&size=L&length_value=10&length_unit=in

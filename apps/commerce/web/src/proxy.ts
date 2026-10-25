@@ -62,7 +62,9 @@ function isStorefrontAccessMode(value: unknown): value is StorefrontAccessMode {
 }
 
 export const config = {
-  matcher: ['/((?!api/|_next/|_static/|_vercel/|[\\w-]+\\.\\w+).*)'],
+  // These are public first-party files, including on merchant/custom hosts.
+  // Keep nested storefront routes gated even when their last segment has a suffix.
+  matcher: ['/((?!api/|_next/|_static/|_vercel/|theme-assets/|theme-previews/|[\\w-]+\\.\\w+).*)'],
 };
 
 function gatewayBaseUrl(): string | null {

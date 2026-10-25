@@ -1,0 +1,593 @@
+{
+  "body": {
+    "background": "rgb(255, 255, 255)",
+    "color": "rgba(0, 0, 255, 0.75)",
+    "font": "Jost, sans-serif",
+    "fontSize": "19.5px"
+  },
+  "controls": [
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Menu",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "true",
+      "label": "",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "true",
+      "label": "",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "true",
+      "label": "",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "true",
+      "label": "",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "true",
+      "label": "",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Search",
+      "tag": "INPUT",
+      "type": "search"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Email",
+      "tag": "INPUT",
+      "type": "email"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Subscribe",
+      "tag": "BUTTON",
+      "type": "submit"
+    }
+  ],
+  "headings": [
+    {
+      "font": "Jost, sans-serif",
+      "height": 23.390625,
+      "line": "23.4px",
+      "size": "16.9px",
+      "tag": "H2",
+      "text": "",
+      "weight": "400",
+      "width": 280.8046875,
+      "x": 45.5,
+      "y": 3.5859375
+    },
+    {
+      "font": "Jost, sans-serif",
+      "height": 50.6953125,
+      "line": "50.7px",
+      "size": "39px",
+      "tag": "H1",
+      "text": "Your cart is empty",
+      "weight": "400",
+      "width": 351,
+      "x": 19.5,
+      "y": 280.28125
+    },
+    {
+      "font": "Jost, sans-serif",
+      "height": 33.1484375,
+      "line": "33.15px",
+      "size": "22.1px",
+      "tag": "H3",
+      "text": "We love them, you love them.",
+      "weight": "400",
+      "width": 351,
+      "x": 19.5,
+      "y": 478.4765625
+    },
+    {
+      "font": "Jost, sans-serif",
+      "height": 20.28125,
+      "line": "20.28px",
+      "size": "15.6px",
+      "tag": "H3",
+      "text": "Pocket Cardi",
+      "weight": "400",
+      "width": 171.5,
+      "x": 19.5,
+      "y": 845.8984375
+    },
+    {
+      "font": "Jost, sans-serif",
+      "height": 40.5625,
+      "line": "20.28px",
+      "size": "15.6px",
+      "tag": "H3",
+      "text": "Tri-Stripe Lambswool Crew",
+      "weight": "400",
+      "width": 171.5,
+      "x": 199,
+      "y": 845.8984375
+    },
+    {
+      "font": "Jost, sans-serif",
+      "height": 20.28125,
+      "line": "20.28px",
+      "size": "15.6px",
+      "tag": "H3",
+      "text": "Knitted Chore Jacket",
+      "weight": "400",
+      "width": 171.5,
+      "x": 19.5,
+      "y": 1180.515625
+    },
+    {
+      "font": "Jost, sans-serif",
+      "height": 20.28125,
+      "line": "20.28px",
+      "size": "15.6px",
+      "tag": "H3",
+      "text": "Lambswool Cardigan",
+      "weight": "400",
+      "width": 171.5,
+      "x": 199,
+      "y": 1180.515625
+    },
+    {
+      "font": "Jost, sans-serif",
+      "height": 20.28125,
+      "line": "20.28px",
+      "size": "15.6px",
+      "tag": "H3",
+      "text": "Patchwork Cable Crew",
+      "weight": "400",
+      "width": 171.5,
+      "x": 19.5,
+      "y": 1494.8515625
+    },
+    {
+      "font": "Jost, sans-serif",
+      "height": 20.28125,
+      "line": "20.28px",
+      "size": "15.6px",
+      "tag": "H3",
+      "text": "College Vee",
+      "weight": "400",
+      "width": 171.5,
+      "x": 199,
+      "y": 1494.8515625
+    },
+    {
+      "font": "Jost, sans-serif",
+      "height": 40.5625,
+      "line": "20.28px",
+      "size": "15.6px",
+      "tag": "H3",
+      "text": "Contrast Tip Lambswool Scarf",
+      "weight": "400",
+      "width": 171.5,
+      "x": 19.5,
+      "y": 1809.1875
+    },
+    {
+      "font": "Jost, sans-serif",
+      "height": 20.28125,
+      "line": "20.28px",
+      "size": "15.6px",
+      "tag": "H3",
+      "text": "Honeycomb Scarf",
+      "weight": "400",
+      "width": 171.5,
+      "x": 199,
+      "y": 1809.1875
+    },
+    {
+      "font": "Jost, sans-serif",
+      "height": 33.796875,
+      "line": "33.8px",
+      "size": "26px",
+      "tag": "H2",
+      "text": "Stay in the know",
+      "weight": "400",
+      "width": 310,
+      "x": 40,
+      "y": 1976.0390625
+    }
+  ],
+  "links": [
+    {
+      "text": "Skip to content",
+      "url": "https://theme-colorblock-demo.myshopify.com/cart#MainContent"
+    },
+    {
+      "text": "",
+      "url": "https://theme-colorblock-demo.myshopify.com/collections/mens-cardigans"
+    },
+    {
+      "text": "",
+      "url": "https://theme-colorblock-demo.myshopify.com/collections/mens-sweaters"
+    },
+    {
+      "text": "",
+      "url": "https://theme-colorblock-demo.myshopify.com/collections/mens-jackets"
+    },
+    {
+      "text": "",
+      "url": "https://theme-colorblock-demo.myshopify.com/collections/t-shirts"
+    },
+    {
+      "text": "",
+      "url": "https://theme-colorblock-demo.myshopify.com/collections/staples"
+    },
+    {
+      "text": "",
+      "url": "https://theme-colorblock-demo.myshopify.com/collections/sale"
+    },
+    {
+      "text": "",
+      "url": "https://theme-colorblock-demo.myshopify.com/collections/designer-collabs"
+    },
+    {
+      "text": "",
+      "url": "https://theme-colorblock-demo.myshopify.com/collections/spring-lookbook"
+    },
+    {
+      "text": "",
+      "url": "https://theme-colorblock-demo.myshopify.com/collections/staff-picks"
+    },
+    {
+      "text": "",
+      "url": "https://theme-colorblock-demo.myshopify.com/collections/best-sellers"
+    },
+    {
+      "text": "",
+      "url": "https://theme-colorblock-demo.myshopify.com/collections/hats"
+    },
+    {
+      "text": "",
+      "url": "https://theme-colorblock-demo.myshopify.com/collections/scarfs"
+    },
+    {
+      "text": "",
+      "url": "https://theme-colorblock-demo.myshopify.com/collections/wall-art"
+    },
+    {
+      "text": "",
+      "url": "https://theme-colorblock-demo.myshopify.com/collections/seat-covers"
+    },
+    {
+      "text": "",
+      "url": "https://theme-colorblock-demo.myshopify.com/collections/pottery"
+    },
+    {
+      "text": "",
+      "url": "https://theme-colorblock-demo.myshopify.com/blogs/news"
+    },
+    {
+      "text": "",
+      "url": "https://theme-colorblock-demo.myshopify.com/pages/about-us"
+    },
+    {
+      "text": "",
+      "url": "https://theme-colorblock-demo.myshopify.com/"
+    },
+    {
+      "text": "Cart",
+      "url": "https://theme-colorblock-demo.myshopify.com/cart"
+    },
+    {
+      "text": "Continue shopping",
+      "url": "https://theme-colorblock-demo.myshopify.com/collections/all"
+    },
+    {
+      "text": "Shop our bestsellers",
+      "url": "https://theme-colorblock-demo.myshopify.com/collections/best-sellers"
+    },
+    {
+      "text": "Pocket Cardi",
+      "url": "https://theme-colorblock-demo.myshopify.com/products/pocket-cardi-purple"
+    },
+    {
+      "text": "Tri-Stripe Lambswool Crew",
+      "url": "https://theme-colorblock-demo.myshopify.com/products/tri-stripe-lambswool-crew-yellow"
+    },
+    {
+      "text": "Knitted Chore Jacket",
+      "url": "https://theme-colorblock-demo.myshopify.com/products/charcoal-knitted-chore-jacket"
+    },
+    {
+      "text": "Lambswool Cardigan",
+      "url": "https://theme-colorblock-demo.myshopify.com/products/cardigan-lambswool-blue"
+    },
+    {
+      "text": "Patchwork Cable Crew",
+      "url": "https://theme-colorblock-demo.myshopify.com/products/patchwork-cable-crew-red-navy-grey"
+    },
+    {
+      "text": "College Vee",
+      "url": "https://theme-colorblock-demo.myshopify.com/products/college-vee-grey"
+    },
+    {
+      "text": "Contrast Tip Lambswool Scarf",
+      "url": "https://theme-colorblock-demo.myshopify.com/products/contrast-tip-lambswool-scarf-grey"
+    },
+    {
+      "text": "Honeycomb Scarf",
+      "url": "https://theme-colorblock-demo.myshopify.com/products/navy-honeycomb-scarf"
+    }
+  ],
+  "sections": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715895152662__cart-items",
+      "rect": {
+        "height": 247.6953125,
+        "width": 390,
+        "x": 0,
+        "y": 182.78125
+      },
+      "tag": "DIV",
+      "text": "Your cart is empty\nContinue shopping"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715895152662__cart-footer",
+      "rect": {
+        "height": 0,
+        "width": 390,
+        "x": 0,
+        "y": 430.4765625
+      },
+      "tag": "DIV",
+      "text": ""
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715895152662__1647874208e081181e",
+      "rect": {
+        "height": 164.6484375,
+        "width": 390,
+        "x": 0,
+        "y": 430.4765625
+      },
+      "tag": "SECTION",
+      "text": "We love them, you love them.\nShop our bestsellers "
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715895152662__featured-collection",
+      "rect": {
+        "height": 1328.4140625,
+        "width": 390,
+        "x": 0,
+        "y": 614.625
+      },
+      "tag": "SECTION",
+      "text": "Pocket Cardi\nRegular price\n$245.00 CAD\nTri-Stripe Lambswool Crew\nRegular price\n$155.00 CAD\nKnitted Chore Jacket\nRegular price\n$230.00 CAD\nLambswool Cardigan\nRegular price\n$215.00 C"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715895152662__1647874103c7292fd7",
+      "rect": {
+        "height": 216.796875,
+        "width": 390,
+        "x": 0,
+        "y": 1943.0390625
+      },
+      "tag": "SECTION",
+      "text": "Stay in the know\nEmail\n\nFollow us on social media"
+    }
+  ],
+  "title": "Your Shopping Cart – theme-colorblock-demo",
+  "url": "https://theme-colorblock-demo.myshopify.com/cart",
+  "viewport": {
+    "dpr": 1,
+    "height": 844,
+    "width": 390
+  },
+  "formGroups": [],
+  "grids": [
+    {
+      "className": "multicolumn-list contains-content-container grid grid--1-col-tablet-down grid--4-col-desktop",
+      "columns": "none",
+      "display": "flex",
+      "gap": "8px",
+      "height": 116.6484375,
+      "tag": "UL",
+      "width": 390
+    },
+    {
+      "className": "grid product-grid contains-card contains-card--standard grid--4-col-desktop grid--2-col-tablet-down",
+      "columns": "none",
+      "display": "flex",
+      "gap": "8px",
+      "height": 1298.4140625,
+      "tag": "UL",
+      "width": 351
+    }
+  ],
+  "images": [
+    {
+      "alt": "Pocket Cardi",
+      "complete": true,
+      "naturalWidth": 177,
+      "rect": {
+        "height": 214.375,
+        "width": 171.5
+      }
+    },
+    {
+      "alt": "Tri-Stripe Lambswool Crew",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 214.375,
+        "width": 171.5
+      }
+    },
+    {
+      "alt": "Knitted Chore Jacket",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 214.375,
+        "width": 171.5
+      }
+    },
+    {
+      "alt": "Lambswool Cardigan",
+      "complete": true,
+      "naturalWidth": 177,
+      "rect": {
+        "height": 214.375,
+        "width": 171.5
+      }
+    },
+    {
+      "alt": "Patchwork Cable Crew",
+      "complete": true,
+      "naturalWidth": 177,
+      "rect": {
+        "height": 214.375,
+        "width": 171.5
+      }
+    },
+    {
+      "alt": "College Vee",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 214.375,
+        "width": 171.5
+      }
+    },
+    {
+      "alt": "Contrast Tip Lambswool Scarf",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 214.375,
+        "width": 171.5
+      }
+    },
+    {
+      "alt": "Honeycomb Scarf",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 214.375,
+        "width": 171.5
+      }
+    }
+  ],
+  "bodyText": "Skip to content\n\nFree shipping on orders $150+\n\nCart\nYour cart is empty\nContinue shopping\nWe love them, you love them.\nShop our bestsellers \nPocket Cardi\nRegular price\n$245.00 CAD\nTri-Stripe Lambswool Crew\nRegular price\n$155.00 CAD\nKnitted Chore Jacket\nRegular price\n$230.00 CAD\nLambswool Cardigan\nRegular price\n$215.00 CAD\nPatchwork Cable Crew\nRegular price\n$255.00 CAD\nCollege Vee\nRegular price\n$185.00 CAD\nContrast Tip Lambswool Scarf\nRegular price\n$80.00 CAD\nSale\nHoneycomb Scarf\nRegular price\n$75.00 CAD \nSale price\n$50.00 CAD\nStay in the know\nEmail\n\nFollow us on social media\n\nTwitter\nFacebook\nInstagram\nTikTok\nYouTube\nThis is a demonstration store. You can purchase products like this from Country of Origin. © 2026 Powered by Shopify"
+}

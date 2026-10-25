@@ -1,0 +1,41 @@
+{
+  "recordedAt": "2026-10-23T17:44:35.914Z",
+  "status": "ROOT_FRESH_OWNED_LATEST392_STARTUP_READBACK_VERIFIED",
+  "runId": "f6074d90e894",
+  "candidate": "/private/tmp/theme-editor-candidate-20261023-latest392-manualtls01",
+  "guardVerified": true,
+  "actualReadback": {
+    "carts": 0,
+    "orders": 0,
+    "products": 17,
+    "collections": 16,
+    "discoveryBody": "bdaec8db8f836e94294e4bdd9c449346",
+    "subscriptions": [
+      {
+        "id": "5cab109a-9c7f-488f-996d-ec6760676e13",
+        "plan": "enterprise",
+        "status": "active",
+        "userId": "b18d7bd0-2f1a-4e34-81e9-db7d06658dc5",
+        "storeId": "f83e5e3d-1474-4378-b99b-55f8f4475b9f",
+        "amountPaid": 0,
+        "paymentGateway": null,
+        "externalSubscriptionId": null
+      }
+    ],
+    "sharedGroupsBody": "f14f2252157119e56f6614decef4c4aa",
+    "syntheticOwnerSiteBound": true
+  },
+  "effectiveCanonicalAllowance": {
+    "limit": null,
+    "plan_name": "enterprise"
+  },
+  "localTestEntitlement": {
+    "plan": "enterprise",
+    "paymentOperation": false,
+    "notPaidUpgradeAcceptance": true
+  },
+  "source391392ActuallyPresent": true,
+  "privateStateMode": "0600",
+  "browserAcceptance": false,
+  "mutationPerformed": false
+}

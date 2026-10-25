@@ -35,9 +35,9 @@ test('theme editor API contracts carry a validated template key', () => {
   const sharedTypesSource = read(SHARED_TYPES_SOURCE);
   const apiClientSource = read(API_CLIENT_SOURCE);
 
-  assert.match(themeEngineSource, /ThemeStoreQuerySchema[\s\S]*template_key: z\.string\(\)\.trim\(\)\.regex/);
-  assert.match(themeEngineSource, /SaveThemeDraftSchema[\s\S]*template_key: z\.string\(\)\.trim\(\)\.regex/);
-  assert.match(themeEngineSource, /PublishThemeSchema[\s\S]*template_key: z\.string\(\)\.trim\(\)\.regex/);
+  assert.match(themeEngineSource, /ThemeStoreQuerySchema[\s\S]*template_key: ThemeEditorTemplateKeySchema/);
+  assert.match(themeEngineSource, /SaveThemeDraftSchema[\s\S]*template_key: ThemeEditorTemplateKeySchema/);
+  assert.match(themeEngineSource, /PublishThemeSchema[\s\S]*template_key: ThemeEditorTemplateKeySchema/);
 
   assert.match(sharedTypesSource, /ThemeEditorPayloadSchema[\s\S]*template_key: z\.string\(\)\.min\(1\)\.max\(80\)\.default\('index'\)/);
   assert.match(sharedTypesSource, /templates: z\.array\(z\.object\(\{/);

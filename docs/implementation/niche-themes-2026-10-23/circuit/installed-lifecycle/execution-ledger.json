@@ -1,0 +1,382 @@
+{
+  "classification": "LIVE_INSTALLED_CASES_ONLY",
+  "runtimeStatus": "NOT_RUN",
+  "completed": 0,
+  "cases": [
+    {
+      "id": "CL-01",
+      "title": "Bind the ONE Editor fixture and exact installed release",
+      "status": "NOT_RUN",
+      "executed": false,
+      "startedAt": null,
+      "finishedAt": null,
+      "evidence": {
+        "dom": null,
+        "screenshot": null,
+        "requests": null,
+        "serverReceipt": null,
+        "readback": null
+      }
+    },
+    {
+      "id": "CL-02",
+      "title": "Create only supplemental records and exact memberships through merchant UI",
+      "status": "NOT_RUN",
+      "executed": false,
+      "startedAt": null,
+      "finishedAt": null,
+      "evidence": {
+        "dom": null,
+        "screenshot": null,
+        "requests": null,
+        "serverReceipt": null,
+        "readback": null
+      }
+    },
+    {
+      "id": "CL-03",
+      "title": "Installed baseline hub PDP facts and missing information",
+      "status": "NOT_RUN",
+      "executed": false,
+      "startedAt": null,
+      "finishedAt": null,
+      "evidence": {
+        "dom": null,
+        "screenshot": null,
+        "requests": null,
+        "serverReceipt": null,
+        "readback": null
+      }
+    },
+    {
+      "id": "CL-04",
+      "title": "Available/OOS native charger selection",
+      "status": "NOT_RUN",
+      "executed": false,
+      "startedAt": null,
+      "finishedAt": null,
+      "evidence": {
+        "dom": null,
+        "screenshot": null,
+        "requests": null,
+        "serverReceipt": null,
+        "readback": null
+      }
+    },
+    {
+      "id": "CL-05",
+      "title": "Unsupported electronics variant overrides stay unsupported",
+      "status": "NOT_RUN",
+      "executed": false,
+      "startedAt": null,
+      "finishedAt": null,
+      "evidence": {
+        "dom": null,
+        "screenshot": null,
+        "requests": null,
+        "serverReceipt": null,
+        "readback": null
+      }
+    },
+    {
+      "id": "CL-06",
+      "title": "Cable capacity/length vs output, and wholly unknown facts",
+      "status": "NOT_RUN",
+      "executed": false,
+      "startedAt": null,
+      "finishedAt": null,
+      "evidence": {
+        "dom": null,
+        "screenshot": null,
+        "requests": null,
+        "serverReceipt": null,
+        "readback": null
+      }
+    },
+    {
+      "id": "CL-07",
+      "title": "Roles are display facts; connector choices are kind OR",
+      "status": "NOT_RUN",
+      "executed": false,
+      "startedAt": null,
+      "finishedAt": null,
+      "evidence": {
+        "dom": null,
+        "screenshot": null,
+        "requests": null,
+        "serverReceipt": null,
+        "readback": null
+      }
+    },
+    {
+      "id": "CL-08",
+      "title": "Scalar power predicates remain distinct and conjunctive",
+      "status": "NOT_RUN",
+      "executed": false,
+      "startedAt": null,
+      "finishedAt": null,
+      "evidence": {
+        "dom": null,
+        "screenshot": null,
+        "requests": null,
+        "serverReceipt": null,
+        "readback": null
+      }
+    },
+    {
+      "id": "CL-09",
+      "title": "Canonical units and matching-variant price",
+      "status": "NOT_RUN",
+      "executed": false,
+      "startedAt": null,
+      "finishedAt": null,
+      "evidence": {
+        "dom": null,
+        "screenshot": null,
+        "requests": null,
+        "serverReceipt": null,
+        "readback": null
+      }
+    },
+    {
+      "id": "CL-10",
+      "title": "Product-name search remains scoped to selected collection",
+      "status": "NOT_RUN",
+      "executed": false,
+      "startedAt": null,
+      "finishedAt": null,
+      "evidence": {
+        "dom": null,
+        "screenshot": null,
+        "requests": null,
+        "serverReceipt": null,
+        "readback": null
+      }
+    },
+    {
+      "id": "CL-11",
+      "title": "Actual sort/page metadata is stable and server-counted",
+      "status": "NOT_RUN",
+      "executed": false,
+      "startedAt": null,
+      "finishedAt": null,
+      "evidence": {
+        "dom": null,
+        "screenshot": null,
+        "requests": null,
+        "serverReceipt": null,
+        "readback": null
+      }
+    },
+    {
+      "id": "CL-12",
+      "title": "Independent clear/sort preserves remaining scope and resets page",
+      "status": "NOT_RUN",
+      "executed": false,
+      "startedAt": null,
+      "finishedAt": null,
+      "evidence": {
+        "dom": null,
+        "screenshot": null,
+        "requests": null,
+        "serverReceipt": null,
+        "readback": null
+      }
+    },
+    {
+      "id": "CL-13",
+      "title": "Known-empty and foreign collection recovery",
+      "status": "NOT_RUN",
+      "executed": false,
+      "startedAt": null,
+      "finishedAt": null,
+      "evidence": {
+        "dom": null,
+        "screenshot": null,
+        "requests": null,
+        "serverReceipt": null,
+        "readback": null
+      }
+    },
+    {
+      "id": "CL-14",
+      "title": "Hub native add and client-authority refusal",
+      "status": "NOT_RUN",
+      "executed": false,
+      "startedAt": null,
+      "finishedAt": null,
+      "evidence": {
+        "dom": null,
+        "screenshot": null,
+        "requests": null,
+        "serverReceipt": null,
+        "readback": null
+      }
+    },
+    {
+      "id": "CL-15",
+      "title": "Cart reload retains exact accepted line/snapshot",
+      "status": "NOT_RUN",
+      "executed": false,
+      "startedAt": null,
+      "finishedAt": null,
+      "evidence": {
+        "dom": null,
+        "screenshot": null,
+        "requests": null,
+        "serverReceipt": null,
+        "readback": null
+      }
+    },
+    {
+      "id": "CL-16",
+      "title": "Stock rejection is visible and recoverable",
+      "status": "NOT_RUN",
+      "executed": false,
+      "startedAt": null,
+      "finishedAt": null,
+      "evidence": {
+        "dom": null,
+        "screenshot": null,
+        "requests": null,
+        "serverReceipt": null,
+        "readback": null
+      }
+    },
+    {
+      "id": "CL-17",
+      "title": "Buyer/site capability boundaries",
+      "status": "NOT_RUN",
+      "executed": false,
+      "startedAt": null,
+      "finishedAt": null,
+      "evidence": {
+        "dom": null,
+        "screenshot": null,
+        "requests": null,
+        "serverReceipt": null,
+        "readback": null
+      }
+    },
+    {
+      "id": "CL-18",
+      "title": "Hosted localCOD contact/delivery/quote",
+      "status": "NOT_RUN",
+      "executed": false,
+      "startedAt": null,
+      "finishedAt": null,
+      "evidence": {
+        "dom": null,
+        "screenshot": null,
+        "requests": null,
+        "serverReceipt": null,
+        "readback": null
+      }
+    },
+    {
+      "id": "CL-19",
+      "title": "COD intent and strict confirm idempotency",
+      "status": "NOT_RUN",
+      "executed": false,
+      "startedAt": null,
+      "finishedAt": null,
+      "evidence": {
+        "dom": null,
+        "screenshot": null,
+        "requests": null,
+        "serverReceipt": null,
+        "readback": null
+      }
+    },
+    {
+      "id": "CL-20",
+      "title": "Confirm stock/ledger effects reconcile once",
+      "status": "NOT_RUN",
+      "executed": false,
+      "startedAt": null,
+      "finishedAt": null,
+      "evidence": {
+        "dom": null,
+        "screenshot": null,
+        "requests": null,
+        "serverReceipt": null,
+        "readback": null
+      }
+    },
+    {
+      "id": "CL-21",
+      "title": "Buyer/merchant/Liquid saved history before mutation",
+      "status": "NOT_RUN",
+      "executed": false,
+      "startedAt": null,
+      "finishedAt": null,
+      "evidence": {
+        "dom": null,
+        "screenshot": null,
+        "requests": null,
+        "serverReceipt": null,
+        "readback": null
+      }
+    },
+    {
+      "id": "CL-22",
+      "title": "Later product edits do not rewrite immutable order history",
+      "status": "NOT_RUN",
+      "executed": false,
+      "startedAt": null,
+      "finishedAt": null,
+      "evidence": {
+        "dom": null,
+        "screenshot": null,
+        "requests": null,
+        "serverReceipt": null,
+        "readback": null
+      }
+    },
+    {
+      "id": "CL-23",
+      "title": "Stale active cart/quote refuses changed facts safely",
+      "status": "NOT_RUN",
+      "executed": false,
+      "startedAt": null,
+      "finishedAt": null,
+      "evidence": {
+        "dom": null,
+        "screenshot": null,
+        "requests": null,
+        "serverReceipt": null,
+        "readback": null
+      }
+    },
+    {
+      "id": "CL-24",
+      "title": "Trusted catalogue demo never becomes a mutation environment",
+      "status": "NOT_RUN",
+      "executed": false,
+      "startedAt": null,
+      "finishedAt": null,
+      "evidence": {
+        "dom": null,
+        "screenshot": null,
+        "requests": null,
+        "serverReceipt": null,
+        "readback": null
+      }
+    },
+    {
+      "id": "CL-25",
+      "title": "Model-only search copy diagnostic",
+      "status": "NOT_RUN",
+      "executed": false,
+      "startedAt": null,
+      "finishedAt": null,
+      "evidence": {
+        "dom": null,
+        "screenshot": null,
+        "requests": null,
+        "serverReceipt": null,
+        "readback": null
+      }
+    }
+  ]
+}

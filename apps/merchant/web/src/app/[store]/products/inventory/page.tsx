@@ -306,7 +306,8 @@ export default function InventoryPage() {
 
     return (
         <Page>
-            <PageHeader
+            <PageHeader identity="products"
+                recipe="index"
                 title="Inventory"
                 description="Review stock availability and adjust tracked inventory quantities."
                 breadcrumbs={[{ label: 'Inventory' }]}

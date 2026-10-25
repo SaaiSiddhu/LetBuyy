@@ -1,0 +1,108 @@
+{
+  "recordedAt": "2026-10-24T04:13:22.793Z",
+  "runId": "936e5f577646",
+  "guardVerified": true,
+  "readOnly": true,
+  "evidenceClass": "Actual persisted canonical mutation from normal merchant Save; not raw HTTP capture",
+  "productId": "f04c5a94-8f0c-48ae-a450-e2374caa5c7e",
+  "originalVariantIds": [
+    "3f4e08a8-bf2e-4899-bbeb-06c7283af499",
+    "b864a0c6-2fb9-472e-a70a-8bbb96db7e9b",
+    "ce1348f3-7ddd-4e06-9a62-6fc77bc15dab"
+  ],
+  "actual": [
+    {
+      "idempotencyKey": "6141ee16-cca5-4686-9df1-0e1ce5711688",
+      "expectedVersion": 15,
+      "returnedVersion": 23,
+      "operation": "product.update.v1",
+      "createdAt": "2026-10-24T04:12:54.198451+00:00",
+      "mutationSqlTextToNodeJsonSha256": "8e7554635704beb6a8b280f06a2a1594541376abab480c42cecdd10874b8bd04",
+      "topLevelStockOmitted": true,
+      "fieldsStockOmitted": true,
+      "existingVariantsStockOmitted": true,
+      "sameOriginalVariantIds": true,
+      "variants": [
+        {
+          "id": "ce1348f3-7ddd-4e06-9a62-6fc77bc15dab",
+          "title": "Fixture shade SKU",
+          "price": 899,
+          "options": {
+            "Renamed shade option": "Rosewater",
+            "पैक आकार": "एक इकाई"
+          }
+        },
+        {
+          "id": "3f4e08a8-bf2e-4899-bbeb-06c7283af499",
+          "title": "New Clay name / एक इकाई",
+          "price": 560,
+          "options": {
+            "Renamed shade option": "New Clay name",
+            "पैक आकार": "एक इकाई"
+          }
+        },
+        {
+          "id": "b864a0c6-2fb9-472e-a70a-8bbb96db7e9b",
+          "title": "Fixture shade SKU",
+          "price": 590,
+          "options": {
+            "Renamed shade option": "Terracotta",
+            "पैक आकार": "एक इकाई"
+          }
+        }
+      ],
+      "options": [
+        {
+          "name": "Renamed shade option",
+          "values": [
+            "Rosewater",
+            "New Clay name",
+            "Terracotta"
+          ],
+          "position": 0
+        },
+        {
+          "name": "पैक आकार",
+          "values": [
+            "एक इकाई"
+          ],
+          "position": 1
+        }
+      ],
+      "beauty": {
+        "format": "Changed format v2",
+        "shades": [
+          {
+            "code": "RW01",
+            "color": "#a36a65",
+            "value": "Rosewater",
+            "ingredients": "Rosewater v1: fixture oil, CI 77491."
+          },
+          {
+            "code": "PC99",
+            "color": "#112233",
+            "value": "New Clay name",
+            "ingredients": "CURRENT v2 shade ingredients must not enter the old order."
+          },
+          {
+            "code": "TC03",
+            "color": "#89534a",
+            "value": "Terracotta",
+            "ingredients": null
+          }
+        ],
+        "warnings": "CURRENT v2 warning.",
+        "directions": "CURRENT v2 directions.",
+        "ingredients": "CURRENT v2 ingredients must not enter the old order.",
+        "netQuantity": {
+          "unit": "ml",
+          "value": 8
+        },
+        "routineStage": "care",
+        "schemaVersion": 1,
+        "shadeOptionName": "Renamed shade option"
+      },
+      "privateSiblingDigest": "83268140333eefc77a9306f59bf4ef372967b0a08d4a0b4ce1e76dadd5789123"
+    }
+  ]
+}

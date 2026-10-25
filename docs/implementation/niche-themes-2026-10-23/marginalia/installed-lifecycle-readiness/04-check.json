@@ -1,0 +1,164 @@
+{
+  "checkedAt": "2026-10-23T14:28:46.430748+00:00",
+  "classification": "NATIVE_389_390_GREEN_ROOT_ACCEPTED_SHARED_FIXTURE_STARTING",
+  "previousCheck": "installed-lifecycle-readiness/03-check.json",
+  "qualification": {
+    "green": true,
+    "rootAccepted": true,
+    "rootAdmission": {
+      "path": "docs/implementation/niche-theme-programme/native389390-final-admission.json",
+      "sha256": "c4a309bc230dbe80cd785733ff94d1203d9ed94696946a9486d64ea0957b3a6f"
+    },
+    "latestRun": "06",
+    "runId": "1a4e6e2c85ad",
+    "tests": 5,
+    "passed": 5,
+    "failed": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    },
+    "independentlyVerifiedReferences": [
+      {
+        "path": "docs/implementation/threadline-2026-10-22/promotion-qualification/native-runs/06/result.json",
+        "sha256": "5fe9172f3af72be38fb45c5024270b048adce6d2eeea451b73be6e26bcea7797"
+      },
+      {
+        "path": "docs/implementation/threadline-2026-10-22/promotion-qualification/native-runs/06/suite.tap",
+        "sha256": "f8854f3b03e5ff58a3df3b064187b5b1f28552a98b21c210cb2e630bdd5289e9"
+      },
+      {
+        "path": "services/api-gateway/src/__tests__/owned-db/niche-theme-promotion.postgres.test.ts",
+        "sha256": "c162f341fae53183bb73606322ebb291e339700562cd5f499918dd8602376739"
+      },
+      {
+        "path": "docs/implementation/threadline-2026-10-22/promotion-qualification/native-runs/06/entry.json",
+        "sha256": "2b0618c26df8188a00d6beb19acac94614615280f2983f8976f3052016788be1"
+      },
+      {
+        "path": "docs/implementation/threadline-2026-10-22/promotion-qualification/native-runs/06/prior-before-promotion-and-install.json",
+        "sha256": "8091087140f2181a732868f108a81a623c53654ac5354938e3a1690d9ced68a3"
+      },
+      {
+        "path": "docs/implementation/threadline-2026-10-22/promotion-qualification/native-runs/06/visitor-sdk-prepromotion.json",
+        "sha256": "c46dcbc3f70f5112ae328573400badb265cf3cb5904a8c4b52fd7e12405e5163"
+      },
+      {
+        "path": "docs/implementation/threadline-2026-10-22/promotion-qualification/native-runs/06/promoted-before-install.json",
+        "sha256": "2b1ed9106dba1bc5ce999530cdc8a50621e4640e94d776e274ecee7dbf95afa4"
+      },
+      {
+        "path": "docs/implementation/threadline-2026-10-22/promotion-qualification/native-runs/06/visitor-metadata-diagnostic.json",
+        "sha256": "796e358a3c87de0ba9d5deec1767f023b9f2d6d03d28bf103939b570d6fd577e"
+      },
+      {
+        "path": "docs/implementation/threadline-2026-10-22/promotion-qualification/native-runs/06/qualified-composition.json",
+        "sha256": "11cbe42e391bb83399d7d92650ab2198240f5222df3856fe3281cccd86de4799"
+      }
+    ],
+    "application389": "PASS exact UP/replay, all-nine API install/save/reload/publish, immutable identity/capture refusals",
+    "rollback389": "PASS exact DOWN/UP and repeat behavior, preserved captures/merchant state/current active install counts",
+    "composition390": "PASS exact profiles/raw responses across389 DOWN/UP and390 DOWN/UP",
+    "nativeEphemeralIdsAreNotSharedRuntimeBindings": true,
+    "rerunPerformedHere": false
+  },
+  "acceptedPair": {
+    "receipt": "docs/implementation/niche-theme-programme/release-v2/389-emission-receipt.json",
+    "receiptSha256": "9f833fd63f38b00ede22193225c35e49c31d0ed855141b90a5db8ab4b4f3427b",
+    "up": {
+      "path": "database/supabase/migrations/389_niche_theme_catalog_v2.sql",
+      "sha256": "3d9a5e0344db7537558554b723ffc134707bf7b98fe4941bc6bf268bd7330e61",
+      "bytes": 5824537
+    },
+    "down": {
+      "path": "database/supabase/rollback/389_niche_theme_catalog_v2.rollback.sql",
+      "sha256": "aecbd647393ac9dcec1466d8b7f80e21cd89a1522b6956bd0c9c479529e45927",
+      "bytes": 2744
+    },
+    "admission": {
+      "path": "docs/implementation/niche-theme-programme/release-v2-final-admission.json",
+      "sha256": "6e026f1adc4be82414e174a92e125d846aad4fab9119d48841350db14f22b1b6"
+    },
+    "allHashesExact": true
+  },
+  "measurement390Emission": {
+    "receipt": "docs/implementation/threadline-2026-10-22/promotion-qualification/390-emission-receipt.json",
+    "receiptSha256": "f5e5dcf0125d67c73a79bbe15e540dde2d0bfe5a38e8233752bbab1e90a8cb81",
+    "files": [
+      {
+        "source": "docs/implementation/threadline-2026-10-22/measurement-discovery/390_measurement_discovery.up.draft.sql",
+        "path": "database/supabase/migrations/390_storefront_measurement_capabilities.sql",
+        "sha256": "6e5eb5e50cecd43acc9a663dd79c505db6c7bfdbe4e559b34d998065f88e9027",
+        "bytes": 26476,
+        "exclusiveCreate": true,
+        "byteIdentical": true
+      },
+      {
+        "source": "docs/implementation/threadline-2026-10-22/measurement-discovery/390_measurement_discovery.down.draft.sql",
+        "path": "database/supabase/rollback/390_storefront_measurement_capabilities.rollback.sql",
+        "sha256": "1aca479d735539ec3d92974da0eed7b8e48e83e874d8612ea78dba7acc91cb7a",
+        "bytes": 24601,
+        "exclusiveCreate": true,
+        "byteIdentical": true
+      }
+    ]
+  },
+  "sharedFixture": {
+    "ready": false,
+    "fixture": null,
+    "browserAccepted": false,
+    "record": "docs/implementation/theme-editor-2026-10-23/evidence/fresh-fixture-lifecycle.json",
+    "recordSha256": "fa646a67caf9e18385abb919e3d419728030855d4cecabc64baf86d434dfe044",
+    "allocatedToMarginalia": false,
+    "schedule": "docs/implementation/niche-theme-programme/capture-schedule.json",
+    "scheduleSha256": "183d6f47ee378fc85e691b6a547cc0ddff758bfaaa25462e5c53ee13eaa9a4cc",
+    "startupOwner": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+    "ownerReportedStage": "Freezing final candidate and checking dependency links before sequential identity,merchant,commerce startup",
+    "browserOwner": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+    "buildOwner": "01a166eb-66bb-7042-bb47-2aaafef26f53"
+  },
+  "installedCases": {
+    "required": 16,
+    "allStatus": "NOT_RUN",
+    "matrixSha256": "f65557129858ac0906fd6f7dfd78fc00c6124e30fbd2a52187cb82b8913bed82",
+    "actualEvidence": null,
+    "runtimeBindings": {
+      "product.books": null,
+      "books.en_hardback": null,
+      "books.hi_paperback": null,
+      "books.en_paperback_oos": null,
+      "product.stationery": null,
+      "collection.books_and_paper": null,
+      "cart.book": null,
+      "cart.stationery": null,
+      "order.id": null,
+      "order.book": null,
+      "order.stationery": null
+    }
+  },
+  "continuation": {
+    "automationId": "marginalia-installed-lifecycle-follow-up",
+    "status": "ACTIVE",
+    "intervalMinutes": 10,
+    "meaningfulChange": "Native389/390 full green and independently root accepted; Editor startup released",
+    "remainingActivationGates": [
+      "Actual final shared fixture ready with acknowledged IDs/host/session evidence",
+      "Compatible explicit Marginalia product/browser lease",
+      "Existing normal merchant refinement to exact three-edition fixture without modifying frozen seed"
+    ],
+    "canExecuteInstalledCases": false
+  },
+  "sideEffects": {
+    "runtimeStarted": false,
+    "sharedResourceClaimed": false,
+    "sourceEdited": false,
+    "fixtureEdited": false,
+    "crossChatMessageSent": false
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "recordedAt": "2026-10-23T13:36:32.694Z",
+  "classification": "CURRENT_SOURCE_CONTRACT_ACCEPTED_NOT_INSTALLED_OR_BROWSER_ACCEPTANCE",
+  "checkpoint": 4,
+  "receipt": {
+    "path": "docs/implementation/theme-editor-2026-10-23/evidence/v2-editor-source-release-checkpoint-04.json",
+    "sha256": "382bfdb7b5c36a4b16ac74bb44f79eb34a460f7e0bae5187fde8811e9e3f9c6d"
+  },
+  "report": {
+    "path": "docs/implementation/theme-editor-2026-10-23/evidence/v2-editor-source-roundtrip-passing-checkpoint-04.json",
+    "sha256": "4a7488b2b361d84c7bc89119cf714e116697dc0b52bf66bb19f5310cae1359bf"
+  },
+  "probe": {
+    "path": "docs/implementation/theme-editor-2026-10-23/evidence/v2-editor-source-probe.mjs",
+    "sha256": "c06b21aea621540476c83dcf0d643dfd74b63f22fcbd52dadd0ffa6444fa59b7"
+  },
+  "passed": 210,
+  "failed": 0,
+  "skipped": 0,
+  "inputsVerified": 88,
+  "allRawFactoryBundleHashesExact": true,
+  "registrySourceSha256": "a742187900a03f2c1c74745c06bf46d797653d4e1309d98762332286972d5a43",
+  "priorCheckpointsPreserved": true,
+  "notClaimed": [
+    "installed version",
+    "real database save",
+    "browser save",
+    "publication",
+    "rollback or recovery"
+  ]
+}

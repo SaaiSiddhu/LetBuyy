@@ -1,0 +1,17 @@
+[
+  [
+    "~1 AXWebArea Search results for \"Fixture\" | Threadline, URL: syn-threadline-ui-d11a8917.localhost:57226/search?search=Fixture&sort=newest&limit=1&format=Retired+format&shade=Retired+named+shade",
+    "~\t\t\t32 link Description: Remove Format: Retired format, Value: syn-threadline-ui-d11a8917.localhost:57226/search?limit=1&search=Fixture&sort=newest&shade=Retired+named+shade",
+    "~\t\t\t33 link Description: Remove Shade: Retired named shade, Value: syn-threadline-ui-d11a8917.localhost:57226/search?limit=1&search=Fixture&sort=newest&format=Retired+format",
+    "The focused UI element is 1 AXWebArea Search results for \"Fixture\" | Threadline, URL: syn-threadline-ui-d11a8917.localhost:57226/search?search=Fixture&sort=newest&limit=1&format=Retired+format&shade=Retired+named+shade"
+  ],
+  [
+    "~1 AXWebArea Search results for \"Fixture\" | Threadline, URL: syn-threadline-ui-d11a8917.localhost:57226/search?limit=1&search=Fixture&sort=newest&shade=Retired+named+shade",
+    "~\t\t\t32 link Description: Remove Shade: Retired named shade, Value: syn-threadline-ui-d11a8917.localhost:57226/search?limit=1&search=Fixture&sort=newest",
+    "~\t\t34 text 0 products",
+    "+\t\t37 heading No products found., Value: 2",
+    "+\t\t\t38 text No products found.",
+    "~\t\t40 link Description: Explore all products, Value: syn-threadline-ui-d11a8917.localhost:57226/store/syn-threadline-ui-d11a8917/products",
+    "The focused UI element is 1 AXWebArea Search results for \"Fixture\" | Threadline, URL: syn-threadline-ui-d11a8917.localhost:57226/search?limit=1&search=Fixture&sort=newest&shade=Retired+named+shade"
+  ]
+]

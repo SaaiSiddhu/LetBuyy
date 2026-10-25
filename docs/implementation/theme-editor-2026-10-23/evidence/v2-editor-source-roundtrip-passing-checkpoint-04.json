@@ -1,0 +1,4545 @@
+{
+  "createdAt": "2026-10-23T13:27:32.509Z",
+  "classification": "SOURCE_CONTRACT_ONLY_NOT_INSTALLED_OR_BROWSER_ACCEPTANCE",
+  "scope": "FINAL_TEN_THEME_SOURCE_GATE",
+  "inputs": [
+    {
+      "path": "apps/merchant/web/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx",
+      "sha256": "8fe3b25fa551758fd4b9bf2c040b9cbc8810f71df331f5b1b39559790c2c637c"
+    },
+    {
+      "path": "services/api-gateway/src/execution/schema-registry-execution.adapter.ts",
+      "sha256": "a742187900a03f2c1c74745c06bf46d797653d4e1309d98762332286972d5a43"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/editor-view-state.ts",
+      "sha256": "80d4d2b3fb4b3c61bfa30830360f393a0c0f773084176cb269997002b2366d68"
+    },
+    {
+      "path": "packages/theme-engine/src/ai-accessibility.ts",
+      "sha256": "b3bd3cdf32f0060c6f683cd8b0e181a738f72dba2372e209ee44e40a370daaa5"
+    },
+    {
+      "path": "packages/theme-engine/src/ai-color-system.ts",
+      "sha256": "00998c3d696b59f5dd7d3f12df15b57d0132929a72cc2774fafad6481489d81f"
+    },
+    {
+      "path": "packages/theme-engine/src/ai-intent-parser.ts",
+      "sha256": "056e07ef9b9ffec32b6f10a28f6db48581b2b8ee0ff604a8f1a5fae97f9b19b7"
+    },
+    {
+      "path": "packages/theme-engine/src/ai-layout.ts",
+      "sha256": "585a53ab5cfc99a34f1137f5877acbc8be418824e5b3a28fb11b78d972217747"
+    },
+    {
+      "path": "packages/theme-engine/src/ai-optimizer.ts",
+      "sha256": "335b041aa174eeb280ab648c0813aa7b098eb6af608e7bd95f021bd3ea888bdf"
+    },
+    {
+      "path": "packages/theme-engine/src/ai-personalization.ts",
+      "sha256": "55905619b2fe0d4bd3f972e785de53d00f542c1a886dc40f418c35387787339b"
+    },
+    {
+      "path": "packages/theme-engine/src/ai-theme-generator.ts",
+      "sha256": "0d48c1920b7035456f0d0a064368f67dbf5c27d1dca2a0b90912069e651c6d68"
+    },
+    {
+      "path": "packages/theme-engine/src/ai-typography.ts",
+      "sha256": "13a318f2e0ce76904bb3eb12deff2d05dc5bc894cd9ae1c8db25061411e9003e"
+    },
+    {
+      "path": "packages/theme-engine/src/app-block-model.ts",
+      "sha256": "11d98cf696bb9e635348233b10c685295f4ea6f2c4e263fa3a7fc3f47290866d"
+    },
+    {
+      "path": "packages/theme-engine/src/built-in-section-schemas.ts",
+      "sha256": "5e44b89d7ebc3d40b82e7d12dfccf399f7a336d39e1a1b04c7deaf4c57486734"
+    },
+    {
+      "path": "packages/theme-engine/src/circuit-discovery.ts",
+      "sha256": "160c6a61a567f87bbcab20bf337336ede6e748c1326110ab977f61ec9c14523b"
+    },
+    {
+      "path": "packages/theme-engine/src/circuit-styles.ts",
+      "sha256": "09c1be83d56d1640770bcf8c76df249f4fa309aa227d81a3d46d0f81879911c2"
+    },
+    {
+      "path": "packages/theme-engine/src/circuit-theme.ts",
+      "sha256": "44f78cdaa4d9241723b7bc9ae0f0952d946e72b11775c05160c9949f87a69d2a"
+    },
+    {
+      "path": "packages/theme-engine/src/custom-css-sanitizer.ts",
+      "sha256": "2a958ce9b14aea26277a79b8024dcd359dd84836785543abf435e48ad20f321c"
+    },
+    {
+      "path": "packages/theme-engine/src/dewdrop-discovery.ts",
+      "sha256": "a9d866eeb5dedc2b123bdf2a287b9a0be23789b39c93c1e1872471c975de1fe1"
+    },
+    {
+      "path": "packages/theme-engine/src/dewdrop-styles.ts",
+      "sha256": "693a0be116d404baac41ef0b044ce69f6c8dcf35d4dfe26b02ac507678ba129e"
+    },
+    {
+      "path": "packages/theme-engine/src/dewdrop-theme.ts",
+      "sha256": "ec0cf0890c607056c1da13087b1c51ee6931d120c46370802360b740f0693190"
+    },
+    {
+      "path": "packages/theme-engine/src/dynamic-source-binding.ts",
+      "sha256": "28b23de56c2069bb02f73ddb444b8d8c266f66714e45a820d3a738060771e421"
+    },
+    {
+      "path": "packages/theme-engine/src/editor-bridge-protocol.ts",
+      "sha256": "7cff1ccbb9725ece155a9d1c08c9fee7706c3f8dc9ea27a860f9a23bd3c8ca66"
+    },
+    {
+      "path": "packages/theme-engine/src/execution-runtime.ts",
+      "sha256": "9fee29e7031948e9a27640c2bbb9a78de00207965fd2da1c9ca1f0b3afef168e"
+    },
+    {
+      "path": "packages/theme-engine/src/experience-apply.ts",
+      "sha256": "fcf62ca230b604f6dd4d33cc34a1b0d990caa131f815fc3666dae4fbce15f6b4"
+    },
+    {
+      "path": "packages/theme-engine/src/experience-compositions.ts",
+      "sha256": "25b73068b7a4fcce5b4bad3768a376e08c7e384e843f707c3cf8f8fb361abc68"
+    },
+    {
+      "path": "packages/theme-engine/src/experience-fonts.ts",
+      "sha256": "3ee9bdb23a8c18410fd36ee6302f0f8fae929484a7c2dbfd9bc6a424e30f64be"
+    },
+    {
+      "path": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "sha256": "cc11490138ae5c2f13ab022a60b4cc2fe7d8fc5eb766dbf087eeb227d6050d6e"
+    },
+    {
+      "path": "packages/theme-engine/src/habitat-discovery.ts",
+      "sha256": "342843da57a6eef8488d906218d4225338f9f3c0afe2bbcc49073f3f34a1f873"
+    },
+    {
+      "path": "packages/theme-engine/src/habitat-styles.ts",
+      "sha256": "e4b89a41c526cc9a96e0e3106e084124717eb56d9837bcf09214045d7fa817e6"
+    },
+    {
+      "path": "packages/theme-engine/src/habitat-theme.ts",
+      "sha256": "0144fdf830ab3c5ddf42ebfcb86258b99e74ed8a8d724469012479705352e8c3"
+    },
+    {
+      "path": "packages/theme-engine/src/index.ts",
+      "sha256": "1544081a6b4e1c7c276ed6cbfd1a9bd39fdbe10fca6406cd72b7ba1eb1d584e5"
+    },
+    {
+      "path": "packages/theme-engine/src/industry-experience-map.ts",
+      "sha256": "e647df5605fc6bac525c6104a0f60e67cfc6b6f0ba6ea6db323e1e795fc404b3"
+    },
+    {
+      "path": "packages/theme-engine/src/jsdom-runtime.d.ts",
+      "sha256": "5a45588b3aadc8ddbd324a645220217a823326811ba5d8ea5bcbf11baefd59aa"
+    },
+    {
+      "path": "packages/theme-engine/src/kindred-discovery.ts",
+      "sha256": "14dd29777737158a61287bf54e98571c6b3abf1e07ec542d2e7f678180ad473f"
+    },
+    {
+      "path": "packages/theme-engine/src/kindred-styles.ts",
+      "sha256": "15e6670f6556a7b9cfd8e56891088f0abe9a8ffa1105822be1a1902ecd7282cf"
+    },
+    {
+      "path": "packages/theme-engine/src/kindred-theme.ts",
+      "sha256": "3a47dc979dbdf5dce395fd44a858e007567820f4fac569fade603ff6da4fd551"
+    },
+    {
+      "path": "packages/theme-engine/src/madeyours-discovery.ts",
+      "sha256": "d1fc0993efd1d876e67c60f997e6cea53efd65a4fd7aba69bafe377f02803eda"
+    },
+    {
+      "path": "packages/theme-engine/src/madeyours-styles.ts",
+      "sha256": "5253e57fcb217526d7bf46e8ddc54b921a5f64ec42f69c7c0dae177eadb5ee6e"
+    },
+    {
+      "path": "packages/theme-engine/src/madeyours-theme.ts",
+      "sha256": "c56bdba5b9e9376c4a296cadc2d4f31a33598a033692d2f6c21daa71b3e98193"
+    },
+    {
+      "path": "packages/theme-engine/src/marginalia-discovery.ts",
+      "sha256": "a1c2c75b3497fc3f0edc1280686b75c7434e1a400c0944154c462561b62cc8d3"
+    },
+    {
+      "path": "packages/theme-engine/src/marginalia-styles.ts",
+      "sha256": "112747bc358f7fb1fcaafbec32d2bc4f866cec76f0a4324003650bf4dd80e88d"
+    },
+    {
+      "path": "packages/theme-engine/src/marginalia-theme.ts",
+      "sha256": "a109aa33018aa786dffaea7a067415b13fe73ddc17beca7ef18a83f58301b7e9"
+    },
+    {
+      "path": "packages/theme-engine/src/niche-order-presentation.ts",
+      "sha256": "6d3cb80e5dc5c922328ae0f653d74492cc202b0f4714fc08314a81a60cfdfc00"
+    },
+    {
+      "path": "packages/theme-engine/src/pantry-discovery.ts",
+      "sha256": "d9c09fe8097123623d26cde25ec9951233792adadbdf8d0eb6628659234759d0"
+    },
+    {
+      "path": "packages/theme-engine/src/pantry-styles.ts",
+      "sha256": "3a7e53583942a5188970d4f5e2901ce4e894ab3b4da55a30176073eaa03db278"
+    },
+    {
+      "path": "packages/theme-engine/src/pantry-theme.ts",
+      "sha256": "9c440d32f146b8155ba78f522da52979fd09a0f3d32c4b25e5c3e289ef390925"
+    },
+    {
+      "path": "packages/theme-engine/src/playfield-discovery.ts",
+      "sha256": "876769a92360a5cc8cd89ab69a436c12c1eda6df32eb4466bdda10111ef297a8"
+    },
+    {
+      "path": "packages/theme-engine/src/playfield-styles.ts",
+      "sha256": "7cb3da13790ec83dcb4bcf6a837abc68e53ebf9a8a49f44b5582af55b1d59243"
+    },
+    {
+      "path": "packages/theme-engine/src/playfield-theme.ts",
+      "sha256": "00493cb361c8fc796941524d9673ee4c1bfa3a12785017e2397e408b924edb63"
+    },
+    {
+      "path": "packages/theme-engine/src/portable-to-liquid.ts",
+      "sha256": "c981e822ec3f51bd7975e72862a957fc011b14a7f8984cdd0b38f8ba9a27803b"
+    },
+    {
+      "path": "packages/theme-engine/src/schema-field-extensions.ts",
+      "sha256": "a5c53fdfc687bc9c7913ff64c1af1d51e496b70fd74b2a78e2b000bb66ee4d71"
+    },
+    {
+      "path": "packages/theme-engine/src/section-schema-migrations.ts",
+      "sha256": "e28f3f3e3835aa5fa0d0c6418ff9e773f0a077c7ed46c0d001749f2d93e87523"
+    },
+    {
+      "path": "packages/theme-engine/src/section-type-map.ts",
+      "sha256": "b262e6d801be599399f18a53944507ab6886c6d9488784381297f72658331d94"
+    },
+    {
+      "path": "packages/theme-engine/src/server-dom-runtime.ts",
+      "sha256": "309b16baf1fb3b51c45358f6569e1b02277a403d16728023a7ff57fad1d01184"
+    },
+    {
+      "path": "packages/theme-engine/src/server-dom-unavailable.ts",
+      "sha256": "101394ab995695bd3118e3a039ba3a1e952b7979d19c24196e42ef2d7be9bb8e"
+    },
+    {
+      "path": "packages/theme-engine/src/settings-schema-canonical.ts",
+      "sha256": "ed5f84c47a5beebf26385d11b67f7068aadfcc09ba40f0f5e0fa693f564b8f86"
+    },
+    {
+      "path": "packages/theme-engine/src/template-registry.ts",
+      "sha256": "2ab00379414a40769d793175dac97d4b795668587a48f081414326cfbb1555c7"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-ai-sdk.ts",
+      "sha256": "36d3be49894dfffd8a484e69b23ad782963f3c5b027385705603bc3f3cf06afb"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-analytics.ts",
+      "sha256": "62aa70aafea1e7413a9ff71fdae81a3242fa77aa8c89082dc1b7d18170af1442"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-artifact-exporter.ts",
+      "sha256": "a1e0728346eecc15c39d80a3b26b1209f2b3406b97171dbd2ea8215eb7fb41a1"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-bundle-core.ts",
+      "sha256": "0e1650a4d71ef358792c0f877f4ae678794fb6d2cfdebbb30d79563e4a2f452f"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-bundle.ts",
+      "sha256": "cdbad4b28277431a3ab06e56ed0ce16539e04837bb107f5f951a3df39a92ed76"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-cli.ts",
+      "sha256": "efcb0eac0c1f8df2d098bf7746062a03845e4bf02538f7dc3dcf4d2e97ec1538"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-document-migrations.ts",
+      "sha256": "1e402455eae328a2d57d87ec6d440fd17e29a9329016953033056ad3ade8e573"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-document.ts",
+      "sha256": "7ba285a54d71a01545c4cb1e4a3c1540a30caae2db793079b2b3cb32b8612412"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-governance.ts",
+      "sha256": "3f1eb0be28d36a16f058d7623f396a9224e4ae7be787e906f9ec3880f03b0004"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-install-receipt.ts",
+      "sha256": "278368a657420943e69bd955649e962ae88327736ce8abf1ae12cde69d905d71"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-install.ts",
+      "sha256": "28fb25bebc530a2aa27624060b96c31a2ec631ea30dfe13233806bfcf3c9112d"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-library-schemas.ts",
+      "sha256": "7839ac1a705e0c6132b6e79a13d0984de12d24bd437ba10035b1de692d6087af"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-linter.ts",
+      "sha256": "e79f69b0435203c1bafd19730f7641f03a47e9ee4474dd10372a40b4087027e9"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-locale.ts",
+      "sha256": "11e94cc5be985504989cb805b28a0017e14966b61460f5d7922a9aaac0d584e9"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-marketplace-contract.ts",
+      "sha256": "65dd0aca7f44aca7fbb38d90a9810db525fc371d7ea27ce2e5046742b200478f"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-packager.ts",
+      "sha256": "0347bc39a986e673ad0ee90ab10dd884eb4ed195535da5aa01aeb52d58c01601"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-presets.ts",
+      "sha256": "283028890199a34e67863c337ebd0c788c830c60ddaa87854c3bad28f9581e82"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-publish.ts",
+      "sha256": "763c73ba074ec2a5654d5a7a2c7a4ab5faac6281c5e321f7f525aa0eb4472be8"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-registry.ts",
+      "sha256": "df47c3ff4a6bfb0b4dfb56a49559249ab69d44f876bf1d422ecda385f09533ce"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-renderer.ts",
+      "sha256": "794cbc6ff9ae71f995560f302e1b0d5f0d4ff4da59fa31191585851b1e822164"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-safe-update.ts",
+      "sha256": "46a43da31d5f9bb89951f44b87cb2076c0054b628af7687624ceca2f39e0da0b"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-sdk.ts",
+      "sha256": "e1f39b4262a24f046b914b752e522160c79f811a0a37523e6e136eb677bb7786"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-settings.ts",
+      "sha256": "3ac7b069b156f89d8f412103cbe6003775524fe4660f47c16a82b13c6a1a2e00"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-upgrade.ts",
+      "sha256": "82ed19d6f3004eda81be013ae49f4d6813b5109faf37aae82c698d7c35ded280"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-version.ts",
+      "sha256": "69042dfc322608cfa34a7f3a370defabe0e10978b2881aa7988e3aad7598f84e"
+    },
+    {
+      "path": "packages/theme-engine/src/threadline-discovery.ts",
+      "sha256": "a3fba143d1217f0da83cf70ab335da66e82bc79cb883a9ad0e3b48773459e4b8"
+    },
+    {
+      "path": "packages/theme-engine/src/threadline-styles.ts",
+      "sha256": "19927c48340b3ff3403b13a945ebe186bf928de638f47281b0fe0421ded48385"
+    },
+    {
+      "path": "packages/theme-engine/src/threadline-theme.ts",
+      "sha256": "1e922e6c056de5017f35dfe08827eef0b41212b96bbff5b6695ab087422d523b"
+    },
+    {
+      "path": "packages/theme-engine/src/trailmark-discovery.ts",
+      "sha256": "f69edf5815a19e513416ebb970e661793a88994a12f70e1e0e6d214f021741cb"
+    },
+    {
+      "path": "packages/theme-engine/src/trailmark-styles.ts",
+      "sha256": "5dc2ae055b560a56842f4d3399f5b3b88b59c37ab5ede6c62731e44da3d1c4b0"
+    },
+    {
+      "path": "packages/theme-engine/src/trailmark-theme.ts",
+      "sha256": "ec412bcee2940769612323c2155ac807cef8d73bd1a06caa754cbb1fd11e90b5"
+    }
+  ],
+  "themes": [
+    {
+      "slug": "letbuyy-forge",
+      "name": "Circuit",
+      "version": "2.0.0",
+      "bundleSha256": "cadab65d5351e1d5f8506d3620df481700ff38ae7e23c19f7282d1f31be79b46",
+      "baselineValidationIssues": [],
+      "baselineWireValidationIssues": [],
+      "baselineSettings": [
+        {
+          "key": "primaryColor",
+          "type": "string",
+          "value": "#17476E",
+          "wireOwn": true
+        },
+        {
+          "key": "secondaryColor",
+          "type": "string",
+          "value": "#142236",
+          "wireOwn": true
+        },
+        {
+          "key": "accentColor",
+          "type": "string",
+          "value": "#17476E",
+          "wireOwn": true
+        },
+        {
+          "key": "backgroundColor",
+          "type": "string",
+          "value": "#F5F7FA",
+          "wireOwn": true
+        },
+        {
+          "key": "textColor",
+          "type": "string",
+          "value": "#142236",
+          "wireOwn": true
+        },
+        {
+          "key": "surfaceColor",
+          "type": "string",
+          "value": "#FFFFFF",
+          "wireOwn": true
+        },
+        {
+          "key": "headingFontFamily",
+          "type": "string",
+          "value": "Inter",
+          "wireOwn": true
+        },
+        {
+          "key": "bodyFontFamily",
+          "type": "string",
+          "value": "Inter",
+          "wireOwn": true
+        },
+        {
+          "key": "borderRadius",
+          "type": "number",
+          "value": 4,
+          "wireOwn": true
+        },
+        {
+          "key": "metaDescription",
+          "type": "string",
+          "value": "",
+          "wireOwn": true
+        },
+        {
+          "key": "socialImageUrl",
+          "type": "string",
+          "value": "",
+          "wireOwn": true
+        },
+        {
+          "key": "faviconUrl",
+          "type": "string",
+          "value": "",
+          "wireOwn": true
+        }
+      ],
+      "inheritedSettings": [
+        {
+          "key": "list-collections",
+          "sections": {
+            "list-collections-grid": {
+              "type": "category-grid",
+              "settings": {
+                "title": "All collections",
+                "subtitle": "Browse every collection in the store."
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          }
+        },
+        {
+          "key": "search",
+          "sections": {
+            "forge-discovery-search": {
+              "type": "collection-filter",
+              "settings": {},
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            },
+            "forge-results-search": {
+              "type": "collection-product-list",
+              "settings": {},
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          }
+        }
+      ],
+      "templates": [
+        {
+          "key": "index",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 5,
+          "identities": 8,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "product",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 2,
+          "identities": 5,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "collection",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 2,
+          "identities": 5,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "search",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 2,
+          "identities": 5,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "cart",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "list-collections",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "contact",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/login",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/register",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/account",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/orders",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/order",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/settings",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/wishlist",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/addresses",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "policy",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "blog",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "article",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "page",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "not_found",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "password",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        }
+      ]
+    },
+    {
+      "slug": "letbuyy-sense",
+      "name": "Threadline",
+      "version": "2.0.0",
+      "bundleSha256": "61082be647eadae9b6e42002be241a82ba6c3627427568f6e64e2cf961c3742e",
+      "baselineValidationIssues": [],
+      "baselineWireValidationIssues": [],
+      "baselineSettings": [
+        {
+          "key": "primaryColor",
+          "type": "string",
+          "value": "#713F35",
+          "wireOwn": true
+        },
+        {
+          "key": "secondaryColor",
+          "type": "string",
+          "value": "#65574C",
+          "wireOwn": true
+        },
+        {
+          "key": "accentColor",
+          "type": "string",
+          "value": "#005FCC",
+          "wireOwn": true
+        },
+        {
+          "key": "backgroundColor",
+          "type": "string",
+          "value": "#FAF7F2",
+          "wireOwn": true
+        },
+        {
+          "key": "textColor",
+          "type": "string",
+          "value": "#241E1A",
+          "wireOwn": true
+        },
+        {
+          "key": "surfaceColor",
+          "type": "string",
+          "value": "#EFE7DC",
+          "wireOwn": true
+        },
+        {
+          "key": "headingFontFamily",
+          "type": "string",
+          "value": "Playfair Display",
+          "wireOwn": true
+        },
+        {
+          "key": "bodyFontFamily",
+          "type": "string",
+          "value": "Inter",
+          "wireOwn": true
+        },
+        {
+          "key": "borderRadius",
+          "type": "number",
+          "value": 4,
+          "wireOwn": true
+        },
+        {
+          "key": "metaDescription",
+          "type": "string",
+          "value": "",
+          "wireOwn": true
+        },
+        {
+          "key": "socialImageUrl",
+          "type": "string",
+          "value": "",
+          "wireOwn": true
+        },
+        {
+          "key": "faviconUrl",
+          "type": "string",
+          "value": "",
+          "wireOwn": true
+        }
+      ],
+      "inheritedSettings": [
+        {
+          "key": "list-collections",
+          "sections": {
+            "list-collections-grid": {
+              "type": "category-grid",
+              "settings": {
+                "title": "All collections",
+                "subtitle": "Browse every collection in the store."
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          }
+        },
+        {
+          "key": "search",
+          "sections": {
+            "search-box-default": {
+              "type": "search-box",
+              "settings": {
+                "placeholder": "Search products"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            },
+            "search-results": {
+              "type": "collection-product-list",
+              "settings": {
+                "title": "Results"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          }
+        }
+      ],
+      "templates": [
+        {
+          "key": "article",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "blog",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "cart",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "collection",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 2,
+          "identities": 5,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "contact",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/account",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/addresses",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/login",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/order",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/orders",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/register",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/settings",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/wishlist",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "index",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 6,
+          "identities": 9,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "list-collections",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "not_found",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "page",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "password",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "policy",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "product",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 2,
+          "identities": 5,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "search",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 2,
+          "identities": 5,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        }
+      ]
+    },
+    {
+      "slug": "letbuyy-aura",
+      "name": "Dewdrop",
+      "version": "2.0.0",
+      "bundleSha256": "e1f8ee24971241d472ec34e50b855fdb94cea769cdde777bd119ba3c1d17619c",
+      "baselineValidationIssues": [],
+      "baselineWireValidationIssues": [],
+      "baselineSettings": [
+        {
+          "key": "primaryColor",
+          "type": "string",
+          "value": "#3F5E51",
+          "wireOwn": true
+        },
+        {
+          "key": "secondaryColor",
+          "type": "string",
+          "value": "#596754",
+          "wireOwn": true
+        },
+        {
+          "key": "accentColor",
+          "type": "string",
+          "value": "#005FCC",
+          "wireOwn": true
+        },
+        {
+          "key": "backgroundColor",
+          "type": "string",
+          "value": "#FAF8F4",
+          "wireOwn": true
+        },
+        {
+          "key": "textColor",
+          "type": "string",
+          "value": "#293229",
+          "wireOwn": true
+        },
+        {
+          "key": "surfaceColor",
+          "type": "string",
+          "value": "#EDE9E1",
+          "wireOwn": true
+        },
+        {
+          "key": "headingFontFamily",
+          "type": "string",
+          "value": "Cormorant Garamond",
+          "wireOwn": true
+        },
+        {
+          "key": "bodyFontFamily",
+          "type": "string",
+          "value": "Lato",
+          "wireOwn": true
+        },
+        {
+          "key": "borderRadius",
+          "type": "number",
+          "value": 8,
+          "wireOwn": true
+        },
+        {
+          "key": "metaDescription",
+          "type": "string",
+          "value": "",
+          "wireOwn": true
+        },
+        {
+          "key": "socialImageUrl",
+          "type": "string",
+          "value": "",
+          "wireOwn": true
+        },
+        {
+          "key": "faviconUrl",
+          "type": "string",
+          "value": "",
+          "wireOwn": true
+        }
+      ],
+      "inheritedSettings": [
+        {
+          "key": "list-collections",
+          "sections": {
+            "list-collections-grid": {
+              "type": "category-grid",
+              "settings": {
+                "title": "All collections"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          }
+        },
+        {
+          "key": "search",
+          "sections": {
+            "aura-care-search": {
+              "type": "collection-filter",
+              "settings": {
+                "title": "Search your care shelf"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            },
+            "aura-routine-shelves-search": {
+              "type": "collection-product-list",
+              "settings": {
+                "title": "Search results"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          }
+        }
+      ],
+      "templates": [
+        {
+          "key": "index",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 5,
+          "identities": 8,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "product",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 3,
+          "identities": 6,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "collection",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 2,
+          "identities": 5,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "search",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 2,
+          "identities": 5,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "cart",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "list-collections",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "contact",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/login",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/register",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/account",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/orders",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/order",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/settings",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/wishlist",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/addresses",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "policy",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "blog",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "article",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "page",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "not_found",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "password",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        }
+      ]
+    },
+    {
+      "slug": "letbuyy-craft",
+      "name": "Habitat",
+      "version": "2.0.0",
+      "bundleSha256": "4e068c69808b5cb82b8caaabbb9197580c425c1edc43b298fb667959ab050497",
+      "baselineValidationIssues": [],
+      "baselineWireValidationIssues": [],
+      "baselineSettings": [
+        {
+          "key": "primaryColor",
+          "type": "string",
+          "value": "#4E573E",
+          "wireOwn": true
+        },
+        {
+          "key": "secondaryColor",
+          "type": "string",
+          "value": "#625C50",
+          "wireOwn": true
+        },
+        {
+          "key": "accentColor",
+          "type": "string",
+          "value": "#7B7261",
+          "wireOwn": true
+        },
+        {
+          "key": "backgroundColor",
+          "type": "string",
+          "value": "#F7F3EB",
+          "wireOwn": true
+        },
+        {
+          "key": "textColor",
+          "type": "string",
+          "value": "#302C25",
+          "wireOwn": true
+        },
+        {
+          "key": "surfaceColor",
+          "type": "string",
+          "value": "#E9E2D5",
+          "wireOwn": true
+        },
+        {
+          "key": "headingFontFamily",
+          "type": "string",
+          "value": "Libre Baskerville",
+          "wireOwn": true
+        },
+        {
+          "key": "bodyFontFamily",
+          "type": "string",
+          "value": "Source Sans Pro",
+          "wireOwn": true
+        },
+        {
+          "key": "borderRadius",
+          "type": "number",
+          "value": 6,
+          "wireOwn": true
+        },
+        {
+          "key": "metaDescription",
+          "type": "string",
+          "value": "",
+          "wireOwn": true
+        },
+        {
+          "key": "socialImageUrl",
+          "type": "string",
+          "value": "",
+          "wireOwn": true
+        },
+        {
+          "key": "faviconUrl",
+          "type": "string",
+          "value": "",
+          "wireOwn": true
+        }
+      ],
+      "inheritedSettings": [
+        {
+          "key": "list-collections",
+          "sections": {
+            "list-collections-grid": {
+              "type": "category-grid",
+              "settings": {
+                "title": "All collections",
+                "subtitle": "Browse every collection in the store."
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          }
+        },
+        {
+          "key": "search",
+          "sections": {
+            "search-box-default": {
+              "type": "search-box",
+              "settings": {
+                "placeholder": "Search products"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            },
+            "search-results": {
+              "type": "collection-product-list",
+              "settings": {
+                "title": "Results"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          }
+        }
+      ],
+      "templates": [
+        {
+          "key": "article",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "blog",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "cart",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "collection",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 2,
+          "identities": 5,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "contact",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/account",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/addresses",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/login",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/order",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/orders",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/register",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/settings",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/wishlist",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "index",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 5,
+          "identities": 8,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "list-collections",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "not_found",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "page",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "password",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "policy",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "product",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 2,
+          "identities": 5,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "search",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 2,
+          "identities": 5,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        }
+      ]
+    },
+    {
+      "slug": "letbuyy-refresh",
+      "name": "Pantry",
+      "version": "2.0.0",
+      "bundleSha256": "6b05ab842f55dd6fcc7b99991a5e5160a5214e4417aedd46c343e94a3041a718",
+      "baselineValidationIssues": [],
+      "baselineWireValidationIssues": [],
+      "baselineSettings": [
+        {
+          "key": "primaryColor",
+          "type": "string",
+          "value": "#36533D",
+          "wireOwn": true
+        },
+        {
+          "key": "secondaryColor",
+          "type": "string",
+          "value": "#36533D",
+          "wireOwn": true
+        },
+        {
+          "key": "accentColor",
+          "type": "string",
+          "value": "#707858",
+          "wireOwn": true
+        },
+        {
+          "key": "backgroundColor",
+          "type": "string",
+          "value": "#FCF8EF",
+          "wireOwn": true
+        },
+        {
+          "key": "textColor",
+          "type": "string",
+          "value": "#262A1D",
+          "wireOwn": true
+        },
+        {
+          "key": "surfaceColor",
+          "type": "string",
+          "value": "#EEE8D8",
+          "wireOwn": true
+        },
+        {
+          "key": "headingFontFamily",
+          "type": "string",
+          "value": "Inter",
+          "wireOwn": true
+        },
+        {
+          "key": "bodyFontFamily",
+          "type": "string",
+          "value": "Inter",
+          "wireOwn": true
+        },
+        {
+          "key": "borderRadius",
+          "type": "number",
+          "value": 6,
+          "wireOwn": true
+        },
+        {
+          "key": "metaDescription",
+          "type": "string",
+          "value": "",
+          "wireOwn": true
+        },
+        {
+          "key": "socialImageUrl",
+          "type": "string",
+          "value": "",
+          "wireOwn": true
+        },
+        {
+          "key": "faviconUrl",
+          "type": "string",
+          "value": "",
+          "wireOwn": true
+        }
+      ],
+      "inheritedSettings": [
+        {
+          "key": "list-collections",
+          "sections": {
+            "list-collections-grid": {
+              "type": "category-grid",
+              "settings": {
+                "title": "All collections"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          }
+        },
+        {
+          "key": "search",
+          "sections": {
+            "search-box-default": {
+              "type": "search-box",
+              "settings": {
+                "placeholder": "Search products"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            },
+            "search-results": {
+              "type": "collection-product-list",
+              "settings": {
+                "title": "Results"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          }
+        }
+      ],
+      "templates": [
+        {
+          "key": "index",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 6,
+          "identities": 9,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "product",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 2,
+          "identities": 5,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "collection",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 2,
+          "identities": 5,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "search",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 2,
+          "identities": 5,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "cart",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "list-collections",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "contact",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/login",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/register",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/account",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/orders",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/order",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/settings",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/wishlist",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/addresses",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "policy",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "blog",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "article",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "page",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "not_found",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "password",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        }
+      ]
+    },
+    {
+      "slug": "letbuyy-ride",
+      "name": "Trailmark",
+      "version": "2.0.0",
+      "bundleSha256": "127a261320b208ec845277abe51c176921767934988f98a2ce73188bfa95c224",
+      "baselineValidationIssues": [],
+      "baselineWireValidationIssues": [],
+      "baselineSettings": [
+        {
+          "key": "primaryColor",
+          "type": "string",
+          "value": "#314E3B",
+          "wireOwn": true
+        },
+        {
+          "key": "secondaryColor",
+          "type": "string",
+          "value": "#FFFFFF",
+          "wireOwn": true
+        },
+        {
+          "key": "accentColor",
+          "type": "string",
+          "value": "#005FCC",
+          "wireOwn": true
+        },
+        {
+          "key": "backgroundColor",
+          "type": "string",
+          "value": "#F5F6F1",
+          "wireOwn": true
+        },
+        {
+          "key": "textColor",
+          "type": "string",
+          "value": "#222B22",
+          "wireOwn": true
+        },
+        {
+          "key": "surfaceColor",
+          "type": "string",
+          "value": "#E5E9DD",
+          "wireOwn": true
+        },
+        {
+          "key": "headingFontFamily",
+          "type": "string",
+          "value": "Inter",
+          "wireOwn": true
+        },
+        {
+          "key": "bodyFontFamily",
+          "type": "string",
+          "value": "Inter",
+          "wireOwn": true
+        },
+        {
+          "key": "borderRadius",
+          "type": "number",
+          "value": 4,
+          "wireOwn": true
+        },
+        {
+          "key": "metaDescription",
+          "type": "string",
+          "value": "",
+          "wireOwn": true
+        },
+        {
+          "key": "socialImageUrl",
+          "type": "string",
+          "value": "",
+          "wireOwn": true
+        },
+        {
+          "key": "faviconUrl",
+          "type": "string",
+          "value": "",
+          "wireOwn": true
+        }
+      ],
+      "inheritedSettings": [
+        {
+          "key": "list-collections",
+          "sections": {
+            "list-collections-grid": {
+              "type": "category-grid",
+              "settings": {
+                "title": "All collections"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          }
+        },
+        {
+          "key": "search",
+          "sections": {
+            "ride-search": {
+              "type": "collection-product-list",
+              "settings": {
+                "title": "Search products"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          }
+        }
+      ],
+      "templates": [
+        {
+          "key": "index",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 5,
+          "identities": 8,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "product",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 2,
+          "identities": 5,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "collection",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "search",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "cart",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "list-collections",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "contact",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/login",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/register",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/account",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/orders",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/order",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/settings",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/wishlist",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/addresses",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "policy",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "blog",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "article",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "page",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "not_found",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "password",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        }
+      ]
+    },
+    {
+      "slug": "letbuyy-dawn",
+      "name": "Marginalia",
+      "version": "2.0.0",
+      "bundleSha256": "d98a0388e3775d4f00dec8c992316af74d8255fd993cc08fc47032b7b4a8aee0",
+      "baselineValidationIssues": [],
+      "baselineWireValidationIssues": [],
+      "baselineSettings": [
+        {
+          "key": "primaryColor",
+          "type": "string",
+          "value": "#744A26",
+          "wireOwn": true
+        },
+        {
+          "key": "secondaryColor",
+          "type": "string",
+          "value": "#6B5C45",
+          "wireOwn": true
+        },
+        {
+          "key": "accentColor",
+          "type": "string",
+          "value": "#005FCC",
+          "wireOwn": true
+        },
+        {
+          "key": "backgroundColor",
+          "type": "string",
+          "value": "#FAF6EA",
+          "wireOwn": true
+        },
+        {
+          "key": "textColor",
+          "type": "string",
+          "value": "#30291E",
+          "wireOwn": true
+        },
+        {
+          "key": "surfaceColor",
+          "type": "string",
+          "value": "#EDE5D1",
+          "wireOwn": true
+        },
+        {
+          "key": "headingFontFamily",
+          "type": "string",
+          "value": "Libre Baskerville",
+          "wireOwn": true
+        },
+        {
+          "key": "bodyFontFamily",
+          "type": "string",
+          "value": "Source Sans 3",
+          "wireOwn": true
+        },
+        {
+          "key": "borderRadius",
+          "type": "number",
+          "value": 3,
+          "wireOwn": true
+        },
+        {
+          "key": "metaDescription",
+          "type": "string",
+          "value": "",
+          "wireOwn": true
+        },
+        {
+          "key": "socialImageUrl",
+          "type": "string",
+          "value": "",
+          "wireOwn": true
+        },
+        {
+          "key": "faviconUrl",
+          "type": "string",
+          "value": "",
+          "wireOwn": true
+        }
+      ],
+      "inheritedSettings": [
+        {
+          "key": "list-collections",
+          "sections": {
+            "list-collections-grid": {
+              "type": "category-grid",
+              "settings": {
+                "title": "All collections"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          }
+        },
+        {
+          "key": "search",
+          "sections": {
+            "marginalia-discovery": {
+              "type": "collection-filter",
+              "settings": {},
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            },
+            "marginalia-catalog": {
+              "type": "collection-product-list",
+              "settings": {},
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          }
+        }
+      ],
+      "templates": [
+        {
+          "key": "article",
+          "headerSections": 1,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 3,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "blog",
+          "headerSections": 1,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 3,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "cart",
+          "headerSections": 1,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 3,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "collection",
+          "headerSections": 1,
+          "footerSections": 1,
+          "sections": 2,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "contact",
+          "headerSections": 1,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 3,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/account",
+          "headerSections": 1,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 3,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/addresses",
+          "headerSections": 1,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 3,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/login",
+          "headerSections": 1,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 3,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/order",
+          "headerSections": 1,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 3,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/orders",
+          "headerSections": 1,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 3,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/register",
+          "headerSections": 1,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 3,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/settings",
+          "headerSections": 1,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 3,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/wishlist",
+          "headerSections": 1,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 3,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "index",
+          "headerSections": 1,
+          "footerSections": 1,
+          "sections": 4,
+          "identities": 6,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "list-collections",
+          "headerSections": 1,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 3,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "not_found",
+          "headerSections": 1,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 3,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "page",
+          "headerSections": 1,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 3,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "password",
+          "headerSections": 1,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 3,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "policy",
+          "headerSections": 1,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 3,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "product",
+          "headerSections": 1,
+          "footerSections": 1,
+          "sections": 2,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "search",
+          "headerSections": 1,
+          "footerSections": 1,
+          "sections": 2,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        }
+      ]
+    },
+    {
+      "slug": "letbuyy-bloom",
+      "name": "Playfield",
+      "version": "2.0.0",
+      "bundleSha256": "eb21c6b0e48b40cb11b5f3ba1e45f6f2ec8c50667175e82c8edb6bbe36299efc",
+      "baselineValidationIssues": [],
+      "baselineWireValidationIssues": [],
+      "baselineSettings": [
+        {
+          "key": "primaryColor",
+          "type": "string",
+          "value": "#1D5C54",
+          "wireOwn": true
+        },
+        {
+          "key": "secondaryColor",
+          "type": "string",
+          "value": "#DDE7D7",
+          "wireOwn": true
+        },
+        {
+          "key": "accentColor",
+          "type": "string",
+          "value": "#005FCC",
+          "wireOwn": true
+        },
+        {
+          "key": "backgroundColor",
+          "type": "string",
+          "value": "#FFF9EE",
+          "wireOwn": true
+        },
+        {
+          "key": "textColor",
+          "type": "string",
+          "value": "#29251D",
+          "wireOwn": true
+        },
+        {
+          "key": "surfaceColor",
+          "type": "string",
+          "value": "#F3E6C8",
+          "wireOwn": true
+        },
+        {
+          "key": "headingFontFamily",
+          "type": "string",
+          "value": "Inter",
+          "wireOwn": true
+        },
+        {
+          "key": "bodyFontFamily",
+          "type": "string",
+          "value": "Inter",
+          "wireOwn": true
+        },
+        {
+          "key": "borderRadius",
+          "type": "number",
+          "value": 16,
+          "wireOwn": true
+        },
+        {
+          "key": "metaDescription",
+          "type": "string",
+          "value": "",
+          "wireOwn": true
+        },
+        {
+          "key": "socialImageUrl",
+          "type": "string",
+          "value": "",
+          "wireOwn": true
+        },
+        {
+          "key": "faviconUrl",
+          "type": "string",
+          "value": "",
+          "wireOwn": true
+        }
+      ],
+      "inheritedSettings": [
+        {
+          "key": "list-collections",
+          "sections": {
+            "list-collections-grid": {
+              "type": "category-grid",
+              "settings": {
+                "title": "All collections"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          }
+        },
+        {
+          "key": "search",
+          "sections": {
+            "search-box-default": {
+              "type": "search-box",
+              "settings": {
+                "placeholder": "Search products"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            },
+            "search-results": {
+              "type": "collection-product-list",
+              "settings": {},
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            },
+            "playfield-filters": {
+              "type": "collection-filter",
+              "settings": {},
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          }
+        }
+      ],
+      "templates": [
+        {
+          "key": "index",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 6,
+          "identities": 9,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "product",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 2,
+          "identities": 5,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "collection",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 2,
+          "identities": 5,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "search",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 3,
+          "identities": 6,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "cart",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "list-collections",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "contact",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/login",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/register",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/account",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/orders",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/order",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/settings",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/wishlist",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/addresses",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "policy",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "blog",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "article",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "page",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "not_found",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "password",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        }
+      ]
+    },
+    {
+      "slug": "letbuyy-nova",
+      "name": "MadeYours",
+      "version": "2.0.0",
+      "bundleSha256": "a06efcb494f2d8b47d901b57388743de7a1bece20afe818255e8c03ae60597f8",
+      "baselineValidationIssues": [],
+      "baselineWireValidationIssues": [],
+      "baselineSettings": [
+        {
+          "key": "primaryColor",
+          "type": "string",
+          "value": "#484B8B",
+          "wireOwn": true
+        },
+        {
+          "key": "secondaryColor",
+          "type": "string",
+          "value": "#595D7D",
+          "wireOwn": true
+        },
+        {
+          "key": "accentColor",
+          "type": "string",
+          "value": "#005FCC",
+          "wireOwn": true
+        },
+        {
+          "key": "backgroundColor",
+          "type": "string",
+          "value": "#F5F6FC",
+          "wireOwn": true
+        },
+        {
+          "key": "textColor",
+          "type": "string",
+          "value": "#23243E",
+          "wireOwn": true
+        },
+        {
+          "key": "surfaceColor",
+          "type": "string",
+          "value": "#FFFFFF",
+          "wireOwn": true
+        },
+        {
+          "key": "headingFontFamily",
+          "type": "string",
+          "value": "Inter",
+          "wireOwn": true
+        },
+        {
+          "key": "bodyFontFamily",
+          "type": "string",
+          "value": "Inter",
+          "wireOwn": true
+        },
+        {
+          "key": "borderRadius",
+          "type": "number",
+          "value": 8,
+          "wireOwn": true
+        },
+        {
+          "key": "metaDescription",
+          "type": "string",
+          "value": "",
+          "wireOwn": true
+        },
+        {
+          "key": "socialImageUrl",
+          "type": "string",
+          "value": "",
+          "wireOwn": true
+        },
+        {
+          "key": "faviconUrl",
+          "type": "string",
+          "value": "",
+          "wireOwn": true
+        }
+      ],
+      "inheritedSettings": [
+        {
+          "key": "list-collections",
+          "sections": {
+            "list-collections-grid": {
+              "type": "category-grid",
+              "settings": {
+                "title": "All collections"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          }
+        },
+        {
+          "key": "search",
+          "sections": {
+            "search-box-default": {
+              "type": "search-box",
+              "settings": {
+                "placeholder": "Search products"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            },
+            "search-results": {
+              "type": "collection-product-list",
+              "settings": {
+                "title": "Choose your base",
+                "subtitle": "Each product is sold separately.",
+                "columns": 2,
+                "productLimit": 6
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            },
+            "madeyours-search-discovery": {
+              "type": "collection-filter",
+              "settings": {
+                "title": "Search your bases"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          }
+        }
+      ],
+      "templates": [
+        {
+          "key": "index",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 5,
+          "identities": 8,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "product",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 2,
+          "identities": 5,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "collection",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 2,
+          "identities": 5,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "search",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 3,
+          "identities": 6,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "cart",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "list-collections",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "contact",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/login",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/register",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/account",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/orders",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/order",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/settings",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/wishlist",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/addresses",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "policy",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "blog",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "article",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "page",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "not_found",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "password",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        }
+      ]
+    },
+    {
+      "slug": "letbuyy-summit",
+      "name": "Kindred",
+      "version": "2.0.0",
+      "bundleSha256": "4702e911bbc5d90b9ec46b9ff3d902249d7411b699e0a0c81283a713f91c1655",
+      "baselineValidationIssues": [],
+      "baselineWireValidationIssues": [],
+      "baselineSettings": [
+        {
+          "key": "primaryColor",
+          "type": "string",
+          "value": "#662E42",
+          "wireOwn": true
+        },
+        {
+          "key": "secondaryColor",
+          "type": "string",
+          "value": "#6C5B59",
+          "wireOwn": true
+        },
+        {
+          "key": "accentColor",
+          "type": "string",
+          "value": "#662E42",
+          "wireOwn": true
+        },
+        {
+          "key": "backgroundColor",
+          "type": "string",
+          "value": "#FFFAF4",
+          "wireOwn": true
+        },
+        {
+          "key": "textColor",
+          "type": "string",
+          "value": "#342C2C",
+          "wireOwn": true
+        },
+        {
+          "key": "surfaceColor",
+          "type": "string",
+          "value": "#F2E7DF",
+          "wireOwn": true
+        },
+        {
+          "key": "headingFontFamily",
+          "type": "string",
+          "value": "Playfair Display",
+          "wireOwn": true
+        },
+        {
+          "key": "bodyFontFamily",
+          "type": "string",
+          "value": "Lato",
+          "wireOwn": true
+        },
+        {
+          "key": "borderRadius",
+          "type": "number",
+          "value": 8,
+          "wireOwn": true
+        },
+        {
+          "key": "metaDescription",
+          "type": "string",
+          "value": "",
+          "wireOwn": true
+        },
+        {
+          "key": "socialImageUrl",
+          "type": "string",
+          "value": "",
+          "wireOwn": true
+        },
+        {
+          "key": "faviconUrl",
+          "type": "string",
+          "value": "",
+          "wireOwn": true
+        }
+      ],
+      "inheritedSettings": [
+        {
+          "key": "list-collections",
+          "sections": {
+            "list-collections-grid": {
+              "type": "category-grid",
+              "settings": {
+                "title": "All collections"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          }
+        },
+        {
+          "key": "search",
+          "sections": {
+            "kindred-search-box-1": {
+              "type": "search-box",
+              "settings": {
+                "placeholder": "A product or a thoughtful detail"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            },
+            "kindred-collection-filter-2": {
+              "type": "collection-filter",
+              "settings": {
+                "title": "Find a thoughtful gift"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            },
+            "kindred-collection-product-list-3": {
+              "type": "collection-product-list",
+              "settings": {
+                "title": "Your gift selection"
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          }
+        }
+      ],
+      "templates": [
+        {
+          "key": "index",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 5,
+          "identities": 8,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "product",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 2,
+          "identities": 5,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "collection",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 2,
+          "identities": 5,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "search",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 3,
+          "identities": 6,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "cart",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "list-collections",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "contact",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/login",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/register",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/account",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/orders",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/order",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/settings",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/wishlist",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/addresses",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "policy",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "blog",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "article",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "page",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "not_found",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "password",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "stableEditorState": true,
+          "stablePreviewIdentities": true,
+          "stableDocumentTemplates": true,
+          "stableDocumentSettings": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        }
+      ]
+    }
+  ],
+  "changedInputs": [],
+  "sourceStable": true
+}

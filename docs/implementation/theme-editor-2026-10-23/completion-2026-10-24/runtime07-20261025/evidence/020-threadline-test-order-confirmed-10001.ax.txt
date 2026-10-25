@@ -1,0 +1,13 @@
+Browser tab: 173052885, Title: "Secure Checkout", URL: "https://checkout.localhost:64597/checkout?[redacted query]
+0 AXWebArea Secure Checkout, URL: checkout.localhost:64597/checkout?[redacted query]
+	1 container
+		2 link Description: Threadline, Value: syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477
+		3 text Secure checkout
+	4 heading Order Confirmed!, Value: 1
+		5 text Order Confirmed!
+	6 text Thank you for your purchase. We will send order updates to the contact details you provided.
+	7 container
+		8 text Order Number:  ORD-20261024-10001
+	9 text Payment confirmation is complete. Keep this order number for support.
+	10 link Description: Track Your Order, Value: syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477/orders
+	11 link Description: Continue Shopping, Value: syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477

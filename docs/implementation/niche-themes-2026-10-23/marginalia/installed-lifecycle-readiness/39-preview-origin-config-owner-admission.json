@@ -1,0 +1,50 @@
+{
+  "recordedAt": "2026-10-24T05:05:34.712553+00:00",
+  "classification": "ROOT_SOURCE_IDENTICAL_SUPPLEMENTAL_PREVIEW_ORIGIN_CONFIG_CORRECTION_ADMITTED_MG_NOT_ALLOCATED",
+  "rootAdmission": "docs/implementation/niche-theme-programme/editor-font-axis-runtime-admission-02.json",
+  "basis": "Read saved Root receipt once; no source/hash/process/network/browser probes here.",
+  "runId": "936e5f577646",
+  "candidate": "/private/tmp/theme-editor-font-axis-20261024-01",
+  "sourceIdenticalPerOwner": true,
+  "origins": {
+    "merchant": "http://admin.threadline-936e5f577646.localhost:58090",
+    "previewPlatform": "http://localhost:58091",
+    "commercePublic": "http://syn-threadline-ui-6815276b.localhost:58091",
+    "originalBuyer": "http://syn-threadline-ui-6815276b.localhost:50494",
+    "checkout": "https://checkout.localhost:50497"
+  },
+  "configurationDelta": "NEXT_PUBLIC_STOREFRONT_URL changed from tenant58091 to canonical platformlocalhost58091 in supplemental clients only. Existing source helper derives this preview origin; source CSP policy and exact frame ancestors unchanged. No wildcard, token follow, bypass, signing key or source copy change.",
+  "rootActualHeaderChecks": {
+    "merchant": {
+      "status": 307,
+      "frameSrc": "frame-src 'self' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com http://accounts.threadline-936e5f577646.localhost:50492 http://admin.threadline-936e5f577646.localhost:58090 http://localhost:58091",
+      "cspSha256": "9f19ee7101296758903ab937c20747bdf95286b30ebb925b09441a0b9aaab659"
+    },
+    "preview": {
+      "status": 200,
+      "frameAncestors": "frame-ancestors 'self' http://admin.threadline-936e5f577646.localhost:58090 http://admin.threadline-936e5f577646.localhost:50493",
+      "cspSha256": "667ec59c90ba94c194c131fb397a3bad2179c7348392f81e7e60ef9042d10f72",
+      "xFrameOptions": "SAMEORIGIN"
+    }
+  },
+  "originalProcessesStopped": false,
+  "databaseMutationByCorrection": false,
+  "safeCutoffUtc": "2026-10-24T08:50:00Z",
+  "EditorAllocation": "Normal same-origin owner-session reload, one Dewdrop preview font/bridge retake, then allocated Pantry P00-P12. Original buyer/cart remains50494. No new confirmed order in Dewdrop.",
+  "fontBrowserParity": "NOT_INFERRED_PENDING_RETTAKE",
+  "sourceLease": "CLOSED_FROZEN",
+  "MGactiveLease": false,
+  "MGbindings": null,
+  "MGcases": {
+    "PASS": 0,
+    "FAIL": 0,
+    "NOT_RUN": 16
+  },
+  "notClaimed": [
+    "Iframe/browser font parity before actual retake",
+    "Cross-port buyer cart/token/session continuity",
+    "WholeDewdrop/all10 acceptance",
+    "Any source-policy relaxation or production deployment"
+  ],
+  "completedSharedControlUnchanged": "38-axis-name-live-component-review.json; not reaudited"
+}

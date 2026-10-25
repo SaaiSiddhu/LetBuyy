@@ -1,0 +1,33 @@
+{
+  "classification": "PREPARED_EXACT_INPUTS_ONLY_NOT_ROOT_ADMISSION_OR_NATIVE_LEASE",
+  "recordedAt": "2026-10-23T16:21:25.959263+00:00",
+  "proposedAdmissionInputs": {
+    "upSha256": "f17f659b8d037c34f02b9cc1cda912ede406bda7950f99310ebae5ca77c61171",
+    "downSha256": "b66f348b56f8f45c60eacf1ba63e1f10177a2be6c0e9d33eb829649838d6a73e",
+    "predecessor391": {
+      "upPath": "database/supabase/migrations/391_theme_editor_shared_groups.sql",
+      "downPath": "database/supabase/rollback/391_theme_editor_shared_groups.rollback.sql",
+      "upSha256": "27fa0234ad98c4b924fb0d1ecec22e9f592ab533f438ca348f99e4c6bb17a17c",
+      "downSha256": "7fea9fbf09df7f8f3af189ce3e406d3f7582ae2c371bf4dde225b59f91f25b54",
+      "functionSignature": "public.mutate_owned_theme_draft_v1(uuid,uuid,text,text,integer,text,text,jsonb,jsonb,uuid,text,jsonb)",
+      "prosrcMd5": "f14f2252157119e56f6614decef4c4aa"
+    }
+  },
+  "reviewedEvidence": [
+    {
+      "path": "docs/implementation/niche-theme-programme/shared-groups391-native-admission.json",
+      "sha256": "f22a9c45e6b9305a56904cb21904ff6e0f96c5274bcf66a15fe4e65400ed31f6"
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/391-emission-receipt.json",
+      "sha256": "1c0ad7ea01504dd6d84d28ca3d05669fd05469a76e8d86ba4fa43d30119cd833"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/circuit-search392-draft-review.json",
+      "sha256": "708119bd85605cdb05da877ec9fa6aec94ca4e00b7b7e46eb45f59e345a154cd"
+    }
+  ],
+  "pending": "Root one fresh default-LATEST391 run and exact392 admission/one native lease. Only Root writes admission.json.",
+  "nativeExecuted": false,
+  "current9cdMutated": false
+}

@@ -1,0 +1,72 @@
+{
+  "recordedAt": "2026-10-25T00:57:31.599549+00:00",
+  "status": "REVIEWED_EXACT_TEST_COMMANDS_PENDING_SPECIFIC_MANAGED_EXEC_APPROVAL",
+  "authority": "Currentdirecthumanresumevalid; automaticreviewstillrejectedprivilegedexecution citingearlierpause/missingescalationauthorization",
+  "reason": "TSXcompilerbootstrapneedslocalUnixIPC; native ownedDocker/PostgreSQL needsnormalmanagedexecutoraccess. No alternativeloader/proxy/workaround.",
+  "preflights": {
+    "count": 2,
+    "script": "docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/hosted-capture-native-preparation01/standalone-preflight.cjs",
+    "scriptSha256": "5a0a89e5c8a2aed2fd27ae08e4cad9031aa16cdfebb828e55cab77250fb758c7",
+    "commandsReference": "docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/hosted-capture-native-preparation01/PREPARED_COMMANDS_NOT_EXECUTED.json",
+    "owner": "01a164ba-e017-7b90-9053-efc5357459a6",
+    "effect": "Readactualreviewedmodules only, guardsforbidapplicationfetch/sockets/subprocesses/excludedenvreads; TSXbootstraplocalIPC precedesguard",
+    "actualPermissionRenewalAndNewOutputs": "Useonlylatestexactallocatorpermissionrenewal02; originalfailed/blockedoutputsretained"
+  },
+  "nativeCohorts": [
+    {
+      "family": "HostedcapturemetadataRED/GREEN",
+      "count": 2,
+      "secondsEach": 600,
+      "jobs": 1,
+      "noReap": true,
+      "attemptsEach": 1,
+      "owner": "01a164ba-e017-7b90-9053-efc5357459a6",
+      "commandsReference": "docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/hosted-capture-native-preparation01/PREPARED_COMMANDS_NOT_EXECUTED.json",
+      "condition": "Bothactualstandalonepreflightsterminal0andexactsource/admissionremainvalid"
+    },
+    {
+      "family": "Apparelcart/orderprovenance04",
+      "count": 1,
+      "secondsEach": 600,
+      "jobs": 1,
+      "noReap": true,
+      "attemptsEach": 1,
+      "owner": "01a16d03-613e-71b0-a591-07d4d24347d4",
+      "command": [
+        "node",
+        "scripts/governance/run-executable-suites.mjs",
+        "--suite",
+        "services/api-gateway/src/__tests__/owned-db/apparel-cart-order-provenance-qualification.manual.ts",
+        "--kind",
+        "gateway-db",
+        "--jobs",
+        "1",
+        "--no-reap",
+        "--prepared-transactions",
+        "2",
+        "--timeout",
+        "600",
+        "--log-dir",
+        "/Volumes/Projects/LetBuyy/docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-provenance04/future-native-one-cohort/logs",
+        "--json-out",
+        "/Volumes/Projects/LetBuyy/docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-provenance04/future-native-one-cohort/result.json",
+        "--run-receipt",
+        "/Volumes/Projects/LetBuyy/docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-provenance04/future-native-one-cohort/run-receipt.json",
+        "--json"
+      ],
+      "sourceReview": "themes-shared-review-20261025-01/ROOT_APPAREL04_SOURCE_REVIEW_01.json",
+      "condition": "Oneatimewhensharedresourcefree; exactsourceandallocatoradmissionremainvalid"
+    }
+  ],
+  "effectsAllowed": "Freshlabelleddisposabletestcontainers/databases/fixturesandonlytheirownedcleanup; serializedjobs1; controlledsyntheticproviderseams, no realproviderrequests",
+  "explicitlyExcluded": [
+    "Currentruntime07DB/apps/drafts/orders/data",
+    "Anypubliccallback/tunnelrenewal",
+    "Usercredentials/APIkeys/privateenv",
+    "Existingresourcecleanup/reap",
+    "RealRazorpay/livepayments/externalemail",
+    "Newloader/sourcechangesorbudgetexpansionwithoutreview"
+  ],
+  "sourceChecks": "Source/manifest/witnessindependentlyreviewed; thisproposaldoesnotclaimnativePASS",
+  "pendingApproval": true
+}

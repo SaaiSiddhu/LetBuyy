@@ -1,0 +1,33 @@
+{
+  "runId": "936e5f577646",
+  "actual": [
+    {
+      "containsLiteralNestedScript": false,
+      "containsRawCloseTag": false,
+      "escapedUnicodeTag": true,
+      "exactAttackCode": false,
+      "id": "",
+      "length": 4855,
+      "type": ""
+    },
+    {
+      "containsLiteralNestedScript": false,
+      "containsRawCloseTag": false,
+      "escapedUnicodeTag": true,
+      "exactAttackCode": false,
+      "id": "",
+      "length": 2082,
+      "type": ""
+    },
+    {
+      "containsLiteralNestedScript": false,
+      "containsRawCloseTag": false,
+      "escapedUnicodeTag": true,
+      "exactAttackCode": false,
+      "id": "",
+      "length": 10981,
+      "type": ""
+    }
+  ],
+  "note": "Substring match in framework serialized scripts is distinct from an injected executable script; raw substring count is not execution evidence."
+}

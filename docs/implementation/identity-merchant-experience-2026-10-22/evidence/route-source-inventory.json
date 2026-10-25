@@ -1,0 +1,1775 @@
+{
+  "date": "2026-10-22",
+  "branch": "letbuyy/theme-release-performance-resume",
+  "source_head": "85aac99043d8dc10469e12cbb810609a3b6f1b0d",
+  "purpose": "Generated source inventory, not governance or a completeness certificate",
+  "routes": [
+    {
+      "app": "apps/platform/identity",
+      "route": "/buyer/authorize",
+      "source": "apps/platform/identity/src/app/buyer/authorize/page.tsx",
+      "lines": 84,
+      "sha256": "18300ab38aceff26b0b30b1e220d6a01dfbff2235e9aa49c792b168fdfe0c4ce",
+      "shared_ui_import": false,
+      "source_markers": {
+        "read_guard": false,
+        "save_bar": false,
+        "empty_state": false,
+        "error_state": false,
+        "dialog": false,
+        "provider_mode": false,
+        "search_params": true,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/platform/identity",
+      "route": "/buyer/privacy",
+      "source": "apps/platform/identity/src/app/buyer/privacy/page.tsx",
+      "lines": 20,
+      "sha256": "6a97d4d3a1806a0957a7f564ec8a195e42a7aeb5d73fad1f087582cc67d1a7ad",
+      "shared_ui_import": false,
+      "source_markers": {
+        "read_guard": false,
+        "save_bar": false,
+        "empty_state": false,
+        "error_state": false,
+        "dialog": false,
+        "provider_mode": false,
+        "search_params": true,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/platform/identity",
+      "route": "/buyer/recover",
+      "source": "apps/platform/identity/src/app/buyer/recover/page.tsx",
+      "lines": 183,
+      "sha256": "8f91abe331500d85105b2cd31ae88509a9639fe2fe11abaeaefd2bbe7003d82d",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": false,
+        "save_bar": false,
+        "empty_state": false,
+        "error_state": false,
+        "dialog": false,
+        "provider_mode": false,
+        "search_params": true,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/platform/identity",
+      "route": "/check-email",
+      "source": "apps/platform/identity/src/app/check-email/page.tsx",
+      "lines": 215,
+      "sha256": "1a615c263e8a8e2f98f55106996cd3a4416c5b4ade85e8a736277aa45c100271",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": false,
+        "save_bar": false,
+        "empty_state": false,
+        "error_state": false,
+        "dialog": false,
+        "provider_mode": false,
+        "search_params": true,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/platform/identity",
+      "route": "/forgot-password",
+      "source": "apps/platform/identity/src/app/forgot-password/page.tsx",
+      "lines": 178,
+      "sha256": "98bb860d94be778b394853bcba0a8599e519c3ade7abcc17e7ab1edffa852206",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": false,
+        "save_bar": false,
+        "empty_state": false,
+        "error_state": false,
+        "dialog": false,
+        "provider_mode": false,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/platform/identity",
+      "route": "/login",
+      "source": "apps/platform/identity/src/app/login/page.tsx",
+      "lines": 372,
+      "sha256": "454128ee56bc29349c3aec45223c317cdd72127c238e4404ed21cb7df3f37a44",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": false,
+        "save_bar": false,
+        "empty_state": false,
+        "error_state": false,
+        "dialog": false,
+        "provider_mode": false,
+        "search_params": true,
+        "html": true
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/platform/identity",
+      "route": "/lookup",
+      "source": "apps/platform/identity/src/app/lookup/page.tsx",
+      "lines": 629,
+      "sha256": "4e73d133e2b718866fccac256973fc459e54ca1f5535cafb2200d93acdce8289",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": false,
+        "save_bar": false,
+        "empty_state": false,
+        "error_state": false,
+        "dialog": false,
+        "provider_mode": false,
+        "search_params": true,
+        "html": true
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/platform/identity",
+      "route": "/onboarding",
+      "source": "apps/platform/identity/src/app/onboarding/page.tsx",
+      "lines": 840,
+      "sha256": "2ee17d76ce2c0bf0e1f507a1c813fb93c1545c5bc1465288cc1e6f4d40f0d9da",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": false,
+        "save_bar": false,
+        "empty_state": false,
+        "error_state": false,
+        "dialog": false,
+        "provider_mode": false,
+        "search_params": false,
+        "html": true
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/platform/identity",
+      "route": "/",
+      "source": "apps/platform/identity/src/app/page.tsx",
+      "lines": 6,
+      "sha256": "5071407ced8cd94d1c8e84fc83196ffe2dfc1900d6585edd8f060c49c44d1be2",
+      "shared_ui_import": false,
+      "source_markers": {
+        "read_guard": false,
+        "save_bar": false,
+        "empty_state": false,
+        "error_state": false,
+        "dialog": false,
+        "provider_mode": false,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/platform/identity",
+      "route": "/reset-password",
+      "source": "apps/platform/identity/src/app/reset-password/page.tsx",
+      "lines": 266,
+      "sha256": "79de0b44bfcb17e4fc9c7037965a90af06f4bfaed8f044d6b8293f23ccd3b3d8",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": false,
+        "save_bar": false,
+        "empty_state": false,
+        "error_state": false,
+        "dialog": false,
+        "provider_mode": false,
+        "search_params": true,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/platform/identity",
+      "route": "/select",
+      "source": "apps/platform/identity/src/app/select/page.tsx",
+      "lines": 226,
+      "sha256": "598cdf85c205d1044479f961eb17e28911c3e511ead4fd1bb657a60bd2bba7a1",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": false,
+        "save_bar": false,
+        "empty_state": false,
+        "error_state": false,
+        "dialog": false,
+        "provider_mode": false,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/platform/identity",
+      "route": "/set-password",
+      "source": "apps/platform/identity/src/app/set-password/page.tsx",
+      "lines": 282,
+      "sha256": "4f06d4367e85b9394664d5e805de920377db90d5f6cb42145b1cb7c69def6a6e",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": false,
+        "save_bar": false,
+        "empty_state": false,
+        "error_state": false,
+        "dialog": false,
+        "provider_mode": false,
+        "search_params": true,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/platform/identity",
+      "route": "/signup",
+      "source": "apps/platform/identity/src/app/signup/page.tsx",
+      "lines": 728,
+      "sha256": "10920b0d0b14420fcf44a66738732b9869e8b680449468a944fdac9e4c24c20e",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": false,
+        "save_bar": false,
+        "empty_state": false,
+        "error_state": false,
+        "dialog": false,
+        "provider_mode": false,
+        "search_params": true,
+        "html": true
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/access_account/checkout/checkout",
+      "source": "apps/merchant/web/src/app/[store]/access_account/checkout/checkout/page.tsx",
+      "lines": 61,
+      "sha256": "fc7064248c3137fbf56a0b4e20ed24e31ee6211d4f64dc9a1a09870961f41478",
+      "shared_ui_import": false,
+      "source_markers": {
+        "read_guard": false,
+        "save_bar": false,
+        "empty_state": false,
+        "error_state": false,
+        "dialog": false,
+        "provider_mode": false,
+        "search_params": true,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/access_account/checkout/select-plan",
+      "source": "apps/merchant/web/src/app/[store]/access_account/checkout/select-plan/page.tsx",
+      "lines": 55,
+      "sha256": "7815afc5ffecfc6b816efdb20c300b2249a4f4bf3de2954231df3e9354342058",
+      "shared_ui_import": false,
+      "source_markers": {
+        "read_guard": false,
+        "save_bar": false,
+        "empty_state": false,
+        "error_state": false,
+        "dialog": false,
+        "provider_mode": false,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/ai",
+      "source": "apps/merchant/web/src/app/[store]/ai/page.tsx",
+      "lines": 348,
+      "sha256": "311e5d19a009ea0cac95a6c0dbeaf775bac06c0ba8e6a9731cd2a2f252f09c06",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": true,
+        "save_bar": false,
+        "empty_state": true,
+        "error_state": false,
+        "dialog": false,
+        "provider_mode": false,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/analytics",
+      "source": "apps/merchant/web/src/app/[store]/analytics/page.tsx",
+      "lines": 325,
+      "sha256": "912680b9a2ed9bdb81de701636d6c62853d5164e8f3f5e6a6890ff32af7f45ad",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": true,
+        "save_bar": false,
+        "empty_state": true,
+        "error_state": false,
+        "dialog": false,
+        "provider_mode": false,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/appearance",
+      "source": "apps/merchant/web/src/app/[store]/appearance/page.tsx",
+      "lines": 470,
+      "sha256": "8d56ff52df6506c44d4975ff0bada7c5a9575a706dd27443547e2cd38036f578",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": true,
+        "save_bar": true,
+        "empty_state": false,
+        "error_state": false,
+        "dialog": false,
+        "provider_mode": false,
+        "search_params": false,
+        "html": true
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/apps/[installationId]",
+      "source": "apps/merchant/web/src/app/[store]/apps/[installationId]/page.tsx",
+      "lines": 32,
+      "sha256": "0a26369c13d9239574f2adb57ffd1d891ee43431b7842f3ef344c287419e7c54",
+      "shared_ui_import": false,
+      "source_markers": {
+        "read_guard": false,
+        "save_bar": false,
+        "empty_state": false,
+        "error_state": false,
+        "dialog": false,
+        "provider_mode": false,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/apps",
+      "source": "apps/merchant/web/src/app/[store]/apps/page.tsx",
+      "lines": 98,
+      "sha256": "1610dbe31af66018dfa6b530e5d8929db1f27b03b4f06708617d3201d6583125",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": false,
+        "save_bar": false,
+        "empty_state": true,
+        "error_state": false,
+        "dialog": false,
+        "provider_mode": false,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/categories",
+      "source": "apps/merchant/web/src/app/[store]/categories/page.tsx",
+      "lines": 493,
+      "sha256": "f604c9286f68e7209881b080ff279b914f387ed22fee20397b922e79cf634155",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": true,
+        "save_bar": true,
+        "empty_state": true,
+        "error_state": false,
+        "dialog": true,
+        "provider_mode": false,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/certifications",
+      "source": "apps/merchant/web/src/app/[store]/certifications/page.tsx",
+      "lines": 513,
+      "sha256": "48a638673a73044905c14c8093f96dfe0f9d55608bedab65b849a853e3e25277",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": true,
+        "save_bar": true,
+        "empty_state": true,
+        "error_state": false,
+        "dialog": true,
+        "provider_mode": false,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/comments",
+      "source": "apps/merchant/web/src/app/[store]/comments/page.tsx",
+      "lines": 393,
+      "sha256": "787a3edf2f6044bb3fb6d2184f58ac2acd5dfc9df6754e687fcc45812f98a024",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": true,
+        "save_bar": false,
+        "empty_state": true,
+        "error_state": false,
+        "dialog": true,
+        "provider_mode": false,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/contact",
+      "source": "apps/merchant/web/src/app/[store]/contact/page.tsx",
+      "lines": 439,
+      "sha256": "0020eff4ffcd89e7c728d99392d484fc44ae34a62dd5b5e4151f081d2f9d9ce5",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": true,
+        "save_bar": false,
+        "empty_state": true,
+        "error_state": false,
+        "dialog": true,
+        "provider_mode": false,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/content/reels",
+      "source": "apps/merchant/web/src/app/[store]/content/reels/page.tsx",
+      "lines": 123,
+      "sha256": "ec704447c75aeae98c9f06722455a17ed2353c53a2eaf6693c54010aedab86ed",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": false,
+        "save_bar": false,
+        "empty_state": false,
+        "error_state": false,
+        "dialog": false,
+        "provider_mode": false,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/coupons",
+      "source": "apps/merchant/web/src/app/[store]/coupons/page.tsx",
+      "lines": 606,
+      "sha256": "6e6b4bff0c6787cb5b8fb6452ad60fa21ee099a078b916739fa0361419236859",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": true,
+        "save_bar": true,
+        "empty_state": true,
+        "error_state": false,
+        "dialog": true,
+        "provider_mode": false,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/customers/[email]",
+      "source": "apps/merchant/web/src/app/[store]/customers/[email]/page.tsx",
+      "lines": 704,
+      "sha256": "b5f62c52800fcc3221ce011c9aead48737b71796a6abb12e5e584d0cdddd180c",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": true,
+        "save_bar": false,
+        "empty_state": true,
+        "error_state": false,
+        "dialog": false,
+        "provider_mode": false,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/customers",
+      "source": "apps/merchant/web/src/app/[store]/customers/page.tsx",
+      "lines": 417,
+      "sha256": "5e88089c2b78ba60658a1c65bf57889d366f71e0868a19e802a726854c62c1d0",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": true,
+        "save_bar": false,
+        "empty_state": true,
+        "error_state": false,
+        "dialog": false,
+        "provider_mode": false,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/customers/segments",
+      "source": "apps/merchant/web/src/app/[store]/customers/segments/page.tsx",
+      "lines": 766,
+      "sha256": "bf165f796bf33da6ca293ab58f5322f4fedfa06b748ef501f71139a2a373a69a",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": true,
+        "save_bar": false,
+        "empty_state": true,
+        "error_state": false,
+        "dialog": false,
+        "provider_mode": false,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/dashboard",
+      "source": "apps/merchant/web/src/app/[store]/dashboard/page.tsx",
+      "lines": 284,
+      "sha256": "6944a49926a83794d2626fc9a24edcb6321db37ae0fcea23ce69e60d773b8f07",
+      "shared_ui_import": false,
+      "source_markers": {
+        "read_guard": false,
+        "save_bar": false,
+        "empty_state": false,
+        "error_state": false,
+        "dialog": false,
+        "provider_mode": false,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/education",
+      "source": "apps/merchant/web/src/app/[store]/education/page.tsx",
+      "lines": 503,
+      "sha256": "fc41ce0f8471dc5683addb67d80923ef96a6e738494cb81d7118854f09c501aa",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": true,
+        "save_bar": true,
+        "empty_state": true,
+        "error_state": false,
+        "dialog": true,
+        "provider_mode": false,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/experience",
+      "source": "apps/merchant/web/src/app/[store]/experience/page.tsx",
+      "lines": 507,
+      "sha256": "a1eb40f87322e3fcbd750b8f4ea1b946c24c796bf8abcd1ab61f89de77b13c24",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": true,
+        "save_bar": true,
+        "empty_state": true,
+        "error_state": false,
+        "dialog": true,
+        "provider_mode": false,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/export",
+      "source": "apps/merchant/web/src/app/[store]/export/page.tsx",
+      "lines": 396,
+      "sha256": "064691a688a3b0761e18cb30967e9a6bf275299a066a5b44bff3eb08a65c5836",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": true,
+        "save_bar": true,
+        "empty_state": false,
+        "error_state": false,
+        "dialog": false,
+        "provider_mode": false,
+        "search_params": false,
+        "html": true
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/gallery",
+      "source": "apps/merchant/web/src/app/[store]/gallery/page.tsx",
+      "lines": 364,
+      "sha256": "bd4da4f234db1ff646e05f7459823ad775b46ac01025b9028b10684f7000c677",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": true,
+        "save_bar": false,
+        "empty_state": true,
+        "error_state": false,
+        "dialog": true,
+        "provider_mode": false,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/leads",
+      "source": "apps/merchant/web/src/app/[store]/leads/page.tsx",
+      "lines": 441,
+      "sha256": "8254805ced68bd511e42a51747fc07ac658b96049cdeee95fd86970d37106642",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": true,
+        "save_bar": false,
+        "empty_state": true,
+        "error_state": false,
+        "dialog": true,
+        "provider_mode": false,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/login",
+      "source": "apps/merchant/web/src/app/[store]/login/page.tsx",
+      "lines": 33,
+      "sha256": "7b5488cae7470afeac3b70e5a236b3a987502aa5bac0ecc78573aea928ec5a77",
+      "shared_ui_import": false,
+      "source_markers": {
+        "read_guard": false,
+        "save_bar": false,
+        "empty_state": false,
+        "error_state": false,
+        "dialog": false,
+        "provider_mode": false,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/marketing",
+      "source": "apps/merchant/web/src/app/[store]/marketing/page.tsx",
+      "lines": 789,
+      "sha256": "55e0d544c6441474e53a22724e28677b1bb9a2348bb4cb94982e1120ae73e8e4",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": true,
+        "save_bar": false,
+        "empty_state": true,
+        "error_state": false,
+        "dialog": true,
+        "provider_mode": false,
+        "search_params": false,
+        "html": true
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/online-store",
+      "source": "apps/merchant/web/src/app/[store]/online-store/page.tsx",
+      "lines": 6,
+      "sha256": "179bc0267f87b9a3d10c8e27acba1fae703722df3e30dab0ad31add99b4302d0",
+      "shared_ui_import": false,
+      "source_markers": {
+        "read_guard": false,
+        "save_bar": false,
+        "empty_state": false,
+        "error_state": false,
+        "dialog": false,
+        "provider_mode": false,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/online-store/pages",
+      "source": "apps/merchant/web/src/app/[store]/online-store/pages/page.tsx",
+      "lines": 825,
+      "sha256": "33f00facb3cfd1e0ecd54b66e27b554f054770efad307b61c65a63d56633840c",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": true,
+        "save_bar": true,
+        "empty_state": true,
+        "error_state": false,
+        "dialog": true,
+        "provider_mode": false,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/online-store/preferences",
+      "source": "apps/merchant/web/src/app/[store]/online-store/preferences/page.tsx",
+      "lines": 337,
+      "sha256": "c66036eed0d90df88c13e0a2bfe86875d68332105f12160ffbfc9452b134be1d",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": true,
+        "save_bar": true,
+        "empty_state": false,
+        "error_state": false,
+        "dialog": false,
+        "provider_mode": false,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/online-store/themes/[themeId]/editor",
+      "source": "apps/merchant/web/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx",
+      "lines": 1892,
+      "sha256": "3df88ae7c4cfa290f3480c83431f9b4eaa9d61f5b09a8b4ff025be53e1b367da",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": true,
+        "save_bar": true,
+        "empty_state": false,
+        "error_state": false,
+        "dialog": true,
+        "provider_mode": false,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/online-store/themes/[themeId]/editor/translations",
+      "source": "apps/merchant/web/src/app/[store]/online-store/themes/[themeId]/editor/translations/page.tsx",
+      "lines": 57,
+      "sha256": "bfc81be9c4e8e57c56fb690cac6518ca93996f16824ad089573f3d8842f3d24f",
+      "shared_ui_import": false,
+      "source_markers": {
+        "read_guard": false,
+        "save_bar": false,
+        "empty_state": false,
+        "error_state": false,
+        "dialog": false,
+        "provider_mode": false,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/online-store/themes/marketplace",
+      "source": "apps/merchant/web/src/app/[store]/online-store/themes/marketplace/page.tsx",
+      "lines": 2,
+      "sha256": "bd2fe750cbc807bcb874f6810cd9cd56e2c354ba0fbd906990dda23280224ca2",
+      "shared_ui_import": false,
+      "source_markers": {
+        "read_guard": false,
+        "save_bar": false,
+        "empty_state": false,
+        "error_state": false,
+        "dialog": false,
+        "provider_mode": false,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/online-store/themes",
+      "source": "apps/merchant/web/src/app/[store]/online-store/themes/page.tsx",
+      "lines": 2,
+      "sha256": "cb08724d3eb806536fc7190a82ad236ea2fbc1aaac11c8d9058965202828038b",
+      "shared_ui_import": false,
+      "source_markers": {
+        "read_guard": false,
+        "save_bar": false,
+        "empty_state": false,
+        "error_state": false,
+        "dialog": false,
+        "provider_mode": false,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/online-store/themes/update",
+      "source": "apps/merchant/web/src/app/[store]/online-store/themes/update/page.tsx",
+      "lines": 54,
+      "sha256": "0e13ac7961fa0d85c74e4cfb1d498e5ce699c47cc726dafe966fa2d8c13c9404",
+      "shared_ui_import": false,
+      "source_markers": {
+        "read_guard": false,
+        "save_bar": false,
+        "empty_state": false,
+        "error_state": false,
+        "dialog": false,
+        "provider_mode": false,
+        "search_params": true,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/orders/[orderId]",
+      "source": "apps/merchant/web/src/app/[store]/orders/[orderId]/page.tsx",
+      "lines": 706,
+      "sha256": "9f615f13d42de8fb447ebe43ea7c22b9874e9e35c62ff8e9c75555fe96584b1c",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": true,
+        "save_bar": false,
+        "empty_state": true,
+        "error_state": false,
+        "dialog": false,
+        "provider_mode": false,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/orders",
+      "source": "apps/merchant/web/src/app/[store]/orders/page.tsx",
+      "lines": 992,
+      "sha256": "cb59db161fb7ad99f0646fde60ba4b5630200097d00b21b3f78bb319e993715a",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": true,
+        "save_bar": false,
+        "empty_state": true,
+        "error_state": false,
+        "dialog": true,
+        "provider_mode": true,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/pages",
+      "source": "apps/merchant/web/src/app/[store]/pages/page.tsx",
+      "lines": 507,
+      "sha256": "7d808ad67ceefbb65f3a7037f82f5a6672f99105c9f6f35ff2f9cc6590fd9b01",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": true,
+        "save_bar": true,
+        "empty_state": true,
+        "error_state": false,
+        "dialog": true,
+        "provider_mode": false,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/payouts",
+      "source": "apps/merchant/web/src/app/[store]/payouts/page.tsx",
+      "lines": 325,
+      "sha256": "2b051f86401cc7bf43868f1ac01f7824110674321002bcc43fa8302884e530dc",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": false,
+        "save_bar": false,
+        "empty_state": true,
+        "error_state": false,
+        "dialog": true,
+        "provider_mode": true,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/posts",
+      "source": "apps/merchant/web/src/app/[store]/posts/page.tsx",
+      "lines": 584,
+      "sha256": "db43be02ef09f3da1501f981cbaca2e0c378bcdae74357f76798871292fe11fd",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": true,
+        "save_bar": true,
+        "empty_state": true,
+        "error_state": false,
+        "dialog": true,
+        "provider_mode": false,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/products/[productId]",
+      "source": "apps/merchant/web/src/app/[store]/products/[productId]/page.tsx",
+      "lines": 1,
+      "sha256": "8bb91993b68cdf4833083c47b2bc3a24535e235aa5932e779f67564cf4fbe612",
+      "shared_ui_import": false,
+      "source_markers": {
+        "read_guard": false,
+        "save_bar": false,
+        "empty_state": false,
+        "error_state": false,
+        "dialog": false,
+        "provider_mode": false,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/products/collections",
+      "source": "apps/merchant/web/src/app/[store]/products/collections/page.tsx",
+      "lines": 645,
+      "sha256": "b05130a0daafdb025b57c7945f647df819458cb5f8a6c58a4674ac0ccf300095",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": false,
+        "save_bar": true,
+        "empty_state": true,
+        "error_state": false,
+        "dialog": false,
+        "provider_mode": false,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/products/gift-cards",
+      "source": "apps/merchant/web/src/app/[store]/products/gift-cards/page.tsx",
+      "lines": 604,
+      "sha256": "bd9e1de5dba582235b9608cae8a99bf6642f09812eca7df2a1b7fec5c74ca19e",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": true,
+        "save_bar": true,
+        "empty_state": true,
+        "error_state": false,
+        "dialog": false,
+        "provider_mode": false,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/products/inventory",
+      "source": "apps/merchant/web/src/app/[store]/products/inventory/page.tsx",
+      "lines": 414,
+      "sha256": "6f6082f80a9ca71fdb6547acf73b586c8ab172d4ccdc3e5e49a2d6505bba4537",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": true,
+        "save_bar": true,
+        "empty_state": true,
+        "error_state": false,
+        "dialog": false,
+        "provider_mode": false,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/products/inventory-history",
+      "source": "apps/merchant/web/src/app/[store]/products/inventory-history/page.tsx",
+      "lines": 586,
+      "sha256": "0327c2237a56081e96219a624e1feede6b4263b384ac989c534052e892a7b084",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": true,
+        "save_bar": false,
+        "empty_state": true,
+        "error_state": false,
+        "dialog": false,
+        "provider_mode": false,
+        "search_params": true,
+        "html": true
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/products/locations",
+      "source": "apps/merchant/web/src/app/[store]/products/locations/page.tsx",
+      "lines": 367,
+      "sha256": "179c0d43af69954cb4757db2711d97d0c40421050a2dcc45f217a2b1ca7cd300",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": true,
+        "save_bar": false,
+        "empty_state": true,
+        "error_state": false,
+        "dialog": true,
+        "provider_mode": false,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/products/new",
+      "source": "apps/merchant/web/src/app/[store]/products/new/page.tsx",
+      "lines": 1626,
+      "sha256": "1518c8cd833b474a655ecc49c540721f068fb6d9a1034907eded8f2442e14096",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": true,
+        "save_bar": true,
+        "empty_state": true,
+        "error_state": false,
+        "dialog": false,
+        "provider_mode": false,
+        "search_params": false,
+        "html": true
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/products/operations-dashboard",
+      "source": "apps/merchant/web/src/app/[store]/products/operations-dashboard/page.tsx",
+      "lines": 485,
+      "sha256": "c2b99505da2297023fb0c48f57ea49060caab42c9a1102171a51eb9fe3fef1e2",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": true,
+        "save_bar": false,
+        "empty_state": true,
+        "error_state": false,
+        "dialog": false,
+        "provider_mode": false,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/products",
+      "source": "apps/merchant/web/src/app/[store]/products/page.tsx",
+      "lines": 544,
+      "sha256": "60a4b105c3ea3fa3a39b93264d980165f6a43b207ee109dae0fa03458443fc72",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": false,
+        "save_bar": false,
+        "empty_state": true,
+        "error_state": false,
+        "dialog": false,
+        "provider_mode": false,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/products/purchase-orders",
+      "source": "apps/merchant/web/src/app/[store]/products/purchase-orders/page.tsx",
+      "lines": 754,
+      "sha256": "f980691267ecbce323d4b4018cb070b662f5cb57c4dafaf01d76824463bbd3eb",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": true,
+        "save_bar": false,
+        "empty_state": true,
+        "error_state": false,
+        "dialog": true,
+        "provider_mode": false,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/products/receipts",
+      "source": "apps/merchant/web/src/app/[store]/products/receipts/page.tsx",
+      "lines": 381,
+      "sha256": "e95b329112bba7d8a5c483a7815b21df3285160242f3aa709dc7179601417d6c",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": true,
+        "save_bar": false,
+        "empty_state": true,
+        "error_state": false,
+        "dialog": false,
+        "provider_mode": false,
+        "search_params": true,
+        "html": true
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/products/reservations",
+      "source": "apps/merchant/web/src/app/[store]/products/reservations/page.tsx",
+      "lines": 418,
+      "sha256": "d0b2a6ccd99397b66bffab29c9f0a94a2f7e0368a54401891e0179e123891f90",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": true,
+        "save_bar": false,
+        "empty_state": true,
+        "error_state": false,
+        "dialog": false,
+        "provider_mode": false,
+        "search_params": true,
+        "html": true
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/products/smart-collections",
+      "source": "apps/merchant/web/src/app/[store]/products/smart-collections/page.tsx",
+      "lines": 612,
+      "sha256": "f341e25d674c7a54d8023904e09fec1c2a074984a9bf93ec57e86fdaca61286f",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": true,
+        "save_bar": false,
+        "empty_state": true,
+        "error_state": false,
+        "dialog": true,
+        "provider_mode": false,
+        "search_params": false,
+        "html": true
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/products/suppliers",
+      "source": "apps/merchant/web/src/app/[store]/products/suppliers/page.tsx",
+      "lines": 379,
+      "sha256": "1ec5b5f5277385460eb65db4f6da449ae4e1955e5206b532bfd4882ca7fdfa20",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": true,
+        "save_bar": false,
+        "empty_state": true,
+        "error_state": false,
+        "dialog": true,
+        "provider_mode": false,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/products/transfers",
+      "source": "apps/merchant/web/src/app/[store]/products/transfers/page.tsx",
+      "lines": 879,
+      "sha256": "070f3c738a30dac4e039ec4541c3a70203cae3ff70b1e5801bc1bdb3c028c7f9",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": true,
+        "save_bar": false,
+        "empty_state": true,
+        "error_state": false,
+        "dialog": true,
+        "provider_mode": false,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/projects",
+      "source": "apps/merchant/web/src/app/[store]/projects/page.tsx",
+      "lines": 499,
+      "sha256": "92d93f85a8c88c1e6f8e1c4a2b1bd1540d7826ef0b66f342e4def1ca84d5c2ff",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": true,
+        "save_bar": true,
+        "empty_state": true,
+        "error_state": false,
+        "dialog": true,
+        "provider_mode": false,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/reviews",
+      "source": "apps/merchant/web/src/app/[store]/reviews/page.tsx",
+      "lines": 472,
+      "sha256": "10d03491e9a2dbf4d07c966a467bb704f265535f609c72f56bb2d4368eaaec4c",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": true,
+        "save_bar": false,
+        "empty_state": true,
+        "error_state": false,
+        "dialog": true,
+        "provider_mode": false,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/settings/apps",
+      "source": "apps/merchant/web/src/app/[store]/settings/apps/page.tsx",
+      "lines": 52,
+      "sha256": "610cc16d1cf660099eae1007861ad98602959574ff1b67e59649d95e1fc45cbc",
+      "shared_ui_import": false,
+      "source_markers": {
+        "read_guard": false,
+        "save_bar": false,
+        "empty_state": false,
+        "error_state": false,
+        "dialog": false,
+        "provider_mode": false,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/settings/billing",
+      "source": "apps/merchant/web/src/app/[store]/settings/billing/page.tsx",
+      "lines": 406,
+      "sha256": "bd2d033fd180ca974559eee7246d94f126e9429236eef8deb86e41c25e68b484",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": true,
+        "save_bar": false,
+        "empty_state": true,
+        "error_state": false,
+        "dialog": false,
+        "provider_mode": false,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/settings/billing/profile",
+      "source": "apps/merchant/web/src/app/[store]/settings/billing/profile/page.tsx",
+      "lines": 278,
+      "sha256": "2b1ce1c54c573df800271c543aaf5329dad46a5b51b87f1dab93acb215bbb8ea",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": true,
+        "save_bar": false,
+        "empty_state": false,
+        "error_state": false,
+        "dialog": false,
+        "provider_mode": false,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/settings/business",
+      "source": "apps/merchant/web/src/app/[store]/settings/business/page.tsx",
+      "lines": 731,
+      "sha256": "736778e755076ab8c6ad965e7f2b59d6a46214008de072209c223ca5a26a6d66",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": true,
+        "save_bar": false,
+        "empty_state": false,
+        "error_state": false,
+        "dialog": false,
+        "provider_mode": false,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/settings/checkout",
+      "source": "apps/merchant/web/src/app/[store]/settings/checkout/page.tsx",
+      "lines": 378,
+      "sha256": "6e44fdcb2330902b65da8fd193c2a531c00365749100e9bc6c5cc1d18d39d58b",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": true,
+        "save_bar": false,
+        "empty_state": false,
+        "error_state": false,
+        "dialog": false,
+        "provider_mode": false,
+        "search_params": false,
+        "html": true
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/settings/custom-data",
+      "source": "apps/merchant/web/src/app/[store]/settings/custom-data/page.tsx",
+      "lines": 23,
+      "sha256": "0cd21b2a8b1ff02c8793d06944faf4984f50b12991025c88b28d5a09231df03b",
+      "shared_ui_import": false,
+      "source_markers": {
+        "read_guard": false,
+        "save_bar": false,
+        "empty_state": false,
+        "error_state": false,
+        "dialog": false,
+        "provider_mode": false,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/settings/domains",
+      "source": "apps/merchant/web/src/app/[store]/settings/domains/page.tsx",
+      "lines": 299,
+      "sha256": "01598f6a6d691085f395c0934b85b051e6061cc8d313b7f98e6d79650b967391",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": true,
+        "save_bar": false,
+        "empty_state": false,
+        "error_state": false,
+        "dialog": false,
+        "provider_mode": false,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/settings/general",
+      "source": "apps/merchant/web/src/app/[store]/settings/general/page.tsx",
+      "lines": 829,
+      "sha256": "9f563d078b6789755ac85cccec1a0abe6e49e3224fcbcaf3101a191138b3fa94",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": true,
+        "save_bar": false,
+        "empty_state": false,
+        "error_state": false,
+        "dialog": true,
+        "provider_mode": false,
+        "search_params": false,
+        "html": true
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/settings/localization",
+      "source": "apps/merchant/web/src/app/[store]/settings/localization/page.tsx",
+      "lines": 12,
+      "sha256": "605971b47e71a6f7c6a4c1c1b3745a4e754fac244f6ce3454ba711c7e7026b5e",
+      "shared_ui_import": false,
+      "source_markers": {
+        "read_guard": false,
+        "save_bar": false,
+        "empty_state": false,
+        "error_state": false,
+        "dialog": false,
+        "provider_mode": false,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/settings/loyalty",
+      "source": "apps/merchant/web/src/app/[store]/settings/loyalty/page.tsx",
+      "lines": 10,
+      "sha256": "521c701fe5aa231bc16df973160cf24c4801e8c9e6c6e4e11a3eca42f89c3614",
+      "shared_ui_import": false,
+      "source_markers": {
+        "read_guard": false,
+        "save_bar": false,
+        "empty_state": false,
+        "error_state": false,
+        "dialog": false,
+        "provider_mode": false,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/settings/notifications",
+      "source": "apps/merchant/web/src/app/[store]/settings/notifications/page.tsx",
+      "lines": 683,
+      "sha256": "8909808b9a64064a3b1e011e1d859596309b84f3c104bbbfb526ab6d8306b065",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": true,
+        "save_bar": false,
+        "empty_state": true,
+        "error_state": false,
+        "dialog": false,
+        "provider_mode": false,
+        "search_params": true,
+        "html": true
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/settings",
+      "source": "apps/merchant/web/src/app/[store]/settings/page.tsx",
+      "lines": 178,
+      "sha256": "3fbc35d62eb19f87d17681981efd9a36c46bf8476a3857363e8e656ae110ecb3",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": false,
+        "save_bar": false,
+        "empty_state": false,
+        "error_state": false,
+        "dialog": false,
+        "provider_mode": false,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/settings/payments",
+      "source": "apps/merchant/web/src/app/[store]/settings/payments/page.tsx",
+      "lines": 478,
+      "sha256": "9b9bc16ceaca0921a27adaabbcca8115063b9c31be5c62d2a074f090ada8c8bc",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": true,
+        "save_bar": false,
+        "empty_state": false,
+        "error_state": false,
+        "dialog": false,
+        "provider_mode": true,
+        "search_params": false,
+        "html": true
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/settings/plan",
+      "source": "apps/merchant/web/src/app/[store]/settings/plan/page.tsx",
+      "lines": 337,
+      "sha256": "e3dd919f64b8ad521765ec926471a6a1fd85e41fbb0680a60f23610b6fad78af",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": true,
+        "save_bar": false,
+        "empty_state": false,
+        "error_state": false,
+        "dialog": true,
+        "provider_mode": false,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/settings/policies",
+      "source": "apps/merchant/web/src/app/[store]/settings/policies/page.tsx",
+      "lines": 333,
+      "sha256": "2e5a9d6fbea9a97118285fccb7b1f05711595d8165bd8ef1d850876ee9b2982e",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": true,
+        "save_bar": false,
+        "empty_state": false,
+        "error_state": false,
+        "dialog": false,
+        "provider_mode": false,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/settings/security",
+      "source": "apps/merchant/web/src/app/[store]/settings/security/page.tsx",
+      "lines": 37,
+      "sha256": "6c008258f3de67ba231accf80725eb2f9da7d5bd69f26bbfb56e0733c0034c49",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": false,
+        "save_bar": false,
+        "empty_state": true,
+        "error_state": false,
+        "dialog": false,
+        "provider_mode": false,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/settings/shipping",
+      "source": "apps/merchant/web/src/app/[store]/settings/shipping/page.tsx",
+      "lines": 613,
+      "sha256": "722f9fecb50fbb08e21c51cd021f88c75fef57523183fc727006de5b1aef3918",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": true,
+        "save_bar": false,
+        "empty_state": true,
+        "error_state": false,
+        "dialog": true,
+        "provider_mode": true,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/settings/subscribe/checkout",
+      "source": "apps/merchant/web/src/app/[store]/settings/subscribe/checkout/page.tsx",
+      "lines": 26,
+      "sha256": "d636d17b083eeba4189a5ac628ffbd60139ead82912f992e0ee896f002250843",
+      "shared_ui_import": false,
+      "source_markers": {
+        "read_guard": false,
+        "save_bar": false,
+        "empty_state": false,
+        "error_state": false,
+        "dialog": false,
+        "provider_mode": false,
+        "search_params": true,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/settings/taxes",
+      "source": "apps/merchant/web/src/app/[store]/settings/taxes/page.tsx",
+      "lines": 683,
+      "sha256": "f058c819efb8ece86fd238741d011c518664465fc167d64c2dda9015bf7c04b9",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": true,
+        "save_bar": false,
+        "empty_state": true,
+        "error_state": false,
+        "dialog": true,
+        "provider_mode": false,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/settings/users",
+      "source": "apps/merchant/web/src/app/[store]/settings/users/page.tsx",
+      "lines": 584,
+      "sha256": "283bb1b3e1129259c854f0c7ae46b90d1b2e987815541f1b232b39e2acc35d29",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": true,
+        "save_bar": false,
+        "empty_state": false,
+        "error_state": false,
+        "dialog": true,
+        "provider_mode": false,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/skills",
+      "source": "apps/merchant/web/src/app/[store]/skills/page.tsx",
+      "lines": 477,
+      "sha256": "8a8a143168a96c48e51515499f2eee07b93eeb120ea419de4dd1f0c3e77a4636",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": true,
+        "save_bar": true,
+        "empty_state": true,
+        "error_state": false,
+        "dialog": true,
+        "provider_mode": false,
+        "search_params": false,
+        "html": true
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/[store]/testimonials",
+      "source": "apps/merchant/web/src/app/[store]/testimonials/page.tsx",
+      "lines": 489,
+      "sha256": "e68c077ada60e8a2995a509b115b8e8b534fe9fca7d218c2b7e4a25becc7e8c3",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": true,
+        "save_bar": true,
+        "empty_state": true,
+        "error_state": false,
+        "dialog": true,
+        "provider_mode": false,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/accept-invite",
+      "source": "apps/merchant/web/src/app/accept-invite/page.tsx",
+      "lines": 10,
+      "sha256": "a7d611d271d703a7e0b07ab6d323dae302a75e2a52779bb5dae30f6a175317f7",
+      "shared_ui_import": false,
+      "source_markers": {
+        "read_guard": false,
+        "save_bar": false,
+        "empty_state": false,
+        "error_state": false,
+        "dialog": false,
+        "provider_mode": false,
+        "search_params": true,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/launching-soon",
+      "source": "apps/merchant/web/src/app/launching-soon/page.tsx",
+      "lines": 39,
+      "sha256": "2592b506658951c4ecb945ca69f864d855f2eef03b411a35ec4b41efe14b0822",
+      "shared_ui_import": true,
+      "source_markers": {
+        "read_guard": false,
+        "save_bar": false,
+        "empty_state": false,
+        "error_state": false,
+        "dialog": false,
+        "provider_mode": false,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/",
+      "source": "apps/merchant/web/src/app/page.tsx",
+      "lines": 34,
+      "sha256": "d7076b6aca42f99cec01bb326fe2225dd33d94c3bbddb5224526a4bc109a80b9",
+      "shared_ui_import": false,
+      "source_markers": {
+        "read_guard": false,
+        "save_bar": false,
+        "empty_state": false,
+        "error_state": false,
+        "dialog": false,
+        "provider_mode": false,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    },
+    {
+      "app": "apps/merchant/web",
+      "route": "/stores",
+      "source": "apps/merchant/web/src/app/stores/page.tsx",
+      "lines": 21,
+      "sha256": "06f3a71fb4cf7724f6919e5ea623587439cc584ebe319f29cc7e3bdea6be4fc4",
+      "shared_ui_import": false,
+      "source_markers": {
+        "read_guard": false,
+        "save_bar": false,
+        "empty_state": false,
+        "error_state": false,
+        "dialog": false,
+        "provider_mode": false,
+        "search_params": false,
+        "html": false
+      },
+      "coverage": "Source inventory; marker presence/absence is not behavioral or visual acceptance"
+    }
+  ]
+}

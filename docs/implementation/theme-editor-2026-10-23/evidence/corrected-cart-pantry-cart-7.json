@@ -1,0 +1,131 @@
+{
+  "recordedAt": "2026-10-23T21:04:26.244Z",
+  "runId": "f6074d90e894",
+  "phase": "pantry-cart-7",
+  "guardVerified": true,
+  "readOnly": true,
+  "scope": "Whitelisted owned active cart line/facts/fingerprints/image only; no session/token/handoff/catalog_source/customer",
+  "actual": {
+    "orders": 2,
+    "siteId": "f83e5e3d-1474-4378-b99b-55f8f4475b9f",
+    "activeCarts": [
+      {
+        "id": "3877932f-b20c-437d-91d7-524cbba72011",
+        "items": [
+          {
+            "id": "54301d6f-f54e-4209-95a0-4fbc32bcf8e6:07d32ed4-62ca-43dc-a605-b11f97c0a791",
+            "image": null,
+            "title": "Habitat lifecycle desk",
+            "currency": "INR",
+            "imageUrl": null,
+            "quantity": 1,
+            "lineTotal": 8900,
+            "productId": "54301d6f-f54e-4209-95a0-4fbc32bcf8e6",
+            "unitPrice": 8900,
+            "variantId": "07d32ed4-62ca-43dc-a605-b11f97c0a791",
+            "properties": {
+              "Width": "48 in",
+              "Finish": "Natural"
+            },
+            "nicheSnapshot": {
+              "facts": {
+                "furniture": {
+                  "care": "Natural finish: wipe dry.",
+                  "finish": "Natural",
+                  "weight": {
+                    "unit": "kg",
+                    "value": 11.5
+                  },
+                  "package": {
+                    "unit": "in",
+                    "depth": 25,
+                    "width": 50
+                  },
+                  "assembly": {
+                    "tools": "4 mm hex key",
+                    "status": "required",
+                    "instructions": "Use the supplied sample instructions."
+                  },
+                  "assembled": {
+                    "unit": "in",
+                    "depth": 30,
+                    "width": 48,
+                    "height": 29.5
+                  },
+                  "materials": [
+                    "Wood"
+                  ]
+                }
+              },
+              "version": 1,
+              "selected_options": [
+                {
+                  "name": "Finish",
+                  "value": "Natural"
+                },
+                {
+                  "name": "Width",
+                  "value": "48 in"
+                }
+              ]
+            },
+            "productVersion": 31,
+            "snapshotFingerprint": "7ce55c10aed62f082841288066219392dd5ffed2a8560348eb8e23fa7b18523c",
+            "configurationFingerprint": null
+          }
+        ],
+        "status": "active"
+      },
+      {
+        "id": "7ba809cf-a1de-4c79-a569-42c0b66a8835",
+        "items": [
+          {
+            "id": "d9bd8cae-b211-48c5-8440-5f446dc57c0e:f275956c-688c-4435-bb96-ae23fc75f72d",
+            "image": null,
+            "title": "Pantry lifecycle red lentils",
+            "currency": "INR",
+            "imageUrl": null,
+            "quantity": 2,
+            "lineTotal": 480,
+            "productId": "d9bd8cae-b211-48c5-8440-5f446dc57c0e",
+            "unitPrice": 240,
+            "variantId": "f275956c-688c-4435-bb96-ae23fc75f72d",
+            "properties": {
+              "Pack": "300 g"
+            },
+            "nicheSnapshot": {
+              "facts": {
+                "food": {
+                  "storage": "Keep cool and dry.",
+                  "allergens": {
+                    "source": "Synthetic label revision B",
+                    "status": "supplied",
+                    "statement": "May contain sesame."
+                  },
+                  "ingredients": "Split red lentils; turmeric.",
+                  "netQuantity": {
+                    "unit": "g",
+                    "value": 300
+                  },
+                  "preparation": "Rinse before cooking.",
+                  "nutritionText": null
+                }
+              },
+              "version": 1,
+              "selected_options": [
+                {
+                  "name": "Pack",
+                  "value": "300 g"
+                }
+              ]
+            },
+            "productVersion": 37,
+            "snapshotFingerprint": "c5ce2b7ac40ec6a3b4742380c566fbd502d7fd54afdc429619eda07c75120866",
+            "configurationFingerprint": null
+          }
+        ],
+        "status": "active"
+      }
+    ]
+  }
+}

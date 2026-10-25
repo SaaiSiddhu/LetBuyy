@@ -1,0 +1,18 @@
+{
+  "extends": "../../../../../../apps/commerce/web/tsconfig.json",
+  "compilerOptions": {
+    "incremental": false,
+    "noEmit": true,
+    "types": [
+      "node"
+    ],
+    "typeRoots": [
+      "../../../../../../apps/commerce/web/node_modules/@types"
+    ]
+  },
+  "include": [
+    "public-readback.ts",
+    "public-readback.test.ts"
+  ],
+  "exclude": []
+}

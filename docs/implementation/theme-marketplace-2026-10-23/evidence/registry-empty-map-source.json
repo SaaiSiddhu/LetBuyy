@@ -1,0 +1,42 @@
+{
+  "recordedAt": "2026-10-23T10:21:33.623Z",
+  "status": "Source/test repair only; real PostgreSQL rerun still required",
+  "focusedTests": {
+    "pass": 36,
+    "fail": 0,
+    "skip": 0
+  },
+  "structuralTests": {
+    "pass": 14,
+    "fail": 0,
+    "skip": 0
+  },
+  "gatewayTypecheck": "exit0",
+  "gatewayEslint": "No gateway flat config; attempt could not run, no lint pass claimed",
+  "previousRedRun": "54884f7b6bbd",
+  "futureProvenancePath": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/theme-install387-<ownedRunId>-<catalogSlug>-provenance.json",
+  "provenanceMode": "0600",
+  "lane": "Released to Threadline390; no new fixture",
+  "files": [
+    {
+      "path": "services/api-gateway/src/execution/schema-registry-execution.adapter.ts",
+      "sha256": "a7133ae2003a23253ac7c9cbb16a92392dbcc8ffb199531ca0fd230ff70114ae"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/theme-registry-version.test.ts",
+      "sha256": "5320bbf69a9d07865066d4cde7a8ca50cb4850855ec5024a79ddfeb58850e417"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/theme-catalog-install.postgres.test.ts",
+      "sha256": "634b4e03bbf537d79d3375ff2539202a8c303d4afdccfa5a17482f09fdb2f6a2"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/theme-install-version.postgres.test.ts",
+      "sha256": "a6b3b6b7155f24fc2871b94965c7aab5fca301492cf91b11aca45105ef4a7357"
+    },
+    {
+      "path": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "sha256": "cc11490138ae5c2f13ab022a60b4cc2fe7d8fc5eb766dbf087eeb227d6050d6e"
+    }
+  ]
+}

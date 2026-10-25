@@ -1,0 +1,169 @@
+[
+  {
+    "scene": "01-home-top",
+    "test": "320px-reflow",
+    "width": 320,
+    "scrollWidth": 320,
+    "overflow": false
+  },
+  {
+    "scene": "02-home-bottom",
+    "test": "320px-reflow",
+    "width": 320,
+    "scrollWidth": 320,
+    "overflow": false
+  },
+  {
+    "scene": "03-collection",
+    "test": "320px-reflow",
+    "width": 320,
+    "scrollWidth": 320,
+    "overflow": false
+  },
+  {
+    "scene": "04-product-selection",
+    "test": "320px-reflow",
+    "width": 320,
+    "scrollWidth": 320,
+    "overflow": false
+  },
+  {
+    "scene": "05-product-contents",
+    "test": "320px-reflow",
+    "width": 320,
+    "scrollWidth": 320,
+    "overflow": false
+  },
+  {
+    "scene": "06-product-continuation",
+    "test": "320px-reflow",
+    "width": 320,
+    "scrollWidth": 320,
+    "overflow": false
+  },
+  {
+    "scene": "07-cart",
+    "test": "320px-reflow",
+    "width": 320,
+    "scrollWidth": 320,
+    "overflow": false
+  },
+  {
+    "scene": "08-checkout-address",
+    "test": "320px-reflow",
+    "width": 320,
+    "scrollWidth": 320,
+    "overflow": false
+  },
+  {
+    "scene": "09-checkout-review",
+    "test": "320px-reflow",
+    "width": 320,
+    "scrollWidth": 320,
+    "overflow": false
+  },
+  {
+    "scene": "12-profile",
+    "test": "320px-reflow",
+    "revision": "1.2 profile correction",
+    "width": 320,
+    "scrollWidth": 320,
+    "overflow": false
+  },
+  {
+    "scene": "13-orders",
+    "test": "320px-reflow",
+    "width": 320,
+    "scrollWidth": 320,
+    "overflow": false
+  },
+  {
+    "scene": "14-order-detail",
+    "test": "320px-reflow",
+    "width": 320,
+    "scrollWidth": 320,
+    "overflow": false
+  },
+  {
+    "scene": "15-addresses",
+    "test": "320px-reflow",
+    "width": 320,
+    "scrollWidth": 320,
+    "overflow": false
+  },
+  {
+    "scene": "01-home-top",
+    "test": "200%-text-size",
+    "width": 390,
+    "scrollWidth": 390,
+    "overflow": false
+  },
+  {
+    "scene": "03-collection",
+    "test": "200%-text-size",
+    "width": 390,
+    "scrollWidth": 390,
+    "overflow": false
+  },
+  {
+    "scene": "04-product-selection",
+    "test": "200%-text-size",
+    "width": 390,
+    "scrollWidth": 390,
+    "overflow": false
+  },
+  {
+    "scene": "08-checkout-address",
+    "test": "200%-text-size",
+    "width": 390,
+    "scrollWidth": 390,
+    "overflow": false
+  },
+  {
+    "scene": "15-addresses",
+    "test": "200%-text-size",
+    "width": 390,
+    "scrollWidth": 390,
+    "overflow": false
+  },
+  {
+    "scene": "04-product-selection",
+    "test": "Hindi-expansion",
+    "width": 390,
+    "scrollWidth": 390,
+    "lang": "hi",
+    "font": "\"Playfair Display\", Georgia, \"Noto Serif Devanagari\", serif",
+    "overflow": false
+  },
+  {
+    "scene": "03-collection",
+    "test": "remove-budget-retains-occasion",
+    "occasion": "birthday",
+    "recipient": "friend",
+    "budget": "any",
+    "status": "Budget removed. Birthday and recipient are retained.",
+    "passed": true
+  },
+  {
+    "scene": "04-product-selection",
+    "test": "no-message-control",
+    "count": 0,
+    "reducedMotion": true
+  },
+  {
+    "scene": "10-sign-in",
+    "test": "320px-reflow",
+    "revision": "1.1 identity correction",
+    "width": 320,
+    "scrollWidth": 320,
+    "overflow": false
+  },
+  {
+    "scene": "11-create-account",
+    "test": "320px-reflow",
+    "revision": "1.1 identity correction",
+    "width": 320,
+    "scrollWidth": 320,
+    "overflow": false
+  }
+]

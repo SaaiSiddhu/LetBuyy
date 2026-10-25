@@ -1,0 +1,31 @@
+{
+  "attempts": [
+    {
+      "log": "generator-run-01.log",
+      "exitCode": 1,
+      "classification": "MISSING_READ_ONLY_RELEASE_HELPER_COPY_NO_PRODUCT_OR_DB_EXECUTED"
+    },
+    {
+      "log": "generator-run-02.log",
+      "exitCode": 0,
+      "outputsPreservedIn": "generator-output-02-before-null-guard-review",
+      "qualification": "Intermediate offline generation; static review found SQL NULL-state guard should fail closed before native admission.",
+      "generatorSha256": "6c7b69c44cd4a9d403f6e18fa34c5679895876a321c282614e3e448a7d9fd36c"
+    },
+    {
+      "nextLog": "generator-run-03.log",
+      "change": "Use IS DISTINCT FROM and IS NOT TRUE for strict version/catalog refusal, including NULL-state semantics.",
+      "nativeExecuted": false
+    },
+    {
+      "log": "generator-run-03.log",
+      "exitCode": 0,
+      "outputsPreservedIn": "generator-output-03-before-checksum-normalization-review",
+      "qualification": "Intermediate offline output. Static comparison with existing qualified capture guard found optional checksum omitted by JSON serialization; PostgreSQL stores NULL. Normalize that one canonical optional field exactly as the existing210 promotion guard."
+    },
+    {
+      "nextLog": "generator-run-04.log",
+      "change": "Reuse canonical optional checksum-to-NULL normalization while retaining exact immutable capture comparison; no DB execution."
+    }
+  ]
+}

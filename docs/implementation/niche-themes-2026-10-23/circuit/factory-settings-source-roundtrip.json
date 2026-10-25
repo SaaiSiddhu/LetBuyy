@@ -1,0 +1,362 @@
+{
+  "createdAt": "2026-10-23T09:43:43.166Z",
+  "classification": "SOURCE_CONTRACT_ONLY_NOT_INSTALLED_OR_BROWSER_ACCEPTANCE",
+  "inputs": [
+    {
+      "path": "apps/merchant/web/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx",
+      "sha256": "8fe3b25fa551758fd4b9bf2c040b9cbc8810f71df331f5b1b39559790c2c637c"
+    },
+    {
+      "path": "services/api-gateway/src/execution/schema-registry-execution.adapter.ts",
+      "sha256": "a181fc35cb97ce58d2be93ebbd40fe299f95333640c54548284955c20be18e99"
+    },
+    {
+      "path": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "sha256": "cc11490138ae5c2f13ab022a60b4cc2fe7d8fc5eb766dbf087eeb227d6050d6e"
+    },
+    {
+      "path": "packages/theme-engine/src/portable-to-liquid.ts",
+      "sha256": "c981e822ec3f51bd7975e72862a957fc011b14a7f8984cdd0b38f8ba9a27803b"
+    },
+    {
+      "path": "packages/theme-engine/src/circuit-theme.ts",
+      "sha256": "44f78cdaa4d9241723b7bc9ae0f0952d946e72b11775c05160c9949f87a69d2a"
+    },
+    {
+      "path": "packages/theme-engine/test/circuit.test.ts",
+      "sha256": "12d42799a35fdcfef3113b90469cb581de9e21710f274ca0f9d86e5c31cf9236"
+    }
+  ],
+  "themes": [
+    {
+      "slug": "letbuyy-forge",
+      "name": "Circuit",
+      "version": "2.0.0",
+      "bundleSha256": "cadab65d5351e1d5f8506d3620df481700ff38ae7e23c19f7282d1f31be79b46",
+      "baselineValidationIssues": [],
+      "baselineWireValidationIssues": [],
+      "baselineSettings": [
+        {
+          "key": "primaryColor",
+          "type": "string",
+          "value": "#17476E",
+          "wireOwn": true
+        },
+        {
+          "key": "secondaryColor",
+          "type": "string",
+          "value": "#142236",
+          "wireOwn": true
+        },
+        {
+          "key": "accentColor",
+          "type": "string",
+          "value": "#17476E",
+          "wireOwn": true
+        },
+        {
+          "key": "backgroundColor",
+          "type": "string",
+          "value": "#F5F7FA",
+          "wireOwn": true
+        },
+        {
+          "key": "textColor",
+          "type": "string",
+          "value": "#142236",
+          "wireOwn": true
+        },
+        {
+          "key": "surfaceColor",
+          "type": "string",
+          "value": "#FFFFFF",
+          "wireOwn": true
+        },
+        {
+          "key": "headingFontFamily",
+          "type": "string",
+          "value": "Inter",
+          "wireOwn": true
+        },
+        {
+          "key": "bodyFontFamily",
+          "type": "string",
+          "value": "Inter",
+          "wireOwn": true
+        },
+        {
+          "key": "borderRadius",
+          "type": "number",
+          "value": 4,
+          "wireOwn": true
+        },
+        {
+          "key": "metaDescription",
+          "type": "string",
+          "value": "",
+          "wireOwn": true
+        },
+        {
+          "key": "socialImageUrl",
+          "type": "string",
+          "value": "",
+          "wireOwn": true
+        },
+        {
+          "key": "faviconUrl",
+          "type": "string",
+          "value": "",
+          "wireOwn": true
+        }
+      ],
+      "inheritedSettings": [
+        {
+          "key": "list-collections",
+          "sections": {
+            "list-collections-grid": {
+              "type": "category-grid",
+              "settings": {
+                "title": "All collections",
+                "subtitle": "Browse every collection in the store."
+              },
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          }
+        },
+        {
+          "key": "search",
+          "sections": {
+            "forge-discovery-search": {
+              "type": "collection-filter",
+              "settings": {},
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            },
+            "forge-results-search": {
+              "type": "collection-product-list",
+              "settings": {},
+              "blocks": {},
+              "block_order": [],
+              "disabled": false
+            }
+          }
+        }
+      ],
+      "templates": [
+        {
+          "key": "index",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 5,
+          "identities": 8,
+          "stableGroupIds": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "product",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 2,
+          "identities": 5,
+          "stableGroupIds": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "collection",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 2,
+          "identities": 5,
+          "stableGroupIds": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "search",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 2,
+          "identities": 5,
+          "stableGroupIds": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "cart",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "list-collections",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "contact",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/login",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/register",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/account",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/orders",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/order",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/settings",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/wishlist",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "customers/addresses",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "policy",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "blog",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "article",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "page",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "not_found",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        },
+        {
+          "key": "password",
+          "headerSections": 2,
+          "footerSections": 1,
+          "sections": 1,
+          "identities": 4,
+          "stableGroupIds": true,
+          "validationIssues": [],
+          "wireValidationIssues": []
+        }
+      ]
+    }
+  ]
+}

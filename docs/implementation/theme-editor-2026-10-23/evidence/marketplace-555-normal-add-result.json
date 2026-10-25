@@ -1,0 +1,34 @@
+{
+  "recordedAt": "2026-10-23T19:07:53.170826+00:00",
+  "runId": "555b91e19691",
+  "directLoginApproval": "call_2139684057274724b75dd2f15cd576f6 / Approve synthetic Marketplace sign-in",
+  "preview": "Actual embedded Threadline2.0.0 desktop sample rendered in Marketplace detail",
+  "normalFlow": [
+    "Add to library",
+    "existing synthetic owner email/password normal form",
+    "exact /install theme=letbuyy-sense version=2.0.0",
+    "owned Threadline syn-threadline-ui-202c08c0 selected",
+    "private-library checkbox checked",
+    "ONE Install Theme submit"
+  ],
+  "actualSubmitOutcome": "The instance and package version were not confirmed. Check this store\u2019s library and retry the same Add request.",
+  "retryPerformed": false,
+  "independentNormalReadback": {
+    "library": "One Threadline tile in My themes, with Publish and Customize; current LetBuyy Core remains Unpublished",
+    "editor": "Actual installed-tile Customize opens /online-store/themes/letbuyy-sense/editor; Threadline Draft theme / Saved. Canvas/sidebar heading reads LetBuyy Core home page (observed, not interpreted)."
+  },
+  "verdict": "PARTIAL: actual library instance and editor exist, but Marketplace reports unconfirmed and does not navigate to success; full Add flow is not accepted",
+  "backendInstanceVersionProof": "Requested Root guarded read-only proof; pending",
+  "published": false,
+  "f607Mutation": "None from this separate slice",
+  "evidence": [
+    "marketplace-555-detail-live-preview.ax.txt",
+    "marketplace-555-detail-live-preview.jpg",
+    "marketplace-555-install-selected-confirmed.ax.txt",
+    "marketplace-555-install-unconfirmed.ax.txt",
+    "marketplace-555-install-unconfirmed.jpg",
+    "marketplace-555-library-after-unconfirmed.ax.txt",
+    "marketplace-555-installed-editor.ax.txt",
+    "marketplace-555-installed-editor.jpg"
+  ]
+}

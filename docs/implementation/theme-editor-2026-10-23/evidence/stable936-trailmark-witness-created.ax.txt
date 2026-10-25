@@ -1,0 +1,355 @@
+Browser tab: 59, Title: "LetBuyy Admin", URL: "http://admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/products/93257d9f-f4ee-4bca-ad6d-72c1e29b37e1".
+1 AXWebArea LetBuyy Admin, URL: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/products/93257d9f-f4ee-4bca-ad6d-72c1e29b37e1
+	2 container
+		3 link Description: LetBuyy dashboard, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/dashboard
+		4 button Search
+		5 button Setup assistant
+		6 button Notifications
+		7 button (collapsed) Description: Switch store, current store Threadline, Secondary Actions: Expand
+			8 text TH
+			9 text Threadline
+	10 container admin-nav-drawer
+		11 container
+			12 container Primary navigation
+				13 content list
+					14 link Description: Home, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/dashboard
+					15 link Description: Orders, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/orders
+					16 container
+						17 link Description: Products, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/products
+						18 button (expanded) Description: Toggle Products section, Secondary Actions: Collapse
+						19 content list
+							20 link Description: Add product, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/products/new
+							21 link Description: Collections, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/products/collections
+							22 link Description: Smart collections, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/products/smart-collections
+							23 link Description: Categories, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/categories
+							24 link Description: Export and import, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/export
+					25 container
+						26 link Description: Inventory, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/products/inventory
+						27 button (collapsed) Description: Toggle Inventory section, Secondary Actions: Expand
+					28 container
+						29 link Description: Purchasing, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/products/purchase-orders
+						30 button (collapsed) Description: Toggle Purchasing section, Secondary Actions: Expand
+					31 container
+						32 link Description: Customers, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/customers
+						33 button (collapsed) Description: Toggle Customers section, Secondary Actions: Expand
+					34 container
+						35 link Description: Money, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/settings/billing
+						36 button (collapsed) Description: Toggle Money section, Secondary Actions: Expand
+					37 container
+						38 link Description: Marketing, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/coupons
+						39 button (collapsed) Description: Toggle Marketing section, Secondary Actions: Expand
+					40 container
+						41 link Description: Content, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/pages
+						42 button (collapsed) Description: Toggle Content section, Secondary Actions: Expand
+					43 link Description: Analytics, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/analytics
+			44 text Sales channels
+			45 container Sales channels
+				46 content list
+					47 container
+						48 link Description: Online Store, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/online-store
+						49 button (collapsed) Description: Toggle Online Store section, Secondary Actions: Expand
+			50 text Apps
+			51 container Apps
+				52 content list
+					53 link Description: Add, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/apps
+		54 container Settings navigation
+			55 content list
+				56 link Description: Settings, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/settings
+	57 container admin-page-scroll
+		58 container
+			59 heading Edit product, Value: 1
+				60 text Edit product
+			61 button Discard
+			62 button (disabled) Save product
+		63 container
+			64 heading Details, Value: 2
+				65 text Details
+			66 text Name and describe the product as shoppers will see it. Title
+			67 text field (settable) Title, Value: Trailmark same-variant witness racket
+			68 text Description
+			69 text entry area (settable) Description, Value: Synthetic shared fixture only. S/M/L are equipment model option codes, not garment measurements.
+		70 container
+			71 button (collapsed) Apparel fit, fabric and care (optional), Secondary Actions: Expand
+				72 text Apparel fit, fabric and care (optional)
+			73 container Product-specific facts
+				74 text Supply facts shoppers need to choose this product. Unsupplied information stays unknown. These facts are saved with the product.
+				75 text Product facts category
+				76 pop up button (collapsed, settable) Product facts category, Value: Sports equipment, Secondary Actions: Expand
+					77 menu
+						78 (disabled) Choose product information to edit
+						79 Toys and activities
+						80 Electronics
+						81 Food and pantry
+						82 Furniture
+						83 Ready-made gifts
+						84 Text personalization
+						85 Beauty and care
+						86 (selected) Sports equipment
+						87 Books and stationery
+				88 container Recreational equipment facts
+					89 heading Recreational equipment facts, Value: 3
+						90 text Recreational equipment facts
+					91 text Optional merchant-supplied measurements and use conditions. Clothing sizes belong in apparel facts.
+					92 button Clear equipment facts
+					93 container Equipment details
+						94 text Equipment details
+						95 text Activity
+						96 text field (settable) Activity, Value: Badminton
+						97 text Equipment category
+						98 pop up button (collapsed, settable) Equipment category, Value: Racket, Secondary Actions: Expand
+							99 menu
+								100 Select equipment category
+								101 (selected) Racket
+								102 Shuttles
+								103 Storage
+								104 Recreational accessory
+						105 text Leave unknown measurements absent. Add a measurement only when its value and unit are supplied. Supply common product measurements here.
+						106 container Overall length
+							107 text Overall length
+							108 text Overall length value
+							109 text field (settable) Overall length value, Value: 67.5
+							110 text Greater than 0; maximum 100,000.
+							111 text Overall length unit
+							112 pop up button (collapsed, settable) Overall length unit, Value: Centimetres (cm), Secondary Actions: Expand
+								113 menu
+									114 Select a unit
+									115 Millimetres (mm)
+									116 (selected) Centimetres (cm)
+									117 Metres (m)
+									118 Inches (in)
+							119 button Clear overall length
+								120 text Clear 
+								121 text overall length
+						122 container Weight
+							123 text Weight
+							124 text Weight value
+							125 text field (settable) Weight value, Value: 85
+							126 text Greater than 0; maximum 100,000.
+							127 text Weight unit
+							128 pop up button (collapsed, settable) Weight unit, Value: Grams (g), Secondary Actions: Expand
+								129 menu
+									130 Select a unit
+									131 (selected) Grams (g)
+									132 Kilograms (kg)
+							133 button Clear weight
+								134 text Clear 
+								135 text weight
+						136 container Grip circumference
+							137 text Grip circumference
+							138 button Add grip circumference
+								139 text Add 
+								140 text grip circumference
+						141 container Dimensions
+							142 text Dimensions
+							143 text Dimension length
+							144 text field (settable) Dimension length, Value: 67.5
+							145 text Dimension width
+							146 text field (settable) Dimension width, Value: 26
+							147 text Dimension height (optional)
+							148 text field (settable) Dimension height (optional), Value: 2
+							149 text Dimensions unit
+							150 pop up button (collapsed, settable) Dimensions unit, Value: Centimetres (cm), Secondary Actions: Expand
+								151 menu
+									152 Select a unit
+									153 Millimetres (mm)
+									154 (selected) Centimetres (cm)
+									155 Metres (m)
+									156 Inches (in)
+							157 button Clear dimensions
+						158 text Material (optional)
+						159 text entry area (settable) Material (optional)
+						160 container Included contents (optional)
+							161 text Included contents (optional)
+							162 text Supply up to 30 included items. Leave the list absent when contents are unknown.
+							163 button Add included item
+						164 text Use conditions (optional)
+						165 text entry area (settable) Use conditions (optional)
+						166 text Care instructions (optional)
+						167 text entry area (settable) Care instructions (optional)
+						168 container Compatibility (optional)
+							169 text Compatibility (optional)
+							170 text Compatibility status
+							171 pop up button (collapsed, settable) Compatibility status, Value: Unconfirmed, Secondary Actions: Expand
+								172 menu
+									173 No compatibility information supplied
+									174 (selected) Unconfirmed
+									175 Merchant-supplied reference
+							176 text Compatibility note (optional)
+							177 text entry area (settable) Compatibility note (optional)
+			178 heading Media, Value: 2
+				179 text Media
+			180 text Upload images that help shoppers inspect the product.
+			181 heading No product media yet, Value: 3
+				182 text No product media yet
+			183 text Upload product images so shoppers can inspect materials, colors, and details before buying.
+			184 button Upload media
+		185 container
+			186 heading Category, Value: 2
+				187 text Category
+			188 text Add category metadata for tax, discovery, and reporting. Category
+			189 text field (settable) Category, Value: Recreation
+			190 text Determines tax rates and adds product metadata.
+		191 container
+			192 heading Pricing, Value: 2
+				193 text Pricing
+			194 text Set the customer-facing price and internal product cost. Price
+			195 stepper (settable, integer) Price, Value: 9999
+			196 text Compare-at price
+			197 stepper (settable) Compare-at price
+			198 checkbox (settable, integer) Description: Charge tax on this product, Value: 0
+			199 text Cost per item
+			200 stepper (settable) Cost per item
+			201 text Customers will not see this.
+		202 container
+			203 heading Inventory, Value: 2
+				204 text Inventory
+			205 text Track SKU, barcode, and sell-through behavior.
+			206 checkbox (settable, integer) Description: Track quantity, Value: 1
+			207 text Quantity
+			208 stepper (settable, integer) Quantity, Value: 5
+			209 checkbox (settable, integer) Description: Continue selling when out of stock, Value: 0
+			210 text SKU (Stock Keeping Unit)
+			211 text field (settable) SKU (Stock Keeping Unit)
+			212 text Barcode (ISBN, UPC, GTIN)
+			213 text field (settable) Barcode (ISBN, UPC, GTIN)
+		214 container
+			215 heading Shipping, Value: 2
+				216 text Shipping
+			217 text Collect fulfillment and customs information for physical products.
+			218 checkbox (settable, integer) Description: This is a physical product, Value: 1
+			219 text Weight
+			220 stepper (settable) Weight
+			221 text Unit
+			222 pop up button (collapsed, settable) Unit, Value: kg, Secondary Actions: Expand
+				223 menu
+					224 (selected) kg
+					225 g
+					226 lb
+					227 oz
+			228 text Importer details (for imported products)
+			229 text entry area (settable) Importer details (for imported products)
+			230 text This information is shown publicly. Enter only details intended for a product listing; it is seller-provided and not independently verified. Country/Region of origin
+			231 text field (settable) Country/Region of origin, Value: India
+			232 text HS (Harmonized System) code
+			233 text field (settable) HS (Harmonized System) code
+		234 container
+			235 heading Variants, Value: 2
+				236 text Variants
+			237 text Add options like size, color, or material.
+			238 text Size
+			239 button Rename option Size
+			240 button Delete
+			241 text S
+			242 button Rename Size value S
+			243 button Remove S
+			244 text M
+			245 button Rename Size value M
+			246 button Remove M
+			247 text L
+			248 button Rename Size value L
+			249 button Remove L
+			250 button Add values
+			251 button Add option
+			252 heading Variant combinations, Value: 2
+				253 text Variant combinations
+			254 text Edit price, SKU, and stock for each combination.
+			255 table
+				256 row
+					257 cell
+						258 text Variant
+					259 cell
+						260 text Price
+					261 cell
+						262 text Compare
+					263 cell
+						264 text SKU
+					265 cell
+						266 text Stock
+				267 row
+					268 cell
+						269 text S
+					270 cell
+						271 stepper (settable, integer) Description: Price for S, Value: 500
+					272 cell
+						273 stepper (settable) Compare-at price for S
+					274 cell
+						275 text field (settable) SKU for S
+					276 cell
+						277 stepper (settable, integer) Description: Stock for S, Value: 3
+					278 cell
+						279 button Remove variant S
+				280 row
+					281 cell
+						282 text M
+					283 cell
+						284 stepper (settable, integer) Description: Price for M, Value: 1000
+					285 cell
+						286 stepper (settable) Compare-at price for M
+					287 cell
+						288 text field (settable) SKU for M
+					289 cell
+						290 stepper (settable, integer) Description: Stock for M, Value: 2
+					291 cell
+						292 button Remove variant M
+				293 row
+					294 cell
+						295 text L
+					296 cell
+						297 stepper (settable, integer) Description: Price for L, Value: 400
+					298 cell
+						299 stepper (settable) Compare-at price for L
+					300 cell
+						301 text field (settable) SKU for L
+					302 cell
+						303 stepper (settable, integer) Description: Stock for L, Value: 0
+					304 cell
+						305 button Remove variant L
+			306 button (collapsed) Facts for S, Secondary Actions: Expand
+				307 text Facts for 
+				308 text S
+			309 button (collapsed) Facts for M, Secondary Actions: Expand
+				310 text Facts for 
+				311 text M
+			312 button (collapsed) Facts for L, Secondary Actions: Expand
+				313 text Facts for 
+				314 text L
+		315 container
+			316 heading Search engine listing, Value: 2
+				317 text Search engine listing
+			318 text Control how this product may appear in search results. syn-threadline-ui-6815276b .letbuyy.com/products/ syn-trailmark-witness-936e5f577646 Trailmark same-variant witness racket Synthetic shared fixture only. S/M/L are equipment model option codes, not garment measurements. Page title
+			319 text field (settable) Page title
+			320 text 0 of 70 characters used Meta description
+			321 text entry area (settable) Meta description
+			322 text 0 of 160 characters used URL handle
+			323 text field (settable) URL handle, Value: syn-trailmark-witness-936e5f577646
+		324 container
+			325 container
+				326 heading Status, Value: 2
+					327 text Status
+				328 text Product status
+				329 pop up button (collapsed, settable) Product status, Value: Active, Secondary Actions: Expand
+					330 menu
+						331 (selected) Active
+						332 Draft
+						333 Archived
+				334 text Visible on storefront
+			335 container
+				336 heading Publishing, Value: 2
+					337 text Publishing
+				338 checkbox (disabled, settable, integer) Description: Online Store, Value: 1
+			339 container
+				340 heading Product organization, Value: 2
+					341 text Product organization
+				342 text Use consistent metadata to keep catalog management fast. Product type
+				343 text field (settable) Product type
+				344 text Vendor
+				345 text field (settable) Vendor
+				346 text Tags
+				347 text field (settable) Tags
+				348 text Separate tags with commas.
+			349 container
+				350 heading Catalog readiness, Value: 2
+					351 text Catalog readiness
+				352 text Save product details, media, pricing, and inventory from one guided form.
+
+The focused UI element is 59 heading Edit product, Value: 1

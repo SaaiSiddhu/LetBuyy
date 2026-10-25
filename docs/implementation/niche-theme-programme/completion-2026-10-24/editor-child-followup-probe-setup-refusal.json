@@ -1,0 +1,9 @@
+{
+  "classification": "INDEPENDENT_PROBE_CONTEXT_ASSUMPTION_FAILURE_NOT_PRODUCT_FAILURE",
+  "observed": "The initial descriptor probe incorrectly selected spotlight. Its badge does not have the claimed inline description, so the assertion stopped before final review output.",
+  "correction": "Use the actual captured migration389 bundle and trust-badges section named in the owner's regression test. Retain separate original Core missing/empty/explicit allowlist controls.",
+  "browser": false,
+  "database": false,
+  "sourceProductChanges": false,
+  "providerCalls": 0
+}

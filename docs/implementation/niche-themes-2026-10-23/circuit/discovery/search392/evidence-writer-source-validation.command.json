@@ -1,0 +1,14 @@
+{
+  "command": [
+    "node",
+    "--import",
+    "tsx",
+    "--test",
+    "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/source-contract.test.mjs",
+    "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/validator-boundaries.test.mjs"
+  ],
+  "exitCode": 0,
+  "durationSeconds": 0.475,
+  "nativeExecuted": false,
+  "suiteSha256": "f0893696d1104c7f46e382eab4eb44ea48758eceeed223e52a6f052385ce1617"
+}

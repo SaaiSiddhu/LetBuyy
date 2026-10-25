@@ -1,0 +1,201 @@
+{
+  "recordedAt": "2026-10-24T04:07:59.894Z",
+  "runId": "936e5f577646",
+  "guardVerified": true,
+  "readOnly": true,
+  "evidenceClass": "Actual persisted canonical mutation from normal merchant Save; not raw HTTP capture",
+  "productId": "f04c5a94-8f0c-48ae-a450-e2374caa5c7e",
+  "originalVariantIds": [
+    "3f4e08a8-bf2e-4899-bbeb-06c7283af499",
+    "b864a0c6-2fb9-472e-a70a-8bbb96db7e9b",
+    "ce1348f3-7ddd-4e06-9a62-6fc77bc15dab"
+  ],
+  "actual": [
+    {
+      "idempotencyKey": "cc045eca-468d-4571-997f-be2f0880e66a",
+      "expectedVersion": 10,
+      "returnedVersion": 12,
+      "operation": "product.update.v1",
+      "createdAt": "2026-10-24T03:12:25.396626+00:00",
+      "mutationSqlTextToNodeJsonSha256": "a272f7815c4ac78d98dd9a467dbbf9393bd1447c09eea0d192c6b2374163f582",
+      "topLevelStockOmitted": true,
+      "fieldsStockOmitted": true,
+      "existingVariantsStockOmitted": true,
+      "sameOriginalVariantIds": true,
+      "variants": [
+        {
+          "id": "ce1348f3-7ddd-4e06-9a62-6fc77bc15dab",
+          "title": "Fixture shade SKU",
+          "price": 520,
+          "options": {
+            "Shade name": "Rosewater",
+            "पैक आकार": "एक इकाई"
+          }
+        },
+        {
+          "id": "3f4e08a8-bf2e-4899-bbeb-06c7283af499",
+          "title": "Fixture shade SKU",
+          "price": 560,
+          "options": {
+            "Shade name": "Pink Clay",
+            "पैक आकार": "एक इकाई"
+          }
+        },
+        {
+          "id": "b864a0c6-2fb9-472e-a70a-8bbb96db7e9b",
+          "title": "Fixture shade SKU",
+          "price": 590,
+          "options": {
+            "Shade name": "Terracotta",
+            "पैक आकार": "एक इकाई"
+          }
+        }
+      ],
+      "options": [
+        {
+          "name": "Shade name",
+          "values": [
+            "Rosewater",
+            "Pink Clay",
+            "Terracotta"
+          ],
+          "position": 0
+        },
+        {
+          "name": "पैक आकार",
+          "values": [
+            "एक इकाई"
+          ],
+          "position": 1
+        }
+      ],
+      "beauty": {
+        "format": "Lip tint",
+        "shades": [
+          {
+            "code": "RW01",
+            "color": "#a36a65",
+            "value": "Rosewater",
+            "ingredients": "Rosewater v1: fixture oil, CI 77491."
+          },
+          {
+            "code": "PC02",
+            "color": "#a36a65",
+            "value": "Pink Clay",
+            "ingredients": "Pink Clay v1: fixture oil, CI 77492."
+          },
+          {
+            "code": "TC03",
+            "color": "#89534a",
+            "value": "Terracotta",
+            "ingredients": null
+          }
+        ],
+        "warnings": "Fixture warning v1: external use only.",
+        "directions": "Fixture directions v1: use as supplied. Saved through merchant form.",
+        "ingredients": "Common tint v1: fixture oil and wax; see named shade ingredients.",
+        "netQuantity": {
+          "unit": "ml",
+          "value": 6
+        },
+        "routineStage": "colour",
+        "schemaVersion": 1,
+        "shadeOptionName": "Shade name"
+      },
+      "privateSiblingDigest": "83268140333eefc77a9306f59bf4ef372967b0a08d4a0b4ce1e76dadd5789123"
+    },
+    {
+      "idempotencyKey": "e5859e91-1012-41c2-8e2e-44f143f474c4",
+      "expectedVersion": 12,
+      "returnedVersion": 14,
+      "operation": "product.update.v1",
+      "createdAt": "2026-10-24T03:12:44.368133+00:00",
+      "mutationSqlTextToNodeJsonSha256": "fe8473f54a5ec109be243bc8468df0e744a6c03a87debb98dd7fcb4c1fa8f936",
+      "topLevelStockOmitted": true,
+      "fieldsStockOmitted": true,
+      "existingVariantsStockOmitted": true,
+      "sameOriginalVariantIds": true,
+      "variants": [
+        {
+          "id": "ce1348f3-7ddd-4e06-9a62-6fc77bc15dab",
+          "title": "Fixture shade SKU",
+          "price": 520,
+          "options": {
+            "Shade name": "Rosewater",
+            "पैक आकार": "एक इकाई"
+          }
+        },
+        {
+          "id": "3f4e08a8-bf2e-4899-bbeb-06c7283af499",
+          "title": "Fixture shade SKU",
+          "price": 560,
+          "options": {
+            "Shade name": "Pink Clay",
+            "पैक आकार": "एक इकाई"
+          }
+        },
+        {
+          "id": "b864a0c6-2fb9-472e-a70a-8bbb96db7e9b",
+          "title": "Fixture shade SKU",
+          "price": 590,
+          "options": {
+            "Shade name": "Terracotta",
+            "पैक आकार": "एक इकाई"
+          }
+        }
+      ],
+      "options": [
+        {
+          "name": "Shade name",
+          "values": [
+            "Rosewater",
+            "Pink Clay",
+            "Terracotta"
+          ],
+          "position": 0
+        },
+        {
+          "name": "पैक आकार",
+          "values": [
+            "एक इकाई"
+          ],
+          "position": 1
+        }
+      ],
+      "beauty": {
+        "format": "Lip tint",
+        "shades": [
+          {
+            "code": "RW01",
+            "color": "#a36a65",
+            "value": "Rosewater",
+            "ingredients": "Rosewater v1: fixture oil, CI 77491."
+          },
+          {
+            "code": "PC02",
+            "color": "#a36a65",
+            "value": "Pink Clay",
+            "ingredients": "Pink Clay v1: fixture oil, CI 77492."
+          },
+          {
+            "code": "TC03",
+            "color": "#89534a",
+            "value": "Terracotta",
+            "ingredients": null
+          }
+        ],
+        "warnings": "Fixture warning v1: external use only.",
+        "directions": "Fixture directions v1: use as supplied.",
+        "ingredients": "Common tint v1: fixture oil and wax; see named shade ingredients.",
+        "netQuantity": {
+          "unit": "ml",
+          "value": 6
+        },
+        "routineStage": "colour",
+        "schemaVersion": 1,
+        "shadeOptionName": "Shade name"
+      },
+      "privateSiblingDigest": "83268140333eefc77a9306f59bf4ef372967b0a08d4a0b4ce1e76dadd5789123"
+    }
+  ]
+}

@@ -1,0 +1,2751 @@
+{
+  "updatedAt": "2026-10-25T01:27:26.061818+00:00",
+  "objective": "Coordinate all13 actual Pantry installed-buyer lifecycle checks with Editor after explicit fresh-fixture allocation; route failures to owners; retain shared-source freeze; report actual evidence",
+  "humanInstructionDate": "2026-10-23 Asia/Calcutta",
+  "classification": "P00_ACTUAL_PASS_REMAINING_REQUIRED_LIFECYCLE_AND_OWNER_RECHECKS_OPEN",
+  "status": "FRESH936_PANTRY_9PASS_1FAIL_3NOTRUN_P09_CHECKOUT_OWNER_REPAIR_PENDING",
+  "matrix": "docs/implementation/niche-themes-2026-10-23/pantry/installed-buyer-lifecycle-matrix.md",
+  "matrixSha256": "87f2e8b22cef3d32c3bdf0228170d36b89ff41e22f96e5c526aae66996119dbd",
+  "rows": [
+    {
+      "id": "P00",
+      "required": true,
+      "status": "PASS",
+      "evidence": [
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/evidence/pantry-publication-A-proof.json",
+          "sha256": "39380432b7c9bf9756811fecae5a09ba341510960879a8ec70c2c43f56087777"
+        },
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/evidence/pantry-public-A-readback.json",
+          "sha256": "9fc8022eb484db6b6cd1abdbc56e725cb05ab45410839dbc33c9de5595037c22"
+        },
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/evidence/pantry-heading-A-reload.ax.txt",
+          "sha256": "c625e71d8864fd0cb5e65a0b22e533a7e7404fc2b1484b85d063d3792b92c873"
+        },
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/pantry/enterprise-baseline-pantry-retry-observation.json",
+          "sha256": "3c67c9126074199a6456b260e874a13bff7b483a8554100949da29cc52d86ab1"
+        },
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/pantry/p00-enterprise-core-chain-acceptance.json",
+          "sha256": "5ca32f53a5d2481c4a5c3239b4c27a46dc6e10a4a65b2b66dc45e82d176bf1ee"
+        }
+      ],
+      "failureId": null,
+      "dependencyIds": [
+        "DEP-NATIVE-PUBLIC-503-01"
+      ],
+      "sourceReportedStatus": "InitialFreeFAIL_preserved_CurrentEnterpriseCoreChainSuccess",
+      "observations": [
+        "Enterprise-baseline normal Pantry install acknowledged saved draft; actual headingA save to draft2, exact full reload, local publication and unauthenticated Pantry2 readback all verified."
+      ],
+      "evidenceLimits": "No responsive/screenshot acceptance at reported0x0 viewport; No merchant-origin runtime fix inferred; No buyer variant/cart/order/history/P12 acceptance inferred",
+      "currentAttempt": {
+        "baseline": "Same9cd run after human-approved canonical Enterprise synthetic precondition",
+        "state": "PASS_CORE_CHAIN_VERIFIED",
+        "substep": "Normal install/save/fullreload/localpublication/unauthenticatedbuyerreadback confirmed",
+        "evidence": {
+          "path": "docs/implementation/niche-themes-2026-10-23/pantry/p00-enterprise-core-chain-acceptance.json",
+          "sha256": "5ca32f53a5d2481c4a5c3239b4c27a46dc6e10a4a65b2b66dc45e82d176bf1ee"
+        },
+        "requiredRemaining": [],
+        "completedCaseStatusUnchanged": "Initial Free failure preserved separately; current Enterprise P00 PASS.",
+        "latestOwnerReport": "Actual buyer Pantry tab now opening; no responsive credit at0x0."
+      },
+      "priorFreeAttempt": {
+        "status": "FAIL_SETUP_CORRECT_FREE_LIMIT",
+        "failureId": "PANTRY-P00-THEME-LIMIT-01",
+        "observations": [
+          "Actual normal Add Pantry refused: Your theme library is full. Archive a theme or upgrade your plan. No Pantry instance/release created. Existing current theme cannot be archived before another is published."
+        ],
+        "evidence": [
+          {
+            "path": "docs/implementation/theme-editor-2026-10-23/evidence/pantry-browser-diagnostics.json",
+            "sha256": "676c441503ebf660b6fc9d6b9a0d2e9380e16cbcfa013ef27a85b6eb1d0ae02a"
+          },
+          {
+            "path": "docs/implementation/theme-editor-2026-10-23/evidence/pantry-install-refusal-observation.json",
+            "sha256": "d8b2ce7acda2897d4f624d911d8484c861446b195062be4be736bbf2384f50f7"
+          }
+        ]
+      },
+      "priorFailureIds": [
+        "PANTRY-P00-THEME-LIMIT-01"
+      ]
+    },
+    {
+      "id": "P01",
+      "required": true,
+      "status": "FAIL",
+      "evidence": [
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/evidence/pantry-browser-diagnostics.json",
+          "sha256": "676c441503ebf660b6fc9d6b9a0d2e9380e16cbcfa013ef27a85b6eb1d0ae02a"
+        },
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/evidence/pantry-merchant-origin-banner.jpg",
+          "sha256": "d99ec98cc8fc7f915481ad64441d7c0c67d91bc4f9fb0a03232766f6d7aaf486"
+        },
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/pantry/lentils-post-rejection-canonical-readback.json",
+          "sha256": "37975c8d5dc8e67a9ee7ec6202cacefadd06bbe0d3ad5e9d1e3f98cb11aae177"
+        }
+      ],
+      "failureId": "PANTRY-P01-ORIGIN-01",
+      "dependencyIds": [
+        "DEP-MERCHANT-SAVE-ORIGIN-01"
+      ],
+      "sourceReportedStatus": "FAIL",
+      "observations": [
+        "Actual existing lentils normal merchant form displayed approved common facts/unknown allergens. Changed only preparation to Rinse before cooking. UI save checkpoint.; Save product rejected This change must originate from this merchant app. Failed draft retained/frozen; no successful write/reload or negative-validation proof."
+      ],
+      "evidenceLimits": "Actual normal-save rejection and canonical GET unchanged preparation/stock. Product API and bounded proof do not expose version; no post-savev1 claim. UI mutation response status/code not captured by Pantry."
+    },
+    {
+      "id": "P02",
+      "required": true,
+      "status": "BLOCKED",
+      "evidence": [
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/evidence/pantry-browser-diagnostics.json",
+          "sha256": "676c441503ebf660b6fc9d6b9a0d2e9380e16cbcfa013ef27a85b6eb1d0ae02a"
+        },
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/pantry/lentils-post-rejection-canonical-readback.json",
+          "sha256": "37975c8d5dc8e67a9ee7ec6202cacefadd06bbe0d3ad5e9d1e3f98cb11aae177"
+        }
+      ],
+      "failureId": null,
+      "dependencyIds": [
+        "DEP-MERCHANT-SAVE-ORIGIN-01"
+      ],
+      "sourceReportedStatus": "PARTIAL",
+      "observations": [
+        "Actual merchant baseline shows Pack250g/500g/750glabelonly,250g explicit quantity/unit and unknown pack blank quantity/unit. Save/clear/rename roundtrip deferred after P01 actual origin rejection."
+      ],
+      "statusReason": "Source ledger PARTIAL means baseline read only. Required variant mutation/clear/reload criteria blocked after actual P01 origin refusal; no acceptance."
+    },
+    {
+      "id": "P03",
+      "required": true,
+      "status": "NOT RUN",
+      "evidence": [
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/evidence/pantry-browser-diagnostics.json",
+          "sha256": "56393ec86ca0fe52227ef3897dd3ee37c01c8ab28b7a6c76b3e6c40e14f22060"
+        },
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/evidence/pantry-P03-250g-two-packs.ax.txt",
+          "sha256": "7242c92567b316bf858201ad4f3e4482667b196e11d59e797dfb1a3a624f39a7"
+        },
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/evidence/pantry-P03-fractional-pack-count.ax.txt",
+          "sha256": "f0e48e12f43c1c68ad9da7a30d2ad294c32320fe41119c54febca9ed5ff05bc4"
+        }
+      ],
+      "failureId": null,
+      "sourceReportedStatus": "PARTIAL",
+      "observations": [
+        "Actual unselected PDP blocks Add; choose250g/count2 ->250g per pack/72 per100g/500g total. Fraction1.5 removes total and shows whole-count guidance. Exact canonical accepted cart variant dec5643b-ae0c-4db2-a654-07d314ac01f2 confirmed later. Blank-count subcase deferred."
+      ],
+      "executionEvidence": false,
+      "statusReason": "Initial unselected,250g/count2 and fractional1.5 states actually observed; required blank-count subcase explicitly NOT RUN. Whole-row acceptance remains open.",
+      "dependencyIds": [
+        "PANTRY-P00-THEME-LIMIT-01"
+      ],
+      "currentAttempt": {
+        "state": "ACTUAL_COMPONENTS_OBSERVED_FULL_ROW_PENDING",
+        "observations": "Controller reports actual fractional pack-count whole-count guidance; full P03 known250g/count2/net500/unit-price evidence awaits detailed ledger.",
+        "source": "Direct Editor controller coordination message",
+        "caseAcceptance": false
+      }
+    },
+    {
+      "id": "P04",
+      "required": true,
+      "status": "PASS",
+      "evidence": [
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/evidence/pantry-browser-diagnostics.json",
+          "sha256": "56393ec86ca0fe52227ef3897dd3ee37c01c8ab28b7a6c76b3e6c40e14f22060"
+        },
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/evidence/pantry-P04-unknown-pack.ax.txt",
+          "sha256": "aefeba70345afd1e223853972c8a78e4bb7c2064f39f1f138c6386ab40c7dc57"
+        },
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/pantry/p04-oos-unknown-selection-acceptance.json",
+          "sha256": "469ff6efb3c373425476fad0a243ff6ecc4db5b3320f2238992127195f4846e6"
+        },
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/pantry/lentils-post-rejection-canonical-readback.json",
+          "sha256": "37975c8d5dc8e67a9ee7ec6202cacefadd06bbe0d3ad5e9d1e3f98cb11aae177"
+        }
+      ],
+      "failureId": null,
+      "sourceReportedStatus": "PASS",
+      "observations": [
+        "Actual500g ->340/unavailable/500g per pack/68 per100g/disabledAdd. Actual750glabelonly ->210/netnot supplied/no unit or net total. Returning250g restores only250g facts."
+      ],
+      "executionEvidence": true,
+      "statusReason": "Actual known500gOOS/unknown750label selection/250g restoration verified with controller observations plus saved unknown AX and canonical data.",
+      "dependencyIds": [
+        "PANTRY-P00-THEME-LIMIT-01"
+      ],
+      "currentAttempt": {
+        "state": "PASS",
+        "evidence": {
+          "path": "docs/implementation/niche-themes-2026-10-23/pantry/p04-oos-unknown-selection-acceptance.json",
+          "sha256": "469ff6efb3c373425476fad0a243ff6ecc4db5b3320f2238992127195f4846e6"
+        }
+      },
+      "evidenceLimits": "500gOOS values are preserved actual controller AX observations, not a separate saved500g snapshot. No replay solely for screenshot. No overstock request/P08 result inferred."
+    },
+    {
+      "id": "P05",
+      "required": true,
+      "status": "PASS",
+      "evidence": [
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/pantry/rice-canonical-data-witness.json",
+          "sha256": "64a62339f59adb9c42310495cc8cd4802c507d54d6ec5c5bb2c3b17bc416aea9"
+        },
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/evidence/pantry-P05-rice-two-packs.ax.txt",
+          "sha256": "32264bdc310635537f84d2cc77574e8b2bd33f783f448bc70e64e41f947267ed"
+        },
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/pantry/p05-rice-data-and-native-pdp-acceptance.json",
+          "sha256": "c04fc3ca9be7cc9c45fc61a9ec1f4db028dd3c9d3ebd3006ecb93f3e04a3cc62"
+        }
+      ],
+      "failureId": null,
+      "sourceReportedStatus": "ActualAXComponentPlusCanonicalGETVerified",
+      "observations": [
+        "Actual Pantry rice PDP shows1000g per pack/₹22 per100g/count2total2000g; canonical product is220/stock4/unvarianted, and controller reports no cross-product fact leak."
+      ],
+      "executionEvidence": true,
+      "statusReason": "Required P05 facts jointly witnessed by current published-Pantry native UI and canonical product GET.",
+      "dependencyIds": [
+        "PANTRY-P00-THEME-LIMIT-01"
+      ],
+      "dataWitness": {
+        "path": "docs/implementation/niche-themes-2026-10-23/pantry/rice-canonical-data-witness.json",
+        "sha256": "64a62339f59adb9c42310495cc8cd4802c507d54d6ec5c5bb2c3b17bc416aea9"
+      },
+      "dataWitnessLimit": "Canonical GET200 proves rice220/stock4/common1000g/no variants only; actual Pantry PDP/count2/2000g proof still required.",
+      "currentAttempt": {
+        "state": "PASS",
+        "evidence": {
+          "path": "docs/implementation/niche-themes-2026-10-23/pantry/p05-rice-data-and-native-pdp-acceptance.json",
+          "sha256": "c04fc3ca9be7cc9c45fc61a9ec1f4db028dd3c9d3ebd3006ecb93f3e04a3cc62"
+        }
+      }
+    },
+    {
+      "id": "P06",
+      "required": true,
+      "status": "BLOCKED",
+      "evidence": [
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/evidence/pantry-P06-repeated-query-recovery.json",
+          "sha256": "01a34b71ea2deb9589ebbf0a90657f496823caa64bec26714ea8b1537d27db52"
+        },
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/evidence/pantry-P06-rice-collection.ax.txt",
+          "sha256": "ee9b8314fe37bbf74ef68127a311c72cfdc906a989da500d2eb47da5518a63da"
+        },
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/pantry/p06-observed-query-canonical-witness.json",
+          "sha256": "c782f70ae48314f3aa0ec1f9205da760210988dc617dfbf96eb1304c95a6a4ae"
+        },
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/pantry/p06-platform-origin-clear-href-concern.json",
+          "sha256": "a5f8cebc4893cf564c7a0aec4d8d501d75f9d1cb2d22eafb4b96575851b191ab"
+        },
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/evidence/pantry-browser-diagnostics.json",
+          "sha256": "56393ec86ca0fe52227ef3897dd3ee37c01c8ab28b7a6c76b3e6c40e14f22060"
+        }
+      ],
+      "failureId": null,
+      "sourceReportedStatus": "PASS_CANONICAL_FLOW_WITH_ADDITIONAL_PLATFORM_CONTROL_REVIEW_HOLD",
+      "observations": [
+        "Actual pulses collection onlylentils; rice collection onlyrice. Supplied250g pack filter nativeApply+Newest ->1lentils and retainscollectionID. Owner canonicalGET200 total1/exactproduct witness. Actual search zero cohort with repeatedusb-c/hdmi retains search/country/category/limit/pack throughsort, resets page; independent removals preserve unrelated values and recover1lentils. Clearpack/country/category and clearall eachpreserve search/sort/limit. Currentvalidselectedpack absentchoices preserved as removablechip/noinventedoption."
+      ],
+      "executionEvidence": true,
+      "statusReason": "Canonical Pantry flow passes actual evidence. Inherited platform origin state-loss reproduced RED and repaired in source with36 passing source tests. Actual Apply/Clear on corrected next candidate still required; current9cd unchanged.",
+      "dependencyIds": [
+        "PANTRY-P00-THEME-LIMIT-01",
+        "PANTRY-P06-PLATFORM-ORIGIN-HREF-01"
+      ],
+      "currentAttempt": {
+        "state": "CANONICAL_FLOW_PASS_PLATFORM_CONTROL_ROOT_SOURCE_ADMITTED_PENDING_RUNTIME_RECHECK",
+        "evidence": {
+          "path": "docs/implementation/niche-themes-2026-10-23/pantry/p06-platform-origin-clear-href-concern.json",
+          "sha256": "a5f8cebc4893cf564c7a0aec4d8d501d75f9d1cb2d22eafb4b96575851b191ab"
+        }
+      },
+      "sourceRepair": {
+        "path": "docs/implementation/niche-themes-2026-10-23/pantry/platform-origin-control-repair/source-release.json",
+        "sha256": "a403a7672972964b72319119232fff7e942dc43524c1bb8347934a96365c6f6a"
+      },
+      "coordinatorSourceAdmission": {
+        "path": "docs/implementation/niche-theme-programme/platform-origin-query-source-admission.json",
+        "sha256": "821d9cd4273b1d602bda09014614f8fde8ce56797ccfd9e2b5a64963383df8a2"
+      }
+    },
+    {
+      "id": "P07",
+      "required": true,
+      "status": "BLOCKED",
+      "evidence": [
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/pantry/p07-known-line-and-restoration-witness.json",
+          "sha256": "fb4c9f89a3d7c0b5dc95117c2be67b9a49e84f27f8496aaaa192efadb854fb9b"
+        },
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/evidence/cart-pantry-two-packs.json",
+          "sha256": "05d9c70164ab6da7d34f1b2ab133def65c63defe45b74759d5435e8d5b19245f"
+        },
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/evidence/pantry-P07-cart-reload.ax.txt",
+          "sha256": "c852f69d2590ac896004dd85c3570db61641f9908478e756fb16c66c0baeea57"
+        }
+      ],
+      "failureId": null,
+      "sourceReportedStatus": "KnownLinePASS_UnknownBranchAuthorizationBlocked",
+      "observations": [
+        "Actual accepted250g variant quantity2 unit180 subtotal360 saved per-item250g facts survives same-store UI reload. Unknown-line add/read/remove did not execute after auto-review rejection; full P07 incomplete."
+      ],
+      "executionEvidence": true,
+      "statusReason": "Known-line and restoration evidence retained; required unknown-variant branch not yet executed after coordinator-confirmed human cart approval. Await Editor allocated Pantry slice; no whole-case PASS.",
+      "dependencyIds": [
+        "PANTRY-P00-THEME-LIMIT-01",
+        "DEP-CART-APPROVAL-01"
+      ],
+      "currentAttempt": {
+        "state": "BLOCKED_REQUIRED_SUBCASE",
+        "evidence": {
+          "path": "docs/implementation/niche-themes-2026-10-23/pantry/p07-known-line-and-restoration-witness.json",
+          "sha256": "fb4c9f89a3d7c0b5dc95117c2be67b9a49e84f27f8496aaaa192efadb854fb9b"
+        }
+      }
+    },
+    {
+      "id": "P08",
+      "required": true,
+      "status": "NOT RUN",
+      "evidence": [
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/evidence/pantry-browser-diagnostics.json",
+          "sha256": "676c441503ebf660b6fc9d6b9a0d2e9380e16cbcfa013ef27a85b6eb1d0ae02a"
+        }
+      ],
+      "failureId": null,
+      "dependencyIds": [
+        "CIRCUIT-CART-409-001",
+        "PANTRY-P00-THEME-LIMIT-01",
+        "DEP-CART-APPROVAL-01"
+      ],
+      "sourceReportedStatus": "NOT_RUN",
+      "observations": [
+        "Pantry-rendered buyer test deferred because P00 installation failed; Dewdrop remains published. No Pantry pass inferred from another theme."
+      ],
+      "executionEvidence": false,
+      "statusReason": "Overstock5/recovery2 not executed. Human cart-test approval now coordinator-confirmed; await Editor allocated slice and actual server rejection/recovery evidence."
+    },
+    {
+      "id": "P09",
+      "required": true,
+      "status": "NOT RUN",
+      "evidence": [
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/evidence/pantry-browser-diagnostics.json",
+          "sha256": "676c441503ebf660b6fc9d6b9a0d2e9380e16cbcfa013ef27a85b6eb1d0ae02a"
+        }
+      ],
+      "failureId": null,
+      "dependencyIds": [
+        "DEP-CHECKOUT-TRUST-H01",
+        "PANTRY-P00-THEME-LIMIT-01"
+      ],
+      "sourceReportedStatus": "NOT_RUN",
+      "observations": [
+        "Pantry purchase preconditions absent after P00 installation failure. Separate earlier actual Dewdrop checkout TLS block is retained as common environment evidence; Pantry checkout not attempted."
+      ],
+      "executionEvidence": false,
+      "statusReason": "Pantry normal checkout unrun. MacOS certificate verification exit0 recorded; actual normal browser checkout requires rebuilt corrected fixture and remains unverified. Existing9cd is not retrofitted; no API order substitute."
+    },
+    {
+      "id": "P10",
+      "required": true,
+      "status": "NOT RUN",
+      "evidence": [
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/evidence/pantry-browser-diagnostics.json",
+          "sha256": "676c441503ebf660b6fc9d6b9a0d2e9380e16cbcfa013ef27a85b6eb1d0ae02a"
+        }
+      ],
+      "failureId": null,
+      "dependencyIds": [
+        "DEP-CHECKOUT-TRUST-H01",
+        "PANTRY-P00-THEME-LIMIT-01"
+      ],
+      "sourceReportedStatus": "NOT_RUN",
+      "observations": [
+        "No Pantry order exists; order/history positive controls not reached."
+      ],
+      "executionEvidence": false,
+      "statusReason": "No Pantry order exists; order/history positive controls not reached."
+    },
+    {
+      "id": "P11",
+      "required": true,
+      "status": "NOT RUN",
+      "evidence": [
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/evidence/pantry-browser-diagnostics.json",
+          "sha256": "676c441503ebf660b6fc9d6b9a0d2e9380e16cbcfa013ef27a85b6eb1d0ae02a"
+        }
+      ],
+      "failureId": null,
+      "dependencyIds": [
+        "DEP-MERCHANT-SAVE-ORIGIN-01",
+        "PANTRY-P00-THEME-LIMIT-01"
+      ],
+      "sourceReportedStatus": "NOT_RUN",
+      "observations": [
+        "Later product edit requires completed P09/P10 and additional active250g cart. Preconditions absent; original data preserved."
+      ],
+      "executionEvidence": false,
+      "statusReason": "Later product edit requires completed P09/P10 and additional active250g cart. Preconditions absent; original data preserved."
+    },
+    {
+      "id": "P12",
+      "required": true,
+      "status": "NOT RUN",
+      "evidence": [
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/evidence/pantry-browser-diagnostics.json",
+          "sha256": "676c441503ebf660b6fc9d6b9a0d2e9380e16cbcfa013ef27a85b6eb1d0ae02a"
+        }
+      ],
+      "failureId": null,
+      "dependencyIds": [
+        "DEP-MERCHANT-SAVE-ORIGIN-01",
+        "DEP-CHECKOUT-TRUST-H01",
+        "PANTRY-P00-THEME-LIMIT-01"
+      ],
+      "sourceReportedStatus": "NOT_RUN",
+      "observations": [
+        "Required stale active-cart case deferred. No P10 primary order, no additional active250g cart, and no P11 later edit; no API order/seed workaround."
+      ],
+      "executionEvidence": false,
+      "statusReason": "Required stale active-cart case deferred. No P10 primary order, no additional active250g cart, and no P11 later edit; no API order/seed workaround."
+    }
+  ],
+  "allocation": {
+    "runtimeAllocated": true,
+    "runId": "9cd50e893016",
+    "candidateHash": "c85083b28b6cfc8696679189d682a9e35b93f7603e54117e60a264aa109fcf0a",
+    "catalogHash": null,
+    "storeId": "7dfc2cb7-b06e-411c-9b2a-0b44882705be",
+    "origins": null,
+    "privateStatePath": null,
+    "owner": "Theme Editor — End-to-End",
+    "pendingGates": [
+      "Playfield origin repair accepted in corrected candidate and normal merchant save/variant clear/reload actually reverified",
+      "Qualified Pantry buyer baseline enables P03–P12; actual hosted COD/order/history and required P12 pre-edit positive cart remain absent",
+      "Common preview/shared-header and local checkout trust failures require existing owner resolution/reverification as applicable"
+    ],
+    "confirmation": "Editor finite Pantry first pass recorded P00quotaFAIL/P01originFAIL/P02baseline-onlyPARTIAL/10NOT_RUN. No Pantry installed/published buyer surface or order exists. Pantry normalized baseline-onlyP02 toBLOCKED, preserving sourcePARTIAL. Actual GET confirms original preparation/stock; version not exposed.",
+    "lastCheckedAt": "2026-10-23T16:10:29.341859+00:00",
+    "pantryScopeAllocated": true,
+    "candidateHashKind": "SHA256_OF_EDITOR_CANDIDATE_SOURCE_MANIFEST_FILE",
+    "candidateRoot": "/private/tmp/theme-editor-candidate-20261023-final02",
+    "evidence": {
+      "path": "docs/implementation/niche-themes-2026-10-23/pantry/shared-run-allocation-observation.json",
+      "sha256": "f10c175d0e11573c6c3b3e5a773427d466cb94582d29e5c8164123ae1d37721a"
+    },
+    "editorLifecycleFixturePresent": true,
+    "pantryDiagnosticAuthorizedForEditor": true,
+    "pantryScopeKind": "FINITE_EDITOR_CONTROLLED_DIAGNOSTIC_ONLY",
+    "pantryPublishedRelease": true,
+    "browserControllerTransferredToPantry": false,
+    "readOnlyPantryApiScope": "Completed only Editor-requested public canonical lentils GET; no mutation/browser.",
+    "entitlementBaseline": {
+      "initial": "Free / limit1 / correct observed install refusal",
+      "next": "ACTIVE_CANONICAL_ENTERPRISE_SYNTHETIC_BASELINE",
+      "source": {
+        "path": "docs/implementation/niche-themes-2026-10-23/pantry/fixture-entitlement-precondition-update.json",
+        "sha256": "271b17b55f3be4b9fa5e68ab465b104b5745133babba958090b6c429b855ed4c"
+      },
+      "latestOwnerStatus": "Direct human approval reported; readback verifies one active enterprise subscription, canonical unlimited limit, amountPaid0/no provider. Normal Pantry UI retry acknowledges Saved draft; P00 editor/save/publish/readback not yet proven.",
+      "approvalRecord": {
+        "path": "docs/implementation/theme-editor-2026-10-23/evidence/owned-theme-library-precondition-approval-pending.json",
+        "sha256": "1c78bab54a8c03ff6c26db1e3d9ad3d8aaaca6d55660f3f27500572444967791"
+      },
+      "postcommitReceipt": {
+        "path": "docs/implementation/theme-editor-2026-10-23/evidence/owned-theme-library-precondition-postcommit-readback.json",
+        "sha256": "ce2a5fdba85033daf29b78b005c729f0a40ceda2f1dfa59ce54e88c12af56846"
+      },
+      "retryEvidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/pantry/enterprise-baseline-pantry-retry-observation.json",
+        "sha256": "3c67c9126074199a6456b260e874a13bff7b483a8554100949da29cc52d86ab1"
+      },
+      "currentCanonicalLimit": null,
+      "planName": "enterprise",
+      "approvalPending": false
+    },
+    "pantryRelease": {
+      "packageVersion": "2.0.0",
+      "sourceDraftVersion": 2,
+      "releaseId": "dee7f527-3b2b-43f3-aa88-18ee86599faa",
+      "releaseSha256": "0fff3985e633a547007aee9cbf9ef119e3f632d9094141ad813de7c84ad1e1be",
+      "evidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/pantry/p00-enterprise-core-chain-acceptance.json",
+        "sha256": "5ca32f53a5d2481c4a5c3239b4c27a46dc6e10a4a65b2b66dc45e82d176bf1ee"
+      }
+    }
+  },
+  "executionOrder": [
+    "P00-P10",
+    "P12 active-cart positive setup",
+    "P11 later300g edit and historic comparison",
+    "P12 stale-cart rejection and final historic comparison"
+  ],
+  "preparedBindings": {
+    "products": [
+      "editorCatalog.products.lentils",
+      "editorCatalog.products.rice"
+    ],
+    "variants": "lentils.variantIds via exact acknowledged canonical option-map matching,250g/500g/label-only order",
+    "collections": [
+      "editorCatalog.collections.pulses",
+      "editorCatalog.collections.rice"
+    ],
+    "shipping": "editorCatalog.shippingRateId",
+    "runtimeSeedExecuted": false
+  },
+  "contacts": {
+    "editor": {
+      "threadId": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+      "hostId": "local",
+      "title": "Theme Editor — End-to-End"
+    },
+    "coordinator": {
+      "threadId": "01a164a4-a342-76d3-ab33-65e021ed57db",
+      "hostId": "local",
+      "title": "Themes"
+    }
+  },
+  "failureRouting": [
+    {
+      "scope": "Installed package/catalog/release activation",
+      "threadId": "01a166fc-411f-7092-b982-a055c186d87d",
+      "title": "Theme Marketplace — End-to-End"
+    },
+    {
+      "scope": "Editor/context/auth/resource/runtime and browser allocation",
+      "threadId": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+      "title": "Theme Editor — End-to-End"
+    },
+    {
+      "scope": "Pantry leaf rendering/food fields/form or its merchant fact editors; diagnose here, request coordinator owner unfreeze for any source repair",
+      "threadId": "01a164ba-b882-7bd3-9d94-af94e6c0b4f2",
+      "title": "Pantry — Food Theme"
+    },
+    {
+      "scope": "Released shared native variant/cart/client or merchant parent product mutation; coordinator assigns exact existing owner lease",
+      "threadId": "01a164a4-a342-76d3-ab33-65e021ed57db",
+      "title": "Themes"
+    },
+    {
+      "scope": "Canonical discovery backend/SQL/metadata contract",
+      "threadId": "01a164ba-a97f-7d80-9430-57924218664b",
+      "title": "Circuit — Electronics Theme"
+    },
+    {
+      "scope": "Cart fact acceptance/stock/order immutable snapshot or stale guard backend",
+      "threadId": "01a164ba-e017-7b90-9053-efc5357459a6",
+      "title": "MadeYours — Personalized Products…"
+    },
+    {
+      "scope": "Buyer/merchant historical saved-fact projection/formatter",
+      "threadId": "01a164ba-ec9f-7073-8f2a-66878e99b008",
+      "title": "Dewdrop — Beauty Theme"
+    }
+  ],
+  "failures": [
+    {
+      "id": "DEP-RELEASE-WIRE-01",
+      "classification": "DEPENDENCY_BLOCKER_NOT_EXECUTED_PANTRY_FAILURE",
+      "status": "RESOLVED_OFFLINE_AND_ROOT_PROPOSAL_ADMITTED",
+      "firstRecordedAt": "2026-10-23T13:18:53.731Z",
+      "owner": "Themes coordinator assigning existing release-generator owner",
+      "sourceScope": "docs/implementation/niche-theme-programme/release-v2/generate-release.ts",
+      "summary": "Reloaded saved proposal fails strict integrity after sorted JSON key order changes derived approved_renderer_keys array order; Pantry membership unchanged but ordered comparison fails.",
+      "evidence": {
+        "path": "docs/implementation/niche-theme-programme/release-v2/dry-run-checkpoint-03-verification.json",
+        "sha256": "24a5a2d63367925b7f29dfed2be379daa09768f4a25942df7eae2e9ba8cb9dd0",
+        "proposalStatus": "PROPOSED_NOT_FROZEN",
+        "wireStatus": "REVIEW_HOLD",
+        "pantryDifference": {
+          "slug": "letbuyy-refresh",
+          "path": "persistence.rendererManifest.approved_renderer_keys",
+          "kind": "ORDER_ONLY",
+          "membershipEqual": true,
+          "count": 48,
+          "storedSha256": "1a27d99074d419c567b85c953f2f6e1a42acf6b26f2ea257eb611daa37a21be7",
+          "rebuiltSha256": "0a7f574e1763e5b9424a5d9f2a8abb9c75abb4f686ade4b452c9da3173af3247"
+        }
+      },
+      "routingEvidence": "Both Editor and Themes compact snapshots confirm generator-only correction routed/being assigned; no independent Pantry source repair.",
+      "pantryCasesExecuted": 0,
+      "lastUpdatedAt": "2026-10-23T14:01:49.618338+00:00",
+      "repairEvidence": {
+        "path": "docs/implementation/niche-theme-programme/release-v2/wire-correction-verification.json",
+        "sha256": "e39ab8b1c3456cd5de72b5860a0301c6d838ead8220ba4a23152a09868568e4b",
+        "classification": "CORRECTED_OFFLINE_WIRE_FIX_VERIFIED_SOURCE_ADMISSION_REVIEW_REQUIRED",
+        "proposalStatus": "PROPOSED_NOT_FROZEN",
+        "manifest": {
+          "path": "docs/implementation/niche-theme-programme/release-v2/proposals/81e91859ebc8c497a49da337d064e1885a76964839d14e39f4a0a3de2283f47f/manifest.json",
+          "manifestSha256": "81e91859ebc8c497a49da337d064e1885a76964839d14e39f4a0a3de2283f47f",
+          "fileSha256": "c0e8d5b7338a70a797a2acc24976700a146f8df4f9a3716d55fab4c03e8cf515"
+        },
+        "regressions": {
+          "red": {
+            "path": "docs/implementation/niche-theme-programme/release-v2/wire-correction-before.tests.tap",
+            "sha256": "dcb7abed43922a21eda7765788c3c7b335996395d8c6625f19499a379f33685a",
+            "tests": 13,
+            "passed": 10,
+            "failed": 3
+          },
+          "green": {
+            "path": "docs/implementation/niche-theme-programme/release-v2/wire-correction-after.tests.tap",
+            "sha256": "c1406460065463a865b3884a98ffd748f1dbb56bc6ffe60fc2524fc13fbadf1d",
+            "tests": 13,
+            "passed": 13,
+            "failed": 0,
+            "skipped": 0,
+            "cancelled": 0
+          },
+          "typecheck": {
+            "path": "docs/implementation/niche-theme-programme/release-v2/wire-correction.typecheck.log",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "exitCode": 0
+          },
+          "actualDiskReloadIntegrity": "PASS",
+          "diskMatchesFreshInMemoryProposal": true,
+          "approvedKeyOrderAndMembershipTamperingRejected": true,
+          "resealedTemplateOrderTamperingRejected": true,
+          "preservedTemplateOrderArrays": 207
+        },
+        "evidenceFilesHashVerified": true,
+        "remainingScope": "Current checkpoint04 whole-source admission, final release promotion/qualification and actual runtime acceptance still required.",
+        "rootAdmission": {
+          "path": "docs/implementation/niche-theme-programme/release-v2-final-admission.json",
+          "sha256": "6e026f1adc4be82414e174a92e125d846aad4fab9119d48841350db14f22b1b6",
+          "status": "ROOT_ACCEPTED_CORRECTED_PROPOSAL",
+          "manifestSha256": "81e91859ebc8c497a49da337d064e1885a76964839d14e39f4a0a3de2283f47f"
+        }
+      }
+    },
+    {
+      "id": "CIRCUIT-CART-409-001",
+      "classification": "SHARED_CLIENT_IN_PROCESS_PREFLIGHT_FAILURE_NOT_PANTRY_EXECUTION",
+      "status": "SOURCE_FIX_VERIFIED_INSTALLED_RECHECK_REQUIRED",
+      "firstRecordedAt": "2026-10-23T13:37:00.967987+00:00",
+      "owner": "Circuit — Electronics Theme",
+      "ownerChatId": "01a164ba-a97f-7d80-9430-57924218664b",
+      "sourceScope": "apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx",
+      "sourceAtReproductionSha256": "734a6a314e570a3c0ffedbd487db46ec5920c2b05b5c0de6703e3dabe8cfe7b5",
+      "candidateHash": null,
+      "evidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/pantry/cart-409-preflight-red-observation.json",
+        "sha256": "cde0530f236710c28da279aeb40a241ab5d406fe6010385834fb499c4eadf00c",
+        "sourceReportSha256": "7fb61b37711a1adf658ce3b6c629d121e2035ec137280a4b2766aaccfd7f59a1"
+      },
+      "reproduction": "Circuit actual v2 factory/render/native cart composition, synthetic hub stock8, request quantity9, intercept canonical cart POST with controlled409 INSUFFICIENT_INVENTORY, flush native update; observed Added and optimistic cached9 without accepted receipt. This is not an actual database stock rejection.",
+      "relatedPantryRows": [
+        "P07",
+        "P08",
+        "P09"
+      ],
+      "pantryCasesExecuted": 0,
+      "routingEvidence": "Themes explicitly assigned Circuit sole narrow lease; Pantry sent source/failure evidence and retained client contracts to Circuit, final-candidate dependency to Editor, and evidence-scope acknowledgement to Themes.",
+      "requiredReverification": "Pantry P08: actual V250 accepted2/available4 then quantity5 real409, actionable failure/no false success or committed5, normal retry2 acknowledged with reload; P07 and P09 retain receipt authority.",
+      "lastUpdatedAt": "2026-10-23T13:54:27.293474+00:00",
+      "repairEvidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/circuit/installed-lifecycle/cart-repair/source-release.json",
+        "sha256": "e3c7e4e8bffe14ff3f60d9f9669776958ff513d7b74dcb6938fe3dec50eed689",
+        "classification": "LOCAL_IN_PROCESS_REPAIR_RELEASE_NOT_BROWSER_SQL_OR_INSTALLED_ACCEPTANCE",
+        "writerReleased": true,
+        "sourceHashes": {
+          "apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx": "9e87ff6b8b18a8e2208ca770fc44c282a03632d575973e26f1cd34f1656088b4",
+          "apps/commerce/web/src/lib/theme-engine/liquid-add-to-cart-acceptance.test.ts": "ccb107c79d088859c366e705ee2ca1bedddcf6a43bf1beeaf66e670df12ad2dd"
+        },
+        "sourceBytesVerified": true,
+        "checks": [
+          {
+            "check": "focusedNative",
+            "path": "docs/implementation/niche-themes-2026-10-23/circuit/installed-lifecycle/cart-repair/focused.tap",
+            "sha256": "e1010344d2d81f70d73a29e4e079ea75c48aa371768a4c096e9de7fa66817f95",
+            "receipt": {
+              "pass": 13,
+              "fail": 0,
+              "skipped": 0,
+              "command": "focused.command.json",
+              "evidence": "focused.tap"
+            }
+          },
+          {
+            "check": "existingNativeRegressions",
+            "path": "docs/implementation/niche-themes-2026-10-23/circuit/installed-lifecycle/cart-repair/native-regressions.tap",
+            "sha256": "32f739e7d95c4440c6d2fde1c6cb37cf29de740358939c578d814c838b940e08",
+            "receipt": {
+              "pass": 54,
+              "fail": 0,
+              "skipped": 0,
+              "command": "native-regressions.command.json",
+              "evidence": "native-regressions.tap"
+            }
+          },
+          {
+            "check": "actualCircuitComposition",
+            "path": "docs/implementation/niche-themes-2026-10-23/circuit/installed-lifecycle/preflight.tap",
+            "sha256": "66bf4dad9d046c6c3206cce2e82e2754be239e0045a225d4d3d46f8bb4f45e4b",
+            "receipt": {
+              "pass": 10,
+              "fail": 0,
+              "skipped": 0,
+              "command": "../preflight.command.json",
+              "evidence": "../preflight.tap"
+            }
+          },
+          {
+            "check": "commerceNoEmit",
+            "path": "docs/implementation/niche-themes-2026-10-23/circuit/installed-lifecycle/cart-repair/commerce-noEmit.log",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "receipt": {
+              "exitCode": 0,
+              "command": "commerce-noEmit.command.json",
+              "evidence": "commerce-noEmit.log"
+            }
+          }
+        ],
+        "evidenceReadOnlyNoRerun": true,
+        "behavior": [
+          "Generic Add and Buy Now wait for canonical cart sync acceptance before Added/drawer/navigation.",
+          "409 and other definite4xx rejections restore only the unchanged optimistic draft; an older response cannot replace a newer local edit.",
+          "503/network/response-loss retry reuses identical replacement lines and quantity rather than incrementing twice.",
+          "Existing serialized write queue, durable variant/configuration identities, server-only accepted prices/facts and personalization review path are preserved.",
+          "Retirement discovered during sync is not a successful new acceptance; stale failure callbacks are scoped to unchanged storefront/token.",
+          "Status timers are guarded by attempt identity; disconnect invalidates generic completion."
+        ]
+      }
+    },
+    {
+      "id": "DEP-NATIVE-PUBLIC-503-01",
+      "classification": "REAL_OWNED_DATABASE_QUALIFICATION_FAILURE_NOT_PANTRY_EXECUTION",
+      "status": "RESOLVED_BY_NATIVE06_QUALIFICATION_ROOT_ADMITTED",
+      "firstRecordedAt": "2026-10-23T14:01:49.618338+00:00",
+      "owner": "Storefronnt Enhancement / Threadline existing chat",
+      "ownerChatId": "01a161c9-36d1-7802-af70-d346f524bff3",
+      "summary": "Anonymous storefront request returned503 STOREFRONT_ACCESS_UNAVAILABLE / Store access is unavailable, expected200. Full rollback/public-read qualification remains red.",
+      "sourceSuiteSha256": "0a17994cf8b1b3b634b991ab70b8c47dbea48bb925bc64ffbd0747a5a10057bc",
+      "manifestSha256": "81e91859ebc8c497a49da337d064e1885a76964839d14e39f4a0a3de2283f47f",
+      "candidateHash": null,
+      "evidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/pantry/native-qualification-public-503-observation.json",
+        "sha256": "872d59b5d41542b341f1aa01227df9c54b1f156cd76dc0b889f65dce23ce8aad"
+      },
+      "relatedPantryRows": [
+        "P00"
+      ],
+      "pantryCasesExecuted": 0,
+      "routingEvidence": "Editor revision82 and Threadline revision35 confirm owner tracing; Pantry sends exact saved-run evidence to owner and Themes.",
+      "lastUpdatedAt": "2026-10-23T14:43:01.896203+00:00",
+      "resolutionEvidence": {
+        "receipt": {
+          "path": "docs/implementation/niche-theme-programme/native389390-final-admission.json",
+          "sha256": "c4a309bc230dbe80cd785733ff94d1203d9ed94696946a9486d64ea0957b3a6f"
+        },
+        "runId": "1a4e6e2c85ad",
+        "counts": {
+          "tests": 5,
+          "pass": 5,
+          "fail": 0,
+          "skip": 0
+        },
+        "cleanup": {
+          "failures": [],
+          "remaining": {
+            "containers": [],
+            "networks": [],
+            "volumes": []
+          }
+        },
+        "scope": "Real owned SQL and mounted Gateway; not Pantry installed/browser acceptance.",
+        "redEvidencePreserved": true
+      }
+    },
+    {
+      "id": "DEP-MERCHANT-SAVE-ORIGIN-01",
+      "classification": "EDITOR_REPORTED_REAL_BROWSER_PRODUCT_SAVE_FAILURE_NOT_PANTRY_EXECUTION",
+      "status": "OPEN_NAMED_OWNER_REPAIR_CURRENT_RUNTIME_NOT_FIXED",
+      "firstRecordedAt": "2026-10-23T15:01:27.309152+00:00",
+      "owner": "Playfield — assigned sole request-origin repair by Themes",
+      "ownerChatId": null,
+      "summary": "First merchant fact edit in current buyer slice: Save product rejected with This change must originate from this merchant app; form kept unsaved draft for recovery. Editor tracing origin check.",
+      "reproduction": "In the existing Editor-owned fresh-run browser during Dewdrop merchant fact edit, edit facts and press Save product; error is shown and draft remains unsaved. Exact product UUID, request/response and origin-check diagnostic await owner receipt.",
+      "candidateSourceManifestSha256": "c85083b28b6cfc8696679189d682a9e35b93f7603e54117e60a264aa109fcf0a",
+      "sourceFileHash": "c288af9f88b5919f09c28391625801ee0c1331544085e01a60ad9252e4934631",
+      "evidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/pantry/merchant-save-origin-observation.json",
+        "sha256": "bd6b49bf62c676a1773400aafee3fa0b93a071c8110275dcd8001fad7e789d01"
+      },
+      "relatedPantryRows": [
+        "P01",
+        "P02",
+        "P11",
+        "P12"
+      ],
+      "pantryCasesExecuted": 0,
+      "routingEvidence": "Sent current run/candidate/reproduction to Editor for canonical request receipt and Themes for existing-owner routing; no competing source mutation.",
+      "lastUpdatedAt": "2026-10-23T15:10:45.710209+00:00",
+      "coordinationChatId": "01a164a4-a342-76d3-ab33-65e021ed57db",
+      "sourceScope": "apps/merchant/web/src/lib/api/request-origin.ts",
+      "staticGuardResponse": {
+        "code": "FORBIDDEN_ORIGIN",
+        "status": 403,
+        "actualBrowserResponseCapturedByPantry": false
+      },
+      "currentRuntimeFixed": false,
+      "currentRuntimeReverified": false,
+      "directEditorConfirmation": {
+        "path": "docs/implementation/niche-themes-2026-10-23/pantry/editor-origin-fix-handoff-check.json",
+        "sha256": "ee2d5e85bbd124d1f3583aebb91fe1c857c895409e7fb88521392a290f41f8f1"
+      },
+      "actualPantryReproduction": "PANTRY-P01-ORIGIN-01"
+    },
+    {
+      "id": "DEP-CHECKOUT-TRUST-H01",
+      "classification": "COORDINATOR_REPORTED_ACTUAL_SHARED_BROWSER_TLS_BLOCKER_NOT_PANTRY_EXECUTION",
+      "status": "OPEN_OWNER_REPORTED_BROWSER_TLS_BLOCKER",
+      "firstRecordedAt": "2026-10-23T15:34:37.558464+00:00",
+      "owner": "Theme Editor — End-to-End / Themes coordinates existing local trust handoff",
+      "ownerChatId": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+      "summary": "Current shared hosted checkout stopped at ERR_CERT_AUTHORITY_INVALID. No completed order/history evidence from that navigation.",
+      "candidateSourceManifestSha256": "c85083b28b6cfc8696679189d682a9e35b93f7603e54117e60a264aa109fcf0a",
+      "evidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/pantry/checkout-trust-blocker-observation.json",
+        "sha256": "4936a05b66db402e0f4dc2ba6a2dcc6db0fb12833bb4dad2e9fc4e9d541153de"
+      },
+      "relatedPantryRows": [
+        "P09",
+        "P10",
+        "P12"
+      ],
+      "pantryCasesExecuted": 0,
+      "routingEvidence": "Themes explicitly routed conclusive H01; Pantry sent finite independent13 ordering/blocked-precondition requirements to Editor and acknowledges current saved H01 ledger awaits finalization."
+    },
+    {
+      "id": "PANTRY-P00-THEME-LIMIT-01",
+      "classification": "ACTUAL_PANTRY_NORMAL_INSTALL_UI_FAILURE",
+      "status": "INITIAL_CORRECT_FREE_REFUSAL_RESOLVED_ENTERPRISE_P00_REVERIFIED_PASS",
+      "firstRecordedAt": "2026-10-23T15:49:33.042190+00:00",
+      "owner": "Themes / Editor canonical synthetic fixture precondition",
+      "ownerChatId": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+      "case": "P00",
+      "runId": "9cd50e893016",
+      "candidateSourceManifestSha256": "c85083b28b6cfc8696679189d682a9e35b93f7603e54117e60a264aa109fcf0a",
+      "summary": "Normal Add Pantry2.0.0 immediately refused: Add has not been confirmed / Your theme library is full. No Pantry instance or publication exists; Dewdrop remains current.",
+      "reproduction": "Existing Editor-owned merchant Themes catalog, normal Add Pantry click, immediate AX refusal; owner reports only one installed/current theme. No repeat performed solely for evidence.",
+      "sourceScope": "services/api-gateway/src/execution/theme-execution.adapter.ts",
+      "sourceSha256": "e35cdc441ddebe10d6e2f39d15967ef853ca380cbbf939889c8d30fecca32b72",
+      "sourceLine": 851,
+      "staticMapping": "Remaining PT409 maps to THEME_LIMIT_REACHED/409; this does not prove actual captured status/code.",
+      "httpStatus": "NOT_CAPTURED",
+      "serverCode": "NOT_CAPTURED",
+      "evidence": [
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/evidence/pantry-browser-diagnostics.json",
+          "sha256": "676c441503ebf660b6fc9d6b9a0d2e9380e16cbcfa013ef27a85b6eb1d0ae02a"
+        },
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/evidence/pantry-install-refusal-observation.json",
+          "sha256": "d8b2ce7acda2897d4f624d911d8484c861446b195062be4be736bbf2384f50f7"
+        }
+      ],
+      "catalogContextScreenshot": {
+        "path": "docs/implementation/theme-editor-2026-10-23/evidence/pantry-install-library-full.jpg",
+        "sha256": "270743ce76e4cdf28d4d5e3876e437a3f3e23fdf4c98367eca115471a1229618"
+      },
+      "requiredReverification": "After explicitly receipted canonical synthetic subscription precondition, one normal Add retry and full P00 install/editor/save/reload/publication/buyer release evidence. Retain initial Free-plan refusal.",
+      "routingEvidence": "Reported with run/candidate/source hashes and exact immediate AX receipt to existing Marketplace chat and Themes.",
+      "lastUpdatedAt": "2026-10-23T16:03:33.424032+00:00",
+      "initialQuotaPolicyCorrect": true,
+      "pantryThemeBug": false,
+      "requiredSourceRepair": false,
+      "quotaReviewResolution": {
+        "path": "docs/implementation/niche-themes-2026-10-23/pantry/fixture-entitlement-precondition-update.json",
+        "sha256": "271b17b55f3be4b9fa5e68ab465b104b5745133babba958090b6c429b855ed4c"
+      },
+      "fixturePreconditionApproval": {
+        "path": "docs/implementation/theme-editor-2026-10-23/evidence/owned-theme-library-precondition-approval-pending.json",
+        "sha256": "1c78bab54a8c03ff6c26db1e3d9ad3d8aaaca6d55660f3f27500572444967791"
+      },
+      "entitlementResolution": {
+        "path": "docs/implementation/theme-editor-2026-10-23/evidence/owned-theme-library-precondition-postcommit-readback.json",
+        "sha256": "ce2a5fdba85033daf29b78b005c729f0a40ceda2f1dfa59ce54e88c12af56846"
+      },
+      "retryObservation": {
+        "path": "docs/implementation/niche-themes-2026-10-23/pantry/enterprise-baseline-pantry-retry-observation.json",
+        "sha256": "3c67c9126074199a6456b260e874a13bff7b483a8554100949da29cc52d86ab1"
+      },
+      "currentP00Acceptance": "PASS_CORE_CHAIN",
+      "resolvedAt": "2026-10-23T16:10:29.341859+00:00",
+      "resolutionEvidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/pantry/p00-enterprise-core-chain-acceptance.json",
+        "sha256": "5ca32f53a5d2481c4a5c3239b4c27a46dc6e10a4a65b2b66dc45e82d176bf1ee"
+      }
+    },
+    {
+      "id": "PANTRY-P01-ORIGIN-01",
+      "classification": "ACTUAL_PANTRY_MERCHANT_NORMAL_SAVE_FAILURE",
+      "status": "OPEN_NAMED_PLAYFIELD_REPAIR_CURRENT_RUNTIME_STILL_FAILS",
+      "firstRecordedAt": "2026-10-23T15:49:33.042190+00:00",
+      "owner": "Playfield sole origin repair, routed by Themes",
+      "ownerChatId": null,
+      "coordinationChatId": "01a164a4-a342-76d3-ab33-65e021ed57db",
+      "case": "P01",
+      "runId": "9cd50e893016",
+      "candidateSourceManifestSha256": "c85083b28b6cfc8696679189d682a9e35b93f7603e54117e60a264aa109fcf0a",
+      "summary": "Changed only lentils preparation to Rinse before cooking. UI save checkpoint.; normal Save product rejected This change must originate from this merchant app and retains/freeze draft.",
+      "reproduction": "Existing lentils merchant record, edit preparation only, Save product, visible Product needs attention origin banner.",
+      "sourceScope": "apps/merchant/web/src/lib/api/request-origin.ts",
+      "sourceSha256": "c288af9f88b5919f09c28391625801ee0c1331544085e01a60ad9252e4934631",
+      "sourceLine": 23,
+      "staticMapping": "Source branch returns FORBIDDEN_ORIGIN/403; actual browser HTTP status/code not captured here.",
+      "httpStatus": "NOT_CAPTURED",
+      "serverCode": "NOT_CAPTURED",
+      "evidence": [
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/evidence/pantry-browser-diagnostics.json",
+          "sha256": "676c441503ebf660b6fc9d6b9a0d2e9380e16cbcfa013ef27a85b6eb1d0ae02a"
+        },
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/evidence/pantry-merchant-origin-banner.jpg",
+          "sha256": "d99ec98cc8fc7f915481ad64441d7c0c67d91bc4f9fb0a03232766f6d7aaf486"
+        },
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/pantry/lentils-post-rejection-canonical-readback.json",
+          "sha256": "37975c8d5dc8e67a9ee7ec6202cacefadd06bbe0d3ad5e9d1e3f98cb11aae177"
+        }
+      ],
+      "requiredReverification": "Accepted corrected runtime normal fact save/reload, validation and variant clear roundtrip; later P11/P12 with genuine order/history preconditions.",
+      "parentDependencyId": "DEP-MERCHANT-SAVE-ORIGIN-01",
+      "routingEvidence": "Actual Pantry reproduction/readback sent to Themes and Editor; Playfield remains sole writer."
+    },
+    {
+      "id": "DEP-CART-APPROVAL-01",
+      "classification": "AUTO_REVIEW_CART_SCOPE_GATE_NOT_APPLICATION_REJECTION",
+      "status": "OPEN_DIRECT_HUMAN_APPROVAL_REQUESTED_IN_EDITOR",
+      "firstRecordedAt": "2026-10-23T16:21:51.773999+00:00",
+      "owner": "Theme Editor — End-to-End direct approval request",
+      "ownerChatId": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+      "summary": "Next unknown-variant addition rejected by automatic approval review as outside narrow cart transition. Addition did not execute; no server rejection inferred.",
+      "evidence": {
+        "path": "docs/implementation/theme-editor-2026-10-23/evidence/pantry-cart-transition-and-restoration.json",
+        "sha256": "7481f396a75573fdae89fe136522f09b01fe20c6af21602656a0f27ae80f5757"
+      },
+      "relatedPantryRows": [
+        "P07",
+        "P08",
+        "P09"
+      ],
+      "candidateSourceManifestSha256": "c85083b28b6cfc8696679189d682a9e35b93f7603e54117e60a264aa109fcf0a"
+    },
+    {
+      "id": "PANTRY-P06-PLATFORM-ORIGIN-HREF-01",
+      "classification": "ACTUAL_RENDERED_PLATFORM_CLEAR_HREF_DROPS_STATE_ACTIVATION_NOT_RUN",
+      "status": "OPEN_COORDINATOR_SCOPE_DISPOSITION_PENDING",
+      "firstRecordedAt": "2026-10-23T16:27:43.929135+00:00",
+      "owner": "Themes assigning existing shared platform-control owner",
+      "ownerChatId": "01a164a4-a342-76d3-ab33-65e021ed57db",
+      "summary": "Visible inherited Clear origin filter href drops current limit/sort/pack/connectors; tested canonical Pantry chip is correct. Activation not captured.",
+      "sourceScope": "apps/commerce/web/src/lib/theme-engine/platform-control-markup.ts",
+      "sourceSha256": "2c7a5e05ab25c7ef29e6e96e9cbc238bdbd1f5805a6c7d01f1cdfd8f89abd413",
+      "candidateSourceManifestSha256": "c85083b28b6cfc8696679189d682a9e35b93f7603e54117e60a264aa109fcf0a",
+      "evidence": {
+        "path": "docs/implementation/niche-themes-2026-10-23/pantry/p06-platform-origin-clear-href-concern.json",
+        "sha256": "a5f8cebc4893cf564c7a0aec4d8d501d75f9d1cb2d22eafb4b96575851b191ab"
+      },
+      "relatedPantryRows": [
+        "P06"
+      ],
+      "routingEvidence": "Exact runtimeAX/source concern sent to Editor and Themes; no new source lease assumed."
+    }
+  ],
+  "waitCursors": {
+    "editor": "55b3b7e5-65f2-4e37-bfbe-f3ebbd81cba2:102",
+    "coordinator": "4a88ad91-a502-40c5-8554-f10ec1e43e00:75",
+    "threadline": "02dc1ff0-b747-4847-bdfa-1151ced028c0:35",
+    "circuit": "49a2abae-3f5d-442c-b854-13a2a366b184:34",
+    "madeyours": "5ee2080b-fef7-475a-81b0-a516070215f1:3",
+    "threadlineCurrent": "c84aa8c2-a9f1-49a3-aba2-a6d4bce3958a:5"
+  },
+  "heartbeat": {
+    "automationId": "pantry-lifecycle-acceptance-follow-up",
+    "status": "ACTIVE",
+    "intervalMinutes": 10,
+    "policy": "Quiet when unchanged/non-actionable; notify meaningful allocation/evidence/failure/user action/completion; disable after all13 evidence and necessary owner fixes reverified"
+  },
+  "sourceFreezeVerification": {
+    "checkedAt": "2026-10-23T13:37:00.967987+00:00",
+    "filesChecked": 8,
+    "clientAndPantryOwnedChanged": [],
+    "coordinatorLeasedException": "apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx",
+    "exceptionCheck": "Await Circuit release hash; Pantry has not edited the leased file.",
+    "authorizedSourceSupersession": {
+      "checkedAt": "2026-10-23T13:54:27.293474+00:00",
+      "path": "apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx",
+      "previousSha256": "734a6a314e570a3c0ffedbd487db46ec5920c2b05b5c0de6703e3dabe8cfe7b5",
+      "releasedSha256": "9e87ff6b8b18a8e2208ca770fc44c282a03632d575973e26f1cd34f1656088b4",
+      "matchesReleasedBytes": true,
+      "authority": "Themes sole Circuit lease and release notification",
+      "originalFreezeReceipt": "Historical baseline preserved; no Pantry source edits."
+    }
+  },
+  "currentReadOnlyFixtureInputs": [
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/threadline-browser-fixture.ts",
+      "sha256": "0a8677cc7036fa773e66782a4d9772887897cc762ed88975fd9309afea9aecc4",
+      "previousSha256": "a80289b5e91c282139b66d73b17801311d5996b35b39692af11af51adc64c245",
+      "supersedingReleaseReceipt": "docs/implementation/theme-editor-2026-10-23/evidence/fixture-observability-source-release.json"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/threadline-qa-fixture.ts",
+      "sha256": "8e0880ac5f1b699d99faa4e4a47b9b6966d79a984858807a51b2d04eee65f997",
+      "previousSha256": "bf03f1efae9b2be53e0808a8b92b22b9ae435f1c7ccd24ac08d07f1799c051dd",
+      "supersedingReleaseReceipt": "docs/implementation/theme-editor-2026-10-23/evidence/fixture-collection-idempotency-source-release.json"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/fixture-preparation-source-release.json",
+      "sha256": "5258fe38d03f6d2449e7db62dcd95fde6cbebffc2076ef533309e6d45a5e60e1"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/fresh-fixture-data.plan.json",
+      "sha256": "eefebbda07c13ebbdf5dd1a7f40d53ecdbe98c8af23ce464ffcdc5191deb4864"
+    }
+  ],
+  "resourcesStartedByPantry": [],
+  "evidenceDestination": "docs/implementation/theme-editor-2026-10-23/evidence/; separate Pantry13 actual result ledger",
+  "preparationBaseline": "installed-buyer-lifecycle-matrix-source.json",
+  "actualExecutionEvidenceCount": 8,
+  "allocationChecks": [
+    {
+      "checkedAt": "2026-10-23T12:57:50.230155+00:00",
+      "directEditorConfirmation": "Runtime still not allocated; no new run/candidate/origins/site/product UUIDs. All13 required and NOTRUN. Final current-source checkpoint03 passes210 at88stable hashes; source-only. Root admission/new389 and actual390/repaired387 qualification gate startup.",
+      "runtimeAllocated": false,
+      "executedRows": 0,
+      "sourceGate": {
+        "checkpoint": 3,
+        "passedTemplates": 210,
+        "failed": 0,
+        "stableInputs": 88,
+        "report": "docs/implementation/theme-editor-2026-10-23/evidence/v2-editor-source-roundtrip-passing-checkpoint-03.json",
+        "sha256": "69d6bfffe8142b1b036e71cf13dfaebd4f8180d9dbf49bac4e58afe64e4f16ea"
+      },
+      "frozenFilesChecked": 9,
+      "changedFrozenFiles": []
+    }
+  ],
+  "latestSourceOnlyGate": {
+    "checkpoint": 4,
+    "passedTemplates": 210,
+    "failed": 0,
+    "stableInputs": 88,
+    "report": "docs/implementation/theme-editor-2026-10-23/evidence/v2-editor-source-roundtrip-passing-checkpoint-04.json",
+    "sha256": "4a7488b2b361d84c7bc89119cf714e116697dc0b52bf66bb19f5310cae1359bf",
+    "releaseReceipt": "docs/implementation/theme-editor-2026-10-23/evidence/v2-editor-source-release-checkpoint-04.json",
+    "releaseReceiptSha256": "382bfdb7b5c36a4b16ac74bb44f79eb34a460f7e0bae5187fde8811e9e3f9c6d"
+  },
+  "editorFixturePreparation": {
+    "newProducts": 14,
+    "existingApparelProducts": 3,
+    "collections": 13,
+    "runtimeSeedExecuted": false
+  },
+  "lastHeartbeatCheck": {
+    "at": "2026-10-24T07:41:50.067660+00:00",
+    "outcome": "CHECKOUT_PROPOSAL_CLEANUP_DB_GATE_PENDING_NO_PANTRY_RETRY",
+    "actualNamedPantryHandoffReceived": true,
+    "uiWritesPaused": true,
+    "monitoredState": "Themes reports corrected checkout proposal pending small import/lint cleanup and22database tests. This is not runtime qualification/admission. Editor continues separate Kindred non-order work. No new Pantry case receipts;9PASS/1FAIL/3NOT RUN unchanged.",
+    "sharedSources": "PANTRY_FILES_FROZEN_ROOT_COORDINATED_OWNER_REVIEW",
+    "browserOrFixtureStartedByPantry": false,
+    "testsRerunByPantry": false,
+    "acceptanceComplete": false,
+    "userNotificationRequired": false
+  },
+  "qualificationProgress": {
+    "observedAt": "2026-10-23T13:33:11.578444+00:00",
+    "independentReexecutionByPantry": false,
+    "evidenceBytesVerifiedByPantry": true,
+    "native387": {
+      "path": "docs/implementation/theme-marketplace-2026-10-23/evidence/install387-final-native-result.json",
+      "sha256": "e7cf3862e86202aad93774e4137cbcf0f16e8afca7e170488e9bb76d801f5135",
+      "runId": "898e86436b36",
+      "passed": 10,
+      "failed": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "scope": "All10 persisted catalog exact install receipts and editor loads, private Threadline clone/edit, private blank create/editor/save, access controls, outbox atomicity, publish and migration rollback/security; exact-version retry/concurrency/conflict suite. No nine-theme v2 promotion or hosted qualification."
+    },
+    "editorSourceCheckpoint": 4,
+    "reported": [
+      "Editor confirms all ten catalog installs/editor loads, private clone save and blank theme create/edit/save green",
+      "Native390 ten groups previously reported passed; no rerun by Pantry",
+      "Fresh fixture still unallocated; no Pantry lifecycle execution"
+    ],
+    "native389390": {
+      "status": "PASS_ROOT_ADMITTED",
+      "receipt": {
+        "path": "docs/implementation/niche-theme-programme/native389390-final-admission.json",
+        "sha256": "c4a309bc230dbe80cd785733ff94d1203d9ed94696946a9486d64ea0957b3a6f"
+      },
+      "runId": "1a4e6e2c85ad",
+      "counts": {
+        "tests": 5,
+        "pass": 5,
+        "fail": 0,
+        "skip": 0
+      },
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "emission": {
+        "receipt": "docs/implementation/threadline-2026-10-22/promotion-qualification/390-emission-receipt.json",
+        "receiptSha256": "f5e5dcf0125d67c73a79bbe15e540dde2d0bfe5a38e8233752bbab1e90a8cb81",
+        "files": [
+          {
+            "source": "docs/implementation/threadline-2026-10-22/measurement-discovery/390_measurement_discovery.up.draft.sql",
+            "path": "database/supabase/migrations/390_storefront_measurement_capabilities.sql",
+            "sha256": "6e5eb5e50cecd43acc9a663dd79c505db6c7bfdbe4e559b34d998065f88e9027",
+            "bytes": 26476,
+            "exclusiveCreate": true,
+            "byteIdentical": true
+          },
+          {
+            "source": "docs/implementation/threadline-2026-10-22/measurement-discovery/390_measurement_discovery.down.draft.sql",
+            "path": "database/supabase/rollback/390_storefront_measurement_capabilities.rollback.sql",
+            "sha256": "1aca479d735539ec3d92974da0eed7b8e48e83e874d8612ea78dba7acc91cb7a",
+            "bytes": 24601,
+            "exclusiveCreate": true,
+            "byteIdentical": true
+          }
+        ]
+      },
+      "evidenceReadByPantry": true,
+      "independentlyReexecutedByPantry": false,
+      "pantryLifecycleEvidence": false
+    }
+  },
+  "sourceFreezeOwnerException": {
+    "authorizedBy": "Themes coordinator message to Pantry",
+    "owner": "Circuit — Electronics Theme",
+    "ownerChatId": "01a164ba-a97f-7d80-9430-57924218664b",
+    "scope": "Generic LbAddToCartElement/existing sync-result handling in apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx and focused tests only",
+    "baselineSha256": "734a6a314e570a3c0ffedbd487db46ec5920c2b05b5c0de6703e3dabe8cfe7b5",
+    "status": "RELEASED_SOURCE_FROZEN_AND_FINAL02_CANDIDATE_PARITY_VERIFIED",
+    "pantryWriteAllowed": false,
+    "requiredRetainedContracts": [
+      "Selected-variant food facts",
+      "MadeYours per-configuration identity and receipt facts",
+      "Serialized writes and newer-local-intent guards",
+      "Personalization review/recovery"
+    ],
+    "finalCandidateReleaseHash": "9e87ff6b8b18a8e2208ca770fc44c282a03632d575973e26f1cd34f1656088b4",
+    "releasedAt": "2026-10-23T13:49:41Z",
+    "releasedSourceHash": "9e87ff6b8b18a8e2208ca770fc44c282a03632d575973e26f1cd34f1656088b4",
+    "releaseReceipt": "docs/implementation/niche-themes-2026-10-23/circuit/installed-lifecycle/cart-repair/source-release.json",
+    "candidateSourceManifestSha256": "c85083b28b6cfc8696679189d682a9e35b93f7603e54117e60a264aa109fcf0a"
+  },
+  "lastCoordinationUpdate": {
+    "at": "2026-10-23T19:07:56.487520+00:00",
+    "outcome": "ROOT_CONFIRMS_SEPARATE_MARKETPLACE_APPROVAL_RESOLVED_PANTRY_INDEPENDENT_QUEUE_RETAINED",
+    "freshF607Counts": {
+      "PASS": 0,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "NOT RUN": 13
+    },
+    "acceptanceComplete": false,
+    "notificationSent": false
+  },
+  "editorObservationPreparation": {
+    "observedAt": "2026-10-23T14:01:49.618338+00:00",
+    "state": "SOURCE_RELEASED_RECORDED17_PASS_RUNTIME_NOT_EXECUTED",
+    "receipt": {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/fixture-observability-source-release.json",
+      "sha256": "a4706bec4f63e3eb0dcf72ffa3f097d882ffb814f5c02e7a0ee80e47075b8220"
+    },
+    "source": [
+      {
+        "path": "services/api-gateway/src/__tests__/owned-db/threadline-browser-fixture.ts",
+        "sha256": "0a8677cc7036fa773e66782a4d9772887897cc762ed88975fd9309afea9aecc4"
+      },
+      {
+        "path": "services/api-gateway/src/__tests__/owned-db/theme-editor-fixture-observation.ts",
+        "sha256": "8e83deb402f138bace7ed37630f4212108e9fa121f02b0b31054e1cf4a32a44f"
+      },
+      {
+        "path": "services/api-gateway/src/__tests__/theme-editor-fixture-observation.test.ts",
+        "sha256": "db98902418414fb178afe4493aaa98c3e5597fc82c9c2d7f1c6b0ec8137f4275"
+      }
+    ],
+    "sourceBytesVerifiedByPantry": true,
+    "validation": {
+      "focusedPassed": 17,
+      "failed": 0,
+      "skipped": 0,
+      "gatewayNoEmitExit": 0,
+      "diffCheckExit": 0
+    },
+    "runtimeSQLHealth": "Existing setup checks own product proof200 then unknown product404 before app builds; NOT EXECUTED yet.",
+    "pantryExecutionEvidence": false,
+    "handling": "Use only Editor-owned existing controls after explicit handoff; no Pantry harness or fixture launch."
+  },
+  "sharedFixturePreparation": {
+    "currentRunId": "9cd50e893016",
+    "candidate": {
+      "copyReceipt": {
+        "path": "docs/implementation/theme-editor-2026-10-23/evidence/final02-candidate-copy-receipt.json",
+        "sha256": "b7c70f883557430c4ab3ac50b4df2505a243a5a9a0e55488c5b8fec32b4d6ad9"
+      },
+      "root": "/private/tmp/theme-editor-candidate-20261023-final02",
+      "sourceFiles": 15839,
+      "stableDuringCopy": true,
+      "workspaceLinks": 256,
+      "workspaceResolutions": 40,
+      "sourceManifestSha256": "c85083b28b6cfc8696679189d682a9e35b93f7603e54117e60a264aa109fcf0a",
+      "dependencyProofSha256": "8953ab9eca0e9762fdda964ce9e6566b1f84b8d25ec1858371ce73622880fa96",
+      "hashesVerifiedReadOnlyByPantry": true
+    },
+    "transportFix": {
+      "receipt": {
+        "path": "docs/implementation/theme-editor-2026-10-23/evidence/fixture-collection-idempotency-source-release.json",
+        "sha256": "26e4860e5e81afb998eca6ee7c9031228569ad2e09feeb81198c84e15e28fd41"
+      },
+      "source": {
+        "path": "services/api-gateway/src/__tests__/owned-db/threadline-qa-fixture.ts",
+        "previousSha256": "bf03f1efae9b2be53e0808a8b92b22b9ae435f1c7ccd24ac08d07f1799c051dd",
+        "sha256": "8e0880ac5f1b699d99faa4e4a47b9b6966d79a984858807a51b2d04eee65f997"
+      },
+      "candidateSourceBytesMatchRelease": true
+    },
+    "reportedActualSetup": {
+      "products": 14,
+      "collections": 13,
+      "membershipReadbacks": "PASS",
+      "databaseObserverOwnPositiveControl": 200,
+      "databaseObserverUnknownNegativeControl": 404,
+      "source": "Direct coordinator release message; not independently replayed by Pantry",
+      "pantryAcceptance": false
+    },
+    "pantryExecutionEvidence": false
+  },
+  "quietWindow": {
+    "status": "RELEASED_FOR_OWN_PROGRESS_AND_EVIDENCE_WRITES",
+    "releasedBy": "Themes direct coordination message",
+    "recordedAt": "2026-10-23T14:43:01.896203+00:00",
+    "sharedSources": "FROZEN",
+    "parallelFixtureOrBroadReruns": "NOT_AUTHORIZED",
+    "resourcesRetainedByEditor": true
+  },
+  "queueProgress": {
+    "observedAt": "2026-10-23T15:34:37.558464+00:00",
+    "source": "Direct Themes next-slice instruction; Editor revision288",
+    "activeOwnerActivity": "Finalize Dewdrop first pass after actual TLS stop; latest owner commentary preparing local certificate handoff",
+    "nextSlice": "Pantry13 finite independent diagnostic, then Habitat26",
+    "pantryScopeAuthorizedForEditor": true,
+    "actualPantryPublishedReleaseHandoffReceived": false,
+    "pantryCasesExecuted": 0
+  },
+  "lastHumanFollowUpCheck": {
+    "at": "2026-10-23T18:17:16.816493+00:00",
+    "outcome": "DIRECT_HUMAN_P00_P08_CONTINUATION_ROOT_APPROVED_AND_ROUTED",
+    "evidence": {
+      "path": "docs/implementation/niche-themes-2026-10-23/pantry/p00-p08-continuation-allocation.json",
+      "sha256": "e1ab77bf7eb079cf59ac03bd2adee3a0181e06578b9c57e124bf38eda4359e1e"
+    },
+    "newPantryAcceptanceEvidenceCount": 0
+  },
+  "executionPreconditions": {
+    "controller": "Editor sole existing browser/controller; Pantry read-only runtime/source owner",
+    "currentPass": "Root explicitly revised current queue: finish only alreadycommittedCloud/control2; finite actualHabitat variant/query/earlyHI then isolatedMarketplace555 safe slot, PantryP00–P08 follows. f607 source/normalHTTPS/registeredbuyer positives retained; no fresh Pantry receipts yet. No owner browser/data/source action or repeated readiness queries.",
+    "requiredP12Order": "Only after P10 actually executes: preserve additional accepted active250g cart BEFORE P11 edit, then stale rejection and old-order history.",
+    "checkoutBlockedHandling": "Do not create an order through setup/API to start P12. Record case-specific FAIL/BLOCKED/NOT RUN with exact actual missing prerequisite; required rows remain open for qualified-baseline verification."
+  },
+  "actualAttemptedCaseCount": 7,
+  "baselineOnlyCaseCount": 1,
+  "completedAcceptanceCaseCount": 3,
+  "resultCounts": {
+    "PASS": 3,
+    "FAIL": 1,
+    "BLOCKED": 3,
+    "NOT RUN": 6
+  },
+  "sourceResultCounts": {
+    "PASS": 0,
+    "FAIL": 2,
+    "PARTIAL": 1,
+    "NOT_RUN": 10
+  },
+  "acceptanceComplete": false,
+  "firstPassEvidence": {
+    "path": "docs/implementation/niche-themes-2026-10-23/pantry/installed-buyer-lifecycle-first-pass.json",
+    "sha256": "79cc026bb32218ddf66f7366c5801fc9d35b522ac3a78241363a738044bd4434"
+  },
+  "pendingUserActions": [
+    {
+      "id": "EDITOR-SYNTHETIC-SUBSCRIPTION-APPROVAL",
+      "status": "RESOLVED_DIRECT_HUMAN_APPROVAL_REPORTED_EXECUTED_BY_EDITOR",
+      "ownerChatId": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+      "ownerTitle": "Theme Editor — End-to-End",
+      "action": "ONE guarded synthetic local Enterprise subscription insertion",
+      "autoReviewStatus": "AUTO_REVIEW_REJECTED_BEFORE_PROCESS_START",
+      "reason": "Persistent entitlement write requires trusted direct human authorization; assistant coordinator allocation insufficient to reviewer.",
+      "databaseMutationOccurred": true,
+      "existingEditorApprovalRequest": true,
+      "receipt": {
+        "path": "docs/implementation/theme-editor-2026-10-23/evidence/owned-theme-library-precondition-approval-pending.json",
+        "sha256": "1c78bab54a8c03ff6c26db1e3d9ad3d8aaaca6d55660f3f27500572444967791"
+      },
+      "handling": "Editor already completed approved precondition; Pantry performs no entitlement mutation or replay.",
+      "resolvedAt": "2026-10-23T16:03:33.424032+00:00",
+      "resolutionReceipt": {
+        "path": "docs/implementation/theme-editor-2026-10-23/evidence/owned-theme-library-precondition-postcommit-readback.json",
+        "sha256": "ce2a5fdba85033daf29b78b005c729f0a40ceda2f1dfa59ce54e88c12af56846"
+      }
+    },
+    {
+      "id": "EDITOR-REMAINING-SYNTHETIC-CART-APPROVAL",
+      "status": "RESOLVED_DIRECT_HUMAN_APPROVAL_VERIFIED_BY_COORDINATOR",
+      "ownerChatId": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+      "ownerTitle": "Theme Editor — End-to-End",
+      "ownerRequestedScope": "Remaining synthetic cart and local COD tests",
+      "rejectedAction": "Unknown-variant addition",
+      "reason": "Automatic approval review found action outside narrow approved cart transition",
+      "rejectedStepExecuted": false,
+      "evidence": {
+        "path": "docs/implementation/theme-editor-2026-10-23/evidence/pantry-cart-transition-and-restoration.json",
+        "sha256": "7481f396a75573fdae89fe136522f09b01fe20c6af21602656a0f27ae80f5757"
+      },
+      "handling": "Human all-ten synthetic cart/local COD scope confirmed by Themes. Editor sole controller may run remaining cases in allocated queue; Pantry no browser/mutation. Original rejection preserved as historical; OS TLS trust separate.",
+      "resolvedAt": "2026-10-23T17:16:24.184476+00:00",
+      "resolutionReceipt": {
+        "path": "docs/implementation/niche-themes-2026-10-23/pantry/remaining-cart-approval-coordinator-readback.json",
+        "sha256": "5a241acd373b1219b923bf3ce7a021e0e749ff0f5a8cb24213a382914e1791c5"
+      }
+    }
+  ],
+  "resultCountsScope": "Prior9cd audited actual attempts only; no prior PASS transferred to correctedf607. Fresh corrected run has separate13-row NOT RUN matrix until actual Editor receipts arrive.",
+  "waitCursorSessionResetObserved": true,
+  "sourceRepairQueue": {
+    "observedAt": "2026-10-23T16:05:04.605986+00:00",
+    "source": "Themes compact revision6",
+    "reportedSourceChecksPassed": 96,
+    "scope": "Merchant save-origin and variant-rename changes",
+    "state": "CLEARED_FOR_NEXT_CONTROLLED_CANDIDATE_NOT_CURRENT_RUNTIME_REVERIFICATION",
+    "pantryAcceptance": false,
+    "testsRerunByPantry": false
+  },
+  "initialFirstPassCounts": {
+    "PASS": 0,
+    "FAIL": 2,
+    "BLOCKED": 1,
+    "NOT RUN": 10
+  },
+  "scopedReadOnlyWitnesses": [
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/pantry/lentils-post-rejection-canonical-readback.json",
+      "sha256": "37975c8d5dc8e67a9ee7ec6202cacefadd06bbe0d3ad5e9d1e3f98cb11aae177"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/pantry/rice-canonical-data-witness.json",
+      "sha256": "64a62339f59adb9c42310495cc8cd4802c507d54d6ec5c5bb2c3b17bc416aea9"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/pantry/p06-observed-query-canonical-witness.json",
+      "sha256": "c782f70ae48314f3aa0ec1f9205da760210988dc617dfbf96eb1304c95a6a4ae"
+    }
+  ],
+  "pendingQueryWitness": "Supplied250g collection apply witnessed200/exact expected1 UUID. Full P06 search/sort/active-clear/state-preservation evidence still pending.",
+  "temporaryCartTransition": {
+    "authorizedBy": "Themes through direct Editor coordination message",
+    "executor": "Editor sole current UI controller",
+    "baseline": {
+      "activeCarts": 1,
+      "originalLine": "Pink Clay quantity2 unit560 subtotal1120",
+      "orders": 0
+    },
+    "allowedSequence": "Remove own Pink line through normal UI; test Pantry cart; remove Pantry and restore exact original Pink2 through normal UI with server readback.",
+    "state": "EXACT_WHITELISTED_CART_STATE_RESTORED_AND_VERIFIED",
+    "pantryActions": "Read-only data/query witnesses only; no cart mutations or capability access.",
+    "restorationEvidence": {
+      "path": "docs/implementation/niche-themes-2026-10-23/pantry/p07-known-line-and-restoration-witness.json",
+      "sha256": "fb4c9f89a3d7c0b5dc95117c2be67b9a49e84f27f8496aaaa192efadb854fb9b"
+    },
+    "orders": 0,
+    "beforeAfterResultEqualityIndependent": true
+  },
+  "sourceLatestLedger": {
+    "evidence": {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/pantry-browser-diagnostics.json",
+      "sha256": "56393ec86ca0fe52227ef3897dd3ee37c01c8ab28b7a6c76b3e6c40e14f22060"
+    },
+    "counts": {
+      "PASS": 4,
+      "FAIL": 1,
+      "PARTIAL": 3,
+      "NOT_RUN": 5
+    }
+  },
+  "platformOriginSourceRepair": {
+    "status": "ROOT_SOURCE_REVIEWED_INDEPENDENT36PASS_NEXT_CANDIDATE_ONLY",
+    "receipt": {
+      "path": "docs/implementation/niche-themes-2026-10-23/pantry/platform-origin-control-repair/source-release.json",
+      "sha256": "a403a7672972964b72319119232fff7e942dc43524c1bb8347934a96365c6f6a"
+    },
+    "sharedSourceException": "Only existing platform-control-markup.ts and product-origin-filter.test.tsx plus own focused evidence; lease returned for coordinator review",
+    "pantryRuntimeAcceptance": false,
+    "final02Untouched": true,
+    "checksPassed": 36,
+    "coordinatorAdmission": {
+      "path": "docs/implementation/niche-theme-programme/platform-origin-query-source-admission.json",
+      "sha256": "821d9cd4273b1d602bda09014614f8fde8ce56797ccfd9e2b5a64963383df8a2"
+    },
+    "independentChecks": {
+      "path": "docs/implementation/niche-theme-programme/m2-platform-origin-query-independent.tap",
+      "sha256": "cd6a6500b461af5d53b37df29660aeb989c1ba0ac8897cbe95ac496f4eeae4a7",
+      "pass": 36,
+      "fail": 0,
+      "skip": 0
+    },
+    "independentlyReexecutedByPantry": false
+  },
+  "lastEditorStatusCheck": {
+    "at": "2026-10-23T16:42:25.211765+00:00",
+    "cursor": "e0f0d40b-e85e-4204-9d73-cb9a504fd711:61",
+    "status": "CURRENT9CD_CIRCUIT_SLICE_NO_CORRECTED_PANTRY_HANDOFF",
+    "observed": "Editor reports Circuit installed/publicA and normal merchant save still origin-rejected on current fixture. This is not a new Pantry P01 replay.",
+    "merchantSaveFixRuntimeVerified": false,
+    "platformCountryControlRepair": "Released source-only for coordinator review and next controlled candidate",
+    "pantryAcceptanceChanged": false
+  },
+  "checkoutTlsPreparation": {
+    "observedAt": "2026-10-23T17:27:05.928134+00:00",
+    "state": "ACTUAL_NORMAL_BROWSER_HTTPS_FORM_GATE_PASS_NOT_ORDER",
+    "coordinatorCursor": "069f0aa3-8519-4144-ae92-bd6e36722620:116",
+    "coordinatorReport": "Local HTTPS setup complete; macOS certificate verification and hostname-limited SSL login-keychain scope confirmed. Next fresh fixture with reviewed fixes, normal browser checkout and remaining cases.",
+    "editorReport": "Trusted checkout certificate setup complete and macOS verification passed. Browser verification needs rebuilt fixture. Finishing Kindred cart/restoration and corrected-fixture prerequisite; current fixture intact.",
+    "trustActuallyVerifiedByPantry": false,
+    "normalCheckoutProven": true,
+    "pantryRuntimeAcceptance": false,
+    "pantryCertificateOrOSActions": false,
+    "setupReceipt": {
+      "path": "docs/implementation/niche-theme-programme/trusted-checkout-setup-receipt.json",
+      "sha256": "8658d2bf36c28abcd18a8714171530c8e2e811cf34dc2eb2a1e34caf3654b2f4"
+    },
+    "recordedOsVerificationExit": 0,
+    "trustApplied": true,
+    "current9cdRetrofitted": false,
+    "humanStepRemaining": false,
+    "normalCheckoutProofScope": "Delivery form reached only; no order/primarybuyer acceptance",
+    "positiveAudit": {
+      "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-normal-https-form-audit.json",
+      "sha256": "4366825c33af3e8f2b84b206a3a10f8f5f7fec00afe0ff6016bae6752c1aeabb"
+    }
+  },
+  "correctedCandidateCoordinatorPlan": {
+    "receivedAt": "2026-10-23T17:28:36.749660+00:00",
+    "source": "Direct Themes coordination message",
+    "candidateAllocated": true,
+    "current9cdRetained": true,
+    "editorNext": "Finish Kindred safe checkpoint; bounded startup Enterprise precondition patch lease; fresh corrected candidate admission next.",
+    "reportedFutureInclusions": [
+      "a027 platform origin-query repair",
+      "4e167 merchant-save origin guard",
+      "platform preview fixture configuration",
+      "Native391+392 qualified schema",
+      "Preissued manual local TLS leaf"
+    ],
+    "actualNewSourceManifestReceived": true,
+    "native19": "Root admitted19/19 and source lane closed/frozen; not Pantry runtime acceptance",
+    "allRemainingCasesGate": "Normal merchant Save and trusted browser checkout positives on corrected candidate, then all remaining P03/P07unknown/P08 with P01/P02/P06/P09–P12",
+    "ownerRole": "Read-only Pantry audit; Editor sole UI/runner",
+    "tlsHumanActionRemaining": false,
+    "browserPositivePending": true,
+    "noCompetingRuntimeCertsOrApiOrder": true,
+    "latestEditorReport": {
+      "path": "docs/implementation/niche-themes-2026-10-23/pantry/editor-corrected-fixture-copy-gate.json",
+      "sha256": "a26a9c95b4fbeee1de499c20a233e2a015794055a613fd97acd2c328d0d9f104"
+    },
+    "sourceStartupAdmission": {
+      "path": "docs/implementation/niche-theme-programme/editor-enterprise-startup-source-admission.json",
+      "sha256": "fe80b645e9d0a42e02e3163e55818e0f520ec406b31c7f44feef4f7b519da754"
+    },
+    "remainingCopyGate": "CLEARED; admitted corrected copy, single fresh fixture now starting with sequential builds. Await startup and actual normalSave/preview/392search/browserHTTPS positives.",
+    "editorPushesActualReadinessPacket": true,
+    "candidateRoot": "/private/tmp/theme-editor-candidate-20261023-latest392-manualtls01"
+  },
+  "latestDirectEditorReadiness": {
+    "receipt": {
+      "path": "docs/implementation/niche-themes-2026-10-23/pantry/editor-corrected-fixture-copy-gate.json",
+      "sha256": "a26a9c95b4fbeee1de499c20a233e2a015794055a613fd97acd2c328d0d9f104"
+    },
+    "correctedCandidateAllocated": false,
+    "normalBrowserHttpsVerified": false,
+    "normalMerchantSaveVerified": false,
+    "soleControllerPausedForRootCandidate": true
+  },
+  "sourceCopyQuietWindow": {
+    "status": "EXPLICITLY_COPY_RELEASED",
+    "owner": "Themes",
+    "repositoryWritesHeldUntilRelease": true,
+    "ownReportsNowAllowed": true,
+    "productionDomainThemeSources": "FROZEN"
+  },
+  "correctedFixturePreparation": {
+    "status": "ACTUAL_STARTUP_VERIFIED_EDITOR_SOLE_UI_PREFLIGHT_GRANTED",
+    "receipt": {
+      "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-latest392-candidate-readonly-audit.json",
+      "sha256": "0e069999673619d5367977f8d50c23b0302eda72ac8f983cb5d3d7935f432835"
+    },
+    "copyAdmission": {
+      "path": "docs/implementation/niche-theme-programme/editor-latest392-copy-admission.json",
+      "sha256": "d92a292c805bb9f16827f89af9e898481d5bb0db271cc4d2ece6dbff23a7f2dd"
+    },
+    "candidateRoot": "/private/tmp/theme-editor-candidate-20261023-latest392-manualtls01",
+    "sourceManifestSha256": "3875d08aab8f5cc335287f3fa6b31c9dd9c9c940e458e512332429404ccb1203",
+    "dependencyProofSha256": "61e45a69e01e2a7a47cc7dcb7787408609c1067a0e1980252813428229a90ac3",
+    "requiredPinManifestSha256": "7f7b4aaba6f2b585d746abfd43e553d1be8c11aab11f800fb75f32dd7089a2a5",
+    "readOnlyPinsMatched": 25,
+    "sourceMax": 392,
+    "ownerSession": 79090,
+    "newRunIdReceived": true,
+    "actualResourceOrUiHandoffReceived": false,
+    "actualPantryRuntimeAcceptance": false,
+    "newRunId": "f6074d90e894",
+    "startupAdmission": {
+      "path": "docs/implementation/niche-theme-programme/editor-latest392-startup-admission.json",
+      "sha256": "f88fb010e7ded3a924376ab33ef3790468aad786f6f41c0d7bf341016e8cf6ae"
+    },
+    "startupReadback": {
+      "path": "docs/implementation/niche-theme-programme/editor-latest392-startup-readback.json",
+      "sha256": "2aa553010e118cc8e2b8c49590338a5afbd2862496becf758f465737562a94fe"
+    },
+    "startupAudit": {
+      "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-startup-readonly-audit.json",
+      "sha256": "cb743049ed2aa92547c18ec91f8d562018a81d64dfe7896d136826edc196864a"
+    },
+    "editorResourceGrantReceived": true,
+    "pantryCaseAllocationReceived": true
+  },
+  "latestStartupSnapshot": {
+    "at": "2026-10-23T17:44:56.837330+00:00",
+    "editorConfirms": "Corrected copy passed; source392/manual TLS fixture starting, waiting three production apps before normal UI verification.",
+    "rootConfirms": "Three app builds sequential; old fixture preserved; no actual startup readiness/resource handoff yet.",
+    "newPantryAcceptance": false,
+    "normalBrowserCheckoutVerified": false,
+    "runtimeActionsByPantry": false
+  },
+  "prior9cdAuditedCounts": {
+    "PASS": 3,
+    "FAIL": 1,
+    "BLOCKED": 3,
+    "NOT RUN": 6
+  },
+  "correctedRun": {
+    "runId": "f6074d90e894",
+    "candidateRoot": "/private/tmp/theme-editor-candidate-20261023-latest392-manualtls01",
+    "sourceManifestSha256": "3875d08aab8f5cc335287f3fa6b31c9dd9c9c940e458e512332429404ccb1203",
+    "startupAudit": {
+      "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-startup-readonly-audit.json",
+      "sha256": "cb743049ed2aa92547c18ec91f8d562018a81d64dfe7896d136826edc196864a"
+    },
+    "phase": "ALL13_ATTEMPTED_11PASS_2EVIDENCE_BLOCKED_F607_CLOSED_READ_ONLY_MAPPING_TRACE",
+    "editorSoleController": true,
+    "pantryCaseAllocationReceived": true,
+    "freshBaseline": {
+      "products": 17,
+      "collections": 16,
+      "orders": 0,
+      "carts": 0,
+      "themesInstalled": 0,
+      "publishedRelease": null
+    },
+    "resultCounts": {
+      "PASS": 11,
+      "FAIL": 0,
+      "BLOCKED": 2,
+      "NOT RUN": 0
+    },
+    "rows": [
+      {
+        "id": "P00",
+        "required": true,
+        "status": "PASS",
+        "executionEvidence": true,
+        "evidence": [
+          {
+            "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-p00-install-publication-acceptance.json",
+            "sha256": "7ce3196628dde6d529adf51be0cef83e366b0e2e0c4ea8d0e5acd548f13c2868"
+          }
+        ],
+        "reason": "Actual installed2.0 binding/config/bundle witnesses, exact A/B publication recovery and anonymous home/PDP data verified."
+      },
+      {
+        "id": "P01",
+        "required": true,
+        "status": "PASS",
+        "executionEvidence": true,
+        "evidence": [
+          {
+            "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-p01-merchant-facts-acceptance.json",
+            "sha256": "ed1246e42462ce9b981c2e34b100ecfda0fe3246704562d7c93c7039c159f9d9"
+          }
+        ],
+        "reason": "Actual same-ID common-fact save/reload/restore on lentils and rice; zero-net invalid draft/error with exact canonical rice unchanged including version; inventory/price/stock conserved."
+      },
+      {
+        "id": "P02",
+        "required": true,
+        "status": "PASS",
+        "executionEvidence": true,
+        "evidence": [
+          {
+            "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-p02-variant-facts-acceptance.json",
+            "sha256": "20ba98fda58dc10cbb2090aa6691e2c8debfc3d5e9bcd87c56f02aa2c04f4659"
+          }
+        ],
+        "reason": "SameUUID explicit750g enter/clear and normal SKU save/reload/revert preserve all three variant identities and food facts."
+      },
+      {
+        "id": "P03",
+        "required": true,
+        "status": "PASS",
+        "executionEvidence": true,
+        "evidence": [
+          {
+            "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-p03-pack-count-acceptance.json",
+            "sha256": "475d1f87db01928f34ae5e8e053e6c511a308b607cbafcb67866ea85664f1078"
+          }
+        ],
+        "reason": "Required native variant/count/blank/fractional states join actual canonical250g/count2 accepted cart witness."
+      },
+      {
+        "id": "P04",
+        "required": true,
+        "status": "PASS",
+        "executionEvidence": true,
+        "evidence": [
+          {
+            "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-p04-selection-acceptance.json",
+            "sha256": "fdbff94db19d9a4beccbed682fe2830097047149b1b61eb8ecd84688e9eae2f3"
+          }
+        ],
+        "reason": "Actual 500g OOS/label-only unknown/return250 native states and canonical variant facts agree."
+      },
+      {
+        "id": "P05",
+        "required": true,
+        "status": "PASS",
+        "executionEvidence": true,
+        "evidence": [
+          {
+            "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-p05-unvarianted-acceptance.json",
+            "sha256": "12ca16146f6441de4b0f36dc98c401c87411aa0b288c1e69b1522e66623fa46b"
+          }
+        ],
+        "reason": "Actual unvarianted rice1000g/count2/net2000/unit22 and return-to-unselected lentils no-leak states verified."
+      },
+      {
+        "id": "P06",
+        "required": true,
+        "status": "PASS",
+        "executionEvidence": true,
+        "evidence": [
+          {
+            "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-p06-discovery-acceptance.json",
+            "sha256": "749a57575799520a3d8d53a3af84609777cd55fe0e8372a1c8dd222769d7a5c7"
+          }
+        ],
+        "reason": "Actual collections, canonical positive/zero response metadata and settled sort/clear/platform-origin/reload queries agree."
+      },
+      {
+        "id": "P07",
+        "required": true,
+        "status": "PASS",
+        "executionEvidence": true,
+        "evidence": [
+          {
+            "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-p07-cart-acceptance.json",
+            "sha256": "6d40ec1f7a3ee4471ab2d93528b4b4d6a50373425d4612e0f84f5a454a10ae7e"
+          }
+        ],
+        "reason": "Actual known and unknown accepted lines/reload/removal retain correct UUID/count/per-item food snapshots."
+      },
+      {
+        "id": "P08",
+        "required": true,
+        "status": "BLOCKED",
+        "executionEvidence": true,
+        "evidence": [
+          {
+            "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-p08-cart-recovery-failure.json",
+            "sha256": "60ced882bc07ad535530dff562cb556f7001b44aa92431d0ece472d940616396"
+          }
+        ],
+        "reason": "Controlled-client repaired native reconciliation/error/retry/reload verified, but exact stock HTTP code/no-effect receipt is not retained. Original observed FAIL is preserved separately; no full case promotion.",
+        "dependencyIds": [
+          "DEP-F607-SHARED-CART-RECOVERY"
+        ],
+        "failureId": "PANTRY-P08-CART-RECOVERY-F607-01",
+        "owningChatThreadId": "01a164ba-a97f-7d80-9430-57924218664b",
+        "ownerFixReverified": "REPAIRED_UI_COMPONENT_ONLY",
+        "repairedUiComponentAudit": {
+          "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-p08-repaired-ui-audit.json",
+          "sha256": "6535fec29140f6eaf6c8a36ad9f1ccd1114291970ec582f6bfdfe6fe618c7689"
+        },
+        "priorObservedFailureStatus": "FAIL",
+        "requiredEvidenceGap": "Actual cart-replace server HTTP/code and matching no-effect proof."
+      },
+      {
+        "id": "P09",
+        "required": true,
+        "status": "PASS",
+        "executionEvidence": true,
+        "evidence": [
+          {
+            "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-p09-normal-cod-acceptance.json",
+            "sha256": "a6744d839d3fb2e5140acd7b4627341fae2f10ff1d2ba3428fd9ef19db1cd3ec"
+          }
+        ],
+        "reason": "Actual hosted normal COD order10001 persisted2packs/180×2/360+20=380; exact captured retry same order/all22protected fingerprints equal.",
+        "dependencyIds": [],
+        "resolvedEnvironmentDependencyIds": [
+          "DEP-F607-BROWSER-TLS-01"
+        ]
+      },
+      {
+        "id": "P10",
+        "required": true,
+        "status": "PASS",
+        "executionEvidence": true,
+        "evidence": [
+          {
+            "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-p10-history-acceptance.json",
+            "sha256": "868137fa0b32dd63c8307f91bfc6a598a44bb0aeb72c93edada427211f524a96"
+          }
+        ],
+        "reason": "Actual both-history/reload and valid-own-order/missing-order UI denial verified.",
+        "dependencyIds": [
+          "DEP-F607-PANTRY-PRIMARY-UI-ORDER"
+        ],
+        "resolvedEnvironmentDependencyIds": [
+          "DEP-F607-BROWSER-TLS-01"
+        ]
+      },
+      {
+        "id": "P11",
+        "required": true,
+        "status": "PASS",
+        "executionEvidence": true,
+        "evidence": [
+          {
+            "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-p11-later-edit-acceptance.json",
+            "sha256": "b5c83785dd7cd3eae20f7f8fccadf4dfe87c72744075148c33a5039e35f31320"
+          }
+        ],
+        "reason": "SameUUID actual300g/240 save/currentPDP, persisted unchanged-stock omission and conserved inventory/immutable old order/both histories verified.",
+        "dependencyIds": [
+          "DEP-F607-PANTRY-PRIMARY-UI-ORDER",
+          "DEP-F607-PRE-P11-ACCEPTED-ACTIVE-250G-CART",
+          "DEP-SHARED-MERCHANT-LATER-EDIT-STOCK-OMISSION"
+        ],
+        "resolvedEnvironmentDependencyIds": [
+          "DEP-F607-BROWSER-TLS-01"
+        ]
+      },
+      {
+        "id": "P12",
+        "required": true,
+        "status": "BLOCKED",
+        "executionEvidence": true,
+        "evidence": [
+          {
+            "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-p12-preedit-cart-positive-control.json",
+            "sha256": "ef4cb784eefd0cfd193cc6a0ac971c996006ee1aeccd182e83fe6c0544746875"
+          },
+          {
+            "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-p12-stale-attempt-blocked-audit.json",
+            "sha256": "48b35348abf76a3e43365a6d8b2e1e867f704231e43d2c978dd398f5c4211646"
+          }
+        ],
+        "reason": "Actual stale UI rejected/no extra orders or inventory effect; original cart/order snapshots conserved and current300g reaccepted. Exact surfaced server mapping not captured; fixture ended before further verification.",
+        "dependencyIds": [
+          "DEP-F607-PANTRY-PRIMARY-UI-ORDER",
+          "DEP-F607-PRE-P11-ACCEPTED-ACTIVE-250G-CART",
+          "DEP-SHARED-MERCHANT-LATER-EDIT-STOCK-OMISSION"
+        ],
+        "resolvedEnvironmentDependencyIds": [
+          "DEP-F607-BROWSER-TLS-01"
+        ]
+      }
+    ],
+    "acceptanceComplete": false,
+    "latestPreflightReport": {
+      "observedAt": "2026-10-23T18:00:06.214291+00:00",
+      "normalMerchantSignIn": "PASS_OWNER_REPORTED",
+      "normalProductSaveAndReload": "PASS_BOUNDED_EVIDENCE_AUDITED",
+      "normalBrowserCheckout": "NOT_YET_PROVEN",
+      "pantryFullCaseAcceptance": false
+    },
+    "commonPreflight": {
+      "normalOwnerLogin": "PASS_OWNER_REPORTED",
+      "browser1440x1000": "PASS_SURFACE_ONLY",
+      "normalMerchantOriginSaveReloadRestore": "PASS_BOUNDED_SHARED_SMOKE",
+      "normalMerchantSmokeAudit": {
+        "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-merchant-origin-smoke-audit.json",
+        "sha256": "be7c8dd2e76b371a3de669b15b5e08737ec1f6e41e7a74a09ef1c0bf08e9620c"
+      },
+      "fullPantryP01Acceptance": true,
+      "metadataNormalizationConcern": {
+        "status": "ACTUAL_SHARED_FORM_DEFECT_CONFIRMED_BY_THEMES_BOUNDED_OWNER_REPAIR_ASSIGNED",
+        "observed": "Normal save of a non-apparel product adds an empty apparel field group.",
+        "runtimeEvidence": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-merchant-save-smoke.json",
+        "pantryAudit": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-merchant-origin-smoke-audit.json",
+        "coordinatorInformedByPantry": true,
+        "coordinatorSourceRepairAssigned": true,
+        "fixLiveInF607": false,
+        "pantrySourceEdits": false,
+        "pantryP01CaseExecuted": true
+      },
+      "preview391Groups": "NOT_YET_PROVEN",
+      "sameUuidRename": "NOT_YET_PROVEN",
+      "real392Search": "NOT_YET_PROVEN",
+      "normalTrustedCheckoutBrowser": {
+        "status": "PASS_ACTUAL_NORMAL_HTTPS_FORM_NO_WARNING_BYPASS_NO_ORDER",
+        "audit": {
+          "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-normal-https-form-audit.json",
+          "sha256": "4366825c33af3e8f2b84b206a3a10f8f5f7fec00afe0ff6016bae6752c1aeabb"
+        },
+        "hostedFormReached": true,
+        "orderConfirmed": false,
+        "fullPantryP09Accepted": false
+      },
+      "normalParentPreview": {
+        "status": "PASS_OWNER_REPORTED_RENDER_AND_PARENT_SECTION_SELECTION",
+        "source": "Editor and Themes compact snapshots",
+        "savedEvidenceIndependentlyAuditedByPantry": false
+      },
+      "shared391HeaderFooter": {
+        "status": "UNAUTH_PUBLIC200_MARKERS_VERIFIED_NATIVE_PERSISTENCE_OWNER_REPORTED",
+        "receipt": {
+          "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-391-dewdrop-published-readback.json",
+          "sha256": "8bb4d44ccd30eca679b6d69b84eedeeea15976d3443f1e89cb966178f130b23c"
+        },
+        "notPantryP00": true
+      },
+      "normalBuyerRegistrationAndBoundCheckoutInit": {
+        "status": "POSITIVE_COMMON_COMPONENT_AUDITED_NO_ORDER_WHOLE_A01_PENDING",
+        "audit": {
+          "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-buyer-checkout-binding-audit.json",
+          "sha256": "f55c31fc7915f9df940aa46af946b5a9594bbb7c547e3e89af564bcb9be1987e"
+        },
+        "emailVerified": false,
+        "orderCreated": false
+      },
+      "sharedCartRecovery": {
+        "id": "DEP-F607-SHARED-CART-RECOVERY",
+        "status": "ACTUAL_PANTRY_AND_HABITAT_FAILURE_OWNER_REPAIR_REVERIFY_REQUIRED",
+        "audit": {
+          "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-shared-cart-recovery-audit.json",
+          "sha256": "ae1e4efa2840cf11728604a6c3e226c7d75dbc02dd54f33364d3dfd499624ff5"
+        },
+        "affectsPantryRows": [
+          "P08"
+        ],
+        "fixLiveInF607": false,
+        "actualPantryP08Executed": true,
+        "owner": "Circuit — Electronics Theme",
+        "ownerThreadId": "01a164ba-a97f-7d80-9430-57924218664b",
+        "routing": "New actual Pantry P08 failure/reproduction/source and candidate hashes routed to Circuit existing owner and Themes; Editor received acceptance audit. No overlapping patch or browser.",
+        "ownerDiagnosis": "Owner reports optimistic lb_cart5 retained while accepted lb_cart_server4 drives header/total; queue result discarded and remount does not reconcile. Diagnosis not independently reexecuted by Pantry.",
+        "sourceLeaseStatus": "ROOT_ADMITTED_COMBINED_SOURCE164_PASS_CONTROLLED_COPY_BUILDING_BROWSER_RECHECK_PENDING",
+        "pantryFailure": {
+          "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-p08-cart-recovery-failure.json",
+          "sha256": "60ced882bc07ad535530dff562cb556f7001b44aa92431d0ece472d940616396"
+        },
+        "pantryFailureId": "PANTRY-P08-CART-RECOVERY-F607-01",
+        "latestOwnerSourceCheckReport": {
+          "source": "Circuit snapshot25 and saved release47366e5d",
+          "targetedCartCasesPassed": 61,
+          "newRecoveryCases": 14,
+          "typeAndLint": "Owner recordednoEmit0; saved lint1inheritederror/23warnings unchanged; newtest0diagnostics. No reexecution by Pantry.",
+          "installedPantryFixReverified": false,
+          "notAcceptanceCredit": true
+        },
+        "ownerReleaseReadOnlyAudit": {
+          "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-cart-owner-source-release-audit.json",
+          "sha256": "822db30fe16d6a95ab9f34bfae5a1e9ebe018e39cc5a90a13b683d4e529b195e"
+        },
+        "rootFinalSourceAdmission": {
+          "path": "docs/implementation/niche-theme-programme/cart-url-facts-order-source-final-admission.json",
+          "sha256": "a7c033be9c74587297a4031fcc804fcf2de678b2cc9def3ef0b0c0e7f1440b91"
+        },
+        "fixLiveInControlledRecoveryClient": true,
+        "originalF607ClientFixLive": false,
+        "installedPantryFixReverified": "REPAIRED_UI_VERIFIED_REQUIRED_SERVER_STATUS_AND_NO_EFFECT_RECEIPTS_PENDING",
+        "repairedNativeUiAudit": {
+          "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-p08-repaired-ui-audit.json",
+          "sha256": "6535fec29140f6eaf6c8a36ad9f1ccd1114291970ec582f6bfdfe6fe618c7689"
+        }
+      },
+      "fullPantryP01AcceptanceAudit": {
+        "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-p01-merchant-facts-acceptance.json",
+        "sha256": "ed1246e42462ce9b981c2e34b100ecfda0fe3246704562d7c93c7039c159f9d9"
+      },
+      "merchantLaterEditStockOmission": {
+        "status": "ACTUAL_PANTRY_CANONICAL_MUTATION_OMITS_STOCK_AND_INVENTORY_CONSERVED_VERIFIED",
+        "sourceFinding": {
+          "path": "docs/implementation/niche-themes-2026-10-23/habitat/later-edit-stock-omission-source-finding.json",
+          "sha256": "71df9549c13c4c432b5212dd3bada2145052b573cc58a6687870e3a999bbea5d"
+        },
+        "candidate": "/private/tmp/theme-editor-merchant-axis-20261024-01",
+        "affectedPantryRows": [
+          "P11",
+          "P12"
+        ],
+        "ownerReportedFinding": "Current edit serializer includes unchanged product/variant stock even for metadata edits. Editor holds later catalog edit pending existing canonical shared-form fix.",
+        "inventoryResetObserved": false,
+        "actualPantryP11Attempted": false,
+        "rootAndEditorAlreadyNotifiedByFindingOwner": true,
+        "pantrySourceChanges": false,
+        "noRequestInterceptionOrDirectApiSubstitute": true,
+        "latestOwnerProgress": "Root snapshot472 reports actual Habitat later edit saved without stock reset; actual saved-command and stale-checkout receipt checks still in progress. No Pantry P11 case acceptance transferred.",
+        "rootSourceAdmission": {
+          "path": "docs/implementation/niche-theme-programme/merchant-stock-intent-source-admission.json",
+          "sha256": "67492c19205e43aaab4914875640778b699ed3956ce3121aa68e9e4df8dd05b4"
+        },
+        "pantryP11Acceptance": {
+          "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-p11-later-edit-acceptance.json",
+          "sha256": "b5c83785dd7cd3eae20f7f8fccadf4dfe87c72744075148c33a5039e35f31320"
+        }
+      },
+      "normalCodOrderAndHistoryInOtherTheme": {
+        "status": "OWNER_REPORTED_ACTUAL_HABITAT_NORMAL_COD_RETRY_BOTH_HISTORIES_SEPARATE_ACTIVE_CART",
+        "source": "Editor snapshot556 and Themes snapshot410",
+        "pantryOrderAcceptance": false,
+        "pantryP09P12StatusAdvanced": false,
+        "savedOrderEvidenceIndependentlyAuditedByPantry": false
+      }
+    },
+    "commonTlsDependency": {
+      "id": "DEP-F607-BROWSER-TLS-01",
+      "status": "RESOLVED_BY_ACTUAL_NORMAL_BROWSER_HTTPS_FORM_POSITIVE",
+      "audit": {
+        "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-browser-tls-failure-audit.json",
+        "sha256": "ea29533ec67f22410e537174cf02d1dc33b89533d1e8fc53639c94546867d4aa"
+      },
+      "affectedRows": [
+        "P09",
+        "P10",
+        "P11",
+        "P12"
+      ],
+      "normalBrowserPositive": true,
+      "codeCorrection": {
+        "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-browser-tls-code-correction.json",
+        "sha256": "5b59113ee02a529e11858e8eab12cf4482cd026fd7b9ff5c2c0e3e7c581eda45"
+      },
+      "ownerPriorToolObservation": {
+        "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-normal-checkout-tls-failure-observation.json",
+        "sha256": "ea560dd330742676dd77ae7e40cdfdd5dd84ad299e532d504225cd1543f59980"
+      },
+      "positiveAudit": {
+        "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-normal-https-form-audit.json",
+        "sha256": "4366825c33af3e8f2b84b206a3a10f8f5f7fec00afe0ff6016bae6752c1aeabb"
+      },
+      "positiveAttemptOrderConfirmed": false,
+      "ordersAtFailureAudit": 0,
+      "afterPositiveOrderDatabaseReexecutedByPantry": false
+    },
+    "independentSliceRequest": {
+      "rows": [
+        "P00",
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05",
+        "P06",
+        "P07",
+        "P08"
+      ],
+      "status": "ROOT_APPROVED_QUEUE_EXPLICITLY_CHANGED_PANTRY_FOLLOWS_FINITE_HABITAT_SAFE_MARKETPLACE_SLOT",
+      "reason": "Human-directed and Root-approved next Editor PantryP00–P08 slice after current safe checkpoint. Normal HTTPS form now passes; actual buyer/order and P12 sequence remain separate required evidence.",
+      "editorSoleController": true,
+      "activePantryCaseHandoffReceived": true,
+      "actualPantryEvidenceReceived": true,
+      "approvalReceipt": {
+        "path": "docs/implementation/niche-themes-2026-10-23/pantry/p00-p08-continuation-allocation.json",
+        "sha256": "e1ab77bf7eb079cf59ac03bd2adee3a0181e06578b9c57e124bf38eda4359e1e"
+      },
+      "activeExecutionStarted": true,
+      "queueUpdate": {
+        "path": "docs/implementation/niche-themes-2026-10-23/pantry/p00-p08-root-queue-change.json",
+        "sha256": "40bcc95a4219830604b0290818114be5a9b9a68c29ab6892e53d5e92f6ea2861"
+      }
+    },
+    "lastDirectEditorMessage": {
+      "at": "2026-10-23T18:13:48.965380+00:00",
+      "status": "Independent cases continue; Pantry13 queued at Root priority, no owner browser lease. Will push actualP00–P08 evidence when executed. P09–P12 unaccepted.",
+      "tlsPrecision": "Exact fresh code unrecoverable; old code label withdrawn; existing observed result transcribed without rawURL/error or retry.",
+      "cartAuditAgreed": true
+    },
+    "activePantrySliceStarted": false,
+    "continuationAllocation": {
+      "path": "docs/implementation/niche-themes-2026-10-23/pantry/p00-p08-continuation-allocation.json",
+      "sha256": "e1ab77bf7eb079cf59ac03bd2adee3a0181e06578b9c57e124bf38eda4359e1e"
+    },
+    "orderChainPrerequisites": {
+      "primaryNormalBuyerRegistration": "POSITIVE_NORMAL_BUYER_A_REGISTERED_RELOAD_AND_BUYER_BOUND_CHECKOUT_AUDITED",
+      "actualPantryUiPrimaryOrder": "PASS_NORMAL_COD_ORDER10001",
+      "receiptAndHistory": "PASS_NORMAL_BUYER_AND_MERCHANT_HISTORIES_RELOAD_MISSING_DENIAL",
+      "extraAcceptedActive250gCartBeforeP11": "PASS_DISTINCT_ACCEPTED_ACTIVE_CART_BEFORE_REAL_EDIT",
+      "P12StaleCartRejectionAndOriginalHistory": "ACTUAL_REJECTION_AND_NO_EFFECT_COMPONENTS_VERIFIED_EXACT_MAPPING_BLOCKED",
+      "normalBuyerBoundCheckoutInitAudit": {
+        "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-buyer-checkout-binding-audit.json",
+        "sha256": "f55c31fc7915f9df940aa46af946b5a9594bbb7c547e3e89af564bcb9be1987e"
+      },
+      "setupOrderAcceptanceForbidden": true,
+      "p07CartWasRemovedWhenRestoringBaseline": true,
+      "laterRealEdit": "PASS_SAME_UUID_300G_240_MUTATION_STOCK_OMITTED_OLD_HISTORY_IMMUTABLE"
+    },
+    "latestControllerReport": {
+      "observedAt": "2026-10-23T21:07:44.712386+00:00",
+      "registeredBuyerBoundCheckout": "PASS_COMMON_COMPONENT_WITH_GUARDED_SITE_CART_BUYER_EPOCH_BINDING",
+      "orderConfirmed": true,
+      "ordersAtGuardedReadback": 2,
+      "currentControllerWork": "Root confirms runner timed out/cleaned database and all original/supplemental processes/leases closed. Final Pink baseline not restored. Source-only original mapping trace explicitly requested; next genuinely fresh fixture belongs Root/Editor with new bindings.",
+      "activePantrySliceStarted": true,
+      "P12StaleResult": "ACTUAL_GENERIC_REJECTION_NO_EFFECT_VERIFIED_EXACT_MAPPING_BLOCKED",
+      "lastCompactSnapshotAt": "2026-10-24T00:34:14.818565+00:00",
+      "pantryOrderNumber": "ORD-20261023-10001"
+    },
+    "currentQueueAllocation": {
+      "path": "docs/implementation/niche-themes-2026-10-23/pantry/p00-p08-root-queue-change.json",
+      "sha256": "40bcc95a4219830604b0290818114be5a9b9a68c29ab6892e53d5e92f6ea2861"
+    },
+    "queueGateIsolation": {
+      "pantryContinuationApproved": true,
+      "marketplace555SignInApprovalIsPantryPrerequisite": false,
+      "coordinatorInformed": true,
+      "source": "Heartbeat303 Root pending555 sign-in; Editor308 Habitat active",
+      "currentPantryCaseEvidenceReceived": false,
+      "marketplace555ApprovalStatus": "ROOT_CONFIRMS_DIRECT_HUMAN_PRECISE_SYNTHETIC_SIGNIN_APPROVED",
+      "marketplace555ApprovalReference": "call_bf8d64c8f1654c76a882f6b0081ce091",
+      "currentRootQueue": "One finite isolated555Add flow then immediate f607 independentHabitat/Pantry; no Pantry dependency on Marketplace success.",
+      "noFurtherReadinessQueries": true
+    },
+    "relatedSharedFormOwnerStatus": {
+      "observedAt": "2026-10-23T19:07:56.487520+00:00",
+      "owner": "Marginalia",
+      "scope": "Actually reproduced first-new-axis form guard",
+      "state": "Owner bounded repair in progress; Habitat-dependent rows remain blocked, independent rows proceed.",
+      "pantrySourceEdits": false,
+      "runtimeFixClaimed": false
+    },
+    "p06OpenEvidenceConcern": {
+      "status": "RESOLVED_FULL_ACTUAL_P06_ACCEPTED",
+      "queryPage": "2",
+      "querySort": "price-asc",
+      "pairedNativeAxSort": "Name",
+      "expectedSortApplyPageReset": "1",
+      "receipt": {
+        "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-P06-sort-apply-query.json",
+        "sha256": "ce2f2d84d14d591b1ef1d5991dbbeeab9c2f86a75df7490ef57c602cf7262541"
+      },
+      "limits": "Early pre-navigation receipt superseded by settled actual navigation addendum. No product page-reset failure inferred. Full P06 still requires remaining named-collection, metadata and platform-origin evidence.",
+      "settledActualSort": "name",
+      "settledActualPage": "omitted_default1",
+      "audit": {
+        "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-p06-query-clear-audit.json",
+        "sha256": "e3768b1980a86f26e736a44a8457c90f5686ef47f7fcccd81e3d0f31fc352fb8"
+      },
+      "productDefectInferred": false
+    },
+    "currentAcceptanceScope": {
+      "runId": "f6074d90e894",
+      "wholeCaseResults": {
+        "PASS": 11,
+        "FAIL": 0,
+        "BLOCKED": 2,
+        "NOT RUN": 0
+      },
+      "passedRows": [
+        "P00",
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05",
+        "P06",
+        "P07",
+        "P09",
+        "P10",
+        "P11"
+      ],
+      "blockedRows": [
+        "P08",
+        "P12"
+      ],
+      "all13Attempted": true,
+      "fixtureLive": false,
+      "prior9cdTopLevelRowsAndCountsAreHistorical": true
+    },
+    "ownerFinalFiniteSlicePacket": {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-pantry-browser-diagnostics.json",
+      "sha256": "94323a82527e497b0821af11f39321316fa08d62e40d64e5746324abb24ee569"
+    },
+    "coordinatorFiniteCheckpointConfirmation": {
+      "receivedAt": "2026-10-23T19:57:29.561148+00:00",
+      "source": "Direct Themes message",
+      "actualExecutorCounts": {
+        "PASS": 8,
+        "FAIL": 1,
+        "NOT RUN": 4
+      },
+      "independentPantryAuditCounts": {
+        "PASS": 8,
+        "FAIL": 1,
+        "BLOCKED": 0,
+        "NOT RUN": 4
+      },
+      "sourceHashAndCandidateProvidedToOwner": true,
+      "remaining": "P09–P12 actual normal order, distinct accepted pre-P11 cart and histories remain mandatory; Editor now full Habitat4-variant cohort under controlled merchant54183 repair."
+    },
+    "recoveryCandidate": {
+      "status": "CLOSED_ORIGINAL_RUN_TIMEOUT_DATABASE_REMOVED",
+      "candidateRoot": "/private/tmp/theme-editor-recovery-20261024-01",
+      "databaseRun": "f6074d90e894",
+      "sourceProofSha256": "702b3a632462cff507993e80b58171fb8d0c246c2913de643bfbe4cf3438522f",
+      "readOnlyAudit": {
+        "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-recovery-copy-readonly-audit.json",
+        "sha256": "a30d2502e15469873d2d409fe86f4642fcf8c355796f2446a4237b433b1cf8f5"
+      },
+      "copyAdmission": {
+        "path": "docs/implementation/niche-theme-programme/supplemental-recovery-copy-admission.json",
+        "sha256": "ca83d7fa9a5c1c4d163012efb15005e59866aa4022eb38d2199c772121363345"
+      },
+      "cartSourceAdmission": {
+        "path": "docs/implementation/niche-theme-programme/cart-url-facts-order-source-final-admission.json",
+        "sha256": "a7c033be9c74587297a4031fcc804fcf2de678b2cc9def3ef0b0c0e7f1440b91"
+      },
+      "merchantStockSourceAdmission": {
+        "path": "docs/implementation/niche-theme-programme/merchant-stock-intent-source-admission.json",
+        "sha256": "67492c19205e43aaab4914875640778b699ed3956ce3121aa68e9e4df8dd05b4"
+      },
+      "independentlyCheckedSourceDeltas": 19,
+      "runtimeReadyClaimedByPantry": false,
+      "pantryCaseCredit": 0,
+      "editorSoleController": true,
+      "runtimeAdmission": {
+        "path": "docs/implementation/niche-theme-programme/supplemental-recovery-runtime-admission.json",
+        "sha256": "c75a1b41d6c0b76ae840fc636cdbee421624d84d9b057948037c077ed1b630f2"
+      },
+      "runtimeReadOnlyAudit": {
+        "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-recovery-runtime-readonly-audit.json",
+        "sha256": "b9d5cebf02354b2556cb538c3a0949c08bc021b5740caa995c2dc65343611094"
+      },
+      "explicitSoleEditorRuntimeHandoffReceived": true,
+      "runtimeReadinessBasis": "Historical startup readiness only; explicit Root closure supersedes it."
+    },
+    "resourceState": {
+      "status": "CLOSED_TIMEOUT_FULL_OWNED_CLEANUP_NO_REUSE",
+      "source": "Explicit Themes lifecycle shutdown message",
+      "reportedResultCode": 124,
+      "reportedTimedOut": true,
+      "reportedSuiteSeconds": 24452.7,
+      "reportedCleanupEmptyNoFailuresNoReaping": true,
+      "allBrowserNetworkDataLeasesClosed": true,
+      "oldCartOrderBindingsLive": false,
+      "oldCredentialsReusable": false,
+      "finalTwoPinkBaselineRestored": false,
+      "newFixtureAllocationReceived": false
+    },
+    "readOnlyErrorMappingTrace": {
+      "status": "DIAGNOSIS_COMPLETE_HANDOFF_TO_ROOT_NO_PRODUCTION_EDITS",
+      "report": {
+        "path": "docs/implementation/niche-themes-2026-10-23/pantry/f607-stock-stale-error-mapping-source-trace.json",
+        "sha256": "4e1c0f3910d1ced63f0b78ae6a755294f9619bedaf32f6ef79564404682c1e41"
+      },
+      "bffSafeMappingMissing": "CHECKOUT_PRODUCT_CHANGED",
+      "gatewayAlreadyMapsCartFactErrors409": true,
+      "cartReplaceSourceCode": "INSUFFICIENT_INVENTORY",
+      "actualLiveCodesReconstructed": false,
+      "proposedProductionPaths": [
+        "apps/commerce/web/src/app/api/checkout/[cartId]/[step]/route.ts"
+      ],
+      "proposedTestPaths": [
+        "apps/commerce/web/src/app/api/checkout/route.test.ts"
+      ],
+      "handoff": "Exact original source chain/hash evidence and smallest existing BFF route/test proposal sent to Themes and Editor; no production edits, requests or tests."
+    },
+    "nextWork": "Await Root source admission and fresh sole Editor-owned fixture with new normal auth/bindings. Audit all13, retaining exact failed-request metadata for P08/P12; source-only repair does not alter historical results.",
+    "checkoutProductChangedSourceRelease": {
+      "path": "docs/implementation/niche-themes-2026-10-23/pantry/checkout-product-changed-source-release/source-release.json",
+      "sha256": "9626c5be898b01792bf92c7d51d83c0808833db25e58255d14d24da2238596e8"
+    },
+    "checkoutProductChangedSourceAdmission": {
+      "path": "docs/implementation/niche-theme-programme/checkout-product-changed-source-admission.json",
+      "sha256": "2d1d7bcbfbdca43c8fdc0b90749bda37e4289f126f1a66d3bd8ed98c282c1c8a"
+    }
+  },
+  "checkoutProductChangedSourceRelease": {
+    "path": "docs/implementation/niche-themes-2026-10-23/pantry/checkout-product-changed-source-release/source-release.json",
+    "sha256": "9626c5be898b01792bf92c7d51d83c0808833db25e58255d14d24da2238596e8"
+  },
+  "checkoutProductChangedSourceAdmission": {
+    "path": "docs/implementation/niche-theme-programme/checkout-product-changed-source-admission.json",
+    "sha256": "2d1d7bcbfbdca43c8fdc0b90749bda37e4289f126f1a66d3bd8ed98c282c1c8a"
+  },
+  "nextRun": {
+    "runId": "936e5f577646",
+    "status": "P00_P08_PASS_P09_NORMAL_CHECKOUT_FAIL_DOWNSTREAM_P10_P12_NOT_RUN_ROOT_OWNER_REPAIR_PENDING",
+    "runtimeAdmission": {
+      "path": "docs/implementation/niche-theme-programme/editor-stable392-02-runtime-admission.json",
+      "sha256": "33b3d8c93eb9a63a7833ed4ae9a15faedde06a6ff44706d862cce773cc0cb174"
+    },
+    "sourceProofSha256": "ca4eb60667972e4a8c8ac61a78a0303fcdaca10b1d9189e9f5675864f689fe6a",
+    "queuePosition": 2,
+    "predecessor": "Sole Editor Dewdrop full30 first",
+    "soleControllerChatId": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+    "resourceLeaseToPantry": false,
+    "actualNamedPantrySliceReceived": true,
+    "browserNetworkDataActionsByPantry": false,
+    "sourceAuditOrTestsRerunByPantry": false,
+    "sourceFreeze": "RETAINED",
+    "resultCounts": {
+      "PASS": 9,
+      "FAIL": 1,
+      "BLOCKED": 0,
+      "NOT RUN": 3
+    },
+    "resultScope": "Actual current936 finite checkpoint: P00-P08 PASS, P09 FAIL after first entry+one permitted recovery, P10-P12 NOT RUN due unmet order/history dependency. All13 classified; acceptance incomplete and required owner repair/reverification still pending.",
+    "rows": {
+      "P00": {
+        "status": "PASS",
+        "audit": {
+          "path": "docs/implementation/niche-themes-2026-10-23/pantry/fresh936-p00-install-publication-acceptance.json",
+          "sha256": "f6917c8bd0b3715a2768581fa6ed67ef2befd4515865e7c03ec77efb7bd8d5bf"
+        }
+      },
+      "P01": {
+        "status": "PASS",
+        "audit": {
+          "path": "docs/implementation/niche-themes-2026-10-23/pantry/fresh936-p01-merchant-facts-acceptance.json",
+          "sha256": "a7363d92cd852cff149e062ad4bf072f11396d0cd32c2e5642c35f5f3217ee88"
+        }
+      },
+      "P02": {
+        "status": "PASS",
+        "audit": {
+          "path": "docs/implementation/niche-themes-2026-10-23/pantry/fresh936-p02-p08-checkpoint-acceptance.json",
+          "sha256": "9fbd71161d81f29069edf583feeb0207159bdb37e37f1c44553a4232d78980fa",
+          "case": "P02"
+        }
+      },
+      "P03": {
+        "status": "PASS",
+        "audit": {
+          "path": "docs/implementation/niche-themes-2026-10-23/pantry/fresh936-p02-p08-checkpoint-acceptance.json",
+          "sha256": "9fbd71161d81f29069edf583feeb0207159bdb37e37f1c44553a4232d78980fa",
+          "case": "P03"
+        }
+      },
+      "P04": {
+        "status": "PASS",
+        "audit": {
+          "path": "docs/implementation/niche-themes-2026-10-23/pantry/fresh936-p02-p08-checkpoint-acceptance.json",
+          "sha256": "9fbd71161d81f29069edf583feeb0207159bdb37e37f1c44553a4232d78980fa",
+          "case": "P04"
+        }
+      },
+      "P05": {
+        "status": "PASS",
+        "audit": {
+          "path": "docs/implementation/niche-themes-2026-10-23/pantry/fresh936-p02-p08-checkpoint-acceptance.json",
+          "sha256": "9fbd71161d81f29069edf583feeb0207159bdb37e37f1c44553a4232d78980fa",
+          "case": "P05"
+        }
+      },
+      "P06": {
+        "status": "PASS",
+        "audit": {
+          "path": "docs/implementation/niche-themes-2026-10-23/pantry/fresh936-p02-p08-checkpoint-acceptance.json",
+          "sha256": "9fbd71161d81f29069edf583feeb0207159bdb37e37f1c44553a4232d78980fa",
+          "case": "P06"
+        }
+      },
+      "P07": {
+        "status": "PASS",
+        "audit": {
+          "path": "docs/implementation/niche-themes-2026-10-23/pantry/fresh936-p02-p08-checkpoint-acceptance.json",
+          "sha256": "9fbd71161d81f29069edf583feeb0207159bdb37e37f1c44553a4232d78980fa",
+          "case": "P07"
+        }
+      },
+      "P08": {
+        "status": "PASS",
+        "audit": {
+          "path": "docs/implementation/niche-themes-2026-10-23/pantry/fresh936-p02-p08-checkpoint-acceptance.json",
+          "sha256": "9fbd71161d81f29069edf583feeb0207159bdb37e37f1c44553a4232d78980fa",
+          "case": "P08"
+        }
+      },
+      "P09": {
+        "status": "FAIL",
+        "audit": {
+          "path": "docs/implementation/niche-themes-2026-10-23/pantry/fresh936-p09-normal-checkout-failure-audit.json",
+          "sha256": "42d7d934a369903acf6693d749aae9bfef7813e1703a01728f989684809243a0"
+        },
+        "repairAndReverificationRequired": true
+      },
+      "P10": {
+        "status": "NOT RUN",
+        "reason": "No real Pantry primary order; cannot open its own buyer/merchant saved histories."
+      },
+      "P11": {
+        "status": "NOT RUN",
+        "reason": "Must follow real Pantry order and both histories; later300g edit has not been performed."
+      },
+      "P12": {
+        "status": "NOT RUN",
+        "reason": "Required stale-cart case awaits real Pantry order/histories then distinct accepted pre-edit250gcart and P11; do not substitute Dewdrop or oldf607 evidence."
+      }
+    },
+    "requiredP12": "After normal primary COD order and both immutable histories, normally accept distinct active250g cart before actual P11 300g edit; retain exact stale-confirm HTTP/code/requestId/native guidance/no-order-no-inventory effect/history/current-product reacceptance.",
+    "safeCutoffUtc": "2026-10-24T08:50:00Z",
+    "effectiveExpiryUtcLowerBound": "2026-10-24T08:55:37Z",
+    "effectiveExpiryUtcUpperBound": "2026-10-24T08:57:25Z",
+    "expirySource": "Explicit Root allocation message; no promised Pantry start time.",
+    "oldF607BindingsReusable": false,
+    "newIndispensableSetupPreconditionsDiscovered": false,
+    "executionPacket": {
+      "path": "docs/implementation/niche-themes-2026-10-23/pantry/stable936-single-controller-execution-packet.json",
+      "sha256": "f4925aaed2d9462f231cd8964bd02bc57a446bb2cfc7f49150409caa55ccb1b6"
+    },
+    "packetPreparedAt": "2026-10-24T04:39:14.363579+00:00",
+    "startGate": "Corrected clients Root admitted. Sole Editor performs one normal Dewdrop font retake, then granted finite PantryP00-P12; actual current936 food UUIDs still await guarded readback.",
+    "bindingState": "CURRENT936_FOOD_PRODUCT_VARIANT_COLLECTION_UUIDS_ACTUAL_RATE_ID_AND_ORDER_PENDING",
+    "namedAllocation": {
+      "path": "docs/implementation/niche-themes-2026-10-23/pantry/stable936-named-editor-allocation.json",
+      "sha256": "63ce1ecbc6d748ce2276f82761a722995e8823ac48409c66cf6bdad09f8c856a"
+    },
+    "allocatedRows": [
+      "P00",
+      "P01",
+      "P02",
+      "P03",
+      "P04",
+      "P05",
+      "P06",
+      "P07",
+      "P08",
+      "P09",
+      "P10",
+      "P11",
+      "P12"
+    ],
+    "activePantrySliceStarted": true,
+    "editorSoleUiDataActor": true,
+    "noNeedWaitFor393OrCountFix": true,
+    "correctedClientAdmission": {
+      "path": "docs/implementation/niche-theme-programme/editor-font-axis-runtime-admission-02.json",
+      "sha256": "340d49dce2d88afb051bf8fb6573c01a512b0d59efaee3bebd76fe6d3fba4b5c"
+    },
+    "currentFrontendCandidate": "/private/tmp/theme-editor-font-axis-20261024-01",
+    "currentFrontendSourceProof": {
+      "path": "/private/tmp/theme-editor-font-axis-20261024-01/font-axis-source-proof.json",
+      "sha256": "4da3248de49a0c828f6e1daeaacb35d5c361bf11dc1f3d90bb34eea5c48979a0"
+    },
+    "clientReadinessReceived": true,
+    "normalFontRetakePending": false,
+    "actualBindings": {
+      "siteId": "2f958a36-71bf-4e8f-89fd-d3363f4fe42c",
+      "lentilsId": "c3740e30-8c62-45f8-9ba4-0d21caabafdf",
+      "riceId": "c0919503-a07e-4144-9efe-af7a686b8333",
+      "v250": "56dec2f4-52ea-4210-bd65-334a7c52f0d0",
+      "v500": "d0c3990a-bee6-4705-a0f7-c38cc80a3147",
+      "vUnknown": "bae0b0d9-8314-44cc-bd7b-a429664559fe",
+      "lentilsObservedVersion": 17,
+      "riceObservedVersion": 7,
+      "instanceId": "13d91850-8ea2-4ec6-be97-6c3fc3abe9b6",
+      "packageVersionId": "296fd771-e249-46f7-b997-262e460556c9",
+      "latestObservedReleaseId": "f1a1d5ac-47b6-4084-abc1-50859f8a1355",
+      "productEvidence": [
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-pantry-lifecycle-before-ui.json",
+          "sha256": "fc1a9bfbcf558bcdcb7211a0f86273aef4a1e27c8a285413563e1c4375f34de8"
+        },
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-pantry-lifecycle-unknown-cleared-restored.json",
+          "sha256": "efbcdb938d197bbe6a15f9e5ab4110409219ad3a420366f7df1828270574725d"
+        },
+        {
+          "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-pantry-rice-restored-readback.json",
+          "sha256": "db9f09760682d1cd884ad32017022b720253cbf7a10871bc9ac738d598139c16"
+        }
+      ],
+      "collectionsAndShipping": "Not bound yet: await actual own current936 readback.",
+      "pulsesCollection": "d03ce5fa-ece2-432a-8ead-27d7aed0e75b",
+      "riceCollection": "8b3fed29-cc75-4302-963f-6c44bc55e2a1",
+      "observedHostedQuote": {
+        "subtotal": 360,
+        "delivery": 20,
+        "grandTotal": 380,
+        "orderAcknowledgement": false
+      }
+    },
+    "unfinalizedCaseCount": 0,
+    "inFlightEvidence": {},
+    "activeUiWritesPaused": true,
+    "failureAudit": {
+      "path": "docs/implementation/niche-themes-2026-10-23/pantry/fresh936-p09-normal-checkout-failure-audit.json",
+      "sha256": "42d7d934a369903acf6693d749aae9bfef7813e1703a01728f989684809243a0"
+    },
+    "ownerP08CompletedReceipt": {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-pantry-P08-completed.json",
+      "sha256": "eb4d11a5d853da36acdc839c51af2d12e3630c414e7ae7026408f8e479a46ae1"
+    },
+    "ownerP02ParentIntentReceipt": {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-pantry-P02-canonical-parent-Save-receipts.json",
+      "sha256": "ecfa08d2b7040ea2af5e149b527fb9137331ee13c12828c42f2be4b77f019bf6"
+    },
+    "acceptanceComplete": false,
+    "requiredNextWork": "Root-designated owner source diagnosis/fix qualification and actual admitted normal UI order retry; P09 reverify, then P10, preserve distinct pre-edit250gcart, P11, P12. No extra live writes or source/resource actions by Pantry.",
+    "resumeServingPrecondition": "At actual resumed Pantry slice, observe original Pantry2 accepted serving release/config restored or reapplied normally if another theme has published meanwhile; no new readiness action or fixture by Pantry.",
+    "checkoutOwnerReviewState": {
+      "reportedAt": "2026-10-24T07:41:50.067660+00:00",
+      "source": "Themes compact revision948",
+      "state": "SOURCE_CLEANUP_AND_22_DB_GATE_PENDING",
+      "runtimeAdmitted": false,
+      "actualPantryRetestEvidenceReceived": false
+    }
+  },
+  "cancelledVariantPriceInquiry": {
+    "recordedAt": "2026-10-24T04:23:49.587110+00:00",
+    "status": "CANCELLED_BY_ROOT_NO_SOURCE_BUG_ESTABLISHED_NO_FIX_PROPOSAL",
+    "scope": "Brief read-only schema/canonical writer trace for reported Dewdrop variant-price mismatch; stopped immediately on Root correction.",
+    "rootCorrection": {
+      "epoch23": "Actual normal Save assigned899 to Rose ce1348f3, not selected Pink3f4e08a8. Pink remained560; selected PDP/cart560 consistent. Stale generic UI helper targeted wrong row after label rename.",
+      "epoch27": "Separate later normal corrective Save; Root reports guarded04:21:38 readback actualPink899,parent999,price_overrideNULL. This later epoch is not evidence of the earlier epoch23 cause.",
+      "rootCartProjection": "NULL/empty or mismatched projection cannot prove a cart price."
+    },
+    "sourceBugEstablished": false,
+    "fixProposed": false,
+    "sourceOrDataEdits": false,
+    "runtimeBrowserNetworkDbActions": false,
+    "testsRun": false,
+    "originalOwnerEvidencePreserved": true,
+    "pantryAllocationChanged": false,
+    "standaloneDiagnosisArtifactCreated": false,
+    "interpretation": "Already inspected canonical price/price_override schema and writer alias semantics are source observations only, not a defect finding. No reader precedence or column repair recommended."
+  },
+  "lastCoordinationCheck": {
+    "at": "2026-10-24T11:48:01.737440+00:00",
+    "status": "HUMAN_RESUME_RECONCILED_FRESH_HANDOFF_NOT_READY",
+    "editorSnapshot": "Fresh-admission checklist prepared; awaiting Kindred sealed packet/changed renderer testing. No current Pantry run/resource handoff.",
+    "themesSnapshot": "Catalogue SQL proxy-role correction applied and source inventory re-pinned; independent review/new native grant pending. Scheduled follow-ups remain paused.",
+    "readinessRequestSentToEditor": true,
+    "requiredSequenceAndNoParallelResourcesSentToThemes": true,
+    "currentSourceReceipt": {
+      "path": "docs/implementation/niche-themes-2026-10-23/pantry/completion-2026-10-24/private-control-mapping-resume01/CHECKOUT08_RECONCILIATION.json",
+      "sha256": "f5f6e27956fd90a137fa9f15920cc04977927e698c771e628341360c14213403"
+    },
+    "actualOriginalResults": {
+      "PASS": 9,
+      "FAIL": 1,
+      "BLOCKED": 0,
+      "NOT RUN": 3
+    },
+    "P12": "NOT RUN_REQUIRED",
+    "newPantryFixtureOrBrowserStarted": false,
+    "sharedSourceEditsByPantry": false,
+    "sourceQualificationIsNotAcceptance": true,
+    "privateControlProposal": "docs/implementation/niche-themes-2026-10-23/pantry/completion-2026-10-24/private-control-mapping-resume01/HANDOFF.json",
+    "automationUpdated": false,
+    "originalExpiryAndAttemptBoundRetained": true,
+    "finalSnapshotAt": "2026-10-24T11:49:23.207462+00:00",
+    "finalSnapshot": "Editor still awaits sealed renderer input; Themes inventory reconstruction progressed and bounded native qualification is being prepared. No ready fresh Pantry handoff or new lifecycle receipts observed.",
+    "privateHandoffSentToThemes": true
+  },
+  "currentFreshHandoffState": {
+    "status": "NO_RUNTIME_ACTIONS_PRESERVATION_MAINTENANCE_QUALIFIED_RECOVERY_REQUIRED",
+    "allocatorChatId": "01a164a4-a342-76d3-ab33-65e021ed57db",
+    "soleControllerChatId": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+    "runId": "49ada80bc494",
+    "old936Reusable": false,
+    "noParallelFixtureOrBrowser": true,
+    "themeActualResult": "NOT_RUN"
+  },
+  "currentHumanReadinessCheck": {
+    "at": "2026-10-24T12:02:07.362735+00:00",
+    "receipt": {
+      "path": "docs/implementation/niche-themes-2026-10-23/pantry/p09-p12-current-handoff-check-20261024-01.json",
+      "sha256": "1794c822f311217520f94a9e7089c5453ea1b6cdde656b847f21c06c730bc355"
+    },
+    "status": "NATIVE06_FAILED_REVOKED_TARGET_422_EXPECTED404_NO_FRESH_HANDOFF",
+    "noFreshRuntimeOrBrowserLeaseInOwnerRecord": true,
+    "trustedCheckoutFreshProof": "NOT_RECEIVED",
+    "actualResultsChanged": false,
+    "sharedSourcesFrozen": true,
+    "lastSnapshotAt": "2026-10-24T12:48:01.532825+00:00",
+    "editorAcknowledgement": "Sealed source review handed back; remaining execution dependency is current native+fixture admission including trusted checkout and scoped browser controls. Expired fixture untouched.",
+    "coordinatorInformed": true,
+    "freshHandoffReceived": false,
+    "P09": "FAIL_HISTORICAL_TWO_ATTEMPTS_NOT_REVERIFIED",
+    "P10": "NOT RUN",
+    "P11": "NOT RUN",
+    "P12": "NOT RUN_REQUIRED",
+    "bothOwnersChecked": true,
+    "nativeQualification": "FAIL_PHASE4_REVOKED_TARGET422_VALIDATION_ERROR_EXPECTED404",
+    "ownerFailureRoutedToThemesAndEditor": true,
+    "blockerAudit": "docs/implementation/niche-themes-2026-10-23/pantry/native06-fresh-handoff-blocker-audit.json"
+  },
+  "freshHandoffCheckHistory": [
+    {
+      "at": "2026-10-24T12:10:37.086634+00:00",
+      "trigger": "Direct human renewed request to check both Editor and Themes and finish P09-P12 when ready",
+      "bothOwnersMessaged": true,
+      "editorObservation": "Independent92 source-render checks complete; no browser case promoted and no fresh handoff supplied.",
+      "themesObservation": "Revised catalogue permission model qualified in source; next native run still pending in latest snapshot.",
+      "freshRuntimeBrowserHandoffReceived": false,
+      "freshTrustedCheckoutBrowserProofReceived": false,
+      "caseEvidenceAdded": 0,
+      "actualRemainingResults": {
+        "P09": "FAIL_FROM_PRIOR_TWO_ATTEMPTS_NOT_REVERIFIED",
+        "P10": "NOT RUN",
+        "P11": "NOT RUN",
+        "P12": "NOT RUN_REQUIRED_NO_ACTUAL_STALE_CART_RESULT"
+      },
+      "sharedSourceWrites": 0,
+      "runtimeBrowserDbProviderActions": 0,
+      "old936Reused": false,
+      "attemptBoundPreserved": true,
+      "p12DistinctAcceptedPreEditCartRequired": true
+    }
+  ],
+  "goalTurnAudit": {
+    "at": "2026-10-24T13:07:48.117383+00:00",
+    "previousTurnClassification": "PROGRESS_NATIVE06_NEW_TERMINAL_FAILURE_EVIDENCE_AND_COORDINATOR_RECOVERY",
+    "currentTurnClassification": "NO_PROGRESS_REQUIRED_EXECUTION_OWNER_GRANTS_MISSING",
+    "platformGoalStatusObserved": "active",
+    "authoritativeProgress": "Native06 passes normal-preview200/read-only assertions then fails revoked-target422expected404, not previous500. Exact terminal receipt and source pins audited and routed; separate frozen200 matrix admission reassessment requested. No original or expanded runtime result promoted.",
+    "pendingSourceInput": "docs/implementation/niche-themes-2026-10-23/pantry/completion-2026-10-24/shared-source-contract-input02/harness-input.PROPOSAL.json",
+    "pendingSourceInputSha256": "e764901fef62ddad3b8b0244e4a5ad8fb400bbc8954356a611b1ac026b8d4928",
+    "sourcePinsVerified": "CURRENT180EXACT_NO_PANTRY_EXECUTION_GRANT",
+    "sharedHarnessExecuted": false,
+    "nativeFixtureBrowserHandoff": "NOT_RECEIVED_NATIVE06_FAILED",
+    "originalFrozen200Decision": "docs/implementation/niche-theme-programme/completion-original-matrix-runtime-admission-decision-20261024-01.json",
+    "providerActualPantryTestPurchase": "NOT_RUN_REQUIRED",
+    "independentFullReview": "PENDING",
+    "fullGoalComplete": false,
+    "sourcePinsVerifiedAtPreparation": 180,
+    "currentSourceDriftCount": 0,
+    "sourceHoldAudit": "docs/implementation/niche-themes-2026-10-23/pantry/completion-2026-10-24/source-input01-current-hold-audit.json",
+    "currentSerialOrder": "Threadline alreadynext; Pantry preserves queue and waits current EditorUI/catalogue seals and exact new source input",
+    "sourceControlFinding": "PANTRY-SOURCE-DESCRIPTION-EMPTY-01",
+    "sourceControlPacket": "docs/implementation/niche-themes-2026-10-23/pantry/completion-2026-10-24/pdp-control-render-check01/PROPOSAL.json",
+    "sourceControlPacketSha256": "187f2ac387573126653a866e0987e12c9691fc66a91b91a9f8ad6a2590459481",
+    "MainSharedWrites": 0,
+    "runtimeBrowserProviderActions": 0,
+    "lastOwnerObservation": {
+      "at": "2026-10-24T12:51:03.122342+00:00",
+      "themes": "Retry active in new turn after capacity failure; native06 terminal failed revoked target422expected404, normalpreview assertion advanced.",
+      "editor": "Assessing source/TLS prerequisites for one original frozen200 fixture; no launch allocation yet.",
+      "threadline": "Still awaits exact next source-harness grant; no slot adopted by Pantry.",
+      "freshPantryHandoffReceived": false,
+      "normalTrustedCheckoutProofReceived": false
+    },
+    "latestNativeAudit": "docs/implementation/niche-themes-2026-10-23/pantry/native06-fresh-handoff-blocker-audit.json",
+    "coordinatorRecovery": "Same-chat same-model retry moved failed capacity-error owner into a new actual active turn; no native restart or source/resource takeover.",
+    "goalStatusReturned": "blocked",
+    "blockedThresholdTurns": 4,
+    "blockedAudit": "docs/implementation/niche-themes-2026-10-23/pantry/completion-2026-10-24/BLOCKED_AUDIT_OWNER_GRANTS_20261024_02.json",
+    "blockedAuditSha256": "463ba9edd441d785add502985dbbce3b4b487174ebb298a26bce153471f39cb9",
+    "fullObjectivePreserved": true
+  },
+  "coordinatorRecovery": {
+    "at": "2026-10-24T12:51:03.122342+00:00",
+    "failureObserved": {
+      "threadId": "01a164a4-a342-76d3-ab33-65e021ed57db",
+      "turnId": "01a16da9-6e6d-7cf3-9b71-c6afbbcaf733",
+      "status": "failed/systemError",
+      "message": "Selected model is at capacity. Please try a different model."
+    },
+    "sameChatSameSettingsRetrySent": true,
+    "modelOverride": false,
+    "newTaskCreated": false,
+    "native06Restarted": false,
+    "authoritativeAfterRetry": {
+      "threadStatus": "active",
+      "turnId": "01a16df4-3e24-7532-a036-ee91c0d13951",
+      "turnStatus": "inProgress"
+    },
+    "freshResourceGrantInferred": false
+  },
+  "currentRuntime07": {
+    "status": "EVIDENCE_RECONCILED_PARTIAL_EDITOR_SUBCHECKS_P09_P12_PENDING_PRESERVED_RECOVERY",
+    "runId": "49ada80bc494",
+    "candidate": "/private/tmp/letbuyy-shared-completion-20261024-06",
+    "package": "letbuyy-refresh2.1.0",
+    "coverage": "docs/implementation/niche-themes-2026-10-23/pantry/completion-2026-10-24/COVERAGE.json#/currentRuntime07",
+    "proposedPosition": 2,
+    "originalCaseIds": [
+      "P09",
+      "P10",
+      "P11",
+      "P12"
+    ],
+    "paymentCase": "RP-PURCHASE",
+    "oldP00P08Retained": true,
+    "oldP09FailuresRetained": true,
+    "descriptionGuardIsSeparateCase": true,
+    "outgoingChatMessagesSent": false,
+    "sharedReadinessIndependentAcceptance": "ACCEPT_SHARED_GATES_FOR_CONTROLLED_THEME_EXECUTION_WITH_FOUR_THEME_HEADING_DEFECTS; four affected slugs exclude Pantry",
+    "independentReview": "docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/INDEPENDENT_SHARED_GATE_REVIEW.json",
+    "currentPantryActualResults": {
+      "P09": "NOT_RUN_CURRENT07; prior936_FAIL retained",
+      "P10": "NOT_RUN",
+      "P11": "NOT_RUN",
+      "P12": "NOT_RUN_REQUIRED",
+      "RP-PURCHASE": "PASS_ACTUAL_PAYMENT_INITIAL_READBACK_OPEN_METADATA_FINDING"
+    },
+    "controllerObservedAt": "2026-10-24T20:12:29.028081+00:00",
+    "controllerProgress": "Threadline own Test order confirmed and buyer history/cart readback; merchant view being recorded before Pantry. Shared and Threadline purchases do not count as Pantry acceptance.",
+    "waitCursors": {
+      "Editor": "55b3b7e5-65f2-4e37-bfbe-f3ebbd81cba2:169",
+      "Themes": "4a88ad91-a502-40c5-8554-f10ec1e43e00:107"
+    },
+    "controllerBlockerAndRetry": {
+      "observedAt": "2026-10-24T20:16:32.954300+00:00",
+      "controllerTurnId": "01a16f77-65e2-7272-af85-e1f3fc114c94",
+      "type": "AUTOMATIC_APPROVAL_REFUSAL_STALE_PAUSE_AUTHORITY",
+      "actualControllerStatement": "Automatic approval review blocked the storefront action, citing the earlier project pause.",
+      "exactBlockedUiStepAndHttp": "UNOBSERVED_FROM_COMPACT_FINAL; no buyer request status/code inferred",
+      "currentSharedQualification": "PASS_ACCEPTED; no current native failure inferred",
+      "ownPantryCompletedActions": "Controller recorded installed210/message-save-ack/message-full-reload/published-active-v3; no intended Pantry order or P09-P12 acceptance yet",
+      "authorityRepair": "One bounded message delivered to existing Editor with verified later actual human resume turn/item and original Pantry coordination authorization, asking authority-aware retry without expanded scope.",
+      "messageDelivered": true,
+      "newBrowserOrStack": false,
+      "sourceWrites": false,
+      "P12ActualResult": "NOT_RUN",
+      "next": "Editor retry under existing current authority or record exact automatic rejection; coordinator can read this existing owned record.",
+      "retryResult": {
+        "observedAt": "2026-10-24T20:17:17.269097+00:00",
+        "controllerTurnId": "01a16f8e-8064-7280-8a6c-f3cfcfea7ba1",
+        "result": "APPROVAL_STILL_PENDING_NO_EXECUTION",
+        "actualControllerFinal": "Pantry’s session and test plan are preserved. Testing awaits the pending approval: automatic review blocked the storefront action under the earlier project pause.",
+        "authorityAwareRetryDelivered": true,
+        "currentHumanAction": "Approve existing Editor Pantry storefront continuation; no new fixture/source/provider exposure requested.",
+        "P12ActualStaleHttp": "NOT_RUN",
+        "original936ResultsRetained": {
+          "PASS": 9,
+          "FAIL": 1,
+          "NOT_RUN": 3
+        },
+        "current07P09P12": {
+          "P09": "NOT_RUN",
+          "P10": "NOT_RUN",
+          "P11": "NOT_RUN",
+          "P12": "NOT_RUN_REQUIRED"
+        }
+      }
+    },
+    "operationalWork": "RESUMED_AUTHORIZED",
+    "latestProjectPause": {
+      "recordedAt": "2026-10-24T21:25:13.578862+00:00",
+      "status": "PAUSED_BY_LATEST_PROJECT_WIDE_HUMAN_REQUEST",
+      "authority": "docs/implementation/niche-theme-programme/project-pause-current.json",
+      "authorityRecordedAt": "2026-10-24T21:24:11.241411+00:00",
+      "instruction": "Broooo pause all the entireeee chats on this project ,.. LETBUYY",
+      "earlierResumesAndLeasesSuperseded": true,
+      "goalObserved": "already paused",
+      "PantryOwnedTransientOperations": "none running; no browser/stack/native/provider process owned or started",
+      "preserved": "All code, drafts, evidence, apps, persistent services, databases and data untouched",
+      "acceptanceResults": "Preserved without further execution or re-audit; no new PASS claims",
+      "resumeCondition": "New explicit human resume after this pause",
+      "newDispatchesOrAutomations": false
+    },
+    "latestResume02": {
+      "recordedAt": "2026-10-24T23:53:36.458729+00:00",
+      "operationalWork": "RESUMED_HUMAN_AUTHORIZED_FINITE_RECONCILIATION",
+      "platformGoal": "paused metadata retained; no active transition tool and no duplicate goal",
+      "authority": "docs/implementation/niche-theme-programme/completion-2026-10-24/HUMAN_RESUME_20261025_02.json",
+      "evidence": "docs/implementation/niche-themes-2026-10-23/pantry/completion-2026-10-24/runtime07-resume02-evidence-reconciliation.json",
+      "nextRecipe": "docs/implementation/niche-themes-2026-10-23/pantry/completion-2026-10-24/runtime07-resume02-next-ui-recipe.json",
+      "RP-PURCHASE": "PASS_ACTUAL_PAYMENT_AND_INITIAL_READBACK_OPEN_CAPTURE_METADATA_FINDING",
+      "P09": "NOT_RUN_CURRENT07_COD_Q2",
+      "P10": "NOT_RUN_ORIGINAL_COD_ORDER; Testq1 initial readback verified separately",
+      "P11": "NOT_RUN",
+      "P12": "NOT_RUN_REQUIRED_NO_ACTUAL_STALE_HTTP",
+      "executionGate": "BLOCKED_PENDING_ROOT_SAME_STATE_RECOVERY_ADMISSION",
+      "noNewResources": true,
+      "sharedSources": "FROZEN"
+    },
+    "localEditorCycleResume02": {
+      "coverage": "docs/implementation/niche-themes-2026-10-23/pantry/completion-2026-10-24/COVERAGE.json#/currentRuntime07/localEditorCycleResume02",
+      "newWholeOriginalRows": 0,
+      "newWholeExpandedRows": 0,
+      "expandedCounts": {
+        "NOT_RUN": 279,
+        "PARTIAL": 3
+      },
+      "nextOneOriginalCase": "P09",
+      "P12ActualStaleResult": "NOT_RUN"
+    },
+    "maintenance": {
+      "receipt": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/PRESERVATION_STOP_EXECUTION_20261025_01.json",
+      "status": "OWNED_QA_MAINTENANCE_STOPPED_FOR_DATA_PRESERVATION",
+      "exactStoppedPids": [
+        54685,
+        55109
+      ],
+      "automaticContinuationAllowed": false,
+      "backup": "Complete verified private backup reported by existing stop receipt; Pantry did not read backup secrets or perform a new backup",
+      "execution": "No browser/API/DB/provider or process signal until qualified preserved recovery and explicit single-controller handoff",
+      "projectHumanWork": "Resume remains active for permitted source/evidence work; this is data-preservation maintenance, not a new human project pause."
+    }
+  }
+}

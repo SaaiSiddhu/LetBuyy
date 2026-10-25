@@ -17,6 +17,8 @@ import '../../services/store_service.dart';
 import '../../services/subscription_service.dart';
 import '../../models/store_model.dart';
 import '../../app/routes.dart';
+import '../../config/app_config.dart';
+import '../customize/theme_screen.dart';
 import '../../theme/app_theme_colors.dart';
 // bento_grid and glass_stat_card available but not used on this screen
 import '../../widgets/dashboard/hero_store_card.dart';
@@ -162,8 +164,9 @@ class _HomeScreenState extends State<HomeScreen> {
       HapticFeedback.mediumImpact();
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Error: $e')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     } finally {
       setState(() => _isPublishing = false);
@@ -289,6 +292,10 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: HeroStoreCard(
                 store: _store!,
+                storefrontUrl: AppConfig.storefrontUrlFor(
+                  subdomain: _store!.subdomain,
+                  publicUrl: _store!.publicUrl,
+                ),
                 billing: _billing,
                 onPlanTap: () async {
                   await Navigator.pushNamed(context, AppRoutes.pricing);
@@ -461,6 +468,23 @@ class _HomeScreenState extends State<HomeScreen> {
               child:
                   AnimatedRevenueChart(
                         totalRevenue: revenue,
+                        period: _analyticsPeriod,
+                        revenueDates:
+                            analytics?.dailyStats
+                                .map((day) => day.date)
+                                .toList(growable: false) ??
+                            const [],
+                        onPeriodChanged: (period) {
+                          setState(
+                            () => _selectedPeriod = const {
+                              '7d': '7 Days',
+                              '30d': '30 Days',
+                              '90d': '90 Days',
+                              '12m': '12 Months',
+                            }[period]!,
+                          );
+                          _loadStore();
+                        },
                         revenueData:
                             analytics?.dailyStats
                                 .map((day) => day.revenue)
@@ -493,10 +517,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     flex: 2,
                     child:
                         QuickActionsGrid(
-                              productCount: _store!.selectedProductIds.length,
-                              onEditorTap: () => Navigator.pushNamed(
+                              productCount: totalProducts,
+                              onEditorTap: () => Navigator.push(
                                 context,
-                                AppRoutes.livePreview,
+                                MaterialPageRoute<void>(
+                                  builder: (_) => const ThemeScreen(),
+                                ),
                               ),
                               onProductsTap: () => Navigator.pushNamed(
                                 context,

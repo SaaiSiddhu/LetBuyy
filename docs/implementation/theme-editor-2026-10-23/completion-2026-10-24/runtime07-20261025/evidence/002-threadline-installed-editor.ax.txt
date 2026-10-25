@@ -1,0 +1,124 @@
+Browser tab: 173052882, Title: "LetBuyy Admin", URL: "http://admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes".
+The following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+Removed element IDs: 61-62, 146-162, 184-273
++		184 container Current theme
++			185 container Current storefront
++				186 AXWebArea about:blank
++			187 heading MadeYours Current theme, Value: 2
++				188 text MadeYours Current theme
++			189 text Version 2.1.0 · Published design
++			190 pop up button (collapsed) Description: More current theme actions, Secondary Actions: Expand
++			191 link Description: Edit theme, Value: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes/letbuyy-nova/editor
++		192 container Installed themes
++			193 heading My themes, Value: 2
++				194 text My themes
++			195 button Add a new blank theme
++			196 content list Installed themes
++				197 container MadeYours theme
++					198 image MadeYours design preview
++					199 text MadeYours
++					200 text Published 25 Oct 2026
++					201 text Published
++					202 pop up button (collapsed) Description: More actions for MadeYours, Secondary Actions: Expand
++					203 button Customize MadeYours
++				204 container Threadline theme
++					205 image Threadline design preview
++					206 text Threadline
++					207 text Modified 25 Oct 2026
++					208 text Saved draft
++					209 pop up button (collapsed) Description: More actions for Threadline, Secondary Actions: Expand
++					210 text Saved draft
++					211 button Publish Threadline
++					212 button Customize Threadline
+~			168 button Import theme
++			213 container Threadline catalog theme
++				214 button Preview Threadline
++					215 image Threadline storefront preview
++				216 heading Threadline, Value: 3
++					217 text Threadline
++				218 text by  LetBuyy Free
++				219 text Editorial apparel with silhouette discovery, garment measurements and size-aware shopping.
++				220 text Version  2.1.0
++				221 link Description: Customize, Value: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes/letbuyy-sense/editor
++			222 container Dewdrop catalog theme
++				223 button Preview Dewdrop
++					224 image Dewdrop storefront preview
++				225 heading Dewdrop, Value: 3
++					226 text Dewdrop
++				227 text by  LetBuyy Free
++				228 text Soft and luxurious for beauty, skincare, and cosmetics. Muted rose with a champagne accent — the aesthetic of a premium beauty brand.
++				229 text Version  2.1.0
++				230 button Add Dewdrop
++			231 container Habitat catalog theme
++				232 button Preview Habitat
++					233 image Habitat storefront preview
++				234 heading Habitat, Value: 3
++					235 text Habitat
++				236 text by  LetBuyy Free
++				237 text Warm, artisanal aesthetics for furniture, home decor, and handcrafted goods. Rich walnut earth tones that convey quality and longevity.
++				238 text Version  2.1.0
++				239 button Add Habitat
++			240 container Pantry catalog theme
++				241 button Preview Pantry
++					242 image Pantry storefront preview
++				243 heading Pantry, Value: 3
++					244 text Pantry
++				245 text by  LetBuyy Free
++				246 text Fresh and inviting for grocery, organic food, and daily essentials. Deep forest green with warm orange — the look of a trusted neighbourhood store.
++				247 text Version  2.1.0
++				248 button Add Pantry
++			249 container Trailmark catalog theme
++				250 button Preview Trailmark
++					251 image Trailmark storefront preview
++				252 heading Trailmark, Value: 3
++					253 text Trailmark
++				254 text by  LetBuyy Free
++				255 text High-energy design for sports equipment, fitness gear, and outdoor brands. Performance orange and carbon black — built for movement.
++				256 text Version  2.1.0
++				257 button Add Trailmark
++			258 container Marginalia catalog theme
++				259 button Preview Marginalia
++					260 image Marginalia storefront preview
++				261 heading Marginalia, Value: 3
++					262 text Marginalia
++				263 text by  LetBuyy Free
++				264 text Calm and scholarly for bookshops, stationery, and educational content. Warm parchment tones with a slate-blue accent — for the thoughtful reader.
++				265 text Version  2.1.0
++				266 button Add Marginalia
++			267 container Playfield catalog theme
++				268 button Preview Playfield
++					269 image Playfield storefront preview
++				270 heading Playfield, Value: 3
++					271 text Playfield
++				272 text by  LetBuyy Free
++				273 text Warm and playful for pet food, accessories, and veterinary products. Sunny tangerine and leaf green — the colours of a happy pet store.
++				274 text Version  2.1.0
++				275 button Add Playfield
++			276 container Kindred catalog theme
++				277 button Preview Kindred
++					278 image Kindred storefront preview
++				279 heading Kindred, Value: 3
++					280 text Kindred
++				281 text by  LetBuyy Free
++				282 text Clean and professional for multi-category stores and general retail. Teal and lime — a versatile, safe baseline for any type of online store.
++				283 text Version  2.1.0
++				284 button Add Kindred
++			285 container Circuit catalog theme
++				286 button Preview Circuit
++					287 image Circuit storefront preview
++				288 heading Circuit, Value: 3
++					289 text Circuit
++				290 text by  LetBuyy Free
++				291 text A precise, technical look for electronics, gadgets, and tech accessories. Deep navy authority with electric-cyan accents — built for spec-heavy products.
++				292 text Version  2.1.0
++				293 button Add Circuit
++			294 container MadeYours catalog theme
++				295 button Preview MadeYours
++					296 image MadeYours storefront preview
++				297 heading MadeYours, Value: 3
++					298 text MadeYours
++				299 text by  LetBuyy Free
++				300 text Bold and contemporary for direct-to-consumer brands and general merchandise. Deep violet and amber — brand-forward for any product category.
++				301 text Version  2.1.0
++				302 link Description: Customize, Value: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes/letbuyy-nova/editor
+The focused UI element is 0 AXWebArea LetBuyy Admin, URL: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes

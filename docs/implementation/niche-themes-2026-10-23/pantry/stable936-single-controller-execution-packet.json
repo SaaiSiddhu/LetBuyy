@@ -1,0 +1,161 @@
+{
+  "recordedAt": "2026-10-24T04:39:14.363579+00:00",
+  "classification": "PREPARED_EXECUTION_PACKET_ONLY_NOT_UI_OR_DATA_ALLOCATION",
+  "runId": "936e5f577646",
+  "soleController": "Theme Editor \u2014 End-to-End (01a166eb-66bb-7042-bb47-2aaafef26f53)",
+  "queuePosition": 2,
+  "startGate": "Root named finite Pantry UI handoff only, after Dewdrop v1 recovery and supplemental preview configuration rebuild. Queue reservation grants no browser/network/data lease.",
+  "safeCutoffUtc": "2026-10-24T08:50:00Z",
+  "authority": {
+    "matrix": "docs/implementation/niche-themes-2026-10-23/pantry/installed-buyer-lifecycle-matrix.md",
+    "sha256": "87f2e8b22cef3d32c3bdf0228170d36b89ff41e22f96e5c526aae66996119dbd",
+    "runtimeAdmission": {
+      "path": "docs/implementation/niche-theme-programme/editor-stable392-02-runtime-admission.json",
+      "sha256": "33b3d8c93eb9a63a7833ed4ae9a15faedde06a6ff44706d862cce773cc0cb174"
+    },
+    "originalApiCandidate": "/private/tmp/theme-editor-stable392-20261024-02",
+    "sourceProofSha256": "ca4eb60667972e4a8c8ac61a78a0303fcdaca10b1d9189e9f5675864f689fe6a",
+    "frontendCandidateAndSourcePins": "Take exact current admitted supplemental client/preview receipts from Root named handoff; do not assume original frontend or copy unreleased source."
+  },
+  "bindingGate": {
+    "state": "UNBOUND_UNTIL_CURRENT936_ACTUAL_GUARDED_READBACK",
+    "siteId": null,
+    "lentilsId": null,
+    "riceId": null,
+    "v250": null,
+    "v500": null,
+    "vUnknown": null,
+    "pulsesCollection": null,
+    "riceCollection": null,
+    "shippingRate": null,
+    "resolve": "Existing current936 editorCatalog.products.lentils/rice; canonical acknowledged product readback, exact Pack option map + durable UUID + explicit food metadata + price. Collections/membership and shipping from actual current-run acknowledgements. Capture each current opaque version. Do not use SKU/title position, stale accessible label, array order or old f607 IDs as identity.",
+    "noDuplicateSetup": "Use existing canonical recipe records; no second products, fixture, parser, SQL or setup-created primary order. Missing/mismatched baseline stops affected row and is reported.",
+    "privateOnly": [
+      "origins with capabilities",
+      "buyer credentials",
+      "cart references",
+      "signed checkout links",
+      "observer authorization"
+    ]
+  },
+  "expectedBaseline": {
+    "lentils": {
+      "name": "Pantry lifecycle red lentils",
+      "category": "Staples",
+      "country": "India",
+      "ingredients": "Split red lentils (100%).",
+      "allergens": "unknown / Not supplied",
+      "storage": "Keep cool and dry.",
+      "preparation": "Rinse before cooking.",
+      "commonNetForVariantProduct": null,
+      "nutrition": "absent"
+    },
+    "packs": {
+      "V250": {
+        "option": "250 g",
+        "priceInr": 180,
+        "available": 4,
+        "net": {
+          "value": 250,
+          "unit": "g"
+        },
+        "unitDisplay": "INR72/100g"
+      },
+      "V500": {
+        "option": "500 g",
+        "priceInr": 340,
+        "available": 0,
+        "net": {
+          "value": 500,
+          "unit": "g"
+        },
+        "unitDisplay": "INR68/100g",
+        "purchase": "disabled"
+      },
+      "VUNKNOWN": {
+        "option": "750 g label only",
+        "priceInr": 210,
+        "available": 2,
+        "net": null,
+        "unitDisplay": null
+      }
+    },
+    "rice": {
+      "name": "Pantry lifecycle rice",
+      "priceInr": 220,
+      "available": 4,
+      "variants": false,
+      "ingredients": "Rice (100%).",
+      "net": {
+        "value": 1000,
+        "unit": "g"
+      },
+      "allergens": "unknown",
+      "unitDisplay": "INR22/100g"
+    },
+    "collections": "Pulses only lentils; rice only rice; actual handles/UUIDs required.",
+    "checkout": "Existing Karnataka560001 COD shipping20; recipes charge_tax:false, tracking on, sell_when_oos:false. Verify current936 quote/setup; never invent missing shipping or totals."
+  },
+  "orderedExecution": [
+    "P00: normal Pantry2 install + Editor A/B save/reload/publication, restoreA/reapplyB recovery; record instance/package/release/config hashes and anonymous serving home/PDP.",
+    "P01/P02: same-ID normal common-food edits/save/reopen; invalid net0 draft rejected with useful error/no data-version change. Save known pack facts; temporarily set VUNKNOWN750g then explicit clear/reload unknown; same-UUID SKU/title control then restore. Observe actual canonical command, stock omissions and opaque versions.",
+    "P03/P04/P05: no-selection block; V250 count2 gives500g total at72/100g. Blank/fractional count gives guidance/no derived total; restore2. V500 OOS68/100g, VUNKNOWN no inferred750g/unit value; returnV250 isolated facts. Rice2 gives2000g/22per100g; keep rice out of primary cart.",
+    "P06: real collections/search/pack filter/native sort/apply/chip/clear/reload. Repeated usb-c+hdmi, India/Staples/limit1/page2/g:250 valid zero URL; preserve both connectors and unedited search/category/country/limit/collection, resetpage1 on apply, no duplicate scalars or invented facets.",
+    "P07/P08: normally accepted V250q2/180/360 with per-item250g receipt+reload. Temporary VUNKNOWNq1/210 stays unknown, remove only its line. With actual availability4, normal total5 attempt captures exact failed response and immediate before/after cart state; no committed5. Valid UI retry q2/360 reload before checkout.",
+    "P09/P10: normal buyer sign-in/hosted COD primary order for V250q2/180/360, observed shipping/tax/grand total (recipe380 only when quote matches). One actual new order, exact allowed confirm retry sameorder/no duplicate protected effects. Reload both saved histories/expanded food facts, valid own positive then scoped missing/other-site denial.",
+    "P12 POSITIVE SETUP BEFORE P11: after real order + both histories, preserve a DISTINCT normally accepted active V250250g/180 cart with current version/fingerprint. Existing safe private capability boundary only; never replace converted primary cart/order or add another fixture. Capture actual cart + product reference before edit.",
+    "P11: normal same-LENTILS/same-V250 UUID save: option300g, price240, explicit net300g, ingredients Split red lentils; turmeric., supplied allergen May contain sesame., source Synthetic label revision B. Omit all stock quantities. Capture actual canonical command/version/UUID/price/net; reopen exact variant row and current PDP300g/80per100g. Both old histories remain250g/old ingredients/unknown allergen/180/q2/360.",
+    "P12 FINAL: untouched distinct pre-edit cart -> normal stale checkout ONEconfirm; retain exact status/code/requestId and native current-cart guidance. No new order/product/inventory/reservation/ledger effect; classify any checkout-intent/outbox deltas separately. Recheck old order/hash/both histories; normal current300g PDP review/reaccept to acknowledged cart within remaining stock, record actual count/240/net300/version. No second primary order or manual cart ref/fingerprint/digest rewriting.",
+    "EXIT: canonical restore of permitted product facts/options/prices/config through normal UI and current versions only, as designated by Root checkpoint; evidence full reload/readback. Never refill inventory consumed by real orders, reset versions, delete/copy orders or restore old capability state. Disclose any unrestored baseline before yielding."
+  ],
+  "all13Coverage": {
+    "P00": "install/save/local publish/recovery and serving release",
+    "P01": "common facts normal persistence + invalid draft",
+    "P02": "variant facts, explicit unknown clear, durable identity",
+    "P03": "selection/pack-count positive and invalid counts",
+    "P04": "OOS/unknown variant isolation",
+    "P05": "unvarianted rice fallback isolation",
+    "P06": "real collection/search/filter/sort/clear URL persistence",
+    "P07": "canonical known+unknown cart/reload/right-line removal",
+    "P08": "actual overstock HTTP failure + no-effect + visible recovery/retry",
+    "P09": "normal local COD order + exact allowed idempotent retry",
+    "P10": "both saved histories/reload + scoped positive/negative",
+    "P11": "later current facts/price edit + immutable old histories",
+    "P12": "distinct pre-edit active cart, exact stale failure/no effects, current review/reaccept + immutable history"
+  },
+  "exactOldGaps": {
+    "P08": "Old f607 repaired native recovery was seen, but actual overstock HTTP409/INSUFFICIENT_INVENTORY receipt missing. Capture exact failed request/status/code/requestId plus immediately matched before/after canonical quantity, visible recovery and normal q2 retry/reload.",
+    "P12": "Old f607 had generic rejection/no new order or inventory effect but exact actual status/code missing. Expected surfaced409CHECKOUT_PRODUCT_CHANGED; internal SQL CART_FACTS_CHANGED is not a substitute for actual observed response. Curated guidance: Some products changed. Review the current items in your cart before checking out again."
+  },
+  "evidencePerRow": "Record PASS/FAIL/BLOCKED/NOT RUN only from actual current936 action + request/receipt identifier, current opaque version/UUID, reload/readback/native evidence and negative/no-effect proof. Use existing qualified observer and canonical lifecycle/cart/product/order collectors; original private bytes retained, public receipts sanitized. Before/after windows must match the actual operation; do not assert all-table invariance when checkout intent/outbox legitimately changes.",
+  "historicalOnly": {
+    "run": "f6074d90e894 CLOSED/deleted",
+    "pass": [
+      "P00",
+      "P01",
+      "P02",
+      "P03",
+      "P04",
+      "P05",
+      "P06",
+      "P07",
+      "P09",
+      "P10",
+      "P11"
+    ],
+    "blocked": [
+      "P08",
+      "P12"
+    ],
+    "oldIdsCapabilitiesAndOrdersReusable": false,
+    "finalPinkBaselineRestored": false,
+    "current936Results": {
+      "PASS": 0,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "NOT RUN": 13
+    }
+  },
+  "stops": "Binding/save/price/UUID/net disagreement, hidden rejected cart, unavailable normal auth/COD/quote, source drift or mutable historical order: stop affected path, preserve evidence, route exact reproduction + source/candidate pins through existing owner and Root. Independent rows only within named slice. No speculative fix or cancelled Dewdrop price inquiry.",
+  "resourceAndSourceRules": "Pantry read-only auditor; sole Editor actor on Root named current936 bindings. No parallel fixture/browser, provider payments, SQL/direct mutation, old f607 reuse, source edits, duplicate accepted gates, restart/keepalive or synthetic completion."
+}

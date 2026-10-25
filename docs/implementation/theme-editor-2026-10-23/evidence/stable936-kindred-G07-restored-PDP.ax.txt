@@ -1,0 +1,79 @@
+Browser tab: 78, Title: "Kindred lifecycle gift box | Threadline", URL: "http://syn-threadline-ui-6815276b.localhost:58091/product/4abca70a-c4f1-42cb-bac1-2988d1c1435c".
+1 AXWebArea Kindred lifecycle gift box | Threadline, URL: syn-threadline-ui-6815276b.localhost:58091/product/4abca70a-c4f1-42cb-bac1-2988d1c1435c
+	2 container
+		3 text Ready-made gifts. A little more considered.
+		4 link syn-threadline-ui-6815276b.localhost:58091/product/4abca70a-c4f1-42cb-bac1-2988d1c1435c
+		5 container Description: Primary, ID: lb-nav-panel-header-default
+		6 link Description: Threadline, Value: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b
+		7 button (collapsed) Description: Search, Secondary Actions: Expand
+		8 link Description: Log in, Value: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/customers/login
+		9 link Description: Cart ( 0 ), Value: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/cart
+		10 container Breadcrumb
+			11 link Description: Home /, Value: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b
+			12 link Description: Shop /, Value: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/products
+			13 text Kindred lifecycle gift box
+		14 container
+			15 image Kindred lifecycle gift box
+			16 tab group Product images
+				17 tab (selected, settable, boolean) Description: Image 1 of 2, Value: 1
+				18 tab (selectable, settable, boolean) Description: Image 2 of 2, Value: 0
+		19 heading Kindred lifecycle gift box, Value: 1
+			20 text Kindred lifecycle gift box
+		21 text INR 1,100.00
+		22 container Description: Included gift contents, ID: gift-contents
+			23 heading What’s included, Value: 2
+				24 text What’s included
+			25 content list
+				26 container
+					27 AXListMarker 1. 
+					28 text 1 × Mug 300 ml Hand wash.
+				29 container
+					30 AXListMarker 2. 
+					31 text 1 × Notebook
+				32 container
+					33 AXListMarker 3. 
+					34 text 1 × Pen
+			35 text Review the listed contents and the selected packaging before adding this product to your bag.
+		36 container
+			37 text Quantity
+			38 stepper (settable, integer) Quantity, Value: 1, ID: lb-quantity-kindred-product-detail-1
+			39 button Add to cart
+			40 button Buy now
+		41 container Add Kindred lifecycle gift box to wishlist
+			42 checkbox Description: Connect store account to use wishlist, Value: 0
+		43 button (collapsed) Description, Secondary Actions: Expand
+			44 text Description
+		45 container
+			46 heading Write a review, Value: 3
+				47 text Write a review
+			48 Your rating
+				49 radio button (settable, integer) Value: 0, ID: lb-review-star-1
+				50 checkbox Description: 1 star, Value: 0
+				51 radio button (settable, integer) Value: 0, ID: lb-review-star-2
+				52 checkbox Description: 2 stars, Value: 0
+				53 radio button (settable, integer) Value: 0, ID: lb-review-star-3
+				54 checkbox Description: 3 stars, Value: 0
+				55 radio button (settable, integer) Value: 0, ID: lb-review-star-4
+				56 checkbox Description: 4 stars, Value: 0
+				57 radio button (settable, integer) Value: 0, ID: lb-review-star-5
+				58 checkbox Description: 5 stars, Value: 0
+			59 text field (settable)
+			60 text field (settable)
+			61 text entry area (settable)
+			62 button Submit review
+		63 container Packaging views
+			64 container
+				65 image Kindred lifecycle gift box — open box
+				66 text Open box · Check the supplied contents list.
+			67 container
+				68 image Kindred lifecycle gift box — closed box
+				69 text Closed box · Confirm the selected packaging option.
+		70 heading Threadline, Value: 3
+			71 text Threadline
+		72 heading CONTACT, Value: 4
+			73 text CONTACT
+		74 link Description: Contact us, Value: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/contact
+		75 text © Threadline. All rights reserved.
+		76 link Description: Powered by LetBuyy, Value: letbuyy.com/
+
+The focused UI element is 1 AXWebArea Kindred lifecycle gift box | Threadline, URL: syn-threadline-ui-6815276b.localhost:58091/product/4abca70a-c4f1-42cb-bac1-2988d1c1435c

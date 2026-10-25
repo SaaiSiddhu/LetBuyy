@@ -1,0 +1,50 @@
+{
+  "date": "2026-10-22",
+  "sources": [
+    {
+      "url": "https://themes.shopify.com/collections/free-themes",
+      "purpose": "Current catalog and listing/demo discovery",
+      "method": "live CUA browser"
+    },
+    {
+      "url": "https://shopify.dev/docs/storefronts/themes/architecture",
+      "purpose": "Theme file/component architecture",
+      "method": "opened official web documentation"
+    },
+    {
+      "url": "https://www.w3.org/WAI/WCAG22/quickref/",
+      "purpose": "Accessibility implementation criteria reference; not a conformance result",
+      "method": "opened W3C web reference"
+    },
+    {
+      "url": "https://github.com/google/fonts/blob/main/ofl/inter/OFL.txt",
+      "purpose": "Font license record; actual binary packaging remains unverified",
+      "method": "opened primary license"
+    },
+    {
+      "url": "https://github.com/google/fonts/blob/main/ofl/playfairdisplay/OFL.txt",
+      "purpose": "Font license record; actual binary packaging remains unverified",
+      "method": "opened primary license"
+    },
+    {
+      "url": "https://github.com/google/fonts/blob/main/ofl/cormorantgaramond/OFL.txt",
+      "purpose": "Font license record; actual binary packaging remains unverified",
+      "method": "opened primary license"
+    },
+    {
+      "url": "https://github.com/google/fonts/blob/main/ofl/librebaskerville/OFL.txt",
+      "purpose": "Font license record; actual binary packaging remains unverified",
+      "method": "opened primary license"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/lato/OFL.txt",
+      "purpose": "Font license record; actual binary packaging remains unverified",
+      "method": "opened primary license"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/sourcesans3/OFL.txt",
+      "purpose": "Font license record; actual binary packaging remains unverified",
+      "method": "opened primary license"
+    }
+  ]
+}

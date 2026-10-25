@@ -1,0 +1,722 @@
+{
+  "body": {
+    "background": "rgb(255, 255, 255)",
+    "color": "rgba(18, 18, 18, 0.75)",
+    "font": "Assistant, sans-serif",
+    "fontSize": "16px"
+  },
+  "controls": [
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Bags",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Shoes",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Search",
+      "tag": "INPUT",
+      "type": "search"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Load video: Introducing the Sera Tote Bag. See how you can customize it so it&#39;s perfec",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Email",
+      "tag": "INPUT",
+      "type": "email"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Subscribe",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Canada | CAD $",
+      "tag": "BUTTON",
+      "type": "button"
+    }
+  ],
+  "headings": [
+    {
+      "font": "Assistant, sans-serif",
+      "height": 37,
+      "line": "0px",
+      "size": "40px",
+      "tag": "H1",
+      "text": "",
+      "weight": "400",
+      "width": 97.5,
+      "x": 170,
+      "y": 62.5
+    },
+    {
+      "font": "Assistant, sans-serif",
+      "height": 19.5,
+      "line": "19.5px",
+      "size": "13px",
+      "tag": "H2",
+      "text": "",
+      "weight": "400",
+      "width": 282,
+      "x": 948,
+      "y": -74.296875
+    },
+    {
+      "font": "Assistant, sans-serif",
+      "height": 67.59375,
+      "line": "67.6px",
+      "size": "52px",
+      "tag": "H2",
+      "text": "Industrial design meets fashion.",
+      "weight": "400",
+      "width": 702.3828125,
+      "x": 368.8046875,
+      "y": 580.609375
+    },
+    {
+      "font": "Assistant, sans-serif",
+      "height": 52,
+      "line": "52px",
+      "size": "40px",
+      "tag": "H2",
+      "text": "Obsessive Attention. Intelligent Effort.",
+      "weight": "400",
+      "width": 780,
+      "x": 330,
+      "y": 884
+    },
+    {
+      "font": "Assistant, sans-serif",
+      "height": 16.8984375,
+      "line": "16.9px",
+      "size": "13px",
+      "tag": "H3",
+      "text": "Small Convertible Flex Bag",
+      "weight": "400",
+      "width": 269,
+      "x": 170,
+      "y": 1314.796875
+    },
+    {
+      "font": "Assistant, sans-serif",
+      "height": 16.8984375,
+      "line": "16.9px",
+      "size": "13px",
+      "tag": "H3",
+      "text": "Studio Bag",
+      "weight": "400",
+      "width": 269,
+      "x": 447,
+      "y": 1314.796875
+    },
+    {
+      "font": "Assistant, sans-serif",
+      "height": 16.8984375,
+      "line": "16.9px",
+      "size": "13px",
+      "tag": "H3",
+      "text": "Louise Slide Sandal",
+      "weight": "400",
+      "width": 269,
+      "x": 724,
+      "y": 1334.796875
+    },
+    {
+      "font": "Assistant, sans-serif",
+      "height": 16.8984375,
+      "line": "16.9px",
+      "size": "13px",
+      "tag": "H3",
+      "text": "Mini Naomi Bag",
+      "weight": "400",
+      "width": 269,
+      "x": 1001,
+      "y": 1334.796875
+    },
+    {
+      "font": "Assistant, sans-serif",
+      "height": 16.8984375,
+      "line": "16.9px",
+      "size": "13px",
+      "tag": "H3",
+      "text": "Helix",
+      "weight": "400",
+      "width": 269,
+      "x": 170,
+      "y": 1693.6953125
+    },
+    {
+      "font": "Assistant, sans-serif",
+      "height": 16.8984375,
+      "line": "16.9px",
+      "size": "13px",
+      "tag": "H3",
+      "text": "Bo Ivy",
+      "weight": "400",
+      "width": 269,
+      "x": 447,
+      "y": 1693.6953125
+    },
+    {
+      "font": "Assistant, sans-serif",
+      "height": 16.8984375,
+      "line": "16.9px",
+      "size": "13px",
+      "tag": "H3",
+      "text": "Pleated Heel Mule",
+      "weight": "400",
+      "width": 269,
+      "x": 724,
+      "y": 1693.6953125
+    },
+    {
+      "font": "Assistant, sans-serif",
+      "height": 16.8984375,
+      "line": "16.9px",
+      "size": "13px",
+      "tag": "H3",
+      "text": "Brick",
+      "weight": "400",
+      "width": 269,
+      "x": 1001,
+      "y": 1693.6953125
+    },
+    {
+      "font": "Assistant, sans-serif",
+      "height": 31.1953125,
+      "line": "31.2px",
+      "size": "24px",
+      "tag": "H2",
+      "text": "Back in stock!",
+      "weight": "400",
+      "width": 1100,
+      "x": 170,
+      "y": 1830.59375
+    },
+    {
+      "font": "Assistant, sans-serif",
+      "height": 23.3984375,
+      "line": "23.4px",
+      "size": "18px",
+      "tag": "H3",
+      "text": "Bags",
+      "weight": "400",
+      "width": 730.6640625,
+      "x": 170,
+      "y": 2721.359375
+    },
+    {
+      "font": "Assistant, sans-serif",
+      "height": 16.8984375,
+      "line": "16.9px",
+      "size": "13px",
+      "tag": "H3",
+      "text": "Mini Eddy",
+      "weight": "400",
+      "width": 361.3359375,
+      "x": 908.6640625,
+      "y": 2270.125
+    },
+    {
+      "font": "Assistant, sans-serif",
+      "height": 23.3984375,
+      "line": "23.4px",
+      "size": "18px",
+      "tag": "H3",
+      "text": "Shoes",
+      "weight": "400",
+      "width": 361.3359375,
+      "x": 908.6640625,
+      "y": 2721.359375
+    },
+    {
+      "font": "Assistant, sans-serif",
+      "height": 23.3984375,
+      "line": "23.4px",
+      "size": "18px",
+      "tag": "H2",
+      "text": "Quick links",
+      "weight": "400",
+      "width": 361.328125,
+      "x": 170,
+      "y": 3697.453125
+    },
+    {
+      "font": "Assistant, sans-serif",
+      "height": 23.3984375,
+      "line": "23.4px",
+      "size": "18px",
+      "tag": "H2",
+      "text": "Info",
+      "weight": "400",
+      "width": 361.3359375,
+      "x": 539.328125,
+      "y": 3697.453125
+    },
+    {
+      "font": "Assistant, sans-serif",
+      "height": 23.3984375,
+      "line": "23.4px",
+      "size": "18px",
+      "tag": "H2",
+      "text": "Our mission",
+      "weight": "400",
+      "width": 361.3359375,
+      "x": 908.6640625,
+      "y": 3697.453125
+    },
+    {
+      "font": "Assistant, sans-serif",
+      "height": 23.3984375,
+      "line": "23.4px",
+      "size": "18px",
+      "tag": "H2",
+      "text": "Subscribe to our emails",
+      "weight": "400",
+      "width": 870,
+      "x": 170,
+      "y": 3889.1328125
+    },
+    {
+      "font": "Assistant, sans-serif",
+      "height": 19.5,
+      "line": "19.5px",
+      "size": "13px",
+      "tag": "H2",
+      "text": "Country/region",
+      "weight": "400",
+      "width": 147.421875,
+      "x": 170,
+      "y": 4084.53125
+    }
+  ],
+  "links": [
+    {
+      "text": "Skip to content",
+      "url": "https://theme-dawn-demo.myshopify.com/#MainContent"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dawn-demo.myshopify.com/"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dawn-demo.myshopify.com/collections/bags"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dawn-demo.myshopify.com/collections/tote-bags"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dawn-demo.myshopify.com/collections/shoulder-bags"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dawn-demo.myshopify.com/collections/crossbody-bags"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dawn-demo.myshopify.com/collections/top-handle-bags"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dawn-demo.myshopify.com/collections/mini-bags"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dawn-demo.myshopify.com/collections/shoes"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dawn-demo.myshopify.com/collections/sandals"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dawn-demo.myshopify.com/collections/boots"
+    },
+    {
+      "text": "Lookbook",
+      "url": "https://theme-dawn-demo.myshopify.com/pages/lookbook-summer"
+    },
+    {
+      "text": "Log in",
+      "url": "https://theme-dawn-demo.myshopify.com/account/login"
+    },
+    {
+      "text": "Cart",
+      "url": "https://theme-dawn-demo.myshopify.com/cart"
+    },
+    {
+      "text": "",
+      "url": "https://theme-dawn-demo.myshopify.com/cart"
+    },
+    {
+      "text": "Shop now",
+      "url": "https://theme-dawn-demo.myshopify.com/collections/all"
+    },
+    {
+      "text": "Small Convertible Flex Bag",
+      "url": "https://theme-dawn-demo.myshopify.com/products/small-convertible-flex-bag-cappuccino"
+    },
+    {
+      "text": "Studio Bag",
+      "url": "https://theme-dawn-demo.myshopify.com/products/studio-denim"
+    },
+    {
+      "text": "Louise Slide Sandal",
+      "url": "https://theme-dawn-demo.myshopify.com/products/louise-slide-sandal"
+    },
+    {
+      "text": "Mini Naomi Bag",
+      "url": "https://theme-dawn-demo.myshopify.com/products/mini-naomi-bag-harvest"
+    },
+    {
+      "text": "Helix",
+      "url": "https://theme-dawn-demo.myshopify.com/products/helix-denim"
+    },
+    {
+      "text": "Bo Ivy",
+      "url": "https://theme-dawn-demo.myshopify.com/products/bo-ivy-black"
+    },
+    {
+      "text": "Pleated Heel Mule",
+      "url": "https://theme-dawn-demo.myshopify.com/products/pleated-heel-mule"
+    },
+    {
+      "text": "Brick",
+      "url": "https://theme-dawn-demo.myshopify.com/products/brick-apple"
+    },
+    {
+      "text": "Bags",
+      "url": "https://theme-dawn-demo.myshopify.com/collections/bags"
+    },
+    {
+      "text": "Mini Eddy",
+      "url": "https://theme-dawn-demo.myshopify.com/products/mini-eddy-cappuccino"
+    },
+    {
+      "text": "Shoes",
+      "url": "https://theme-dawn-demo.myshopify.com/collections/shoes"
+    },
+    {
+      "text": "Bags",
+      "url": "https://theme-dawn-demo.myshopify.com/collections/bags"
+    },
+    {
+      "text": "Shoes",
+      "url": "https://theme-dawn-demo.myshopify.com/collections/shoes"
+    },
+    {
+      "text": "Lookbook",
+      "url": "https://theme-dawn-demo.myshopify.com/pages/lookbook"
+    },
+    {
+      "text": "About",
+      "url": "https://theme-dawn-demo.myshopify.com/pages/about"
+    },
+    {
+      "text": "Contact us",
+      "url": "https://theme-dawn-demo.myshopify.com/pages/contact-us"
+    },
+    {
+      "text": "Shipping policy",
+      "url": "https://theme-dawn-demo.myshopify.com/pages/shipping"
+    },
+    {
+      "text": "Blog",
+      "url": "https://theme-dawn-demo.myshopify.com/blogs/news"
+    },
+    {
+      "text": "theme-dawn-demo",
+      "url": "https://theme-dawn-demo.myshopify.com/"
+    }
+  ],
+  "sections": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--15968257704025__image_banner",
+      "rect": {
+        "height": 720,
+        "width": 1440,
+        "x": 0,
+        "y": 124
+      },
+      "tag": "SECTION",
+      "text": "Industrial design meets fashion.\n\nAtypical leather goods\n\nShop now"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--15968257704025__rich_text",
+      "rect": {
+        "height": 140.796875,
+        "width": 1440,
+        "x": 0,
+        "y": 844
+      },
+      "tag": "SECTION",
+      "text": "Obsessive Attention. Intelligent Effort.\n\nFunctional handbags made of luxurious materials to improve people's lives in small but mighty ways."
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--15968257704025__featured_collection",
+      "rect": {
+        "height": 789.796875,
+        "width": 1440,
+        "x": 0,
+        "y": 984.796875
+      },
+      "tag": "SECTION",
+      "text": "Sold out\nSmall Convertible Flex Bag\nRegular price\n$395.00 CAD \nSale price\nFrom $320.00 CAD\nSold out\nStudio Bag\nRegular price\n$465.00 CAD\nSale\nLouise Slide Sandal\nRegular price\n$430"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--15968257704025__collage",
+      "rect": {
+        "height": 1003.1640625,
+        "width": 1440,
+        "x": 0,
+        "y": 1774.59375
+      },
+      "tag": "SECTION",
+      "text": "Back in stock!\nBags\nMini Eddy\nRegular price\n$375.00 CAD\nShoes"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--15968257704025__video",
+      "rect": {
+        "height": 552.2890625,
+        "width": 1440,
+        "x": 0,
+        "y": 2777.7578125
+      },
+      "tag": "SECTION",
+      "text": ""
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--15968257704025__multicolumn",
+      "rect": {
+        "height": 243.40625,
+        "width": 1440,
+        "x": 0,
+        "y": 3330.046875
+      },
+      "tag": "SECTION",
+      "text": "\"The leather is sourced from environmentally friendly tanneries in Italy, France, and Turkey, where Rure is based and everything is assembled by hand.\"\n\n\"All too often, we're force"
+    }
+  ],
+  "title": "theme-dawn-demo",
+  "url": "https://theme-dawn-demo.myshopify.com/",
+  "viewport": {
+    "dpr": 1,
+    "height": 1000,
+    "width": 1440
+  },
+  "formGroups": [],
+  "grids": [
+    {
+      "className": "grid product-grid contains-card contains-card--product contains-card--standard grid--4-col-desktop grid--2-col-tablet-down",
+      "columns": "none",
+      "display": "flex",
+      "gap": "8px",
+      "height": 709.796875,
+      "tag": "UL",
+      "width": 1100
+    },
+    {
+      "className": "multicolumn-list contains-content-container grid grid--1-col-tablet-down grid--2-col-desktop",
+      "columns": "none",
+      "display": "flex",
+      "gap": "8px",
+      "height": 171.40625,
+      "tag": "UL",
+      "width": 1100
+    }
+  ],
+  "images": [
+    {
+      "alt": "A woman crouches while holding multiple blue handbags",
+      "complete": true,
+      "naturalWidth": 1036,
+      "rect": {
+        "height": 1000,
+        "width": 720
+      }
+    },
+    {
+      "alt": "A woman's feet in the air, balancing a blue bag. ",
+      "complete": true,
+      "naturalWidth": 1056,
+      "rect": {
+        "height": 1000,
+        "width": 720
+      }
+    },
+    {
+      "alt": "Small Convertible Flex Bag",
+      "complete": true,
+      "naturalWidth": 267,
+      "rect": {
+        "height": 269,
+        "width": 269
+      }
+    },
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 267,
+      "rect": {
+        "height": 269,
+        "width": 269
+      }
+    },
+    {
+      "alt": "Studio Bag",
+      "complete": true,
+      "naturalWidth": 267,
+      "rect": {
+        "height": 269,
+        "width": 269
+      }
+    },
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 267,
+      "rect": {
+        "height": 269,
+        "width": 269
+      }
+    },
+    {
+      "alt": "Louise Slide Sandal",
+      "complete": true,
+      "naturalWidth": 267,
+      "rect": {
+        "height": 269,
+        "width": 269
+      }
+    },
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 267,
+      "rect": {
+        "height": 269,
+        "width": 269
+      }
+    },
+    {
+      "alt": "Mini Naomi Bag",
+      "complete": true,
+      "naturalWidth": 267,
+      "rect": {
+        "height": 269,
+        "width": 269
+      }
+    },
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 267,
+      "rect": {
+        "height": 269,
+        "width": 269
+      }
+    },
+    {
+      "alt": "Helix",
+      "complete": true,
+      "naturalWidth": 267,
+      "rect": {
+        "height": 269,
+        "width": 269
+      }
+    },
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 267,
+      "rect": {
+        "height": 269,
+        "width": 269
+      }
+    }
+  ],
+  "bodyText": "Skip to content\n\nFree shipping available on all orders!\n\nBags\nShoes\nLookbook\nLog in\nCart\nIndustrial design meets fashion.\n\nAtypical leather goods\n\nShop now\nObsessive Attention. Intelligent Effort.\n\nFunctional handbags made of luxurious materials to improve people's lives in small but mighty ways.\n\nSold out\nSmall Convertible Flex Bag\nRegular price\n$395.00 CAD \nSale price\nFrom $320.00 CAD\nSold out\nStudio Bag\nRegular price\n$465.00 CAD\nSale\nLouise Slide Sandal\nRegular price\n$430.00 CAD \nSale price\n$395.00 CAD\nSold out\nMini Naomi Bag\nRegular price\n$315.00 CAD \nSale price\nFrom $299.00 CAD\nHelix\nRegular price\n$470.00 CAD\nBo Ivy\nRegular price\n$390.00 CAD\nPleated Heel Mule\nRegular price\n$495.00 CAD\nBrick\nRegular price\n$385.00 CAD\nBack in stock!\nBags\nMini Eddy\nRegular price\n$375.00 CAD\nShoes\n\n\"The leather is sourced from environmentally friendly tanneries in Italy, France, and Turkey, where Rure is based and everything is assembled by hand.\"\n\n\"All too often, we're forced to pick: style, or sustainability. Recently, more designers have been making environmental impact a top priority\"\n\nQuick links\nBags\nShoes\nLookbook\nInfo\nAbout\nContact us\nShipping policy\nBlog\nOur mission\n\nQuality materials, good designs, craftsmanship and sustainability.\n\nSubscribe to our emails\nEmail\nFacebook\nInstagram\nYouTube\nTikTok\nX (Twitter)\nCountry/region\nCanada | CAD $\nPayment methods\n© 2026, theme-dawn-demo Powered by Shopify"
+}

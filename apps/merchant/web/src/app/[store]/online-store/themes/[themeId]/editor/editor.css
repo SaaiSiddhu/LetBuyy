@@ -1915,9 +1915,12 @@
 }
 
 .theme-os--centered {
-  display: grid;
-  min-height: 100vh;
-  place-items: center;
+  display: flex;
+  flex-direction: column;
+  min-height: 100svh;
+  height: 100dvh;
+  overflow: auto;
+  padding: clamp(var(--lb-space-4), 4vw, var(--lb-space-6));
 }
 
 .theme-os-topbar {
@@ -2604,30 +2607,95 @@
 }
 
 .theme-os-state {
+  flex: none;
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--lb-space-5);
+  width: min(100%, 28rem);
+  margin: auto;
+  border: 1px solid var(--theme-os-border);
+  border-radius: var(--lb-radius-xl);
+  background: var(--theme-os-panel);
+  padding: clamp(var(--lb-space-5), 5vw, var(--lb-space-8));
+  text-align: center;
+  box-shadow: var(--lb-shadow-lg);
+}
+
+.theme-os-state__icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: var(--lb-space-10);
+  height: var(--lb-space-10);
+  border: 1px solid var(--theme-os-border);
+  border-radius: var(--lb-radius-lg);
+  background: var(--theme-os-panel-muted);
+  color: var(--theme-os-muted);
+}
+
+.theme-os-state__copy {
   display: grid;
   justify-items: center;
-  gap: 10px;
-  max-width: 420px;
-  border: 1px solid var(--theme-os-border);
-  border-radius: 16px;
-  background: var(--theme-os-panel);
-  padding: 28px;
-  text-align: center;
-  box-shadow: var(--theme-os-shadow);
+  gap: var(--lb-space-3);
+  min-width: 0;
+}
+
+.theme-os-state__eyebrow {
+  color: var(--theme-os-muted);
+  font-size: var(--lb-font-size-caption);
+  font-weight: var(--lb-font-weight-medium);
+  line-height: var(--lb-line-height-caption);
 }
 
 .theme-os-state h1,
 .theme-os-state p {
   margin: 0;
+  overflow-wrap: anywhere;
 }
 
 .theme-os-state h1 {
-  font-size: 20px;
+  color: var(--theme-os-text);
+  font-size: var(--lb-font-size-h3);
+  font-weight: var(--lb-font-weight-semibold);
+  line-height: var(--lb-line-height-h3);
+  letter-spacing: -0.02em;
 }
 
 .theme-os-state p {
+  max-width: 36ch;
   color: var(--theme-os-muted);
-  font-size: 14px;
+  font-size: var(--lb-font-size-body);
+  line-height: 1.6;
+}
+
+.theme-os-state__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--lb-space-2);
+  width: 100%;
+}
+
+.theme-os-state__actions > * {
+  min-height: 44px;
+}
+
+@media (max-width: 480px) {
+  .theme-os-state__actions {
+    flex-direction: column;
+  }
+
+  .theme-os-state__actions > * {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-os-state .theme-os-spin {
+    animation: none;
+  }
 }
 
 .theme-os-store-announcement {

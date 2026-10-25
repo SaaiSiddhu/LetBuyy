@@ -1,0 +1,407 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-24T20:01:58.019477+00:00",
+  "reviewer": "Themes /01a164a4-a342-76d3-ab33-65e021ed57db",
+  "authority": "RESUME_AUTHORITY.json",
+  "status": "ACCEPT_SHARED_GATES_FOR_CONTROLLED_THEME_EXECUTION_WITH_FOUR_THEME_HEADING_DEFECTS",
+  "candidate": "/private/tmp/letbuyy-shared-completion-20261024-06",
+  "runId": "49ada80bc494",
+  "sourceFilesIndependentlyRehashed": 6547,
+  "sourceManifestSha256": "44049b9b9f9ac17295d2b590199d447b4da42796f9b9a995d01b3ba2367981c4",
+  "sourceMismatchCount": 0,
+  "sourceSymlinkEscapeCount": 0,
+  "currentMainRuntimeSourceDriftAtReview": 0,
+  "allFourAdmittedOwnedFixtureProposalBytesExact": true,
+  "nativeCohorts": [
+    {
+      "gate": "catalog394",
+      "path": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/native-runs/08/result.json",
+      "sha256": "d29367666294ad18e8506b0e94388f1ada10de7368cd561002e03c8a3bdfe8a8",
+      "runId": "0c23ed799a87",
+      "passed": 9,
+      "failed": 0,
+      "skipped": 0,
+      "exitCode": 0,
+      "timedOut": false,
+      "ownedDatabase": "verified before start",
+      "migrationCount": 322,
+      "maxMigration": 393,
+      "migrationCeiling": null,
+      "migrationCurrentSourceMismatches": [],
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "reaped": [],
+      "suite": "services/api-gateway/src/__tests__/owned-db/playfield201-catalog394-qualification.manual.ts",
+      "suiteCandidateSha256": "c40f1a77d45b01d35e90cffc8e5d39fe6421856a3ab580d5ec8ac0d784b900ec",
+      "resultInternalTestCount": 9,
+      "suites": 1
+    },
+    {
+      "gate": "circuit-facets",
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/result.json",
+      "sha256": "fe20957711d91c0ac442ea9eb0fa21e90c18764b2143e7dee85697182c22528f",
+      "runId": "786c7515c57a",
+      "passed": 9,
+      "failed": 0,
+      "skipped": 0,
+      "exitCode": 0,
+      "timedOut": false,
+      "ownedDatabase": "verified before start",
+      "migrationCount": 322,
+      "maxMigration": 393,
+      "migrationCeiling": null,
+      "migrationCurrentSourceMismatches": [],
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "reaped": [],
+      "suite": "services/api-gateway/src/__tests__/owned-db/circuit-facets-qualification.manual.ts",
+      "suiteCandidateSha256": "689047487002d9a27fc0b059948abca7fce29c3601d7121e1df7ed566da26b83",
+      "resultInternalTestCount": 9,
+      "suites": 1
+    },
+    {
+      "gate": "converted-cart",
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/razorpay-converted-cart-repair01/native04/result.json",
+      "sha256": "aa531746cbc467903cef2101a037b8575f6202398a7bdf30618cd73e4e160f83",
+      "runId": "06fe9e80f1ae",
+      "passed": 18,
+      "failed": 0,
+      "skipped": 0,
+      "exitCode": 0,
+      "timedOut": false,
+      "ownedDatabase": "verified before start",
+      "migrationCount": 322,
+      "maxMigration": 393,
+      "migrationCeiling": null,
+      "migrationCurrentSourceMismatches": [],
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "reaped": [],
+      "suite": "services/api-gateway/src/__tests__/owned-db/hosted-checkout-buyer-ownership.postgres.test.ts",
+      "suiteCandidateSha256": "b0ed45ce28a0bb5d1b452fa1113058a9710ec5880f0eca1b2c9861479131a63d",
+      "resultInternalTestCount": 18,
+      "suites": 1
+    },
+    {
+      "gate": "configured-cart",
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-integration01/native07/result.json",
+      "sha256": "0197196a87926fff98e522b872b1eb1a769b85138ec6d34f4c4216991dda7850",
+      "runId": "3cafad0d3fe7",
+      "passed": 16,
+      "failed": 0,
+      "skipped": 0,
+      "exitCode": 0,
+      "timedOut": false,
+      "ownedDatabase": "verified before start",
+      "migrationCount": 322,
+      "maxMigration": 393,
+      "migrationCeiling": null,
+      "migrationCurrentSourceMismatches": [],
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "reaped": [],
+      "suite": "services/api-gateway/src/__tests__/owned-db/configured-cart-qualification.manual.ts",
+      "suiteCandidateSha256": null,
+      "resultInternalTestCount": 16,
+      "suites": 1
+    },
+    {
+      "gate": "child-customization",
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/child-customization-integration01/native03/result.json",
+      "sha256": "8b45d0e6a5d11b9e04f32ea9b99a912019ed5c95f0838beaa6609e4ce63158b6",
+      "runId": "909a07fa1663",
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "exitCode": 0,
+      "timedOut": false,
+      "ownedDatabase": "verified before start",
+      "migrationCount": 322,
+      "maxMigration": 393,
+      "migrationCeiling": null,
+      "migrationCurrentSourceMismatches": [],
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "reaped": [],
+      "suite": "services/api-gateway/src/__tests__/owned-db/first-party-customization-qualification.manual.ts",
+      "suiteCandidateSha256": "7e5e7b3ac1cf2a59893714d09a62a0a0c93728331e3bf579e8f5f22398ed2fbf",
+      "resultInternalTestCount": 1,
+      "suites": 1
+    },
+    {
+      "gate": "webhook-first",
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/razorpay-webhook-first-repair01/native04/result.json",
+      "sha256": "81283970f36970bc4c3bb490ed8b0197e95e418458b2213511f1351a90657033",
+      "runId": "29f1032eaf9e",
+      "passed": 20,
+      "failed": 0,
+      "skipped": 0,
+      "exitCode": 0,
+      "timedOut": false,
+      "ownedDatabase": "verified before start",
+      "migrationCount": 322,
+      "maxMigration": 393,
+      "migrationCeiling": null,
+      "migrationCurrentSourceMismatches": [],
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "reaped": [],
+      "suite": "services/api-gateway/src/__tests__/owned-db/hosted-checkout-webhook-first-qualification.manual.ts",
+      "suiteCandidateSha256": "2f09a51690608ef28130e7d8559fe4af0f96f9bd6a9db474a29cfbc0d22bca14",
+      "resultInternalTestCount": 20,
+      "suites": 1
+    }
+  ],
+  "gates": [
+    {
+      "id": "SHARED-01",
+      "gate": "Unavailable immutable target / canonical publication",
+      "verdict": "ACCEPT_CONTROLLED_EXECUTION",
+      "nativeRunId": "0c23ed799a87",
+      "proof": "8 ordered phases / 9 TAP, unavailable GET and POST remain404; tenant/context/role/shadow/profile refusals, exact published-content preservation, append-only capture and paired DOWN/replay conservation.",
+      "limits": "No per-theme browser/update certificate inferred."
+    },
+    {
+      "id": "SHARED-02",
+      "gate": "Converted-cart real-provider confirmation",
+      "verdict": "ACCEPT_CONTROLLED_EXECUTION",
+      "nativeRunId": "06fe9e80f1ae",
+      "proof": "18 native assertions, later20-native cohort covers current webhook-first source. Canonical ownership, converted cart, exactly-one order/capture and recovery retained.",
+      "limits": "18 and later20 are overlapping cohorts, not38 independent new cases."
+    },
+    {
+      "id": "SHARED-03",
+      "gate": "Circuit manufacturer / compatibility facets",
+      "verdict": "ACCEPT_FUNCTIONAL_CONTROLLED_EXECUTION",
+      "nativeRunId": "786c7515c57a",
+      "proof": "8 stages / 9 TAP; same-candidate UUID/price/stock, Unicode normalization, own/foreign collections, malformed queries, role denial, Worker fault sanitization, full public-table conservation and paired DOWN/replay.66 retained proof hashes independently match.",
+      "limits": "Indexed-predicate acceptance and production-scale performance NOT_PROVEN; outer RPC plan with finite fixture budget does not prove an index. Installed facet UI remains required."
+    },
+    {
+      "id": "SHARED-04",
+      "gate": "Configured-cart atomic edit and existing consumers",
+      "verdict": "ACCEPT_CONTROLLED_EXECUTION",
+      "nativeRunId": "3cafad0d3fe7",
+      "proof": "16 native cases; lost acknowledgement, same-key/body conflict, concurrent/stale writer, bind race, revisioned clear, service-only RPCs and actual paired DOWN/reapply.1079 original private source pins still exact; five proof receipts match; conservation witnesses cover487 public tables.",
+      "limits": "Current fixture admits qualified cart03 UP830259374dbc0692f7d5d07651f7bc1028d8689452ad9dc7544aba99bef545a1 and DOWN247515f8d020ac923064aa3d2dceefb583ae6768cd11db1f9bcbb42bdf176240, not subsequently edited unused cart02 paths. Later projection, proxy, renderer/catalog and webhook source deltas reconciled separately."
+    },
+    {
+      "id": "SHARED-05",
+      "gate": "Explicit all10 customization2.1.0 / guarded Liquid / Editor eligibility",
+      "verdict": "ACCEPT_SHARED_QUALIFICATION",
+      "nativeRunId": "909a07fa1663",
+      "proof": "31 source,24 actual Editor callback and45 retained security cases. One native cohort executes six SQL phases and proves103 eligible inline contexts; UP replay, paired DOWN restoring prior metadata, captures retained, DOWN replay and final UP/replay. Four retained proof hashes match, each487-table witness. Renderer hash is the independently reviewed guarded candidate; eligibility compares exact installed section+reusable definitions.",
+      "limits": "Six SQL phases are not six separately counted TAP tests. Zero-child HTML parity compares explicit210 with its201/202 source base, and frozen200 factories remain unchanged. All theme-specific nested browser/preview/save/publish/reload obligations remain required; no version-only activation or third-party app-block activation authorized."
+    },
+    {
+      "id": "SHARED-06",
+      "gate": "Webhook-first acknowledgement and capture-backed receipt recovery",
+      "verdict": "ACCEPT_CONTROLLED_EXECUTION",
+      "nativeRunId": "29f1032eaf9e",
+      "proof": "20 native assertions/no skips, four current source pins exact. Focused checkout diff accepts only the same already verified provider payment or order reference; existing signature/replay/order/amount/currency/captured checks remain. Recovery only reads the site+cart-bound paid order, matching captured payment and exact balanced ledger; it never creates a second order, renews capability, reopens a cart or changes checkout state.",
+      "limits": "Native provider seams do not count as actual external provider evidence; current actual shared browser/HMAC proof is independently recorded below."
+    },
+    {
+      "id": "SHARED-07",
+      "gate": "Configured-cart browser evidence applicability",
+      "verdict": "ACCEPT_REUSE_EXACT_UNCHANGED_RELEVANT_SOURCE",
+      "executionRunId": "63c55b066db3",
+      "currentRunId": "49ada80bc494",
+      "proof": "13 actual browser operations retained under their original execution run, including normal buyerSSO, Moss-to-Oat/text edit, acknowledged Save, full reload, remove and re-add. Complete6547-file candidate manifests independently differ only in the three CSP files.",
+      "limits": "Not a fresh execution on current07 and not all23 MadeYours cases. Existing-buyer login does not cover new-buyer signup/email verification."
+    },
+    {
+      "id": "SHARED-08",
+      "gate": "Current hosted-checkout CSP / provider redirect",
+      "verdict": "ACCEPT_NARROW_SECURITY_CHANGE",
+      "proof": "Reviewed exact three-file delta: only configured checkout host /checkout opts into exact https://api.razorpay.com form-action. All other CSP directives and ordinary-page self-only form policy remain.3 contracts/86 proxy regressions/typecheck0; actual response-header qualification and successful provider redirect retained.",
+      "limits": "Repeated86 regression totals overlap the prior proxy cohort and are not172 distinct checks."
+    },
+    {
+      "id": "SHARED-09",
+      "gate": "Actual product/cart/checkout to Razorpay Test Success and Order Confirmed",
+      "verdict": "ACCEPT_SHARED_REAL_TEST_SMOKE",
+      "executionRunId": "49ada80bc494",
+      "proof": "REAL_PROVIDER_UI_PAYMENT_PASS.json identifies actual Test-bank popup interaction, payment pay_TrrfTowi3aAFdW and provider order order_TrrelDJBpFgEI8. Independently inspected confirmation and merchant screenshots: matching ORD-20261024-10000, one paid/confirmed INR1220 order.",
+      "limits": "MadeYours2.1.0 presentation plus Circuit product is shared smoke; neither theme receives its own purchase or full certificate from this mixed-niche proof."
+    },
+    {
+      "id": "SHARED-10",
+      "gate": "Actual HMAC callback / canonical ledger / cart retirement / merchant readback",
+      "verdict": "ACCEPT_SHARED_REAL_TEST_SMOKE",
+      "executionRunId": "49ada80bc494",
+      "proof": "Actual authorized/captured callbacks200; durable events processed with signatureValid=true; one122000-paise capture, two ledger entries with debit=credit122000, completed checkout, continued-shopping cart0 and merchant visible order count1. Exact manual cross-runtime entry explicitly passes Test-prefixed credentials into existing gateway fixture and invokes canonical webhook-service with owned same-DB transport; HOSTED_RAZORPAY_TEST_ADAPTER absent, no fake callback.",
+      "limits": "No independent provider API calls or private credential reads by this reviewer. Test Mode only; no live provider approval or production deployment inferred."
+    }
+  ],
+  "blockingSharedSourceDefectsFound": [],
+  "remainingAcceptance": [
+    {
+      "id": "OPEN-THEME-MATRICES",
+      "status": "REQUIRED",
+      "scope": "Every retained original and successor matrix, including actual responsive/keyboard/accessibility/negative/recovery/history and nested child UI operations, must receive its own evidence and independent review."
+    },
+    {
+      "id": "OPEN-PER-THEME-RAZORPAY",
+      "status": "REQUIRED",
+      "scope": "One intended niche product/variant under the actual intended installed theme, normal buyer cart/checkout/Test purchase, signed callbacks, paid order/stock/snapshot, balanced canonical ledger, buyer history/cart and merchant readback per theme. Shared mixed-niche smoke does not transfer."
+    },
+    {
+      "id": "OPEN-NEW-BUYER",
+      "status": "REQUIRED",
+      "scope": "Normal new-buyer signup and email verification are not covered by existing synthetic buyerSSO."
+    },
+    {
+      "id": "OPEN-CIRCUIT-INDEXING",
+      "status": "NOT_PROVEN",
+      "scope": "Functional facets qualify for controlled browser work. Named indexed-predicate/performance acceptance remains open for full applicable certification; outer Function/Result plan is insufficient."
+    },
+    {
+      "id": "OPEN-FAULT-AND-DENIAL-UI",
+      "status": "REQUIRED_WHERE_NAMED",
+      "scope": "Unavailable/malformed discovery, profile/orders dependency failures, stale revisions, cross-tenant/buyer denial and configured stock/format branches must be distinguished from401/403 auth failures under finite owned controls."
+    },
+    {
+      "id": "OPEN-LIBRARY-METADATA",
+      "status": "OBSERVATION_REQUIRES_REPRODUCTION",
+      "scope": "Root reported stale Private/Unpublished library context after successful public publication; this reviewer has not reproduced it. Capture exact theme/version/view/request before any source correction; do not infer global publication failure or mutate frozen captures."
+    },
+    {
+      "id": "HARD-PUBLIC-RECEIVER-CUTOFF",
+      "status": "BOUNDARY_UNCHANGED",
+      "scope": "Existing receiver expires2026-10-24T22:20Z /25Oct03:50IST or runner death. No extension, new public endpoint, secret change or replacement stack is authorized by this review."
+    }
+  ],
+  "certificates": {
+    "LOCAL_E2E": "SHARED_CANARY_ACCEPTED; PER_THEME_REQUIRED",
+    "RAZORPAY_TEST": "SHARED_REAL_TEST_SMOKE_ACCEPTED; PER_THEME_REQUIRED",
+    "REVIEW": "THIS_SHARED_REVIEW_ACCEPTED_ONLY",
+    "FULL_THEME": "NO_FULL_THEME_CERTIFICATE_GRANTED",
+    "fullThemeCertificatesGrantedByThisReview": 0,
+    "observedPortfolioFullCertificateCountAtSharedGate": 0
+  },
+  "sourceAllocation": {
+    "soleAllocator": "Themes",
+    "activeMainSourceLeases": [],
+    "sealedCandidateMutationAllowed": false,
+    "oldLeasesRevived": false,
+    "correctionRule": "Only reproduced evidence-backed defect, exact path+before hash+bounded owner grant; rebuild/requalification applicability separately admitted."
+  },
+  "executionPolicy": {
+    "singleBrowserOwner": "Theme Editor \u2014 End-to-End /01a166eb-66bb-7042-bb47-2aaafef26f53",
+    "doNotBlockUnaffectedOriginalCasesOnUnrelatedSuccessorWork": true,
+    "perThemePackets": "Own existing evidence subtree only; theme owners do not write shared queue/allocation JSON",
+    "sharedQueueWriters": [
+      "Themes",
+      "Theme Editor \u2014 End-to-End"
+    ],
+    "queueFromCurrentRootHandoff": [
+      "Threadline",
+      "Pantry",
+      "Dewdrop",
+      "Habitat",
+      "Circuit",
+      "Trailmark",
+      "Marginalia",
+      "Kindred",
+      "MadeYours",
+      "Playfield"
+    ],
+    "providerPriority": "Per-theme actual Test purchases within existing exposure window; retain all mandatory remainder"
+  },
+  "preservation": {
+    "noNewStack": true,
+    "noNewBuild": true,
+    "noNativeRerun": true,
+    "noBrowserActionsByReviewer": true,
+    "noProviderCallsByReviewer": true,
+    "noPrivateStateOrCredentialRead": true,
+    "userApps9001AndMarketplace9015And9022Preserved": true,
+    "draftsDataEvidencePreserved": true,
+    "canonicalMigrationsEmitted": false,
+    "automationsUnchangedPaused": true
+  },
+  "reviewLimits": [
+    "Focused shared change/evidence review, not a whole-project audit or production gate.",
+    "Process listing was unavailable under sandbox; no escalation/restart attempted. Existing Editor takeover snapshot and retained exact run receipts supply current execution context; no independent live process certification claimed.",
+    "Native pin applicability includes explicitly reconciled later source changes; older raw cohorts are not relabeled as rerun against current07."
+  ],
+  "evidence": [
+    "INDEPENDENT_ARTIFACT_RECONCILIATION.json",
+    "NATIVE_SOURCE_APPLICABILITY.json",
+    "NATIVE_PROVENANCE_REVIEW.json",
+    "SOURCE_TEST_EVIDENCE_INDEX.json",
+    "FOCUSED_DIFF_INDEX.json"
+  ],
+  "rulesApplied": [
+    "WIN-R3",
+    "WIN-R4",
+    "WIN-R6",
+    "SEC tenant/realm isolation",
+    "TEST-R6",
+    "MIG-R3",
+    "MIG-R4",
+    "CODE-R6",
+    "CODE-R10"
+  ],
+  "subsequentThemeSpecificFindings": [
+    {
+      "id": "FOUR-THEME-ORDER-HEADING-210",
+      "status": "OPEN_REPRODUCED_SOURCE_RENDER",
+      "evidence": "ORDER_HEADING_ALL10_SOURCE_REVIEW.json",
+      "affected": [
+        "letbuyy-craft",
+        "letbuyy-dawn",
+        "letbuyy-nova",
+        "letbuyy-summit"
+      ],
+      "probe": "Ten actual Liquid renders: six heading effects confirmed, four declared headings ignored; no browser credit.",
+      "allocation": "ORDER_HEADING211_PRIVATE_PROPOSAL_ALLOCATION.json",
+      "blocks": "Affected heading/full descendant certificates only; current ordinary original UI and intended Test purchase queue continue."
+    }
+  ],
+  "performanceFollowup": "CIRCUIT_PERFORMANCE_PREPARATION_ALLOCATION.json",
+  "additionalIndependentReviews": [
+    "MARGINALIA_HISTORICAL_SOURCE_REVIEW.json",
+    "THREADLINE_HISTORICAL_SOURCE_REVIEW.json"
+  ],
+  "finiteEditorAllocations": [
+    "MARGINALIA_FINITE_EDITOR_ALLOCATION.json"
+  ]
+}

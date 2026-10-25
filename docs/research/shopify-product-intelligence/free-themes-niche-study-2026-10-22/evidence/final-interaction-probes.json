@@ -1,0 +1,49 @@
+[
+  {
+    "theme": "fabric",
+    "probe": "variant",
+    "selected": "XS",
+    "result": "checked through visible radio"
+  },
+  {
+    "theme": "dwell",
+    "probe": "variant",
+    "selected": "Antique White",
+    "result": "checked through visible radio"
+  },
+  {
+    "theme": "savor",
+    "probe": "variant",
+    "selected": "2 Bottles",
+    "result": "checked through visible radio"
+  },
+  {
+    "theme": "ritual",
+    "probe": "variant",
+    "selected": "S/36",
+    "result": "checked through visible radio"
+  },
+  {
+    "theme": "heritage",
+    "probe": "variant",
+    "selected": "Navy",
+    "result": "checked through visible radio"
+  },
+  {
+    "theme": "horizon",
+    "probe": "variant",
+    "selected": "S",
+    "result": "checked through visible radio"
+  },
+  {
+    "theme": "vessel",
+    "probe": "variant",
+    "selected": "Black",
+    "result": "checked through visible radio"
+  },
+  {
+    "theme": "colorblock",
+    "result": "native Size select changed",
+    "selected": "M"
+  }
+]

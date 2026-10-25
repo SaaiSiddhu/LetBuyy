@@ -1,0 +1,142 @@
+{
+  "recordedAt": "2026-10-24T19:22:34.055562+00:00",
+  "runId": "63c55b066db3",
+  "orders": [
+    {
+      "id": "7084727f-f439-4ca4-ad56-f3246724ee3e",
+      "order_number": "ORD-20261024-10000",
+      "status": "cancelled",
+      "payment_status": "failed",
+      "payment_id": "order_Trqy4Ji7Chb6vw",
+      "total": 710.0
+    },
+    {
+      "id": "b5542d8b-b48e-4f49-bf24-373d42383ce4",
+      "order_number": "ORD-20261024-10001",
+      "status": "cancelled",
+      "payment_status": "failed",
+      "payment_id": "order_Trr8jGXuCC0Xt7",
+      "total": 1220.0
+    },
+    {
+      "id": "5922cb85-dcba-4439-ba40-1c4b9a7b66d9",
+      "order_number": "ORD-20261024-10002",
+      "status": "pending",
+      "payment_status": "pending",
+      "payment_id": "order_TrrDkh2Hk77mTV",
+      "total": 1220.0
+    },
+    {
+      "id": "551a7d7e-b58a-4ce8-ade5-218727bd9c6b",
+      "order_number": "ORD-20261024-10003",
+      "status": "pending",
+      "payment_status": "pending",
+      "payment_id": "order_TrrH5sT1s1yjdQ",
+      "total": 1220.0
+    }
+  ],
+  "deliveries": [
+    {
+      "runId": "63c55b066db3",
+      "receivedAt": "2026-10-24T18:55:29.923Z",
+      "event": null,
+      "paymentId": null,
+      "providerOrderId": null,
+      "paymentStatus": null,
+      "amount": null,
+      "currency": null,
+      "providerEventId": null,
+      "signaturePresent": false,
+      "bodySha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "canonicalStatus": 400
+    },
+    {
+      "runId": "63c55b066db3",
+      "receivedAt": "2026-10-24T19:01:04.417Z",
+      "event": null,
+      "paymentId": null,
+      "providerOrderId": null,
+      "paymentStatus": null,
+      "amount": null,
+      "currency": null,
+      "providerEventId": null,
+      "signaturePresent": false,
+      "bodySha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "canonicalStatus": 400
+    },
+    {
+      "runId": "63c55b066db3",
+      "receivedAt": "2026-10-24T19:01:21.253Z",
+      "event": "payment.authorized",
+      "paymentId": "pay_TrpVkfPZLoSlVJ",
+      "providerOrderId": "order_TrpJDOVcB9cQHv",
+      "paymentStatus": "authorized",
+      "amount": 122000,
+      "currency": "INR",
+      "providerEventId": "TrpVsibVMHb0EV",
+      "signaturePresent": true,
+      "bodySha256": "dcf59961c4859bb0a33bd5acfe4bc7dd0542c74c39bce35cac90b3c5c45a9004",
+      "canonicalStatus": 400
+    },
+    {
+      "runId": "63c55b066db3",
+      "receivedAt": "2026-10-24T19:01:21.256Z",
+      "event": "payment.captured",
+      "paymentId": "pay_TrpVkfPZLoSlVJ",
+      "providerOrderId": "order_TrpJDOVcB9cQHv",
+      "paymentStatus": "captured",
+      "amount": 122000,
+      "currency": "INR",
+      "providerEventId": "TrpVtWFJSREG0J",
+      "signaturePresent": true,
+      "bodySha256": "50df65ad5a9024542ec144a6cb1c9f4c3822701195f72640a7b27c801e188755",
+      "canonicalStatus": 400
+    },
+    {
+      "runId": "63c55b066db3",
+      "receivedAt": "2026-10-24T19:04:39.178Z",
+      "event": "payment.failed",
+      "paymentId": "pay_TrqzG5aG1cWbuE",
+      "providerOrderId": "order_Trqy4Ji7Chb6vw",
+      "paymentStatus": "failed",
+      "amount": 71000,
+      "currency": "INR",
+      "providerEventId": "Trr1iu174JSfRR",
+      "signaturePresent": true,
+      "bodySha256": "894c5d2a451c6b3ae62b5e57c2f291a66d348b8a938813acd59a78259c249e1b",
+      "canonicalStatus": 200
+    },
+    {
+      "runId": "63c55b066db3",
+      "receivedAt": "2026-10-24T19:08:54.023Z",
+      "event": "payment.failed",
+      "paymentId": "pay_Trr4iTSLeh01ET",
+      "providerOrderId": "order_Trqy4Ji7Chb6vw",
+      "paymentStatus": "failed",
+      "amount": 71000,
+      "currency": "INR",
+      "providerEventId": "Trr6D14DFRiWuP",
+      "signaturePresent": true,
+      "bodySha256": "c534ca0099623fb56dc7e8d7bf2f3640cc9790f6eec4e886ae34a2cd0cb57ebf",
+      "canonicalStatus": 200
+    },
+    {
+      "runId": "63c55b066db3",
+      "receivedAt": "2026-10-24T19:13:23.065Z",
+      "event": "payment.failed",
+      "paymentId": "pay_Trr9eGXpfUnBXR",
+      "providerOrderId": "order_Trr8jGXuCC0Xt7",
+      "paymentStatus": "failed",
+      "amount": 122000,
+      "currency": "INR",
+      "providerEventId": "TrrAwgiArXqSFm",
+      "signaturePresent": true,
+      "bodySha256": "17b471d3dfbbe0e09144184a4eab9611334237e2c11ba3e3ace8e67bbb84613d",
+      "canonicalStatus": 200
+    }
+  ],
+  "freshSuccessfulCapture": "NOT_YET_PROVEN",
+  "allTenCertified": false,
+  "providerUIObservation": "Multiple in-app Test bank/card simulations stayed processing; cancelled attempts confirmed failed/no capture. Visible in-app bank also waited, so visibility cause is not established. Isolated Chrome checkout iframe remained blank. No security bypass or fake success.",
+  "reusableSuccess": "shared-runtime04/REAL_PROVIDER_UI_PAYMENT_PASS.json for exact unchanged backend/checkout source only; per-theme actual journey still mandatory"
+}

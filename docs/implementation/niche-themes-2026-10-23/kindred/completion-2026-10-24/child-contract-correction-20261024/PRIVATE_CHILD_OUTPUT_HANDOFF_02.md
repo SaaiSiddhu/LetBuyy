@@ -1,0 +1,11 @@
+# Kindred private guarded child-output proposal02
+
+The canonical model retains nested first-party children. Current captured Kindred output hides them in all11 tested parent contexts; the same unmodified badge at top level is visible. Model validity, normal editor persistence and final rendered output are separate obligations.
+
+The existing-renderer private patch plus explicit successor outlet helper passes58/58 source/library checks:11/11 child markers visible and23 default no-child template outputs exact. Schemas and every non-source bundle value stay exact. Initial50 and the later module-resolution failure remain preserved separately; their counts are not added to58. No source was applied to Main, successor version assigned or theme package emitted.
+
+The exact renderer/helper/probe/patch/result hashes and full private source tree are sealed in the JSON and evidence snapshot. A separate actual preflight pins111 source modules and four direct dependency entries. It is not an in-process trace of the58-check run. The shared catalogue changed afterward; the exact earlier catalogue was reconstructed from retained bytes and the recorded Root diff, then verified against its original3464bc35 hash for archival evidence only. No tests or results are transferred to current Main. Current integrated/transitive runtime admission remains pending.
+
+The private tree differs from Main in the proposed renderer and an older retained catalogue copy. Kindred proposes no catalogue edit. Only the renderer is a proposed Main path; the immutable outlet helper remains unwired and needs explicit successor treatment. The separate heading proposal must reuse canonical withConfiguredOrderHeading rather than its obsolete Core hunk.
+
+Theme Editor is the designated independent reviewer. Shared security/other-theme regression, fresh exact source/runtime/browser allocation and real installed persistence/rendering proof remain required. No cross-chat message was sent. The one-shot job exited0; there is no owned browser/runtime/database/build/provider resource or lease to return. Private evidence folders are retained; shared cleanup is not certified. Original19 remain3PASS/1FAIL/15NOT_RUN; KQA-01 remains OPEN P2.

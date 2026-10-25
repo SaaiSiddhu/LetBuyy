@@ -1,0 +1,70 @@
+--- a/apps/commerce/web/src/app/api/checkout/[cartId]/[step]/route.ts
++++ b/apps/commerce/web/src/app/api/checkout/[cartId]/[step]/route.ts
+@@ -137,6 +137,7 @@
+         INSUFFICIENT_INVENTORY: 'Some items are no longer available in that quantity. Review your cart and try again.',
+         PAYMENT_SETUP_REQUIRED: 'Payment setup is required for this store.',
+         CHECKOUT_STATE_CONFLICT: 'Checkout details changed. Refresh checkout and try again.',
++        CHECKOUT_PRODUCT_CHANGED: 'Some products changed. Review the current items in your cart before checking out again.',
+         CHECKOUT_SHIPPING_CHANGED: 'The delivery price changed. Review the updated delivery option and try again.',
+         CHECKOUT_PROVIDER_PAYMENT_REQUIRED: 'Payment confirmation is required to complete checkout.',
+         CHECKOUT_PROVIDER_SIGNATURE_INVALID: 'Payment could not be verified. Please try again or contact support.',
+--- a/apps/commerce/web/src/app/api/checkout/route.test.ts
++++ b/apps/commerce/web/src/app/api/checkout/route.test.ts
+@@ -99,6 +99,57 @@
+         assert.equal(calls.length, 1);
+         assert.equal(calls[0].url.pathname, `/v1/checkout/${CART_ID}/confirm`);
+     });
++});
++
++test('checkout confirm preserves a safe product-changed conflict with actionable cart guidance', async () => {
++    await withGateway(() => jsonResponse({
++        success: false,
++        error: {
++            code: 'CHECKOUT_PRODUCT_CHANGED',
++            message: 'CART_FACTS_CHANGED: SELECT private_snapshot FROM orders; buyer=private@example.invalid; signature=secret-handoff',
++            details: { customer_email: 'private@example.invalid', stack: 'private database stack' },
++        },
++    }, { status: 409 }), async (calls) => {
++        const response = await call(request('confirm', { idempotency_key: 'product-changed-confirm-001' }), 'confirm');
++        assert.equal(response.status, 409);
++        assert.equal(response.headers.get('cache-control'), 'no-store');
++        const responseText = await response.text();
++        assert.deepEqual(JSON.parse(responseText), {
++            success: false,
++            error: {
++                code: 'CHECKOUT_PRODUCT_CHANGED',
++                message: 'Some products changed. Review the current items in your cart before checking out again.',
++            },
++        });
++        assert.doesNotMatch(responseText, /CART_FACTS_CHANGED|SELECT|private_snapshot|private@example|secret-handoff|database stack/);
++        assert.equal(calls.length, 1);
++        assert.equal(calls[0].method, 'POST');
++        assert.equal(calls[0].url.pathname, `/v1/checkout/${CART_ID}/confirm`);
++        assert.equal(calls[0].url.searchParams.get('signature'), HANDOFF.get('signature'));
++        assert.deepEqual(JSON.parse(calls[0].body || '{}'), { idempotency_key: 'product-changed-confirm-001' });
++    });
++});
++
++test('checkout failure projection keeps unknown, malformed, and server errors sanitized', async () => {
++    for (const scenario of [
++        { status: 409, code: 'CHECKOUT_NEW_CONFLICT', expectedStatus: 409, expectedCode: 'CHECKOUT_NEW_CONFLICT', message: 'Checkout could not continue.' },
++        { status: 400, code: '<script>private</script>', expectedStatus: 400, expectedCode: 'CHECKOUT_REQUEST_FAILED', message: 'Checkout could not continue.' },
++        { status: 500, code: 'CHECKOUT_PRODUCT_CHANGED', expectedStatus: 503, expectedCode: 'CHECKOUT_UNAVAILABLE', message: 'Checkout is temporarily unavailable. Please try again.' },
++    ]) {
++        await withGateway(() => jsonResponse({
++            success: false,
++            error: { code: scenario.code, message: 'SELECT private_snapshot; private@example.invalid' },
++        }, { status: scenario.status }), async (calls) => {
++            const response = await call(request('confirm', { idempotency_key: 'sanitized-confirm-001' }), 'confirm');
++            assert.equal(response.status, scenario.expectedStatus);
++            assert.equal(response.headers.get('cache-control'), 'no-store');
++            assert.deepEqual(await response.json(), {
++                success: false,
++                error: { code: scenario.expectedCode, message: scenario.message },
++            });
++            assert.equal(calls.length, 1);
++        });
++    }
+ });
+ 
+ test('Razorpay payment-intent exposes only the server-created provider order needed by hosted checkout', async () => {

@@ -1,0 +1,12 @@
+{
+  "recordedAt": "2026-10-24T10:05:27.005Z",
+  "classification": "UNMODIFIED_CAPTURED_FIRST_PARTY_BADGE_DEFINITION_TOP_LEVEL_POSITIVE_CONTROL_NOT_BROWSER",
+  "sameChildDefinitionAndMarkerAsNestedProbe": true,
+  "definitionSourceUnmodified": true,
+  "renderStatus": "rendered",
+  "warnings": [],
+  "markerVisibleAtRoot": true,
+  "rootBlockHtml": "<span class=\"lb-badge\" data-block-id=\"source-child-at-root\">SOURCE_CHILD_LABEL</span>",
+  "browserApiDatabaseProviderCalls": 0,
+  "mainSourceArtifactWrites": 0
+}

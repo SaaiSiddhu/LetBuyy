@@ -1,3 +1,4 @@
+import { resolveMerchantResourceStoreIds } from '../lib/tenant-context';
 // ============================================================
 // INVENTORY — Locations, levels, adjustments (Doc 05 + Doc 08 § 6)
 // ============================================================
@@ -288,7 +289,9 @@ router.post('/locations', validate('json', CreateLocationSchema), async (c) => {
 
     const { data, error } = await db
         .from('inventory_locations')
-        .insert(body)
+        .insert({ store_id: body.store_id, name: body.name, is_default: body.is_default,
+            address: { address: body.address || '', city: body.city || '', state: body.state || '', country: body.country },
+            created_by: customUser.id, updated_by: customUser.id })
         .select()
         .single();
 
@@ -306,7 +309,7 @@ router.post('/locations', validate('json', CreateLocationSchema), async (c) => {
         return c.json(dbFailureBody(), 500);
     }
 
-    return c.json(success(data), 201);
+    return c.json(success({ ...data, address: body.address || '', city: body.city || '', state: body.state || '', country: body.country }), 201);
 });
 
 // GET /inventory/suppliers — List suppliers
@@ -460,7 +463,7 @@ router.post('/purchase-orders/:id/receive', validate('json', ReceivePurchaseOrde
     const customUser = await resolveCustomUser(db, auth.user);
 
     if (!customUser) return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
-    const siteId = await loadPurchaseOrderSiteId(db, purchaseOrderId);
+    const siteId = await loadPurchaseOrderSiteId(db, purchaseOrderId, await resolveMerchantResourceStoreIds(c));
     if (!siteId || !(await verifySiteOwnership(db, siteId, customUser.id, auth.user.storeId))) {
         return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Purchase order not found' } }, 404);
     }
@@ -576,7 +579,7 @@ router.post('/transfers/:id/ship', validate('json', ShipTransferSchema), async (
     const customUser = await resolveCustomUser(db, auth.user);
 
     if (!customUser) return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
-    const siteId = await loadTransferSiteId(db, transferId);
+    const siteId = await loadTransferSiteId(db, transferId, await resolveMerchantResourceStoreIds(c));
     if (!siteId || !(await verifySiteOwnership(db, siteId, customUser.id, auth.user.storeId))) {
         return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Transfer not found' } }, 404);
     }
@@ -601,7 +604,7 @@ router.post('/transfers/:id/receive', validate('json', ReceiveTransferSchema), a
     const customUser = await resolveCustomUser(db, auth.user);
 
     if (!customUser) return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
-    const siteId = await loadTransferSiteId(db, transferId);
+    const siteId = await loadTransferSiteId(db, transferId, await resolveMerchantResourceStoreIds(c));
     if (!siteId || !(await verifySiteOwnership(db, siteId, customUser.id, auth.user.storeId))) {
         return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Transfer not found' } }, 404);
     }
@@ -1206,12 +1209,13 @@ function requestId(c: { res: { headers: Headers }; req: { header: (name: string)
 
 async function loadPurchaseOrderSiteId(
     db: ReturnType<typeof getSupabaseAdmin>,
-    purchaseOrderId: string
+    purchaseOrderId: string,
+    storeIds: string[]
 ) {
     const { data, error } = await db
         .from('purchase_orders')
         .select('site_id')
-        .eq('id', purchaseOrderId)
+        .eq('id', purchaseOrderId).in('site_id', storeIds)
         .is('deleted_at', null)
         .single();
 
@@ -1222,12 +1226,13 @@ async function loadPurchaseOrderSiteId(
 
 async function loadTransferSiteId(
     db: ReturnType<typeof getSupabaseAdmin>,
-    transferId: string
+    transferId: string,
+    storeIds: string[]
 ) {
     const { data, error } = await db
         .from('inventory_transfers')
         .select('site_id')
-        .eq('id', transferId)
+        .eq('id', transferId).in('site_id', storeIds)
         .is('deleted_at', null)
         .single();
 

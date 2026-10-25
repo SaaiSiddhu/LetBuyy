@@ -1,0 +1,178 @@
+TAP version 13
+# Subtest: buyer identity update without a channel preserves the cart acquisition channel
+ok 1 - buyer identity update without a channel preserves the cart acquisition channel
+  ---
+  duration_ms: 20.81925
+  type: 'test'
+  ...
+# Subtest: D6 checkout handoff canonical binding is content stable and order independent
+ok 2 - D6 checkout handoff canonical binding is content stable and order independent
+  ---
+  duration_ms: 1.458833
+  type: 'test'
+  ...
+# Subtest: D6 cart checkout URL signs the cart content digest, not just cart identity
+ok 3 - D6 cart checkout URL signs the cart content digest, not just cart identity
+  ---
+  duration_ms: 0.128042
+  type: 'test'
+  ...
+# Subtest: D6 hosted checkout rejects mutated cart handoffs by recomputing digest from server cart
+ok 4 - D6 hosted checkout rejects mutated cart handoffs by recomputing digest from server cart
+  ---
+  duration_ms: 0.182667
+  type: 'test'
+  ...
+# Subtest: marketplace cart admission and checkout preserve listing identity through dedicated order transaction
+ok 5 - marketplace cart admission and checkout preserve listing identity through dedicated order transaction
+  ---
+  duration_ms: 0.690167
+  type: 'test'
+  ...
+# Subtest: D6 order inventory path uses reserve then commit lifecycle and rollback restores direct decrement
+ok 6 - D6 order inventory path uses reserve then commit lifecycle and rollback restores direct decrement
+  ---
+  duration_ms: 0.088959
+  type: 'test'
+  ...
+# Subtest: D6 payment capture no longer directly adjusts product stock from legacy JSON orders
+ok 7 - D6 payment capture no longer directly adjusts product stock from legacy JSON orders
+  ---
+  duration_ms: 0.093334
+  type: 'test'
+  ...
+# Subtest: D6 stale reservation sweeper is scheduled in queue-workers
+ok 8 - D6 stale reservation sweeper is scheduled in queue-workers
+  ---
+  duration_ms: 0.094166
+  type: 'test'
+  ...
+# Subtest: D6 hosted checkout origin is provisioned as config and human-applied DNS
+ok 9 - D6 hosted checkout origin is provisioned as config and human-applied DNS
+  ---
+  duration_ms: 0.090334
+  type: 'test'
+  ...
+# Subtest: Task 003 checkout routes mount public session steps and split branding auth
+ok 10 - Task 003 checkout routes mount public session steps and split branding auth
+  ---
+  duration_ms: 1.116917
+  type: 'test'
+  ...
+# Subtest: Task 003 checkout verifies signed handoff, uses idempotency, and queues review for a captured mismatch
+ok 11 - Task 003 checkout verifies signed handoff, uses idempotency, and queues review for a captured mismatch
+  ---
+  duration_ms: 0.345333
+  type: 'test'
+  ...
+# Subtest: Wave 7 checkout confirm creates server order and posts provider capture to ledger
+ok 12 - Wave 7 checkout confirm creates server order and posts provider capture to ledger
+  ---
+  duration_ms: 0.379333
+  type: 'test'
+  ...
+# Subtest: hosted Razorpay intent creates and persists a server order before returning a public checkout binding
+ok 13 - hosted Razorpay intent creates and persists a server order before returning a public checkout binding
+  ---
+  duration_ms: 0.074917
+  type: 'test'
+  ...
+# Subtest: hosted Razorpay confirmation checks provider capture status and exact bound amount before ledger posting
+ok 14 - hosted Razorpay confirmation checks provider capture status and exact bound amount before ledger posting
+  ---
+  duration_ms: 0.074917
+  type: 'test'
+  ...
+# Subtest: hosted checkout binds only a verified buyer before origin transfer and confirms through the buyer-owned order RPC
+ok 15 - hosted checkout binds only a verified buyer before origin transfer and confirms through the buyer-owned order RPC
+  ---
+  duration_ms: 0.130209
+  type: 'test'
+  ...
+# Subtest: Wave 7 checkout confirm fails closed for unsupported hosted payment methods
+ok 16 - Wave 7 checkout confirm fails closed for unsupported hosted payment methods
+  ---
+  duration_ms: 0.099125
+  type: 'test'
+  ...
+# Subtest: Task 003 checkout core exposes lifecycle schemas and data-only branding
+ok 17 - Task 003 checkout core exposes lifecycle schemas and data-only branding
+  ---
+  duration_ms: 0.058
+  type: 'test'
+  ...
+# Subtest: Task 003 checkout migration extends sessions, adds branding, RLS, rollback, and no code execution
+ok 18 - Task 003 checkout migration extends sessions, adds branding, RLS, rollback, and no code execution
+  ---
+  duration_ms: 0.19775
+  type: 'test'
+  ...
+# Subtest: Task 003 hosted checkout live origin is human-required, not auto-cut over
+ok 19 - Task 003 hosted checkout live origin is human-required, not auto-cut over
+  ---
+  duration_ms: 0.451208
+  type: 'test'
+  ...
+# Subtest: signed hosted delivery options use storefront quotes for storefront carts and preserve per-rate COD eligibility
+ok 20 - signed hosted delivery options use storefront quotes for storefront carts and preserve per-rate COD eligibility
+  ---
+  duration_ms: 0.174333
+  type: 'test'
+  ...
+# Subtest: marketplace cart rejects a mixed-seller cart before product or cart persistence
+ok 21 - marketplace cart rejects a mixed-seller cart before product or cart persistence
+  ---
+  duration_ms: 19.753334
+  type: 'test'
+  ...
+# Subtest: same-seller marketplace lines pass seller binding and reach product hydration
+ok 22 - same-seller marketplace lines pass seller binding and reach product hydration
+  ---
+  duration_ms: 1.553584
+  type: 'test'
+  ...
+# Subtest: only exact product UUID PATCH hands off to its canonical receipt; all other generic key guards remain
+ok 23 - only exact product UUID PATCH hands off to its canonical receipt; all other generic key guards remain
+  ---
+  duration_ms: 20.585917
+  type: 'test'
+  ...
+# Subtest: canonical edit requires the exact positive version and a retained save UUID
+ok 24 - canonical edit requires the exact positive version and a retained save UUID
+  ---
+  duration_ms: 2.549167
+  type: 'test'
+  ...
+# Subtest: edit plan keeps stable variant identity and omits untouched inventory instead of applying create defaults
+ok 25 - edit plan keeps stable variant identity and omits untouched inventory instead of applying create defaults
+  ---
+  duration_ms: 1.068541
+  type: 'test'
+  ...
+# Subtest: TypeScript SDK forwards a stable intent key and loaded version without calculating the next version
+ok 26 - TypeScript SDK forwards a stable intent key and loaded version without calculating the next version
+  ---
+  duration_ms: 0.992334
+  type: 'test'
+  ...
+# Subtest: canonical status vocabulary preserves all three pairs and rejects malformed or mismatched commands
+ok 27 - canonical status vocabulary preserves all three pairs and rejects malformed or mismatched commands
+  ---
+  duration_ms: 0.846583
+  type: 'test'
+  ...
+# Subtest: existing TypeScript SDK forwards each canonical status pair and literal list filter unchanged
+ok 28 - existing TypeScript SDK forwards each canonical status pair and literal list filter unchanged
+  ---
+  duration_ms: 1.768375
+  type: 'test'
+  ...
+1..28
+# tests 28
+# suites 0
+# pass 28
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 772.885

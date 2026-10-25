@@ -27,6 +27,7 @@ import {
     planShippingZoneUpdate,
     planTaxRateCreate,
     planTaxRateUpdate,
+    serializeMerchantTaxRate,
     type CreateShippingRateInput,
     type CreateShippingZoneInput,
     type CreateTaxRateInput,
@@ -323,7 +324,7 @@ router.get('/taxes', async (c) => {
         if (isMissingTaxSchemaError(error)) return c.json({ error: { code: 'TAX_SCHEMA_MISSING', message: 'Tax settings are unavailable.' } }, 503);
         return c.json({ error: { code: 'DB_ERROR', message: 'Unable to access settings' } }, 500);
     }
-    return c.json(success(data || []));
+    return c.json(success((data || []).map(serializeMerchantTaxRate)));
 });
 
 // POST /taxes — Create a tax rate
@@ -354,7 +355,7 @@ router.post('/taxes', validate('json', CreateTaxRateSchema), async (c) => {
         }
         return c.json({ error: { code: 'DB_ERROR', message: 'Unable to access settings' } }, 500);
     }
-    return c.json(success(data), 201);
+    return c.json(success(serializeMerchantTaxRate(data)), 201);
 });
 
 // PATCH /taxes/:id — Update a tax rate
@@ -377,7 +378,7 @@ router.patch('/taxes/:id', validate('json', UpdateTaxRateSchema), async (c) => {
         }
         return c.json({ error: { code: 'DB_ERROR', message: 'Unable to access settings' } }, 500);
     }
-    return c.json(success(data));
+    return c.json(success(serializeMerchantTaxRate(data)));
 });
 
 // DELETE /taxes/:id

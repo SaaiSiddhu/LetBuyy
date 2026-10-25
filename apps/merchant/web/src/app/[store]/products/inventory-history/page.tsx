@@ -265,7 +265,8 @@ export default function InventoryHistoryPage() {
 
     return (
         <Page>
-            <PageHeader
+            <PageHeader identity="products"
+                recipe="index"
                 title="Inventory History"
                 description="Movement and adjustment records for your products"
             />

@@ -1,0 +1,324 @@
+{
+  "runId": "936e5f577646",
+  "sourceProof": "ca4eb60667972e4a8c8ac61a78a0303fcdaca10b1d9189e9f5675864f689fe6a",
+  "status": "FINITE_DEWDROP_BOUNDARY_REPORT_NOT_WHOLE_THEME_ACCEPTANCE",
+  "safeWorkingCutoffUtc": "2026-10-24T08:50:00Z",
+  "primaryOrders": 1,
+  "syntheticLegacyOrders": 1,
+  "otherPrimaryProducts": {
+    "labelledSecurityControl": "b2b7303f-d78f-468e-b658-ea90e8d0a2d8"
+  },
+  "cases": [
+    {
+      "id": "B00",
+      "status": "PASS",
+      "runId": "936e5f577646",
+      "notes": [
+        "Functional cycle accepted separately. Typography mismatch tracked, visual parity not accepted."
+      ],
+      "evidence": [
+        "stable936-B00-completed.json"
+      ]
+    },
+    {
+      "id": "M01",
+      "status": "PASS",
+      "runId": "936e5f577646",
+      "notes": [],
+      "evidence": [
+        "stable936-M01-completed.json"
+      ]
+    },
+    {
+      "id": "M02",
+      "status": "PASS",
+      "runId": "936e5f577646",
+      "notes": [
+        "Canonicalfixturecreate receipt whitelistedIDs compared to actualnormalUIacknowledgedSave/readback; all3durableIDs, exact520/560/590,4/4/0beforepurchase, Hindioptions/RGB-distinctidentity/common6ml verified. No browser mainTintcreation claimed."
+      ],
+      "evidence": [
+        "stable936-M02-completed.json"
+      ]
+    },
+    {
+      "id": "M03",
+      "status": "PASS",
+      "runId": "936e5f577646",
+      "notes": [],
+      "evidence": [
+        "stable936-M03-unsupported-variant-beauty-result.json"
+      ]
+    },
+    {
+      "id": "M04",
+      "status": "PARTIAL",
+      "runId": "936e5f577646",
+      "notes": [
+        "Native400/400/409 andexactcapturedsetupAPIreplay; normalUIduplicatedraftshowedinlineissue, Savewasrefusedanddraftkept; normalDiscardleftformandnewclientread15unchanged. ExactbrowserSaveHTTPreplaynotcaptured/claimed."
+      ],
+      "evidence": [
+        "stable936-M04-unknown-shade-result.json",
+        "stable936-M04-duplicate-shade-result.json",
+        "stable936-M04-stale-version-result.json",
+        "stable936-M04-cloud-exact-replay-result.json",
+        "stable936-M04-duplicate-draft-kept.ax.txt",
+        "stable936-M04-invalid-Save-draft-kept.ax.txt"
+      ]
+    },
+    {
+      "id": "M05",
+      "status": "PARTIAL",
+      "runId": "936e5f577646",
+      "notes": [
+        "Actual memberships2/1/1 saved, resources bound/published correctly. List falsely shows0; coordinator owns fix/retest."
+      ],
+      "evidence": [
+        "stable936-M05-membership-after-ui-saves.json",
+        "stable936-M05-editor-three-resources-reloaded.ax.txt",
+        "stable936-M05-public-resource-links-settled.ax.txt"
+      ]
+    },
+    {
+      "id": "D01",
+      "status": "PASS",
+      "runId": "936e5f577646",
+      "notes": []
+    },
+    {
+      "id": "D02",
+      "status": "PARTIAL",
+      "runId": "936e5f577646",
+      "notes": [
+        "Reachable unknown-only and zero cohorts behave honestly; missing/malformed/unsupported live transport unreachable. Separate20-test component suite not live-browser acceptance."
+      ],
+      "evidence": [
+        "stable936-D02-unknown-only-browser.ax.txt",
+        "stable936-dewdrop-discovery-metadata.json"
+      ]
+    },
+    {
+      "id": "D03",
+      "status": "PASS",
+      "runId": "936e5f577646",
+      "notes": []
+    },
+    {
+      "id": "D04",
+      "status": "PASS",
+      "runId": "936e5f577646",
+      "notes": []
+    },
+    {
+      "id": "D05",
+      "status": "PASS",
+      "runId": "936e5f577646",
+      "notes": []
+    },
+    {
+      "id": "D06",
+      "status": "PASS",
+      "runId": "936e5f577646",
+      "notes": []
+    },
+    {
+      "id": "D07",
+      "status": "PASS",
+      "runId": "936e5f577646",
+      "notes": []
+    },
+    {
+      "id": "P01",
+      "status": "PASS",
+      "runId": "936e5f577646",
+      "notes": []
+    },
+    {
+      "id": "P02",
+      "status": "PASS",
+      "runId": "936e5f577646",
+      "notes": []
+    },
+    {
+      "id": "P03",
+      "status": "PARTIAL",
+      "runId": "936e5f577646",
+      "notes": [
+        "409variantrequired/400unknownvariant/foreign-own200 beforewrongsite404. Actual foreign-variant UUID rejection not yet separately tested; no new cart-control request budget."
+      ],
+      "evidence": [
+        "stable936-P03-variant-required-result.json",
+        "stable936-P03-unknown-variant-result.json",
+        "stable936-P03-foreign-site-cart.json"
+      ]
+    },
+    {
+      "id": "C01",
+      "status": "PASS",
+      "runId": "936e5f577646",
+      "notes": [],
+      "evidence": [
+        "stable936-primary-purchase-completed.json"
+      ]
+    },
+    {
+      "id": "C02",
+      "status": "PASS",
+      "runId": "936e5f577646",
+      "notes": [
+        "Original response projection null diagnostic retained. Supplemental guarded durable read proves accepted Pink/PC02/560/6ml while spoof property remains non-authoritative; no extra HTTP/mutation."
+      ],
+      "evidence": [
+        "stable936-C02-client-price-result.json",
+        "stable936-C02-client-niche-snapshot-result.json",
+        "stable936-C02-client-product-snapshot-result.json",
+        "stable936-C02-properties-spoof-durable-addendum.json"
+      ]
+    },
+    {
+      "id": "C03",
+      "status": "PASS",
+      "runId": "936e5f577646",
+      "notes": [
+        "Final corrected functional outcome proved; original controller price-field mistake retained. Normal v1 catalogue/cart recovery now complete at36; visual retake remains separate."
+      ],
+      "evidence": [
+        "stable936-history-stale-archive-completed.json",
+        "stable936-R01-baseline-recovery-completed.json"
+      ]
+    },
+    {
+      "id": "A01",
+      "status": "PASS",
+      "runId": "936e5f577646",
+      "notes": [],
+      "evidence": [
+        "stable936-primary-purchase-completed.json"
+      ]
+    },
+    {
+      "id": "H01",
+      "status": "PASS",
+      "runId": "936e5f577646",
+      "notes": [],
+      "evidence": [
+        "stable936-primary-purchase-completed.json"
+      ]
+    },
+    {
+      "id": "H02",
+      "status": "PASS",
+      "runId": "936e5f577646",
+      "notes": [],
+      "evidence": [
+        "stable936-dewdrop-H02-exact-confirm-retry.json",
+        "stable936-dewdrop-H02-same-key-conflict-result.json"
+      ]
+    },
+    {
+      "id": "O01",
+      "status": "PASS",
+      "runId": "936e5f577646",
+      "notes": [],
+      "evidence": [
+        "stable936-primary-purchase-completed.json"
+      ]
+    },
+    {
+      "id": "O02",
+      "status": "PASS",
+      "runId": "936e5f577646",
+      "notes": [],
+      "evidence": [
+        "stable936-primary-purchase-completed.json"
+      ]
+    },
+    {
+      "id": "O03",
+      "status": "PASS",
+      "runId": "936e5f577646",
+      "notes": [
+        "Final corrected functional outcome proved; original controller price-field mistake retained. Normal v1 catalogue/cart recovery now complete at36; visual retake remains separate."
+      ],
+      "evidence": [
+        "stable936-history-stale-archive-completed.json",
+        "stable936-R01-baseline-recovery-completed.json"
+      ]
+    },
+    {
+      "id": "O04",
+      "status": "PASS",
+      "runId": "936e5f577646",
+      "notes": [
+        "Final corrected functional outcome proved; original controller price-field mistake retained. Normal v1 catalogue/cart recovery now complete at36; visual retake remains separate."
+      ],
+      "evidence": [
+        "stable936-history-stale-archive-completed.json",
+        "stable936-R01-baseline-recovery-completed.json"
+      ]
+    },
+    {
+      "id": "O05",
+      "status": "PARTIAL",
+      "runId": "936e5f577646",
+      "notes": [
+        "Actual Buyer A own positive; signed foreign-site denial; home-positive restore; normal Buyer B positive then denial; normal signout missing-session denial; normal A signin/consent/account/order/private-BFF positive restored. HTTP statuses not observed for browser private-BFF navigation. Backend unavailable-context503 not live-executed; Root explicitly declined disabled-account mutation."
+      ],
+      "evidence": [
+        "stable936-O05-A-primary-positive-before-foreign.ax.txt",
+        "stable936-O05-A-foreign-account-positive-reloaded.ax.txt",
+        "stable936-O05-A-foreign-signed-BFF-denied.json",
+        "stable936-O05-A-foreign-signed-Liquid-denied.ax.txt",
+        "stable936-O05-A-primary-restored-after-foreign.ax.txt",
+        "stable936-O05-B-account-positive-reloaded.ax.txt",
+        "stable936-O05-B-private-BFF-denied.json",
+        "stable936-O05-B-Liquid-order-denied.ax.txt",
+        "stable936-O05-missing-session-private-BFF-denied.json",
+        "stable936-O05-missing-session-Liquid-denied.ax.txt",
+        "stable936-O05-A-restored-final-account.ax.txt",
+        "stable936-O05-A-restored-final-primary-order.ax.txt",
+        "stable936-O05-A-restored-private-BFF-positive.json"
+      ]
+    },
+    {
+      "id": "S01",
+      "status": "PARTIAL",
+      "runId": "936e5f577646",
+      "notes": [
+        "ActualinertPDP/searchcard and benignrecovery passed. Unavailableonlycohort offered noformatfacetchooser; no unsafechoice roundtrip, no network-zero claim."
+      ],
+      "evidence": [
+        "stable936-S01-branch-result.json"
+      ]
+    },
+    {
+      "id": "S02",
+      "status": "PASS",
+      "runId": "936e5f577646",
+      "notes": [
+        "Final corrected functional outcome proved; original controller price-field mistake retained. Normal v1 catalogue/cart recovery now complete at36; visual retake remains separate."
+      ],
+      "evidence": [
+        "stable936-history-stale-archive-completed.json",
+        "stable936-R01-baseline-recovery-completed.json"
+      ]
+    },
+    {
+      "id": "R01",
+      "status": "PASS",
+      "runId": "936e5f577646",
+      "notes": [
+        "Finite30-case report and baseline recovery completed; scope-specific gaps explicit. UI context handed back to Root; no shared fixture/resource cleanup performed. Source checkpoints and historical evidence preserved. Shared fixture remains owner-controlled for all10."
+      ],
+      "evidence": [
+        "stable936-R01-baseline-recovery-completed.json"
+      ]
+    }
+  ],
+  "note": "Controller running ledger, distinct from independent owner acceptance audit; update as remaining actual tests complete.",
+  "recordedAt": "2026-10-24T04:41:28.057064+00:00",
+  "currentProductVersion": 36,
+  "counts": {
+    "PARTIAL": 6,
+    "PASS": 24
+  }
+}

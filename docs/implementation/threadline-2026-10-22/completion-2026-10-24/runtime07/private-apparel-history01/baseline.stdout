@@ -1,0 +1,36 @@
+{
+  "classification": "PURE_SOURCE_BASELINE_NOT_RUNTIME_OR_NEW_ORDER",
+  "modulePath": "/private/tmp/letbuyy-shared-completion-20261024-06/packages/commerce-core/src/index.ts",
+  "snapshot": {
+    "version": 1,
+    "facts": {},
+    "selected_options": [
+      {
+        "name": "Color",
+        "value": "Oat"
+      },
+      {
+        "name": "Size",
+        "value": "M"
+      }
+    ]
+  },
+  "summary": [
+    {
+      "id": "selected-options",
+      "title": "Saved options",
+      "rows": [
+        {
+          "label": "Color",
+          "value": "Oat"
+        },
+        {
+          "label": "Size",
+          "value": "M"
+        }
+      ]
+    }
+  ],
+  "providerCalls": 0,
+  "databaseActions": 0
+}

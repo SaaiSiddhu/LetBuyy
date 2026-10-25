@@ -1,0 +1,83 @@
+{
+  "recordedAt": "2026-10-23T13:14:36.287430+00:00",
+  "throughMigration": 387,
+  "status": "Final02 with validated blank producer correction",
+  "files": [
+    {
+      "path": "database/supabase/migrations/386_storefront_discovery.sql",
+      "sha256": "33c2849f93fc594902e5017f00ab3141780bd06f856ce67f4a21aa77e87da81d"
+    },
+    {
+      "path": "database/supabase/migrations/387_theme_install_version_precondition.sql",
+      "sha256": "0e3efc617809fea71296d0325067b89b0b18c8e23210d9a6bda27ac05cbb61f0"
+    },
+    {
+      "path": "database/supabase/migrations/388_cart_order_fact_snapshots.sql",
+      "sha256": "9de7c35b68684cd5d3c752166e5c6ae0b33c64c6b1ea8ac353a82bcac936d2c3"
+    },
+    {
+      "path": "database/supabase/rollback/386_storefront_discovery.rollback.sql",
+      "sha256": "775db15081b25b1eeaa2d646fcb4695ec520f9d7ab470035cb40f8c979fdd2b5"
+    },
+    {
+      "path": "database/supabase/rollback/387_theme_install_version_precondition.rollback.sql",
+      "sha256": "d1d0f53a45c7af774c8d9dc709e32e05ccc5e313135ca841a01a6f4775f14ad2"
+    },
+    {
+      "path": "database/supabase/rollback/388_cart_order_fact_snapshots.rollback.sql",
+      "sha256": "12d10a0ef5043cfa330356dfae1b31b58df3c06f393c1d0db208ee4a9513ac5b"
+    },
+    {
+      "path": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "sha256": "cc11490138ae5c2f13ab022a60b4cc2fe7d8fc5eb766dbf087eeb227d6050d6e"
+    },
+    {
+      "path": "packages/theme-engine/src/index.ts",
+      "sha256": "1544081a6b4e1c7c276ed6cbfd1a9bd39fdbe10fca6406cd72b7ba1eb1d584e5"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-install-receipt.ts",
+      "sha256": "278368a657420943e69bd955649e962ae88327736ce8abf1ae12cde69d905d71"
+    },
+    {
+      "path": "packages/typescript/api-client/src/index.ts",
+      "sha256": "bca9564794dc06352982fbcaa04d91bb095402d0b3f63cdeb8cfa7feab0bad47"
+    },
+    {
+      "path": "scripts/governance/owned-database-provision.mjs",
+      "sha256": "e537a426bf0284a32d49728f31ea55d5d265f1dc5562ccb527a36c55eaaa0db7"
+    },
+    {
+      "path": "scripts/governance/run-executable-suites.mjs",
+      "sha256": "022085746f83c94979889a303044aa3b4503d53606f3f1e2ad3bd3084bc75213"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/theme-catalog-install.postgres.test.ts",
+      "sha256": "634b4e03bbf537d79d3375ff2539202a8c303d4afdccfa5a17482f09fdb2f6a2"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/theme-install-version.postgres.test.ts",
+      "sha256": "a6b3b6b7155f24fc2871b94965c7aab5fca301492cf91b11aca45105ef4a7357"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/theme-private-version.test.ts",
+      "sha256": "de1fbc9720366e8bd2576479977f65a685d5150a8443ebf325a5325e1a062f1c"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/theme-registry-version.test.ts",
+      "sha256": "5320bbf69a9d07865066d4cde7a8ca50cb4850855ec5024a79ddfeb58850e417"
+    },
+    {
+      "path": "services/api-gateway/src/execution/schema-registry-execution.adapter.ts",
+      "sha256": "a7133ae2003a23253ac7c9cbb16a92392dbcc8ffb199531ca0fd230ff70114ae"
+    },
+    {
+      "path": "services/api-gateway/src/execution/theme-execution.adapter.ts",
+      "sha256": "e35cdc441ddebe10d6e2f39d15967ef853ca380cbbf939889c8d30fecca32b72"
+    },
+    {
+      "path": "services/api-gateway/src/routes/themes.ts",
+      "sha256": "01ec865cb8d878485dee67c5665df1091b514bd822ddc036d5b99bdbcaf54f8d"
+    }
+  ]
+}

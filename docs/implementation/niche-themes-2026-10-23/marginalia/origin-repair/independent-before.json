@@ -1,0 +1,18 @@
+{
+  "checkedAt": "2026-10-23T15:10:13.339Z",
+  "classification": "INDEPENDENT_EXISTING_WRITER_TEST_REPRO_NOT_LIVE_BROWSER",
+  "command": "node --import tsx --test apps/merchant/web/src/lib/api/request-origin.test.ts",
+  "exitCode": 0,
+  "before": {
+    "apps/merchant/web/src/lib/api/request-origin.ts": "4e1671afcb62bba3dc1d93a3e588b92e58d0d9ba7a3c081e8df4ee6ddb174f96",
+    "apps/merchant/web/src/lib/api/request-origin.test.ts": "ab75dacb0c38c276a443e54319d8bdbba2bace03d522fbc96693f9e6d789a09f",
+    "apps/merchant/web/src/lib/staff/request-origin.ts": "39484b7ececbb61800d6e2b27bc19d8d03e36f952ff1a9d0b04342b9405b9318"
+  },
+  "after": {
+    "apps/merchant/web/src/lib/api/request-origin.ts": "4e1671afcb62bba3dc1d93a3e588b92e58d0d9ba7a3c081e8df4ee6ddb174f96",
+    "apps/merchant/web/src/lib/api/request-origin.test.ts": "ab75dacb0c38c276a443e54319d8bdbba2bace03d522fbc96693f9e6d789a09f",
+    "apps/merchant/web/src/lib/staff/request-origin.ts": "39484b7ececbb61800d6e2b27bc19d8d03e36f952ff1a9d0b04342b9405b9318"
+  },
+  "stable": true,
+  "sourceEdited": false
+}

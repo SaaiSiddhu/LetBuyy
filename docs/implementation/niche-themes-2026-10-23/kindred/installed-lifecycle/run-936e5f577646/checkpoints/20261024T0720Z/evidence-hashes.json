@@ -1,0 +1,35 @@
+{
+  "recordedAt": "2026-10-24T07:23:05.656838+00:00",
+  "inputs": [
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-kindred-G01-products-before.ax.txt",
+      "copy": "inputs/stable936-kindred-G01-products-before.ax.txt",
+      "sha256": "760367817cd1c7c55488b0ee6e49010c9d0ba177d381888f7633363a04898608",
+      "bytes": 23767
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-kindred-G03-discovery-keys-draft.ax.txt",
+      "copy": "inputs/stable936-kindred-G03-discovery-keys-draft.ax.txt",
+      "sha256": "d5adbdb2ba09dcda6b43347aa54f8661fcaf2284e3c5bb3b5b60a0976e810ad4",
+      "bytes": 15482
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-kindred-installed-readback.json",
+      "copy": "inputs/stable936-kindred-installed-readback.json",
+      "sha256": "2912b885d706d4d3272caeeb7c548839254480415f3ee3fc6808f2a11b71bb6e",
+      "bytes": 7708
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-kindred-lifecycle-before-ui.json",
+      "copy": "inputs/stable936-kindred-lifecycle-before-ui.json",
+      "sha256": "842f257b4342729f494c9159145514a3b57ffc789e67871a398ba81a4925d431",
+      "bytes": 8400
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-kindred-lifecycle-after-g03-keys.json",
+      "copy": "inputs/stable936-kindred-lifecycle-after-g03-keys.json",
+      "sha256": "41cbfae599ca3fba14332a28406dacb1799f01bd837ee0b8a0c4307fe0abea1b",
+      "bytes": 8560
+    }
+  ]
+}

@@ -1,0 +1,121 @@
+{
+  "recordedAt": "2026-10-23T09:16:26.709188+00:00",
+  "classification": "SOURCE_CONTRACT_ONLY_NOT_INSTALLED_OR_BROWSER_ACCEPTANCE",
+  "checkpoint": "final-discovery-handoff-01",
+  "passedTemplates": 210,
+  "failed": 0,
+  "skipped": 0,
+  "sourceStable": true,
+  "inputCount": 88,
+  "probe": {
+    "path": "docs/implementation/theme-editor-2026-10-23/evidence/v2-editor-source-probe.mjs",
+    "sha256": "c06b21aea621540476c83dcf0d643dfd74b63f22fcbd52dadd0ffa6444fa59b7"
+  },
+  "report": {
+    "path": "docs/implementation/theme-editor-2026-10-23/evidence/v2-editor-source-roundtrip-passing-checkpoint-01.json",
+    "sha256": "9854a874fd825d43ef2f440094f246d0a3f53b1a40fce96676e22f0559b89ab2"
+  },
+  "helperInputs": [
+    {
+      "path": "apps/merchant/web/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx",
+      "sha256": "8fe3b25fa551758fd4b9bf2c040b9cbc8810f71df331f5b1b39559790c2c637c"
+    },
+    {
+      "path": "services/api-gateway/src/execution/schema-registry-execution.adapter.ts",
+      "sha256": "a181fc35cb97ce58d2be93ebbd40fe299f95333640c54548284955c20be18e99"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/editor-view-state.ts",
+      "sha256": "80d4d2b3fb4b3c61bfa30830360f393a0c0f773084176cb269997002b2366d68"
+    },
+    {
+      "path": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "sha256": "cc11490138ae5c2f13ab022a60b4cc2fe7d8fc5eb766dbf087eeb227d6050d6e"
+    },
+    {
+      "path": "packages/theme-engine/src/index.ts",
+      "sha256": "1544081a6b4e1c7c276ed6cbfd1a9bd39fdbe10fca6406cd72b7ba1eb1d584e5"
+    },
+    {
+      "path": "packages/theme-engine/src/portable-to-liquid.ts",
+      "sha256": "c981e822ec3f51bd7975e72862a957fc011b14a7f8984cdd0b38f8ba9a27803b"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-bundle.ts",
+      "sha256": "cdbad4b28277431a3ab06e56ed0ce16539e04837bb107f5f951a3df39a92ed76"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-document.ts",
+      "sha256": "7ba285a54d71a01545c4cb1e4a3c1540a30caae2db793079b2b3cb32b8612412"
+    }
+  ],
+  "bundles": [
+    {
+      "slug": "letbuyy-forge",
+      "name": "Circuit",
+      "version": "2.0.0",
+      "sha256": "14e72e526669bd8e7f2e252bfebdd5894e292fd6a888990a38c4d9528732eead"
+    },
+    {
+      "slug": "letbuyy-sense",
+      "name": "Threadline",
+      "version": "2.0.0",
+      "sha256": "61082be647eadae9b6e42002be241a82ba6c3627427568f6e64e2cf961c3742e"
+    },
+    {
+      "slug": "letbuyy-aura",
+      "name": "Dewdrop",
+      "version": "2.0.0",
+      "sha256": "e1f8ee24971241d472ec34e50b855fdb94cea769cdde777bd119ba3c1d17619c"
+    },
+    {
+      "slug": "letbuyy-craft",
+      "name": "Habitat",
+      "version": "2.0.0",
+      "sha256": "228b32004fa0791101a7b82393b1a1c3a893599ad92bca8ef992f1db457b6510"
+    },
+    {
+      "slug": "letbuyy-refresh",
+      "name": "Pantry",
+      "version": "2.0.0",
+      "sha256": "6b05ab842f55dd6fcc7b99991a5e5160a5214e4417aedd46c343e94a3041a718"
+    },
+    {
+      "slug": "letbuyy-ride",
+      "name": "Trailmark",
+      "version": "2.0.0",
+      "sha256": "1fb9cb5b22e7cb9fef0265166b252ee305d6c910f044b8eb1dddc5b6c2af7d76"
+    },
+    {
+      "slug": "letbuyy-dawn",
+      "name": "Marginalia",
+      "version": "2.0.0",
+      "sha256": "d98a0388e3775d4f00dec8c992316af74d8255fd993cc08fc47032b7b4a8aee0"
+    },
+    {
+      "slug": "letbuyy-bloom",
+      "name": "Playfield",
+      "version": "2.0.0",
+      "sha256": "eb21c6b0e48b40cb11b5f3ba1e45f6f2ec8c50667175e82c8edb6bbe36299efc"
+    },
+    {
+      "slug": "letbuyy-nova",
+      "name": "MadeYours",
+      "version": "2.0.0",
+      "sha256": "a06efcb494f2d8b47d901b57388743de7a1bece20afe818255e8c03ae60597f8"
+    },
+    {
+      "slug": "letbuyy-summit",
+      "name": "Kindred",
+      "version": "2.0.0",
+      "sha256": "4702e911bbc5d90b9ec46b9ff3d902249d7411b699e0a0c81283a713f91c1655"
+    }
+  ],
+  "notClaimed": [
+    "installed version",
+    "real database save",
+    "browser save",
+    "public publishing",
+    "rollback or recovery"
+  ]
+}

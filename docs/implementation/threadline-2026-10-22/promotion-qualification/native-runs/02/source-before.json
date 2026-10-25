@@ -1,0 +1,274 @@
+{
+  "capturedAt": "2026-10-23T13:53:36.208548+00:00",
+  "runId": "eccf5f1df418",
+  "suiteSha256": "0a17994cf8b1b3b634b991ab70b8c47dbea48bb925bc64ffbd0747a5a10057bc",
+  "inputPins": [
+    {
+      "path": "docs/implementation/niche-theme-programme/release-v2/proposals/81e91859ebc8c497a49da337d064e1885a76964839d14e39f4a0a3de2283f47f/letbuyy-aura-2.0.0.json",
+      "sha256": "9c274b283c2fc36b42658033e79004b4c9ccbf84ad3417aabca6174c7e1674e7"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/release-v2/proposals/81e91859ebc8c497a49da337d064e1885a76964839d14e39f4a0a3de2283f47f/letbuyy-bloom-2.0.0.json",
+      "sha256": "de251c7edc9bae2e18edcd9cae0ff474b9545222da782a470f509633e41f5299"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/release-v2/proposals/81e91859ebc8c497a49da337d064e1885a76964839d14e39f4a0a3de2283f47f/letbuyy-craft-2.0.0.json",
+      "sha256": "16db7fb8ea5dafb12d4c075d49222abfd5e15fc85a23ad13923d649e94767326"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/release-v2/proposals/81e91859ebc8c497a49da337d064e1885a76964839d14e39f4a0a3de2283f47f/letbuyy-dawn-2.0.0.json",
+      "sha256": "a4e23c63a700f87294a291a1760b94a93d2ee594f9bfea55038c0ff7ab335f3c"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/release-v2/proposals/81e91859ebc8c497a49da337d064e1885a76964839d14e39f4a0a3de2283f47f/letbuyy-forge-2.0.0.json",
+      "sha256": "47d6f0cf0b07adbf6266fb2fb2d4584932c7173497d8f5d838d4b4a70c428568"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/release-v2/proposals/81e91859ebc8c497a49da337d064e1885a76964839d14e39f4a0a3de2283f47f/letbuyy-nova-2.0.0.json",
+      "sha256": "71c1690f66cd4176a3c3b9b9768ef86c3f6134afa0ea4ab6dda2ea5791186ba0"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/release-v2/proposals/81e91859ebc8c497a49da337d064e1885a76964839d14e39f4a0a3de2283f47f/letbuyy-refresh-2.0.0.json",
+      "sha256": "39866e8607d2f0e98bd6abafd4d33141e915b44140d2e8f70c2893462dae8cf9"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/release-v2/proposals/81e91859ebc8c497a49da337d064e1885a76964839d14e39f4a0a3de2283f47f/letbuyy-ride-2.0.0.json",
+      "sha256": "0ac93f9e452fe455301fc30f598b85c7541edeb4fcc87c2e21ed0d81316419f5"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/release-v2/proposals/81e91859ebc8c497a49da337d064e1885a76964839d14e39f4a0a3de2283f47f/letbuyy-summit-2.0.0.json",
+      "sha256": "54f9d916749d64f80b6bd5dd6ec85a7e50b5e17bef765e61fffe727d94c8d411"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/release-v2/generate-release.ts",
+      "sha256": "ccbd78a2b0b47e8a6cfb33390965a32ddc611711cc4c369772199db5adb389b3"
+    },
+    {
+      "path": "packages/theme-engine/package.json",
+      "sha256": "8eec1e66946b79412200297e8755d67f6769fe49beec86c5d7eeb2ccf013b763"
+    },
+    {
+      "path": "packages/theme-engine/src/built-in-section-schemas.ts",
+      "sha256": "5e44b89d7ebc3d40b82e7d12dfccf399f7a336d39e1a1b04c7deaf4c57486734"
+    },
+    {
+      "path": "packages/theme-engine/src/circuit-discovery.ts",
+      "sha256": "160c6a61a567f87bbcab20bf337336ede6e748c1326110ab977f61ec9c14523b"
+    },
+    {
+      "path": "packages/theme-engine/src/circuit-styles.ts",
+      "sha256": "09c1be83d56d1640770bcf8c76df249f4fa309aa227d81a3d46d0f81879911c2"
+    },
+    {
+      "path": "packages/theme-engine/src/circuit-theme.ts",
+      "sha256": "44f78cdaa4d9241723b7bc9ae0f0952d946e72b11775c05160c9949f87a69d2a"
+    },
+    {
+      "path": "packages/theme-engine/src/dewdrop-discovery.ts",
+      "sha256": "a9d866eeb5dedc2b123bdf2a287b9a0be23789b39c93c1e1872471c975de1fe1"
+    },
+    {
+      "path": "packages/theme-engine/src/dewdrop-styles.ts",
+      "sha256": "693a0be116d404baac41ef0b044ce69f6c8dcf35d4dfe26b02ac507678ba129e"
+    },
+    {
+      "path": "packages/theme-engine/src/dewdrop-theme.ts",
+      "sha256": "ec0cf0890c607056c1da13087b1c51ee6931d120c46370802360b740f0693190"
+    },
+    {
+      "path": "packages/theme-engine/src/experience-apply.ts",
+      "sha256": "fcf62ca230b604f6dd4d33cc34a1b0d990caa131f815fc3666dae4fbce15f6b4"
+    },
+    {
+      "path": "packages/theme-engine/src/experience-compositions.ts",
+      "sha256": "25b73068b7a4fcce5b4bad3768a376e08c7e384e843f707c3cf8f8fb361abc68"
+    },
+    {
+      "path": "packages/theme-engine/src/experience-fonts.ts",
+      "sha256": "3ee9bdb23a8c18410fd36ee6302f0f8fae929484a7c2dbfd9bc6a424e30f64be"
+    },
+    {
+      "path": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "sha256": "cc11490138ae5c2f13ab022a60b4cc2fe7d8fc5eb766dbf087eeb227d6050d6e"
+    },
+    {
+      "path": "packages/theme-engine/src/habitat-discovery.ts",
+      "sha256": "342843da57a6eef8488d906218d4225338f9f3c0afe2bbcc49073f3f34a1f873"
+    },
+    {
+      "path": "packages/theme-engine/src/habitat-styles.ts",
+      "sha256": "e4b89a41c526cc9a96e0e3106e084124717eb56d9837bcf09214045d7fa817e6"
+    },
+    {
+      "path": "packages/theme-engine/src/habitat-theme.ts",
+      "sha256": "0144fdf830ab3c5ddf42ebfcb86258b99e74ed8a8d724469012479705352e8c3"
+    },
+    {
+      "path": "packages/theme-engine/src/kindred-discovery.ts",
+      "sha256": "14dd29777737158a61287bf54e98571c6b3abf1e07ec542d2e7f678180ad473f"
+    },
+    {
+      "path": "packages/theme-engine/src/kindred-styles.ts",
+      "sha256": "15e6670f6556a7b9cfd8e56891088f0abe9a8ffa1105822be1a1902ecd7282cf"
+    },
+    {
+      "path": "packages/theme-engine/src/kindred-theme.ts",
+      "sha256": "3a47dc979dbdf5dce395fd44a858e007567820f4fac569fade603ff6da4fd551"
+    },
+    {
+      "path": "packages/theme-engine/src/madeyours-discovery.ts",
+      "sha256": "d1fc0993efd1d876e67c60f997e6cea53efd65a4fd7aba69bafe377f02803eda"
+    },
+    {
+      "path": "packages/theme-engine/src/madeyours-styles.ts",
+      "sha256": "5253e57fcb217526d7bf46e8ddc54b921a5f64ec42f69c7c0dae177eadb5ee6e"
+    },
+    {
+      "path": "packages/theme-engine/src/madeyours-theme.ts",
+      "sha256": "c56bdba5b9e9376c4a296cadc2d4f31a33598a033692d2f6c21daa71b3e98193"
+    },
+    {
+      "path": "packages/theme-engine/src/marginalia-discovery.ts",
+      "sha256": "a1c2c75b3497fc3f0edc1280686b75c7434e1a400c0944154c462561b62cc8d3"
+    },
+    {
+      "path": "packages/theme-engine/src/marginalia-styles.ts",
+      "sha256": "112747bc358f7fb1fcaafbec32d2bc4f866cec76f0a4324003650bf4dd80e88d"
+    },
+    {
+      "path": "packages/theme-engine/src/marginalia-theme.ts",
+      "sha256": "a109aa33018aa786dffaea7a067415b13fe73ddc17beca7ef18a83f58301b7e9"
+    },
+    {
+      "path": "packages/theme-engine/src/niche-order-presentation.ts",
+      "sha256": "6d3cb80e5dc5c922328ae0f653d74492cc202b0f4714fc08314a81a60cfdfc00"
+    },
+    {
+      "path": "packages/theme-engine/src/pantry-discovery.ts",
+      "sha256": "d9c09fe8097123623d26cde25ec9951233792adadbdf8d0eb6628659234759d0"
+    },
+    {
+      "path": "packages/theme-engine/src/pantry-styles.ts",
+      "sha256": "3a7e53583942a5188970d4f5e2901ce4e894ab3b4da55a30176073eaa03db278"
+    },
+    {
+      "path": "packages/theme-engine/src/pantry-theme.ts",
+      "sha256": "9c440d32f146b8155ba78f522da52979fd09a0f3d32c4b25e5c3e289ef390925"
+    },
+    {
+      "path": "packages/theme-engine/src/playfield-discovery.ts",
+      "sha256": "876769a92360a5cc8cd89ab69a436c12c1eda6df32eb4466bdda10111ef297a8"
+    },
+    {
+      "path": "packages/theme-engine/src/playfield-styles.ts",
+      "sha256": "7cb3da13790ec83dcb4bcf6a837abc68e53ebf9a8a49f44b5582af55b1d59243"
+    },
+    {
+      "path": "packages/theme-engine/src/playfield-theme.ts",
+      "sha256": "00493cb361c8fc796941524d9673ee4c1bfa3a12785017e2397e408b924edb63"
+    },
+    {
+      "path": "packages/theme-engine/src/schema-field-extensions.ts",
+      "sha256": "a5c53fdfc687bc9c7913ff64c1af1d51e496b70fd74b2a78e2b000bb66ee4d71"
+    },
+    {
+      "path": "packages/theme-engine/src/section-type-map.ts",
+      "sha256": "b262e6d801be599399f18a53944507ab6886c6d9488784381297f72658331d94"
+    },
+    {
+      "path": "packages/theme-engine/src/template-registry.ts",
+      "sha256": "2ab00379414a40769d793175dac97d4b795668587a48f081414326cfbb1555c7"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-bundle-core.ts",
+      "sha256": "0e1650a4d71ef358792c0f877f4ae678794fb6d2cfdebbb30d79563e4a2f452f"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-bundle.ts",
+      "sha256": "cdbad4b28277431a3ab06e56ed0ce16539e04837bb107f5f951a3df39a92ed76"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-document.ts",
+      "sha256": "7ba285a54d71a01545c4cb1e4a3c1540a30caae2db793079b2b3cb32b8612412"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-presets.ts",
+      "sha256": "283028890199a34e67863c337ebd0c788c830c60ddaa87854c3bad28f9581e82"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-registry.ts",
+      "sha256": "df47c3ff4a6bfb0b4dfb56a49559249ab69d44f876bf1d422ecda385f09533ce"
+    },
+    {
+      "path": "packages/theme-engine/src/threadline-discovery.ts",
+      "sha256": "a3fba143d1217f0da83cf70ab335da66e82bc79cb883a9ad0e3b48773459e4b8"
+    },
+    {
+      "path": "packages/theme-engine/src/threadline-styles.ts",
+      "sha256": "19927c48340b3ff3403b13a945ebe186bf928de638f47281b0fe0421ded48385"
+    },
+    {
+      "path": "packages/theme-engine/src/threadline-theme.ts",
+      "sha256": "1e922e6c056de5017f35dfe08827eef0b41212b96bbff5b6695ab087422d523b"
+    },
+    {
+      "path": "packages/theme-engine/src/trailmark-discovery.ts",
+      "sha256": "f69edf5815a19e513416ebb970e661793a88994a12f70e1e0e6d214f021741cb"
+    },
+    {
+      "path": "packages/theme-engine/src/trailmark-styles.ts",
+      "sha256": "5dc2ae055b560a56842f4d3399f5b3b88b59c37ab5ede6c62731e44da3d1c4b0"
+    },
+    {
+      "path": "packages/theme-engine/src/trailmark-theme.ts",
+      "sha256": "ec412bcee2940769612323c2155ac807cef8d73bd1a06caa754cbb1fd11e90b5"
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "sha256": "15fd89109bbc17e0624e29d5a1b56db07e19f1f880c44d9a9abf847b52b6d09a"
+    }
+  ],
+  "acceptedInputs": [
+    {
+      "key": "rootReceipt",
+      "path": "docs/implementation/niche-theme-programme/release-v2-final-admission.json",
+      "sha256": "6e026f1adc4be82414e174a92e125d846aad4fab9119d48841350db14f22b1b6"
+    },
+    {
+      "key": "manifest",
+      "path": "docs/implementation/niche-theme-programme/release-v2/proposals/81e91859ebc8c497a49da337d064e1885a76964839d14e39f4a0a3de2283f47f/manifest.json",
+      "sha256": "c0e8d5b7338a70a797a2acc24976700a146f8df4f9a3716d55fab4c03e8cf515"
+    },
+    {
+      "key": "generator",
+      "path": "docs/implementation/niche-theme-programme/release-v2/generate-release.ts",
+      "sha256": "ccbd78a2b0b47e8a6cfb33390965a32ddc611711cc4c369772199db5adb389b3"
+    },
+    {
+      "key": "389UP",
+      "path": "database/supabase/migrations/389_niche_theme_catalog_v2.sql",
+      "sha256": "3d9a5e0344db7537558554b723ffc134707bf7b98fe4941bc6bf268bd7330e61"
+    },
+    {
+      "key": "389DOWN",
+      "path": "database/supabase/rollback/389_niche_theme_catalog_v2.rollback.sql",
+      "sha256": "aecbd647393ac9dcec1466d8b7f80e21cd89a1522b6956bd0c9c479529e45927"
+    },
+    {
+      "key": "390UP",
+      "path": "docs/implementation/threadline-2026-10-22/measurement-discovery/390_measurement_discovery.up.draft.sql",
+      "sha256": "6e5eb5e50cecd43acc9a663dd79c505db6c7bfdbe4e559b34d998065f88e9027"
+    },
+    {
+      "key": "390DOWN",
+      "path": "docs/implementation/threadline-2026-10-22/measurement-discovery/390_measurement_discovery.down.draft.sql",
+      "sha256": "1aca479d735539ec3d92974da0eed7b8e48e83e874d8612ea78dba7acc91cb7a"
+    }
+  ],
+  "nativeOutcome": "RUNNING",
+  "runBindingCorrection": {
+    "previousRunId": "2185ed02f5df",
+    "source": "/private/tmp/niche389390-native-20261023-02-run.json",
+    "note": "Copied bookkeeping field corrected to actual exclusive runner receipt. Source bytes/hashes and capturedAt remain unchanged; original record preserved."
+  }
+}

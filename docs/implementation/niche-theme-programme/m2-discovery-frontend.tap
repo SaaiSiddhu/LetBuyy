@@ -1,0 +1,94 @@
+TAP version 13
+# Subtest: canonical route parser retains all query keys and repeated connectors; invalid scalar repeats/unknowns fail explicitly
+ok 1 - canonical route parser retains all query keys and repeated connectors; invalid scalar repeats/unknowns fail explicitly
+  ---
+  duration_ms: 3.304792
+  type: 'test'
+  ...
+# Subtest: actual ProductService→SDK forwards arrays/all niche values and preserves response metadata and persisted price
+ok 2 - actual ProductService→SDK forwards arrays/all niche values and preserves response metadata and persisted price
+  ---
+  duration_ms: 65.168208
+  type: 'test'
+  ...
+# Subtest: signed discovery uses only token-scoped no-store endpoint; failure never retries public or retains capability
+ok 3 - signed discovery uses only token-scoped no-store endpoint; failure never retries public or retains capability
+  ---
+  duration_ms: 18.93
+  type: 'test'
+  ...
+# Subtest: binder preserves exact empty/past-end pages and page metadata, never selected-product/catalog fallback
+ok 4 - binder preserves exact empty/past-end pages and page metadata, never selected-product/catalog fallback
+  ---
+  duration_ms: 66.059458
+  type: 'test'
+  ...
+# Subtest: missing capability stays hidden, selected unsupported niche filters and malformed responses fail closed
+ok 5 - missing capability stays hidden, selected unsupported niche filters and malformed responses fail closed
+  ---
+  duration_ms: 61.399833
+  type: 'test'
+  ...
+# Subtest: same response builds real facets/counts, array-preserving pagination and paired length/individual filter clearing
+ok 6 - same response builds real facets/counts, array-preserving pagination and paired length/individual filter clearing
+  ---
+  duration_ms: 7.063
+  type: 'test'
+  ...
+# Subtest: actual binder→compositor consumes one page for collection/search and exposes matching witnesses without replacing price
+ok 7 - actual binder→compositor consumes one page for collection/search and exposes matching witnesses without replacing price
+  ---
+  duration_ms: 164.851417
+  type: 'test'
+  ...
+# Subtest: actual nine Liquid collection sections and depth4 preserve supplied toy row values/labels/count/selection
+ok 8 - actual nine Liquid collection sections and depth4 preserve supplied toy row values/labels/count/selection
+  ---
+  duration_ms: 1065.448708
+  type: 'test'
+  ...
+# Subtest: trusted demo stays no-network with exact/intentional-empty membership; typed unsupported arrays cannot broaden it
+ok 9 - trusted demo stays no-network with exact/intentional-empty membership; typed unsupported arrays cannot broaden it
+  ---
+  duration_ms: 31.849458
+  type: 'test'
+  ...
+# Subtest: Editor scalar selected collection survives dedicated typed query and conflicts fail closed
+ok 10 - Editor scalar selected collection survives dedicated typed query and conflicts fail closed
+  ---
+  duration_ms: 0.376833
+  type: 'test'
+  ...
+# Subtest: actual named collection loader uses exact response scope; private summary then SAME signed product page, with no public retry
+ok 11 - actual named collection loader uses exact response scope; private summary then SAME signed product page, with no public retry
+  ---
+  duration_ms: 36.251542
+  type: 'test'
+  ...
+# Subtest: actual products/shop/search/named route adapters retain multivalues through binder→SDK and preserve exact response page
+ok 12 - actual products/shop/search/named route adapters retain multivalues through binder→SDK and preserve exact response page
+  ---
+  duration_ms: 123.360375
+  type: 'test'
+  ...
+# Subtest: actual signed route bodies and metadata retain private store authority; absent private store never falls back public
+ok 13 - actual signed route bodies and metadata retain private store authority; absent private store never falls back public
+  ---
+  duration_ms: 243.094083
+  type: 'test'
+  ...
+# Subtest: toy individual capabilities require supplied options, never selected query defaults or zero-count synthetic rows
+ok 14 - toy individual capabilities require supplied options, never selected query defaults or zero-count synthetic rows
+  ---
+  duration_ms: 10.41575
+  type: 'test'
+  ...
+1..14
+# tests 14
+# suites 0
+# pass 14
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2442.394167

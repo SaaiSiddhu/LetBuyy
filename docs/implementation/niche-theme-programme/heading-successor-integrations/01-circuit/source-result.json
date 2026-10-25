@@ -1,0 +1,55 @@
+{
+  "recordedAt": "2026-10-24T09:29:00.728713+00:00",
+  "owner": "01a164a4-a342-76d3-ab33-65e021ed57db",
+  "status": "SEALED_SOURCE_INTEGRATION_PASS_NOT_CATALOGUE_OR_BROWSER_ADMISSION",
+  "files": [
+    {
+      "path": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "beforeSHA256": "48e8126f5681d91fb1780b521bd5d53c4bf933156ca2b97c64932d95e0800605"
+    },
+    {
+      "path": "packages/theme-engine/src/circuit-theme-v201.ts",
+      "beforeSHA256": null
+    },
+    {
+      "path": "packages/theme-engine/test/circuit-successor.test.ts",
+      "beforeSHA256": null
+    }
+  ],
+  "scope": "Integrate exact reviewed opt-in Circuit2.0.1 factory/catalogue dispatch plus permanent meaningful source regressions; no catalogue SQL/runtime or immutable2.0.0 changes",
+  "independentPrivateReview": "completion-circuit-successor-root-review-20261024.json",
+  "nativeLane": "None; reviewer checkout07 remains exclusive",
+  "preservation": "Default old20 output digests captured; previous catalogue source preserved; all old native failed receipts remain",
+  "afterFiles": [
+    {
+      "path": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "sha256": "3a18bacf97e91420917b1b9a7de07eed610286fd8a83a84a327ed1b5ffa1bc3b"
+    },
+    {
+      "path": "packages/theme-engine/src/circuit-theme-v201.ts",
+      "sha256": "3f090332d1b1a7ada396d6e2bf7b970ea57b967b7ff512673f7908e97332279f"
+    },
+    {
+      "path": "packages/theme-engine/test/circuit-successor.test.ts",
+      "sha256": "a4f881f0fadc76cd7eec3c77725470223b517e3105798fdf1c67f4bf342fac21"
+    }
+  ],
+  "checks": {
+    "sourceTests": {
+      "tests": 15,
+      "PASS": 15,
+      "FAIL": 0,
+      "skipped": 0,
+      "exitCode": 0,
+      "log": "docs/implementation/niche-theme-programme/heading-successor-integrations/01-circuit/source-tests.tap",
+      "sha256": "9ac5fdfde2fd1a7a82a2fd710c5a36e4eb3ca508e3775cec0a60cac5e0e4f22e"
+    },
+    "strictScopedTypecheck": {
+      "exitCode": 0,
+      "log": "docs/implementation/niche-theme-programme/heading-successor-integrations/01-circuit/typecheck.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "frozen20DefaultDigests": "All10legacy and10v200 outputs equal pre-apply capture; source test gates actual Main public factory",
+    "exactReviewedTwoSourceBytes": true
+  }
+}

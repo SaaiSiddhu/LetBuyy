@@ -1,0 +1,32 @@
+{
+  "recordedAt": "2026-10-24T05:05:57.862Z",
+  "runId": "936e5f577646",
+  "phase": "saved",
+  "guardVerified": true,
+  "readOnly": true,
+  "scope": "Approved beauty fields plus sibling-metadata/options/inventory digests; no private supplier content or credentials",
+  "actual": {
+    "id": "c0919503-a07e-4144-9efe-af7a686b8333",
+    "food": {
+      "storage": "Synthetic UI936 rice save check.",
+      "allergens": {
+        "status": "not_supplied"
+      },
+      "ingredients": "Rice (100%).",
+      "netQuantity": {
+        "unit": "g",
+        "value": 1000
+      }
+    },
+    "name": "Pantry lifecycle rice",
+    "price": 220,
+    "stock": 4,
+    "siteId": "2f958a36-71bf-4e8f-89fd-d3363f4fe42c",
+    "siteOrders": 2,
+    "variantRows": 0,
+    "optionsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "productVersion": 5,
+    "inventorySha256": "31400d74f68bf32a92309274723e6ec3ed380ca79c84cf3df527dfca2665002d",
+    "otherMetadataSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  }
+}

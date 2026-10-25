@@ -1,0 +1,225 @@
+{
+  "recordedAt": "2026-10-24T03:55:36.119896+00:00",
+  "status": "ACL393_ADMITTED_NATIVE_RUN_STOPPED_PHASE1_PSQL_OUTPUT_TAG_PARSER_DEFECT_CANDIDATES_NOT_REACHED",
+  "runId": "d487018486d2",
+  "runnerExitCode": 1,
+  "suiteExitCode": 1,
+  "kind": "gateway-db",
+  "ownership": "verified before start",
+  "jobs": 1,
+  "sandboxPermissions": "require_escalated",
+  "noReap": true,
+  "preparedTransactions": 2,
+  "timeoutSeconds": 600,
+  "timedOut": false,
+  "migrationReceipt": {
+    "path": "docs/implementation/niche-theme-programme/publisher-acl393/native-runs/01/migration-receipt.json",
+    "sha256": "404446dba93d548c50b97a16c73e9138f1be0a8224e6657192b9b33e641ce7aa",
+    "bytes": 55386
+  },
+  "appliedMigrations": 321,
+  "maximum": 392,
+  "migrationCeiling": null,
+  "expectedNativeTests": 8,
+  "actualTap": {
+    "tests": 2,
+    "pass": 0,
+    "fail": 2,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "raw": {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/native-runs/01/suite-logs/theme-publisher-acl.postgres.log",
+      "sha256": "981f0d4c98d8526efa1c3676d63e59768ee4567290af3a93267fe3d475d05001",
+      "bytes": 4973
+    }
+  },
+  "failure": {
+    "path": "services/api-gateway/src/__tests__/owned-db/theme-publisher-acl.postgres.test.ts",
+    "line": 114,
+    "column": 123,
+    "actual": "ROLLBACK",
+    "expected": "1",
+    "classification": "TEST_OUTPUT_PARSER_READ_FINAL_TRANSACTION_COMMAND_TAG_INSTEAD_OF_COUNT",
+    "actualOwnCountCaptured": false,
+    "aclCandidateSqlExecuted": false,
+    "productionPermissionFailureEstablished": false
+  },
+  "phases": [
+    {
+      "phase": 1,
+      "status": "FAILED_AFTER_SCHEMA200_INSTALL201_EDITOR200_ON_STDOUT_PARSE"
+    },
+    {
+      "phase": 2,
+      "status": "NOT_STARTED"
+    },
+    {
+      "phase": 3,
+      "status": "NOT_STARTED"
+    },
+    {
+      "phase": 4,
+      "status": "NOT_STARTED"
+    },
+    {
+      "phase": 5,
+      "status": "NOT_STARTED"
+    },
+    {
+      "phase": 6,
+      "status": "NOT_STARTED"
+    },
+    {
+      "phase": 7,
+      "status": "NOT_STARTED"
+    }
+  ],
+  "observedBaseline": {
+    "actualFullFailedRunProfileCaptured": true,
+    "entryProfile": {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/native-runs/01/provenance/001-entry-full-profile-before-assertions.json",
+      "sha256": "e49670247dcd1adeefe951b7cc47fddb961ed39dd11fdcd35c8a758b8ac9813e",
+      "bytes": 378897
+    },
+    "owner": "postgres",
+    "bodyMd5": "56a6b7b15e8a7ec159341fe0331ac593",
+    "tenantExecute": true,
+    "ordinaryDependencyRows": 2,
+    "sharedDependencyRows": 2,
+    "qualifiesCandidate": false
+  },
+  "provenance": {
+    "path": "docs/implementation/niche-theme-programme/publisher-acl393/native-runs/01/provenance-manifest.json",
+    "sha256": "18540eaf8322eec61c789a8ce03abfdc8965ba2d4e2fd77eedfb3dadd06b2e2c",
+    "bytes": 2497
+  },
+  "candidate393UpDownApplied": false,
+  "393394Emitted": false,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "suiteCleanup": {
+    "rest": true,
+    "database": true
+  },
+  "reaped": [],
+  "closureFilesRehashedAfter": 1071,
+  "admissionManifestClosureSuiteCandidatesUnchanged": true,
+  "sourceOrGuardsOrPrivilegesRepaired": false,
+  "retryAttempted": false,
+  "retainedOrOtherFixtureResourcesTouched": false,
+  "next": "Root review: bounded phase1 positive-control output-parser correction, exact same SQL count=1 authority/role/GUC; no SQL/app/ACL guard repair. New source freeze/admission and renewed run required.",
+  "narrative": {
+    "path": "docs/implementation/niche-theme-programme/publisher-acl393/native-runs/01/NATIVE-RESULT.md",
+    "sha256": "3102d6c2ca9265ffc12f4532f163bc97ca7ba105187c3c9854ac21ea052d0ca6",
+    "bytes": 2905
+  },
+  "evidence": [
+    {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/native-runs/01/NATIVE-RESULT.md",
+      "sha256": "3102d6c2ca9265ffc12f4532f163bc97ca7ba105187c3c9854ac21ea052d0ca6",
+      "bytes": 2905
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/native-runs/01/admission.json.after.snapshot",
+      "sha256": "23b5f6734a970ff10a22c34eeb199289c52bcddc01eba847c13149e1db87bfdb",
+      "bytes": 1153
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/native-runs/01/admission.json.before.snapshot",
+      "sha256": "23b5f6734a970ff10a22c34eeb199289c52bcddc01eba847c13149e1db87bfdb",
+      "bytes": 1153
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/native-runs/01/invocation.json",
+      "sha256": "75b45426390ef15b1d43d1cecf111a08da60929eae6b31cc01a164d16d15c748",
+      "bytes": 1371
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/native-runs/01/manifest.json.after.snapshot",
+      "sha256": "c939d1a6fca0ab6481bfbd4402ec17935b4e6b9a0238210a2040f9d592be8e6f",
+      "bytes": 3954
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/native-runs/01/manifest.json.before.snapshot",
+      "sha256": "c939d1a6fca0ab6481bfbd4402ec17935b4e6b9a0238210a2040f9d592be8e6f",
+      "bytes": 3954
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/native-runs/01/migration-receipt.json",
+      "sha256": "404446dba93d548c50b97a16c73e9138f1be0a8224e6657192b9b33e641ce7aa",
+      "bytes": 55386
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/native-runs/01/provenance/001-entry-full-profile-before-assertions.json",
+      "sha256": "e49670247dcd1adeefe951b7cc47fddb961ed39dd11fdcd35c8a758b8ac9813e",
+      "bytes": 378897
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/native-runs/01/provenance/002-before-phase.json",
+      "sha256": "4938a1dea2a255f1a435aa4a3aedaaf33d22ca2250139af39775452e18a48a22",
+      "bytes": 408870
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/native-runs/01/provenance/003-mounted-api.json",
+      "sha256": "8d9c818bfb1bb65e52b60d1eb6413213707c7c55c27581d7178015cd2783f6a7",
+      "bytes": 86370
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/native-runs/01/provenance/004-mounted-api.json",
+      "sha256": "157acba55a619feac3356bca95c0dea5ebfefe9822cb7b0167d2016bda4126ea",
+      "bytes": 1205
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/native-runs/01/provenance/005-mounted-api.json",
+      "sha256": "60ef65c6071a7930dd8a97a17e1cfd615804bfd6fedeb3d02e408365f71552a9",
+      "bytes": 292361
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/native-runs/01/provenance-manifest.json",
+      "sha256": "18540eaf8322eec61c789a8ce03abfdc8965ba2d4e2fd77eedfb3dadd06b2e2c",
+      "bytes": 2497
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/native-runs/01/result.json",
+      "sha256": "a8cfac8e824ea08b5dd22565606feb6a7638a7c2c9f5ea7a0cbac0adfbca7ec8",
+      "bytes": 66981
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/native-runs/01/root-native-source-admission.before.snapshot",
+      "sha256": "d235bf1aeb794e9ccfc67c29922f4b51a7184a39fef575ee2f9a1dcdfddc6984",
+      "bytes": 2746
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/native-runs/01/run-receipt.json",
+      "sha256": "916ebf74d0f465a57f80208329061da2ef11d1245c788f899a72909a5eb6e31a",
+      "bytes": 96
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/native-runs/01/runner.log",
+      "sha256": "c4baf5ecf5992f458eb1fd32a733d09c5946151ade59d409f972b32be7ee049e",
+      "bytes": 410
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/native-runs/01/source-input-closure.json.after.snapshot",
+      "sha256": "3697c9d176e60eed801ea72529e387810b3c5e372d27c3a083e9232b85660262",
+      "bytes": 559275
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/native-runs/01/source-input-closure.json.before.snapshot",
+      "sha256": "3697c9d176e60eed801ea72529e387810b3c5e372d27c3a083e9232b85660262",
+      "bytes": 559275
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/native-runs/01/suite-logs/theme-publisher-acl.postgres.log",
+      "sha256": "981f0d4c98d8526efa1c3676d63e59768ee4567290af3a93267fe3d475d05001",
+      "bytes": 4973
+    }
+  ]
+}

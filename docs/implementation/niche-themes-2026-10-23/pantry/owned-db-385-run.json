@@ -1,0 +1,81 @@
+{
+  "runId": "fda7d2c5db61",
+  "image": "postgres:16-alpine",
+  "restImage": "public.ecr.aws/supabase/postgrest:v16.2",
+  "limits": {
+    "postgres": {
+      "memory": "1g",
+      "cpus": "2",
+      "pids": "512"
+    },
+    "rest": {
+      "memory": "256m",
+      "cpus": "1",
+      "pids": "256"
+    }
+  },
+  "jobs": 1,
+  "containers": [
+    "letbuyy-exec-64474-mvkke7zd-7b523d"
+  ],
+  "reaped": [],
+  "suites": 1,
+  "gatewayDbSuites": 1,
+  "failedSuites": 0,
+  "tests": 11,
+  "assertionsPassed": 11,
+  "assertionsFailed": 0,
+  "cancelled": 0,
+  "skipped": 0,
+  "todo": 0,
+  "wallSeconds": 40.6,
+  "suiteSeconds": 38.5,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "results": [
+    {
+      "name": "pantry-variant-facts.postgres",
+      "path": "services/api-gateway/src/__tests__/owned-db/pantry-variant-facts.postgres.test.ts",
+      "kind": "gateway-db",
+      "cluster": "letbuyy-exec-64474-mvkke7zd-7b523d",
+      "code": 0,
+      "timedOut": false,
+      "hasSummary": true,
+      "tests": 11,
+      "pass": 11,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "seconds": 38.5,
+      "firstFailure": "",
+      "failures": [],
+      "skips": [],
+      "strayProcessesStopped": false,
+      "database": "letbuyy_exec_pantry_variant_facts_postgres",
+      "templateSeconds": 26.5,
+      "provisionSeconds": 1.4,
+      "rest": {
+        "container": "letbuyy-exec-fda7d2c5db61-rest-1",
+        "upstreamPort": 54472,
+        "proxyPort": 54473
+      },
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "proxyRequests": {
+        "forwarded": 179,
+        "refused": 0,
+        "upstreamErrors": 1
+      }
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "originalBitmapAssets": "../generation-prompts.json",
+  "font": "font-provenance.json",
+  "fontLicense": "Inter-OFL.txt",
+  "identityLogo": {
+    "file": "letbuyy-logo.svg",
+    "source": "apps/platform/identity/public/icons/letbuyy-logo-light.svg",
+    "role": "Canonical platform identity; reused with no recoloring"
+  },
+  "icons": {
+    "file": "../source/icons.json",
+    "generator": "../source/generate-icons.cjs",
+    "source": "installed lucide-react@0.562.0 via React static SVG rendering",
+    "license": "Lucide-LICENSE.txt"
+  },
+  "photographyLimits": "Generated fictional hardware illustrations are not manufacturer specifications or compatibility proof",
+  "noShopifyAssetsInTheme": true
+}

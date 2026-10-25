@@ -1,0 +1,148 @@
+{
+  "recordedAt": "2026-10-24T05:17:07.456Z",
+  "runId": "936e5f577646",
+  "guardVerified": true,
+  "readOnly": true,
+  "evidenceClass": "Actual canonical parent normal Save mutations;750 set then explicit clear, commonmarker and same-UUID SKUcontrol then restore; not raw HTTP capture",
+  "productId": "c3740e30-8c62-45f8-9ba4-0d21caabafdf",
+  "originalVariantIds": [
+    "56dec2f4-52ea-4210-bd65-334a7c52f0d0",
+    "bae0b0d9-8314-44cc-bd7b-a429664559fe",
+    "d0c3990a-bee6-4705-a0f7-c38cc80a3147"
+  ],
+  "actual": [
+    {
+      "idempotencyKey": "ff4372a3-1d88-4fae-b318-dc7962f81a15",
+      "expectedVersion": 9,
+      "returnedVersion": 13,
+      "operation": "product.update.v1",
+      "createdAt": "2026-10-24T05:05:06.224439+00:00",
+      "mutationSqlTextToNodeJsonSha256": "197c179553a37d591ac14c826b95da86faaddadd6164562bb1c50a3715cb7ec9",
+      "topLevelStockOmitted": true,
+      "fieldsStockOmitted": true,
+      "existingVariantsStockOmitted": true,
+      "sameOriginalVariantIds": true,
+      "variants": [
+        {
+          "id": "56dec2f4-52ea-4210-bd65-334a7c52f0d0",
+          "title": "250 g",
+          "sku": "SYN-PANTRY-250-CONTROL-936",
+          "price": 180,
+          "options": {
+            "Pack": "250 g"
+          }
+        },
+        {
+          "id": "d0c3990a-bee6-4705-a0f7-c38cc80a3147",
+          "title": "500 g",
+          "sku": null,
+          "price": 340,
+          "options": {
+            "Pack": "500 g"
+          }
+        },
+        {
+          "id": "bae0b0d9-8314-44cc-bd7b-a429664559fe",
+          "title": "750 g label only",
+          "sku": null,
+          "price": 210,
+          "options": {
+            "Pack": "750 g label only"
+          },
+          "metadata": {
+            "food": {
+              "netQuantity": {
+                "unit": "g",
+                "value": 750
+              }
+            }
+          }
+        }
+      ],
+      "options": [
+        {
+          "name": "Pack",
+          "values": [
+            "250 g",
+            "500 g",
+            "750 g label only"
+          ],
+          "position": 0
+        }
+      ],
+      "food": {
+        "storage": "Keep cool and dry. UI936 persistence check.",
+        "allergens": {
+          "status": "not_supplied"
+        },
+        "ingredients": "Split red lentils (100%).",
+        "netQuantity": null,
+        "preparation": "Rinse before cooking."
+      },
+      "privateSiblingDigest": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    },
+    {
+      "idempotencyKey": "a2c87c2e-f53f-479e-a490-53c06b1a47f2",
+      "expectedVersion": 13,
+      "returnedVersion": 17,
+      "operation": "product.update.v1",
+      "createdAt": "2026-10-24T05:05:24.50622+00:00",
+      "mutationSqlTextToNodeJsonSha256": "db47cef09efbb0deb032e2df838a710e692c0092dbbc47f3c3ed2b4a1e173fd3",
+      "topLevelStockOmitted": true,
+      "fieldsStockOmitted": true,
+      "existingVariantsStockOmitted": true,
+      "sameOriginalVariantIds": true,
+      "variants": [
+        {
+          "id": "56dec2f4-52ea-4210-bd65-334a7c52f0d0",
+          "title": "250 g",
+          "sku": null,
+          "price": 180,
+          "options": {
+            "Pack": "250 g"
+          }
+        },
+        {
+          "id": "d0c3990a-bee6-4705-a0f7-c38cc80a3147",
+          "title": "500 g",
+          "sku": null,
+          "price": 340,
+          "options": {
+            "Pack": "500 g"
+          }
+        },
+        {
+          "id": "bae0b0d9-8314-44cc-bd7b-a429664559fe",
+          "title": "750 g label only",
+          "sku": null,
+          "price": 210,
+          "options": {
+            "Pack": "750 g label only"
+          },
+          "metadata": {}
+        }
+      ],
+      "options": [
+        {
+          "name": "Pack",
+          "values": [
+            "250 g",
+            "500 g",
+            "750 g label only"
+          ],
+          "position": 0
+        }
+      ],
+      "food": {
+        "storage": "Keep cool and dry.",
+        "allergens": {
+          "status": "not_supplied"
+        },
+        "ingredients": "Split red lentils (100%).",
+        "netQuantity": null,
+        "preparation": "Rinse before cooking."
+      },
+      "privateSiblingDigest": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    }
+  ]
+}

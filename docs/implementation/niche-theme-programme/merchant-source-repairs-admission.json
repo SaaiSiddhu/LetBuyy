@@ -1,0 +1,110 @@
+{
+  "recordedAt": "2026-10-23T16:01:03.514500+00:00",
+  "status": "ROOT_SOURCE_REVIEWED_AND_INDEPENDENTLY_TESTED_FOR_NEXT_CONTROLLED_CANDIDATE_ONLY",
+  "releases": [
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/marginalia/option-value-rename/source-release.json",
+      "sha256": "ba1bee69690366ebed7b30cfbf90e8a19fc64726e62f764c75924e150ec815cf",
+      "files": [
+        {
+          "path": "apps/merchant/web/src/app/[store]/products/new/page.tsx",
+          "beforeSha256": "42d7323cab8cc15549304f7e7c63cb9c46f7ea9634989a3c42bc69e0da47ab00",
+          "sha256": "1a99ded9a1e0dbf98fdf520af6c3685ad9ee3d46d2137a9e0d38e5b1e12c0b20",
+          "bytes": 87173,
+          "lines": 1470
+        },
+        {
+          "path": "apps/merchant/web/src/lib/product-form-state.ts",
+          "beforeSha256": "1babef7539a4e88b6f54fcb04e5990453391c71460a5760dc771bf8d69c2ffd2",
+          "sha256": "23ff59003b3297384a8de416ea08edfb5923cf95dfbd6fa7ab93e0b0455ec120",
+          "bytes": 23355,
+          "lines": 448
+        },
+        {
+          "path": "apps/merchant/web/src/components/products/product-conflict.test.tsx",
+          "beforeSha256": "4da421caaea0ccbcb528189a9fbd227939d6257bca781baae14532a95f7c9872",
+          "sha256": "2cd027c295b74e62f4f4212f49b572c2c67dcfeb36bd2050b6cdd488a2484dd7",
+          "bytes": 73311,
+          "lines": 1121
+        },
+        {
+          "path": "apps/merchant/web/src/lib/product-form-state.option-rename.test.ts",
+          "new": true,
+          "sha256": "5b5879811f895d35f6b371159b7dbf282451b6fa2becfd31dccf2dfaa0b5df9e",
+          "bytes": 5393,
+          "lines": 73
+        }
+      ]
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/playfield/request-origin-fix-2026-10-23/source-release.json",
+      "sha256": "a661cc96f5c31229cc9cb82aa08e23c2e11a477fee284b6154a35759d8119f12",
+      "files": [
+        {
+          "path": "apps/merchant/web/src/lib/api/request-origin.ts",
+          "sha256": "4e1671afcb62bba3dc1d93a3e588b92e58d0d9ba7a3c081e8df4ee6ddb174f96"
+        },
+        {
+          "path": "apps/merchant/web/src/lib/api/request-origin.test.ts",
+          "sha256": "ab75dacb0c38c276a443e54319d8bdbba2bace03d522fbc96693f9e6d789a09f"
+        }
+      ]
+    }
+  ],
+  "independentChecks": [
+    {
+      "path": "docs/implementation/niche-theme-programme/m2-merchant-option-rename-independent.tap",
+      "sha256": "23b90f1f24882d1407a5f33ea97035746e3121bee19a40c61e396d741456716c",
+      "tests": 48,
+      "pass": 48,
+      "fail": 0,
+      "skipped": 0
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/m2-merchant-fact-retention-independent.tap",
+      "sha256": "70adcdd70700e2b1c42b6dd962f64aa6c7d9ed69531bb584600d1fa8d68a61c7",
+      "tests": 21,
+      "pass": 21,
+      "fail": 0,
+      "skipped": 0
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/m2-merchant-variant-composition-independent.tap",
+      "sha256": "e96c1759f1b0f80437b6d417df63ecb8aa2910e9b693946076ef505533cdbb10",
+      "tests": 10,
+      "pass": 10,
+      "fail": 0,
+      "skipped": 0
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/m2-merchant-origin-independent.tap",
+      "sha256": "29485c3891c7648824664ad56f11aeb417287d060f08cdd15a702d7498347c5c",
+      "tests": 15,
+      "pass": 15,
+      "fail": 0,
+      "skipped": 0
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/m2-merchant-origin-consumer-independent.tap",
+      "sha256": "23fa2b54f4a844df26dfa66ba375f8e4723436cf7fadc1b49bf760e83d04e281",
+      "tests": 2,
+      "pass": 2,
+      "fail": 0,
+      "skipped": 0
+    }
+  ],
+  "renamePass": 79,
+  "originPass": 17,
+  "sourceReview": [
+    "Exact configured merchant origin bound to Host/protocol/port; Origin and idempotency still required; no forwarded wildcard/bypass",
+    "Installed NextRequest constructor preserves localhost aliases; actual internal normalized runtime URL not captured, so live diagnosis remains a hypothesis pending retest",
+    "Explicit DS/Lucide option Rename updates same UUIDs/tuples/titles; preserves raw metadata and unrelated axes/commercial fields/recovery bytes; collisions refused"
+  ],
+  "current9cdModified": false,
+  "notClaimed": [
+    "Actual current fixture normal product Save repair",
+    "Marginalia16 installed cases",
+    "All10 browser acceptance"
+  ],
+  "next": "Editor includes exact hashes in controlled source-fresh candidate and proves normal save/reload, same UUID edition rename, denial cases."
+}

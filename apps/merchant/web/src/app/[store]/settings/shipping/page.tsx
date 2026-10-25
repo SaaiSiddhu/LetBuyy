@@ -370,6 +370,7 @@ export default function ShippingSettingsPage() {
     if (loading) {
         return (
             <SettingsPane
+                navigationKey="shipping"
                 title="Shipping and delivery"
                 description="Define delivery zones and rate coverage for checkout."
                 store={store}
@@ -386,6 +387,7 @@ export default function ShippingSettingsPage() {
     return (
         <>
             <SettingsPane
+                navigationKey="shipping"
                 title="Shipping and delivery"
                 description="Define delivery zones and rate coverage for checkout."
                 store={store}

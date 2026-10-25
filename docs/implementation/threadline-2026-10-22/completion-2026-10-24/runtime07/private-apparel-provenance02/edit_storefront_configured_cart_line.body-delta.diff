@@ -1,0 +1,11 @@
+--- current/edit_storefront_configured_cart_line
++++ proposed/edit_storefront_configured_cart_line
+@@ -114,7 +114,7 @@
+   END IF;
+   SELECT coalesce(jsonb_object_agg(k,value),'{}'::jsonb) INTO v_product_facts
+     FROM jsonb_each(coalesce(v_product.metadata,'{}'::jsonb)) AS f(k,value)
+-    WHERE k=ANY(ARRAY['toys','electronics','food','furniture','gifts','personalization','beauty','sports','books']);
++    WHERE k=ANY(ARRAY['toys','electronics','food','furniture','gifts','personalization','beauty','sports','books','apparel']);
+   IF p_replacement->'product_version' IS DISTINCT FROM to_jsonb(v_product.version)
+     OR p_replacement->'catalog_source'->'product_facts' IS DISTINCT FROM v_product_facts
+     OR p_replacement->'catalog_source'->'variant_facts' IS DISTINCT FROM v_variant_facts

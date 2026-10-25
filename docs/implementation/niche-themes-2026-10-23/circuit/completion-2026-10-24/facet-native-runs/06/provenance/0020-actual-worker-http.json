@@ -1,0 +1,44 @@
+{
+  "runId": "786c7515c57a",
+  "operation": "actual-worker-http",
+  "value": {
+    "path": "/v1/storefront/syn-facet-a-176b0b4a/products?collection_id=0c69e002-c533-41ba-af07-bdfac16048e7&compatibility_evidence=supplied",
+    "status": 200,
+    "requestId": "ff42f3ea-0376-4748-950c-c187290ab174",
+    "body": {
+      "success": true,
+      "data": [],
+      "meta": {
+        "page": 1,
+        "per_page": 20,
+        "total": 0,
+        "total_pages": 0,
+        "has_next": false,
+        "has_prev": false
+      },
+      "discovery": {
+        "query": {
+          "page": 1,
+          "limit": 20,
+          "sort": "display_order",
+          "collection_id": "0c69e002-c533-41ba-af07-bdfac16048e7",
+          "compatibility_evidence": "supplied"
+        },
+        "facets": [],
+        "matches": [],
+        "measurement_capabilities": {
+          "equipment_length": {
+            "available": false,
+            "allowed_units": []
+          },
+          "max_width_cm": {
+            "available": false
+          },
+          "max_depth_cm": {
+            "available": false
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,792 @@
+{
+  "body": {
+    "background": "rgba(0, 0, 0, 0)",
+    "color": "rgba(46, 42, 57, 0.75)",
+    "font": "Poppins, sans-serif",
+    "fontSize": "16px"
+  },
+  "controls": [
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Search",
+      "tag": "INPUT",
+      "type": "search"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Availability",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "INPUT",
+      "type": "checkbox"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "INPUT",
+      "type": "checkbox"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Price",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "0",
+      "tag": "INPUT",
+      "type": "number"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "68.00",
+      "tag": "INPUT",
+      "type": "number"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Featured\nMost relevant\nBest selling\nAlphabetically, A-Z\nAlphabetically, Z-A\nPrice, low to ",
+      "tag": "SELECT",
+      "type": "select-one"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Email",
+      "tag": "INPUT",
+      "type": "email"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Subscribe",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    }
+  ],
+  "headings": [
+    {
+      "font": "Poppins, sans-serif",
+      "height": 19.5,
+      "line": "19.5px",
+      "size": "13px",
+      "tag": "H2",
+      "text": "",
+      "weight": "400",
+      "width": 282,
+      "x": 948,
+      "y": 16.3984375
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 60,
+      "line": "60px",
+      "size": "48px",
+      "tag": "H1",
+      "text": "Collection:\nSkin Care",
+      "weight": "500",
+      "width": 1100,
+      "x": 170,
+      "y": 206.1953125
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 21,
+      "line": "21px",
+      "size": "14px",
+      "tag": "H2",
+      "text": "Filter:",
+      "weight": "400",
+      "width": 38.7265625,
+      "x": 170,
+      "y": 411.1953125
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 21,
+      "line": "21px",
+      "size": "14px",
+      "tag": "H2",
+      "text": "Sort by:",
+      "weight": "400",
+      "width": 54.765625,
+      "x": 916.6484375,
+      "y": 411.1953125
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 21,
+      "line": "21px",
+      "size": "14px",
+      "tag": "H2",
+      "text": "15 products",
+      "weight": "400",
+      "width": 86.5859375,
+      "x": 1183.4140625,
+      "y": 411.1953125
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 39,
+      "line": "19.5px",
+      "size": "15.6px",
+      "tag": "H3",
+      "text": "Lavender Algae Peel-off Mask",
+      "weight": "500",
+      "width": 205,
+      "x": 190,
+      "y": 740.1953125
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 19.5,
+      "line": "19.5px",
+      "size": "15.6px",
+      "tag": "H3",
+      "text": "Algae Peel-off Mask",
+      "weight": "500",
+      "width": 205,
+      "x": 475,
+      "y": 740.1953125
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 39,
+      "line": "19.5px",
+      "size": "15.6px",
+      "tag": "H3",
+      "text": "Hibiscus Algae Peel-off Mask",
+      "weight": "500",
+      "width": 205,
+      "x": 760,
+      "y": 740.1953125
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 39,
+      "line": "19.5px",
+      "size": "15.6px",
+      "tag": "H3",
+      "text": "Marine Algae Face Moisturizer",
+      "weight": "500",
+      "width": 205,
+      "x": 1045,
+      "y": 740.1953125
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 39,
+      "line": "19.5px",
+      "size": "15.6px",
+      "tag": "H3",
+      "text": "Superfruit Face Moisturizer",
+      "weight": "500",
+      "width": 205,
+      "x": 190,
+      "y": 1157.7890625
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 19.5,
+      "line": "19.5px",
+      "size": "15.6px",
+      "tag": "H3",
+      "text": "Lip Balm",
+      "weight": "500",
+      "width": 205,
+      "x": 475,
+      "y": 1157.7890625
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 19.5,
+      "line": "19.5px",
+      "size": "15.6px",
+      "tag": "H3",
+      "text": "Rose Water Face Mist",
+      "weight": "500",
+      "width": 205,
+      "x": 760,
+      "y": 1157.7890625
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 39,
+      "line": "19.5px",
+      "size": "15.6px",
+      "tag": "H3",
+      "text": "Papaya Enzyme Face Scrub",
+      "weight": "500",
+      "width": 205,
+      "x": 1045,
+      "y": 1157.7890625
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 19.5,
+      "line": "19.5px",
+      "size": "15.6px",
+      "tag": "H3",
+      "text": "Face Mask Applicator",
+      "weight": "500",
+      "width": 205,
+      "x": 190,
+      "y": 1575.3828125
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 39,
+      "line": "19.5px",
+      "size": "15.6px",
+      "tag": "H3",
+      "text": "Lavender Konjac Sponge",
+      "weight": "500",
+      "width": 205,
+      "x": 475,
+      "y": 1575.3828125
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 39,
+      "line": "19.5px",
+      "size": "15.6px",
+      "tag": "H3",
+      "text": "Rose Flower Konjac Sponge",
+      "weight": "500",
+      "width": 205,
+      "x": 760,
+      "y": 1575.3828125
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 19.5,
+      "line": "19.5px",
+      "size": "15.6px",
+      "tag": "H3",
+      "text": "Bamboo Konjac Sponge",
+      "weight": "500",
+      "width": 205,
+      "x": 1045,
+      "y": 1575.3828125
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 39,
+      "line": "19.5px",
+      "size": "15.6px",
+      "tag": "H3",
+      "text": "Turmeric Konjac Sponge",
+      "weight": "500",
+      "width": 205,
+      "x": 190,
+      "y": 1992.9765625
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 19.5,
+      "line": "19.5px",
+      "size": "15.6px",
+      "tag": "H3",
+      "text": "White Jade Facial Roller",
+      "weight": "500",
+      "width": 205,
+      "x": 475,
+      "y": 1992.9765625
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 19.5,
+      "line": "19.5px",
+      "size": "15.6px",
+      "tag": "H3",
+      "text": "Pink Quartz Facial Roller",
+      "weight": "500",
+      "width": 205,
+      "x": 760,
+      "y": 1992.9765625
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 35.9921875,
+      "line": "36px",
+      "size": "28.8px",
+      "tag": "H2",
+      "text": "Discover more of our favorites",
+      "weight": "500",
+      "width": 1100,
+      "x": 170,
+      "y": 2150.5703125
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 27,
+      "line": "27px",
+      "size": "21.6px",
+      "tag": "H3",
+      "text": "Hair Care",
+      "weight": "500",
+      "width": 680,
+      "x": 190,
+      "y": 2995.65625
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 19.5,
+      "line": "19.5px",
+      "size": "15.6px",
+      "tag": "H3",
+      "text": "Herbal Body Soap",
+      "weight": "500",
+      "width": 300,
+      "x": 950,
+      "y": 2963.5625
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 60,
+      "line": "60px",
+      "size": "48px",
+      "tag": "H2",
+      "text": "Get 20% off your first order",
+      "weight": "500",
+      "width": 1260,
+      "x": 90,
+      "y": 3217.65625
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 27,
+      "line": "27px",
+      "size": "21.6px",
+      "tag": "H2",
+      "text": "Menu",
+      "weight": "500",
+      "width": 245,
+      "x": 170,
+      "y": 3461.453125
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 27,
+      "line": "27px",
+      "size": "21.6px",
+      "tag": "H2",
+      "text": "Our Store",
+      "weight": "500",
+      "width": 245,
+      "x": 455,
+      "y": 3461.453125
+    },
+    {
+      "font": "Poppins, sans-serif",
+      "height": 27,
+      "line": "27px",
+      "size": "21.6px",
+      "tag": "H2",
+      "text": "Our Promise",
+      "weight": "500",
+      "width": 245,
+      "x": 1025,
+      "y": 3461.453125
+    }
+  ],
+  "links": [
+    {
+      "text": "Skip to content",
+      "url": "https://theme-sense-demo.myshopify.com/collections/skin#MainContent"
+    },
+    {
+      "text": "",
+      "url": "https://theme-sense-demo.myshopify.com/"
+    },
+    {
+      "text": "Skin Care",
+      "url": "https://theme-sense-demo.myshopify.com/collections/skin"
+    },
+    {
+      "text": "Hair Care",
+      "url": "https://theme-sense-demo.myshopify.com/collections/hair"
+    },
+    {
+      "text": "Body Care",
+      "url": "https://theme-sense-demo.myshopify.com/collections/body"
+    },
+    {
+      "text": "Nail Polish",
+      "url": "https://theme-sense-demo.myshopify.com/collections/nail-polish"
+    },
+    {
+      "text": "Blog",
+      "url": "https://theme-sense-demo.myshopify.com/blogs/news"
+    },
+    {
+      "text": "About Us",
+      "url": "https://theme-sense-demo.myshopify.com/pages/about-us"
+    },
+    {
+      "text": "Cart",
+      "url": "https://theme-sense-demo.myshopify.com/cart"
+    },
+    {
+      "text": "",
+      "url": "https://theme-sense-demo.myshopify.com/collections/skin"
+    },
+    {
+      "text": "",
+      "url": "https://theme-sense-demo.myshopify.com/collections/skin"
+    },
+    {
+      "text": "Lavender Algae Peel-off Mask",
+      "url": "https://theme-sense-demo.myshopify.com/products/algae-peel-off-mask-soothing"
+    },
+    {
+      "text": "Algae Peel-off Mask",
+      "url": "https://theme-sense-demo.myshopify.com/products/algae-peel-off-mask-antioxidant"
+    },
+    {
+      "text": "Hibiscus Algae Peel-off Mask",
+      "url": "https://theme-sense-demo.myshopify.com/products/peel-off-face-mask-hibiscus-and-pink-clay"
+    },
+    {
+      "text": "Marine Algae Face Moisturizer",
+      "url": "https://theme-sense-demo.myshopify.com/products/marine-algae-face-moisturizer"
+    },
+    {
+      "text": "Superfruit Face Moisturizer",
+      "url": "https://theme-sense-demo.myshopify.com/products/superfruit-face-moisturizer"
+    },
+    {
+      "text": "Lip Balm",
+      "url": "https://theme-sense-demo.myshopify.com/products/natural-vegan-lip-balm-lemon-lime"
+    },
+    {
+      "text": "Rose Water Face Mist",
+      "url": "https://theme-sense-demo.myshopify.com/products/natural-skincare-floral-face-mist"
+    },
+    {
+      "text": "Papaya Enzyme Face Scrub",
+      "url": "https://theme-sense-demo.myshopify.com/products/sensitive-skin-face-scrub-papaya-enzyme"
+    },
+    {
+      "text": "Face Mask Applicator",
+      "url": "https://theme-sense-demo.myshopify.com/products/face-mask-applicator"
+    },
+    {
+      "text": "Lavender Konjac Sponge",
+      "url": "https://theme-sense-demo.myshopify.com/products/natural-konjac-sponge-lavender"
+    },
+    {
+      "text": "Rose Flower Konjac Sponge",
+      "url": "https://theme-sense-demo.myshopify.com/products/natural-konjac-sponge-rose"
+    },
+    {
+      "text": "Bamboo Konjac Sponge",
+      "url": "https://theme-sense-demo.myshopify.com/products/natural-konjac-sponge-charcoal"
+    },
+    {
+      "text": "Turmeric Konjac Sponge",
+      "url": "https://theme-sense-demo.myshopify.com/products/natural-konjac-sponge-turmeric"
+    },
+    {
+      "text": "White Jade Facial Roller",
+      "url": "https://theme-sense-demo.myshopify.com/products/white-jade-facial-roller"
+    },
+    {
+      "text": "Pink Quartz Facial Roller",
+      "url": "https://theme-sense-demo.myshopify.com/products/pink-quartz-facial-roller"
+    },
+    {
+      "text": "Hair Care",
+      "url": "https://theme-sense-demo.myshopify.com/collections/hair"
+    },
+    {
+      "text": "Herbal Body Soap",
+      "url": "https://theme-sense-demo.myshopify.com/products/package-free-body-soap-herbal"
+    },
+    {
+      "text": "Skin Care",
+      "url": "https://theme-sense-demo.myshopify.com/collections/skin"
+    },
+    {
+      "text": "Hair Care",
+      "url": "https://theme-sense-demo.myshopify.com/collections/hair"
+    },
+    {
+      "text": "Body Care",
+      "url": "https://theme-sense-demo.myshopify.com/collections/body"
+    },
+    {
+      "text": "Nail Polish",
+      "url": "https://theme-sense-demo.myshopify.com/collections/nail-polish"
+    },
+    {
+      "text": "Blog",
+      "url": "https://theme-sense-demo.myshopify.com/blogs/news"
+    },
+    {
+      "text": "About Us",
+      "url": "https://theme-sense-demo.myshopify.com/pages/about-us"
+    },
+    {
+      "text": "theme-sense-demo",
+      "url": "https://theme-sense-demo.myshopify.com/"
+    }
+  ],
+  "sections": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--16716093522128__banner",
+      "rect": {
+        "height": 184,
+        "width": 1440,
+        "x": 0,
+        "y": 181.1953125
+      },
+      "tag": "DIV",
+      "text": "Collection:\nSkin Care\n\nKeep your skin looking and feeling its best with an all-natural, plant-based routine. ♡"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--16716093522128__product-grid",
+      "rect": {
+        "height": 1697.375,
+        "width": 1440,
+        "x": 0,
+        "y": 401.1953125
+      },
+      "tag": "DIV",
+      "text": "Filter:\nAvailability\nPrice\nSort by:\nFeatured\nMost relevant\nBest selling\nAlphabetically, A-Z\nAlphabetically, Z-A\nPrice, low to high\nPrice, high to low\nDate, old to new\nDate, new to "
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--16716093522128__1639602284c60ea8d7",
+      "rect": {
+        "height": 979.0859375,
+        "width": 1440,
+        "x": 0,
+        "y": 2134.5703125
+      },
+      "tag": "SECTION",
+      "text": "Discover more of our favorites\nHair Care\nHerbal Body Soap\nRegular price\n$10.00 CAD"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--16716093522128__16401216876d5d294d",
+      "rect": {
+        "height": 295.796875,
+        "width": 1440,
+        "x": 0,
+        "y": 3149.65625
+      },
+      "tag": "SECTION",
+      "text": "Get 20% off your first order\n\nJoin our email list for exclusive offers and the latest news.\n\nEmail"
+    }
+  ],
+  "title": "Skin Care – theme-sense-demo",
+  "url": "https://theme-sense-demo.myshopify.com/collections/skin",
+  "viewport": {
+    "dpr": 1,
+    "height": 1000,
+    "width": 1440
+  },
+  "formGroups": [],
+  "grids": [
+    {
+      "className": "\n            grid grid--2-col product-grid\n            \n               grid--3-col-tablet grid--one-third-max grid--4-col-desktop grid--quarter-max\n            ",
+      "columns": "none",
+      "display": "flex",
+      "gap": "40px",
+      "height": 1630.375,
+      "tag": "UL",
+      "width": 1100
+    }
+  ],
+  "images": [
+    {
+      "alt": "Algae Peel-off Mask - Lavender, Lemon Balm and Acai - BKIND",
+      "complete": true,
+      "naturalWidth": 267,
+      "rect": {
+        "height": 245,
+        "width": 245
+      }
+    },
+    {
+      "alt": "Algae Peel-off Mask - Lavender, Lemon Balm and Acai - BKIND",
+      "complete": true,
+      "naturalWidth": 267,
+      "rect": {
+        "height": 245,
+        "width": 245
+      }
+    },
+    {
+      "alt": "Algae Peel-off Mask - Chlorella, Aloe vera and Ginkgo biloba - BKIND",
+      "complete": false,
+      "naturalWidth": 267,
+      "rect": {
+        "height": 245,
+        "width": 245
+      }
+    },
+    {
+      "alt": "Algae Peel-off Mask - Chlorella, Aloe vera and Ginkgo biloba - BKIND",
+      "complete": true,
+      "naturalWidth": 267,
+      "rect": {
+        "height": 245,
+        "width": 245
+      }
+    },
+    {
+      "alt": "Algae Peel-off Mask - Hibiscus and Pink clay - BKIND",
+      "complete": true,
+      "naturalWidth": 267,
+      "rect": {
+        "height": 245,
+        "width": 245
+      }
+    },
+    {
+      "alt": "Algae Peel-off Mask - Hibiscus and Pink clay - BKIND",
+      "complete": false,
+      "naturalWidth": 267,
+      "rect": {
+        "height": 245,
+        "width": 245
+      }
+    },
+    {
+      "alt": "Marine Algae Face Moisturizer",
+      "complete": true,
+      "naturalWidth": 267,
+      "rect": {
+        "height": 245,
+        "width": 245
+      }
+    },
+    {
+      "alt": "Marine Algae Face Moisturizer",
+      "complete": true,
+      "naturalWidth": 267,
+      "rect": {
+        "height": 245,
+        "width": 245
+      }
+    },
+    {
+      "alt": "Superfruit Face Moisturizer",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 245,
+        "width": 245
+      }
+    },
+    {
+      "alt": "Superfruit Face Moisturizer",
+      "complete": true,
+      "naturalWidth": 267,
+      "rect": {
+        "height": 245,
+        "width": 245
+      }
+    },
+    {
+      "alt": "Lip Balm - Lemon and lime bkind",
+      "complete": true,
+      "naturalWidth": 267,
+      "rect": {
+        "height": 245,
+        "width": 245
+      }
+    },
+    {
+      "alt": "Lip Balm - Lemon and lime bkind",
+      "complete": true,
+      "naturalWidth": 267,
+      "rect": {
+        "height": 245,
+        "width": 245
+      }
+    }
+  ],
+  "bodyText": "Skip to content\n\nSave 15% on orders over $50 ♡ Use code 15OFF at checkout\n\nSkin Care\nHair Care\nBody Care\nNail Polish\nBlog\nAbout Us\nCart\nCollection:\nSkin Care\n\nKeep your skin looking and feeling its best with an all-natural, plant-based routine. ♡\n\nFilter:\nAvailability\nPrice\nSort by:\nFeatured\nMost relevant\nBest selling\nAlphabetically, A-Z\nAlphabetically, Z-A\nPrice, low to high\nPrice, high to low\nDate, old to new\nDate, new to old\n15 products\nLavender Algae Peel-off Mask\nRegular price\nFrom $32.00 CAD\nAlgae Peel-off Mask\nRegular price\nFrom $32.00 CAD\nHibiscus Algae Peel-off Mask\nRegular price\nFrom $32.00 CAD\nMarine Algae Face Moisturizer\nRegular price\n$68.00 CAD\nSold out\nSuperfruit Face Moisturizer\nRegular price\n$68.00 CAD\nSale\nLip Balm\nRegular price\n$19.00 CAD \nSale price\n$16.00 CAD\nRose Water Face Mist\nRegular price\n$36.00 CAD\nPapaya Enzyme Face Scrub\nRegular price\n$30.00 CAD\nFace Mask Applicator\nRegular price\n$12.00 CAD\nLavender Konjac Sponge\nRegular price\n$10.00 CAD\nRose Flower Konjac Sponge\nRegular price\n$10.00 CAD\nBamboo Konjac Sponge\nRegular price\n$10.00 CAD\nTurmeric Konjac Sponge\nRegular price\n$16.00 CAD\nSold out\nWhite Jade Facial Roller\nRegular price\n$30.00 CAD\nPink Quartz Facial Roller\nRegular price\n$30.00 CAD\nDiscover more of our favorites\nHair Care\nHerbal Body Soap\nRegular price\n$10.00 CAD\nGet 20% off your first order\n\nJoin our email list for exclusive offers and the latest news.\n\nEmail\nMenu\nSkin Care\nHair Care\nBody Care\nNail Polish\nBlog\nAbout Us\nOur Store\n\n3455 St Laurent Blvd\nMontreal, Quebec H2X 2T6\nMon - Fri 9 a.m. - 7 p.m.\nSat - Sun 10a.m. - 6p.m.\n\n\nOur Promise\n\nTo create high quality, plant-based products that are safe for people and the planet.\n\nTwitter\nFacebook\nPinterest\nInstagram\nTikTok\n© 2026, theme-sense-demo Powered by Shopify"
+}

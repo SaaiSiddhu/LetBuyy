@@ -1,0 +1,93 @@
+{
+  "recordedAt": "2026-10-25T06:00:10.029961+00:00",
+  "status": "CONDITIONAL_SUPPORT_FOR_SOURCE_ONLY_PREPARATION_NO_EXECUTION_OR_RECOVERY_SUCCESS",
+  "reviewOwner": "Themes / 01a164a4-a342-76d3-ab33-65e021ed57db",
+  "observedInputs": [
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/original210-recovery-candidate02/future-restore-rehearsal02/READONLY_FAILURE_DIAGNOSIS02.json",
+      "sha256": "8214a7ad03f7bb7205b1499343a6b769b76fa7c08cb2d0f5b80b3495a02813a3"
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/PHYSICAL_RECOVERY_READONLY_CAPABILITY_20261025_01.json",
+      "sha256": "b644b71d858ac7d67decf544d75a49e7a23f3eb33f2be33f0aa80348bd952901"
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/PHYSICAL_RECOVERY_READONLY_COMPATIBILITY_20261025_01.json",
+      "sha256": "602f1a09720634e4bf8e1e1ea5b693559742526cb33950de474d157030549fa9"
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/PHYSICAL_RECOVERY_READONLY_EXTERNAL_CONFIG_20261025_01.json",
+      "sha256": "639e0a4e7bb32ae41d39c9cb05174de0bcefa3db612dba0383c6a353147ecfcd"
+    }
+  ],
+  "finding": "Logical restore06 fails immutable TAX360 catalog identity; source code binds historical OIDs/owners/ACL/function and trigger definitions. Consistent fullcluster physical file copy is an appropriate candidate for preserving those identities. This is an inference from source and PostgreSQL physicalbackup contract, not proof of actual restore correctness.",
+  "reportedCapability": "Root receipts: original running PG16.15 exact imageID721873...,6databases approx211MB including sealedtemplate; no additionaltablespaces, sourcewal_levelreplica/full_page_writeson/max_wal_senders10,wal_keep_size0/archive_modeoff, appDBnounlogged/prepared/logicalslots and enabledguardO. These are Root observations, not independent Docker/SQL actions by Themes.",
+  "requirements": [
+    {
+      "id": "PHYS01",
+      "requirement": "Copy the entire exact original PostgreSQL16.15 cluster, all database/global catalogs and required WAL using supported pg_basebackup. Preserve original physical systemidentifier, database/role/object OIDs, full TAX360 binding/journal/ACL/function/RI/event profiles. New Docker runID/ownerPID/network/container/volume are separate fresh ownership identities; do not change database historical identities to satisfy resource ownership.",
+      "source": "database/supabase/migrations/360_subscription_tax_quote_snapshot.sql:1099,1105,1110,1132,1155,1433"
+    },
+    {
+      "id": "PHYS02",
+      "requirement": "Exact original container/imageID/volume/application/capsule lineage admission before any source command, repeated before and after backup. No source relabel/adoption/restart/SIGCONT, source RW mounts, tar/cp of live data, stoppedworker55109 action, failedcopy reuse, or new cross-source fallback.",
+      "source": "scripts/governance/owned-database-provision.mjs:107; scripts/governance/owned-fixture-guard.mjs:191"
+    },
+    {
+      "id": "PHYS03",
+      "requirement": "Root-only follow-up inventory must cover all already-connectable DBs, unlogged relations, logicalsubscriptions/FDW/schedulers, extensions/C-language library paths, data/config/HBA/ident includes and symlinks, slots/preparedtransactions and application fence. Do not enable connections on sealed letbuyy_tpl_gateway/template0 to inspect. Use safe read-only source _init fork inventory or explicitly resolve sealedDB unlogged gap before claiming allcluster contents. Applied config, inherited command-line overrides, auto.conf and signals need independent verification. archive_modeoff makes nonemptyarchive_command inactive but clone may not activate it.",
+      "openGap": true
+    },
+    {
+      "id": "PHYS04",
+      "requirement": "The stdout tar option requires no additional tablespaces and -Xfetch. wal_keep_size0 means WAL recycling can cause an unusable backup; fail/retain on missingWAL, never silently modify retention/archiving/slots or retry. No -R, -Xnone, --no-sync, --no-manifest or checksum/WAL-verification skips. Backup entails source checkpoint/WAL switch/I/O and replication connection; explicit human execution approval must describe these bounded source effects.",
+      "openGap": "Actual bounded duration/deadline and WAL availability remain unproven"
+    },
+    {
+      "id": "PHYS05",
+      "requirement": "Exclusive private0700 destination and0600 binary archive/manifest receipts; stream backpressure/shortwrite/childexit/close errors handled, all bytes and directory fsynced before success. Hash archive and securely retain manifest separately. Extraction only into newly labeled protected empty volume via bounded network-none helper with immutable sameimageID and no host/original mounts. Refuse traversal/escaping symlinks/unexpected tablespaces. Preserve failed helper/volume/resource provenance."
+    },
+    {
+      "id": "PHYS06",
+      "requirement": "Run samePG16 pg_verifybackup on extracted plain backup before startup, default filechecksums plus requiredWAL parse, no ignore/skip options. Check auto.conf/standby.signal/recovery.signal, extraWAL and external/config paths independently because verifier does not cover them fully. No external source replication/archive connections or background sideeffects on cloneboot. Do not remove backup_label or edit pg_control/catalog/guard to force startup."
+    },
+    {
+      "id": "PHYS07",
+      "requirement": "Existing preservedRoleSql/CREATE DATABASE/pg_restore/bootstrap/seeds/migrations must not execute on physical branch. Before any clone-only tool delta, compare exact physical custody catalog witnesses plus existing fullbusiness/logicalsequence/security/order witnesses and rawglobals hash. Existing witness intentionally excludes authenticator password as NEW_TOOL_TRANSPORT; permit only explicitly reviewed clone-only authenticator password and originalDB letbuyy.fixture_run_id update if needed. Preserve authenticator OID/attributes/memberships and every other credential/setting. Do not use postgres REST credentials or weaken normal ownership/REST marker guard.",
+      "source": "scripts/governance/owned-database-provision.mjs:120,133,198; scripts/governance/owned-fixture-guard.mjs:217"
+    },
+    {
+      "id": "PHYS08",
+      "requirement": "Preserved physical branch is explicit and fixed to original manual suite/rehearsal phase, new protected resource only; no adopt/external/shim path or user-set boolean that skips custody proof. Prove normal ordinary ownership including REST marker with new runID after exact clone-only tooldelta. StartCluster/executable-pg-fixture, original suite support, guard and businesssource remain unchanged unless separately reviewed expanded source allocation."
+    },
+    {
+      "id": "PHYS09",
+      "requirement": "Actual later qualification must prove startup/WAL recovery, full business/security/global/OID parity and guard event O via a safe rollback-scoped DDL trigger exercise on clone. Existing witness normalizes native FK OID names and excludes marker/auth password, so it is insufficient as the sole physical identity proof. Do not replay or disable guard/journal, alterimmutablebindings or pg_resetwal. No provider/ordercertification credit for a backup/restore."
+    },
+    {
+      "id": "PHYS10",
+      "requirement": "Physical artifact is an additional immutable recovery artifact, not a replacement for original25MB logicalarchive/source/witness or failedcopies. Cleanup cannot depend solely on a fresh logical pg_dump that cannot restore custody. Require verified physical checkpoint/restore evidence before any clone deletion; otherwise retain all new protected resources with truthful primary/checkpoint/report diagnostics. Existing checkpoint path must failclosed and no reaper may act on protectedresources."
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://www.postgresql.org/docs/16/app-pgbasebackup.html",
+      "supports": "Wholecluster exactfiles; replication protocol; stdouttar no additionaltablespaces/no WALstream; fetch retention; checkpoint/fsync/manifest requirements."
+    },
+    {
+      "url": "https://www.postgresql.org/docs/16/app-pgverifybackup.html",
+      "supports": "Extracted plain verification/checksums+requiredWAL; ignoredauto.conf/signals; testrestore/data validation still required."
+    },
+    {
+      "url": "https://www.postgresql.org/docs/16/backup-file.html",
+      "supports": "Live raw filecopy is not a consistent backup; wholecluster and WAL required."
+    },
+    {
+      "url": "https://www.postgresql.org/docs/16/continuous-archiving.html",
+      "supports": "Standalone hotbackup with bundledWAL can recover without externalarchive; sourcebackupstop WALswitch."
+    }
+  ],
+  "authority": "Actual human resume user01a17051-60f8-7fe2-bf0e-87647ea64e7f and confirmation01a17051-aabe-7e93-954b-da5059e385df observed in live Root read_thread; Root current exact source-only prep request. Old Themes pause is historical; attempted misreadpause dispatch was rejected/no effects, no newhumanpause.",
+  "actualDockerSqlBackupProvisionBuildServeBrowserProviderActionsByThemes": 0,
+  "fullThemeCertificates": 0
+}

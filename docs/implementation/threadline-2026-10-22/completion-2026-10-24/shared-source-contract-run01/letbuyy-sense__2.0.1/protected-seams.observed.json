@@ -1,0 +1,11 @@
+{
+  "id": "protected-seams",
+  "status": "PASS_SOURCE_DATA_CONTRACT",
+  "observed": {
+    "protectedSectionTypes": [
+      "app-block-slot"
+    ],
+    "appInstancesGenerated": 0,
+    "nestedPermissionInferenceMade": false
+  }
+}

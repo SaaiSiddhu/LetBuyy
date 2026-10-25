@@ -1,0 +1,15 @@
+{
+  "recordedAt": "2026-10-24T09:11:56.484223+00:00",
+  "classification": "INDEPENDENT_EXACT_FILE_AND_MAIN_BASE_REVIEW_BEFORE_NATIVE",
+  "candidate": "/private/tmp/madeyours-checkout-reentry-proposal-20261024-06",
+  "candidateFilesVerified": 1127,
+  "overlayFilesVerified": 11,
+  "mainBaseAndUnchangedInputsCompared": 1127,
+  "sealed05HandoffPreserved": true,
+  "mismatches": [],
+  "materializationSha256": "d414ad5ea5bb24081c3c7de9966ba8e67b6d8ccc476b145c266118af86f523c8",
+  "nativeStarted": false,
+  "databaseStarted": false,
+  "browser": false,
+  "providerCalls": 0
+}

@@ -1,0 +1,36 @@
+{
+  "status": "ROOT_QUALIFIED_NATIVE04_EPOCH_CLOSED_393_SOURCE_ONLY_EMISSION_AUTHORIZED",
+  "recordedAt": "2026-10-24T05:46:55.974511+00:00",
+  "files": [
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/theme-publisher-acl.postgres.test.ts",
+      "sha256": "e71b15856e4868d28f249d8debf7f758de31cf61715bd10c0844ce79c2bc66b2",
+      "snapshot": "docs/implementation/niche-theme-programme/publisher-acl393/source-emission/theme-publisher-acl.postgres.test.ts.before.snapshot"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/source-contracts.test.mjs",
+      "sha256": "46754071acbbe5d906ab09dffc10a4e59ee4965ae80ce3721e80d9b8078ab7db",
+      "snapshot": "docs/implementation/niche-theme-programme/publisher-acl393/source-emission/source-contracts.test.mjs.before.snapshot"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/check-native-types.mjs",
+      "sha256": "b745c5a3c37f8f55096ed78da8b725687e2ded6b186fb52b01f97e86a90db5b8",
+      "snapshot": "docs/implementation/niche-theme-programme/publisher-acl393/source-emission/check-native-types.mjs.before.snapshot"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393/capture-source-inputs.mjs",
+      "sha256": "0f75dac1c6e132a3d973035c225191a0a7adf5b6848512d616b571d2462e1df2",
+      "snapshot": "docs/implementation/niche-theme-programme/publisher-acl393/source-emission/capture-source-inputs.mjs.before.snapshot"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/publisher-acl393-native04-root-qualification.json",
+      "sha256": "647d6bd4636dc2c7c5bed741354dd34a5efe646febf27bdfc6ce774f81e85b73",
+      "snapshot": "docs/implementation/niche-theme-programme/publisher-acl393/source-emission/publisher-acl393-native04-root-qualification.json.before.snapshot"
+    },
+    {
+      "path": "scripts/governance/test-suite-catalog.mjs",
+      "sha256": "d3a176967f9b23fa3aed93d17f4e68670becdc08c36227e06447d50f7b71d3af",
+      "snapshot": "docs/implementation/niche-theme-programme/publisher-acl393/source-emission/test-suite-catalog.mjs.before.snapshot"
+    }
+  ]
+}

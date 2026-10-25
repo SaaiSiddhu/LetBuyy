@@ -1,0 +1,7 @@
+The renewed human instruction is delivered to Themes and Editor. Themes sealed the shared catalogue-read repair with13passing permission-model checks and gateway typecheck0. Read-only review confirms both preview and confirmed-update target reads use the bounded guarded selector. This changes shared API code under its existing owner; Kindred source and accepted artifacts remain frozen.
+
+Native06(run9a1393559a57) proves progress: normal update-preview returned200 instead of the earlier500, followed by the expected diff/tenant/other-package refusals in its execution prefix. The run then failed the unavailable-version control: expected404, observed422 VALIDATION_ERROR. The full native gate remains unqualified, and later clauses are unproved. These are partial native observations, not Kindred installed-case passes. Themes received the exact current failure for resolution without weakening the oracle.
+
+Editor’s public certificate preflight and OS trust diagnostic are preparation only; a fresh serving origin and normal navigation are still required. No actual Kindred runtime or browser lease has been issued. Original19 results remain3 PASS / 1 FAIL / 15 NOT_RUN; the complete broader objective is unchanged.
+
+Native06 cleanup reports no remaining containers, networks or volumes. Kindred acquired no resource, ran no case and returned no lease. Private evidence and shared resources are retained; shared936teardown remains unproved. All seven frozen input hashes match, KQA-01 remains OPEN P2, and no schedule or prior evidence was changed.

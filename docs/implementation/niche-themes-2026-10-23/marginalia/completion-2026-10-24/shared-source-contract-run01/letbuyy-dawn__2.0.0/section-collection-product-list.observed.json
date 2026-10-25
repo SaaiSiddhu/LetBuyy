@@ -1,0 +1,66 @@
+{
+  "id": "section-collection-product-list",
+  "status": "PASS_SOURCE_DATA_CONTRACT",
+  "observed": {
+    "type": "collection-product-list",
+    "group": "template",
+    "firstId": "section-7742018c-679e-45f5-9c86-39b12b16c0df",
+    "finalId": "section-d81046d3-aa57-4227-af60-520e7ec767e1",
+    "phases": [
+      {
+        "phase": "edited",
+        "data": {
+          "type": "collection-product-list",
+          "settings": {
+            "title": "Source fixture title"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      {
+        "phase": "hidden-reordered",
+        "data": {
+          "type": "collection-product-list",
+          "settings": {
+            "title": "Source fixture title"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": true
+        }
+      },
+      {
+        "phase": "shown",
+        "data": {
+          "type": "collection-product-list",
+          "settings": {
+            "title": "Source fixture title"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      {
+        "phase": "removed",
+        "pinnedGroupSectionRetained": false
+      },
+      {
+        "phase": "readded",
+        "data": {
+          "type": "collection-product-list",
+          "settings": {
+            "title": "Source fixture title"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      }
+    ],
+    "actualUICallbacksExecuted": false,
+    "resourceAuthorityProved": false
+  }
+}

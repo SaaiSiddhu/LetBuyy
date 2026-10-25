@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
-import { getPooledSql, closePooledSqlClients } from '@letbuyy/infrastructure/pooled-sql-adapter';
+import { getPooledSql, closePooledSqlClients, withPooledSqlScope } from '@letbuyy/infrastructure/pooled-sql-adapter';
 import { APPLY_INVENTORY_ADJUSTMENT_SQL } from '../../execution/inventory-adjustment.adapter';
 import test, { after, afterEach, before } from 'node:test';
 import { Gateway, gatewayEnv, newBarrier, newIdentityKeys, signedIdentityHeaders, type IdentityKeys } from './gateway-harness';
@@ -28,6 +28,9 @@ let gateway: Gateway;
 let proxy: OwnedPooledSqlProxy;
 
 before(async () => {
+    // Isolate the pinned 346/356 BEFORE witnesses from later 385/388 replacements.
+    // Current behavior suites reapply both successors after the historical proofs.
+    for(const name of ['388_cart_order_fact_snapshots','385_product_variant_facts']) owned.script(readFileSync(new URL('../../../../../database/supabase/rollback/'+name+'.rollback.sql',import.meta.url),'utf8'));
     keys = await newIdentityKeys();
     seedSyntheticTenant(psql, tenant);
     psql(`
@@ -49,7 +52,7 @@ before(async () => {
 afterEach(async () => { await gateway.settle(); });
 after(async () => { await closePooledSqlClients(); await proxy?.stop(); });
 
-async function adjust(actorId: string, email: string, adjustment: number, idempotencyKey: string, requestId: string) {
+async function adjustRequest(actorId: string, email: string, adjustment: number, idempotencyKey: string, requestId: string) {
     return gateway.request('/v1/inventory/adjust', {
         method: 'POST',
         headers: {
@@ -73,7 +76,7 @@ async function adjust(actorId: string, email: string, adjustment: number, idempo
 
 const stockMigration=readFileSync(new URL('../../../../../database/supabase/migrations/356_inventory_adjustment_receipts.sql',import.meta.url),'utf8');
 const stockRollback=readFileSync(new URL('../../../../../database/supabase/rollback/356_inventory_adjustment_receipts.rollback.sql',import.meta.url),'utf8');
-function observeAdjustmentQueries(onQuery:()=>Promise<void>){
+function installAdjustmentObservation(onQuery:()=>Promise<void>){
     const pool=getPooledSql(gateway.env,{maxConnections:3,idleTimeoutSeconds:10,connectTimeoutSeconds:5})!;
     const original=pool.begin;
     (pool as any).begin=(callback:any)=>(original as any).call(pool,(tx:any)=>callback(new Proxy(tx,{
@@ -84,6 +87,18 @@ function observeAdjustmentQueries(onQuery:()=>Promise<void>){
     })));
     return{restore(){pool.begin=original;}};
 }
+let adjustmentObservation:(()=>Promise<void>)|undefined;
+function observeAdjustmentQueries(onQuery:()=>Promise<void>){adjustmentObservation=onQuery;return {restore(){adjustmentObservation=undefined;}};}
+async function observedAdjustment<T>(work:()=>Promise<T>){
+    // Instrument the real request's invocation-owned client, never a process
+    // global pool that production fetch no longer uses.
+    return withPooledSqlScope(async()=>{
+        const tap=adjustmentObservation?installAdjustmentObservation(adjustmentObservation):null;
+        try{return await work();}finally{tap?.restore();}
+    });
+}
+async function adjust(...args:Parameters<typeof adjustRequest>){return observedAdjustment(()=>adjustRequest(...args));}
+async function recoveryAdjust(...args:Parameters<typeof recoveryAdjustRequest>){return observedAdjustment(()=>recoveryAdjustRequest(...args));}
 const stockQuote=(s:string)=>"'"+s.replaceAll("'","''")+"'";
 const stockCommand=(p:ReturnType<typeof recoveryProduct>)=>({...recoveryBody(p),variant_id:p.variantId,location_id:tenant.locationId});
 function stockRoleCall(p:ReturnType<typeof recoveryProduct>,key:string,command:object=stockCommand(p),role='app_tenant',actor=ownerId,store=tenant.siteId,contextActor=actor,contextStore=store){return `BEGIN;SET LOCAL ROLE ${role};SELECT set_config('app.site_id',${stockQuote(contextStore)},true),set_config('app.actor_id',${stockQuote(contextActor)},true);SELECT public.apply_inventory_adjustment_v1('${store}','${actor}',${stockQuote(key)},${stockQuote(JSON.stringify(command))}::jsonb);COMMIT;`;}
@@ -177,7 +192,7 @@ const stock356BeforePinnedSources={
     rollback356:{path:'rollback/356_inventory_adjustment_receipts.rollback.sql',sha:'ea3611b65a5683c1fcbf4a0291a72718c2b77b314e690e1c7cf2d9bdae4939fd'},
 } as const;
 function stock356BeforeBody(kind:keyof typeof stock356BeforePinnedSources){
-    const pin=stock356BeforePinnedSources[kind],text=readFileSync(new URL('../../../../../database/supabase/'+pin.path,import.meta.url),'utf8');
+    const pin=stock356BeforePinnedSources[kind],text=readFileSync(kind==='rollback356' ? new URL('../../../../../tests/fixtures/migration-history/356_inventory_adjustment_receipts.before.rollback.sql',import.meta.url) : new URL('../../../../../database/supabase/'+pin.path,import.meta.url),'utf8');
     assert.equal(stock356BeforeHash(text),pin.sha,'exact root-reviewed SQL pair required for BEFORE');
     const begin=text.match(/^BEGIN;\s*$/m),commit=text.lastIndexOf('COMMIT;');assert.ok(begin&&begin.index!==undefined&&commit>begin.index);assert.match(text.slice(commit),/^COMMIT;\s*$/);
     return text.slice(begin.index+begin[0].length,commit);
@@ -264,6 +279,7 @@ test('BEFORE defect witness: original356 retires unreviewed provenance and colum
 });
 
 test('empty356 rollback verifies family/body/owner/ACL/provenance/shape and refuses concurrent writers before a clean reapply and command race',async()=>{
+    for(const name of ['385_product_variant_facts','388_cart_order_fact_snapshots']) owned.script(readFileSync(new URL('../../../../../database/supabase/migrations/'+name+'.sql',import.meta.url),'utf8'));
     const original=stockOwnerDefinitions();assert.equal(psql('SELECT count(*) FROM inventory_adjustment_receipts;'),'0');
     assert.equal(psql(`SELECT EXISTS(SELECT 1 FROM pg_depend d JOIN pg_attrdef a ON d.classid='pg_attrdef'::regclass AND d.objid=a.oid WHERE a.adrelid='public.inventory_adjustment_receipts'::regclass AND d.refclassid='pg_proc'::regclass AND d.refobjid='public.assert_product_edit_actor_v1(uuid,uuid,text)'::regprocedure);`),'t');
     assert.match(owned.psqlExpectError('BEGIN;DROP FUNCTION public.assert_product_edit_actor_v1(uuid,uuid,text) RESTRICT;ROLLBACK;'),/depend|cannot drop/);
@@ -286,10 +302,21 @@ test('empty356 rollback verifies family/body/owner/ACL/provenance/shape and refu
     owned.script(stockRollback);assert.equal(psql(`SELECT to_regclass('public.inventory_adjustment_receipts') IS NULL AND to_regprocedure('public.apply_inventory_adjustment_v1(uuid,uuid,text,jsonb)') IS NULL;`),'t');assert.equal(stockOwnerDefinitions(),original);
     owned.script(stockMigration);assert.equal(stockOwnerDefinitions(),original);
     const p=recoveryProduct(),before=recoverySnapshot(p),key='syn-stock-rollback-race-'+crypto.randomUUID();
-    const paused=stockRollback.replace('LOCK TABLE public.inventory_adjustment_receipts IN ACCESS EXCLUSIVE MODE;','SELECT pg_sleep(0.5) /* syn-stock-rollback-race */;LOCK TABLE public.inventory_adjustment_receipts IN ACCESS EXCLUSIVE MODE;');
-    const rollback=owned.psqlAsync(paused).then(()=>({ok:true}),()=>({ok:false}));
-    await eventually(()=>Number(psql(`SELECT count(*) FROM pg_stat_activity WHERE pid<>pg_backend_pid() AND state='active' AND query LIKE '%syn-stock-rollback-race%';`))>0);
-    const [rolled,write]=await Promise.all([rollback,recoveryAdjust(p,key)]);
+    const gate='syn-stock-gate-'+crypto.randomUUID(),rollbackName='syn-stock-retire-'+crypto.randomUUID();
+    const blocker=owned.psqlAsync(`SET application_name=${stockQuote(gate)};SELECT pg_advisory_lock(hashtextextended(${stockQuote(gate)},0));SELECT pg_sleep(300);`).catch(()=>undefined);
+    const release=()=>psql(`SELECT pg_cancel_backend(pid) FROM pg_stat_activity WHERE datname=current_database() AND application_name=${stockQuote(gate)} AND pid<>pg_backend_pid()`);
+    let outcome:{ok:boolean}|undefined,written:Awaited<ReturnType<typeof recoveryAdjust>>|undefined;
+    try {
+      await eventually(()=>psql(`SELECT count(*) FROM pg_stat_activity WHERE datname=current_database() AND application_name=${stockQuote(gate)} AND wait_event='PgSleep'`)==='1');
+      const paused=stockRollback.replace('BEGIN;',`BEGIN;SET LOCAL application_name=${stockQuote(rollbackName)};`).replace('LOCK TABLE public.inventory_adjustment_receipts IN ACCESS EXCLUSIVE MODE;',`SELECT pg_advisory_xact_lock(hashtextextended(${stockQuote(gate)},0));LOCK TABLE public.inventory_adjustment_receipts IN ACCESS EXCLUSIVE MODE;`);
+      assert.notEqual(paused,stockRollback,'the named gate must be installed');
+      const rollback=owned.psqlAsync(paused).then(()=>({ok:true}),()=>({ok:false}));
+      await eventually(()=>psql(`SELECT count(*) FROM pg_stat_activity WHERE datname=current_database() AND application_name=${stockQuote(rollbackName)} AND wait_event_type='Lock'`)==='1');
+      const write=recoveryAdjust(p,key);release();
+      [outcome,written]=await Promise.all([rollback,write]);
+    } finally {release();await blocker;}
+    assert(outcome&&written);const rolled=outcome,write=written;
+
     if(rolled.ok){assert.notEqual(write.status,200);assert.deepEqual(recoverySnapshot(p),before);owned.script(stockMigration);}
     else{assert.equal(psql(`SELECT to_regclass('public.inventory_adjustment_receipts') IS NOT NULL;`),'t');if(write.status===200){assert.equal(Number(psql(`SELECT count(*) FROM inventory_adjustment_receipts WHERE idempotency_key='${key}';`)),1);}else assert.deepEqual(recoverySnapshot(p),before);}
     assert.equal(stockOwnerDefinitions(),original);
@@ -363,7 +390,7 @@ function recoveryProduct() {
 }
 function recoveryStaff(){const id=crypto.randomUUID(),email=`syn-stock-staff-${id}@example.invalid`;psql(`INSERT INTO users_custom(id,email,email_verified) VALUES('${id}','${email}',true);INSERT INTO employees(user_id,email,store_id,role,status,is_active,permissions) VALUES('${id}','${email}','${tenant.siteId}','editor','active',true,'{"granted":["products:read","products:write"]}');`);return{id,email};}
 const recoveryBody=(p:ReturnType<typeof recoveryProduct>)=>({product_id:p.id,variant_id:p.variantId,location_id:tenant.locationId,adjustment:2,reason:'correction',notes:'Synthetic immutable recovery command'});
-async function recoveryAdjust(p:ReturnType<typeof recoveryProduct>,key:string,actorId=ownerId,email=ownerEmail){return gateway.request('/v1/inventory/adjust',{method:'POST',headers:{...await signedIdentityHeaders(actorId,email,tenant.siteId),'X-Store-ID':tenant.siteId,'X-Idempotency-Key':key},body:JSON.stringify(recoveryBody(p))});}
+async function recoveryAdjustRequest(p:ReturnType<typeof recoveryProduct>,key:string,actorId=ownerId,email=ownerEmail){return gateway.request('/v1/inventory/adjust',{method:'POST',headers:{...await signedIdentityHeaders(actorId,email,tenant.siteId),'X-Store-ID':tenant.siteId,'X-Idempotency-Key':key},body:JSON.stringify(recoveryBody(p))});}
 function recoverySnapshot(p:ReturnType<typeof recoveryProduct>){return JSON.parse(psql(`SELECT jsonb_build_object('levels',(SELECT jsonb_agg(to_jsonb(t) ORDER BY t.id) FROM inventory_levels t WHERE product_id='${p.id}'),'variant',(SELECT to_jsonb(t) FROM product_variants t WHERE id='${p.variantId}'),'product',(SELECT to_jsonb(t) FROM products t WHERE id='${p.id}'),'adjustments',(SELECT coalesce(jsonb_agg(to_jsonb(t) ORDER BY t.id),'[]') FROM inventory_adjustments t WHERE product_id='${p.id}'),'outbox',(SELECT coalesce(jsonb_agg(to_jsonb(t) ORDER BY t.id),'[]') FROM outbox_events t WHERE aggregate_id='${p.id}'))::text;`));}
 
 test('a current products-write staff member can read the selected stock level and adjust it once',async()=>{

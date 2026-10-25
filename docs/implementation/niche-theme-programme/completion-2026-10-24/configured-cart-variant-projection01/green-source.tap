@@ -1,0 +1,112 @@
+TAP version 13
+# Subtest: public variant adapter retains durable IDs and validates food while dropping private metadata
+ok 1 - public variant adapter retains durable IDs and validates food while dropping private metadata
+  ---
+  duration_ms: 1.378709
+  type: 'test'
+  ...
+# Subtest: missing or malformed variant facts remain absent and do not borrow another variant quantity
+ok 2 - missing or malformed variant facts remain absent and do not borrow another variant quantity
+  ---
+  duration_ms: 0.392333
+  type: 'test'
+  ...
+# Subtest: restored accepted input requires a fresh context and deliberate Review
+ok 3 - restored accepted input requires a fresh context and deliberate Review
+  ---
+  duration_ms: 58.993833
+  type: 'test'
+  ...
+# Subtest: invalid Unicode draft preserves exact input and last valid preview; normalization is explicit
+ok 4 - invalid Unicode draft preserves exact input and last valid preview; normalization is explicit
+  ---
+  duration_ms: 18.0575
+  type: 'test'
+  ...
+# Subtest: revoked saved choices remain unavailable instead of silently becoming the first current option
+ok 5 - revoked saved choices remain unavailable instead of silently becoming the first current option
+  ---
+  duration_ms: 15.599583
+  type: 'test'
+  ...
+# Subtest: context failure and late variant context cannot expose a reviewed cart draft
+ok 6 - context failure and late variant context cannot expose a reviewed cart draft
+  ---
+  duration_ms: 24.463
+  type: 'test'
+  ...
+# Subtest: lb-cart: actual edit control saves one replacement and preserves unrelated Kabir
+ok 7 - lb-cart: actual edit control saves one replacement and preserves unrelated Kabir
+  ---
+  duration_ms: 72.883042
+  type: 'test'
+  ...
+# Subtest: lb-cart-drawer: actual edit control saves one replacement and preserves unrelated Kabir
+ok 8 - lb-cart-drawer: actual edit control saves one replacement and preserves unrelated Kabir
+  ---
+  duration_ms: 65.907458
+  type: 'test'
+  ...
+# Subtest: Cancel and Escape return focus without a mutation or accepted-line loss
+ok 9 - Cancel and Escape return focus without a mutation or accepted-line loss
+  ---
+  duration_ms: 46.184959
+  type: 'test'
+  ...
+# Subtest: unknown acknowledgement keeps same command/key; retry confirms once and blocks navigation/cancel
+ok 10 - unknown acknowledgement keeps same command/key; retry confirms once and blocks navigation/cancel
+  ---
+  duration_ms: 53.853917
+  type: 'test'
+  ...
+# Subtest: stale-tab refusal preserves accepted cart and exact draft and requires fresh read/review
+ok 11 - stale-tab refusal preserves accepted cart and exact draft and requires fresh read/review
+  ---
+  duration_ms: 53.130542
+  type: 'test'
+  ...
+# Subtest: changing actual variant UUID invalidates Review and keeps old line until acknowledgement
+ok 12 - changing actual variant UUID invalidates Review and keeps old line until acknowledgement
+  ---
+  duration_ms: 51.497542
+  type: 'test'
+  ...
+# Subtest: another window revision retires Review while retaining exact transient draft
+ok 13 - another window revision retires Review while retaining exact transient draft
+  ---
+  duration_ms: 31.02825
+  type: 'test'
+  ...
+# Subtest: cart identity switch removes the previous private draft without modifying the replacement cart
+ok 14 - cart identity switch removes the previous private draft without modifying the replacement cart
+  ---
+  duration_ms: 28.296791
+  type: 'test'
+  ...
+# Subtest: opening a saved cart is read-only; stale visible rows cannot overwrite a newer acknowledged configuration
+ok 15 - opening a saved cart is read-only; stale visible rows cannot overwrite a newer acknowledged configuration
+  ---
+  duration_ms: 56.506791
+  type: 'test'
+  ...
+# Subtest: committed edit readback for a subsequently closed cart cannot republish an active checkout
+ok 16 - committed edit readback for a subsequently closed cart cannot republish an active checkout
+  ---
+  duration_ms: 39.43525
+  type: 'test'
+  ...
+# Subtest: auth refusal while recovering an uncertain save never discards its original command or falsely denies the prior commit
+ok 17 - auth refusal while recovering an uncertain save never discards its original command or falsely denies the prior commit
+  ---
+  duration_ms: 59.079042
+  type: 'test'
+  ...
+1..17
+# tests 17
+# suites 0
+# pass 17
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1455.495542

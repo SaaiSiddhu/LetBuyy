@@ -8,9 +8,10 @@ import test from 'node:test';
 import {createServer,type Server} from 'node:http';
 import {exportJWK} from 'jose';
 import {chromium,expect,type Page} from '@playwright/test';
+import {closePooledSqlClients} from '@letbuyy/infrastructure/pooled-sql-adapter';
 import {hashMerchantPassword} from '../../services/api-gateway/src/lib/merchant-password';
 import {Gateway,gatewayEnv,newIdentityKeys,INTERNAL_SECRET,tapRest,restJson} from '../../services/api-gateway/src/__tests__/owned-db/gateway-harness';
-import {requireOwnedDatabase,startOwnedClientRuntime,stopOwnedClientRuntime,type OwnedClientProcess} from '../../services/api-gateway/src/__tests__/owned-db/owned-db-support';
+import {requireOwnedDatabase,startOwnedPooledSqlProxy,startOwnedClientRuntime,stopOwnedClientRuntime,type OwnedClientProcess} from '../../services/api-gateway/src/__tests__/owned-db/owned-db-support';
 import {newSyntheticTenant,seedSyntheticTenant} from '../../services/api-gateway/src/__tests__/owned-db/synthetic-tenant';
 const owned=requireOwnedDatabase();
 async function port(){const s=createServer();await new Promise<void>(r=>s.listen(0,'127.0.0.1',r));const p=(s.address() as {port:number}).port;await new Promise<void>(r=>s.close(()=>r()));return p;}
@@ -35,7 +36,8 @@ test('normal product creation preserves persisted restrictions and actionable re
  const state=()=>JSON.parse(owned.psql("SELECT jsonb_build_object('products',(SELECT jsonb_agg(to_jsonb(p) ORDER BY id) FROM products p WHERE store_id='"+site.siteId+"'),'inventory',(SELECT jsonb_agg(to_jsonb(i) ORDER BY id) FROM inventory_levels i WHERE store_id='"+site.siteId+"'),'meters',(SELECT jsonb_agg(to_jsonb(m) ORDER BY id) FROM site_usage_meters m WHERE site_id='"+site.siteId+"'),'usage',(SELECT jsonb_agg(to_jsonb(u) ORDER BY id) FROM usage_meter_entries u WHERE site_id='"+site.siteId+"'));"));
  const ip=await port();let mp=await port();for(let i=0;mp===ip&&i<5;i++)mp=await port();assert.notEqual(mp,ip);
  const identityOrigin='http://localhost:'+ip,merchantOrigin='http://localhost:'+mp,keys=await newIdentityKeys();
- const gateway=new Gateway(gatewayEnv(owned,keys,{ENVIRONMENT:'local',LETBUYY_IDENTITY_ISSUER:identityOrigin,NEXT_PUBLIC_ADMIN_URL:merchantOrigin}));
+ const proxy=await startOwnedPooledSqlProxy(owned);
+ const gateway=new Gateway(gatewayEnv(owned,keys,{...proxy.env(),ENVIRONMENT:'local',LETBUYY_IDENTITY_ISSUER:identityOrigin,NEXT_PUBLIC_ADMIN_URL:merchantOrigin}));
  const originalFetch=globalThis.fetch,external:string[]=[],browserProvider:string[]=[];
  globalThis.fetch=(async(input:RequestInfo|URL,init?:RequestInit)=>{
   const u=new URL(typeof input==='string'?input:input instanceof URL?input.href:input.url);
@@ -66,7 +68,7 @@ test('normal product creation preserves persisted restrictions and actionable re
   await login(page,identityOrigin,merchantOrigin,email,password);
   const target=merchantOrigin+'/'+site.subdomain+'/products/new',endpoint='/api/stores/'+site.subdomain+'/products';
   await page.goto(target);await page.getByLabel('Title',{exact:true}).fill('Synthetic Restricted Product');await page.getByLabel('Price',{exact:true}).fill('199');
-  const save=async()=>{const [r]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname===endpoint&&r.request().method()==='POST'),page.getByRole('button',{name:'Save product',exact:true}).click()]);return r;};
+  const save=async()=>{const [r]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname===endpoint&&r.request().method()==='POST'),page.getByRole('button',{name:'Create product',exact:true}).click()]);return r;};
   const before=state();
   await t.test('current persisted zero limit refuses normal UI/BFF creation403 with no effects',async()=>{
    const r=await save();assert.equal(r.status(),403,await r.text());assert.match(await r.text(),/Product limit reached/);
@@ -86,7 +88,7 @@ test('normal product creation preserves persisted restrictions and actionable re
   assert.deepEqual(external,[]);assert.deepEqual(browserProvider,[]);
   console.info('N2_ENTITLEMENT_NORMAL_BROWSER '+JSON.stringify({normalIdentity:true,maintainedUI:true,subtests:3,paymentOrEmailProviderRequests:0,externalGatewayRequests:0}));
  }finally{
-  await browser?.close();await stopOwnedClientRuntime(merchant);await stopOwnedClientRuntime(identity);await gateway.settle();tap.restore();globalThis.fetch=originalFetch;
+  await browser?.close();await stopOwnedClientRuntime(merchant);await stopOwnedClientRuntime(identity);await gateway.settle();await closePooledSqlClients();await proxy.stop();tap.restore();globalThis.fetch=originalFetch;
   if(bridge){bridge.closeAllConnections();await new Promise<void>(r=>bridge!.close(()=>r()));}
  }
 });

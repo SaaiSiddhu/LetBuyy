@@ -1,0 +1,294 @@
+{
+  "currentSourceProfile": {
+    "row": {
+      "oid": "32599",
+      "proacl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres"
+      ],
+      "probin": null,
+      "prosrc": "\nDECLARE s public.sites;t public.themes;i public.theme_instances;d public.theme_instance_drafts;e public.theme_editor_drafts;\n receipt public.idempotency_keys;v_hash text;v_scope text;v_current integer;v_next integer;v_now timestamptz:=now();\n v_config jsonb;v_templates jsonb;v_item record;v_response jsonb;v_release record;v_manifest jsonb;v_patch uuid;\n v_package uuid;v_package_version uuid;v_schema text;v_instance_draft uuid;\n v_input jsonb;v_order jsonb;v_existing_order jsonb;v_sections jsonb;v_ids text[];\nBEGIN\n IF p_operation IS NULL OR p_operation NOT IN('save','reorder','discard','publish') OR p_base_version IS NULL OR p_base_version<0 OR p_base_version>=2147483647\n  OR p_key IS NULL OR char_length(p_key) NOT BETWEEN 8 AND 200 OR p_key<>btrim(p_key) OR p_key~'[[:cntrl:]]'\n  OR p_template_key IS NULL OR char_length(p_template_key) NOT BETWEEN 1 AND 120\n  OR p_template_key IN('__proto__','constructor','prototype')\n  OR p_template_key!~'^[a-z0-9][a-z0-9_./-]*$' OR position('..' IN p_template_key)>0 OR position('//' IN p_template_key)>0\n  OR (position('.' IN p_template_key)>0 AND split_part(p_template_key,'.',2)<>''\n      AND substring(p_template_key FROM position('.' IN p_template_key)+1)!~'^[a-z0-9][a-z0-9_-]*$') THEN\n  RAISE EXCEPTION 'Invalid theme draft intent' USING ERRCODE='PT400'; END IF;\n s:=public.theme_draft_actor_site_v1(p_actor_id,p_store_id,p_bound_site_id);\n SELECT * INTO t FROM public.themes WHERE slug=p_theme_slug AND is_active=true;\n IF t.id IS NULL OR(t.is_site_private AND t.owned_by_site_id IS DISTINCT FROM p_store_id) THEN\n  RAISE EXCEPTION 'Theme not available' USING ERRCODE='42501'; END IF;\n SELECT * INTO i FROM public.theme_instances WHERE store_id=p_store_id AND theme_slug=p_theme_slug AND deleted_at IS NULL\n  ORDER BY updated_at DESC,id DESC LIMIT 1 FOR UPDATE;\n v_current:=greatest(coalesce(i.draft_revision,0),coalesce((SELECT max(version) FROM public.theme_editor_drafts WHERE store_id=p_store_id AND theme_id=p_theme_slug),0));\n v_scope:='theme-draft-v1:'||p_actor_id::text||':'||p_theme_slug;\n v_hash:=encode(sha256(convert_to(jsonb_build_object('actor',p_actor_id,'store',p_store_id,'theme',p_theme_slug,\n  'template',p_template_key,'base_version',p_base_version,'operation',p_operation,'config',p_config,'publish',p_publish_options)::text,'UTF8')),'hex');\n SELECT * INTO receipt FROM public.idempotency_keys WHERE site_id=p_store_id AND scope=v_scope AND key=p_key FOR UPDATE;\n IF FOUND THEN\n  IF receipt.request_hash IS DISTINCT FROM v_hash THEN RAISE EXCEPTION 'Theme intent key has different content' USING ERRCODE='PT409'; END IF;\n  IF receipt.status<>'completed' OR receipt.response_body IS NULL OR receipt.deleted_at IS NOT NULL THEN\n   RAISE EXCEPTION 'Theme receipt unavailable' USING ERRCODE='PT503'; END IF;\n  RETURN receipt.response_body||jsonb_build_object('replayed',true,'current_version',v_current);\n END IF;\n IF v_current<>p_base_version THEN\n  RAISE EXCEPTION 'Theme draft has changed in another session' USING ERRCODE='PT409',DETAIL=jsonb_build_object('current_version',v_current)::text; END IF;\n v_next:=v_current+1;\n SELECT * INTO d FROM public.theme_instance_drafts WHERE theme_instance_id=i.id AND store_id=p_store_id\n  AND draft_status='active' AND deleted_at IS NULL ORDER BY updated_at DESC,id DESC LIMIT 1 FOR UPDATE;\n SELECT * INTO e FROM public.theme_editor_drafts WHERE store_id=p_store_id AND theme_id=p_theme_slug AND template_key=p_template_key FOR UPDATE;\n\n IF p_operation='reorder' THEN\n  v_order:=p_config->'section_order';\n  IF jsonb_typeof(v_order) IS DISTINCT FROM 'array' OR jsonb_array_length(v_order)>500 THEN\n   RAISE EXCEPTION 'Section order required' USING ERRCODE='PT400'; END IF;\n  IF EXISTS(SELECT 1 FROM jsonb_array_elements(v_order) x WHERE jsonb_typeof(x)<>'string' OR length(x#>>'{}') NOT BETWEEN 1 AND 200)\n   OR (SELECT count(*) FROM jsonb_array_elements(v_order))<>(SELECT count(DISTINCT x) FROM jsonb_array_elements(v_order) x) THEN\n   RAISE EXCEPTION 'Distinct section IDs required' USING ERRCODE='PT400'; END IF;\n  v_input:=coalesce(d.working_manifest,CASE WHEN e.deleted_at IS NULL THEN e.draft_config END,p_runtime->'initial_config');\n  IF jsonb_typeof(v_input) IS DISTINCT FROM 'object' THEN RAISE EXCEPTION 'Theme document unavailable' USING ERRCODE='PT503'; END IF;\n  v_sections:=v_input->'templates'->p_template_key->'sections';\n  v_existing_order:=v_input->'templates'->p_template_key->'order';\n  IF jsonb_typeof(v_sections)='object' AND jsonb_typeof(v_existing_order)='array' THEN\n   SELECT array_agg(x) INTO v_ids FROM jsonb_object_keys(v_sections) x;\n  ELSIF jsonb_typeof(v_input->'sections'->'template')='array' THEN\n   SELECT array_agg(x->>'id'),coalesce(jsonb_agg(x->'id'),'[]') INTO v_ids,v_existing_order FROM jsonb_array_elements(v_input->'sections'->'template') x;\n  ELSE RAISE EXCEPTION 'Template sections unavailable' USING ERRCODE='PT409'; END IF;\n  IF EXISTS(SELECT 1 FROM jsonb_array_elements_text(v_order) x WHERE NOT(x=ANY(coalesce(v_ids,ARRAY[]::text[])))) THEN\n   RAISE EXCEPTION 'Section order changed' USING ERRCODE='PT409'; END IF;\n  SELECT v_order||coalesce(jsonb_agg(x ORDER BY n) FILTER(WHERE NOT(v_order ? (x#>>'{}'))),'[]') INTO v_order\n   FROM jsonb_array_elements(v_existing_order) WITH ORDINALITY a(x,n);\n  IF jsonb_typeof(v_sections)='object' THEN\n   v_input:=jsonb_set(v_input,ARRAY['templates',p_template_key,'order'],v_order);\n  END IF;\n  IF jsonb_typeof(v_input->'sections'->'template')='array' THEN\n   SELECT coalesce(jsonb_agg(x ORDER BY array_position(ARRAY(SELECT jsonb_array_elements_text(v_order)),x->>'id')),'[]') INTO v_sections\n    FROM jsonb_array_elements(v_input->'sections'->'template') x;\n   v_input:=jsonb_set(v_input,'{sections,template}',v_sections);\n  END IF;\n ELSE v_input:=p_config;\n END IF;\n IF p_operation IN('save','reorder') THEN\n  IF v_input IS NULL OR jsonb_typeof(v_input)<>'object' THEN RAISE EXCEPTION 'Theme document required' USING ERRCODE='PT400'; END IF;\n  v_package:=(p_runtime->>'theme_package_id')::uuid;v_package_version:=(p_runtime->>'theme_package_version_id')::uuid;\n  SELECT schema_version INTO v_schema FROM public.theme_package_versions WHERE id=v_package_version AND theme_package_id=v_package;\n  IF v_schema IS NULL OR NOT EXISTS(SELECT 1 FROM public.theme_packages WHERE id=v_package AND slug=p_theme_slug) THEN\n   RAISE EXCEPTION 'Canonical theme runtime unavailable' USING ERRCODE='PT503'; END IF;\n  IF i.id IS NULL THEN\n   INSERT INTO public.theme_instances(store_id,theme_package_id,theme_package_version_id,theme_slug,installed_config,settings,created_by,updated_by,draft_revision)\n    VALUES(p_store_id,v_package,v_package_version,p_theme_slug,v_input,coalesce(v_input->'themeSettings','{}'),p_actor_id,p_actor_id,v_current) RETURNING * INTO i;\n  ELSIF i.theme_package_id<>v_package THEN RAISE EXCEPTION 'Theme package changed' USING ERRCODE='PT409'; END IF;\n  v_templates:=coalesce(v_input->'templates','{}');\n  -- Preserve every saved template while the selected template and shared settings\n  -- are changed under one global instance revision.\n  IF d.id IS NOT NULL THEN v_templates:=v_templates||coalesce(d.working_manifest->'templates','{}'); END IF;\n  FOR v_item IN SELECT template_key,draft_config FROM public.theme_editor_drafts WHERE store_id=p_store_id AND theme_id=p_theme_slug AND deleted_at IS NULL LOOP\n   IF v_item.template_key<>p_template_key AND jsonb_typeof(v_item.draft_config->'templates'->v_item.template_key)='object' THEN\n    v_templates:=jsonb_set(v_templates,ARRAY[v_item.template_key],v_item.draft_config->'templates'->v_item.template_key,true); END IF;\n  END LOOP;\n  IF jsonb_typeof(v_input->'templates'->p_template_key)='object' THEN\n   v_templates:=jsonb_set(v_templates,ARRAY[p_template_key],v_input->'templates'->p_template_key,true); END IF;\n  v_config:=v_input||jsonb_build_object('templates',v_templates);\n  IF d.id IS NULL THEN\n   INSERT INTO public.theme_instance_drafts(theme_instance_id,store_id,base_release_id,draft_version,working_manifest,schema_manifest_version,created_by,updated_by)\n    VALUES(i.id,p_store_id,i.active_release_id,v_next,v_config,v_schema,p_actor_id,p_actor_id) RETURNING * INTO d;\n  ELSE\n   UPDATE public.theme_instance_drafts SET draft_version=v_next,working_manifest=v_config,schema_manifest_version=v_schema,\n    auto_saved_at=v_now,updated_at=v_now,updated_by=p_actor_id WHERE id=d.id AND store_id=p_store_id RETURNING * INTO d;\n  END IF;\n  INSERT INTO public.theme_editor_drafts(store_id,theme_id,template_key,draft_config,version,created_by,updated_by)\n   VALUES(p_store_id,p_theme_slug,p_template_key,v_config,v_next,p_actor_id,p_actor_id)\n   ON CONFLICT(store_id,theme_id,template_key) DO UPDATE SET draft_config=excluded.draft_config,version=v_next,\n    deleted_at=NULL,auto_saved_at=v_now,updated_at=v_now,updated_by=p_actor_id RETURNING * INTO e;\n  INSERT INTO public.theme_draft_patches(draft_id,store_id,patch_sequence,patch_type,operation,path,value,previous_value,actor_id,request_id,client_revision,server_revision,metadata)\n   VALUES(d.id,p_store_id,v_next,'set',jsonb_build_object('op','replace','path','/','source','theme-editor-v1'), '/',v_config,NULL,p_actor_id,p_request_id,p_base_version,v_next,\n    jsonb_build_object('template_key',p_template_key,'idempotency_key',p_key)) RETURNING id INTO v_patch;\n  UPDATE public.theme_instances SET draft_revision=v_next,current_draft_id=d.id,theme_package_version_id=v_package_version,\n   updated_at=v_now,updated_by=p_actor_id WHERE id=i.id AND store_id=p_store_id;\n  INSERT INTO public.outbox_events(store_id,site_id,aggregate_type,aggregate_id,event_type,payload,idempotency_key,request_id,actor_id,schema_version)\n   VALUES(p_store_id,p_store_id,'theme_draft',e.id::text,'theme.draft.saved',jsonb_build_object('store_id',p_store_id,'theme_id',p_theme_slug,'template_key',p_template_key,\n    'theme_instance_id',i.id,'theme_package_version_id',v_package_version,'theme_instance_draft_id',d.id,'draft_id',e.id,'version',v_next,'client',p_runtime->>'client'),\n    'theme.draft.saved:'||i.id::text||':'||v_next,p_request_id,p_actor_id,1);\n  v_response:=jsonb_build_object('saved_at',to_char(v_now AT TIME ZONE 'UTC','YYYY-MM-DD\"T\"HH24:MI:SS.US\"Z\"'),'version',v_next,'template_key',p_template_key,'draft',jsonb_build_object('id',e.id,'version',v_next,'auto_saved_at',to_char(v_now AT TIME ZONE 'UTC','YYYY-MM-DD\"T\"HH24:MI:SS.US\"Z\"')));\n  IF p_operation='reorder' THEN v_response:=v_response||jsonb_build_object('section_order',v_order); END IF;\n ELSE\n  IF d.id IS NULL THEN RAISE EXCEPTION 'No saved theme draft exists' USING ERRCODE='PT409'; END IF;\n  v_config:=d.working_manifest;\n  IF p_operation='publish' THEN\n   IF p_base_version=0 OR(p_config IS NOT NULL AND p_config IS DISTINCT FROM v_config) THEN\n    RAISE EXCEPTION 'Save the exact theme draft before publishing' USING ERRCODE='PT409'; END IF;\n   SELECT * INTO v_release FROM public.publish_theme_release(p_store_id,p_theme_slug,v_config,e.id,p_base_version,p_actor_id,\n    p_publish_options->>'publish_message',coalesce((p_publish_options->>'make_store_live')::boolean,true),p_request_id,NULL);\n   UPDATE public.theme_instance_drafts SET draft_status='published',updated_at=v_now,updated_by=p_actor_id\n    WHERE id=d.id AND store_id=p_store_id;\n   -- Keep the existing renderer artifacts inside this transaction rather than a\n   -- post-commit enrichment that can return false failure after switching release.\n   v_manifest:=coalesce(p_runtime->'release_manifest','{}')||jsonb_build_object('store_id',p_store_id,'theme_id',p_theme_slug,\n    'release_id',v_release.release_id,'release_version',v_release.release_version,'theme_instance_id',i.id,'theme_package_version_id',i.theme_package_version_id);\n   UPDATE public.theme_releases SET release_manifest=v_manifest,asset_manifest=coalesce(p_runtime->'asset_manifest','{}'),\n    settings_snapshot=coalesce(v_config->'themeSettings','{}'),template_snapshot=v_config,\n    idempotency_key=p_key WHERE id=v_release.release_id AND store_id=p_store_id;\n   v_response:=jsonb_build_object('version',v_next,'template_key',p_template_key,'release',jsonb_build_object('release_id',v_release.release_id,'release_version',v_release.release_version,'published_at',to_char(v_release.published_at AT TIME ZONE 'UTC','YYYY-MM-DD\"T\"HH24:MI:SS.US\"Z\"')),'published_at',to_char(v_release.published_at AT TIME ZONE 'UTC','YYYY-MM-DD\"T\"HH24:MI:SS.US\"Z\"'),\n    'theme',jsonb_build_object('id',t.id,'slug',t.slug,'name',t.name),'store',(SELECT jsonb_build_object('id',x.id,'status',x.status,'theme_id',x.theme_id,\n     'current_theme_release_id',x.current_theme_release_id,'storefront_release_version',x.storefront_release_version,'updated_at',to_char(x.updated_at AT TIME ZONE 'UTC','YYYY-MM-DD\"T\"HH24:MI:SS.US\"Z\"')) FROM public.sites x WHERE id=p_store_id));\n  ELSE\n   UPDATE public.theme_instance_drafts SET draft_status='discarded',deleted_at=v_now,updated_at=v_now,updated_by=p_actor_id WHERE id=d.id AND store_id=p_store_id;\n   v_response:=jsonb_build_object('deleted',true,'version',v_next,'template_key',p_template_key);\n   INSERT INTO public.outbox_events(store_id,site_id,aggregate_type,aggregate_id,event_type,payload,idempotency_key,request_id,actor_id,schema_version)\n    VALUES(p_store_id,p_store_id,'theme_draft',d.id::text,'theme.draft.discarded',jsonb_build_object('store_id',p_store_id,'theme_id',p_theme_slug,'template_key',p_template_key,\n     'draft_id',d.id,'version',v_next),'theme.draft.discarded:'||i.id::text||':'||v_next,p_request_id,p_actor_id,1);\n  END IF;\n  INSERT INTO public.theme_draft_patches(draft_id,store_id,patch_sequence,patch_type,operation,path,value,previous_value,actor_id,request_id,client_revision,server_revision,metadata)\n   VALUES(d.id,p_store_id,v_next,CASE WHEN p_operation='discard' THEN 'delete' ELSE 'set' END,\n    jsonb_build_object('op',p_operation,'path','/'), '/',CASE WHEN p_operation='publish' THEN v_config ELSE NULL END,v_config,\n    p_actor_id,p_request_id,p_base_version,v_next,jsonb_build_object('template_key',p_template_key,'idempotency_key',p_key,'disposition',p_operation));\n  UPDATE public.theme_instance_drafts SET draft_version=v_next WHERE id=d.id AND store_id=p_store_id;\n  -- End the whole canonical document; retaining revision and tombstones prevents\n  -- an old editor from reviving a previously used version after discard/publish.\n  UPDATE public.theme_editor_drafts SET deleted_at=v_now,version=v_next,updated_at=v_now,updated_by=p_actor_id\n   WHERE store_id=p_store_id AND theme_id=p_theme_slug;\n  UPDATE public.theme_instances SET draft_revision=v_next,current_draft_id=NULL,updated_at=v_now,updated_by=p_actor_id WHERE id=i.id AND store_id=p_store_id;\n END IF;\n INSERT INTO public.audit_activity_events(store_id,actor_id,actor_type,action,resource_type,resource_id,request_id,before_state,after_state,metadata)\n  VALUES(p_store_id,p_actor_id,CASE WHEN s.custom_user_id=p_actor_id OR s.user_id=p_actor_id THEN 'user' ELSE 'employee' END,\n   'theme.draft.'||p_operation,'theme_draft',coalesce(d.id,e.id)::text,p_request_id,jsonb_build_object('version',v_current),jsonb_build_object('version',v_next),\n   jsonb_build_object('theme_id',p_theme_slug,'template_key',p_template_key,'idempotency_key',p_key));\n INSERT INTO public.idempotency_keys(site_id,key,scope,request_hash,response_hash,response_body,status,status_code,resource_type,resource_id,request_id,expires_at)\n  VALUES(p_store_id,p_key,v_scope,v_hash,encode(sha256(convert_to(v_response::text,'UTF8')),'hex'),v_response,'completed',200,'theme_draft',d.id,p_request_id,'infinity');\n RETURN v_response||jsonb_build_object('replayed',false,'current_version',v_next);\nEND ",
+      "procost": 100,
+      "prokind": "f",
+      "prolang": "13666",
+      "proname": "mutate_owned_theme_draft_v1",
+      "prorows": 0,
+      "pronargs": 12,
+      "proowner": "10",
+      "proconfig": [
+        "search_path=pg_catalog, public"
+      ],
+      "proretset": false,
+      "prosecdef": false,
+      "prorettype": "3802",
+      "prosqlbody": null,
+      "prosupport": "-",
+      "proargmodes": null,
+      "proargnames": [
+        "p_actor_id",
+        "p_store_id",
+        "p_theme_slug",
+        "p_template_key",
+        "p_base_version",
+        "p_key",
+        "p_operation",
+        "p_config",
+        "p_runtime",
+        "p_bound_site_id",
+        "p_request_id",
+        "p_publish_options"
+      ],
+      "proargtypes": [
+        "2950",
+        "2950",
+        "25",
+        "25",
+        "23",
+        "25",
+        "25",
+        "3802",
+        "3802",
+        "2950",
+        "25",
+        "3802"
+      ],
+      "proisstrict": false,
+      "proparallel": "u",
+      "protrftypes": null,
+      "provariadic": "0",
+      "provolatile": "v",
+      "proleakproof": false,
+      "pronamespace": "2200",
+      "proallargtypes": null,
+      "proargdefaults": "({CONST :consttype 3802 :consttypmod -1 :constcollid 0 :constlen -1 :constbyval false :constisnull true :location 210 :constvalue <>} {CONST :consttype 3802 :consttypmod -1 :constcollid 0 :constlen -1 :constbyval false :constisnull false :location 239 :constvalue 8 [ 32 0 0 0 0 0 0 32 ]} {CONST :consttype 2950 :consttypmod -1 :constcollid 0 :constlen 16 :constbyval false :constisnull true :location 273 :constvalue <>} {CONST :consttype 25 :consttypmod -1 :constcollid 100 :constlen -1 :constbyval false :constisnull true :location 304 :constvalue <>} {CONST :consttype 3802 :consttypmod -1 :constcollid 0 :constlen -1 :constbyval false :constisnull false :location 341 :constvalue 8 [ 32 0 0 0 0 0 0 32 ]})",
+      "pronargdefaults": 5
+    },
+    "comment": null,
+    "dependencies": [
+      {
+        "objid": "32599",
+        "classid": "1255",
+        "deptype": "n",
+        "objsubid": 0,
+        "refobjid": "13666",
+        "refclassid": "2612",
+        "refobjsubid": 0
+      },
+      {
+        "objid": "32599",
+        "classid": "1255",
+        "deptype": "n",
+        "objsubid": 0,
+        "refobjid": "2200",
+        "refclassid": "2615",
+        "refobjsubid": 0
+      }
+    ],
+    "sharedDependencies": [
+      {
+        "dbid": "33337",
+        "objid": "32599",
+        "classid": "1255",
+        "deptype": "a",
+        "objsubid": 0,
+        "refobjid": "16522",
+        "refclassid": "1260"
+      }
+    ]
+  },
+  "proposedProfile": {
+    "row": {
+      "oid": "32599",
+      "proacl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres"
+      ],
+      "probin": null,
+      "prosrc": "\nDECLARE s public.sites;t public.themes;i public.theme_instances;d public.theme_instance_drafts;e public.theme_editor_drafts;\n receipt public.idempotency_keys;v_hash text;v_scope text;v_current integer;v_next integer;v_now timestamptz:=now();\n v_config jsonb;v_templates jsonb;v_item record;v_response jsonb;v_release record;v_manifest jsonb;v_patch uuid;\n v_package uuid;v_package_version uuid;v_schema text;v_instance_draft uuid;\n v_input jsonb;v_order jsonb;v_existing_order jsonb;v_sections jsonb;v_ids text[];\nBEGIN\n IF p_operation IS NULL OR p_operation NOT IN('save','reorder','discard','publish') OR p_base_version IS NULL OR p_base_version<0 OR p_base_version>=2147483647\n  OR p_key IS NULL OR char_length(p_key) NOT BETWEEN 8 AND 200 OR p_key<>btrim(p_key) OR p_key~'[[:cntrl:]]'\n  OR p_template_key IS NULL OR char_length(p_template_key) NOT BETWEEN 1 AND 120\n  OR p_template_key IN('__proto__','constructor','prototype')\n  OR p_template_key!~'^[a-z0-9][a-z0-9_./-]*$' OR position('..' IN p_template_key)>0 OR position('//' IN p_template_key)>0\n  OR (position('.' IN p_template_key)>0 AND split_part(p_template_key,'.',2)<>''\n      AND substring(p_template_key FROM position('.' IN p_template_key)+1)!~'^[a-z0-9][a-z0-9_-]*$') THEN\n  RAISE EXCEPTION 'Invalid theme draft intent' USING ERRCODE='PT400'; END IF;\n s:=public.theme_draft_actor_site_v1(p_actor_id,p_store_id,p_bound_site_id);\n SELECT * INTO t FROM public.themes WHERE slug=p_theme_slug AND is_active=true;\n IF t.id IS NULL OR(t.is_site_private AND t.owned_by_site_id IS DISTINCT FROM p_store_id) THEN\n  RAISE EXCEPTION 'Theme not available' USING ERRCODE='42501'; END IF;\n SELECT * INTO i FROM public.theme_instances WHERE store_id=p_store_id AND theme_slug=p_theme_slug AND deleted_at IS NULL\n  ORDER BY updated_at DESC,id DESC LIMIT 1 FOR UPDATE;\n v_current:=greatest(coalesce(i.draft_revision,0),coalesce((SELECT max(version) FROM public.theme_editor_drafts WHERE store_id=p_store_id AND theme_id=p_theme_slug),0));\n v_scope:='theme-draft-v1:'||p_actor_id::text||':'||p_theme_slug;\n v_hash:=encode(sha256(convert_to(jsonb_build_object('actor',p_actor_id,'store',p_store_id,'theme',p_theme_slug,\n  'template',p_template_key,'base_version',p_base_version,'operation',p_operation,'config',p_config,'publish',p_publish_options)::text,'UTF8')),'hex');\n SELECT * INTO receipt FROM public.idempotency_keys WHERE site_id=p_store_id AND scope=v_scope AND key=p_key FOR UPDATE;\n IF FOUND THEN\n  IF receipt.request_hash IS DISTINCT FROM v_hash THEN RAISE EXCEPTION 'Theme intent key has different content' USING ERRCODE='PT409'; END IF;\n  IF receipt.status<>'completed' OR receipt.response_body IS NULL OR receipt.deleted_at IS NOT NULL THEN\n   RAISE EXCEPTION 'Theme receipt unavailable' USING ERRCODE='PT503'; END IF;\n  RETURN receipt.response_body||jsonb_build_object('replayed',true,'current_version',v_current);\n END IF;\n IF v_current<>p_base_version THEN\n  RAISE EXCEPTION 'Theme draft has changed in another session' USING ERRCODE='PT409',DETAIL=jsonb_build_object('current_version',v_current)::text; END IF;\n v_next:=v_current+1;\n SELECT * INTO d FROM public.theme_instance_drafts WHERE theme_instance_id=i.id AND store_id=p_store_id\n  AND draft_status='active' AND deleted_at IS NULL ORDER BY updated_at DESC,id DESC LIMIT 1 FOR UPDATE;\n SELECT * INTO e FROM public.theme_editor_drafts WHERE store_id=p_store_id AND theme_id=p_theme_slug AND template_key=p_template_key FOR UPDATE;\n\n IF p_operation='reorder' THEN\n  v_order:=p_config->'section_order';\n  IF jsonb_typeof(v_order) IS DISTINCT FROM 'array' OR jsonb_array_length(v_order)>500 THEN\n   RAISE EXCEPTION 'Section order required' USING ERRCODE='PT400'; END IF;\n  IF EXISTS(SELECT 1 FROM jsonb_array_elements(v_order) x WHERE jsonb_typeof(x)<>'string' OR length(x#>>'{}') NOT BETWEEN 1 AND 200)\n   OR (SELECT count(*) FROM jsonb_array_elements(v_order))<>(SELECT count(DISTINCT x) FROM jsonb_array_elements(v_order) x) THEN\n   RAISE EXCEPTION 'Distinct section IDs required' USING ERRCODE='PT400'; END IF;\n  v_input:=coalesce(d.working_manifest,CASE WHEN e.deleted_at IS NULL THEN e.draft_config END,p_runtime->'initial_config');\n  IF jsonb_typeof(v_input) IS DISTINCT FROM 'object' THEN RAISE EXCEPTION 'Theme document unavailable' USING ERRCODE='PT503'; END IF;\n  v_sections:=v_input->'templates'->p_template_key->'sections';\n  v_existing_order:=v_input->'templates'->p_template_key->'order';\n  IF jsonb_typeof(v_sections)='object' AND jsonb_typeof(v_existing_order)='array' THEN\n   SELECT array_agg(x) INTO v_ids FROM jsonb_object_keys(v_sections) x;\n  ELSIF jsonb_typeof(v_input->'sections'->'template')='array' THEN\n   SELECT array_agg(x->>'id'),coalesce(jsonb_agg(x->'id'),'[]') INTO v_ids,v_existing_order FROM jsonb_array_elements(v_input->'sections'->'template') x;\n  ELSE RAISE EXCEPTION 'Template sections unavailable' USING ERRCODE='PT409'; END IF;\n  IF EXISTS(SELECT 1 FROM jsonb_array_elements_text(v_order) x WHERE NOT(x=ANY(coalesce(v_ids,ARRAY[]::text[])))) THEN\n   RAISE EXCEPTION 'Section order changed' USING ERRCODE='PT409'; END IF;\n  SELECT v_order||coalesce(jsonb_agg(x ORDER BY n) FILTER(WHERE NOT(v_order ? (x#>>'{}'))),'[]') INTO v_order\n   FROM jsonb_array_elements(v_existing_order) WITH ORDINALITY a(x,n);\n  IF jsonb_typeof(v_sections)='object' THEN\n   v_input:=jsonb_set(v_input,ARRAY['templates',p_template_key,'order'],v_order);\n  END IF;\n  IF jsonb_typeof(v_input->'sections'->'template')='array' THEN\n   SELECT coalesce(jsonb_agg(x ORDER BY array_position(ARRAY(SELECT jsonb_array_elements_text(v_order)),x->>'id')),'[]') INTO v_sections\n    FROM jsonb_array_elements(v_input->'sections'->'template') x;\n   v_input:=jsonb_set(v_input,'{sections,template}',v_sections);\n  END IF;\n ELSE v_input:=p_config;\n END IF;\n IF p_operation IN('save','reorder') THEN\n  IF v_input IS NULL OR jsonb_typeof(v_input)<>'object' THEN RAISE EXCEPTION 'Theme document required' USING ERRCODE='PT400'; END IF;\n  v_package:=(p_runtime->>'theme_package_id')::uuid;v_package_version:=(p_runtime->>'theme_package_version_id')::uuid;\n  SELECT schema_version INTO v_schema FROM public.theme_package_versions WHERE id=v_package_version AND theme_package_id=v_package;\n  IF v_schema IS NULL OR NOT EXISTS(SELECT 1 FROM public.theme_packages WHERE id=v_package AND slug=p_theme_slug) THEN\n   RAISE EXCEPTION 'Canonical theme runtime unavailable' USING ERRCODE='PT503'; END IF;\n  IF i.id IS NULL THEN\n   INSERT INTO public.theme_instances(store_id,theme_package_id,theme_package_version_id,theme_slug,installed_config,settings,created_by,updated_by,draft_revision)\n    VALUES(p_store_id,v_package,v_package_version,p_theme_slug,v_input,coalesce(v_input->'themeSettings','{}'),p_actor_id,p_actor_id,v_current) RETURNING * INTO i;\n  ELSIF i.theme_package_id<>v_package THEN RAISE EXCEPTION 'Theme package changed' USING ERRCODE='PT409'; END IF;\n  v_templates:=coalesce(v_input->'templates','{}');\n  -- Preserve every saved template while the selected template and shared settings\n  -- are changed under one global instance revision.\n  IF d.id IS NOT NULL THEN v_templates:=v_templates||coalesce(d.working_manifest->'templates','{}'); END IF;\n  FOR v_item IN SELECT template_key,draft_config FROM public.theme_editor_drafts WHERE store_id=p_store_id AND theme_id=p_theme_slug AND deleted_at IS NULL LOOP\n   IF v_item.template_key<>p_template_key AND jsonb_typeof(v_item.draft_config->'templates'->v_item.template_key)='object' THEN\n    v_templates:=jsonb_set(v_templates,ARRAY[v_item.template_key],v_item.draft_config->'templates'->v_item.template_key,true); END IF;\n  END LOOP;\n  IF jsonb_typeof(v_input->'templates'->p_template_key)='object' THEN\n   v_templates:=jsonb_set(v_templates,ARRAY[p_template_key],v_input->'templates'->p_template_key,true); END IF;\n  -- Shared groups are explicit document-wide edits, not unselected pages.\n  -- Reapply only supplied header/footer groups after preserving prior pages.\n  IF jsonb_typeof(v_input#>'{templates,header}')='object' THEN\n   v_templates:=jsonb_set(v_templates,'{header}',v_input#>'{templates,header}',true); END IF;\n  IF jsonb_typeof(v_input#>'{templates,footer}')='object' THEN\n   v_templates:=jsonb_set(v_templates,'{footer}',v_input#>'{templates,footer}',true); END IF;\n  v_config:=v_input||jsonb_build_object('templates',v_templates);\n  IF d.id IS NULL THEN\n   INSERT INTO public.theme_instance_drafts(theme_instance_id,store_id,base_release_id,draft_version,working_manifest,schema_manifest_version,created_by,updated_by)\n    VALUES(i.id,p_store_id,i.active_release_id,v_next,v_config,v_schema,p_actor_id,p_actor_id) RETURNING * INTO d;\n  ELSE\n   UPDATE public.theme_instance_drafts SET draft_version=v_next,working_manifest=v_config,schema_manifest_version=v_schema,\n    auto_saved_at=v_now,updated_at=v_now,updated_by=p_actor_id WHERE id=d.id AND store_id=p_store_id RETURNING * INTO d;\n  END IF;\n  INSERT INTO public.theme_editor_drafts(store_id,theme_id,template_key,draft_config,version,created_by,updated_by)\n   VALUES(p_store_id,p_theme_slug,p_template_key,v_config,v_next,p_actor_id,p_actor_id)\n   ON CONFLICT(store_id,theme_id,template_key) DO UPDATE SET draft_config=excluded.draft_config,version=v_next,\n    deleted_at=NULL,auto_saved_at=v_now,updated_at=v_now,updated_by=p_actor_id RETURNING * INTO e;\n  INSERT INTO public.theme_draft_patches(draft_id,store_id,patch_sequence,patch_type,operation,path,value,previous_value,actor_id,request_id,client_revision,server_revision,metadata)\n   VALUES(d.id,p_store_id,v_next,'set',jsonb_build_object('op','replace','path','/','source','theme-editor-v1'), '/',v_config,NULL,p_actor_id,p_request_id,p_base_version,v_next,\n    jsonb_build_object('template_key',p_template_key,'idempotency_key',p_key)) RETURNING id INTO v_patch;\n  UPDATE public.theme_instances SET draft_revision=v_next,current_draft_id=d.id,theme_package_version_id=v_package_version,\n   updated_at=v_now,updated_by=p_actor_id WHERE id=i.id AND store_id=p_store_id;\n  INSERT INTO public.outbox_events(store_id,site_id,aggregate_type,aggregate_id,event_type,payload,idempotency_key,request_id,actor_id,schema_version)\n   VALUES(p_store_id,p_store_id,'theme_draft',e.id::text,'theme.draft.saved',jsonb_build_object('store_id',p_store_id,'theme_id',p_theme_slug,'template_key',p_template_key,\n    'theme_instance_id',i.id,'theme_package_version_id',v_package_version,'theme_instance_draft_id',d.id,'draft_id',e.id,'version',v_next,'client',p_runtime->>'client'),\n    'theme.draft.saved:'||i.id::text||':'||v_next,p_request_id,p_actor_id,1);\n  v_response:=jsonb_build_object('saved_at',to_char(v_now AT TIME ZONE 'UTC','YYYY-MM-DD\"T\"HH24:MI:SS.US\"Z\"'),'version',v_next,'template_key',p_template_key,'draft',jsonb_build_object('id',e.id,'version',v_next,'auto_saved_at',to_char(v_now AT TIME ZONE 'UTC','YYYY-MM-DD\"T\"HH24:MI:SS.US\"Z\"')));\n  IF p_operation='reorder' THEN v_response:=v_response||jsonb_build_object('section_order',v_order); END IF;\n ELSE\n  IF d.id IS NULL THEN RAISE EXCEPTION 'No saved theme draft exists' USING ERRCODE='PT409'; END IF;\n  v_config:=d.working_manifest;\n  IF p_operation='publish' THEN\n   IF p_base_version=0 OR(p_config IS NOT NULL AND p_config IS DISTINCT FROM v_config) THEN\n    RAISE EXCEPTION 'Save the exact theme draft before publishing' USING ERRCODE='PT409'; END IF;\n   SELECT * INTO v_release FROM public.publish_theme_release(p_store_id,p_theme_slug,v_config,e.id,p_base_version,p_actor_id,\n    p_publish_options->>'publish_message',coalesce((p_publish_options->>'make_store_live')::boolean,true),p_request_id,NULL);\n   UPDATE public.theme_instance_drafts SET draft_status='published',updated_at=v_now,updated_by=p_actor_id\n    WHERE id=d.id AND store_id=p_store_id;\n   -- Keep the existing renderer artifacts inside this transaction rather than a\n   -- post-commit enrichment that can return false failure after switching release.\n   v_manifest:=coalesce(p_runtime->'release_manifest','{}')||jsonb_build_object('store_id',p_store_id,'theme_id',p_theme_slug,\n    'release_id',v_release.release_id,'release_version',v_release.release_version,'theme_instance_id',i.id,'theme_package_version_id',i.theme_package_version_id);\n   UPDATE public.theme_releases SET release_manifest=v_manifest,asset_manifest=coalesce(p_runtime->'asset_manifest','{}'),\n    settings_snapshot=coalesce(v_config->'themeSettings','{}'),template_snapshot=v_config,\n    idempotency_key=p_key WHERE id=v_release.release_id AND store_id=p_store_id;\n   v_response:=jsonb_build_object('version',v_next,'template_key',p_template_key,'release',jsonb_build_object('release_id',v_release.release_id,'release_version',v_release.release_version,'published_at',to_char(v_release.published_at AT TIME ZONE 'UTC','YYYY-MM-DD\"T\"HH24:MI:SS.US\"Z\"')),'published_at',to_char(v_release.published_at AT TIME ZONE 'UTC','YYYY-MM-DD\"T\"HH24:MI:SS.US\"Z\"'),\n    'theme',jsonb_build_object('id',t.id,'slug',t.slug,'name',t.name),'store',(SELECT jsonb_build_object('id',x.id,'status',x.status,'theme_id',x.theme_id,\n     'current_theme_release_id',x.current_theme_release_id,'storefront_release_version',x.storefront_release_version,'updated_at',to_char(x.updated_at AT TIME ZONE 'UTC','YYYY-MM-DD\"T\"HH24:MI:SS.US\"Z\"')) FROM public.sites x WHERE id=p_store_id));\n  ELSE\n   UPDATE public.theme_instance_drafts SET draft_status='discarded',deleted_at=v_now,updated_at=v_now,updated_by=p_actor_id WHERE id=d.id AND store_id=p_store_id;\n   v_response:=jsonb_build_object('deleted',true,'version',v_next,'template_key',p_template_key);\n   INSERT INTO public.outbox_events(store_id,site_id,aggregate_type,aggregate_id,event_type,payload,idempotency_key,request_id,actor_id,schema_version)\n    VALUES(p_store_id,p_store_id,'theme_draft',d.id::text,'theme.draft.discarded',jsonb_build_object('store_id',p_store_id,'theme_id',p_theme_slug,'template_key',p_template_key,\n     'draft_id',d.id,'version',v_next),'theme.draft.discarded:'||i.id::text||':'||v_next,p_request_id,p_actor_id,1);\n  END IF;\n  INSERT INTO public.theme_draft_patches(draft_id,store_id,patch_sequence,patch_type,operation,path,value,previous_value,actor_id,request_id,client_revision,server_revision,metadata)\n   VALUES(d.id,p_store_id,v_next,CASE WHEN p_operation='discard' THEN 'delete' ELSE 'set' END,\n    jsonb_build_object('op',p_operation,'path','/'), '/',CASE WHEN p_operation='publish' THEN v_config ELSE NULL END,v_config,\n    p_actor_id,p_request_id,p_base_version,v_next,jsonb_build_object('template_key',p_template_key,'idempotency_key',p_key,'disposition',p_operation));\n  UPDATE public.theme_instance_drafts SET draft_version=v_next WHERE id=d.id AND store_id=p_store_id;\n  -- End the whole canonical document; retaining revision and tombstones prevents\n  -- an old editor from reviving a previously used version after discard/publish.\n  UPDATE public.theme_editor_drafts SET deleted_at=v_now,version=v_next,updated_at=v_now,updated_by=p_actor_id\n   WHERE store_id=p_store_id AND theme_id=p_theme_slug;\n  UPDATE public.theme_instances SET draft_revision=v_next,current_draft_id=NULL,updated_at=v_now,updated_by=p_actor_id WHERE id=i.id AND store_id=p_store_id;\n END IF;\n INSERT INTO public.audit_activity_events(store_id,actor_id,actor_type,action,resource_type,resource_id,request_id,before_state,after_state,metadata)\n  VALUES(p_store_id,p_actor_id,CASE WHEN s.custom_user_id=p_actor_id OR s.user_id=p_actor_id THEN 'user' ELSE 'employee' END,\n   'theme.draft.'||p_operation,'theme_draft',coalesce(d.id,e.id)::text,p_request_id,jsonb_build_object('version',v_current),jsonb_build_object('version',v_next),\n   jsonb_build_object('theme_id',p_theme_slug,'template_key',p_template_key,'idempotency_key',p_key));\n INSERT INTO public.idempotency_keys(site_id,key,scope,request_hash,response_hash,response_body,status,status_code,resource_type,resource_id,request_id,expires_at)\n  VALUES(p_store_id,p_key,v_scope,v_hash,encode(sha256(convert_to(v_response::text,'UTF8')),'hex'),v_response,'completed',200,'theme_draft',d.id,p_request_id,'infinity');\n RETURN v_response||jsonb_build_object('replayed',false,'current_version',v_next);\nEND ",
+      "procost": 100,
+      "prokind": "f",
+      "prolang": "13666",
+      "proname": "mutate_owned_theme_draft_v1",
+      "prorows": 0,
+      "pronargs": 12,
+      "proowner": "10",
+      "proconfig": [
+        "search_path=pg_catalog, public"
+      ],
+      "proretset": false,
+      "prosecdef": false,
+      "prorettype": "3802",
+      "prosqlbody": null,
+      "prosupport": "-",
+      "proargmodes": null,
+      "proargnames": [
+        "p_actor_id",
+        "p_store_id",
+        "p_theme_slug",
+        "p_template_key",
+        "p_base_version",
+        "p_key",
+        "p_operation",
+        "p_config",
+        "p_runtime",
+        "p_bound_site_id",
+        "p_request_id",
+        "p_publish_options"
+      ],
+      "proargtypes": [
+        "2950",
+        "2950",
+        "25",
+        "25",
+        "23",
+        "25",
+        "25",
+        "3802",
+        "3802",
+        "2950",
+        "25",
+        "3802"
+      ],
+      "proisstrict": false,
+      "proparallel": "u",
+      "protrftypes": null,
+      "provariadic": "0",
+      "provolatile": "v",
+      "proleakproof": false,
+      "pronamespace": "2200",
+      "proallargtypes": null,
+      "proargdefaults": "({CONST :consttype 3802 :consttypmod -1 :constcollid 0 :constlen -1 :constbyval false :constisnull true :location 210 :constvalue <>} {CONST :consttype 3802 :consttypmod -1 :constcollid 0 :constlen -1 :constbyval false :constisnull false :location 239 :constvalue 8 [ 32 0 0 0 0 0 0 32 ]} {CONST :consttype 2950 :consttypmod -1 :constcollid 0 :constlen 16 :constbyval false :constisnull true :location 273 :constvalue <>} {CONST :consttype 25 :consttypmod -1 :constcollid 100 :constlen -1 :constbyval false :constisnull true :location 304 :constvalue <>} {CONST :consttype 3802 :consttypmod -1 :constcollid 0 :constlen -1 :constbyval false :constisnull false :location 341 :constvalue 8 [ 32 0 0 0 0 0 0 32 ]})",
+      "pronargdefaults": 5
+    },
+    "comment": null,
+    "dependencies": [
+      {
+        "objid": "32599",
+        "classid": "1255",
+        "deptype": "n",
+        "objsubid": 0,
+        "refobjid": "13666",
+        "refclassid": "2612",
+        "refobjsubid": 0
+      },
+      {
+        "objid": "32599",
+        "classid": "1255",
+        "deptype": "n",
+        "objsubid": 0,
+        "refobjid": "2200",
+        "refclassid": "2615",
+        "refobjsubid": 0
+      }
+    ],
+    "sharedDependencies": [
+      {
+        "dbid": "33337",
+        "objid": "32599",
+        "classid": "1255",
+        "deptype": "a",
+        "objsubid": 0,
+        "refobjid": "16522",
+        "refclassid": "1260"
+      }
+    ]
+  },
+  "currentProsrcMd5": "2a6e74135720d0557ba921d517e88a13",
+  "proposedProsrcMd5": "f14f2252157119e56f6614decef4c4aa",
+  "conservedNonBodyProfile": {
+    "row": {
+      "oid": "32599",
+      "proacl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres"
+      ],
+      "probin": null,
+      "procost": 100,
+      "prokind": "f",
+      "prolang": "13666",
+      "proname": "mutate_owned_theme_draft_v1",
+      "prorows": 0,
+      "pronargs": 12,
+      "proowner": "10",
+      "proconfig": [
+        "search_path=pg_catalog, public"
+      ],
+      "proretset": false,
+      "prosecdef": false,
+      "prorettype": "3802",
+      "prosqlbody": null,
+      "prosupport": "-",
+      "proargmodes": null,
+      "proargnames": [
+        "p_actor_id",
+        "p_store_id",
+        "p_theme_slug",
+        "p_template_key",
+        "p_base_version",
+        "p_key",
+        "p_operation",
+        "p_config",
+        "p_runtime",
+        "p_bound_site_id",
+        "p_request_id",
+        "p_publish_options"
+      ],
+      "proargtypes": [
+        "2950",
+        "2950",
+        "25",
+        "25",
+        "23",
+        "25",
+        "25",
+        "3802",
+        "3802",
+        "2950",
+        "25",
+        "3802"
+      ],
+      "proisstrict": false,
+      "proparallel": "u",
+      "protrftypes": null,
+      "provariadic": "0",
+      "provolatile": "v",
+      "proleakproof": false,
+      "pronamespace": "2200",
+      "proallargtypes": null,
+      "proargdefaults": "({CONST :consttype 3802 :consttypmod -1 :constcollid 0 :constlen -1 :constbyval false :constisnull true :location 210 :constvalue <>} {CONST :consttype 3802 :consttypmod -1 :constcollid 0 :constlen -1 :constbyval false :constisnull false :location 239 :constvalue 8 [ 32 0 0 0 0 0 0 32 ]} {CONST :consttype 2950 :consttypmod -1 :constcollid 0 :constlen 16 :constbyval false :constisnull true :location 273 :constvalue <>} {CONST :consttype 25 :consttypmod -1 :constcollid 100 :constlen -1 :constbyval false :constisnull true :location 304 :constvalue <>} {CONST :consttype 3802 :consttypmod -1 :constcollid 0 :constlen -1 :constbyval false :constisnull false :location 341 :constvalue 8 [ 32 0 0 0 0 0 0 32 ]})",
+      "pronargdefaults": 5
+    },
+    "comment": null,
+    "dependencies": [
+      {
+        "objid": "32599",
+        "classid": "1255",
+        "deptype": "n",
+        "objsubid": 0,
+        "refobjid": "13666",
+        "refclassid": "2612",
+        "refobjsubid": 0
+      },
+      {
+        "objid": "32599",
+        "classid": "1255",
+        "deptype": "n",
+        "objsubid": 0,
+        "refobjid": "2200",
+        "refclassid": "2615",
+        "refobjsubid": 0
+      }
+    ],
+    "sharedDependencies": [
+      {
+        "dbid": "33337",
+        "objid": "32599",
+        "classid": "1255",
+        "deptype": "a",
+        "objsubid": 0,
+        "refobjid": "16522",
+        "refclassid": "1260"
+      }
+    ]
+  }
+}

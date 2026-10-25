@@ -1,0 +1,22 @@
+{
+  "order": {
+    "id": "8b0d850e-3812-41be-aad1-40b417e9f16e",
+    "number": "ORD-20261024-10003",
+    "status": "cancelled",
+    "paymentStatus": "failed"
+  },
+  "webhook": [
+    {
+      "id": "2d643aee-b664-495c-9c1b-198b3957e3cd",
+      "eventType": "payment.failed",
+      "signatureValid": true,
+      "canonicalEventId": "payment.failed:pay_TrpnvdOYsm6CPp",
+      "processingStatus": "processed"
+    }
+  ],
+  "captureLedgerCount": 0,
+  "runId": "20b861608061",
+  "observedAt": "2026-10-24T17:55:55.283790+00:00",
+  "scope": "Actualproviderfailurewebhookqualification;successfulcapturestillpending",
+  "lookupCorrection": "Canonicaleventidentityisnormalizedtype+paymentid;rawproviderheaderretainedinpassivecallbackreceipt"
+}

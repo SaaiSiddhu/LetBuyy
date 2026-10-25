@@ -1,0 +1,43 @@
+{
+  "date": "2026-10-22",
+  "source_head": "85aac99043d8dc10469e12cbb810609a3b6f1b0d",
+  "fresh_local_checks": {
+    "existing_products_loaded": true,
+    "saved_synthetic_product_opened": true,
+    "nested_main_landmarks_observed": true,
+    "saved_bar_enabled_under_opacity_zero": true,
+    "tab_from_tags_focuses_invisible_discard": true,
+    "product_values_changed": false
+  },
+  "local_recovery": {
+    "initial_http": {
+      "merchant": 500,
+      "identity": 500,
+      "gateway": "timeout"
+    },
+    "observed_errors": [
+      "missing generated Next development manifests",
+      "gateway dependency resolution missing"
+    ],
+    "actions": [
+      "offline frozen-lockfile no-scripts link restoration",
+      "restart only verified existing identity/merchant/gateway jobs"
+    ],
+    "after_http": {
+      "merchant": 307,
+      "identity": 200,
+      "gateway": 200
+    },
+    "database_reset": false,
+    "frozen_services_activated": false,
+    "cause_of_repeat_artifact_removal": "not established in this follow-up"
+  },
+  "automated_suites_rerun_this_follow_up": false,
+  "redesign_application_source_changed": false,
+  "shopify_changes": {
+    "temporary_product_input": "discarded; Products returned empty",
+    "temporary_general_suffix": "discarded; blank suffix restored",
+    "editor": "selection only; Save/Save as/undo/redo disabled at exit",
+    "published_or_purchased": false
+  }
+}

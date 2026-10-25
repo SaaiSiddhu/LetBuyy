@@ -1,0 +1,79 @@
+{
+  "recordedAt": "2026-10-24T01:45:12.421663+00:00",
+  "status": "ROOT_STABLE392_02_EXACT_ISOLATED_SOURCE_GATES_PASS_ADMITTED_FOR_NEW_OWNED_FIXTURE_START",
+  "candidate": "/private/tmp/theme-editor-stable392-20261024-02",
+  "sourceProof": {
+    "path": "/private/tmp/theme-editor-stable392-20261024-02/stable392-editor-source-proof.json",
+    "sha256": "ca4eb60667972e4a8c8ac61a78a0303fcdaca10b1d9189e9f5675864f689fe6a"
+  },
+  "sourceFilesRehashedAfterGates": 17243,
+  "sourceChanges": 0,
+  "qualifiedCart191PinsExact": true,
+  "cart164SourceEpochPreservedNotRerun": true,
+  "newFrozenOverlays": [
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/theme-editor-fixture-observation.ts",
+      "sha256": "c37c7779822b50d533496a7ad4aa6fb14f1d5422894b90adb27fa98589ad6a11"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/theme-editor-fixture-observation.test.ts",
+      "sha256": "6ae2734f24f0e54e272bf63fe4f512fe98266e3b8fcc4d9d3f388b2961680256"
+    },
+    {
+      "path": "apps/commerce/web/src/app/api/checkout/[cartId]/[step]/route.ts",
+      "sha256": "94455bc02ad97b801de5e8cabd995473c022bb330d468fe412aeb8b6590a339b"
+    },
+    {
+      "path": "apps/commerce/web/src/app/api/checkout/route.test.ts",
+      "sha256": "095cb48fff4222cb2eb43615e6cfe29cb528657718493f869283c4fa9708d00c"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/threadline-browser-fixture.ts",
+      "sha256": "b17600512a50d3be39338325cc4baf83bdfd89508486a821b00328bb3d22e4b8",
+      "bytes": 23081
+    }
+  ],
+  "verification": {
+    "observerAndOrigins": {
+      "pass": 36,
+      "fail": 0,
+      "skip": 0,
+      "cancelled": 0
+    },
+    "checkoutBff": {
+      "pass": 11,
+      "fail": 0,
+      "skip": 0,
+      "cancelled": 0
+    },
+    "fullGatewayNoEmit": 0,
+    "commerceNoEmit": 0,
+    "scopedLint": "Frozen owner receipts0errors0warnings; not globally lint green"
+  },
+  "logs": [
+    {
+      "path": "/private/tmp/theme-editor-stable392-20261024-02/gates/observer-origins.tap",
+      "sha256": "d2d77d68eb55e3b4f99ebf95a91d33c3a1b6f6d7239d93f43c00402ba1e7a5e4"
+    },
+    {
+      "path": "/private/tmp/theme-editor-stable392-20261024-02/gates/checkout-bff.tap",
+      "sha256": "459c726e6dbd783bd0b21a882cb8ae166e2277918f52471b781c2207892dc068"
+    },
+    {
+      "path": "/private/tmp/theme-editor-stable392-20261024-02/gates/gateway-noemit.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/private/tmp/theme-editor-stable392-20261024-02/gates/commerce-noemit.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "sourceMigrationMaximum": 392,
+  "sourceMigrationFiles": 321,
+  "noMigrationCeiling": true,
+  "mainUpdaterWip": "EXCLUDED; current Main compile/native393 not qualified by this separate gate",
+  "runtimeOrDatabaseStarted": false,
+  "browserGrant": "NONE_UNTIL_NEW_ACTUAL_RUNTIME_ADMISSION; DEWDROP_FIRST_FULL30_RESERVED",
+  "next": "One genuinely fresh owned manual Editor fixture, sequential proper production clients, existing manual trusted leaf, normal new authentication and fresh actual bindings. No old credentials or data restoration.",
+  "timeoutBudget": "Official runner12h ceiling permits setup plus unchanged six-hour fixture hold; neither test guard nor cleanup is edited."
+}

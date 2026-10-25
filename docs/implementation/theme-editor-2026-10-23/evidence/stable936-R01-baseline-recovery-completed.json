@@ -1,0 +1,47 @@
+{
+  "recordedAt": "2026-10-24T04:41:28.057064+00:00",
+  "runId": "936e5f577646",
+  "status": "PASS_BOUNDED_NORMAL_UI_BASELINE_RECOVERY",
+  "productVersion": 36,
+  "productStatus": "Active observed in settled merchant AX",
+  "cartId": "6284ebe8-98d4-41db-9272-292417bd41e5",
+  "acceptedCartFingerprint": "6f1b64f1c282148b1fde16291199f30e92db3afd04d724bdf54cf6097ef6739a",
+  "checks": {
+    "v1NamePriceAndBeautyRestored": true,
+    "sameThreeVariantUUIDs": true,
+    "consumedVariantStocksAndInventoryPreserved": true,
+    "privateSiblingDigestExact": true,
+    "bothImmutableOrderRowsAndSnapshotsExact": true,
+    "restorationReceiptStockOmitted": true,
+    "cartTwoOriginalPink560AcceptedCurrentVersion": true,
+    "cartV1FactsAndOriginalProperties": true,
+    "noExtraOrder": true
+  },
+  "protectedTablesUnchanged": 20,
+  "protectedTablesChangedAsExpected": [
+    "carts",
+    "outbox_events"
+  ],
+  "evidence": [
+    "stable936-dewdrop-lifecycle-dewdrop-before-baseline-recovery.json",
+    "stable936-dewdrop-lifecycle-dewdrop-after-baseline-cart.json",
+    "stable936-R01-restoration-canonical-receipt.json",
+    "stable936-cart-dewdrop-restored-21.json",
+    "stable936-R01-v1-restored-settled.ax.txt",
+    "stable936-R01-normal-cart-empty.ax.txt",
+    "stable936-R01-baseline-cart-restored-reloaded.ax.txt",
+    "stable936-R01-primary-buyer-history.ax.txt",
+    "stable936-R01-primary-merchant-history.ax.txt",
+    "stable936-R01-legacy-buyer-history.ax.txt"
+  ],
+  "scope": [
+    "Normal merchant rename/facts/price/status Save and full reload. No inventory inputs touched.",
+    "Old v2 line removed through normal cart then original Pink selected and two added; settled cart full reload.",
+    "Native c0 control untouched. No checkout confirmation, new order, direct data write, payment or fulfillment.",
+    "Supplemental UI clean and returned to Root for owned rebuild; shared fixture retained for remaining nine themes."
+  ],
+  "remaining": [
+    "Supplemental editor preview/font retake waits Root corrected origin runtime readiness.",
+    "Six partial case qualifications retained in finite ledger; no whole-theme or all10 acceptance."
+  ]
+}

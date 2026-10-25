@@ -1,0 +1,52 @@
+{
+  "checkedAt": "2026-10-23T14:07:11+0530",
+  "origin": "http://localhost:9005",
+  "results": [
+    {
+      "path": "/",
+      "status": 200,
+      "bytes": 482978,
+      "catalogUnavailable": false,
+      "applicationError": false,
+      "threadlinePresent": true,
+      "exactPreviewVersion": false
+    },
+    {
+      "path": "/themes",
+      "status": 200,
+      "bytes": 580038,
+      "catalogUnavailable": false,
+      "applicationError": false,
+      "threadlinePresent": true,
+      "exactPreviewVersion": false
+    },
+    {
+      "path": "/themes/letbuyy-sense",
+      "status": 200,
+      "bytes": 569276,
+      "catalogUnavailable": false,
+      "applicationError": false,
+      "threadlinePresent": true,
+      "exactPreviewVersion": true
+    },
+    {
+      "path": "/preview/letbuyy-sense?theme=letbuyy-sense&version=2.0.0",
+      "status": 200,
+      "bytes": 316874,
+      "catalogUnavailable": false,
+      "applicationError": false,
+      "threadlinePresent": true,
+      "exactPreviewVersion": true
+    },
+    {
+      "path": "/theme-previews/threadline-2.0.0.webp",
+      "status": 200,
+      "bytes": 45126,
+      "catalogUnavailable": false,
+      "applicationError": false,
+      "threadlinePresent": false,
+      "exactPreviewVersion": false
+    }
+  ],
+  "scope": "Standalone latest source HTTP and actual server-rendered markup only; private install/browser acceptance remains pending current backend fixture."
+}

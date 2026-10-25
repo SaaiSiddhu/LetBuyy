@@ -1,0 +1,39 @@
+{
+  "runId": "5d023114b98b",
+  "name": "mounted-http-attributed",
+  "sequence": 31,
+  "suiteSha256": "ff95aa6fb61dfd68df3ea2bfd1451e6923fa7d29faf33e493ff0e6212cb10e99",
+  "value": {
+    "expected": {
+      "requestId": "85b05152-1031-4d97-a46f-ad2f95c70c91",
+      "traceId": "63276b84-5348-4b5a-80a7-bb83c3f59b85",
+      "jtiHash": "1568e2029634d58bc99af089bfe424d32716a2485513a39f59770848d2befc74",
+      "actorId": "b294554d-4bc4-464a-8f97-288ebe732bb8",
+      "method": "GET",
+      "route": "/v1/products/collections",
+      "status": 200,
+      "errorCode": null,
+      "siteId": "ae90e73a-d88d-45e8-885c-8fe041e29ee7",
+      "ip": "2001:db8:feed::2",
+      "userAgent": "LetBuyy-collection-count-owned-native"
+    },
+    "attribution": {
+      "allTableHashesRetained": 487,
+      "domainAndAllUnclassifiedHashesExact": true,
+      "auth": {
+        "inserted": 1,
+        "expiredRemoved": 0,
+        "jtiHash": "1568e2029634d58bc99af089bfe424d32716a2485513a39f59770848d2befc74"
+      },
+      "requestLogRows": 1,
+      "requestMetricRows": 1,
+      "latencyMs": 144,
+      "requestId": "85b05152-1031-4d97-a46f-ad2f95c70c91",
+      "traceId": "63276b84-5348-4b5a-80a7-bb83c3f59b85",
+      "actorId": "b294554d-4bc4-464a-8f97-288ebe732bb8",
+      "route": "/v1/products/collections",
+      "status": 200,
+      "partitionCopiesExact": true
+    }
+  }
+}

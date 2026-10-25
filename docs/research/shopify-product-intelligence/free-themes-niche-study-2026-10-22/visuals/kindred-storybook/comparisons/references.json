@@ -1,0 +1,40 @@
+[
+  {
+    "reference": "Craft",
+    "url": "https://theme-craft-demo.myshopify.com/collections/bundles",
+    "savedCaptureDate": "2026-10-22",
+    "viewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "state": "collection",
+    "referenceImage": "evidence/craft-collection-desktop.jpg",
+    "comparison": "comparisons/craft-side-by-side.png",
+    "kindredScene": "03-collection",
+    "observed": "Large curated set cards and category-first navigation",
+    "retainedConvention": "Large curated set cards and category-first navigation",
+    "deliberateDifference": "Retain complete-object media and familiar catalog controls. Kindred adds independent occasion, recipient and budget choices plus fixed contents and packaging context.",
+    "requiredContract": "C: typed gift facets and safe query hydration",
+    "limits": "Saved reference screenshot inspected. Taste selected capture has blank main media; this is an incomplete load, not a proposed layout. Public web text rechecked 22 Oct 2026; crawl freshness varies. No transaction or filter-combination certification."
+  },
+  {
+    "reference": "Taste",
+    "url": "https://theme-taste-demo.myshopify.com/products/green-bundle-1",
+    "savedCaptureDate": "2026-10-22",
+    "viewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "state": "product",
+    "referenceImage": "evidence/taste-product-desktop.jpg",
+    "comparison": "comparisons/taste-side-by-side.png",
+    "kindredScene": "05-product-contents",
+    "observed": "Named fixed bundle contents below a conventional purchase area",
+    "retainedConvention": "Named fixed bundle contents below a conventional purchase area",
+    "deliberateDifference": "Retain explicit contents. Kindred brings countable contents into a dedicated open/closed box decision area; no nutrition claims, configurable bundle or gifting-message feature is inferred.",
+    "requiredContract": "C: bounded gift contents; A: media; A/B: real packaging SKU",
+    "limits": "Saved reference screenshot inspected. Taste selected capture has blank main media; this is an incomplete load, not a proposed layout. Public web text rechecked 22 Oct 2026; crawl freshness varies. No transaction or filter-combination certification."
+  }
+]

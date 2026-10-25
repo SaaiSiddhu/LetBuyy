@@ -1,0 +1,307 @@
+{
+  "recordedAt": "2026-10-24T09:03:00.959Z",
+  "classification": "PRIVATE_FACTORY_CANONICAL_SCHEMA_LIQUID_SOURCE_TESTS_NOT_INSTALLED_ACCEPTANCE",
+  "privateFactoryPath": "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/pantry/completion-2026-10-24/applied-private-heading-20261024-01/src/pantry-theme.ts",
+  "privateFactorySha256": "00e8661dc205ed0c5d9d6e47e6b5b4f1354f1d1ac95c0aee18cb6b3b64cd1995",
+  "mainSha256": "9c440d32f146b8155ba78f522da52979fd09a0f3d32c4b25e5c3e289ef390925",
+  "runtimeSourceFiles": [
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/pantry/completion-2026-10-24/applied-private-heading-20261024-01/src/pantry-theme.ts",
+      "sha256": "00e8661dc205ed0c5d9d6e47e6b5b4f1354f1d1ac95c0aee18cb6b3b64cd1995"
+    },
+    {
+      "path": "packages/theme-engine/src/built-in-section-schemas.ts",
+      "sha256": "5e44b89d7ebc3d40b82e7d12dfccf399f7a336d39e1a1b04c7deaf4c57486734"
+    },
+    {
+      "path": "packages/theme-engine/src/experience-fonts.ts",
+      "sha256": "3ee9bdb23a8c18410fd36ee6302f0f8fae929484a7c2dbfd9bc6a424e30f64be"
+    },
+    {
+      "path": "packages/theme-engine/src/pantry-discovery.ts",
+      "sha256": "d9c09fe8097123623d26cde25ec9951233792adadbdf8d0eb6628659234759d0"
+    },
+    {
+      "path": "packages/theme-engine/src/pantry-styles.ts",
+      "sha256": "3a7e53583942a5188970d4f5e2901ce4e894ab3b4da55a30176073eaa03db278"
+    },
+    {
+      "path": "packages/theme-engine/src/schema-field-extensions.ts",
+      "sha256": "a5c53fdfc687bc9c7913ff64c1af1d51e496b70fd74b2a78e2b000bb66ee4d71"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-bundle.ts",
+      "sha256": "cdbad4b28277431a3ab06e56ed0ce16539e04837bb107f5f951a3df39a92ed76"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-presets.ts",
+      "sha256": "283028890199a34e67863c337ebd0c788c830c60ddaa87854c3bad28f9581e82"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-registry.ts",
+      "sha256": "df47c3ff4a6bfb0b4dfb56a49559249ab69d44f876bf1d422ecda385f09533ce"
+    }
+  ],
+  "observations": [
+    {
+      "template": "collection",
+      "empty": false,
+      "collectionTitle": "Current named shelf",
+      "htmlSha256": "a84297e5613aff63338c3bb03be47ac6d564a493c2fc5f617357c60d37a8cbe5",
+      "styleSha256": "9f1074fde3fcb8fe18246784b9cb4bbeb16d0b9c18f9338cf88703ac9b862f1a"
+    },
+    {
+      "template": "search",
+      "empty": false,
+      "collectionTitle": "Current named shelf",
+      "htmlSha256": "cabbaad04d77f71b7d6c13d2bb4bba8812c49e592ac9fc21721f6d53a60732d8",
+      "styleSha256": "9f1074fde3fcb8fe18246784b9cb4bbeb16d0b9c18f9338cf88703ac9b862f1a"
+    },
+    {
+      "template": "search",
+      "empty": false,
+      "collectionTitle": "Current named shelf",
+      "htmlSha256": "6541974e1fa74e326f8a2ce99b4efcdbc8c3b1ff527914713f0d529c31183f12",
+      "styleSha256": "9f1074fde3fcb8fe18246784b9cb4bbeb16d0b9c18f9338cf88703ac9b862f1a"
+    },
+    {
+      "template": "collection",
+      "empty": false,
+      "collectionTitle": "Current named shelf",
+      "htmlSha256": "c95f5cc37db144f6ceb60973e531ce366f8d0ab391e5e682daaef358cdf6f34f",
+      "styleSha256": "9f1074fde3fcb8fe18246784b9cb4bbeb16d0b9c18f9338cf88703ac9b862f1a"
+    },
+    {
+      "template": "collection",
+      "empty": false,
+      "collectionTitle": "Current named shelf",
+      "htmlSha256": "f5d881d5af604c46b81c0ee4483f51b4f3eba4ac8a7a7a18caf98f2f69fc47af",
+      "styleSha256": "9f1074fde3fcb8fe18246784b9cb4bbeb16d0b9c18f9338cf88703ac9b862f1a"
+    },
+    {
+      "template": "search",
+      "empty": true,
+      "collectionTitle": "Current named shelf",
+      "htmlSha256": "4f2178831ca2c544ab442ef9af1852c859322d2c0afe04f85d9be76982187498",
+      "styleSha256": "9f1074fde3fcb8fe18246784b9cb4bbeb16d0b9c18f9338cf88703ac9b862f1a"
+    },
+    {
+      "template": "collection",
+      "empty": true,
+      "collectionTitle": "Current named shelf",
+      "htmlSha256": "fc59df565c4b5e3694f8deed053a1232f7100c45941bcb1c01bd305e73c67564",
+      "styleSha256": "9f1074fde3fcb8fe18246784b9cb4bbeb16d0b9c18f9338cf88703ac9b862f1a"
+    },
+    {
+      "template": "collection",
+      "empty": false,
+      "collectionTitle": "Canonical shelf fallback",
+      "htmlSha256": "0a53c923948e090b8d3c14290e8c4d57bc2fd84919c45ae4effd5d01f5d242a8",
+      "styleSha256": "9f1074fde3fcb8fe18246784b9cb4bbeb16d0b9c18f9338cf88703ac9b862f1a"
+    },
+    {
+      "template": "collection",
+      "empty": true,
+      "collectionTitle": "Canonical shelf fallback",
+      "htmlSha256": "cead0bcb79d0deb066431a7d113d6c3fbf15b9c0e17db135ff15834b8ecde19e",
+      "styleSha256": "9f1074fde3fcb8fe18246784b9cb4bbeb16d0b9c18f9338cf88703ac9b862f1a"
+    },
+    {
+      "template": "collection",
+      "empty": false,
+      "collectionTitle": "Canonical shelf fallback",
+      "htmlSha256": "0a53c923948e090b8d3c14290e8c4d57bc2fd84919c45ae4effd5d01f5d242a8",
+      "styleSha256": "9f1074fde3fcb8fe18246784b9cb4bbeb16d0b9c18f9338cf88703ac9b862f1a"
+    },
+    {
+      "template": "collection",
+      "empty": true,
+      "collectionTitle": "Canonical shelf fallback",
+      "htmlSha256": "cead0bcb79d0deb066431a7d113d6c3fbf15b9c0e17db135ff15834b8ecde19e",
+      "styleSha256": "9f1074fde3fcb8fe18246784b9cb4bbeb16d0b9c18f9338cf88703ac9b862f1a"
+    },
+    {
+      "template": "collection",
+      "empty": false,
+      "collectionTitle": "Different live collection",
+      "htmlSha256": "a501476f7ee60d9f722cb5865f6a06c2e02acd64dd574a447931c5f20153686d",
+      "styleSha256": "9f1074fde3fcb8fe18246784b9cb4bbeb16d0b9c18f9338cf88703ac9b862f1a"
+    },
+    {
+      "template": "collection",
+      "empty": true,
+      "collectionTitle": "Different live collection",
+      "htmlSha256": "956a0e929dd6f70ff1f1cd5140ffa4e448fb939d33ace7681ffc3f731dcd683b",
+      "styleSha256": "9f1074fde3fcb8fe18246784b9cb4bbeb16d0b9c18f9338cf88703ac9b862f1a"
+    },
+    {
+      "template": "search",
+      "empty": false,
+      "collectionTitle": "",
+      "htmlSha256": "921e573b73e74f99b4a321fa3fe076025e97015f9f1b37fe84480260f06f4011",
+      "styleSha256": "9f1074fde3fcb8fe18246784b9cb4bbeb16d0b9c18f9338cf88703ac9b862f1a"
+    },
+    {
+      "template": "search",
+      "empty": true,
+      "collectionTitle": "",
+      "htmlSha256": "7f07ea41d27258cd9792a28a178542ece9f1e0429221ec5a7556250530c8b5dc",
+      "styleSha256": "9f1074fde3fcb8fe18246784b9cb4bbeb16d0b9c18f9338cf88703ac9b862f1a"
+    },
+    {
+      "template": "search",
+      "empty": false,
+      "collectionTitle": "Current named shelf",
+      "htmlSha256": "944b06e4120c6977f9e0399b32ff2202b3495995633c5266de81a6d0518083a3",
+      "styleSha256": "9f1074fde3fcb8fe18246784b9cb4bbeb16d0b9c18f9338cf88703ac9b862f1a"
+    },
+    {
+      "template": "collection",
+      "empty": false,
+      "collectionTitle": "Current named shelf",
+      "htmlSha256": "205542729cd635897510848a2addffde3628f9f6ab203189cdbb5f09ddb3381d",
+      "styleSha256": "9f1074fde3fcb8fe18246784b9cb4bbeb16d0b9c18f9338cf88703ac9b862f1a"
+    },
+    {
+      "template": "index",
+      "empty": false,
+      "collectionTitle": "Current named shelf",
+      "htmlSha256": "91a7f0cdb9706a30ca1d9d3eae61bf80e9b7afbea3e9aebb1d06586fa031dcd3",
+      "styleSha256": "9f1074fde3fcb8fe18246784b9cb4bbeb16d0b9c18f9338cf88703ac9b862f1a"
+    },
+    {
+      "template": "index",
+      "empty": false,
+      "collectionTitle": "Current named shelf",
+      "htmlSha256": "91a7f0cdb9706a30ca1d9d3eae61bf80e9b7afbea3e9aebb1d06586fa031dcd3",
+      "styleSha256": "9f1074fde3fcb8fe18246784b9cb4bbeb16d0b9c18f9338cf88703ac9b862f1a"
+    },
+    {
+      "template": "index",
+      "empty": true,
+      "collectionTitle": "Current named shelf",
+      "htmlSha256": "d73833072c22af0fe240d1a31b9094138283ba2d40219cb902cb9ce786866155",
+      "styleSha256": "9f1074fde3fcb8fe18246784b9cb4bbeb16d0b9c18f9338cf88703ac9b862f1a"
+    },
+    {
+      "template": "index",
+      "empty": true,
+      "collectionTitle": "Current named shelf",
+      "htmlSha256": "d73833072c22af0fe240d1a31b9094138283ba2d40219cb902cb9ce786866155",
+      "styleSha256": "9f1074fde3fcb8fe18246784b9cb4bbeb16d0b9c18f9338cf88703ac9b862f1a"
+    },
+    {
+      "template": "product",
+      "empty": false,
+      "collectionTitle": "Current named shelf",
+      "htmlSha256": "8310fae7dfabe166412c22140cdb1648bd71c4e302edcb9c15ca97891fc785ed",
+      "styleSha256": "9f1074fde3fcb8fe18246784b9cb4bbeb16d0b9c18f9338cf88703ac9b862f1a"
+    },
+    {
+      "template": "product",
+      "empty": false,
+      "collectionTitle": "Current named shelf",
+      "htmlSha256": "8310fae7dfabe166412c22140cdb1648bd71c4e302edcb9c15ca97891fc785ed",
+      "styleSha256": "9f1074fde3fcb8fe18246784b9cb4bbeb16d0b9c18f9338cf88703ac9b862f1a"
+    },
+    {
+      "template": "product",
+      "empty": true,
+      "collectionTitle": "Current named shelf",
+      "htmlSha256": "8310fae7dfabe166412c22140cdb1648bd71c4e302edcb9c15ca97891fc785ed",
+      "styleSha256": "9f1074fde3fcb8fe18246784b9cb4bbeb16d0b9c18f9338cf88703ac9b862f1a"
+    },
+    {
+      "template": "product",
+      "empty": true,
+      "collectionTitle": "Current named shelf",
+      "htmlSha256": "8310fae7dfabe166412c22140cdb1648bd71c4e302edcb9c15ca97891fc785ed",
+      "styleSha256": "9f1074fde3fcb8fe18246784b9cb4bbeb16d0b9c18f9338cf88703ac9b862f1a"
+    },
+    {
+      "template": "collection",
+      "empty": false,
+      "collectionTitle": "Current named shelf",
+      "htmlSha256": "0df17f2d252a829c995649900c0e805ecd2d5f141cf3d18253ce9e4135f674dd",
+      "styleSha256": "9f1074fde3fcb8fe18246784b9cb4bbeb16d0b9c18f9338cf88703ac9b862f1a"
+    },
+    {
+      "template": "collection",
+      "empty": false,
+      "collectionTitle": "Current named shelf",
+      "htmlSha256": "0df17f2d252a829c995649900c0e805ecd2d5f141cf3d18253ce9e4135f674dd",
+      "styleSha256": "9f1074fde3fcb8fe18246784b9cb4bbeb16d0b9c18f9338cf88703ac9b862f1a"
+    },
+    {
+      "template": "collection",
+      "empty": true,
+      "collectionTitle": "Current named shelf",
+      "htmlSha256": "e3d3d610c9934fd829109d4608f1381603df4915fed108bc5c9a14c92d615db7",
+      "styleSha256": "9f1074fde3fcb8fe18246784b9cb4bbeb16d0b9c18f9338cf88703ac9b862f1a"
+    },
+    {
+      "template": "collection",
+      "empty": true,
+      "collectionTitle": "Current named shelf",
+      "htmlSha256": "e3d3d610c9934fd829109d4608f1381603df4915fed108bc5c9a14c92d615db7",
+      "styleSha256": "9f1074fde3fcb8fe18246784b9cb4bbeb16d0b9c18f9338cf88703ac9b862f1a"
+    },
+    {
+      "template": "search",
+      "empty": false,
+      "collectionTitle": "Current named shelf",
+      "htmlSha256": "7d3ac69addbc3158754c36aa37b7515fdc151780effd157417379f8a4fd836f2",
+      "styleSha256": "9f1074fde3fcb8fe18246784b9cb4bbeb16d0b9c18f9338cf88703ac9b862f1a"
+    },
+    {
+      "template": "search",
+      "empty": false,
+      "collectionTitle": "Current named shelf",
+      "htmlSha256": "7d3ac69addbc3158754c36aa37b7515fdc151780effd157417379f8a4fd836f2",
+      "styleSha256": "9f1074fde3fcb8fe18246784b9cb4bbeb16d0b9c18f9338cf88703ac9b862f1a"
+    },
+    {
+      "template": "search",
+      "empty": true,
+      "collectionTitle": "Current named shelf",
+      "htmlSha256": "231ca61c77de827fe4cffce9ea4f8e6d86a2204100ad79e86f3fd3101b59efcf",
+      "styleSha256": "9f1074fde3fcb8fe18246784b9cb4bbeb16d0b9c18f9338cf88703ac9b862f1a"
+    },
+    {
+      "template": "search",
+      "empty": true,
+      "collectionTitle": "Current named shelf",
+      "htmlSha256": "231ca61c77de827fe4cffce9ea4f8e6d86a2204100ad79e86f3fd3101b59efcf",
+      "styleSha256": "9f1074fde3fcb8fe18246784b9cb4bbeb16d0b9c18f9338cf88703ac9b862f1a"
+    },
+    {
+      "template": "search",
+      "empty": false,
+      "collectionTitle": "Current named shelf",
+      "htmlSha256": "7d3ac69addbc3158754c36aa37b7515fdc151780effd157417379f8a4fd836f2",
+      "styleSha256": "9f1074fde3fcb8fe18246784b9cb4bbeb16d0b9c18f9338cf88703ac9b862f1a"
+    },
+    {
+      "template": "search",
+      "empty": false,
+      "collectionTitle": "Current named shelf",
+      "htmlSha256": "7d3ac69addbc3158754c36aa37b7515fdc151780effd157417379f8a4fd836f2",
+      "styleSha256": "9f1074fde3fcb8fe18246784b9cb4bbeb16d0b9c18f9338cf88703ac9b862f1a"
+    },
+    {
+      "template": "search",
+      "empty": false,
+      "collectionTitle": "Current named shelf",
+      "htmlSha256": "7d3ac69addbc3158754c36aa37b7515fdc151780effd157417379f8a4fd836f2",
+      "styleSha256": "9f1074fde3fcb8fe18246784b9cb4bbeb16d0b9c18f9338cf88703ac9b862f1a"
+    },
+    {
+      "template": "search",
+      "empty": false,
+      "collectionTitle": "Current named shelf",
+      "htmlSha256": "7d3ac69addbc3158754c36aa37b7515fdc151780effd157417379f8a4fd836f2",
+      "styleSha256": "9f1074fde3fcb8fe18246784b9cb4bbeb16d0b9c18f9338cf88703ac9b862f1a"
+    }
+  ],
+  "liveEffects": 0
+}

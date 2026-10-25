@@ -1,0 +1,27 @@
+{
+  "recordedAt": "2026-10-24T20:55:26.235196+00:00",
+  "status": "OWNER_TRANSFER_RECORDED_DELIVERY_PENDING",
+  "allocationPath": "docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/CIRCUIT_PERFORMANCE_AMENDMENT_ALLOCATION_02.json",
+  "allocationSha256": "ed2da0bcc1df517d1e87b42c736a73fb9bf9a7d6349728b2fcdce7990679a42e",
+  "previousOwner": "01a16ce5-e5ba-7191-ab2c-a1b76947d2b5",
+  "newOwner": "01a164ba-a97f-7d80-9430-57924218664b",
+  "privateRoot": "/private/tmp/letbuyy-circuit-performance-prep-20261025-02",
+  "privateRootAbsentVerified": true,
+  "sealedV1Unchanged": true,
+  "requirements": [
+    "PERF-R01",
+    "PERF-R02",
+    "PERF-R03",
+    "PERF-R04",
+    "PERF-R05",
+    "PERF-R06"
+  ],
+  "scopeUnchanged": true,
+  "expiryUnchanged": "2026-10-24T22:25:17.401192+00:00",
+  "nativeDatabaseDockerModuleBuildBrowserProviderGranted": false,
+  "oldOwnerMayEditPrivate02": false,
+  "deliveryRequiredFrom": "01a16ce5-e5ba-7191-ab2c-a1b76947d2b5",
+  "deliveryStatus": "PENDING_REQUESTING_CTO_AUTHORIZED_MESSAGE",
+  "freshRootDecision": "Reuse uncreated private02 as the newly Circuit-owned fresh root. No duplicate03 preparation: previous owner explicitly released02 and has never materialized it.",
+  "deliveryBeforeFirstEditRequired": true
+}

@@ -1,0 +1,87 @@
+{
+  "checkedAt": "2026-10-23T17:20:06.186694+00:00",
+  "classification": "READ_ONLY_INDEPENDENT_VERIFICATION_NATIVE_NOT_BROWSER",
+  "runId": "bc5db405796b",
+  "qualification": {
+    "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/latest392-qualification.json",
+    "sha256": "c8950c43a7a041bf1fa97e54d5fe414f896ab5abb23fddcff846f29265620ffa"
+  },
+  "review": {
+    "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/latest392-final-review.json",
+    "sha256": "097eee8536a97889b563b7f6953a6f60ccb982f2e91ac05f17f793d4bc8286f0"
+  },
+  "manifest": {
+    "path": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/latest392-native-evidence-manifest.json",
+    "sha256": "47d95fa27507c0ea3f4fd2facccdff3d5ed2b1cbc3147bb7326502c03aab618f"
+  },
+  "fullTests": 19,
+  "passed": 19,
+  "failed": 0,
+  "skipped": 0,
+  "cancelled": 0,
+  "suites": [
+    {
+      "name": "niche-theme-promotion.postgres",
+      "pass": 5,
+      "fail": 0,
+      "skipped": 0,
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      }
+    },
+    {
+      "name": "storefront-electronics-search.postgres",
+      "pass": 8,
+      "fail": 0,
+      "skipped": 0,
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      }
+    },
+    {
+      "name": "theme-shared-groups.postgres",
+      "pass": 6,
+      "fail": 0,
+      "skipped": 0,
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      }
+    }
+  ],
+  "ownedCleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "manifestFilesExact": 376,
+  "originalAndCopiedNativeProofsExact": 365,
+  "beforeAfterSourceInputsEqual": 816,
+  "currentSourceDrift": [],
+  "allTenHeaderFooterProofsExact": true,
+  "marginaliaIncludedInNativeProof": true,
+  "rootIndependentAdmission": "Awaiting coordinator final receipt, not granted by this read-only review.",
+  "currentFixtureApplied": false,
+  "trustedHttpsVerified": false,
+  "installedMarginaliaCases": {
+    "PASS": 0,
+    "FAIL": 0,
+    "NOT_RUN": 16
+  },
+  "runtimeBindingsAssigned": false,
+  "sideEffects": {
+    "testsRerun": false,
+    "databaseStarted": false,
+    "browserClaimed": false,
+    "buildRun": false,
+    "fixtureEdited": false
+  }
+}

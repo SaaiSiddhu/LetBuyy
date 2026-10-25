@@ -1,0 +1,74 @@
+{
+  "theme": "Dewdrop",
+  "reviewer": "Dewdrop theme chat; coordinator portfolio review remains separate",
+  "date": "2026-10-23",
+  "scope": "Measurements and PNG checks for all 45 exports, plus representative full-size scene review. This is not a pixel-by-pixel audit of every image or assistive-technology conformance.",
+  "inspected": [
+    "01-home-top-desktop",
+    "01-home-top-mobile",
+    "02-home-bottom-desktop",
+    "03-collection-tablet",
+    "04-product-selection-mobile",
+    "05-product-facts-desktop",
+    "06-product-continuation-tablet",
+    "07-cart-mobile",
+    "08-checkout-address-mobile",
+    "09-checkout-review-desktop",
+    "10-sign-in-desktop",
+    "11-create-account-mobile",
+    "13-orders-mobile",
+    "14-order-detail-desktop",
+    "15-addresses-mobile",
+    "comparisons/hindi-expansion",
+    "comparisons/04-product-selection-320",
+    "comparisons/03-collection-text-zoom",
+    "09-checkout-review-mobile (final)",
+    "12-profile-tablet (final)"
+  ],
+  "findings": [
+    {
+      "id": "QA-01",
+      "finding": "First post-creation Continue anchor inherited purple text on purple fill",
+      "status": "fixed_and_recaptured",
+      "evidence": "comparisons/rejected-11-continue-contrast.png retains rejected first image; current11 image has visible white label"
+    },
+    {
+      "id": "QA-02",
+      "finding": "First synthetic text size test compounded parent/child font scaling",
+      "status": "test_corrected_and_rerun",
+      "evidence": "Original sizes snapshot before doubling; first report retained; final stress audit no overflow"
+    },
+    {
+      "id": "QA-03",
+      "finding": "Historical purple identity reference superseded by current admin/light source",
+      "status": "source_aligned_and_identity_recaptured",
+      "evidence": "identity-source-baseline.json; scenes10/11 Geist and brand ink"
+    },
+    {
+      "id": "QA-04",
+      "finding": "Mobile review summary followed payment action",
+      "status": "fixed_recaptured_and_semantically_checked",
+      "evidence": "final-semantic-checks.json and refreshed 09/12 exports; 320/390/834px checks passed"
+    },
+    {
+      "id": "QA-05",
+      "finding": "Profile sign-in email should not imply unsupported email change",
+      "status": "fixed_recaptured_and_semantically_checked",
+      "evidence": "final-semantic-checks.json and refreshed 09/12 exports; 320/390/834px checks passed"
+    }
+  ],
+  "acceptedObservations": [
+    "Distinct routine shelves and product type/net quantity remain meaningful in neutral comparison.",
+    "Named shade controls remain readable and keyboard-distinct when colours share the same RGB value.",
+    "Ingredients and directions appear near purchase; missing ingredients and warnings remain explicit.",
+    "Mock order, payment and fulfillment states are visible; no delivery promise is supplied.",
+    "Native fonts and four coherent original product images load.",
+    "Mobile and tablet layouts reflow components independently."
+  ],
+  "remaining": [
+    "Coordinator visual portfolio review.",
+    "Actual merchant content, real variant media, and typed care facts/query contracts.",
+    "Browser-native zoom, full translated catalog, assistive technology and production performance during implementation."
+  ],
+  "verdict": "Theme visual pack ready for coordinator portfolio review; no unresolved local visual defect identified in reviewed scope."
+}

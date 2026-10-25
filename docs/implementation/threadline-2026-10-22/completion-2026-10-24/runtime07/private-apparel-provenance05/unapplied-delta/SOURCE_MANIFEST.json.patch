@@ -1,0 +1,48 @@
+--- a/SOURCE_MANIFEST.json
++++ b/SOURCE_MANIFEST.json
+@@ -1,10 +1,10 @@
+ {
+-  "classification": "PRIVATE04_TWO_METADATA_TRANSPORT_CORRECTIONS_NOT_EXECUTION_ADMISSION",
+-  "recordedAt": "2026-10-25T00:34:01.583263+00:00",
+-  "privateRoot": "/private/tmp/letbuyy-apparel-provenance-prep-20261025-04",
++  "classification": "PRIVATE05_DEPENDENCY_LAUNCHER_PREPARATION_NOT_ADMISSION",
++  "recordedAt": "2026-10-25T04:01:47.952224+00:00",
++  "privateRoot": "/private/tmp/letbuyy-apparel-provenance-prep-20261025-05",
+   "candidate": "/private/tmp/letbuyy-shared-completion-20261024-06",
+   "originalProvenanceUniverse": 6547,
+-  "copiedBaseFiles": 6541,
++  "copiedBaseFiles": 1424,
+   "baseSourceCopyReceiptSha256": "44049b9b9f9ac17295d2b590199d447b4da42796f9b9a995d01b3ba2367981c4",
+   "baseFiles": [
+     {
+@@ -32799,5 +32799,29 @@
+     }
+   ],
+   "nativeDbDockerModuleBuildBrowserProviderExecuted": false,
+-  "prior03HandoffSha256": "db438bacfa02f47620e96340d34bc99b7cc69de3e26eeb173e3faf254ca29a57"
++  "prior03HandoffSha256": "db438bacfa02f47620e96340d34bc99b7cc69de3e26eeb173e3faf254ca29a57",
++  "materializationKind": "Only1120closedsourceinputs+requiredcatalogueinventory; original6541baseFiles and6 excluded environment template pins retained as original6547 provenance; not claimed all copied05",
++  "prior04HandoffSha256": "ead3475f7a8e62556bf7bbc241b08bc58b801b2943f755bfb9054551ca0335a6",
++  "controlOverlayPaths": [
++    {
++      "path": "qualification-inputs.ts",
++      "sha256": "09d6454bddaa05d4edb27e6be2e30f25ed158d6f32191dc78deadb26c7895f68"
++    },
++    {
++      "path": "dependency-launcher-preflight.cjs",
++      "sha256": "24c383d1a99864da656aa4a82225511eb6f703f36b01495a88831ce3159d7e9b"
++    },
++    {
++      "path": "dependency-launcher-smoke.ts",
++      "sha256": "c373d5811dbfcb2d994936a4a91f279c21872c32a3f5f7f16f23a3f710baae85"
++    },
++    {
++      "path": "dependency-launcher-provenance.json",
++      "sha256": "834a2a9ebaf7a3c297ebe840d4ca7067e0cdc26380f8b331729009dbdf7ece88"
++    },
++    {
++      "path": "VENDOR_BASELINE04.json",
++      "sha256": "6ce5e5320b175b3314a8db55bacab2d688ec6f7e83286f2be09d92131f31e52c"
++    }
++  ]
+ }

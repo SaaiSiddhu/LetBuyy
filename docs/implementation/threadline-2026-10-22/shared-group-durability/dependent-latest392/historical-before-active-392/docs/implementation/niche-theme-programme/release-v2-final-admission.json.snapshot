@@ -1,0 +1,207 @@
+{
+  "recordedAt": "2026-10-23T13:36:32.694Z",
+  "classification": "ROOT_ACCEPTED_EXACT_OFFLINE_RELEASE_INPUTS_NATIVE_389_390_QUALIFICATION_PENDING",
+  "status": "ACCEPTED_FOR_PAIRED_EMISSION_AND_OWNED_DB_QUALIFICATION",
+  "migration": 389,
+  "version": "2.0.0",
+  "manifest": {
+    "path": "docs/implementation/niche-theme-programme/release-v2/proposals/81e91859ebc8c497a49da337d064e1885a76964839d14e39f4a0a3de2283f47f/manifest.json",
+    "manifestSha256": "81e91859ebc8c497a49da337d064e1885a76964839d14e39f4a0a3de2283f47f",
+    "fileSha256": "c0e8d5b7338a70a797a2acc24976700a146f8df4f9a3716d55fab4c03e8cf515"
+  },
+  "generator": {
+    "path": "docs/implementation/niche-theme-programme/release-v2/generate-release.ts",
+    "sha256": "ccbd78a2b0b47e8a6cfb33390965a32ddc611711cc4c369772199db5adb389b3"
+  },
+  "generatorTests": {
+    "path": "docs/implementation/niche-theme-programme/release-v2/generate-release.test.ts",
+    "sha256": "569485559353562215f96529f4e486e4216b64b0a676930c9b913a5f56163ca0"
+  },
+  "independentTests": {
+    "path": "docs/implementation/niche-theme-programme/m2-release-wire-independent.tap",
+    "sha256": "746cb7d005b72c583e61874d2c5642a30bb519d4a1ef262e22844d5a996196e2",
+    "passed": 13,
+    "failed": 0,
+    "skipped": 0
+  },
+  "generatorInputsVerified": 47,
+  "artifactCount": 9,
+  "artifacts": [
+    {
+      "bundleSha256": "f33a757208ed0928199bf09a7f38de189369d1bb0dc5b204a9d9b7af7e6b32a1",
+      "category": "beauty",
+      "file": "letbuyy-aura-2.0.0.json",
+      "fileSha256": "9c274b283c2fc36b42658033e79004b4c9ccbf84ad3417aabca6174c7e1674e7",
+      "id": "7b669c70-0000-4000-8000-000000000003",
+      "name": "Dewdrop",
+      "payloadSha256": "6d1e80b05d7d234bec27961776bc0ea5610cd18249cf6e2631a8222757883e7d",
+      "previousCatalogVersion": "1.0.0",
+      "slug": "letbuyy-aura",
+      "version": "2.0.0"
+    },
+    {
+      "bundleSha256": "aeb5117633e934c547d3ddea864d12c2f82c5ce608e3133ecdc26efec1ac174d",
+      "category": "toys",
+      "file": "letbuyy-bloom-2.0.0.json",
+      "fileSha256": "de251c7edc9bae2e18edcd9cae0ff474b9545222da782a470f509633e41f5299",
+      "id": "7b669c70-0000-4000-8000-000000000008",
+      "name": "Playfield",
+      "payloadSha256": "4430bda97938b60b6725cf441db06c7820b5fa5c47f4e193333cc99870bec3a9",
+      "previousCatalogVersion": "1.0.0",
+      "slug": "letbuyy-bloom",
+      "version": "2.0.0"
+    },
+    {
+      "bundleSha256": "b1e5ae539eefcb55afbf0f84e918d60985a632b094ead05de76cb73a75a6ae51",
+      "category": "furniture",
+      "file": "letbuyy-craft-2.0.0.json",
+      "fileSha256": "16db7fb8ea5dafb12d4c075d49222abfd5e15fc85a23ad13923d649e94767326",
+      "id": "7b669c70-0000-4000-8000-000000000004",
+      "name": "Habitat",
+      "payloadSha256": "3009388914e11ae955ba370f68da70d078da6e3129fc8a1baad2d33313d3aeee",
+      "previousCatalogVersion": "1.0.0",
+      "slug": "letbuyy-craft",
+      "version": "2.0.0"
+    },
+    {
+      "bundleSha256": "5cbe36168853833fda0cf0a81dd5373d5cae013259bdbd330d3ee547f4d3726b",
+      "category": "books",
+      "file": "letbuyy-dawn-2.0.0.json",
+      "fileSha256": "a4e23c63a700f87294a291a1760b94a93d2ee594f9bfea55038c0ff7ab335f3c",
+      "id": "7b669c70-0000-4000-8000-000000000007",
+      "name": "Marginalia",
+      "payloadSha256": "8c0eee170f703b1b3f3b4903b5313a755e78ce7ae7555ed46f599b102f292f2d",
+      "previousCatalogVersion": "1.0.0",
+      "slug": "letbuyy-dawn",
+      "version": "2.0.0"
+    },
+    {
+      "bundleSha256": "7b871acebad8181d1ae0d3dc73ff2f001237c2b29619aee46b0f4d2f7db6fb98",
+      "category": "electronics",
+      "file": "letbuyy-forge-2.0.0.json",
+      "fileSha256": "47d6f0cf0b07adbf6266fb2fb2d4584932c7173497d8f5d838d4b4a70c428568",
+      "id": "7b669c70-0000-4000-8000-000000000001",
+      "name": "Circuit",
+      "payloadSha256": "a5dad69e0b632b810e15ad4cb925ffc77dbda4d4a9eb54eeb4ee4b5b9b4af174",
+      "previousCatalogVersion": "1.0.0",
+      "slug": "letbuyy-forge",
+      "version": "2.0.0"
+    },
+    {
+      "bundleSha256": "fa5a2b7673790d6c78d496fe3a5f985a06f458fd02bfae74b990360cb8c762d9",
+      "category": "personalized",
+      "file": "letbuyy-nova-2.0.0.json",
+      "fileSha256": "71c1690f66cd4176a3c3b9b9768ef86c3f6134afa0ea4ab6dda2ea5791186ba0",
+      "id": "7b669c70-0000-4000-8000-000000000009",
+      "name": "MadeYours",
+      "payloadSha256": "ab5344b3340a2912205d71219d8c7f9de1bf99d9c18ea83a2dd017d0543fb3d5",
+      "previousCatalogVersion": "1.0.0",
+      "slug": "letbuyy-nova",
+      "version": "2.0.0"
+    },
+    {
+      "bundleSha256": "a13a3d742a29f83c2c9d8db5b6753bded011b46a7cb45876719388a16fbd6903",
+      "category": "food",
+      "file": "letbuyy-refresh-2.0.0.json",
+      "fileSha256": "39866e8607d2f0e98bd6abafd4d33141e915b44140d2e8f70c2893462dae8cf9",
+      "id": "7b669c70-0000-4000-8000-000000000005",
+      "name": "Pantry",
+      "payloadSha256": "7f9f2cd2abd44077728ce9c3b8552f27d34bebe35e47903124240ce269d61fc0",
+      "previousCatalogVersion": "1.0.0",
+      "slug": "letbuyy-refresh",
+      "version": "2.0.0"
+    },
+    {
+      "bundleSha256": "c038ed3ce61ba9a9b78d089f553439640d5589c10431c34bcd1bc8dff3461991",
+      "category": "sports",
+      "file": "letbuyy-ride-2.0.0.json",
+      "fileSha256": "0ac93f9e452fe455301fc30f598b85c7541edeb4fcc87c2e21ed0d81316419f5",
+      "id": "7b669c70-0000-4000-8000-000000000006",
+      "name": "Trailmark",
+      "payloadSha256": "16b6e1642269ee43531923d4ca1d7585e842789f2b79eb2e256e2d2f0d777612",
+      "previousCatalogVersion": "1.0.0",
+      "slug": "letbuyy-ride",
+      "version": "2.0.0"
+    },
+    {
+      "bundleSha256": "d3d19b3da2cb0214613ba81ba4a08a187cacdce985fefc2c351a7c6a72792058",
+      "category": "gifts",
+      "file": "letbuyy-summit-2.0.0.json",
+      "fileSha256": "54f9d916749d64f80b6bd5dd6ec85a7e50b5e17bef765e61fffe727d94c8d411",
+      "id": "7b669c70-0000-4000-8000-000000000010",
+      "name": "Kindred",
+      "payloadSha256": "56d8b92957d4259466e6bdf659c927fea2f5220916d5887fde779439c1f7e961",
+      "previousCatalogVersion": "1.0.0",
+      "slug": "letbuyy-summit",
+      "version": "2.0.0"
+    }
+  ],
+  "sourceAdmission": {
+    "path": "docs/implementation/niche-theme-programme/editor-post390-source-admission-checkpoint04.json",
+    "sha256": "57965788d4f04d221ecd7b944a8f4cc8812f6e8fb1cb31f3a3feccd53cf074e5"
+  },
+  "catalog387Admission": {
+    "path": "docs/implementation/niche-theme-programme/marketplace387-final-native-admission.json",
+    "sha256": "6284b8c2fa536807c04c4987582b702269b7d72dc5a851a2e7ea8218caf8490a"
+  },
+  "sql": {
+    "up": {
+      "sha256": "3d9a5e0344db7537558554b723ffc134707bf7b98fe4941bc6bf268bd7330e61",
+      "bytes": 5824537
+    },
+    "down": {
+      "sha256": "aecbd647393ac9dcec1466d8b7f80e21cd89a1522b6956bd0c9c479529e45927",
+      "bytes": 2744
+    },
+    "emitted": false,
+    "executed": false
+  },
+  "measurement390": {
+    "up": {
+      "path": "docs/implementation/threadline-2026-10-22/measurement-discovery/390_measurement_discovery.up.draft.sql",
+      "sha256": "6e5eb5e50cecd43acc9a663dd79c505db6c7bfdbe4e559b34d998065f88e9027"
+    },
+    "down": {
+      "path": "docs/implementation/threadline-2026-10-22/measurement-discovery/390_measurement_discovery.down.draft.sql",
+      "sha256": "1aca479d735539ec3d92974da0eed7b8e48e83e874d8612ea78dba7acc91cb7a"
+    }
+  },
+  "protected": {
+    "defaultFactorySha256": {
+      "letbuyy-aura": "720c5d83e3f82f6ace8fc5240591190d11bb88a34e6cb0191d69c26b2c28cbd6",
+      "letbuyy-bloom": "c7d7ba6972c4d5b5f63e7f001a00f13e6985d0c3c2253f94c78471a72162c846",
+      "letbuyy-craft": "523872c45fb0eae75785d7cb70dbeb4fbce797a99d3b68914c4b75f8cb508b63",
+      "letbuyy-dawn": "451d361535109c941f6485312307d95495bbb02053281b84c029b02c6438bf4d",
+      "letbuyy-forge": "2c21baef67a9323837418cfcead55a8334a7642d657f334d24e939d10ddab229",
+      "letbuyy-nova": "eec24ee5e24712c355e1d38ea7dc3e71b5c99c171eb373e5b02590913e3669e3",
+      "letbuyy-refresh": "9b27f89d3e9b1d3e382aa2ae72d52598090661c78e5e7cf341854ffd935683a1",
+      "letbuyy-ride": "a484f2892e50efcd4ab766b01a1c5f084d60a5d8d0a7149cd45721e1c2024418",
+      "letbuyy-sense": "89b10eaeb54b5800d1339fa49a6b6527ef54f6fa79f1d666b953dd339f6f9b6c",
+      "letbuyy-summit": "85200da23ac0019f59d458425abbf03ce7d5f312ab906d84b25c0b77413be67e"
+    },
+    "frozenCatalog": {
+      "path": "database/supabase/migrations/372_first_party_theme_catalog.sql",
+      "sha256": "0b7390291aa5c488624eabfd2f1035a1f6786c638150ae9a702da015def47c13"
+    },
+    "threadline": {
+      "bundleSha256": "61082be647eadae9b6e42002be241a82ba6c3627427568f6e64e2cf961c3742e",
+      "excludedFromPromotion": true,
+      "fileSha256": "475717e0f7afd78327ce89b55768e0a13347394a98a2bfcf8bfad19ed088b9dc",
+      "path": "database/supabase/migrations/382_threadline_catalog_v2.sql",
+      "payloadSha256": "e3b97f84ac1d2472eebd853946e548002fde1f2daf6bb5277004a6b8884aac8a",
+      "rawBundleJsonSha256": "61082be647eadae9b6e42002be241a82ba6c3627427568f6e64e2cf961c3742e"
+    }
+  },
+  "hashConventions": {
+    "editor": "SHA256(JSON.stringify(raw factory bundle)); exact checkpoint03 raw comparison before normalization",
+    "distribution": "SHA256(sorted canonical JSON of bundle); exact manifest/content comparison",
+    "normalization": "JSON-wire object key order before persistence derivation; semantic arrays preserved; raw hash equality after normalization is not claimed"
+  },
+  "notClaimed": [
+    "actual database package UUIDs/immutable capture compatibility for new nine v2",
+    "native389 promotion/rollback qualification",
+    "installed Editor save/publication/recovery",
+    "installed buyer checkout/account journeys",
+    "deployment"
+  ]
+}

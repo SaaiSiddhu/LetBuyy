@@ -1,0 +1,47 @@
+{
+  "checkedAt": "2026-10-23T14:23:07.902092+00:00",
+  "runId": "1a4e6e2c85ad",
+  "suiteSha256": "c162f341fae53183bb73606322ebb291e339700562cd5f499918dd8602376739",
+  "allAcceptedInputsUnchanged": true,
+  "artifacts": 9,
+  "factoryHelperInputs": 47,
+  "acceptedPairAndReceiptInputs": 7,
+  "actualTests": 5,
+  "passed": 5,
+  "failed": 0,
+  "skipped": 0,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "actualNativeProvenance": [
+    {
+      "path": "docs/implementation/threadline-2026-10-22/promotion-qualification/native-runs/06/entry.json",
+      "sha256": "2b0618c26df8188a00d6beb19acac94614615280f2983f8976f3052016788be1"
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/promotion-qualification/native-runs/06/prior-before-promotion-and-install.json",
+      "sha256": "8091087140f2181a732868f108a81a623c53654ac5354938e3a1690d9ced68a3"
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/promotion-qualification/native-runs/06/visitor-sdk-prepromotion.json",
+      "sha256": "c46dcbc3f70f5112ae328573400badb265cf3cb5904a8c4b52fd7e12405e5163"
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/promotion-qualification/native-runs/06/promoted-before-install.json",
+      "sha256": "2b1ed9106dba1bc5ce999530cdc8a50621e4640e94d776e274ecee7dbf95afa4"
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/promotion-qualification/native-runs/06/visitor-metadata-diagnostic.json",
+      "sha256": "796e358a3c87de0ba9d5deec1767f023b9f2d6d03d28bf103939b570d6fd577e"
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/promotion-qualification/native-runs/06/qualified-composition.json",
+      "sha256": "11cbe42e391bb83399d7d92650ab2198240f5222df3856fe3281cccd86de4799"
+    }
+  ]
+}

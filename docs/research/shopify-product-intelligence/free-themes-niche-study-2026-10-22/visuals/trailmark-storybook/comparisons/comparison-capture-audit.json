@@ -1,0 +1,82 @@
+{
+  "date": "2026-10-23",
+  "required45Boards15AndZipUnchanged": true,
+  "audit": [
+    {
+      "name": "ride-home",
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1,
+      "scrollWidth": 1440,
+      "brokenImages": [],
+      "fonts": "loaded",
+      "captureFrames": [
+        {
+          "width": 622,
+          "height": 431,
+          "imageWidth": 622,
+          "naturalWidth": 1440
+        },
+        {
+          "width": 622,
+          "height": 431,
+          "imageWidth": 622,
+          "naturalWidth": 1440
+        }
+      ]
+    },
+    {
+      "name": "tinker-product",
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1,
+      "scrollWidth": 1440,
+      "brokenImages": [],
+      "fonts": "loaded",
+      "captureFrames": [
+        {
+          "width": 622,
+          "height": 431,
+          "imageWidth": 622,
+          "naturalWidth": 1440
+        },
+        {
+          "width": 622,
+          "height": 431,
+          "imageWidth": 622,
+          "naturalWidth": 1440
+        }
+      ]
+    },
+    {
+      "name": "neutral-home",
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1,
+      "scrollWidth": 1440,
+      "brokenImages": [],
+      "fonts": "loaded",
+      "captureFrames": []
+    },
+    {
+      "name": "neutral-collection",
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1,
+      "scrollWidth": 1440,
+      "brokenImages": [],
+      "fonts": "loaded",
+      "captureFrames": []
+    },
+    {
+      "name": "neutral-product",
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1,
+      "scrollWidth": 1440,
+      "brokenImages": [],
+      "fonts": "loaded",
+      "captureFrames": []
+    }
+  ]
+}

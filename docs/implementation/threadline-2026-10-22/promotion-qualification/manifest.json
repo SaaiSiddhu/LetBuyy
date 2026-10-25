@@ -1,0 +1,447 @@
+{
+  "recordedAt": "2026-10-23T14:25:16.550348+00:00",
+  "status": "NATIVE389_390_GREEN_EXACT390_SOURCE_EMITTED_LIVE_BROWSER_PENDING",
+  "suiteSha256": "c162f341fae53183bb73606322ebb291e339700562cd5f499918dd8602376739",
+  "artifacts": [
+    {
+      "path": "390-emission-receipt.json",
+      "sha256": "f5e5dcf0125d67c73a79bbe15e540dde2d0bfe5a38e8233752bbab1e90a8cb81",
+      "bytes": 1866
+    },
+    {
+      "path": "README.md",
+      "sha256": "542c736403f30589b5f9775a412d9b720a82b91aa904cba0ca11f9763e4b0816",
+      "bytes": 6337
+    },
+    {
+      "path": "active-counter-typecheck-10.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "admission.json",
+      "sha256": "5cedad1d50cbed67fdb1f60b0f94c45c6838eaca797c9800bf2f6768822b9688",
+      "bytes": 693
+    },
+    {
+      "path": "conditional-lease-activation.json",
+      "sha256": "c4d960029f6e9f0e27905d3932e90c03937c54d3fe1a69f31af14b14c305470d",
+      "bytes": 3328
+    },
+    {
+      "path": "conditional-lease-input-check.json",
+      "sha256": "07c409d1d174c84785f1bbd53eb78f79d19fc571869fff0972d0eae73237528a",
+      "bytes": 10170
+    },
+    {
+      "path": "eventloop-typecheck-08.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "native-runs/01/admission.json",
+      "sha256": "5cedad1d50cbed67fdb1f60b0f94c45c6838eaca797c9800bf2f6768822b9688",
+      "bytes": 693
+    },
+    {
+      "path": "native-runs/01/diagnosis.json",
+      "sha256": "30b68a8bd17fe46b24031ef5cae95c8d638d6414ca12c3c5cc69c2ee231c60c0",
+      "bytes": 1113
+    },
+    {
+      "path": "native-runs/01/entry.json",
+      "sha256": "31db2870defb45261f945a7d7f6025671965e14c77d76b836eba63e6eaccfef0",
+      "bytes": 2209198
+    },
+    {
+      "path": "native-runs/01/prior-before-promotion-and-install.json",
+      "sha256": "ae614c2ccc579e669fcddaf22510a1aa4fd72a7674c91883a6b1ee1e53d874af",
+      "bytes": 8009948
+    },
+    {
+      "path": "native-runs/01/result.json",
+      "sha256": "f6dc4f6295e21a1eed37b2484153626dbacd801450c13058ff9c829e2f03e0ea",
+      "bytes": 66177
+    },
+    {
+      "path": "native-runs/01/run.json",
+      "sha256": "a575ec89fcad642aaf34dcf3975254d60fbd17a829a45807eb50afde9823174c",
+      "bytes": 96
+    },
+    {
+      "path": "native-runs/01/source-after.json",
+      "sha256": "cb08a73e259cb6060a45160cd88b30c8f3d841ce7a87939c4eed43768cbe48c3",
+      "bytes": 353
+    },
+    {
+      "path": "native-runs/01/source-before.json",
+      "sha256": "cda1b99479e029a6b0cba42c3b459ebb06732a79379f92f5a437e906622c4c1c",
+      "bytes": 11704
+    },
+    {
+      "path": "native-runs/01/suite-before.ts",
+      "sha256": "6b3714ce235e832abd91a22220192d0ab4df8b6ac69e27ddc210507144deb852",
+      "bytes": 35125
+    },
+    {
+      "path": "native-runs/01/suite.tap",
+      "sha256": "67f6bfdd6885c8e7cf1748922c0750d9a3bae4c113f4fc75da3068d5ba969d79",
+      "bytes": 47220
+    },
+    {
+      "path": "native-runs/02/admission.json",
+      "sha256": "5cedad1d50cbed67fdb1f60b0f94c45c6838eaca797c9800bf2f6768822b9688",
+      "bytes": 693
+    },
+    {
+      "path": "native-runs/02/entry.json",
+      "sha256": "0e1e4e16acb547e546accceaafeb44943dcab9bd1260a79a5637c6c3e8f175fc",
+      "bytes": 2209198
+    },
+    {
+      "path": "native-runs/02/prior-before-promotion-and-install.json",
+      "sha256": "c9a526c36d8c63eb7f78f14e6cea7a540f0721eaff53d379c169d2396365ca98",
+      "bytes": 8009949
+    },
+    {
+      "path": "native-runs/02/promoted-before-install.json",
+      "sha256": "d960e7c572fe3426c91fd2526e57e7ea2e921ee90c04672e604a5d94bfa55607",
+      "bytes": 17243322
+    },
+    {
+      "path": "native-runs/02/result.json",
+      "sha256": "151d29be732337d5141600683e96f24d1cefc0a7c925fe02619cc9df670f22cf",
+      "bytes": 66179
+    },
+    {
+      "path": "native-runs/02/run.json",
+      "sha256": "86d82c83415eed98804ab13d4807c69d60e365db7a97f0a4ece05d35f51da00b",
+      "bytes": 96
+    },
+    {
+      "path": "native-runs/02/source-after.json",
+      "sha256": "2c9becfb7521bbbaeb82c047a6fa5c8532e7e0683cb58d57a86aae257a2c7416",
+      "bytes": 285
+    },
+    {
+      "path": "native-runs/02/source-before-original-run-binding-error.json",
+      "sha256": "176e9164787ff1efa4f2b2ce38af1b74eb21e1ee1545c3b1cc6446e79156db58",
+      "bytes": 11704
+    },
+    {
+      "path": "native-runs/02/source-before.json",
+      "sha256": "433f355b72ad0923c7efabb7e02fabae9d1291f8d3d39d40a9f367b59e42a8e8",
+      "bytes": 12009
+    },
+    {
+      "path": "native-runs/02/suite-before.ts",
+      "sha256": "0a17994cf8b1b3b634b991ab70b8c47dbea48bb925bc64ffbd0747a5a10057bc",
+      "bytes": 35597
+    },
+    {
+      "path": "native-runs/02/suite.tap",
+      "sha256": "b3785c11b450549fc8b123c44dc3bfde01ce0e82aa177754e4460cbafa0fbeee",
+      "bytes": 53303
+    },
+    {
+      "path": "native-runs/03/admission.json",
+      "sha256": "5cedad1d50cbed67fdb1f60b0f94c45c6838eaca797c9800bf2f6768822b9688",
+      "bytes": 693
+    },
+    {
+      "path": "native-runs/03/entry.json",
+      "sha256": "62389741a6f668ed86f35d292c3b0935d0711dd6fb466049b262dcbf42233530",
+      "bytes": 2209198
+    },
+    {
+      "path": "native-runs/03/prior-before-promotion-and-install.json",
+      "sha256": "56ee1369c810f6e1632a7a16d4873c628b32fd8de31c182faf037d6e766354c9",
+      "bytes": 8009947
+    },
+    {
+      "path": "native-runs/03/promoted-before-install.json",
+      "sha256": "a4fc1a1526ce7ed4d7859df85fcebe93ba94f4d270fd62c13d5a2f75b6a18900",
+      "bytes": 17243320
+    },
+    {
+      "path": "native-runs/03/result.json",
+      "sha256": "314bb962391749c6de6071fa052c823e873a389283cb975b91a7b501ad4ee404",
+      "bytes": 66182
+    },
+    {
+      "path": "native-runs/03/run.json",
+      "sha256": "c759fc1f988acedc2d2d16349ba5582d7e7f4bf69b0ce1dbc11388aa136cba29",
+      "bytes": 96
+    },
+    {
+      "path": "native-runs/03/source-after.json",
+      "sha256": "f3c394e703beaa5b7cd066682e02746502e664e59adb585d51e2f6c1aa966a31",
+      "bytes": 335
+    },
+    {
+      "path": "native-runs/03/source-before-original-run-binding-error.json",
+      "sha256": "c41eb2252164bd6244e3ddea489cc7acfbb06a0533244f68502d6582e6901778",
+      "bytes": 11727
+    },
+    {
+      "path": "native-runs/03/source-before.json",
+      "sha256": "35e8656d66d66a66e7d621702616b10ca0748f53364c5fcfbdee0f7fb69c312c",
+      "bytes": 12032
+    },
+    {
+      "path": "native-runs/03/suite-before.ts",
+      "sha256": "8cab3c1764e14c8b7728dadc865b683228fed1a6d58574e58e594917f051c655",
+      "bytes": 36674
+    },
+    {
+      "path": "native-runs/03/suite.tap",
+      "sha256": "9631707ee02681d245e800dc09de2a34b8012cb2f9bfb33c19afafdae5e34d16",
+      "bytes": 53582
+    },
+    {
+      "path": "native-runs/03/visitor-metadata-diagnostic.json",
+      "sha256": "2bb84a08061c645c51355d4e2bdfd906d8d80786a3fdec288fe00c365b710580",
+      "bytes": 900
+    },
+    {
+      "path": "native-runs/04/admission.json",
+      "sha256": "5cedad1d50cbed67fdb1f60b0f94c45c6838eaca797c9800bf2f6768822b9688",
+      "bytes": 693
+    },
+    {
+      "path": "native-runs/04/diagnosis.json",
+      "sha256": "58f35f92e1c8f04d08f4cb36fc8b8f258324f61729017d733405bdad5a1001e8",
+      "bytes": 582
+    },
+    {
+      "path": "native-runs/04/entry.json",
+      "sha256": "6a9202226daf2b7f2f5a9448313d25ad3bb695c4103f070dfdf3e4c34e76a915",
+      "bytes": 2209198
+    },
+    {
+      "path": "native-runs/04/prior-before-promotion-and-install.json",
+      "sha256": "71ebe503687603f74183b88c851e534015d62c6c782e48ca47dc92499043427d",
+      "bytes": 8009959
+    },
+    {
+      "path": "native-runs/04/promoted-before-install.json",
+      "sha256": "55d6a33bc921da9c60dcb0e268b5f5d3e4281ba81a89a47bc54aa0a654cd684c",
+      "bytes": 17243332
+    },
+    {
+      "path": "native-runs/04/result.json",
+      "sha256": "2d25627fb2db25e059f5c1064cf902faeb4512e7a7a9b495ef084ba5ca5c928a",
+      "bytes": 66182
+    },
+    {
+      "path": "native-runs/04/run.json",
+      "sha256": "d62139b72203a3ac7def9b3835dce2ddab8ee11c9ea82d713c3ab7c7b0cdc2cd",
+      "bytes": 96
+    },
+    {
+      "path": "native-runs/04/source-after.json",
+      "sha256": "e9603e13dd996bf38a050d22a0f99be8950a49fd3863ae7a1877bd6a9e9420ad",
+      "bytes": 335
+    },
+    {
+      "path": "native-runs/04/source-before.json",
+      "sha256": "bc3a8e4e74269988dca5d1f0658f3446ebc5048772f248fc09dd2127e77b0457",
+      "bytes": 11708
+    },
+    {
+      "path": "native-runs/04/suite-before.ts",
+      "sha256": "41072aeddfb0d36b097ba8383b8fae6922076714d724b00a303e619895372778",
+      "bytes": 39885
+    },
+    {
+      "path": "native-runs/04/suite.tap",
+      "sha256": "708eca09f85d7b415aeffde026bb0750b38b53d8b010b0382158c67499129293",
+      "bytes": 54119
+    },
+    {
+      "path": "native-runs/04/visitor-metadata-diagnostic.json",
+      "sha256": "4b3e75773f3fe9ba43de777b776b1b42e120462a6924d5810c1d521097a4a998",
+      "bytes": 1992
+    },
+    {
+      "path": "native-runs/04/visitor-sdk-control.json",
+      "sha256": "e017356accd0d93a19063166dc1fa1c7e0a4acd02955223993443c18eee937a1",
+      "bytes": 241
+    },
+    {
+      "path": "native-runs/04/visitor-sdk-prepromotion.json",
+      "sha256": "e017356accd0d93a19063166dc1fa1c7e0a4acd02955223993443c18eee937a1",
+      "bytes": 241
+    },
+    {
+      "path": "native-runs/05/admission.json",
+      "sha256": "5cedad1d50cbed67fdb1f60b0f94c45c6838eaca797c9800bf2f6768822b9688",
+      "bytes": 693
+    },
+    {
+      "path": "native-runs/05/diagnosis.json",
+      "sha256": "1c6ece6615b95d8f04d1aca7e6e762d55698ba2cd9aefc958853207093a0c72d",
+      "bytes": 763
+    },
+    {
+      "path": "native-runs/05/entry.json",
+      "sha256": "6c4ecd8042172b5787dd46600ae5096d0a29eb6deece6a17553888d15f4faa63",
+      "bytes": 2209198
+    },
+    {
+      "path": "native-runs/05/prior-before-promotion-and-install.json",
+      "sha256": "d865a77d76580265778b40b64f10a5426dee71a43096b4e95ef3e3bec5dffc9a",
+      "bytes": 8009953
+    },
+    {
+      "path": "native-runs/05/promoted-before-install.json",
+      "sha256": "ca36633522e47608f3b393f5810186354cb869227d25a2d0b6ec227f3f8f60c7",
+      "bytes": 17243326
+    },
+    {
+      "path": "native-runs/05/result.json",
+      "sha256": "3ee2096be1071e5377bbffc7d50133500dd16234821d57cf28db491e69a09ceb",
+      "bytes": 66182
+    },
+    {
+      "path": "native-runs/05/run.json",
+      "sha256": "bb5c6194669f34278d19719af1bf935709fbacca423dd7a59de52be2ee929abf",
+      "bytes": 96
+    },
+    {
+      "path": "native-runs/05/source-after.json",
+      "sha256": "7ababaeadca8a8bf9f210141167e48904a22bf828c861fa860a63dba085b6799",
+      "bytes": 335
+    },
+    {
+      "path": "native-runs/05/source-before.json",
+      "sha256": "7a1c75bae794165e96c647459b4266dd0aa3280b946082da3ceacf29a6c3216a",
+      "bytes": 11714
+    },
+    {
+      "path": "native-runs/05/suite-before.ts",
+      "sha256": "12faa0c330061d9cdbcb64ea1442b0a55b6ddde5cbeaa977be6e0741b6fc4bcd",
+      "bytes": 40174
+    },
+    {
+      "path": "native-runs/05/suite.tap",
+      "sha256": "1fa456f28019c8fec6133a97ec43977b2d1bc57cf2729fd32c0ae5e0d5a2ac69",
+      "bytes": 4852359
+    },
+    {
+      "path": "native-runs/05/visitor-metadata-diagnostic.json",
+      "sha256": "631a9c3108409cac81894f9b32398e648573f4d4b4120822fb942990e77fa917",
+      "bytes": 4708
+    },
+    {
+      "path": "native-runs/05/visitor-sdk-prepromotion.json",
+      "sha256": "31813b0831642503254527e7f9bbb7d41a701474550cfbc3d0a4022e15ffff5a",
+      "bytes": 241
+    },
+    {
+      "path": "native-runs/06/admission.json",
+      "sha256": "5cedad1d50cbed67fdb1f60b0f94c45c6838eaca797c9800bf2f6768822b9688",
+      "bytes": 693
+    },
+    {
+      "path": "native-runs/06/entry.json",
+      "sha256": "2b0618c26df8188a00d6beb19acac94614615280f2983f8976f3052016788be1",
+      "bytes": 2209198
+    },
+    {
+      "path": "native-runs/06/prior-before-promotion-and-install.json",
+      "sha256": "8091087140f2181a732868f108a81a623c53654ac5354938e3a1690d9ced68a3",
+      "bytes": 8009944
+    },
+    {
+      "path": "native-runs/06/promoted-before-install.json",
+      "sha256": "2b1ed9106dba1bc5ce999530cdc8a50621e4640e94d776e274ecee7dbf95afa4",
+      "bytes": 17243317
+    },
+    {
+      "path": "native-runs/06/qualified-composition.json",
+      "sha256": "11cbe42e391bb83399d7d92650ab2198240f5222df3856fe3281cccd86de4799",
+      "bytes": 25443
+    },
+    {
+      "path": "native-runs/06/result.json",
+      "sha256": "5fe9172f3af72be38fb45c5024270b048adce6d2eeea451b73be6e26bcea7797",
+      "bytes": 65945
+    },
+    {
+      "path": "native-runs/06/run.json",
+      "sha256": "bea352ce4f58d8199db8458f1c88c0ad02f9a7c3700dcfdd1588f6d58139976e",
+      "bytes": 96
+    },
+    {
+      "path": "native-runs/06/source-after.json",
+      "sha256": "9d35aca419f49d6c8007546f22afea216cbff9316c3c4c22b89b50cd35e6cecf",
+      "bytes": 1853
+    },
+    {
+      "path": "native-runs/06/source-before.json",
+      "sha256": "ac1a89ef8da6e48da9518e615e579e36d65b788bd7f62a677fcd8c03ebd2d484",
+      "bytes": 11719
+    },
+    {
+      "path": "native-runs/06/suite-before.ts",
+      "sha256": "c162f341fae53183bb73606322ebb291e339700562cd5f499918dd8602376739",
+      "bytes": 41419
+    },
+    {
+      "path": "native-runs/06/suite.tap",
+      "sha256": "f8854f3b03e5ff58a3df3b064187b5b1f28552a98b21c210cb2e630bdd5289e9",
+      "bytes": 52763
+    },
+    {
+      "path": "native-runs/06/visitor-metadata-diagnostic.json",
+      "sha256": "796e358a3c87de0ba9d5deec1767f023b9f2d6d03d28bf103939b570d6fd577e",
+      "bytes": 4708
+    },
+    {
+      "path": "native-runs/06/visitor-sdk-prepromotion.json",
+      "sha256": "c46dcbc3f70f5112ae328573400badb265cf3cb5904a8c4b52fd7e12405e5163",
+      "bytes": 241
+    },
+    {
+      "path": "oracle-fix-typecheck-04.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "preparation-typecheck-01.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "preparation-typecheck-02.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "preparation-typecheck-03.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "preparation.json",
+      "sha256": "d544d7a6adeec58cfbff05966d306a8c761196dcd4745a1ffa10e55935c11c77",
+      "bytes": 5368
+    },
+    {
+      "path": "qualification.json",
+      "sha256": "f209f4d9a9f7f0e467b21069f3bb803ec052fa17f388693695221df78c51a1d8",
+      "bytes": 9055
+    },
+    {
+      "path": "refined-diagnostic-typecheck-07.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "site-diagnostic-typecheck-05.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  ]
+}

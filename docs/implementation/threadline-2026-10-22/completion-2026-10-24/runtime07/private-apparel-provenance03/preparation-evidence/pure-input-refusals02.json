@@ -1,0 +1,75 @@
+{
+  "classification": "METADATA_ONLY_NO_APP_OR_NATIVE_MODULE_PROBE",
+  "records": [
+    {
+      "name": "complete recursive source inventory and in-memory metadata shape positive control",
+      "status": "PASS",
+      "class": "PURE_METADATA_OR_SOURCE_REFUSAL_NOT_NATIVE_E2E"
+    },
+    {
+      "name": "absent actual future admission refuses before any owned/app import",
+      "status": "PASS",
+      "class": "PURE_METADATA_OR_SOURCE_REFUSAL_NOT_NATIVE_E2E"
+    },
+    {
+      "name": "corrupt pinned closure digest refuses",
+      "status": "PASS",
+      "class": "PURE_METADATA_OR_SOURCE_REFUSAL_NOT_NATIVE_E2E"
+    },
+    {
+      "name": "missing required native input refuses",
+      "status": "PASS",
+      "class": "PURE_METADATA_OR_SOURCE_REFUSAL_NOT_NATIVE_E2E"
+    },
+    {
+      "name": "corrupt source byte pin refuses without changing source",
+      "status": "PASS",
+      "class": "PURE_METADATA_OR_SOURCE_REFUSAL_NOT_NATIVE_E2E"
+    },
+    {
+      "name": "incomplete recursive import edge refuses fresh rediscovery",
+      "status": "PASS",
+      "class": "PURE_METADATA_OR_SOURCE_REFUSAL_NOT_NATIVE_E2E"
+    },
+    {
+      "name": "missing runtime module refuses fresh rediscovery",
+      "status": "PASS",
+      "class": "PURE_METADATA_OR_SOURCE_REFUSAL_NOT_NATIVE_E2E"
+    },
+    {
+      "name": "wrong migration count and changed actual migration list refuse",
+      "status": "PASS",
+      "class": "PURE_METADATA_OR_SOURCE_REFUSAL_NOT_NATIVE_E2E"
+    },
+    {
+      "name": "omitted environment template cannot silently enter dependencies",
+      "status": "PASS",
+      "class": "PURE_METADATA_OR_SOURCE_REFUSAL_NOT_NATIVE_E2E"
+    },
+    {
+      "name": "wrong owner, expiry and widened native envelope refuse",
+      "status": "PASS",
+      "class": "PURE_METADATA_OR_SOURCE_REFUSAL_NOT_NATIVE_E2E"
+    },
+    {
+      "name": "actual runner command ceiling and changed budget refuse",
+      "status": "PASS",
+      "class": "PURE_METADATA_OR_SOURCE_REFUSAL_NOT_NATIVE_E2E"
+    },
+    {
+      "name": "parent actual applied migration evidence gate: positive metadata fixture, missing/ceiling/skip/cleanup refusals",
+      "status": "PASS",
+      "class": "PURE_METADATA_OR_SOURCE_REFUSAL_NOT_NATIVE_E2E"
+    },
+    {
+      "name": "native source loads only standard libraries and metadata statically; application imports follow admission",
+      "status": "PASS",
+      "class": "PURE_METADATA_OR_SOURCE_REFUSAL_NOT_NATIVE_E2E"
+    }
+  ],
+  "pass": 13,
+  "fail": 0,
+  "actualAdmissionCreated": false,
+  "syntheticAdmission": "In memory only; never written or used for execution",
+  "nativeDatabaseDockerBrowserProviderBuildActions": 0
+}

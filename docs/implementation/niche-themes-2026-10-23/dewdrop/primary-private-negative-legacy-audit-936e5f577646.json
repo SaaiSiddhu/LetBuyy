@@ -1,0 +1,402 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-24T04:17:50.775981+00:00",
+  "runId": "936e5f577646",
+  "classification": "INDEPENDENT_ACTUAL_RECEIPT_AND_UI_TRANSCRIPT_AUDIT_NO_LIVE_ACTOR",
+  "wholePasses": [
+    "M01",
+    "M03",
+    "P02",
+    "P03",
+    "C01",
+    "A01",
+    "H01",
+    "S02"
+  ],
+  "M01": {
+    "allSixActuallyChangedAndReopened": true,
+    "nonemptyPrivateMetadataPositive": true,
+    "privateDigest": "842c9ab51457e904ac9f895657beb93d05e5233469ff6153b55e679273be2130",
+    "digestAllThreeStatesEqual": true,
+    "v1ExactlyRestored": true,
+    "stock12AndInventoryDigestEqual": true,
+    "opaqueVersions": [
+      9,
+      11,
+      13
+    ],
+    "setupNotUiAcceptance": true,
+    "priorEmptySiblingGapPreserved": true
+  },
+  "H01": {
+    "normalIdentityConsentAccountReloadCheckoutUi": true,
+    "actualFlat20Selected": true,
+    "Bengaluru560001AndCodConfirmed": true,
+    "primaryOrder": {
+      "id": "84a52d92-6cb4-46bb-b941-8d7f37e8cb74",
+      "number": "ORD-20261024-10000",
+      "subtotal": 1120,
+      "shipping": 20,
+      "tax": 0,
+      "discount": 0,
+      "total": 1140,
+      "status": "pending_cod",
+      "paymentStatus": "pending",
+      "quantity": 2,
+      "unitPrice": 560,
+      "lineTotal": 1120,
+      "variantId": "3f4e08a8-bf2e-4899-bbeb-06c7283af499",
+      "approvedNicheV1": true,
+      "singleItemSnapshotSha256": "8c9540171cab8e50a2454ce823da7e4d01fc966a4955d1224293aa9b9f4461f7"
+    },
+    "carrierServiceability": "UI says seller-zone estimate; carrier serviceability not confirmed, not claimed."
+  },
+  "A01": {
+    "normalConsentAccountReloadAndOwnCheckoutInitiation": true,
+    "buyerBindingSource": "Root actual H02/S02 boundary plus normal owned account/checkout UI",
+    "emailVerified": "NOT_CAPTURED_IN_THIS_NEW_RECEIPT_SET_NOT_INFERRED"
+  },
+  "C01": {
+    "normalAckAndSettledCartReload": true,
+    "cartId": "784bfc88-ebd0-4ad6-8d0a-f30e96adfa0e",
+    "productVersion": 14,
+    "snapshotFingerprint": "c217c096c2321316928a531531e4dda59c2bf2a45ca4bcfc72c7b54e69de9911",
+    "exactPinkHindiApprovedFactsAnd2x560": true,
+    "perItemNetQuantity6ml": true,
+    "configurationFingerprint": null,
+    "notLocalOnly": true
+  },
+  "apiNegatives": [
+    {
+      "case": "M03-unsupported-variant-beauty",
+      "status": 400,
+      "responseCode": "VALIDATION_ERROR",
+      "requestId": "d3cd2d0c-e885-447f-904e-1246f9bbd14e",
+      "mutatedSelector": "variants[first].metadata.beauty",
+      "scopeCount": 25,
+      "allBeforeAfterExact": true
+    },
+    {
+      "case": "M04-unknown-shade",
+      "status": 400,
+      "responseCode": "VALIDATION_ERROR",
+      "requestId": "6ccc2a98-2ce2-42f7-a5ca-3892851892f6",
+      "mutatedSelector": "metadata.beauty.shades[0].value",
+      "scopeCount": 25,
+      "allBeforeAfterExact": true
+    },
+    {
+      "case": "M04-duplicate-shade",
+      "status": 400,
+      "responseCode": "VALIDATION_ERROR",
+      "requestId": "0f48f553-0da6-4e77-8a26-a7c47e5e1275",
+      "mutatedSelector": "metadata.beauty.shades[append duplicate first]",
+      "scopeCount": 25,
+      "allBeforeAfterExact": true
+    },
+    {
+      "case": "M04-stale-version",
+      "status": 409,
+      "responseCode": "PRODUCT_VERSION_CONFLICT",
+      "requestId": "7a912727-068b-44d2-adc4-32303abebea9",
+      "mutatedSelector": "version=14 against current15",
+      "scopeCount": 25,
+      "allBeforeAfterExact": true
+    },
+    {
+      "case": "P02-terracotta-stock",
+      "status": 409,
+      "responseCode": "INSUFFICIENT_INVENTORY",
+      "requestId": "6cc725e3-10d3-4241-b3fb-eee0a5f46f6a",
+      "mutatedSelector": null,
+      "scopeCount": 25,
+      "allBeforeAfterExact": true
+    },
+    {
+      "case": "P03-variant-required",
+      "status": 409,
+      "responseCode": "VARIANT_REQUIRED",
+      "requestId": "070d6237-e54f-47d6-b8dd-a7a0ef071b12",
+      "mutatedSelector": null,
+      "scopeCount": 25,
+      "allBeforeAfterExact": true
+    },
+    {
+      "case": "P03-unknown-variant",
+      "status": 400,
+      "responseCode": "VARIANT_NOT_FOUND",
+      "requestId": "876dff82-2656-47d6-8ee2-8e6b0871cdc7",
+      "mutatedSelector": null,
+      "scopeCount": 25,
+      "allBeforeAfterExact": true
+    },
+    {
+      "case": "C02-client-price",
+      "status": 400,
+      "responseCode": "VALIDATION_ERROR",
+      "requestId": "98d20603-baaf-4b1e-b5fd-812ffc4589b4",
+      "mutatedSelector": null,
+      "scopeCount": 25,
+      "allBeforeAfterExact": true
+    },
+    {
+      "case": "C02-client-niche-snapshot",
+      "status": 400,
+      "responseCode": "VALIDATION_ERROR",
+      "requestId": "1fb62204-85ea-493d-8f56-c201abe27080",
+      "mutatedSelector": null,
+      "scopeCount": 25,
+      "allBeforeAfterExact": true
+    },
+    {
+      "case": "C02-client-product-snapshot",
+      "status": 400,
+      "responseCode": "VALIDATION_ERROR",
+      "requestId": "9d32805f-a2f7-4143-a039-f5361b46cfd4",
+      "mutatedSelector": null,
+      "scopeCount": 25,
+      "allBeforeAfterExact": true
+    }
+  ],
+  "P03Foreign": {
+    "ownPositive": 200,
+    "wrongSiteNegative": 404,
+    "realNewSiteProductCart": true,
+    "primaryScopesExact": true,
+    "notO05BrowserOrderProof": true
+  },
+  "M04": {
+    "status": "PARTIAL",
+    "unknownDuplicateStaleNativeControls": "PASS",
+    "cloudSetupReplay": "PASS26SCOPES_ONLY_ZERO_VARIANTS",
+    "variantUpsertReplay": "NOT_RUN_NOT_ESTABLISHED_BY_CLOUD",
+    "normalStaleFormDraftRetentionRecovery": "NOT_CAPTURED_IN_RECEIVED_EVIDENCE"
+  },
+  "C02": {
+    "status": "PARTIAL_CAPTURE_GAP",
+    "strictExtras400And25ScopeConservation": "PASS",
+    "allowedPropertiesStatus": 200,
+    "recordedCanonicalSuccess": false,
+    "recordedProjected": null,
+    "onlyCartChangedAndPrimaryHeldExact": true,
+    "canonicalPinkFactsProof": "PENDING_READ_ONLY_ADDENDUM_NO_REPOST",
+    "productBugInferred": false
+  },
+  "S02": {
+    "approvedSyntheticSetupCommittedOnce": true,
+    "recipeSha256": "d9df6ed3e60e1194c53f07f75d35d3d653a272d22267563403163f35645afeda",
+    "guardAndConservationQualification": "Exact reviewed SQL completed exit0 with its assertions; guarded lifecycle and BFF/UI confirm actual rows. No fresh before/after full-table hash manifest is fabricated from unrelated phases.",
+    "legacyOrderId": "36b89194-f491-49ab-b42c-401029a4a58c",
+    "legacyNumber": "ORD-20261024-10001",
+    "legacyTotal": 560,
+    "quantity": 1,
+    "emptySnapshotSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "buyerBffAndInstalledStorefrontAndMerchantPositiveGuidance": true,
+    "primaryOrderExactlyEqualAcrossLifecycleReadbacks": true,
+    "activeV1ContextActualAtExecution": true,
+    "normalCheckoutCredit": false,
+    "laterV2Comparison": "Still required under O03; no v2 result claimed now."
+  },
+  "evidence": [
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-A01-buyerA-account-reloaded.ax.txt",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-A01-buyerA-account-reloaded.ax.txt",
+      "sha256": "bb64ee66f0028ee3c673e33d16fd44d2e9c177a287bec8e26b74bb38b77eee64"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-A01-buyerA-consent.ax.txt",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-A01-buyerA-consent.ax.txt",
+      "sha256": "c90bbb334df70a06b6af0d870d52637b4153fe3d226971359f7ce6745d81b3d2"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-C01-cart-acknowledged.ax.txt",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-C01-cart-acknowledged.ax.txt",
+      "sha256": "7a825d405da39af1a7e62f97e0b9eaf913c29f65de2d13aa553a40e1dd2481ae"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-C01-cart-reloaded-settled.ax.txt",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-C01-cart-reloaded-settled.ax.txt",
+      "sha256": "12a795b655ce69130498758747366fdbbc7fbfb2cfe606c57658d2a30b3c74c5"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-C02-client-niche-snapshot-result.json",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-C02-client-niche-snapshot-result.json",
+      "sha256": "7960a0a8b5c38ddd23ae69b7d32ad47a53ce9cd05fd7176d75bdf867310470d8"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-C02-client-price-result.json",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-C02-client-price-result.json",
+      "sha256": "51ce3511a3ff3a9435a640d10cad5f3091a1bbf8f2daacb3fb82c81a2cc454f9"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-C02-client-product-snapshot-result.json",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-C02-client-product-snapshot-result.json",
+      "sha256": "56005fe41ab2d63544adfe74413cf8e2542bebc26bc882209d9a15e951ca29d0"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-C02-properties-spoof-result.json",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-C02-properties-spoof-result.json",
+      "sha256": "00c50db93dcf0b05db0eec5d6b98c5b2e754ebb8042c236b898da8b7f67bd052"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-H01-COD-review.ax.txt",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-H01-COD-review.ax.txt",
+      "sha256": "24ac5ec9380de46fbbefb584f089309ea26c4e0980e059b4b3f0f48a058549de"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-H01-confirm-result.ax.txt",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-H01-confirm-result.ax.txt",
+      "sha256": "24e3ce5e08c3df1be14a171a86eaa450e4b87a22ddc02b313c10596341ed7e1f"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-H01-normal-trusted-checkout.ax.txt",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-H01-normal-trusted-checkout.ax.txt",
+      "sha256": "f0c3d37283bb5269427bf9c18f1210281fafe82aa9b0dd407a0ba2176e6c2c12"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-H01-selected-delivery.ax.txt",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-H01-selected-delivery.ax.txt",
+      "sha256": "47d0fabea120ba60aaa4e66c1229d9b0f9edbeabd2e14a99c7fdb615e531c3c3"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-M01-cloud-private-marker-setup.json",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-M01-cloud-private-marker-setup.json",
+      "sha256": "48fa7b6b9e9b8759d773e3f31249cd66f332c6686f1d3189df11916d04a18e3a"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-M01-completed.json",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-M01-completed.json",
+      "sha256": "0e501eda43a79b57103dec3031832da47839fb1c159e912aa481a5b13b257d23"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-M01-private-siblings-six-fields-reloaded.ax.txt",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-M01-private-siblings-six-fields-reloaded.ax.txt",
+      "sha256": "051141cc3322fb00a2a4c885f9b3f16ec38cd205cca8781105a32d45725eab16"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-M01-public-private-fields-absent.ax.txt",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-M01-public-private-fields-absent.ax.txt",
+      "sha256": "64916e53a5bc0aa17bdf0ef16bf0d83e7ccdcd8057b2979d22af9a71bb6275c4"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-M03-unsupported-variant-beauty-result.json",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-M03-unsupported-variant-beauty-result.json",
+      "sha256": "3ab97cd8983fd38287991220fb15114744c24842df1de2192d502734511f5164"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-M04-cloud-exact-replay-result.json",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-M04-cloud-exact-replay-result.json",
+      "sha256": "b829616aa8cbb2a2a80a3e8b18574f12951045a29367ca12b0cc889c96e61d99"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-M04-duplicate-shade-result.json",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-M04-duplicate-shade-result.json",
+      "sha256": "b666e9691a0c193c438d9407cda7b2a1441efd760f6a4f4231c4e82ceb898178"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-M04-stale-version-result.json",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-M04-stale-version-result.json",
+      "sha256": "f081e9c99e78c0cb5ed8889dcd21cbf14bd56ba76a8bcc65533cf19481c9b02d"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-M04-unknown-shade-result.json",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-M04-unknown-shade-result.json",
+      "sha256": "1cd6caa7318d8f4986c5280a165847461093d076d07b0fc1ea51c5fa780f1046"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-P02-Terracotta-disabled.ax.txt",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-P02-Terracotta-disabled.ax.txt",
+      "sha256": "800fd11f77d6322d4a090a4f13fa8dc0b42f5e9486261d8dce6042d0dc77422a"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-P02-terracotta-stock-result.json",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-P02-terracotta-stock-result.json",
+      "sha256": "2cc11abbe723c708180c25a09a648585591c238fffae38cad8fc5a8260075100"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-P03-foreign-site-cart.json",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-P03-foreign-site-cart.json",
+      "sha256": "45ce0842ba099d3992d6033527cc72eae5da581b7e562754519e86791a6b7131"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-P03-unknown-variant-result.json",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-P03-unknown-variant-result.json",
+      "sha256": "9de9e23577a35f46d1237d9a8922d35a5770c96a6a488d8f4e61ce9cf97bf517"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-P03-variant-required-result.json",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-P03-variant-required-result.json",
+      "sha256": "124989103b267ecea58f091f37db9e702becb54ea88892589c6d11760b47ad6d"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-S02-buyer-legacy-reloaded-before-edit.ax.txt",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-S02-buyer-legacy-reloaded-before-edit.ax.txt",
+      "sha256": "919fe0736c36a2e54b827bf9dd4b964d7656c3ad4420480f347a1087603489d4"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-S02-buyer-v1-current-product-legacy-read.ax.txt",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-S02-buyer-v1-current-product-legacy-read.ax.txt",
+      "sha256": "919fe0736c36a2e54b827bf9dd4b964d7656c3ad4420480f347a1087603489d4"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-S02-merchant-v1-current-product-legacy-read.ax.txt",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-S02-merchant-v1-current-product-legacy-read.ax.txt",
+      "sha256": "3893e3f9859d93102bc039dd315d22ebf1855d996408f3c81296e463556401be"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-S02-private-BFF-before-edit.json",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-S02-private-BFF-before-edit.json",
+      "sha256": "87a562f0ef8d7d8323f6da38aae938c04965990a87f5c66d869bc7cd3e987567"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-S02-setup-attempt-consumed.json",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-S02-setup-attempt-consumed.json",
+      "sha256": "ce80e73acb62bab3c208fbcbfc6ea571a10ca668aabb00f3f928a921071fc06f"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-S02-setup-result.json",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-S02-setup-result.json",
+      "sha256": "07adc2b66ad1211d2c71c7953164800ef2e7130687dbf4e333ca2a093b97a46e"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-cart-dewdrop-before.json",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-cart-dewdrop-before.json",
+      "sha256": "3aca9e6769c27d4c7344fa1e2c5c678890e47de97b1d028be5d4073a6915eb8b"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-cart-dewdrop-cart.json",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-cart-dewdrop-cart.json",
+      "sha256": "b906b2798f20e967cdcd60ffee881bf486b3579047a4fe777a3958c559930a4d"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-cloud-private-before-readback.json",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-cloud-private-before-readback.json",
+      "sha256": "87a22b703425db9e590f973acb4c05ed9f5f655cc5d108dbb1a766eb212159bb"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-cloud-private-restored-readback.json",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-cloud-private-restored-readback.json",
+      "sha256": "2b6825cd1fe99525d8a96989525c3a555878fb227ea4934bf25ca4baeb6edf3b"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-cloud-private-saved-readback.json",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-cloud-private-saved-readback.json",
+      "sha256": "d15a1265320568c5a451c02f276b778bc00a67e234356696994860c77415c95c"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-dewdrop-lifecycle-after-legacy-setup.json",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-dewdrop-lifecycle-after-legacy-setup.json",
+      "sha256": "5c6fbd6e67558065afc0ac9a45bb6bb2213dad40f3b4f24267aee7c4d9ac5502"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-dewdrop-lifecycle-after-primary-order.json",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-dewdrop-lifecycle-after-primary-order.json",
+      "sha256": "51d5f2dbebd30138faf9ac3816f14f3324d856d3eb2b40763f350b43e7709b4a"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-dewdrop-lifecycle-before-primary-order.json",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-dewdrop-lifecycle-before-primary-order.json",
+      "sha256": "119394aef89eb9d78ff2b13b6619919af01be96a97df46d3ff29ce8a08d1164a"
+    }
+  ]
+}

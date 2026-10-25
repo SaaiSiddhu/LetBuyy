@@ -1,0 +1,62 @@
+TAP version 13
+# node:internal/modules/run_main:123
+#     triggerUncaughtException(
+#     ^
+# AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+# + actual - expected
+#   [
+# +   '/layout/theme/source',
+#     '/package/version',
+#     '/package/version_number',
+# +   '/sections/customer-order-detail/source',
+#     '/sections/product-detail/source'
+#   ]
+#     at buildProposal (/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/release-playfield201/generate-playfield201.ts:77:10)
+#     at fs (/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/release-playfield201/generate-playfield201.test.ts:9:18)
+#     at Object.<anonymous> (/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/release-playfield201/generate-playfield201.test.ts:84:2)
+#     at Module._compile (node:internal/modules/cjs/loader:1781:14)
+#     at Object.transformer (/Volumes/Projects/LetBuyy/node_modules/.pnpm/tsx@4.20.6/node_modules/tsx/dist/register-D46fvsV_.cjs:3:1104)
+#     at Module.load (node:internal/modules/cjs/loader:1505:32)
+#     at Module._load (node:internal/modules/cjs/loader:1309:12)
+#     at wrapModuleLoad (node:internal/modules/cjs/loader:254:19)
+#     at loadCJSModuleWithModuleLoad (node:internal/modules/esm/translators:335:3)
+#     at ModuleWrap.<anonymous> (node:internal/modules/esm/translators:235:7) {
+#   generatedMessage: true,
+#   code: 'ERR_ASSERTION',
+#   actual: [
+#     '/layout/theme/source',
+#     '/package/version',
+#     '/package/version_number',
+#     '/sections/customer-order-detail/source',
+#     '/sections/product-detail/source'
+#   ],
+#   expected: [
+#     '/package/version',
+#     '/package/version_number',
+#     '/sections/product-detail/source'
+#   ],
+#   operator: 'deepStrictEqual',
+#   diff: 'simple'
+# }
+# Node.js v22.23.3
+# Subtest: docs/implementation/niche-theme-programme/release-playfield201/generate-playfield201.test.ts
+not ok 1 - docs/implementation/niche-theme-programme/release-playfield201/generate-playfield201.test.ts
+  ---
+  duration_ms: 1001.130584
+  type: 'test'
+  location: '/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/release-playfield201/generate-playfield201.test.ts:1:1'
+  failureType: 'testCodeFailure'
+  exitCode: 1
+  signal: ~
+  error: 'test failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 0
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1006.148625

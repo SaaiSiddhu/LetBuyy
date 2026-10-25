@@ -352,7 +352,8 @@ export default function ReviewsPage() {
 
     return (
         <Page>
-            <PageHeader
+            <PageHeader identity="content"
+                recipe="index"
                 title="Product reviews"
                 description={visibleCounts.pending > 0
                     ? `${visibleCounts.pending} review${visibleCounts.pending > 1 ? 's' : ''} awaiting moderation.`

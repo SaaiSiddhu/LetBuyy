@@ -1,0 +1,47 @@
+{
+  "recordedAt": "2026-10-24T21:19:30.115Z",
+  "runId": "49ada80bc494",
+  "siteId": "02049de4-41c3-4b10-b5b2-a60a6b5e82bf",
+  "status": 200,
+  "productId": "22446d70-4e10-41f0-97f0-55662eeea763",
+  "name": "Trailmark lifecycle racket",
+  "price": 1800,
+  "stock": 8,
+  "variants": [
+    {
+      "id": "ef6281cd-7148-4cc5-be34-37e1a4f98e74",
+      "title": "26.5 in",
+      "price": 1800,
+      "inventory_qty": 3,
+      "stock": 3,
+      "option1": "26.5 in",
+      "option2": null,
+      "metadata": {
+        "sports": {
+          "length": {
+            "value": 26.5,
+            "unit": "in"
+          },
+          "weight": {
+            "value": 80,
+            "unit": "g"
+          },
+          "dimensions": {
+            "length": 26.5,
+            "width": 10,
+            "unit": "in"
+          }
+        }
+      }
+    },
+    {
+      "id": "69729510-82e4-44fa-8892-19bbd9d59700",
+      "title": "Common size",
+      "price": 1800,
+      "inventory_qty": 4,
+      "stock": 4,
+      "option1": "Common size",
+      "option2": null
+    }
+  ]
+}

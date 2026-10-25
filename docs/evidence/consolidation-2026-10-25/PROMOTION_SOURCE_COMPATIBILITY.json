@@ -1,0 +1,37 @@
+{
+  "status": "LOCAL_SOURCE_COMPATIBILITY_VERIFICATION",
+  "prior_admission_unchanged": true,
+  "scope": "Existing accepted 389 proposal and emitted SQL remain immutable. Explicit current source changes require frozen default/2.0.0 package parity in the owned test. This receipt does not grant deployment or ARB acceptance.",
+  "changes": [
+    {
+      "path": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "accepted_sha256": "cc11490138ae5c2f13ab022a60b4cc2fe7d8fc5eb766dbf087eeb227d6050d6e",
+      "current_sha256": "2a1775243185e982f19f511738167c280d237fc6d15ed2dd72844e425dc62488",
+      "reason": "Adds explicit successor/customization selection while keeping legacy/default and 2.0.0 outputs frozen."
+    },
+    {
+      "path": "packages/theme-engine/src/marginalia-theme.ts",
+      "accepted_sha256": "a109aa33018aa786dffaea7a067415b13fe73ddc17beca7ef18a83f58301b7e9",
+      "current_sha256": "c8e89e5e7ed4093fa7864b6ab40d480398f7249e8fa35c4b5c513f75724d83cc",
+      "reason": "Names merchant-editable theme settings without creating a platform palette authority; package bytes remain frozen."
+    },
+    {
+      "path": "packages/theme-engine/src/niche-order-presentation.ts",
+      "accepted_sha256": "6d3cb80e5dc5c922328ae0f653d74492cc202b0f4714fc08314a81a60cfdfc00",
+      "current_sha256": "5683e413e48bc11d6b0906dc344ec6c3b0c7413113172b11bda91c49d08cb444",
+      "reason": "Retains additional niche order facts in the canonical shared presentation; admitted package bytes stay unchanged."
+    },
+    {
+      "path": "packages/theme-engine/src/playfield-theme.ts",
+      "accepted_sha256": "00493cb361c8fc796941524d9673ee4c1bfa3a12785017e2397e408b924edb63",
+      "current_sha256": "60b06f8e07eb0cab2749e809a5eacaf044492c2a7b9ba205be2539ede933a2ef",
+      "reason": "Adds opt-in successor options while retaining frozen original versions."
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "accepted_sha256": "15fd89109bbc17e0624e29d5a1b56db07e19f1f880c44d9a9abf847b52b6d09a",
+      "current_sha256": "befd63ad036cf5a796f039b1b2418488ab25c2cec68230a78f3af404e4cf763d",
+      "reason": "Removes the api-client commerce-core workspace dependency after its wire contracts moved to shared-types; frozen install verified."
+    }
+  ]
+}

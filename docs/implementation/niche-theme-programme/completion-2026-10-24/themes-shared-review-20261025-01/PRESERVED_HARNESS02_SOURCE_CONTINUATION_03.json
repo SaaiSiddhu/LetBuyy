@@ -1,0 +1,20 @@
+{
+  "recordedAt": "2026-10-25T03:48:36.568608+00:00",
+  "expiresAt": "2026-10-25T04:48:36.568608+00:00",
+  "ends": "First02sealorrevisedexpiry",
+  "status": "GRANTED_METADATA_ONLY_CONTINUATION_OF_UNSEALED_EXISTING_HARNESS02",
+  "owner": "01a16d03-613e-71b0-a591-07d4d24347d4",
+  "authority": "Root03:41explicitfinish/reviewexistingharness02partialwork afterappinterruption; exactoriginalscope",
+  "parentGrant": {
+    "path": "PRESERVED_RUNTIME07_PRIVATE_HARNESS_AMENDMENT_02.json",
+    "sha256": "a50a293fda94ed46c9d95064857adce06985083a93cf4ff0f2cad562269886fa"
+  },
+  "triggerAddendum": "PRESERVED_HARNESS02_INTERNAL_TRIGGER_ADDENDUM_01.json",
+  "privateRoot": "/private/tmp/letbuyy-preserved-runtime07-prep-20261025-02",
+  "durableOutput": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/preserved-runtime07-harness02",
+  "scope": "Sameexact10pathcontext6mutable4frozenand4readonlyordinaryguard/launcher/directory/supportpins. Continueexistingpartialwork, no recopy/newroot/redesign/extrapaths. AllfourP1logicalsequence,archive/metadata/directoryfsync,persistentprotection/default+scopedreapers,logicalinternal-triggersemantics remain acceptance.",
+  "retainedProgress": "Ownerreports10runtime-focusedpurePASS/5reaper-focusedPASS andtriggernormalizationfolded; notsealed/independentlyaccepted. Reuseunchangedchecks; finishonlynecessarynewpure/type/syntax/refusalproofs andseal.",
+  "expiryReason": "Previous02lease expired02:58:56Z duringappinterruption; olddeadline notsilentlyrevived, now explicitmetadata-onlycontinuation.",
+  "noActualResourceAuthority": "NoNative/restore/stage/build/DB/Docker/network/privatearchive/state/key/old07signal/port/adoption/relabelling/Main/sourcecandidateactions. Source-onlysamegrantforbiddensretain.",
+  "sequencing": "Original210browser onlyrealrecovery/sharedfix/healthgates; no artificialunactivated211/performancegate. Newapparelfactwritesconsumerqualificationheld, full211historyseparate."
+}

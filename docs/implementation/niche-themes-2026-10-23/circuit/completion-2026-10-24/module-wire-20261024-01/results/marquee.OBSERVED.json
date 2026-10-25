@@ -1,0 +1,64 @@
+{
+  "classification": "SOURCE_STATE_SERIALIZATION_ONLY_NOT_ACTUAL_UI_OPERATIONS",
+  "type": "marquee",
+  "group": "template",
+  "originalId": "section-fcc38d93-233c-4b16-bebd-2e808daf66ca",
+  "finalId": "section-677947d8-307e-409e-9c48-e89797fff7bb",
+  "sectionFieldsExercised": [
+    "text"
+  ],
+  "effectiveBlockFieldsExercised": [],
+  "phases": [
+    {
+      "phase": "edited",
+      "observed": {
+        "settings": {
+          "text": "Circuit source text"
+        },
+        "disabled": false,
+        "block_order": [],
+        "blocks": {}
+      }
+    },
+    {
+      "phase": "hidden-reordered",
+      "observed": {
+        "settings": {
+          "text": "Circuit source text"
+        },
+        "disabled": true,
+        "block_order": [],
+        "blocks": {}
+      }
+    },
+    {
+      "phase": "shown",
+      "observed": {
+        "settings": {
+          "text": "Circuit source text"
+        },
+        "disabled": false,
+        "block_order": [],
+        "blocks": {}
+      }
+    },
+    {
+      "phase": "removed",
+      "originalSectionAbsent": true,
+      "protectedGroupIdentityRetained": false
+    },
+    {
+      "phase": "readded",
+      "observed": {
+        "settings": {
+          "text": "Circuit source text"
+        },
+        "disabled": false,
+        "block_order": [],
+        "blocks": {}
+      }
+    }
+  ],
+  "resourceAuthorityProved": false,
+  "actualUiCallbacksExecuted": false
+}

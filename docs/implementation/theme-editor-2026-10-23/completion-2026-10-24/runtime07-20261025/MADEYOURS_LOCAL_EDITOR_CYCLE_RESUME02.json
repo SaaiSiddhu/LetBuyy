@@ -1,0 +1,268 @@
+{
+  "theme": "MadeYours",
+  "slug": "letbuyy-nova",
+  "runId": "49ada80bc494",
+  "version": "2.1.0",
+  "host": "Trust Badges",
+  "propertyHost": "Personalization workspace introduction",
+  "uniqueField": "Heading",
+  "fieldKey": "title",
+  "startedAt": "2026-10-25T00:55:25.928Z",
+  "cases": [
+    {
+      "id": "MADEYOURS-R07-ATOMIC-FIELD_ROUNDTRIP",
+      "status": "PASS",
+      "identifierOrigin": "Controller atomic reference; no automatic closure of original whole matrix row"
+    },
+    {
+      "id": "MADEYOURS-R07-ATOMIC-ROOT_CHILD_ADD_EDIT",
+      "status": "PASS",
+      "identifierOrigin": "Controller atomic reference; no automatic closure of original whole matrix row"
+    },
+    {
+      "id": "MADEYOURS-R07-ATOMIC-REORDER_HIDE_RELOAD",
+      "status": "PASS",
+      "identifierOrigin": "Controller atomic reference; no automatic closure of original whole matrix row"
+    },
+    {
+      "id": "MADEYOURS-R07-ATOMIC-PUBLISHED_HIDDEN_LIQUID",
+      "status": "PASS",
+      "identifierOrigin": "Controller atomic reference; no automatic closure of original whole matrix row"
+    },
+    {
+      "id": "MADEYOURS-R07-ATOMIC-CHILD_SHOW_PUBLIC",
+      "status": "PASS",
+      "identifierOrigin": "Controller atomic reference; no automatic closure of original whole matrix row"
+    },
+    {
+      "id": "MADEYOURS-R07-ATOMIC-REMOVE_CANCEL",
+      "status": "PASS",
+      "identifierOrigin": "Controller atomic reference; no automatic closure of original whole matrix row"
+    },
+    {
+      "id": "MADEYOURS-R07-ATOMIC-REMOVE_CHILD_SIBLING_PRESERVED",
+      "status": "PASS",
+      "identifierOrigin": "Controller atomic reference; no automatic closure of original whole matrix row"
+    },
+    {
+      "id": "MADEYOURS-R07-ATOMIC-CHILD_READDED_PUBLIC",
+      "status": "PASS",
+      "identifierOrigin": "Controller atomic reference; no automatic closure of original whole matrix row"
+    },
+    {
+      "id": "MADEYOURS-R07-ATOMIC-OWN_ROOT_CLEANUP",
+      "status": "PASS",
+      "identifierOrigin": "Controller atomic reference; no automatic closure of original whole matrix row"
+    },
+    {
+      "id": "MADEYOURS-R07-ATOMIC-UNDO_REDO",
+      "status": "PASS",
+      "identifierOrigin": "Controller atomic reference; no automatic closure of original whole matrix row"
+    },
+    {
+      "id": "MADEYOURS-R07-ATOMIC-ORIGINAL_FIELDS_FULLRELOAD",
+      "status": "PASS",
+      "identifierOrigin": "Controller atomic reference; no automatic closure of original whole matrix row"
+    },
+    {
+      "id": "MADEYOURS-R07-ATOMIC-CLEAN_PUBLIC",
+      "status": "PASS",
+      "identifierOrigin": "Controller atomic reference; no automatic closure of original whole matrix row"
+    }
+  ],
+  "originalMatrixWholeRowsClosed": 0,
+  "fullThemeCertified": false,
+  "temporaryLabels": [
+    "MadeYours temporary root A",
+    "MadeYours temporary child A",
+    "MadeYours temporary child B"
+  ],
+  "entryHostFields": [
+    {
+      "label": "Introduction photograph image URL",
+      "value": ""
+    },
+    {
+      "label": "Button destination",
+      "value": "/products"
+    },
+    {
+      "label": "Button label",
+      "value": "Choose your base"
+    },
+    {
+      "label": "Eyebrow",
+      "value": "A SMALL DETAIL. ALL YOURS."
+    },
+    {
+      "label": "Heading",
+      "value": "Make something everyday feel like you."
+    },
+    {
+      "label": "Description",
+      "value": "Choose a base. Add your words. Review every detail."
+    }
+  ],
+  "entryOtherControls": [
+    {
+      "label": "Image focal position",
+      "value": "0"
+    }
+  ],
+  "beforeValue": "Make something everyday feel like you.",
+  "originalSectionNames": [
+    "Announcement Bar",
+    "Header",
+    "Personalization workspace introduction",
+    "Choose, specify, review",
+    "Personalizable base catalog",
+    "Base collections",
+    "The details before you buy",
+    "Footer"
+  ],
+  "lastStep": "COMPLETE_FINITE_LOCAL_ATOMIC_CYCLE_FULL_THEME_OPEN",
+  "updatedAt": "2026-10-25T00:55:55.424Z",
+  "temporarySection": {
+    "addedByNormalUi": true,
+    "originallyPresent": false,
+    "label": "Trust Badges",
+    "mustRemoveBeforeCompletion": true,
+    "removed": true,
+    "originalSectionListRestoredAfterFullReload": true
+  },
+  "originalRootCount": 0,
+  "persistedLabels": [
+    "MadeYours temporary root A",
+    "MadeYours temporary child B",
+    "MadeYours temporary child A"
+  ],
+  "persistedChildVisibility": [
+    "true",
+    "false"
+  ],
+  "publicHiddenProof": {
+    "root": true,
+    "visibleB": true,
+    "hiddenAAbsent": true,
+    "uniqueField": true
+  },
+  "publicShowProof": true,
+  "removeCancelPreservedTwo": true,
+  "publicRemovalProof": {
+    "rootRetained": true,
+    "bRetained": true,
+    "aAbsent": true
+  },
+  "readdedLabel": "MadeYours temporary child A2",
+  "bindingBeforeCleanup": "MADEYOURS_EDITOR_BINDINGS_TEMPORARY_READDED.json",
+  "cleanup": {
+    "originalRootCountRestored": true,
+    "undoRestored2Children": true,
+    "redoCleaned": true,
+    "originalPropertyHostTextFieldsRestored": true,
+    "untouchedSelectValuesMatched": true,
+    "fullReload": true,
+    "cleanPublic": true,
+    "originalFieldPublic": true
+  },
+  "responsiveAcceptance": {
+    "status": "NOT_RUN_REMAINS_REQUIRED",
+    "sharedFinding": "ED-R07-PREVIEW-DEVICE-02; no responsive pass inferred"
+  },
+  "ordersCreated": 0,
+  "stockOrProductFactsChanged": false,
+  "providerActions": 0,
+  "evidence": [
+    {
+      "recordedAt": "2026-10-25T00:55:26.171Z",
+      "runId": "49ada80bc494",
+      "label": "madeyours-local-cycle-entry",
+      "tabId": "173052882",
+      "url": "http://admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes/letbuyy-nova/editor",
+      "ax": "evidence/102-madeyours-local-cycle-entry.ax.txt",
+      "screenshot": "evidence/102-madeyours-local-cycle-entry.png"
+    },
+    {
+      "recordedAt": "2026-10-25T00:55:26.899Z",
+      "runId": "49ada80bc494",
+      "label": "madeyours-declared-field-full-reload",
+      "tabId": "173052882",
+      "url": "http://admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes/letbuyy-nova/editor",
+      "ax": "evidence/103-madeyours-declared-field-full-reload.ax.txt",
+      "screenshot": "evidence/103-madeyours-declared-field-full-reload.png"
+    },
+    {
+      "recordedAt": "2026-10-25T00:55:27.655Z",
+      "runId": "49ada80bc494",
+      "label": "madeyours-root-children-reorder-hide-full-reload",
+      "tabId": "173052882",
+      "url": "http://admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes/letbuyy-nova/editor",
+      "ax": "evidence/104-madeyours-root-children-reorder-hide-full-reload.ax.txt",
+      "screenshot": "evidence/104-madeyours-root-children-reorder-hide-full-reload.png"
+    },
+    {
+      "recordedAt": "2026-10-25T00:55:35.136Z",
+      "runId": "49ada80bc494",
+      "label": "madeyours-public-hidden-tree-and-unique-field",
+      "tabId": "173052885",
+      "url": "http://syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477",
+      "ax": "evidence/105-madeyours-public-hidden-tree-and-unique-field.ax.txt",
+      "screenshot": "evidence/105-madeyours-public-hidden-tree-and-unique-field.png"
+    },
+    {
+      "recordedAt": "2026-10-25T00:55:35.927Z",
+      "runId": "49ada80bc494",
+      "label": "madeyours-public-shown-children",
+      "tabId": "173052885",
+      "url": "http://syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477",
+      "ax": "evidence/106-madeyours-public-shown-children.ax.txt",
+      "screenshot": "evidence/106-madeyours-public-shown-children.png"
+    },
+    {
+      "recordedAt": "2026-10-25T00:55:36.814Z",
+      "runId": "49ada80bc494",
+      "label": "madeyours-public-child-removed-sibling-preserved",
+      "tabId": "173052885",
+      "url": "http://syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477",
+      "ax": "evidence/107-madeyours-public-child-removed-sibling-preserved.ax.txt",
+      "screenshot": "evidence/107-madeyours-public-child-removed-sibling-preserved.png"
+    },
+    {
+      "recordedAt": "2026-10-25T00:55:53.351Z",
+      "runId": "49ada80bc494",
+      "label": "madeyours-a2-readded-published",
+      "tabId": "173052885",
+      "url": "http://syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477",
+      "ax": "evidence/108-madeyours-a2-readded-published.ax.txt",
+      "screenshot": "evidence/108-madeyours-a2-readded-published.png"
+    },
+    {
+      "recordedAt": "2026-10-25T00:55:54.066Z",
+      "runId": "49ada80bc494",
+      "label": "madeyours-original-property-controls-restored-reload",
+      "tabId": "173052882",
+      "url": "http://admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes/letbuyy-nova/editor",
+      "ax": "evidence/109-madeyours-original-property-controls-restored-reload.ax.txt",
+      "screenshot": "evidence/109-madeyours-original-property-controls-restored-reload.png"
+    },
+    {
+      "recordedAt": "2026-10-25T00:55:54.844Z",
+      "runId": "49ada80bc494",
+      "label": "madeyours-original-sections-restored-full-reload",
+      "tabId": "173052882",
+      "url": "http://admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes/letbuyy-nova/editor",
+      "ax": "evidence/110-madeyours-original-sections-restored-full-reload.ax.txt",
+      "screenshot": "evidence/110-madeyours-original-sections-restored-full-reload.png"
+    },
+    {
+      "recordedAt": "2026-10-25T00:55:55.422Z",
+      "runId": "49ada80bc494",
+      "label": "madeyours-clean-public-original-content",
+      "tabId": "173052885",
+      "url": "http://syn-threadline-ui-ae3f0477.localhost:64595/store/syn-threadline-ui-ae3f0477",
+      "ax": "evidence/111-madeyours-clean-public-original-content.ax.txt",
+      "screenshot": "evidence/111-madeyours-clean-public-original-content.png"
+    }
+  ],
+  "finishedAt": "2026-10-25T00:55:55.424Z"
+}

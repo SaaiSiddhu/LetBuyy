@@ -1,0 +1,50 @@
+- main:
+  - link "LetBuyy Themes":
+    - /url: /theme-preview
+    - text: LetBuyy
+    - generic: Themes
+  - link "Open merchant workspace":
+    - /url: http://localhost:56900
+    - text: Open merchant workspace
+  - paragraph: A home for your business
+  - heading "Find your store’s point of view." [level=1]:
+    - text: Find your store’s
+    - text: point of view.
+  - paragraph: Explore themes built around how your customers discover, compare and choose.
+  - region "Theme catalog":
+    - search:
+      - generic: Search themes
+      - textbox "Search themes":
+        - /placeholder: Search themes and features
+        - text: zznotatheme
+      - text: Category
+      - combobox "Category":
+        - option "All categories" [selected]
+        - option "electronics"
+        - option "fashion"
+        - option "beauty"
+        - option "furniture"
+        - option "food"
+        - option "sports"
+        - option "books"
+        - option "pet"
+        - option "General"
+        - option "general"
+      - text: Sort by
+      - combobox "Sort by":
+        - option "Portfolio order" [selected]
+        - option "Name"
+        - option "Newest"
+      - button "Apply filters"
+    - paragraph: 0 themes matching “zznotatheme”
+    - link "Clear filters":
+      - /url: /theme-preview
+    - heading "No themes match these filters" [level=2]
+    - paragraph: Try another search or browse all themes.
+    - link "Browse all themes":
+      - /url: /theme-preview
+    - navigation "Theme catalog pages":
+      - generic: Page 1 of 1
+  - generic: Theme selection is just the beginning. Your products, content and policies make the store yours.
+- button "Open Next.js Dev Tools":
+- alert

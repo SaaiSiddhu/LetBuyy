@@ -1,0 +1,136 @@
+{
+  "recordedAt": "2026-10-23T19:24:40.777681+00:00",
+  "runId": "f6074d90e894",
+  "scope": "Independent finite file-receipt audit; no HTTP/DB/UI requests by Habitat owner",
+  "fivePublicResponseChecks": [
+    {
+      "id": "HQ08",
+      "status": 200,
+      "requestId": "33c6e40e-32a5-47fb-846d-e6592e0c5ed1",
+      "responseSha256": "a2bdedf09b882e5e0a43a95a6637c5fa1db3e0f37a44ced7f9f27eb666a6838c",
+      "sameResponseAllThreeCapabilitiesExact": true,
+      "canonicalQuery": {
+        "page": 1,
+        "limit": 20,
+        "search": "Habitat dimensions-only stand",
+        "category": "Habitat dimensional controls",
+        "country_of_origin": "India",
+        "sort": "display_order"
+      },
+      "actualTotal": 1,
+      "actualIds": [
+        "646e8bcb-3267-4f70-b31b-e44fb5f542a6"
+      ],
+      "noInventedMaterialFinishFacets": true
+    },
+    {
+      "id": "HQ08-past-end",
+      "status": 200,
+      "requestId": "c83964d2-40cd-462b-ae72-c4ba31b66fa0",
+      "responseSha256": "a502f2f807fde1e1dc5039c8e18ea0f84c26a8555123f24572e4db4c8088fdbc",
+      "sameResponseAllThreeCapabilitiesExact": true,
+      "canonicalQuery": {
+        "page": 10000,
+        "limit": 1,
+        "search": "Habitat dimensions-only stand",
+        "category": "Habitat dimensional controls",
+        "country_of_origin": "India",
+        "sort": "display_order"
+      },
+      "actualTotal": 1,
+      "actualIds": [],
+      "noInventedMaterialFinishFacets": true
+    },
+    {
+      "id": "HQ09",
+      "status": 200,
+      "requestId": "2fd33a94-b985-4e58-ad9c-ab541afa564b",
+      "responseSha256": "0446dcf9db4d40ee28540a7cb53190f72291fb1bfd896e2b8873d076ea42dce4",
+      "sameResponseAllThreeCapabilitiesExact": true,
+      "canonicalQuery": {
+        "page": 1,
+        "limit": 20,
+        "search": "Habitat width-only shelf",
+        "category": "Habitat dimensional controls",
+        "country_of_origin": "India",
+        "sort": "display_order"
+      },
+      "actualTotal": 1,
+      "actualIds": [
+        "57d0c360-01a6-49dc-88f7-f3796e313b2e"
+      ],
+      "noInventedMaterialFinishFacets": true
+    },
+    {
+      "id": "HQ09-depth-zero",
+      "status": 200,
+      "requestId": "bc14da2f-d0b2-426d-881e-21c08555dd04",
+      "responseSha256": "e69a54faa4dbabccdc71009486215fc9d5e0ce48c9138eeef3082ee333ec7e01",
+      "sameResponseAllThreeCapabilitiesExact": true,
+      "canonicalQuery": {
+        "page": 1,
+        "limit": 20,
+        "search": "Habitat width-only shelf",
+        "category": "Habitat dimensional controls",
+        "country_of_origin": "India",
+        "sort": "display_order",
+        "max_depth_cm": 100
+      },
+      "actualTotal": 0,
+      "actualIds": [],
+      "noInventedMaterialFinishFacets": true
+    },
+    {
+      "id": "HQ09-past-end",
+      "status": 200,
+      "requestId": "d982c2cb-4117-4cc2-a193-7c458a05fa17",
+      "responseSha256": "7cae26ddd5555586f52e6747c8e2958eab75e19f672b03a06abb707e366d03ef",
+      "sameResponseAllThreeCapabilitiesExact": true,
+      "canonicalQuery": {
+        "page": 10000,
+        "limit": 1,
+        "search": "Habitat width-only shelf",
+        "category": "Habitat dimensional controls",
+        "country_of_origin": "India",
+        "sort": "display_order"
+      },
+      "actualTotal": 1,
+      "actualIds": [],
+      "noInventedMaterialFinishFacets": true
+    }
+  ],
+  "publicationRecoveryChecks": {
+    "AandBPublic200": true,
+    "unpublishedBIsolated": true,
+    "restoredAHashExact": true,
+    "retainedBHeadingInReloadedEditorAX": true,
+    "reappliedBHashExact": true
+  },
+  "whole26Claim": false,
+  "wholeHQ08HQ09Credit": false,
+  "remaining": "Executor whole-row ledger and full cohort/shared-axis live integration; cart/COD/history. Two collection responses verified in addition to five search witnesses.",
+  "receiptSha256": {
+    "corrected-habitat-probe-query-results.json": "d4564c7f8f5504de96d7a03ddaa2b889cc7ffb69f5992b8d5bd51279a08cc32a",
+    "corrected-habitat-retained-B-after-restore.ax.txt": "55af17f15237a878971d59a9cf780b73b5f4360d2ff8afcdda674d55bb4d93d1"
+  },
+  "collectionResponseChecks": [
+    {
+      "id": "HQ08-collection",
+      "rawBodyShaExact": true,
+      "capabilitiesExact": true,
+      "singleOwnedProbe": true,
+      "noMaterialFinishFacets": true,
+      "requestId": "4be3b143-f1eb-41fa-8b62-5a51b9dfa8af",
+      "sha256": "44b1493056c5d09fc6f7da0632fea3c363f03f730cd9f445697cd91c56ea98a9"
+    },
+    {
+      "id": "HQ09-collection",
+      "rawBodyShaExact": true,
+      "capabilitiesExact": true,
+      "singleOwnedProbe": true,
+      "noMaterialFinishFacets": true,
+      "requestId": "56ce28ca-8886-4ed9-8143-94a95d488088",
+      "sha256": "c9decb0d1f7db3f14f37ebb9628a9eb4b4b2985877ed0028a69a261c4d4bb40e"
+    }
+  ]
+}

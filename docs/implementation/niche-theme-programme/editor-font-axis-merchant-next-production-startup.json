@@ -1,0 +1,74 @@
+{
+  "recordedAt": "2026-10-24T04:04:03.229Z",
+  "status": "OWNED_FONT_AXIS_PRODUCTION_HTTP_READY_NORMAL_UI_NOT_RUN",
+  "kind": "merchant-next-production",
+  "runId": "936e5f577646",
+  "candidate": "/private/tmp/theme-editor-font-axis-20261024-01",
+  "origin": "http://admin.threadline-936e5f577646.localhost:58090",
+  "port": 58090,
+  "parentPid": 26856,
+  "supervisorPid": 26954,
+  "healthStatus": 307,
+  "healthPath": "/",
+  "sourceProof": {
+    "path": "/private/tmp/theme-editor-font-axis-20261024-01/font-axis-source-proof.json",
+    "sha256": "4da3248de49a0c828f6e1daeaacb35d5c361bf11dc1f3d90bb34eea5c48979a0"
+  },
+  "sourceFiles": 17245,
+  "sourceAfterBuildUnchanged": true,
+  "sourceDeltas": [
+    {
+      "path": "apps/commerce/web/src/app/preview/preview-content.tsx",
+      "bytes": 36423,
+      "sha256": "a7d1236632a30d534c6ced99a8f18392459cc100303d6d9a7bbff4db7ee73efa"
+    },
+    {
+      "path": "apps/commerce/web/src/app/preview/preview-typography.test.ts",
+      "bytes": 7333,
+      "sha256": "969ecea515e2410f9782e20e44446f033191cf5c1c0fc92afd78617859e3576d"
+    },
+    {
+      "path": "apps/merchant/web/src/lib/product-form-state.ts",
+      "sha256": "3d0c279d6ccb7344abf3801f7bda0e53d892a9e76057e5494e0b9211ddd22306",
+      "bytes": 34028
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/products/new/page.tsx",
+      "sha256": "d092e9e2859b61e3cfdf1f9f54bc670fe8c9ffc757e486b1abad5612d1882877",
+      "bytes": 92137
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/product-conflict.test.tsx",
+      "sha256": "63dfaea142b13d4eb765bc17851c835054dd3afbabca910db9454195aa83dd71",
+      "bytes": 111192
+    },
+    {
+      "path": "apps/merchant/web/src/lib/product-form-state.option-name.test.ts",
+      "sha256": "78a5b4d6eca011d02246125b6e3b0e6c0915412f98b8720d59e9207781866174",
+      "bytes": 8044
+    }
+  ],
+  "oldProcessesStopped": false,
+  "databaseMutationPerformed": false,
+  "before": {
+    "orders": 2,
+    "siteId": "2f958a36-71bf-4e8f-89fd-d3363f4fe42c",
+    "ownerId": "f6315386-e12f-4816-956f-3a2088e7c714",
+    "products": 18
+  },
+  "originalAnnouncementSource": "Fresh936 Root-private announcement revalidated by unchanged canonical ownership guard; no dead bindings reused",
+  "merchantOrigin": "http://admin.threadline-936e5f577646.localhost:58090",
+  "commerceOrigin": "http://syn-threadline-ui-6815276b.localhost:58091",
+  "originalMerchantOrigin": "http://admin.threadline-936e5f577646.localhost:50493",
+  "originalCommerceOrigin": "http://syn-threadline-ui-6815276b.localhost:50494",
+  "checkoutOrigin": "https://checkout.localhost:50497",
+  "logPath": "/private/tmp/theme-editor-font-axis-936-merchant-next-production-01.log",
+  "limits": [
+    "Original issuer/Gateway/hostedcheckout and buyer/cart remain on original origins. No signing key read or copied.",
+    "Normal host cookies only; no cookie/token/storage injection. New-port SSO not claimed.",
+    "New Commerce port is for Editor preview/font retake; no cross-port cart continuity or new buyer checkout credit.",
+    "Original accepted v1 cart must remain in original buyer context; do not navigate it through the new Commerce origin.",
+    "Original guarded fixture lifecycle remains unchanged; safe cutoff08:50UTC. No keepalive/timeout extension."
+  ],
+  "cspConfiguration": null
+}

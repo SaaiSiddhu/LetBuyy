@@ -383,7 +383,8 @@ export default function GiftCardsPage() {
     if (loading) {
         return (
             <Page>
-                <PageHeader
+                <PageHeader identity="products"
+                    recipe="index"
                     title="Gift cards"
                     description="Issue gift card balances that customers can redeem at checkout."
                     breadcrumbs={[{ label: 'Money' }, { label: 'Gift cards' }]}
@@ -399,7 +400,8 @@ export default function GiftCardsPage() {
 
     return (
         <Page>
-            <PageHeader
+            <PageHeader identity="products"
+                recipe="index"
                 title="Gift cards"
                 description="Issue gift card balances that customers can redeem at checkout."
                 breadcrumbs={[{ label: 'Money' }, { label: 'Gift cards' }]}

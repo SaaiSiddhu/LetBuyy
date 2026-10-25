@@ -1,0 +1,91 @@
+{
+  "generatedAt": "2026-10-23T09:29:26.062Z",
+  "classification": "STATIC_PLAN_CONTRACT_CHECK_ONLY_NOT_E2E",
+  "plannedCases": 30,
+  "completedCases": 0,
+  "runExecuted": false,
+  "checks": {
+    "productCreatePlans": 4,
+    "canonicalDiscoveryQueries": 4,
+    "unsupportedVariantBeautyRejected": true,
+    "consistentVersionedHistoryEdit": true,
+    "uniqueCaseIds": true,
+    "allCasesDocumented": true,
+    "priceArithmetic": true,
+    "frozenSourceUnchanged": true
+  },
+  "planFiles": [
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/installed-beauty-fixture.plan.json",
+      "sha256": "d1e6c63a38dd38bd7bfc289390272101b4784050cdd2d61eab4b0e26c6a402c3"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/installed-beauty-lifecycle-matrix.md",
+      "sha256": "e6f1ff8c303e5b8b3b7dd9e1ec10dcc360a37a3bec11656e69542dfbf3b15edc"
+    }
+  ],
+  "sources": [
+    {
+      "path": "packages/commerce-core/src/dewdrop-facts.ts",
+      "sha256": "5f4aee4b13d48a8575464a4ace5abb217eac029491ea3ac00b2dcf2e92b5aaed"
+    },
+    {
+      "path": "packages/commerce-core/src/niche-product-facts.ts",
+      "sha256": "efdefb2c5a20306a6b80afa133a962d873341b01df51ac701696d8256c13eb2e"
+    },
+    {
+      "path": "packages/commerce-core/src/index.ts",
+      "sha256": "b36af7e65c00d8b9d16fe84ffc7da522b6107c4010208cc224363fa90bdee6b9"
+    },
+    {
+      "path": "packages/commerce-core/src/storefront-discovery.ts",
+      "sha256": "c8de3871a998df011de12791db90c868139903b5c84afb211d9e9de3a1997ff1"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/synthetic-tenant.ts",
+      "sha256": "4c295d82439263daa3680138b95d624247af8fc9b201abb6df9eeb271a4644c8"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/threadline-browser-fixture.ts",
+      "sha256": "49c34a59c788dad3761ed5b6d24cd152006f2d6cda64c82c53cbc65a4401bb5b"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/threadline-qa-fixture.ts",
+      "sha256": "2a2e69fed6e596b92f4872e01d0f04254971a8c30a987980b274320b28d9681f"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/cart-order-fact-snapshots.postgres.test.ts",
+      "sha256": "c1f8c88126c57a0a08d6e75c05035da59adc918345e3080853ca1647d657d02f"
+    },
+    {
+      "path": "services/api-gateway/src/routes/storefront/cart-routes.ts",
+      "sha256": "a92dc02137ff70c71336487b16f627ddf7b35213250a34c5cec835fd3fdf5588"
+    },
+    {
+      "path": "services/api-gateway/src/routes/checkout.ts",
+      "sha256": "2bee4e2e2d69a87e1acde3ab4e3009ee92f78f6e349b57ba8b0376d6ff47f68a"
+    },
+    {
+      "path": "apps/commerce/web/src/app/api/buyer/orders/route.ts",
+      "sha256": "512082a8b21ae20002b7266c74c559608a170c8d13d42a16871f62f88d8e5a5d"
+    },
+    {
+      "path": "apps/merchant/web/src/lib/product-form-state.ts",
+      "sha256": "1babef7539a4e88b6f54fcb04e5990453391c71460a5760dc771bf8d69c2ffd2"
+    }
+  ],
+  "frozenSourceChecks": [
+    {
+      "path": "packages/theme-engine/src/dewdrop-theme.ts",
+      "sha256": "ec0cf0890c607056c1da13087b1c51ee6931d120c46370802360b740f0693190",
+      "matchesReleasedHash": true
+    },
+    {
+      "path": "packages/theme-engine/src/dewdrop-discovery.ts",
+      "sha256": "a9d866eeb5dedc2b123bdf2a287b9a0be23789b39c93c1e1872471c975de1fe1",
+      "matchesReleasedHash": true
+    }
+  ],
+  "resourcesStarted": [],
+  "pending": "Coordinator-assigned fresh owned fixture, final admitted release, origins and all null runtime bindings"
+}

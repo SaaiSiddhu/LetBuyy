@@ -1,0 +1,314 @@
+Browser tab: 59, Title: "LetBuyy Admin", URL: "http://admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/products/c3740e30-8c62-45f8-9ba4-0d21caabafdf".
+1 AXWebArea LetBuyy Admin, URL: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/products/c3740e30-8c62-45f8-9ba4-0d21caabafdf
+	2 container
+		3 link Description: LetBuyy dashboard, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/dashboard
+		4 button Search
+		5 button Setup assistant
+		6 button Notifications
+		7 button (collapsed) Description: Switch store, current store Threadline, Secondary Actions: Expand
+			8 text TH
+			9 text Threadline
+	10 container admin-nav-drawer
+		11 container
+			12 container Primary navigation
+				13 content list
+					14 link Description: Home, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/dashboard
+					15 link Description: Orders, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/orders
+					16 container
+						17 link Description: Products, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/products
+						18 button (collapsed) Description: Toggle Products section, Secondary Actions: Expand
+					19 container
+						20 link Description: Inventory, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/products/inventory
+						21 button (collapsed) Description: Toggle Inventory section, Secondary Actions: Expand
+					22 container
+						23 link Description: Purchasing, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/products/purchase-orders
+						24 button (collapsed) Description: Toggle Purchasing section, Secondary Actions: Expand
+					25 container
+						26 link Description: Customers, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/customers
+						27 button (collapsed) Description: Toggle Customers section, Secondary Actions: Expand
+					28 container
+						29 link Description: Money, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/settings/billing
+						30 button (collapsed) Description: Toggle Money section, Secondary Actions: Expand
+					31 container
+						32 link Description: Marketing, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/coupons
+						33 button (collapsed) Description: Toggle Marketing section, Secondary Actions: Expand
+					34 container
+						35 link Description: Content, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/pages
+						36 button (collapsed) Description: Toggle Content section, Secondary Actions: Expand
+					37 link Description: Analytics, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/analytics
+			38 text Sales channels
+			39 container Sales channels
+				40 content list
+					41 container
+						42 link Description: Online Store, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/online-store
+						43 button (collapsed) Description: Toggle Online Store section, Secondary Actions: Expand
+			44 text Apps
+			45 container Apps
+				46 content list
+					47 link Description: Add, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/apps
+		48 container Settings navigation
+			49 content list
+				50 link Description: Settings, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/settings
+	51 container admin-page-scroll
+		52 container
+			53 heading Edit product, Value: 1
+				54 text Edit product
+			55 button Discard
+			56 button (disabled) Save product
+		57 container
+			58 heading Details, Value: 2
+				59 text Details
+			60 text Name and describe the product as shoppers will see it. Title
+			61 text field (settable) Title, Value: Pantry lifecycle red lentils
+			62 text Description
+			63 text entry area (settable) Description, Value: Synthetic owned theme acceptance fixture only.
+		64 container
+			65 button (collapsed) Apparel fit, fabric and care (optional), Secondary Actions: Expand
+				66 text Apparel fit, fabric and care (optional)
+			67 container Product-specific facts
+				68 text Supply facts shoppers need to choose this product. Unsupplied information stays unknown. These facts are saved with the product.
+				69 text Product facts category
+				70 pop up button (collapsed, settable) Product facts category, Value: Food and pantry, Secondary Actions: Expand
+					71 menu
+						72 (disabled) Choose product information to edit
+						73 Toys and activities
+						74 Electronics
+						75 (selected) Food and pantry
+						76 Furniture
+						77 Ready-made gifts
+						78 Text personalization
+						79 Beauty and care
+						80 Sports equipment
+						81 Books and stationery
+				259 container
+					260 button (expanded) Food ingredients, allergens and pack facts (optional), Secondary Actions: Collapse
+						261 text Food ingredients, allergens and pack facts (optional)
+					262 container Food product facts
+						263 text Food product facts
+						264 text Copy information you can support from the product label. Missing allergen information stays unknown; it does not mean allergen-free.
+						265 text Ingredients (optional)
+						266 text entry area (settable) Ingredients (optional), Value: Split red lentils (100%).
+						267 text Supply the ingredient statement for this product.
+						268 container Allergen information
+							269 text Allergen information
+							270 text Allergen information status
+							271 pop up button (collapsed, settable) Allergen information status, Value: Not supplied — unknown, Secondary Actions: Expand
+								272 menu
+									273 (selected) Not supplied — unknown
+									274 Merchant-supplied statement
+						275 container Net contents per sellable pack (optional)
+							276 text Net contents per sellable pack (optional)
+							277 text This product has options. Enter net contents on each sellable variant using the product variant editor.
+						278 text Storage instructions (optional)
+						279 text entry area (settable) Storage instructions (optional), Value: Keep cool and dry. UI936 persistence check.
+						280 text Preparation instructions (optional)
+						281 text entry area (settable) Preparation instructions (optional), Value: Rinse before cooking.
+						282 text Nutrition statement (optional)
+						283 text entry area (settable) Nutrition statement (optional)
+						284 text Supply label text without adding health or nutrition claims.
+						285 button Clear all food facts
+			84 heading Media, Value: 2
+				85 text Media
+			86 text Upload images that help shoppers inspect the product.
+			87 heading No product media yet, Value: 3
+				88 text No product media yet
+			89 text Upload product images so shoppers can inspect materials, colors, and details before buying.
+			90 button Upload media
+		91 container
+			92 heading Category, Value: 2
+				93 text Category
+			94 text Add category metadata for tax, discovery, and reporting. Category
+			95 text field (settable) Category, Value: Staples
+			96 text Determines tax rates and adds product metadata.
+		97 container
+			98 heading Pricing, Value: 2
+				99 text Pricing
+			100 text Set the customer-facing price and internal product cost. Price
+			101 stepper (settable, integer) Price, Value: 180
+			102 text Compare-at price
+			103 stepper (settable) Compare-at price
+			104 checkbox (settable, integer) Description: Charge tax on this product, Value: 0
+			105 text Cost per item
+			106 stepper (settable) Cost per item
+			107 text Customers will not see this.
+		108 container
+			109 heading Inventory, Value: 2
+				110 text Inventory
+			111 text Track SKU, barcode, and sell-through behavior.
+			112 checkbox (settable, integer) Description: Track quantity, Value: 1
+			113 text Quantity
+			114 stepper (settable, integer) Quantity, Value: 6
+			115 checkbox (settable, integer) Description: Continue selling when out of stock, Value: 0
+			116 text SKU (Stock Keeping Unit)
+			117 text field (settable) SKU (Stock Keeping Unit), Value: SYN-EDITOR-lentils-936e5f577646
+			118 text Barcode (ISBN, UPC, GTIN)
+			119 text field (settable) Barcode (ISBN, UPC, GTIN)
+		120 container
+			121 heading Shipping, Value: 2
+				122 text Shipping
+			123 text Collect fulfillment and customs information for physical products.
+			124 checkbox (settable, integer) Description: This is a physical product, Value: 1
+			125 text Weight
+			126 stepper (settable) Weight
+			127 text Unit
+			128 pop up button (collapsed, settable) Unit, Value: kg, Secondary Actions: Expand
+				129 menu
+					130 (selected) kg
+					131 g
+					132 lb
+					133 oz
+			134 text Importer details (for imported products)
+			135 text entry area (settable) Importer details (for imported products)
+			136 text This information is shown publicly. Enter only details intended for a product listing; it is seller-provided and not independently verified. Country/Region of origin
+			137 text field (settable) Country/Region of origin, Value: India
+			138 text HS (Harmonized System) code
+			139 text field (settable) HS (Harmonized System) code
+		140 container
+			141 heading Variants, Value: 2
+				142 text Variants
+			143 text Add options like size, color, or material.
+			144 text Pack
+			145 button Rename option Pack
+			146 button Delete
+			147 text 250 g
+			148 button Rename Pack value 250 g
+			149 button Remove 250 g
+			150 text 500 g
+			151 button Rename Pack value 500 g
+			152 button Remove 500 g
+			153 text 750 g label only
+			154 button Rename Pack value 750 g label only
+			155 button Remove 750 g label only
+			156 button Add values
+			157 button Add option
+			158 heading Variant combinations, Value: 2
+				159 text Variant combinations
+			160 text Edit price, SKU, and stock for each combination.
+			161 table
+				162 row
+					163 cell
+						164 text Variant
+					165 cell
+						166 text Price
+					167 cell
+						168 text Compare
+					169 cell
+						170 text SKU
+					171 cell
+						172 text Stock
+				173 row
+					174 cell
+						175 text 250 g
+					176 cell
+						177 stepper (settable, integer) Description: Price for 250 g, Value: 180
+					178 cell
+						179 stepper (settable) Compare-at price for 250 g
+					180 cell
+						181 text field (settable) Description: SKU for 250 g, Value: SYN-PANTRY-250-CONTROL-936
+					182 cell
+						183 stepper (settable, integer) Description: Stock for 250 g, Value: 4
+					184 cell
+						185 button Remove variant 250 g
+				186 row
+					187 cell
+						188 text 500 g
+					189 cell
+						190 stepper (settable, integer) Description: Price for 500 g, Value: 340
+					191 cell
+						192 stepper (settable) Compare-at price for 500 g
+					193 cell
+						194 text field (settable) SKU for 500 g
+					195 cell
+						196 stepper (settable, integer) Description: Stock for 500 g, Value: 0
+					197 cell
+						198 button Remove variant 500 g
+				199 row
+					200 cell
+						201 text 750 g label only
+					202 cell
+						203 stepper (settable, integer) Description: Price for 750 g label only, Value: 210
+					204 cell
+						205 stepper (settable) Compare-at price for 750 g label only
+					206 cell
+						207 text field (settable) SKU for 750 g label only
+					208 cell
+						209 stepper (settable, integer) Description: Stock for 750 g label only, Value: 2
+					210 cell
+						211 button Remove variant 750 g label only
+			212 button (collapsed) Facts for 250 g, Secondary Actions: Expand
+				213 text Facts for 
+				214 text 250 g
+			215 button (collapsed) Facts for 500 g, Secondary Actions: Expand
+				216 text Facts for 
+				217 text 500 g
+			286 container
+				287 button (expanded) Facts for 750 g label only, Secondary Actions: Collapse
+					288 text Facts for 
+					289 text 750 g label only
+				290 container Variant-specific facts
+					291 heading Variant-specific facts, Value: 3
+						292 text Variant-specific facts
+					293 text Edit supplied facts for this variant. Common product information is read-only context; missing or deliberately cleared facts follow each category’s rules. Changes are saved with the variant.
+					294 text Variant facts category
+					295 pop up button (collapsed, settable) Variant facts category, Value: Food net contents, Secondary Actions: Expand
+						296 menu
+							297 Choose variant information to edit
+							298 Toys and activities
+							299 (selected) Food net contents
+							300 Furniture measurements
+							301 Sports measurements
+							302 Books and stationery
+					303 container Net contents for this variant (optional)
+						304 text Net contents for this variant (optional)
+						305 text Supply the labelled net contents of one sellable pack. Missing contents stay unknown. Product-level net quantity does not apply to this variant; shipping weight and number of packs are separate.
+						306 text Variant net quantity
+						307 stepper (settable, integer) Variant net quantity, Value: 750
+						308 text Variant net quantity unit
+						309 pop up button (collapsed, settable) Variant net quantity unit, Value: Grams (g), Secondary Actions: Expand
+							310 menu
+								311 Select a unit
+								312 (selected) Grams (g)
+								313 Millilitres (ml)
+						314 button Clear variant net contents
+					315 button Clear selected variant facts
+					316 button Clear all variant fact overrides
+		221 container
+			222 heading Search engine listing, Value: 2
+				223 text Search engine listing
+			224 text Control how this product may appear in search results. syn-threadline-ui-6815276b .letbuyy.com/products/ syn-editor-lentils-936e5f577646 Pantry lifecycle red lentils Synthetic owned theme acceptance fixture only. Page title
+			225 text field (settable) Page title
+			226 text 0 of 70 characters used Meta description
+			227 text entry area (settable) Meta description
+			228 text 0 of 160 characters used URL handle
+			229 text field (settable) URL handle, Value: syn-editor-lentils-936e5f577646
+		230 container
+			231 container
+				232 heading Status, Value: 2
+					233 text Status
+				234 text Product status
+				235 pop up button (collapsed, settable) Product status, Value: Active, Secondary Actions: Expand
+					236 menu
+						237 (selected) Active
+						238 Draft
+						239 Archived
+				240 text Visible on storefront
+			241 container
+				242 heading Publishing, Value: 2
+					243 text Publishing
+				244 checkbox (disabled, settable, integer) Description: Online Store, Value: 1
+			245 container
+				246 heading Product organization, Value: 2
+					247 text Product organization
+				248 text Use consistent metadata to keep catalog management fast. Product type
+				249 text field (settable) Product type
+				250 text Vendor
+				251 text field (settable) Vendor
+				252 text Tags
+				253 text field (settable) Tags
+				254 text Separate tags with commas.
+			255 container
+				256 heading Catalog readiness, Value: 2
+					257 text Catalog readiness
+				258 text Save product details, media, pricing, and inventory from one guided form.
+
+The focused UI element is 287 button (expanded) Facts for 750 g label only, Secondary Actions: Collapse

@@ -142,7 +142,7 @@ export default {
 
 export function UsageGuidelines() {
     return (
-        <Page>
+        <Page as="main">
             <PageHeader
                 eyebrow="Design system guardrails"
                 title="Merchant UI grammar"
@@ -217,7 +217,7 @@ export function UsageGuidelines() {
 
 export function PageGrammar() {
     return (
-        <Page>
+        <Page as="main">
             <PageHeader
                 eyebrow="Merchant control plane"
                 title="Products"
@@ -246,7 +246,7 @@ export function PageGrammar() {
 export function FormsAndFeedback() {
     return (
         <ToastProvider>
-            <Page>
+            <Page as="main">
                 <PageHeader title="Settings" description="Token-driven controls, feedback, and save states." />
                 <Card>
                     <Section title="Store profile" description="A compact form with consistent validation and save feedback.">
@@ -290,7 +290,7 @@ export function FormsAndFeedback() {
 
 export function EmptyAndLoadingStates() {
     return (
-        <Page>
+        <Page as="main">
             <PageHeader title="Empty states" description="Designed blanks, skeletons, and next actions." />
             <div className="grid gap-[var(--lb-space-4)] md:grid-cols-2">
                 <EmptyState
@@ -313,7 +313,7 @@ export function EmptyAndLoadingStates() {
 
 export function TablesAndProductivity() {
     return (
-        <Page>
+        <Page as="main">
             <PageHeader title="Index table" description="Bulk actions, saved views, filters, sorting, and dense scanning." />
             <Table
                 rows={sampleRows}
@@ -355,7 +355,7 @@ export function TablesAndProductivity() {
 
 export function OverlaysAndCommandPalette() {
     return (
-        <Page>
+        <Page as="main">
             <PageHeader title="Guided actions" description="Dialog safety and command-driven productivity." />
             <Card>
                 <Section title="Overlays">

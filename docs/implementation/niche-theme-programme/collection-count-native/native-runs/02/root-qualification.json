@@ -1,0 +1,45 @@
+{
+  "recordedAt": "2026-10-24T06:56:11.668643+00:00",
+  "status": "ROOT_NATIVE_COUNT_QUALIFIED_ALL_EIGHT_STAGES; M05_BROWSER_RETEST_PENDING",
+  "runId": "5d023114b98b",
+  "TAP": {
+    "pass": 1,
+    "fail": 0,
+    "skip": 0,
+    "mandatoryStagesPassed": 8
+  },
+  "sourceInputsIndependentlyRehashed": 1076,
+  "actualMigrationSHAsIndependentlyVerified": 322,
+  "sourceMigrationMaximum": 393,
+  "migrationCeiling": null,
+  "provenanceFilesIndependentlyRehashedAndPreserved": 37,
+  "rootIndependentActualHttpSnapshotReplays": [
+    200,
+    200,
+    403,
+    503
+  ],
+  "fullTableHashesPerReplay": 487,
+  "actual503BodyCaptured": true,
+  "actual503Code": "COLLECTION_LIST_UNAVAILABLE",
+  "actual503NoRestCountFallback": true,
+  "fullAuthorityAndEndMigrationChecksPassed": true,
+  "completeOfficialOwnedCleanupEmpty": true,
+  "sourceFreeze": "COMPLETED_RUN_RELEASED; original publisher/helper and source393 unchanged; future checkout/394 changes require separate named source batches.",
+  "preservedFailureEpoch": "../01/root-failure-review.json",
+  "result": {
+    "path": "docs/implementation/niche-theme-programme/collection-count-native/native-runs/02/result.json",
+    "sha256": "9779288ab5b8be0b166adb1f32a467faad11f1457080bc9ba1b1fc683066b318"
+  },
+  "qualificationPacket": {
+    "path": "docs/implementation/niche-theme-programme/collection-count-native/native-runs/02/qualification-packet.json",
+    "sha256": "d77a7357cf8b1af4665d2602074438b5ad34135b5e722b8b2b0ddb3429c798f7"
+  },
+  "limits": [
+    "No normal M05 UI retest on updated runtime yet",
+    "Active936 remains pre-count-fix",
+    "No injected count-window switch/restore native fault claim",
+    "No all-ten end-to-end acceptance"
+  ],
+  "noExtraResourcesOrPublisherRerun": true
+}

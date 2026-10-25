@@ -1,0 +1,301 @@
+{
+  "recordedAt": "2026-10-23T20:59:35.793Z",
+  "runId": "f6074d90e894",
+  "phase": "before-order",
+  "guardVerified": true,
+  "readOnly": true,
+  "actual": {
+    "orders": [
+      {
+        "id": "c5a7d7a4-dabc-4a3b-a7ea-0c8f61285891",
+        "tax": 0,
+        "items": [
+          {
+            "name": "Habitat lifecycle desk",
+            "niche": {
+              "facts": {
+                "furniture": {
+                  "care": "Natural finish: wipe dry.",
+                  "finish": "Natural",
+                  "weight": {
+                    "unit": "kg",
+                    "value": 11.5
+                  },
+                  "package": {
+                    "unit": "in",
+                    "depth": 25,
+                    "width": 50
+                  },
+                  "assembly": {
+                    "tools": "4 mm hex key",
+                    "status": "required",
+                    "instructions": "Use the supplied sample instructions."
+                  },
+                  "assembled": {
+                    "unit": "in",
+                    "depth": 30,
+                    "width": 48,
+                    "height": 29.5
+                  },
+                  "materials": [
+                    "Wood"
+                  ]
+                }
+              },
+              "version": 1,
+              "selected_options": [
+                {
+                  "name": "Finish",
+                  "value": "Natural"
+                },
+                {
+                  "name": "Width",
+                  "value": "48 in"
+                }
+              ]
+            },
+            "title": "Habitat lifecycle desk",
+            "total": 17800,
+            "quantity": 2,
+            "productId": "54301d6f-f54e-4209-95a0-4fbc32bcf8e6",
+            "unitPrice": 8900,
+            "variantId": "07d32ed4-62ca-43dc-a605-b11f97c0a791",
+            "snapshotSha256": "436431a4e61c70fd6cd1dd5a650f9bfe5d2f1f3f5bbbcaa1caecbb1d50665cb9"
+          }
+        ],
+        "total": 17820,
+        "number": "ORD-20261023-10000",
+        "status": "pending_cod",
+        "discount": 0,
+        "shipping": 20,
+        "subtotal": 17800,
+        "rowSha256": "3795596fc3159cccff7c3311a2d873f7030d906f8c01ff72ad32195a6753518f",
+        "paymentMethod": "cod",
+        "paymentStatus": "pending"
+      }
+    ],
+    "product": {
+      "id": "d9bd8cae-b211-48c5-8440-5f446dc57c0e",
+      "name": "Pantry lifecycle red lentils",
+      "price": 180,
+      "stock": 6,
+      "options": [
+        {
+          "id": "7523e6f4-4cd6-499d-b72d-0343bb50a84c",
+          "name": "Pack",
+          "values": [
+            "250 g",
+            "500 g",
+            "750 g label only"
+          ],
+          "position": 0,
+          "created_at": "2026-10-23T17:40:44.376864+00:00",
+          "product_id": "d9bd8cae-b211-48c5-8440-5f446dc57c0e"
+        }
+      ],
+      "version": 31,
+      "metadata": {
+        "food": {
+          "storage": "Keep cool and dry.",
+          "allergens": {
+            "status": "not_supplied"
+          },
+          "ingredients": "Split red lentils (100%).",
+          "netQuantity": null,
+          "preparation": "Rinse before cooking."
+        },
+        "apparel": {
+          "fit": "",
+          "care": "",
+          "unit": "cm",
+          "fabric": "",
+          "measurements": []
+        }
+      },
+      "variants": [
+        {
+          "id": "b54e1a3f-dba9-4243-a2a4-6a31d168e79c",
+          "price": 210,
+          "stock": 2,
+          "title": "750 g label only",
+          "option1": "750 g label only",
+          "option2": null,
+          "option3": null,
+          "metadata": {}
+        },
+        {
+          "id": "ec9f2eae-bc7f-4de2-a32c-357ab75520c0",
+          "price": 340,
+          "stock": 0,
+          "title": "500 g",
+          "option1": "500 g",
+          "option2": null,
+          "option3": null,
+          "metadata": {
+            "food": {
+              "netQuantity": {
+                "unit": "g",
+                "value": 500
+              }
+            }
+          }
+        },
+        {
+          "id": "f275956c-688c-4435-bb96-ae23fc75f72d",
+          "price": 180,
+          "stock": 4,
+          "title": "250 g",
+          "option1": "250 g",
+          "option2": null,
+          "option3": null,
+          "metadata": {
+            "food": {
+              "netQuantity": {
+                "unit": "g",
+                "value": 250
+              }
+            }
+          }
+        }
+      ],
+      "inventory": [
+        {
+          "id": "24f42bcc-c8c0-43c1-8a53-05ec8c82b7f8",
+          "reserved": 0,
+          "available": 6,
+          "variantId": null
+        },
+        {
+          "id": "465c13c1-b42f-40d7-9f1e-ab56d8490ac3",
+          "reserved": 0,
+          "available": 0,
+          "variantId": "ec9f2eae-bc7f-4de2-a32c-357ab75520c0"
+        },
+        {
+          "id": "834f5fcb-b5fc-4ca1-855e-1559081b6d19",
+          "reserved": 0,
+          "available": 2,
+          "variantId": "b54e1a3f-dba9-4243-a2a4-6a31d168e79c"
+        },
+        {
+          "id": "a929b93b-d313-4020-aa31-8bda1d55fdd1",
+          "reserved": 0,
+          "available": 4,
+          "variantId": "f275956c-688c-4435-bb96-ae23fc75f72d"
+        }
+      ]
+    }
+  },
+  "protectedTableHashes": [
+    {
+      "count": 0,
+      "table": "ad_credit_ledger_entries",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 4,
+      "table": "carts",
+      "sha256": "be972c5809e50f45a42b442f3141dc060aba1adadac0724063e801f4e388a20e"
+    },
+    {
+      "count": 4,
+      "table": "checkout_sessions",
+      "sha256": "f37a2d4d6d5f3ee13727b751c1695fafca9476e5e2c40ffe164579fe28b2280e"
+    },
+    {
+      "count": 0,
+      "table": "gift_card_ledger_entries",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 49,
+      "table": "inventory_adjustments",
+      "sha256": "16e973ba0129df13491d518f5ce80d9d053d25511471c777310b79740c1804bd"
+    },
+    {
+      "count": 1,
+      "table": "inventory_events",
+      "sha256": "a61aa77d9e66370ee6522680350fe22996716b58f7ee08d14a416592c22f9b0f"
+    },
+    {
+      "count": 53,
+      "table": "inventory_levels",
+      "sha256": "e82fb126e15679dcc7f5e69dd6947a1dfe232d609191146d7e46dd058945ed91"
+    },
+    {
+      "count": 1,
+      "table": "inventory_reservations",
+      "sha256": "f2508a5daf44f0ee18cc0b24be9accddc2f10a88d56f83dff880ec9bfd3828b0"
+    },
+    {
+      "count": 0,
+      "table": "ledger_accounts",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 0,
+      "table": "ledger_entries",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 0,
+      "table": "ledger_transactions",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 0,
+      "table": "loyalty_ledger_entries",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 0,
+      "table": "money_ledger_reconciliation_batches",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 0,
+      "table": "money_ledger_reconciliation_traversal",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 0,
+      "table": "money_ledger_site_reconciliations",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 1,
+      "table": "order_items",
+      "sha256": "99ce3989ce5d16152fdbc44f65fcbd7b12e663fe2fb2d00693bdf10227a3640d"
+    },
+    {
+      "count": 1,
+      "table": "orders",
+      "sha256": "fe2156a21d3f3998f8d1bc42fda090b90add2a2c62946ce3f899e8194f543b54"
+    },
+    {
+      "count": 220,
+      "table": "outbox_events",
+      "sha256": "11311ce91edf3d845e8fcb50e774f944481d6e4832dd85bec04b50aec490f1cf"
+    },
+    {
+      "count": 0,
+      "table": "partner_payout_ledger_entries",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 0,
+      "table": "payout_statement_source_ledger_transactions",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 0,
+      "table": "store_credit_ledger_entries",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "count": 0,
+      "table": "wallet_ledger_entries",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    }
+  ]
+}

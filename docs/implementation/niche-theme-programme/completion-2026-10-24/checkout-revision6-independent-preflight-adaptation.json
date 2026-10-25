@@ -1,0 +1,10 @@
+{
+  "source": "/private/tmp/madeyours-checkout-reentry-proposal-20261024-06/packaging-receipts/preflight.mjs",
+  "sourceSha256": "380836d490c37a2acfd10ec7d2e5e3a485ac50271c05188f3ff4996885583111",
+  "changes": [
+    "Bind reviewed candidate06 absolute root because probe copy is root-owned",
+    "Write independent result to requesting-chat owned folder; preserve owner receipts"
+  ],
+  "native": false,
+  "database": false
+}

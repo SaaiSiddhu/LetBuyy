@@ -44,7 +44,7 @@ export default function ThemeCard({ theme, featured = false, initialQuickLookOpe
     const freshnessBadge = getThemeFreshnessBadge(theme);
     const relativeUpdated = formatRelativeUpdatedAt(theme.updated_at);
     const compareHref = themeCompareSingleHref(theme.slug);
-    const previewHref = themeSandboxPreviewHref(theme.slug);
+    const previewHref = themeSandboxPreviewHref(theme.slug, theme.version);
 
     return (
         <>

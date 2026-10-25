@@ -1,4 +1,4 @@
-import type { ProductModel } from '@letbuyy/commerce-core';
+import { readVariantNicheFacts, type ProductModel } from '@letbuyy/commerce-core';
 
 /** Adapt the public catalog's positional variant fields to existing Liquid picker contracts. */
 export function mapPublicProductVariants(data: Record<string, unknown>, variants: Array<Record<string, unknown>>) {
@@ -10,9 +10,13 @@ export function mapPublicProductVariants(data: Record<string, unknown>, variants
     });
     return {
         variantOptions: groups.map(option => ({ name: String(option.name), values: Array.isArray(option.values) ? option.values.filter((value): value is string => typeof value === 'string') : [] })),
-        variants: variants.map(variant => ({ ...variant, options: Object.fromEntries(groups.flatMap((option, index) => {
+        variants: variants.map(variant => {
+            const { metadata, ...fields } = variant;
+            const facts = readVariantNicheFacts(metadata);
+            return { ...fields, ...facts, ...(Object.keys(facts).length ? { metadata: facts } : {}), options: Object.fromEntries(groups.flatMap((option, index) => {
             const value = variant[`option${options.length ? index + 1 : Number(option.position) + 1}`];
             return typeof value === 'string' && value.length ? [[String(option.name), value]] : [];
-        })) })) as unknown as ProductModel['variants'],
+        })) };
+        }) as unknown as ProductModel['variants'],
     };
 }

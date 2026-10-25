@@ -15,6 +15,8 @@ export interface PooledSqlEnv {
 }
 
 export interface PooledSqlOptions {
+  /** Required tenant transactions do not follow the optional storefront-read rollback switch. */
+  purpose?: 'storefront-read' | 'tenant-transaction';
   maxConnections?: number;
   idleTimeoutSeconds?: number;
   connectTimeoutSeconds?: number;
@@ -124,7 +126,7 @@ function preparedHyperdriveClient<T extends object>(client: T): T {
 }
 
 export function getPooledSql(env: PooledSqlEnv, options: PooledSqlOptions = {}): PooledSqlClient | null {
-  if (!isPooledSqlEnabled(env)) return null;
+  if (options.purpose !== 'tenant-transaction' && !isPooledSqlEnabled(env)) return null;
   const connectionString = pooledSqlConnectionString(env);
   if (!connectionString) return null;
   const hyperdrive = Boolean(env.HYPERDRIVE?.connectionString);

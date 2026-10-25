@@ -25,7 +25,8 @@ export {
   GenerateImageSchema,
 } from './app-platform';
 
-export const UuidSchema = z.string().uuid('Must be a valid UUID');
+import { UuidSchema } from './uuid';
+export { UuidSchema } from './uuid';
 
 export const ProductCsvImportSchema = z.object({
   store_id: UuidSchema,
@@ -1438,6 +1439,37 @@ export const CollectionSchema = AuditedEntitySchema.extend({
   seo_title: z.string().max(70).optional().nullable(),
   seo_description: z.string().max(160).optional().nullable(),
 });
+
+// Merchant read projection: assignment counts are confirmed by the server, never defaulted.
+export const CollectionListPaginationSchema = z.object({
+  page: z.coerce.number().int().min(1).max(10000).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(20),
+}).strict();
+export const CollectionListQuerySchema = CollectionListPaginationSchema.extend({ store_id: UuidSchema }).strict();
+export const CollectionSummarySchema = z.object({
+  id: UuidSchema, store_id: UuidSchema, title: CollectionSchema.shape.title,
+  description: z.string().max(1000).nullable(), image_url: CollectionSchema.shape.image_url,
+  created_at: z.string().datetime({ offset: true }), is_active: z.boolean(),
+  membership_version: z.number().int().positive(),
+  product_count: z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER),
+}).strict();
+export const CollectionListPageSchema = z.object({
+  success: z.literal(true), data: z.array(CollectionSummarySchema).max(100),
+  meta: z.object({page:z.number().int().positive().max(10000),per_page:z.number().int().min(1).max(100),
+    total:z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER),total_pages:z.number().int().nonnegative(),
+    has_next:z.boolean(),has_prev:z.boolean()}).strict(),
+}).strict().superRefine((value,ctx)=>{
+  const m=value.meta;
+  if(value.data.length>m.per_page||new Set(value.data.map(row=>row.id)).size!==value.data.length||
+    m.total_pages!==Math.ceil(m.total/m.per_page)||m.has_next!==(m.page<m.total_pages)||m.has_prev!==(m.page>1)||
+    value.data.length!==Math.min(m.per_page,Math.max(0,m.total-(m.page-1)*m.per_page)))
+    ctx.addIssue({code:'custom',message:'Collection pagination could not be confirmed.'});
+});
+export type CollectionSummary = z.infer<typeof CollectionSummarySchema>;
+export type CollectionListPage = z.infer<typeof CollectionListPageSchema>;
+export type CollectionListQuery = z.infer<typeof CollectionListQuerySchema>;
+export type CollectionListQueryInput = z.input<typeof CollectionListQuerySchema>;
+export type CollectionListPagination = z.infer<typeof CollectionListPaginationSchema>;
 
 // Complete manual membership and an explicit ordered replacement intent. These
 // contracts do not change the metadata Collection shape or public projections.
@@ -5033,3 +5065,6 @@ export { BuyerAssistantRequestSchema, BuyerAssistantResponseSchema } from './buy
 export type { BuyerAssistantRequest, BuyerAssistantResponse } from './buyer-assistant';
 
 export { calculateGstAmounts } from './gst-amounts';
+
+export * from './personalization-contracts';
+export * from './storefront-discovery-contracts';

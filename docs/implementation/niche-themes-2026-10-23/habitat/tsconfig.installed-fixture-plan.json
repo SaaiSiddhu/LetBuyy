@@ -1,0 +1,8 @@
+{
+  "extends": "./tsconfig.finish-evidence.json",
+  "compilerOptions": {
+    "types": ["node"],
+    "typeRoots": ["../../../../apps/commerce/web/node_modules/@types"]
+  },
+  "include": ["validate-installed-fixture-plan.ts"]
+}

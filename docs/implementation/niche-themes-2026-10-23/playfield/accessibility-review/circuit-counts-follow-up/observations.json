@@ -1,0 +1,3746 @@
+[
+  {
+    "route": "collection",
+    "count": 4,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/collection-count-4.html",
+    "sha256": "697335102aac9d228f1b666dbabd7b16333d54e232c1dd5c557e070bcaf15d44",
+    "classification": "PRIMARY32_CONTROL_FOLLOW_UP",
+    "panel": "desktop",
+    "selector": "aside.ct-desktop-facets > form:nth-of-type(1) > fieldset:nth-of-type(1) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "electronics_kind",
+    "value": "hub",
+    "role": "radio",
+    "checked": true,
+    "previousCount4Name": "hub4",
+    "accessibleName": "hub (4 matching products)",
+    "accessibleDescription": "",
+    "groupName": "Accessory type",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "hub ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"electronics_kind\" value=\"hub\" checked=\"\">hub <span aria-hidden=\"true\">4</span><span class=\"lb-sr-only\"> (4 matching products)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "collection",
+    "count": 4,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/collection-count-4.html",
+    "sha256": "697335102aac9d228f1b666dbabd7b16333d54e232c1dd5c557e070bcaf15d44",
+    "classification": "PRIMARY32_CONTROL_FOLLOW_UP",
+    "panel": "desktop",
+    "selector": "aside.ct-desktop-facets > form:nth-of-type(1) > fieldset:nth-of-type(1) > label:nth-of-type(3) > input:nth-of-type(1)",
+    "name": "electronics_kind",
+    "value": "charger",
+    "role": "radio",
+    "checked": false,
+    "previousCount4Name": "charger4",
+    "accessibleName": "charger (4 matching products)",
+    "accessibleDescription": "",
+    "groupName": "Accessory type",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "charger ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"electronics_kind\" value=\"charger\">charger <span aria-hidden=\"true\">4</span><span class=\"lb-sr-only\"> (4 matching products)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "collection",
+    "count": 4,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/collection-count-4.html",
+    "sha256": "697335102aac9d228f1b666dbabd7b16333d54e232c1dd5c557e070bcaf15d44",
+    "classification": "PRIMARY32_CONTROL_FOLLOW_UP",
+    "panel": "desktop",
+    "selector": "aside.ct-desktop-facets > form:nth-of-type(1) > fieldset:nth-of-type(2) > label:nth-of-type(1) > input:nth-of-type(1)",
+    "name": "connector",
+    "value": "usb-c",
+    "role": "checkbox",
+    "checked": true,
+    "previousCount4Name": "usb-c4",
+    "accessibleName": "usb-c (4 matching products)",
+    "accessibleDescription": "",
+    "groupName": "Connector",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "usb-c ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"checkbox\" name=\"connector\" value=\"usb-c\" checked=\"\">usb-c <span aria-hidden=\"true\">4</span><span class=\"lb-sr-only\"> (4 matching products)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "collection",
+    "count": 4,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/collection-count-4.html",
+    "sha256": "697335102aac9d228f1b666dbabd7b16333d54e232c1dd5c557e070bcaf15d44",
+    "classification": "PRIMARY32_CONTROL_FOLLOW_UP",
+    "panel": "desktop",
+    "selector": "aside.ct-desktop-facets > form:nth-of-type(1) > fieldset:nth-of-type(2) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "connector",
+    "value": "hdmi",
+    "role": "checkbox",
+    "checked": true,
+    "previousCount4Name": "hdmi4",
+    "accessibleName": "hdmi (4 matching products)",
+    "accessibleDescription": "",
+    "groupName": "Connector",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "hdmi ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"checkbox\" name=\"connector\" value=\"hdmi\" checked=\"\">hdmi <span aria-hidden=\"true\">4</span><span class=\"lb-sr-only\"> (4 matching products)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "collection",
+    "count": 4,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/collection-count-4.html",
+    "sha256": "697335102aac9d228f1b666dbabd7b16333d54e232c1dd5c557e070bcaf15d44",
+    "classification": "PRIMARY32_CONTROL_FOLLOW_UP",
+    "panel": "desktop",
+    "selector": "aside.ct-desktop-facets > form:nth-of-type(1) > fieldset:nth-of-type(3) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "power_input_w",
+    "value": "100",
+    "role": "radio",
+    "checked": true,
+    "previousCount4Name": "1004",
+    "accessibleName": "100 (4 matching products)",
+    "accessibleDescription": "",
+    "groupName": "Power input (W)",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "100 ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"power_input_w\" value=\"100\" checked=\"\">100 <span aria-hidden=\"true\">4</span><span class=\"lb-sr-only\"> (4 matching products)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "collection",
+    "count": 4,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/collection-count-4.html",
+    "sha256": "697335102aac9d228f1b666dbabd7b16333d54e232c1dd5c557e070bcaf15d44",
+    "classification": "PRIMARY32_CONTROL_FOLLOW_UP",
+    "panel": "desktop",
+    "selector": "aside.ct-desktop-facets > form:nth-of-type(1) > fieldset:nth-of-type(4) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "pass_through_output_w",
+    "value": "85",
+    "role": "radio",
+    "checked": true,
+    "previousCount4Name": "854",
+    "accessibleName": "85 (4 matching products)",
+    "accessibleDescription": "",
+    "groupName": "Pass-through output (W)",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "85 ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"pass_through_output_w\" value=\"85\" checked=\"\">85 <span aria-hidden=\"true\">4</span><span class=\"lb-sr-only\"> (4 matching products)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "collection",
+    "count": 4,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/collection-count-4.html",
+    "sha256": "697335102aac9d228f1b666dbabd7b16333d54e232c1dd5c557e070bcaf15d44",
+    "classification": "PRIMARY32_CONTROL_FOLLOW_UP",
+    "panel": "desktop",
+    "selector": "aside.ct-desktop-facets > form:nth-of-type(1) > fieldset:nth-of-type(5) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "data_rate_mbps",
+    "value": "5000",
+    "role": "radio",
+    "checked": true,
+    "previousCount4Name": "50004",
+    "accessibleName": "5000 (4 matching products)",
+    "accessibleDescription": "",
+    "groupName": "Data rate (Mbps)",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "5000 ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"data_rate_mbps\" value=\"5000\" checked=\"\">5000 <span aria-hidden=\"true\">4</span><span class=\"lb-sr-only\"> (4 matching products)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "collection",
+    "count": 4,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/collection-count-4.html",
+    "sha256": "697335102aac9d228f1b666dbabd7b16333d54e232c1dd5c557e070bcaf15d44",
+    "classification": "PRIMARY32_CONTROL_FOLLOW_UP",
+    "panel": "desktop",
+    "selector": "aside.ct-desktop-facets > form:nth-of-type(1) > fieldset:nth-of-type(6) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "length_mm",
+    "value": "100",
+    "role": "radio",
+    "checked": true,
+    "previousCount4Name": "1004",
+    "accessibleName": "100 (4 matching products)",
+    "accessibleDescription": "",
+    "groupName": "Length (mm)",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "100 ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"length_mm\" value=\"100\" checked=\"\">100 <span aria-hidden=\"true\">4</span><span class=\"lb-sr-only\"> (4 matching products)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "collection",
+    "count": 4,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/collection-count-4.html",
+    "sha256": "697335102aac9d228f1b666dbabd7b16333d54e232c1dd5c557e070bcaf15d44",
+    "classification": "PRIMARY32_CONTROL_FOLLOW_UP",
+    "panel": "mobile",
+    "selector": "details.ct-mobile-facets > form:nth-of-type(1) > fieldset:nth-of-type(1) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "electronics_kind",
+    "value": "hub",
+    "role": "radio",
+    "checked": true,
+    "previousCount4Name": "hub4",
+    "accessibleName": "hub (4 matching products)",
+    "accessibleDescription": "",
+    "groupName": "Accessory type",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "hub ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"electronics_kind\" value=\"hub\" checked=\"\">hub <span aria-hidden=\"true\">4</span><span class=\"lb-sr-only\"> (4 matching products)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "collection",
+    "count": 4,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/collection-count-4.html",
+    "sha256": "697335102aac9d228f1b666dbabd7b16333d54e232c1dd5c557e070bcaf15d44",
+    "classification": "PRIMARY32_CONTROL_FOLLOW_UP",
+    "panel": "mobile",
+    "selector": "details.ct-mobile-facets > form:nth-of-type(1) > fieldset:nth-of-type(1) > label:nth-of-type(3) > input:nth-of-type(1)",
+    "name": "electronics_kind",
+    "value": "charger",
+    "role": "radio",
+    "checked": false,
+    "previousCount4Name": "charger4",
+    "accessibleName": "charger (4 matching products)",
+    "accessibleDescription": "",
+    "groupName": "Accessory type",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "charger ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"electronics_kind\" value=\"charger\">charger <span aria-hidden=\"true\">4</span><span class=\"lb-sr-only\"> (4 matching products)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "collection",
+    "count": 4,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/collection-count-4.html",
+    "sha256": "697335102aac9d228f1b666dbabd7b16333d54e232c1dd5c557e070bcaf15d44",
+    "classification": "PRIMARY32_CONTROL_FOLLOW_UP",
+    "panel": "mobile",
+    "selector": "details.ct-mobile-facets > form:nth-of-type(1) > fieldset:nth-of-type(2) > label:nth-of-type(1) > input:nth-of-type(1)",
+    "name": "connector",
+    "value": "usb-c",
+    "role": "checkbox",
+    "checked": true,
+    "previousCount4Name": "usb-c4",
+    "accessibleName": "usb-c (4 matching products)",
+    "accessibleDescription": "",
+    "groupName": "Connector",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "usb-c ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"checkbox\" name=\"connector\" value=\"usb-c\" checked=\"\">usb-c <span aria-hidden=\"true\">4</span><span class=\"lb-sr-only\"> (4 matching products)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "collection",
+    "count": 4,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/collection-count-4.html",
+    "sha256": "697335102aac9d228f1b666dbabd7b16333d54e232c1dd5c557e070bcaf15d44",
+    "classification": "PRIMARY32_CONTROL_FOLLOW_UP",
+    "panel": "mobile",
+    "selector": "details.ct-mobile-facets > form:nth-of-type(1) > fieldset:nth-of-type(2) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "connector",
+    "value": "hdmi",
+    "role": "checkbox",
+    "checked": true,
+    "previousCount4Name": "hdmi4",
+    "accessibleName": "hdmi (4 matching products)",
+    "accessibleDescription": "",
+    "groupName": "Connector",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "hdmi ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"checkbox\" name=\"connector\" value=\"hdmi\" checked=\"\">hdmi <span aria-hidden=\"true\">4</span><span class=\"lb-sr-only\"> (4 matching products)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "collection",
+    "count": 4,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/collection-count-4.html",
+    "sha256": "697335102aac9d228f1b666dbabd7b16333d54e232c1dd5c557e070bcaf15d44",
+    "classification": "PRIMARY32_CONTROL_FOLLOW_UP",
+    "panel": "mobile",
+    "selector": "details.ct-mobile-facets > form:nth-of-type(1) > fieldset:nth-of-type(3) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "power_input_w",
+    "value": "100",
+    "role": "radio",
+    "checked": true,
+    "previousCount4Name": "1004",
+    "accessibleName": "100 (4 matching products)",
+    "accessibleDescription": "",
+    "groupName": "Power input (W)",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "100 ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"power_input_w\" value=\"100\" checked=\"\">100 <span aria-hidden=\"true\">4</span><span class=\"lb-sr-only\"> (4 matching products)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "collection",
+    "count": 4,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/collection-count-4.html",
+    "sha256": "697335102aac9d228f1b666dbabd7b16333d54e232c1dd5c557e070bcaf15d44",
+    "classification": "PRIMARY32_CONTROL_FOLLOW_UP",
+    "panel": "mobile",
+    "selector": "details.ct-mobile-facets > form:nth-of-type(1) > fieldset:nth-of-type(4) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "pass_through_output_w",
+    "value": "85",
+    "role": "radio",
+    "checked": true,
+    "previousCount4Name": "854",
+    "accessibleName": "85 (4 matching products)",
+    "accessibleDescription": "",
+    "groupName": "Pass-through output (W)",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "85 ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"pass_through_output_w\" value=\"85\" checked=\"\">85 <span aria-hidden=\"true\">4</span><span class=\"lb-sr-only\"> (4 matching products)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "collection",
+    "count": 4,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/collection-count-4.html",
+    "sha256": "697335102aac9d228f1b666dbabd7b16333d54e232c1dd5c557e070bcaf15d44",
+    "classification": "PRIMARY32_CONTROL_FOLLOW_UP",
+    "panel": "mobile",
+    "selector": "details.ct-mobile-facets > form:nth-of-type(1) > fieldset:nth-of-type(5) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "data_rate_mbps",
+    "value": "5000",
+    "role": "radio",
+    "checked": true,
+    "previousCount4Name": "50004",
+    "accessibleName": "5000 (4 matching products)",
+    "accessibleDescription": "",
+    "groupName": "Data rate (Mbps)",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "5000 ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"data_rate_mbps\" value=\"5000\" checked=\"\">5000 <span aria-hidden=\"true\">4</span><span class=\"lb-sr-only\"> (4 matching products)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "collection",
+    "count": 4,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/collection-count-4.html",
+    "sha256": "697335102aac9d228f1b666dbabd7b16333d54e232c1dd5c557e070bcaf15d44",
+    "classification": "PRIMARY32_CONTROL_FOLLOW_UP",
+    "panel": "mobile",
+    "selector": "details.ct-mobile-facets > form:nth-of-type(1) > fieldset:nth-of-type(6) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "length_mm",
+    "value": "100",
+    "role": "radio",
+    "checked": true,
+    "previousCount4Name": "1004",
+    "accessibleName": "100 (4 matching products)",
+    "accessibleDescription": "",
+    "groupName": "Length (mm)",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "100 ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"length_mm\" value=\"100\" checked=\"\">100 <span aria-hidden=\"true\">4</span><span class=\"lb-sr-only\"> (4 matching products)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "collection",
+    "count": 0,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/collection-count-0.html",
+    "sha256": "12088f9b44c6fbfdc280a0ed975551916b34a4bd0c33d9d2ca03cc17631a7086",
+    "classification": "COUNT_VARIANT",
+    "panel": "desktop",
+    "selector": "aside.ct-desktop-facets > form:nth-of-type(1) > fieldset:nth-of-type(1) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "electronics_kind",
+    "value": "hub",
+    "role": "radio",
+    "checked": true,
+    "previousCount4Name": "hub4",
+    "accessibleName": "hub (0 matching products)",
+    "accessibleDescription": "",
+    "groupName": "Accessory type",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "hub ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"electronics_kind\" value=\"hub\" checked=\"\">hub <span aria-hidden=\"true\">0</span><span class=\"lb-sr-only\"> (0 matching products)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "collection",
+    "count": 0,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/collection-count-0.html",
+    "sha256": "12088f9b44c6fbfdc280a0ed975551916b34a4bd0c33d9d2ca03cc17631a7086",
+    "classification": "COUNT_VARIANT",
+    "panel": "desktop",
+    "selector": "aside.ct-desktop-facets > form:nth-of-type(1) > fieldset:nth-of-type(1) > label:nth-of-type(3) > input:nth-of-type(1)",
+    "name": "electronics_kind",
+    "value": "charger",
+    "role": "radio",
+    "checked": false,
+    "previousCount4Name": "charger4",
+    "accessibleName": "charger (0 matching products)",
+    "accessibleDescription": "",
+    "groupName": "Accessory type",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "charger ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"electronics_kind\" value=\"charger\">charger <span aria-hidden=\"true\">0</span><span class=\"lb-sr-only\"> (0 matching products)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "collection",
+    "count": 0,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/collection-count-0.html",
+    "sha256": "12088f9b44c6fbfdc280a0ed975551916b34a4bd0c33d9d2ca03cc17631a7086",
+    "classification": "COUNT_VARIANT",
+    "panel": "desktop",
+    "selector": "aside.ct-desktop-facets > form:nth-of-type(1) > fieldset:nth-of-type(2) > label:nth-of-type(1) > input:nth-of-type(1)",
+    "name": "connector",
+    "value": "usb-c",
+    "role": "checkbox",
+    "checked": true,
+    "previousCount4Name": "usb-c4",
+    "accessibleName": "usb-c (0 matching products)",
+    "accessibleDescription": "",
+    "groupName": "Connector",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "usb-c ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"checkbox\" name=\"connector\" value=\"usb-c\" checked=\"\">usb-c <span aria-hidden=\"true\">0</span><span class=\"lb-sr-only\"> (0 matching products)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "collection",
+    "count": 0,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/collection-count-0.html",
+    "sha256": "12088f9b44c6fbfdc280a0ed975551916b34a4bd0c33d9d2ca03cc17631a7086",
+    "classification": "COUNT_VARIANT",
+    "panel": "desktop",
+    "selector": "aside.ct-desktop-facets > form:nth-of-type(1) > fieldset:nth-of-type(2) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "connector",
+    "value": "hdmi",
+    "role": "checkbox",
+    "checked": true,
+    "previousCount4Name": "hdmi4",
+    "accessibleName": "hdmi (0 matching products)",
+    "accessibleDescription": "",
+    "groupName": "Connector",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "hdmi ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"checkbox\" name=\"connector\" value=\"hdmi\" checked=\"\">hdmi <span aria-hidden=\"true\">0</span><span class=\"lb-sr-only\"> (0 matching products)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "collection",
+    "count": 0,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/collection-count-0.html",
+    "sha256": "12088f9b44c6fbfdc280a0ed975551916b34a4bd0c33d9d2ca03cc17631a7086",
+    "classification": "COUNT_VARIANT",
+    "panel": "desktop",
+    "selector": "aside.ct-desktop-facets > form:nth-of-type(1) > fieldset:nth-of-type(3) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "power_input_w",
+    "value": "100",
+    "role": "radio",
+    "checked": true,
+    "previousCount4Name": "1004",
+    "accessibleName": "100 (0 matching products)",
+    "accessibleDescription": "",
+    "groupName": "Power input (W)",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "100 ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"power_input_w\" value=\"100\" checked=\"\">100 <span aria-hidden=\"true\">0</span><span class=\"lb-sr-only\"> (0 matching products)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "collection",
+    "count": 0,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/collection-count-0.html",
+    "sha256": "12088f9b44c6fbfdc280a0ed975551916b34a4bd0c33d9d2ca03cc17631a7086",
+    "classification": "COUNT_VARIANT",
+    "panel": "desktop",
+    "selector": "aside.ct-desktop-facets > form:nth-of-type(1) > fieldset:nth-of-type(4) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "pass_through_output_w",
+    "value": "85",
+    "role": "radio",
+    "checked": true,
+    "previousCount4Name": "854",
+    "accessibleName": "85 (0 matching products)",
+    "accessibleDescription": "",
+    "groupName": "Pass-through output (W)",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "85 ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"pass_through_output_w\" value=\"85\" checked=\"\">85 <span aria-hidden=\"true\">0</span><span class=\"lb-sr-only\"> (0 matching products)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "collection",
+    "count": 0,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/collection-count-0.html",
+    "sha256": "12088f9b44c6fbfdc280a0ed975551916b34a4bd0c33d9d2ca03cc17631a7086",
+    "classification": "COUNT_VARIANT",
+    "panel": "desktop",
+    "selector": "aside.ct-desktop-facets > form:nth-of-type(1) > fieldset:nth-of-type(5) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "data_rate_mbps",
+    "value": "5000",
+    "role": "radio",
+    "checked": true,
+    "previousCount4Name": "50004",
+    "accessibleName": "5000 (0 matching products)",
+    "accessibleDescription": "",
+    "groupName": "Data rate (Mbps)",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "5000 ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"data_rate_mbps\" value=\"5000\" checked=\"\">5000 <span aria-hidden=\"true\">0</span><span class=\"lb-sr-only\"> (0 matching products)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "collection",
+    "count": 0,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/collection-count-0.html",
+    "sha256": "12088f9b44c6fbfdc280a0ed975551916b34a4bd0c33d9d2ca03cc17631a7086",
+    "classification": "COUNT_VARIANT",
+    "panel": "desktop",
+    "selector": "aside.ct-desktop-facets > form:nth-of-type(1) > fieldset:nth-of-type(6) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "length_mm",
+    "value": "100",
+    "role": "radio",
+    "checked": true,
+    "previousCount4Name": "1004",
+    "accessibleName": "100 (0 matching products)",
+    "accessibleDescription": "",
+    "groupName": "Length (mm)",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "100 ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"length_mm\" value=\"100\" checked=\"\">100 <span aria-hidden=\"true\">0</span><span class=\"lb-sr-only\"> (0 matching products)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "collection",
+    "count": 0,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/collection-count-0.html",
+    "sha256": "12088f9b44c6fbfdc280a0ed975551916b34a4bd0c33d9d2ca03cc17631a7086",
+    "classification": "COUNT_VARIANT",
+    "panel": "mobile",
+    "selector": "details.ct-mobile-facets > form:nth-of-type(1) > fieldset:nth-of-type(1) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "electronics_kind",
+    "value": "hub",
+    "role": "radio",
+    "checked": true,
+    "previousCount4Name": "hub4",
+    "accessibleName": "hub (0 matching products)",
+    "accessibleDescription": "",
+    "groupName": "Accessory type",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "hub ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"electronics_kind\" value=\"hub\" checked=\"\">hub <span aria-hidden=\"true\">0</span><span class=\"lb-sr-only\"> (0 matching products)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "collection",
+    "count": 0,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/collection-count-0.html",
+    "sha256": "12088f9b44c6fbfdc280a0ed975551916b34a4bd0c33d9d2ca03cc17631a7086",
+    "classification": "COUNT_VARIANT",
+    "panel": "mobile",
+    "selector": "details.ct-mobile-facets > form:nth-of-type(1) > fieldset:nth-of-type(1) > label:nth-of-type(3) > input:nth-of-type(1)",
+    "name": "electronics_kind",
+    "value": "charger",
+    "role": "radio",
+    "checked": false,
+    "previousCount4Name": "charger4",
+    "accessibleName": "charger (0 matching products)",
+    "accessibleDescription": "",
+    "groupName": "Accessory type",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "charger ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"electronics_kind\" value=\"charger\">charger <span aria-hidden=\"true\">0</span><span class=\"lb-sr-only\"> (0 matching products)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "collection",
+    "count": 0,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/collection-count-0.html",
+    "sha256": "12088f9b44c6fbfdc280a0ed975551916b34a4bd0c33d9d2ca03cc17631a7086",
+    "classification": "COUNT_VARIANT",
+    "panel": "mobile",
+    "selector": "details.ct-mobile-facets > form:nth-of-type(1) > fieldset:nth-of-type(2) > label:nth-of-type(1) > input:nth-of-type(1)",
+    "name": "connector",
+    "value": "usb-c",
+    "role": "checkbox",
+    "checked": true,
+    "previousCount4Name": "usb-c4",
+    "accessibleName": "usb-c (0 matching products)",
+    "accessibleDescription": "",
+    "groupName": "Connector",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "usb-c ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"checkbox\" name=\"connector\" value=\"usb-c\" checked=\"\">usb-c <span aria-hidden=\"true\">0</span><span class=\"lb-sr-only\"> (0 matching products)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "collection",
+    "count": 0,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/collection-count-0.html",
+    "sha256": "12088f9b44c6fbfdc280a0ed975551916b34a4bd0c33d9d2ca03cc17631a7086",
+    "classification": "COUNT_VARIANT",
+    "panel": "mobile",
+    "selector": "details.ct-mobile-facets > form:nth-of-type(1) > fieldset:nth-of-type(2) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "connector",
+    "value": "hdmi",
+    "role": "checkbox",
+    "checked": true,
+    "previousCount4Name": "hdmi4",
+    "accessibleName": "hdmi (0 matching products)",
+    "accessibleDescription": "",
+    "groupName": "Connector",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "hdmi ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"checkbox\" name=\"connector\" value=\"hdmi\" checked=\"\">hdmi <span aria-hidden=\"true\">0</span><span class=\"lb-sr-only\"> (0 matching products)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "collection",
+    "count": 0,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/collection-count-0.html",
+    "sha256": "12088f9b44c6fbfdc280a0ed975551916b34a4bd0c33d9d2ca03cc17631a7086",
+    "classification": "COUNT_VARIANT",
+    "panel": "mobile",
+    "selector": "details.ct-mobile-facets > form:nth-of-type(1) > fieldset:nth-of-type(3) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "power_input_w",
+    "value": "100",
+    "role": "radio",
+    "checked": true,
+    "previousCount4Name": "1004",
+    "accessibleName": "100 (0 matching products)",
+    "accessibleDescription": "",
+    "groupName": "Power input (W)",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "100 ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"power_input_w\" value=\"100\" checked=\"\">100 <span aria-hidden=\"true\">0</span><span class=\"lb-sr-only\"> (0 matching products)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "collection",
+    "count": 0,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/collection-count-0.html",
+    "sha256": "12088f9b44c6fbfdc280a0ed975551916b34a4bd0c33d9d2ca03cc17631a7086",
+    "classification": "COUNT_VARIANT",
+    "panel": "mobile",
+    "selector": "details.ct-mobile-facets > form:nth-of-type(1) > fieldset:nth-of-type(4) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "pass_through_output_w",
+    "value": "85",
+    "role": "radio",
+    "checked": true,
+    "previousCount4Name": "854",
+    "accessibleName": "85 (0 matching products)",
+    "accessibleDescription": "",
+    "groupName": "Pass-through output (W)",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "85 ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"pass_through_output_w\" value=\"85\" checked=\"\">85 <span aria-hidden=\"true\">0</span><span class=\"lb-sr-only\"> (0 matching products)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "collection",
+    "count": 0,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/collection-count-0.html",
+    "sha256": "12088f9b44c6fbfdc280a0ed975551916b34a4bd0c33d9d2ca03cc17631a7086",
+    "classification": "COUNT_VARIANT",
+    "panel": "mobile",
+    "selector": "details.ct-mobile-facets > form:nth-of-type(1) > fieldset:nth-of-type(5) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "data_rate_mbps",
+    "value": "5000",
+    "role": "radio",
+    "checked": true,
+    "previousCount4Name": "50004",
+    "accessibleName": "5000 (0 matching products)",
+    "accessibleDescription": "",
+    "groupName": "Data rate (Mbps)",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "5000 ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"data_rate_mbps\" value=\"5000\" checked=\"\">5000 <span aria-hidden=\"true\">0</span><span class=\"lb-sr-only\"> (0 matching products)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "collection",
+    "count": 0,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/collection-count-0.html",
+    "sha256": "12088f9b44c6fbfdc280a0ed975551916b34a4bd0c33d9d2ca03cc17631a7086",
+    "classification": "COUNT_VARIANT",
+    "panel": "mobile",
+    "selector": "details.ct-mobile-facets > form:nth-of-type(1) > fieldset:nth-of-type(6) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "length_mm",
+    "value": "100",
+    "role": "radio",
+    "checked": true,
+    "previousCount4Name": "1004",
+    "accessibleName": "100 (0 matching products)",
+    "accessibleDescription": "",
+    "groupName": "Length (mm)",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "100 ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"length_mm\" value=\"100\" checked=\"\">100 <span aria-hidden=\"true\">0</span><span class=\"lb-sr-only\"> (0 matching products)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "collection",
+    "count": 1,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/collection-count-1.html",
+    "sha256": "7bfa31e923a5b2fa7471e065974a63abb7c16001d35c3da28c58ade1cc7afe28",
+    "classification": "COUNT_VARIANT",
+    "panel": "desktop",
+    "selector": "aside.ct-desktop-facets > form:nth-of-type(1) > fieldset:nth-of-type(1) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "electronics_kind",
+    "value": "hub",
+    "role": "radio",
+    "checked": true,
+    "previousCount4Name": "hub4",
+    "accessibleName": "hub (1 matching product)",
+    "accessibleDescription": "",
+    "groupName": "Accessory type",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "hub ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"electronics_kind\" value=\"hub\" checked=\"\">hub <span aria-hidden=\"true\">1</span><span class=\"lb-sr-only\"> (1 matching product)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "collection",
+    "count": 1,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/collection-count-1.html",
+    "sha256": "7bfa31e923a5b2fa7471e065974a63abb7c16001d35c3da28c58ade1cc7afe28",
+    "classification": "COUNT_VARIANT",
+    "panel": "desktop",
+    "selector": "aside.ct-desktop-facets > form:nth-of-type(1) > fieldset:nth-of-type(1) > label:nth-of-type(3) > input:nth-of-type(1)",
+    "name": "electronics_kind",
+    "value": "charger",
+    "role": "radio",
+    "checked": false,
+    "previousCount4Name": "charger4",
+    "accessibleName": "charger (1 matching product)",
+    "accessibleDescription": "",
+    "groupName": "Accessory type",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "charger ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"electronics_kind\" value=\"charger\">charger <span aria-hidden=\"true\">1</span><span class=\"lb-sr-only\"> (1 matching product)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "collection",
+    "count": 1,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/collection-count-1.html",
+    "sha256": "7bfa31e923a5b2fa7471e065974a63abb7c16001d35c3da28c58ade1cc7afe28",
+    "classification": "COUNT_VARIANT",
+    "panel": "desktop",
+    "selector": "aside.ct-desktop-facets > form:nth-of-type(1) > fieldset:nth-of-type(2) > label:nth-of-type(1) > input:nth-of-type(1)",
+    "name": "connector",
+    "value": "usb-c",
+    "role": "checkbox",
+    "checked": true,
+    "previousCount4Name": "usb-c4",
+    "accessibleName": "usb-c (1 matching product)",
+    "accessibleDescription": "",
+    "groupName": "Connector",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "usb-c ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"checkbox\" name=\"connector\" value=\"usb-c\" checked=\"\">usb-c <span aria-hidden=\"true\">1</span><span class=\"lb-sr-only\"> (1 matching product)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "collection",
+    "count": 1,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/collection-count-1.html",
+    "sha256": "7bfa31e923a5b2fa7471e065974a63abb7c16001d35c3da28c58ade1cc7afe28",
+    "classification": "COUNT_VARIANT",
+    "panel": "desktop",
+    "selector": "aside.ct-desktop-facets > form:nth-of-type(1) > fieldset:nth-of-type(2) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "connector",
+    "value": "hdmi",
+    "role": "checkbox",
+    "checked": true,
+    "previousCount4Name": "hdmi4",
+    "accessibleName": "hdmi (1 matching product)",
+    "accessibleDescription": "",
+    "groupName": "Connector",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "hdmi ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"checkbox\" name=\"connector\" value=\"hdmi\" checked=\"\">hdmi <span aria-hidden=\"true\">1</span><span class=\"lb-sr-only\"> (1 matching product)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "collection",
+    "count": 1,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/collection-count-1.html",
+    "sha256": "7bfa31e923a5b2fa7471e065974a63abb7c16001d35c3da28c58ade1cc7afe28",
+    "classification": "COUNT_VARIANT",
+    "panel": "desktop",
+    "selector": "aside.ct-desktop-facets > form:nth-of-type(1) > fieldset:nth-of-type(3) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "power_input_w",
+    "value": "100",
+    "role": "radio",
+    "checked": true,
+    "previousCount4Name": "1004",
+    "accessibleName": "100 (1 matching product)",
+    "accessibleDescription": "",
+    "groupName": "Power input (W)",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "100 ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"power_input_w\" value=\"100\" checked=\"\">100 <span aria-hidden=\"true\">1</span><span class=\"lb-sr-only\"> (1 matching product)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "collection",
+    "count": 1,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/collection-count-1.html",
+    "sha256": "7bfa31e923a5b2fa7471e065974a63abb7c16001d35c3da28c58ade1cc7afe28",
+    "classification": "COUNT_VARIANT",
+    "panel": "desktop",
+    "selector": "aside.ct-desktop-facets > form:nth-of-type(1) > fieldset:nth-of-type(4) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "pass_through_output_w",
+    "value": "85",
+    "role": "radio",
+    "checked": true,
+    "previousCount4Name": "854",
+    "accessibleName": "85 (1 matching product)",
+    "accessibleDescription": "",
+    "groupName": "Pass-through output (W)",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "85 ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"pass_through_output_w\" value=\"85\" checked=\"\">85 <span aria-hidden=\"true\">1</span><span class=\"lb-sr-only\"> (1 matching product)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "collection",
+    "count": 1,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/collection-count-1.html",
+    "sha256": "7bfa31e923a5b2fa7471e065974a63abb7c16001d35c3da28c58ade1cc7afe28",
+    "classification": "COUNT_VARIANT",
+    "panel": "desktop",
+    "selector": "aside.ct-desktop-facets > form:nth-of-type(1) > fieldset:nth-of-type(5) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "data_rate_mbps",
+    "value": "5000",
+    "role": "radio",
+    "checked": true,
+    "previousCount4Name": "50004",
+    "accessibleName": "5000 (1 matching product)",
+    "accessibleDescription": "",
+    "groupName": "Data rate (Mbps)",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "5000 ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"data_rate_mbps\" value=\"5000\" checked=\"\">5000 <span aria-hidden=\"true\">1</span><span class=\"lb-sr-only\"> (1 matching product)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "collection",
+    "count": 1,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/collection-count-1.html",
+    "sha256": "7bfa31e923a5b2fa7471e065974a63abb7c16001d35c3da28c58ade1cc7afe28",
+    "classification": "COUNT_VARIANT",
+    "panel": "desktop",
+    "selector": "aside.ct-desktop-facets > form:nth-of-type(1) > fieldset:nth-of-type(6) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "length_mm",
+    "value": "100",
+    "role": "radio",
+    "checked": true,
+    "previousCount4Name": "1004",
+    "accessibleName": "100 (1 matching product)",
+    "accessibleDescription": "",
+    "groupName": "Length (mm)",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "100 ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"length_mm\" value=\"100\" checked=\"\">100 <span aria-hidden=\"true\">1</span><span class=\"lb-sr-only\"> (1 matching product)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "collection",
+    "count": 1,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/collection-count-1.html",
+    "sha256": "7bfa31e923a5b2fa7471e065974a63abb7c16001d35c3da28c58ade1cc7afe28",
+    "classification": "COUNT_VARIANT",
+    "panel": "mobile",
+    "selector": "details.ct-mobile-facets > form:nth-of-type(1) > fieldset:nth-of-type(1) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "electronics_kind",
+    "value": "hub",
+    "role": "radio",
+    "checked": true,
+    "previousCount4Name": "hub4",
+    "accessibleName": "hub (1 matching product)",
+    "accessibleDescription": "",
+    "groupName": "Accessory type",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "hub ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"electronics_kind\" value=\"hub\" checked=\"\">hub <span aria-hidden=\"true\">1</span><span class=\"lb-sr-only\"> (1 matching product)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "collection",
+    "count": 1,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/collection-count-1.html",
+    "sha256": "7bfa31e923a5b2fa7471e065974a63abb7c16001d35c3da28c58ade1cc7afe28",
+    "classification": "COUNT_VARIANT",
+    "panel": "mobile",
+    "selector": "details.ct-mobile-facets > form:nth-of-type(1) > fieldset:nth-of-type(1) > label:nth-of-type(3) > input:nth-of-type(1)",
+    "name": "electronics_kind",
+    "value": "charger",
+    "role": "radio",
+    "checked": false,
+    "previousCount4Name": "charger4",
+    "accessibleName": "charger (1 matching product)",
+    "accessibleDescription": "",
+    "groupName": "Accessory type",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "charger ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"electronics_kind\" value=\"charger\">charger <span aria-hidden=\"true\">1</span><span class=\"lb-sr-only\"> (1 matching product)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "collection",
+    "count": 1,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/collection-count-1.html",
+    "sha256": "7bfa31e923a5b2fa7471e065974a63abb7c16001d35c3da28c58ade1cc7afe28",
+    "classification": "COUNT_VARIANT",
+    "panel": "mobile",
+    "selector": "details.ct-mobile-facets > form:nth-of-type(1) > fieldset:nth-of-type(2) > label:nth-of-type(1) > input:nth-of-type(1)",
+    "name": "connector",
+    "value": "usb-c",
+    "role": "checkbox",
+    "checked": true,
+    "previousCount4Name": "usb-c4",
+    "accessibleName": "usb-c (1 matching product)",
+    "accessibleDescription": "",
+    "groupName": "Connector",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "usb-c ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"checkbox\" name=\"connector\" value=\"usb-c\" checked=\"\">usb-c <span aria-hidden=\"true\">1</span><span class=\"lb-sr-only\"> (1 matching product)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "collection",
+    "count": 1,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/collection-count-1.html",
+    "sha256": "7bfa31e923a5b2fa7471e065974a63abb7c16001d35c3da28c58ade1cc7afe28",
+    "classification": "COUNT_VARIANT",
+    "panel": "mobile",
+    "selector": "details.ct-mobile-facets > form:nth-of-type(1) > fieldset:nth-of-type(2) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "connector",
+    "value": "hdmi",
+    "role": "checkbox",
+    "checked": true,
+    "previousCount4Name": "hdmi4",
+    "accessibleName": "hdmi (1 matching product)",
+    "accessibleDescription": "",
+    "groupName": "Connector",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "hdmi ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"checkbox\" name=\"connector\" value=\"hdmi\" checked=\"\">hdmi <span aria-hidden=\"true\">1</span><span class=\"lb-sr-only\"> (1 matching product)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "collection",
+    "count": 1,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/collection-count-1.html",
+    "sha256": "7bfa31e923a5b2fa7471e065974a63abb7c16001d35c3da28c58ade1cc7afe28",
+    "classification": "COUNT_VARIANT",
+    "panel": "mobile",
+    "selector": "details.ct-mobile-facets > form:nth-of-type(1) > fieldset:nth-of-type(3) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "power_input_w",
+    "value": "100",
+    "role": "radio",
+    "checked": true,
+    "previousCount4Name": "1004",
+    "accessibleName": "100 (1 matching product)",
+    "accessibleDescription": "",
+    "groupName": "Power input (W)",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "100 ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"power_input_w\" value=\"100\" checked=\"\">100 <span aria-hidden=\"true\">1</span><span class=\"lb-sr-only\"> (1 matching product)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "collection",
+    "count": 1,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/collection-count-1.html",
+    "sha256": "7bfa31e923a5b2fa7471e065974a63abb7c16001d35c3da28c58ade1cc7afe28",
+    "classification": "COUNT_VARIANT",
+    "panel": "mobile",
+    "selector": "details.ct-mobile-facets > form:nth-of-type(1) > fieldset:nth-of-type(4) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "pass_through_output_w",
+    "value": "85",
+    "role": "radio",
+    "checked": true,
+    "previousCount4Name": "854",
+    "accessibleName": "85 (1 matching product)",
+    "accessibleDescription": "",
+    "groupName": "Pass-through output (W)",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "85 ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"pass_through_output_w\" value=\"85\" checked=\"\">85 <span aria-hidden=\"true\">1</span><span class=\"lb-sr-only\"> (1 matching product)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "collection",
+    "count": 1,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/collection-count-1.html",
+    "sha256": "7bfa31e923a5b2fa7471e065974a63abb7c16001d35c3da28c58ade1cc7afe28",
+    "classification": "COUNT_VARIANT",
+    "panel": "mobile",
+    "selector": "details.ct-mobile-facets > form:nth-of-type(1) > fieldset:nth-of-type(5) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "data_rate_mbps",
+    "value": "5000",
+    "role": "radio",
+    "checked": true,
+    "previousCount4Name": "50004",
+    "accessibleName": "5000 (1 matching product)",
+    "accessibleDescription": "",
+    "groupName": "Data rate (Mbps)",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "5000 ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"data_rate_mbps\" value=\"5000\" checked=\"\">5000 <span aria-hidden=\"true\">1</span><span class=\"lb-sr-only\"> (1 matching product)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "collection",
+    "count": 1,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/collection-count-1.html",
+    "sha256": "7bfa31e923a5b2fa7471e065974a63abb7c16001d35c3da28c58ade1cc7afe28",
+    "classification": "COUNT_VARIANT",
+    "panel": "mobile",
+    "selector": "details.ct-mobile-facets > form:nth-of-type(1) > fieldset:nth-of-type(6) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "length_mm",
+    "value": "100",
+    "role": "radio",
+    "checked": true,
+    "previousCount4Name": "1004",
+    "accessibleName": "100 (1 matching product)",
+    "accessibleDescription": "",
+    "groupName": "Length (mm)",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "100 ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"length_mm\" value=\"100\" checked=\"\">100 <span aria-hidden=\"true\">1</span><span class=\"lb-sr-only\"> (1 matching product)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "search",
+    "count": 4,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/search-count-4.html",
+    "sha256": "387de5015853392c2529e72c52425c433f713deaf7c449afa2c9625d70f47fe5",
+    "classification": "PRIMARY32_CONTROL_FOLLOW_UP",
+    "panel": "desktop",
+    "selector": "aside.ct-desktop-facets > form:nth-of-type(1) > fieldset:nth-of-type(1) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "electronics_kind",
+    "value": "hub",
+    "role": "radio",
+    "checked": true,
+    "previousCount4Name": "hub4",
+    "accessibleName": "hub (4 matching products)",
+    "accessibleDescription": "",
+    "groupName": "Accessory type",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "hub ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"electronics_kind\" value=\"hub\" checked=\"\">hub <span aria-hidden=\"true\">4</span><span class=\"lb-sr-only\"> (4 matching products)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "search",
+    "count": 4,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/search-count-4.html",
+    "sha256": "387de5015853392c2529e72c52425c433f713deaf7c449afa2c9625d70f47fe5",
+    "classification": "PRIMARY32_CONTROL_FOLLOW_UP",
+    "panel": "desktop",
+    "selector": "aside.ct-desktop-facets > form:nth-of-type(1) > fieldset:nth-of-type(1) > label:nth-of-type(3) > input:nth-of-type(1)",
+    "name": "electronics_kind",
+    "value": "charger",
+    "role": "radio",
+    "checked": false,
+    "previousCount4Name": "charger4",
+    "accessibleName": "charger (4 matching products)",
+    "accessibleDescription": "",
+    "groupName": "Accessory type",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "charger ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"electronics_kind\" value=\"charger\">charger <span aria-hidden=\"true\">4</span><span class=\"lb-sr-only\"> (4 matching products)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "search",
+    "count": 4,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/search-count-4.html",
+    "sha256": "387de5015853392c2529e72c52425c433f713deaf7c449afa2c9625d70f47fe5",
+    "classification": "PRIMARY32_CONTROL_FOLLOW_UP",
+    "panel": "desktop",
+    "selector": "aside.ct-desktop-facets > form:nth-of-type(1) > fieldset:nth-of-type(2) > label:nth-of-type(1) > input:nth-of-type(1)",
+    "name": "connector",
+    "value": "usb-c",
+    "role": "checkbox",
+    "checked": true,
+    "previousCount4Name": "usb-c4",
+    "accessibleName": "usb-c (4 matching products)",
+    "accessibleDescription": "",
+    "groupName": "Connector",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "usb-c ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"checkbox\" name=\"connector\" value=\"usb-c\" checked=\"\">usb-c <span aria-hidden=\"true\">4</span><span class=\"lb-sr-only\"> (4 matching products)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "search",
+    "count": 4,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/search-count-4.html",
+    "sha256": "387de5015853392c2529e72c52425c433f713deaf7c449afa2c9625d70f47fe5",
+    "classification": "PRIMARY32_CONTROL_FOLLOW_UP",
+    "panel": "desktop",
+    "selector": "aside.ct-desktop-facets > form:nth-of-type(1) > fieldset:nth-of-type(2) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "connector",
+    "value": "hdmi",
+    "role": "checkbox",
+    "checked": true,
+    "previousCount4Name": "hdmi4",
+    "accessibleName": "hdmi (4 matching products)",
+    "accessibleDescription": "",
+    "groupName": "Connector",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "hdmi ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"checkbox\" name=\"connector\" value=\"hdmi\" checked=\"\">hdmi <span aria-hidden=\"true\">4</span><span class=\"lb-sr-only\"> (4 matching products)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "search",
+    "count": 4,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/search-count-4.html",
+    "sha256": "387de5015853392c2529e72c52425c433f713deaf7c449afa2c9625d70f47fe5",
+    "classification": "PRIMARY32_CONTROL_FOLLOW_UP",
+    "panel": "desktop",
+    "selector": "aside.ct-desktop-facets > form:nth-of-type(1) > fieldset:nth-of-type(3) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "power_input_w",
+    "value": "100",
+    "role": "radio",
+    "checked": true,
+    "previousCount4Name": "1004",
+    "accessibleName": "100 (4 matching products)",
+    "accessibleDescription": "",
+    "groupName": "Power input (W)",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "100 ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"power_input_w\" value=\"100\" checked=\"\">100 <span aria-hidden=\"true\">4</span><span class=\"lb-sr-only\"> (4 matching products)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "search",
+    "count": 4,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/search-count-4.html",
+    "sha256": "387de5015853392c2529e72c52425c433f713deaf7c449afa2c9625d70f47fe5",
+    "classification": "PRIMARY32_CONTROL_FOLLOW_UP",
+    "panel": "desktop",
+    "selector": "aside.ct-desktop-facets > form:nth-of-type(1) > fieldset:nth-of-type(4) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "pass_through_output_w",
+    "value": "85",
+    "role": "radio",
+    "checked": true,
+    "previousCount4Name": "854",
+    "accessibleName": "85 (4 matching products)",
+    "accessibleDescription": "",
+    "groupName": "Pass-through output (W)",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "85 ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"pass_through_output_w\" value=\"85\" checked=\"\">85 <span aria-hidden=\"true\">4</span><span class=\"lb-sr-only\"> (4 matching products)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "search",
+    "count": 4,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/search-count-4.html",
+    "sha256": "387de5015853392c2529e72c52425c433f713deaf7c449afa2c9625d70f47fe5",
+    "classification": "PRIMARY32_CONTROL_FOLLOW_UP",
+    "panel": "desktop",
+    "selector": "aside.ct-desktop-facets > form:nth-of-type(1) > fieldset:nth-of-type(5) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "data_rate_mbps",
+    "value": "5000",
+    "role": "radio",
+    "checked": true,
+    "previousCount4Name": "50004",
+    "accessibleName": "5000 (4 matching products)",
+    "accessibleDescription": "",
+    "groupName": "Data rate (Mbps)",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "5000 ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"data_rate_mbps\" value=\"5000\" checked=\"\">5000 <span aria-hidden=\"true\">4</span><span class=\"lb-sr-only\"> (4 matching products)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "search",
+    "count": 4,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/search-count-4.html",
+    "sha256": "387de5015853392c2529e72c52425c433f713deaf7c449afa2c9625d70f47fe5",
+    "classification": "PRIMARY32_CONTROL_FOLLOW_UP",
+    "panel": "desktop",
+    "selector": "aside.ct-desktop-facets > form:nth-of-type(1) > fieldset:nth-of-type(6) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "length_mm",
+    "value": "100",
+    "role": "radio",
+    "checked": true,
+    "previousCount4Name": "1004",
+    "accessibleName": "100 (4 matching products)",
+    "accessibleDescription": "",
+    "groupName": "Length (mm)",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "100 ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"length_mm\" value=\"100\" checked=\"\">100 <span aria-hidden=\"true\">4</span><span class=\"lb-sr-only\"> (4 matching products)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "search",
+    "count": 4,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/search-count-4.html",
+    "sha256": "387de5015853392c2529e72c52425c433f713deaf7c449afa2c9625d70f47fe5",
+    "classification": "PRIMARY32_CONTROL_FOLLOW_UP",
+    "panel": "mobile",
+    "selector": "details.ct-mobile-facets > form:nth-of-type(1) > fieldset:nth-of-type(1) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "electronics_kind",
+    "value": "hub",
+    "role": "radio",
+    "checked": true,
+    "previousCount4Name": "hub4",
+    "accessibleName": "hub (4 matching products)",
+    "accessibleDescription": "",
+    "groupName": "Accessory type",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "hub ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"electronics_kind\" value=\"hub\" checked=\"\">hub <span aria-hidden=\"true\">4</span><span class=\"lb-sr-only\"> (4 matching products)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "search",
+    "count": 4,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/search-count-4.html",
+    "sha256": "387de5015853392c2529e72c52425c433f713deaf7c449afa2c9625d70f47fe5",
+    "classification": "PRIMARY32_CONTROL_FOLLOW_UP",
+    "panel": "mobile",
+    "selector": "details.ct-mobile-facets > form:nth-of-type(1) > fieldset:nth-of-type(1) > label:nth-of-type(3) > input:nth-of-type(1)",
+    "name": "electronics_kind",
+    "value": "charger",
+    "role": "radio",
+    "checked": false,
+    "previousCount4Name": "charger4",
+    "accessibleName": "charger (4 matching products)",
+    "accessibleDescription": "",
+    "groupName": "Accessory type",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "charger ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"electronics_kind\" value=\"charger\">charger <span aria-hidden=\"true\">4</span><span class=\"lb-sr-only\"> (4 matching products)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "search",
+    "count": 4,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/search-count-4.html",
+    "sha256": "387de5015853392c2529e72c52425c433f713deaf7c449afa2c9625d70f47fe5",
+    "classification": "PRIMARY32_CONTROL_FOLLOW_UP",
+    "panel": "mobile",
+    "selector": "details.ct-mobile-facets > form:nth-of-type(1) > fieldset:nth-of-type(2) > label:nth-of-type(1) > input:nth-of-type(1)",
+    "name": "connector",
+    "value": "usb-c",
+    "role": "checkbox",
+    "checked": true,
+    "previousCount4Name": "usb-c4",
+    "accessibleName": "usb-c (4 matching products)",
+    "accessibleDescription": "",
+    "groupName": "Connector",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "usb-c ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"checkbox\" name=\"connector\" value=\"usb-c\" checked=\"\">usb-c <span aria-hidden=\"true\">4</span><span class=\"lb-sr-only\"> (4 matching products)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "search",
+    "count": 4,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/search-count-4.html",
+    "sha256": "387de5015853392c2529e72c52425c433f713deaf7c449afa2c9625d70f47fe5",
+    "classification": "PRIMARY32_CONTROL_FOLLOW_UP",
+    "panel": "mobile",
+    "selector": "details.ct-mobile-facets > form:nth-of-type(1) > fieldset:nth-of-type(2) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "connector",
+    "value": "hdmi",
+    "role": "checkbox",
+    "checked": true,
+    "previousCount4Name": "hdmi4",
+    "accessibleName": "hdmi (4 matching products)",
+    "accessibleDescription": "",
+    "groupName": "Connector",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "hdmi ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"checkbox\" name=\"connector\" value=\"hdmi\" checked=\"\">hdmi <span aria-hidden=\"true\">4</span><span class=\"lb-sr-only\"> (4 matching products)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "search",
+    "count": 4,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/search-count-4.html",
+    "sha256": "387de5015853392c2529e72c52425c433f713deaf7c449afa2c9625d70f47fe5",
+    "classification": "PRIMARY32_CONTROL_FOLLOW_UP",
+    "panel": "mobile",
+    "selector": "details.ct-mobile-facets > form:nth-of-type(1) > fieldset:nth-of-type(3) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "power_input_w",
+    "value": "100",
+    "role": "radio",
+    "checked": true,
+    "previousCount4Name": "1004",
+    "accessibleName": "100 (4 matching products)",
+    "accessibleDescription": "",
+    "groupName": "Power input (W)",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "100 ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"power_input_w\" value=\"100\" checked=\"\">100 <span aria-hidden=\"true\">4</span><span class=\"lb-sr-only\"> (4 matching products)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "search",
+    "count": 4,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/search-count-4.html",
+    "sha256": "387de5015853392c2529e72c52425c433f713deaf7c449afa2c9625d70f47fe5",
+    "classification": "PRIMARY32_CONTROL_FOLLOW_UP",
+    "panel": "mobile",
+    "selector": "details.ct-mobile-facets > form:nth-of-type(1) > fieldset:nth-of-type(4) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "pass_through_output_w",
+    "value": "85",
+    "role": "radio",
+    "checked": true,
+    "previousCount4Name": "854",
+    "accessibleName": "85 (4 matching products)",
+    "accessibleDescription": "",
+    "groupName": "Pass-through output (W)",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "85 ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"pass_through_output_w\" value=\"85\" checked=\"\">85 <span aria-hidden=\"true\">4</span><span class=\"lb-sr-only\"> (4 matching products)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "search",
+    "count": 4,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/search-count-4.html",
+    "sha256": "387de5015853392c2529e72c52425c433f713deaf7c449afa2c9625d70f47fe5",
+    "classification": "PRIMARY32_CONTROL_FOLLOW_UP",
+    "panel": "mobile",
+    "selector": "details.ct-mobile-facets > form:nth-of-type(1) > fieldset:nth-of-type(5) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "data_rate_mbps",
+    "value": "5000",
+    "role": "radio",
+    "checked": true,
+    "previousCount4Name": "50004",
+    "accessibleName": "5000 (4 matching products)",
+    "accessibleDescription": "",
+    "groupName": "Data rate (Mbps)",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "5000 ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"data_rate_mbps\" value=\"5000\" checked=\"\">5000 <span aria-hidden=\"true\">4</span><span class=\"lb-sr-only\"> (4 matching products)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "search",
+    "count": 4,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/search-count-4.html",
+    "sha256": "387de5015853392c2529e72c52425c433f713deaf7c449afa2c9625d70f47fe5",
+    "classification": "PRIMARY32_CONTROL_FOLLOW_UP",
+    "panel": "mobile",
+    "selector": "details.ct-mobile-facets > form:nth-of-type(1) > fieldset:nth-of-type(6) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "length_mm",
+    "value": "100",
+    "role": "radio",
+    "checked": true,
+    "previousCount4Name": "1004",
+    "accessibleName": "100 (4 matching products)",
+    "accessibleDescription": "",
+    "groupName": "Length (mm)",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "100 ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"length_mm\" value=\"100\" checked=\"\">100 <span aria-hidden=\"true\">4</span><span class=\"lb-sr-only\"> (4 matching products)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "search",
+    "count": 0,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/search-count-0.html",
+    "sha256": "253dff10ea86dd620984597d5beab462210a102c329a42937438840c04fff0e6",
+    "classification": "COUNT_VARIANT",
+    "panel": "desktop",
+    "selector": "aside.ct-desktop-facets > form:nth-of-type(1) > fieldset:nth-of-type(1) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "electronics_kind",
+    "value": "hub",
+    "role": "radio",
+    "checked": true,
+    "previousCount4Name": "hub4",
+    "accessibleName": "hub (0 matching products)",
+    "accessibleDescription": "",
+    "groupName": "Accessory type",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "hub ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"electronics_kind\" value=\"hub\" checked=\"\">hub <span aria-hidden=\"true\">0</span><span class=\"lb-sr-only\"> (0 matching products)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "search",
+    "count": 0,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/search-count-0.html",
+    "sha256": "253dff10ea86dd620984597d5beab462210a102c329a42937438840c04fff0e6",
+    "classification": "COUNT_VARIANT",
+    "panel": "desktop",
+    "selector": "aside.ct-desktop-facets > form:nth-of-type(1) > fieldset:nth-of-type(1) > label:nth-of-type(3) > input:nth-of-type(1)",
+    "name": "electronics_kind",
+    "value": "charger",
+    "role": "radio",
+    "checked": false,
+    "previousCount4Name": "charger4",
+    "accessibleName": "charger (0 matching products)",
+    "accessibleDescription": "",
+    "groupName": "Accessory type",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "charger ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"electronics_kind\" value=\"charger\">charger <span aria-hidden=\"true\">0</span><span class=\"lb-sr-only\"> (0 matching products)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "search",
+    "count": 0,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/search-count-0.html",
+    "sha256": "253dff10ea86dd620984597d5beab462210a102c329a42937438840c04fff0e6",
+    "classification": "COUNT_VARIANT",
+    "panel": "desktop",
+    "selector": "aside.ct-desktop-facets > form:nth-of-type(1) > fieldset:nth-of-type(2) > label:nth-of-type(1) > input:nth-of-type(1)",
+    "name": "connector",
+    "value": "usb-c",
+    "role": "checkbox",
+    "checked": true,
+    "previousCount4Name": "usb-c4",
+    "accessibleName": "usb-c (0 matching products)",
+    "accessibleDescription": "",
+    "groupName": "Connector",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "usb-c ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"checkbox\" name=\"connector\" value=\"usb-c\" checked=\"\">usb-c <span aria-hidden=\"true\">0</span><span class=\"lb-sr-only\"> (0 matching products)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "search",
+    "count": 0,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/search-count-0.html",
+    "sha256": "253dff10ea86dd620984597d5beab462210a102c329a42937438840c04fff0e6",
+    "classification": "COUNT_VARIANT",
+    "panel": "desktop",
+    "selector": "aside.ct-desktop-facets > form:nth-of-type(1) > fieldset:nth-of-type(2) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "connector",
+    "value": "hdmi",
+    "role": "checkbox",
+    "checked": true,
+    "previousCount4Name": "hdmi4",
+    "accessibleName": "hdmi (0 matching products)",
+    "accessibleDescription": "",
+    "groupName": "Connector",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "hdmi ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"checkbox\" name=\"connector\" value=\"hdmi\" checked=\"\">hdmi <span aria-hidden=\"true\">0</span><span class=\"lb-sr-only\"> (0 matching products)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "search",
+    "count": 0,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/search-count-0.html",
+    "sha256": "253dff10ea86dd620984597d5beab462210a102c329a42937438840c04fff0e6",
+    "classification": "COUNT_VARIANT",
+    "panel": "desktop",
+    "selector": "aside.ct-desktop-facets > form:nth-of-type(1) > fieldset:nth-of-type(3) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "power_input_w",
+    "value": "100",
+    "role": "radio",
+    "checked": true,
+    "previousCount4Name": "1004",
+    "accessibleName": "100 (0 matching products)",
+    "accessibleDescription": "",
+    "groupName": "Power input (W)",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "100 ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"power_input_w\" value=\"100\" checked=\"\">100 <span aria-hidden=\"true\">0</span><span class=\"lb-sr-only\"> (0 matching products)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "search",
+    "count": 0,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/search-count-0.html",
+    "sha256": "253dff10ea86dd620984597d5beab462210a102c329a42937438840c04fff0e6",
+    "classification": "COUNT_VARIANT",
+    "panel": "desktop",
+    "selector": "aside.ct-desktop-facets > form:nth-of-type(1) > fieldset:nth-of-type(4) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "pass_through_output_w",
+    "value": "85",
+    "role": "radio",
+    "checked": true,
+    "previousCount4Name": "854",
+    "accessibleName": "85 (0 matching products)",
+    "accessibleDescription": "",
+    "groupName": "Pass-through output (W)",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "85 ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"pass_through_output_w\" value=\"85\" checked=\"\">85 <span aria-hidden=\"true\">0</span><span class=\"lb-sr-only\"> (0 matching products)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "search",
+    "count": 0,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/search-count-0.html",
+    "sha256": "253dff10ea86dd620984597d5beab462210a102c329a42937438840c04fff0e6",
+    "classification": "COUNT_VARIANT",
+    "panel": "desktop",
+    "selector": "aside.ct-desktop-facets > form:nth-of-type(1) > fieldset:nth-of-type(5) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "data_rate_mbps",
+    "value": "5000",
+    "role": "radio",
+    "checked": true,
+    "previousCount4Name": "50004",
+    "accessibleName": "5000 (0 matching products)",
+    "accessibleDescription": "",
+    "groupName": "Data rate (Mbps)",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "5000 ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"data_rate_mbps\" value=\"5000\" checked=\"\">5000 <span aria-hidden=\"true\">0</span><span class=\"lb-sr-only\"> (0 matching products)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "search",
+    "count": 0,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/search-count-0.html",
+    "sha256": "253dff10ea86dd620984597d5beab462210a102c329a42937438840c04fff0e6",
+    "classification": "COUNT_VARIANT",
+    "panel": "desktop",
+    "selector": "aside.ct-desktop-facets > form:nth-of-type(1) > fieldset:nth-of-type(6) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "length_mm",
+    "value": "100",
+    "role": "radio",
+    "checked": true,
+    "previousCount4Name": "1004",
+    "accessibleName": "100 (0 matching products)",
+    "accessibleDescription": "",
+    "groupName": "Length (mm)",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "100 ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"length_mm\" value=\"100\" checked=\"\">100 <span aria-hidden=\"true\">0</span><span class=\"lb-sr-only\"> (0 matching products)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "search",
+    "count": 0,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/search-count-0.html",
+    "sha256": "253dff10ea86dd620984597d5beab462210a102c329a42937438840c04fff0e6",
+    "classification": "COUNT_VARIANT",
+    "panel": "mobile",
+    "selector": "details.ct-mobile-facets > form:nth-of-type(1) > fieldset:nth-of-type(1) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "electronics_kind",
+    "value": "hub",
+    "role": "radio",
+    "checked": true,
+    "previousCount4Name": "hub4",
+    "accessibleName": "hub (0 matching products)",
+    "accessibleDescription": "",
+    "groupName": "Accessory type",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "hub ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"electronics_kind\" value=\"hub\" checked=\"\">hub <span aria-hidden=\"true\">0</span><span class=\"lb-sr-only\"> (0 matching products)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "search",
+    "count": 0,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/search-count-0.html",
+    "sha256": "253dff10ea86dd620984597d5beab462210a102c329a42937438840c04fff0e6",
+    "classification": "COUNT_VARIANT",
+    "panel": "mobile",
+    "selector": "details.ct-mobile-facets > form:nth-of-type(1) > fieldset:nth-of-type(1) > label:nth-of-type(3) > input:nth-of-type(1)",
+    "name": "electronics_kind",
+    "value": "charger",
+    "role": "radio",
+    "checked": false,
+    "previousCount4Name": "charger4",
+    "accessibleName": "charger (0 matching products)",
+    "accessibleDescription": "",
+    "groupName": "Accessory type",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "charger ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"electronics_kind\" value=\"charger\">charger <span aria-hidden=\"true\">0</span><span class=\"lb-sr-only\"> (0 matching products)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "search",
+    "count": 0,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/search-count-0.html",
+    "sha256": "253dff10ea86dd620984597d5beab462210a102c329a42937438840c04fff0e6",
+    "classification": "COUNT_VARIANT",
+    "panel": "mobile",
+    "selector": "details.ct-mobile-facets > form:nth-of-type(1) > fieldset:nth-of-type(2) > label:nth-of-type(1) > input:nth-of-type(1)",
+    "name": "connector",
+    "value": "usb-c",
+    "role": "checkbox",
+    "checked": true,
+    "previousCount4Name": "usb-c4",
+    "accessibleName": "usb-c (0 matching products)",
+    "accessibleDescription": "",
+    "groupName": "Connector",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "usb-c ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"checkbox\" name=\"connector\" value=\"usb-c\" checked=\"\">usb-c <span aria-hidden=\"true\">0</span><span class=\"lb-sr-only\"> (0 matching products)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "search",
+    "count": 0,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/search-count-0.html",
+    "sha256": "253dff10ea86dd620984597d5beab462210a102c329a42937438840c04fff0e6",
+    "classification": "COUNT_VARIANT",
+    "panel": "mobile",
+    "selector": "details.ct-mobile-facets > form:nth-of-type(1) > fieldset:nth-of-type(2) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "connector",
+    "value": "hdmi",
+    "role": "checkbox",
+    "checked": true,
+    "previousCount4Name": "hdmi4",
+    "accessibleName": "hdmi (0 matching products)",
+    "accessibleDescription": "",
+    "groupName": "Connector",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "hdmi ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"checkbox\" name=\"connector\" value=\"hdmi\" checked=\"\">hdmi <span aria-hidden=\"true\">0</span><span class=\"lb-sr-only\"> (0 matching products)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "search",
+    "count": 0,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/search-count-0.html",
+    "sha256": "253dff10ea86dd620984597d5beab462210a102c329a42937438840c04fff0e6",
+    "classification": "COUNT_VARIANT",
+    "panel": "mobile",
+    "selector": "details.ct-mobile-facets > form:nth-of-type(1) > fieldset:nth-of-type(3) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "power_input_w",
+    "value": "100",
+    "role": "radio",
+    "checked": true,
+    "previousCount4Name": "1004",
+    "accessibleName": "100 (0 matching products)",
+    "accessibleDescription": "",
+    "groupName": "Power input (W)",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "100 ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"power_input_w\" value=\"100\" checked=\"\">100 <span aria-hidden=\"true\">0</span><span class=\"lb-sr-only\"> (0 matching products)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "search",
+    "count": 0,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/search-count-0.html",
+    "sha256": "253dff10ea86dd620984597d5beab462210a102c329a42937438840c04fff0e6",
+    "classification": "COUNT_VARIANT",
+    "panel": "mobile",
+    "selector": "details.ct-mobile-facets > form:nth-of-type(1) > fieldset:nth-of-type(4) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "pass_through_output_w",
+    "value": "85",
+    "role": "radio",
+    "checked": true,
+    "previousCount4Name": "854",
+    "accessibleName": "85 (0 matching products)",
+    "accessibleDescription": "",
+    "groupName": "Pass-through output (W)",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "85 ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"pass_through_output_w\" value=\"85\" checked=\"\">85 <span aria-hidden=\"true\">0</span><span class=\"lb-sr-only\"> (0 matching products)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "search",
+    "count": 0,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/search-count-0.html",
+    "sha256": "253dff10ea86dd620984597d5beab462210a102c329a42937438840c04fff0e6",
+    "classification": "COUNT_VARIANT",
+    "panel": "mobile",
+    "selector": "details.ct-mobile-facets > form:nth-of-type(1) > fieldset:nth-of-type(5) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "data_rate_mbps",
+    "value": "5000",
+    "role": "radio",
+    "checked": true,
+    "previousCount4Name": "50004",
+    "accessibleName": "5000 (0 matching products)",
+    "accessibleDescription": "",
+    "groupName": "Data rate (Mbps)",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "5000 ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"data_rate_mbps\" value=\"5000\" checked=\"\">5000 <span aria-hidden=\"true\">0</span><span class=\"lb-sr-only\"> (0 matching products)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "search",
+    "count": 0,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/search-count-0.html",
+    "sha256": "253dff10ea86dd620984597d5beab462210a102c329a42937438840c04fff0e6",
+    "classification": "COUNT_VARIANT",
+    "panel": "mobile",
+    "selector": "details.ct-mobile-facets > form:nth-of-type(1) > fieldset:nth-of-type(6) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "length_mm",
+    "value": "100",
+    "role": "radio",
+    "checked": true,
+    "previousCount4Name": "1004",
+    "accessibleName": "100 (0 matching products)",
+    "accessibleDescription": "",
+    "groupName": "Length (mm)",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "100 ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"length_mm\" value=\"100\" checked=\"\">100 <span aria-hidden=\"true\">0</span><span class=\"lb-sr-only\"> (0 matching products)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "search",
+    "count": 1,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/search-count-1.html",
+    "sha256": "596ece61d9c1ebf4ddb444441a2d6245f2b68f742c475af1b3572a4da610990c",
+    "classification": "COUNT_VARIANT",
+    "panel": "desktop",
+    "selector": "aside.ct-desktop-facets > form:nth-of-type(1) > fieldset:nth-of-type(1) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "electronics_kind",
+    "value": "hub",
+    "role": "radio",
+    "checked": true,
+    "previousCount4Name": "hub4",
+    "accessibleName": "hub (1 matching product)",
+    "accessibleDescription": "",
+    "groupName": "Accessory type",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "hub ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"electronics_kind\" value=\"hub\" checked=\"\">hub <span aria-hidden=\"true\">1</span><span class=\"lb-sr-only\"> (1 matching product)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "search",
+    "count": 1,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/search-count-1.html",
+    "sha256": "596ece61d9c1ebf4ddb444441a2d6245f2b68f742c475af1b3572a4da610990c",
+    "classification": "COUNT_VARIANT",
+    "panel": "desktop",
+    "selector": "aside.ct-desktop-facets > form:nth-of-type(1) > fieldset:nth-of-type(1) > label:nth-of-type(3) > input:nth-of-type(1)",
+    "name": "electronics_kind",
+    "value": "charger",
+    "role": "radio",
+    "checked": false,
+    "previousCount4Name": "charger4",
+    "accessibleName": "charger (1 matching product)",
+    "accessibleDescription": "",
+    "groupName": "Accessory type",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "charger ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"electronics_kind\" value=\"charger\">charger <span aria-hidden=\"true\">1</span><span class=\"lb-sr-only\"> (1 matching product)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "search",
+    "count": 1,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/search-count-1.html",
+    "sha256": "596ece61d9c1ebf4ddb444441a2d6245f2b68f742c475af1b3572a4da610990c",
+    "classification": "COUNT_VARIANT",
+    "panel": "desktop",
+    "selector": "aside.ct-desktop-facets > form:nth-of-type(1) > fieldset:nth-of-type(2) > label:nth-of-type(1) > input:nth-of-type(1)",
+    "name": "connector",
+    "value": "usb-c",
+    "role": "checkbox",
+    "checked": true,
+    "previousCount4Name": "usb-c4",
+    "accessibleName": "usb-c (1 matching product)",
+    "accessibleDescription": "",
+    "groupName": "Connector",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "usb-c ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"checkbox\" name=\"connector\" value=\"usb-c\" checked=\"\">usb-c <span aria-hidden=\"true\">1</span><span class=\"lb-sr-only\"> (1 matching product)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "search",
+    "count": 1,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/search-count-1.html",
+    "sha256": "596ece61d9c1ebf4ddb444441a2d6245f2b68f742c475af1b3572a4da610990c",
+    "classification": "COUNT_VARIANT",
+    "panel": "desktop",
+    "selector": "aside.ct-desktop-facets > form:nth-of-type(1) > fieldset:nth-of-type(2) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "connector",
+    "value": "hdmi",
+    "role": "checkbox",
+    "checked": true,
+    "previousCount4Name": "hdmi4",
+    "accessibleName": "hdmi (1 matching product)",
+    "accessibleDescription": "",
+    "groupName": "Connector",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "hdmi ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"checkbox\" name=\"connector\" value=\"hdmi\" checked=\"\">hdmi <span aria-hidden=\"true\">1</span><span class=\"lb-sr-only\"> (1 matching product)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "search",
+    "count": 1,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/search-count-1.html",
+    "sha256": "596ece61d9c1ebf4ddb444441a2d6245f2b68f742c475af1b3572a4da610990c",
+    "classification": "COUNT_VARIANT",
+    "panel": "desktop",
+    "selector": "aside.ct-desktop-facets > form:nth-of-type(1) > fieldset:nth-of-type(3) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "power_input_w",
+    "value": "100",
+    "role": "radio",
+    "checked": true,
+    "previousCount4Name": "1004",
+    "accessibleName": "100 (1 matching product)",
+    "accessibleDescription": "",
+    "groupName": "Power input (W)",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "100 ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"power_input_w\" value=\"100\" checked=\"\">100 <span aria-hidden=\"true\">1</span><span class=\"lb-sr-only\"> (1 matching product)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "search",
+    "count": 1,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/search-count-1.html",
+    "sha256": "596ece61d9c1ebf4ddb444441a2d6245f2b68f742c475af1b3572a4da610990c",
+    "classification": "COUNT_VARIANT",
+    "panel": "desktop",
+    "selector": "aside.ct-desktop-facets > form:nth-of-type(1) > fieldset:nth-of-type(4) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "pass_through_output_w",
+    "value": "85",
+    "role": "radio",
+    "checked": true,
+    "previousCount4Name": "854",
+    "accessibleName": "85 (1 matching product)",
+    "accessibleDescription": "",
+    "groupName": "Pass-through output (W)",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "85 ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"pass_through_output_w\" value=\"85\" checked=\"\">85 <span aria-hidden=\"true\">1</span><span class=\"lb-sr-only\"> (1 matching product)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "search",
+    "count": 1,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/search-count-1.html",
+    "sha256": "596ece61d9c1ebf4ddb444441a2d6245f2b68f742c475af1b3572a4da610990c",
+    "classification": "COUNT_VARIANT",
+    "panel": "desktop",
+    "selector": "aside.ct-desktop-facets > form:nth-of-type(1) > fieldset:nth-of-type(5) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "data_rate_mbps",
+    "value": "5000",
+    "role": "radio",
+    "checked": true,
+    "previousCount4Name": "50004",
+    "accessibleName": "5000 (1 matching product)",
+    "accessibleDescription": "",
+    "groupName": "Data rate (Mbps)",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "5000 ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"data_rate_mbps\" value=\"5000\" checked=\"\">5000 <span aria-hidden=\"true\">1</span><span class=\"lb-sr-only\"> (1 matching product)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "search",
+    "count": 1,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/search-count-1.html",
+    "sha256": "596ece61d9c1ebf4ddb444441a2d6245f2b68f742c475af1b3572a4da610990c",
+    "classification": "COUNT_VARIANT",
+    "panel": "desktop",
+    "selector": "aside.ct-desktop-facets > form:nth-of-type(1) > fieldset:nth-of-type(6) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "length_mm",
+    "value": "100",
+    "role": "radio",
+    "checked": true,
+    "previousCount4Name": "1004",
+    "accessibleName": "100 (1 matching product)",
+    "accessibleDescription": "",
+    "groupName": "Length (mm)",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "100 ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"length_mm\" value=\"100\" checked=\"\">100 <span aria-hidden=\"true\">1</span><span class=\"lb-sr-only\"> (1 matching product)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "search",
+    "count": 1,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/search-count-1.html",
+    "sha256": "596ece61d9c1ebf4ddb444441a2d6245f2b68f742c475af1b3572a4da610990c",
+    "classification": "COUNT_VARIANT",
+    "panel": "mobile",
+    "selector": "details.ct-mobile-facets > form:nth-of-type(1) > fieldset:nth-of-type(1) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "electronics_kind",
+    "value": "hub",
+    "role": "radio",
+    "checked": true,
+    "previousCount4Name": "hub4",
+    "accessibleName": "hub (1 matching product)",
+    "accessibleDescription": "",
+    "groupName": "Accessory type",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "hub ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"electronics_kind\" value=\"hub\" checked=\"\">hub <span aria-hidden=\"true\">1</span><span class=\"lb-sr-only\"> (1 matching product)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "search",
+    "count": 1,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/search-count-1.html",
+    "sha256": "596ece61d9c1ebf4ddb444441a2d6245f2b68f742c475af1b3572a4da610990c",
+    "classification": "COUNT_VARIANT",
+    "panel": "mobile",
+    "selector": "details.ct-mobile-facets > form:nth-of-type(1) > fieldset:nth-of-type(1) > label:nth-of-type(3) > input:nth-of-type(1)",
+    "name": "electronics_kind",
+    "value": "charger",
+    "role": "radio",
+    "checked": false,
+    "previousCount4Name": "charger4",
+    "accessibleName": "charger (1 matching product)",
+    "accessibleDescription": "",
+    "groupName": "Accessory type",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "charger ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"electronics_kind\" value=\"charger\">charger <span aria-hidden=\"true\">1</span><span class=\"lb-sr-only\"> (1 matching product)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "search",
+    "count": 1,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/search-count-1.html",
+    "sha256": "596ece61d9c1ebf4ddb444441a2d6245f2b68f742c475af1b3572a4da610990c",
+    "classification": "COUNT_VARIANT",
+    "panel": "mobile",
+    "selector": "details.ct-mobile-facets > form:nth-of-type(1) > fieldset:nth-of-type(2) > label:nth-of-type(1) > input:nth-of-type(1)",
+    "name": "connector",
+    "value": "usb-c",
+    "role": "checkbox",
+    "checked": true,
+    "previousCount4Name": "usb-c4",
+    "accessibleName": "usb-c (1 matching product)",
+    "accessibleDescription": "",
+    "groupName": "Connector",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "usb-c ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"checkbox\" name=\"connector\" value=\"usb-c\" checked=\"\">usb-c <span aria-hidden=\"true\">1</span><span class=\"lb-sr-only\"> (1 matching product)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "search",
+    "count": 1,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/search-count-1.html",
+    "sha256": "596ece61d9c1ebf4ddb444441a2d6245f2b68f742c475af1b3572a4da610990c",
+    "classification": "COUNT_VARIANT",
+    "panel": "mobile",
+    "selector": "details.ct-mobile-facets > form:nth-of-type(1) > fieldset:nth-of-type(2) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "connector",
+    "value": "hdmi",
+    "role": "checkbox",
+    "checked": true,
+    "previousCount4Name": "hdmi4",
+    "accessibleName": "hdmi (1 matching product)",
+    "accessibleDescription": "",
+    "groupName": "Connector",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "hdmi ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"checkbox\" name=\"connector\" value=\"hdmi\" checked=\"\">hdmi <span aria-hidden=\"true\">1</span><span class=\"lb-sr-only\"> (1 matching product)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "search",
+    "count": 1,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/search-count-1.html",
+    "sha256": "596ece61d9c1ebf4ddb444441a2d6245f2b68f742c475af1b3572a4da610990c",
+    "classification": "COUNT_VARIANT",
+    "panel": "mobile",
+    "selector": "details.ct-mobile-facets > form:nth-of-type(1) > fieldset:nth-of-type(3) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "power_input_w",
+    "value": "100",
+    "role": "radio",
+    "checked": true,
+    "previousCount4Name": "1004",
+    "accessibleName": "100 (1 matching product)",
+    "accessibleDescription": "",
+    "groupName": "Power input (W)",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "100 ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"power_input_w\" value=\"100\" checked=\"\">100 <span aria-hidden=\"true\">1</span><span class=\"lb-sr-only\"> (1 matching product)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "search",
+    "count": 1,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/search-count-1.html",
+    "sha256": "596ece61d9c1ebf4ddb444441a2d6245f2b68f742c475af1b3572a4da610990c",
+    "classification": "COUNT_VARIANT",
+    "panel": "mobile",
+    "selector": "details.ct-mobile-facets > form:nth-of-type(1) > fieldset:nth-of-type(4) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "pass_through_output_w",
+    "value": "85",
+    "role": "radio",
+    "checked": true,
+    "previousCount4Name": "854",
+    "accessibleName": "85 (1 matching product)",
+    "accessibleDescription": "",
+    "groupName": "Pass-through output (W)",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "85 ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"pass_through_output_w\" value=\"85\" checked=\"\">85 <span aria-hidden=\"true\">1</span><span class=\"lb-sr-only\"> (1 matching product)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "search",
+    "count": 1,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/search-count-1.html",
+    "sha256": "596ece61d9c1ebf4ddb444441a2d6245f2b68f742c475af1b3572a4da610990c",
+    "classification": "COUNT_VARIANT",
+    "panel": "mobile",
+    "selector": "details.ct-mobile-facets > form:nth-of-type(1) > fieldset:nth-of-type(5) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "data_rate_mbps",
+    "value": "5000",
+    "role": "radio",
+    "checked": true,
+    "previousCount4Name": "50004",
+    "accessibleName": "5000 (1 matching product)",
+    "accessibleDescription": "",
+    "groupName": "Data rate (Mbps)",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "5000 ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"data_rate_mbps\" value=\"5000\" checked=\"\">5000 <span aria-hidden=\"true\">1</span><span class=\"lb-sr-only\"> (1 matching product)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  },
+  {
+    "route": "search",
+    "count": 1,
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/accessibility-counts/search-count-1.html",
+    "sha256": "596ece61d9c1ebf4ddb444441a2d6245f2b68f742c475af1b3572a4da610990c",
+    "classification": "COUNT_VARIANT",
+    "panel": "mobile",
+    "selector": "details.ct-mobile-facets > form:nth-of-type(1) > fieldset:nth-of-type(6) > label:nth-of-type(2) > input:nth-of-type(1)",
+    "name": "length_mm",
+    "value": "100",
+    "role": "radio",
+    "checked": true,
+    "previousCount4Name": "1004",
+    "accessibleName": "100 (1 matching product)",
+    "accessibleDescription": "",
+    "groupName": "Length (mm)",
+    "visibleCountAriaHidden": true,
+    "meaningfulCountExposed": true,
+    "separatingTextNode": "100 ",
+    "separatorLocation": "after option value and before aria-hidden visual count",
+    "clippedHelperDeclaration": [
+      {
+        "parents": [
+          "lb-liquid-theme-base"
+        ],
+        "cssText": ".lb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }"
+      }
+    ],
+    "meaningStyle": {
+      "display": "inline",
+      "visibility": "visible",
+      "position": "static",
+      "width": "auto",
+      "height": "auto",
+      "overflow": ""
+    },
+    "labelHtml": "<label><input type=\"radio\" name=\"length_mm\" value=\"100\" checked=\"\">100 <span aria-hidden=\"true\">1</span><span class=\"lb-sr-only\"> (1 matching product)</span></label>",
+    "identityAndSelectedStateUnchanged": true
+  }
+]

@@ -124,7 +124,7 @@ export default function DashboardClient({ store, storeInfo, setupStatus, homeDat
                 "Add product" CTA compete with the board, which already names the
                 store and carries every action as its own card. */}
             {stage !== 'activating' && (
-                <PageHeader
+                <PageHeader identity="dashboard"
                     breadcrumbs={[{ label: 'Home' }]}
                     eyebrow={formatSiteType(storeInfo.site_type)}
                     title={storeInfo.name || store}
@@ -458,9 +458,6 @@ function SetupCards({ store, siteType, setupStatus, currentDomain, storeStatus, 
             >
                 {/* ── Hero banner ── */}
                 <div className="relative overflow-hidden rounded-[var(--lb-radius-xl)] border border-[var(--lb-component-card-border)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-4)]">
-                    {/* Ambient glow blobs */}
-                    <div className="pointer-events-none absolute -right-16 -top-16 h-44 w-44 rounded-[var(--lb-radius-full)] bg-[var(--lb-color-primary)] opacity-[0.07] blur-3xl" aria-hidden="true" />
-                    <div className="pointer-events-none absolute -bottom-8 left-6 h-28 w-28 rounded-[var(--lb-radius-full)] bg-[var(--lb-color-primary)] opacity-[0.04] blur-2xl" aria-hidden="true" />
 
                     <div className="relative flex flex-col gap-[var(--lb-space-3)] sm:flex-row sm:items-center sm:justify-between">
                         {/* Left: heading block */}

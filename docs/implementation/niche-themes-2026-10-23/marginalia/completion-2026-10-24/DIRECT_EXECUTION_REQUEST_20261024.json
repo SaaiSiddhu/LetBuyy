@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-24T12:02:21.902830+00:00",
+  "authority": "Direct human request in this Marginalia chat",
+  "request": "Run Marginalia shared harness once Root admits exact input/slot, then finish remaining tests through fresh Editor queue; preserve evidence and certify only after actual E2E.",
+  "scopeUnchanged": "Original16 plus expanded286 editor/identity/commerce/actual provider/history/security/quality obligations; no source-check substitution.",
+  "centralEvidence": {
+    "handoff": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/central-adapter-probe-02/HANDOFF.json",
+    "reportedDisposition": "CURRENT_ADAPTER_RESOLVES_EDITOR03_NO_REBIND_NEEDED",
+    "reportedFullHarnessExecutions": 0,
+    "proposalIsNotAdmission": true,
+    "probeRerunHere": false
+  },
+  "rootAdmission": {
+    "status": "PENDING_EXACT_ROOT_MANIFEST_AND_SLOT",
+    "expectedSlugVersionHash": "Proposed only; not permission to execute",
+    "inputManifest": null,
+    "command": null,
+    "serialSlot": null,
+    "freshOutputPath": null,
+    "scopeRoot": null
+  },
+  "executionRules": [
+    "Compare actual admitted manifest/entrypoint/source pins immediately before execution.",
+    "Use one existing shared runner invocation, unchanged; no local adapters or serializer copy.",
+    "Write only Root-allocated fresh own output; never overwrite previous results.",
+    "Retain fatal/refusal/failure and any generated evidence; do not retry or change inputs to force a pass.",
+    "Reconcile actual field/check coverage to SOURCE_HARNESS_CASE_MAP.json; keep source-data results separate from original and expanded whole-case statuses.",
+    "Only after current runtime/site/actor/TLS/expiry/protected baseline/cleanup and named sole-Editor handoff perform UI/buyer/purchase/history tests.",
+    "Actual Razorpay remains gated on designated secure real-adapter and public HTTPS webhook admission."
+  ],
+  "coordination": "Root notified once of this new direct request and sealed central handoff; accepted send_message_to_thread.",
+  "harnessInvocationsHere": 0,
+  "runtimeBrowserDatabaseBuildProviderActionsHere": 0,
+  "sourcePatchesHere": 0,
+  "originalCounts": {
+    "PASS": 9,
+    "FAIL": 0,
+    "NOT_RUN": 7
+  },
+  "expandedCounts": {
+    "PASS": 0,
+    "FAIL": 0,
+    "NOT_RUN": 286
+  },
+  "certification": false,
+  "latestExecution": {
+    "authority": "docs/implementation/niche-theme-programme/completion-marginalia-shared-source-allocation-20261024-01.json",
+    "status": "ONE_ADMITTED_RUN_COMPLETED_EXIT0",
+    "harnessInvocations": 1,
+    "sourcePass": 46,
+    "sourceFail": 0,
+    "editedFields": 138,
+    "sourcePinsExact": 102,
+    "artifactCount": 100,
+    "handoff": "SHARED_SOURCE_RUN01_HANDOFF.md",
+    "freshEditorScope": "NOT_YET_ADMITTED",
+    "certification": false
+  }
+}

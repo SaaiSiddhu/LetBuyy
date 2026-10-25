@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "classification": "GOAL_TURN2_REAL_SOURCE_OUTPUT_PROGRESS_NOT_RUNTIME_ACCEPTANCE",
+  "recordedAt": "2026-10-24T08:50:41.004294+00:00",
+  "previousGoalTurn": "PROGRESS: generated exhaustive actual-source inventory/coverage and finite execution contract",
+  "thisGoalTurn": "PROGRESS: actual Liquid witness proves two output failures and five positive controls; shared source correction owner now has a concrete witness rather than a static unused-field hypothesis.",
+  "checks": {
+    "actual_source_probe_5pass_2fail_0error": true,
+    "zero_network": true,
+    "factory_unchanged": true,
+    "probe_exact_source_pinned": true,
+    "input_source_still_matches": true,
+    "frozen15_current_pins_unchanged": true,
+    "original23_ledger_unchanged": true,
+    "all_installed_cases_remain_NOT_RUN": true,
+    "two_failures_bound_to_required_cases": true,
+    "two_failed_outputs_byte_identical": true
+  },
+  "sourceProbe": {
+    "command": "node --import tsx docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/source-render-probe.mjs",
+    "exitCode": 1,
+    "report": "source-render-contracts/02/report.json",
+    "sha256": "0b2a3ccab6c9023b7aa68449c89da8c168077fab01167771000b5e2060657a65",
+    "summary": {
+      "total": 7,
+      "pass": 5,
+      "fail": 2,
+      "error": 0
+    }
+  },
+  "preservedInitialProbe": "source-render-contracts/01/report.json and expectation-adjudication.json",
+  "artifacts": [
+    {
+      "path": "COVERAGE.json",
+      "sha256": "d13c6cbcda862ec1a6657e466de2ce2152955448b3a2684ad29c0f7c432760c1"
+    },
+    {
+      "path": "SOURCE_RENDER_FINDINGS.json",
+      "sha256": "b31b0e2e12d80bd8e5e330544565d4bdcd3f6ac8e78d58d75a56b78ce489914e"
+    },
+    {
+      "path": "RUNBOOK.md",
+      "sha256": "5a5fa2198021f0b68f2503384e670470aba9c0d8a82a1e4ff1320300497ab642"
+    },
+    {
+      "path": "FINDINGS.md",
+      "sha256": "d1243eb244406540a31311992a6bb2d22362064af9a5c142eee1c4f246018a17"
+    },
+    {
+      "path": "CERTIFICATION.json",
+      "sha256": "3d4bdd6d287fa8e3cd1b945536f5e7843899298377f10f223b63d87c5294c06d"
+    }
+  ],
+  "sourceWrites": {
+    "main": 0,
+    "frozen": 0,
+    "ownEvidenceOnly": true
+  },
+  "runtimeMadeYours": {
+    "run": 0,
+    "notRun": 23
+  },
+  "remainingExecutionDependency": "Helper resumption and exact allocator source/native/controller grants; no lease inferred from conversation/state file.",
+  "goal": "ACTIVE_INCOMPLETE"
+}

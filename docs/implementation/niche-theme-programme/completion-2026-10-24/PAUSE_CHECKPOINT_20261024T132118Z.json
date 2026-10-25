@@ -1,0 +1,13 @@
+{
+  "recordedAt": "2026-10-24T13:23:06.992189+00:00",
+  "status": "PAUSED_ON_NEWER_PROJECT_WIDE_HUMAN_NOTICE_FROM_THEMES",
+  "sourceThreadId": "01a164a4-a342-76d3-ab33-65e021ed57db",
+  "sourcePauseReceipt": "docs/implementation/niche-theme-programme/project-pause-current.json",
+  "sourcePauseRecordedAt": "2026-10-24 13:21:18 UTC",
+  "previousResumeRecordedAt": "2026-10-24T11:24:57.593895+00:00",
+  "verification": "Read current Themes turn; new pause acknowledgement and current shared pause record both postdate the direct human resume. Raw in-turn human steering is not exposed by read_thread.",
+  "requestingChatOwnedRunningJobs": [],
+  "preservation": "No source implementation, native/build/test, browser/provider action, app restart, database change, credential mutation, cleanup, reset or revert. Preserve all existing work and evidence.",
+  "resumption": "Wait for a later explicit human resume.",
+  "fullCertification": "INCOMPLETE"
+}

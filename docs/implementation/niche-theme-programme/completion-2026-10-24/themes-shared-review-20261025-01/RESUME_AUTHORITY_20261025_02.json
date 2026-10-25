@@ -1,0 +1,13 @@
+{
+  "recordedAt": "2026-10-24T23:52:56.342555+00:00",
+  "status": "VERIFIED_NEWER_DIRECT_HUMAN_RESUME_AFTER_PAUSE",
+  "requestingChat": "01a16ce5-e5ba-7191-ab2c-a1b76947d2b5",
+  "turnId": "01a17051-60e1-79b1-9416-da1ea0818b15",
+  "userMessageId": "01a17051-60f8-7fe2-bf0e-87647ea64e7f",
+  "confirmationId": "01a17051-aabe-7e93-954b-da5059e385df",
+  "instruction": "Broooo resume now. This overrides my earlier pause. Resume all 10 themes and both shared owners on runtime07, finish the remaining blockers and Razorpay Test Mode certification, and preserve all apps, drafts and data.",
+  "verifiedBy": "read_thread exact current actual user messages, turnLimit1",
+  "scope": "Finite source proposal review and pure preparation; requesting CTO exclusively handles runtime/browser recovery; no Main/candidate/native/build/DB/provider mutation from this review",
+  "automations": "Remain paused",
+  "oldProviderCutoff": "2026-10-24T22:20:00Z elapsed; no extension inferred"
+}

@@ -1,0 +1,30 @@
+- heading [level=1]: Billing
+- link "Billing profile":
+- heading "Billing" [level=1]
+- status:
+- heading "Ensure your billing address meets India payment requirements" [level=2]:
+- link "View address guidelines":
+- link "click here":
+- heading "Upcoming bill" [level=2]:
+- link "View bill":
+- heading "Upcoming bill" [level=3]:
+- link "Add payment method":
+- link "visit plan settings":
+- heading "Past bills" [level=2]:
+- link "View in charge table":
+- tablist:
+- tab "All" [selected]:
+- tab "Paid":
+- tab "Unpaid":
+- button "Search and filter results":
+- button "Sort the results":
+- table
+- status
+- status
+- status
+- button "Close" [disabled]:
+- textbox "Work with Sidekick"
+- button "Add files and more":
+- button "Voice":
+- button "Open Sidekick":
+- status

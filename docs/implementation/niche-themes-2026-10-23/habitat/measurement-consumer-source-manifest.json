@@ -1,0 +1,23 @@
+{
+  "recordedAt": "2026-10-23T09:37:38.210096+00:00",
+  "classification": "IN_PROCESS_RELEASED_READER_PROJECTOR_LIQUID_FORMDATA_CONTRACT_NOT_DB_BROWSER_OR_INSTALLED_ACCEPTANCE",
+  "scope": "Habitat direct per-axis measurement consumer complete and source frozen; shared source inputs read only",
+  "tests": {
+    "theme": 13,
+    "discovery": 16,
+    "passed": 29,
+    "failed": 0,
+    "skipped": 0,
+    "themeTypecheck": "passed",
+    "evidenceTypecheck": "passed"
+  },
+  "sha256": {
+    "packages/theme-engine/src/habitat-discovery.ts": "342843da57a6eef8488d906218d4225338f9f3c0afe2bbcc49073f3f34a1f873",
+    "packages/theme-engine/src/habitat-theme.ts": "0144fdf830ab3c5ddf42ebfcb86258b99e74ed8a8d724469012479705352e8c3",
+    "packages/theme-engine/test/habitat.test.ts": "fd1fa3d30be0841e41f00e4226fde5d23880ef31232d5c57c83ececdc3124bfc",
+    "docs/implementation/niche-themes-2026-10-23/habitat/discovery-form-roundtrip.test.ts": "4447aa81d52698f79fde7389b0f968480186f8ce0c951733df6fc65ecd895a73",
+    "packages/commerce-core/src/storefront-discovery.ts": "c8de3871a998df011de12791db90c868139903b5c84afb211d9e9de3a1997ff1",
+    "services/api-gateway/src/lib/storefront-discovery.ts": "fa47b2c867e916ab082e5c420eed18751e4c313f98dd1ae2b19ec26de00afa37",
+    "apps/commerce/web/src/lib/theme-engine/storefront-discovery.ts": "b59b34fbe89cf44f13f9dba56107f993af2632d4d2ed28fe3f9694e87743cbfc"
+  }
+}

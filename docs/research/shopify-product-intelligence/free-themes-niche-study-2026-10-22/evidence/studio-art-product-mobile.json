@@ -1,0 +1,721 @@
+{
+  "body": {
+    "background": "rgb(255, 255, 255)",
+    "color": "rgba(16, 57, 72, 0.75)",
+    "font": "Cormorant, serif",
+    "fontSize": "16.5px"
+  },
+  "controls": [
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Menu",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "true",
+      "label": "",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "true",
+      "label": "",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Search",
+      "tag": "INPUT",
+      "type": "search"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": true,
+      "expanded": null,
+      "label": "Slide left",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Slide right",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Add to cart",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Buy it now",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Share",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Email",
+      "tag": "INPUT",
+      "type": "email"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Subscribe",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    }
+  ],
+  "headings": [
+    {
+      "font": "Cormorant, serif",
+      "height": 20.7890625,
+      "line": "20.8px",
+      "size": "14.3px",
+      "tag": "H2",
+      "text": "",
+      "weight": "500",
+      "width": 297.6015625,
+      "x": 38.5,
+      "y": 4.8046875
+    },
+    {
+      "font": "Cormorant, serif",
+      "height": 45.8984375,
+      "line": "45.9px",
+      "size": "36px",
+      "tag": "H1",
+      "text": "seven vessels 2",
+      "weight": "500",
+      "width": 357,
+      "x": 16.5,
+      "y": 825.703125
+    },
+    {
+      "font": "Cormorant, serif",
+      "height": 29.7421875,
+      "line": "29.75px",
+      "size": "20.4px",
+      "tag": "H3",
+      "text": "Shipping",
+      "weight": "500",
+      "width": 302,
+      "x": 44,
+      "y": 1737.1015625
+    },
+    {
+      "font": "Cormorant, serif",
+      "height": 29.7421875,
+      "line": "29.75px",
+      "size": "20.4px",
+      "tag": "H3",
+      "text": "Returns",
+      "weight": "500",
+      "width": 302,
+      "x": 44,
+      "y": 1958.34375
+    },
+    {
+      "font": "Cormorant, serif",
+      "height": 45.8984375,
+      "line": "45.9px",
+      "size": "36px",
+      "tag": "H2",
+      "text": "Leia Bryans",
+      "weight": "500",
+      "width": 170.25,
+      "x": 56.5,
+      "y": 2522.484375
+    },
+    {
+      "font": "Cormorant, serif",
+      "height": 30.59375,
+      "line": "30.6px",
+      "size": "24px",
+      "tag": "H2",
+      "text": "More by Leia",
+      "weight": "500",
+      "width": 132.0546875,
+      "x": 16.5,
+      "y": 3203.6484375
+    },
+    {
+      "font": "Cormorant, serif",
+      "height": 18.3515625,
+      "line": "18.36px",
+      "size": "14.4px",
+      "tag": "H3",
+      "text": "seven vessels 2",
+      "weight": "500",
+      "width": 168.5,
+      "x": 16.5,
+      "y": 3492.1640625
+    },
+    {
+      "font": "Cormorant, serif",
+      "height": 18.3515625,
+      "line": "18.36px",
+      "size": "14.4px",
+      "tag": "H3",
+      "text": "eleven vessels",
+      "weight": "500",
+      "width": 168.5,
+      "x": 205,
+      "y": 3492.1640625
+    },
+    {
+      "font": "Cormorant, serif",
+      "height": 18.3515625,
+      "line": "18.36px",
+      "size": "14.4px",
+      "tag": "H3",
+      "text": "eleven vessels 2",
+      "weight": "500",
+      "width": 168.5,
+      "x": 16.5,
+      "y": 3809.734375
+    },
+    {
+      "font": "Cormorant, serif",
+      "height": 91.796875,
+      "line": "45.9px",
+      "size": "36px",
+      "tag": "H2",
+      "text": "Build your collection ",
+      "weight": "500",
+      "width": 277,
+      "x": 56.5,
+      "y": 4188.625
+    },
+    {
+      "font": "Cormorant, serif",
+      "height": 24.4765625,
+      "line": "24.48px",
+      "size": "19.2px",
+      "tag": "H2",
+      "text": "Shop",
+      "weight": "500",
+      "width": 310,
+      "x": 40,
+      "y": 4561.421875
+    },
+    {
+      "font": "Cormorant, serif",
+      "height": 24.4765625,
+      "line": "24.48px",
+      "size": "19.2px",
+      "tag": "H2",
+      "text": "Info",
+      "weight": "500",
+      "width": 310,
+      "x": 40,
+      "y": 4894.8671875
+    },
+    {
+      "font": "Cormorant, serif",
+      "height": 24.4765625,
+      "line": "24.48px",
+      "size": "19.2px",
+      "tag": "H2",
+      "text": "Our mission",
+      "weight": "500",
+      "width": 310,
+      "x": 40,
+      "y": 5233.125
+    },
+    {
+      "font": "Cormorant, serif",
+      "height": 24.4765625,
+      "line": "24.48px",
+      "size": "19.2px",
+      "tag": "H2",
+      "text": "Subscribe to our emails",
+      "weight": "500",
+      "width": 310,
+      "x": 40,
+      "y": 5380.6015625
+    }
+  ],
+  "links": [
+    {
+      "text": "Skip to content",
+      "url": "https://theme-studio-demo.myshopify.com/products/seven-vessels#MainContent"
+    },
+    {
+      "text": "Discover our newest collection from Leia Bryans",
+      "url": "https://theme-studio-demo.myshopify.com/collections/leia-bryans"
+    },
+    {
+      "text": "",
+      "url": "https://theme-studio-demo.myshopify.com/collections/prints"
+    },
+    {
+      "text": "",
+      "url": "https://theme-studio-demo.myshopify.com/collections/originals"
+    },
+    {
+      "text": "",
+      "url": "https://theme-studio-demo.myshopify.com/collections/art-objects"
+    },
+    {
+      "text": "",
+      "url": "https://theme-studio-demo.myshopify.com/collections/eryn-lougheed"
+    },
+    {
+      "text": "",
+      "url": "https://theme-studio-demo.myshopify.com/collections/leia-bryans"
+    },
+    {
+      "text": "",
+      "url": "https://theme-studio-demo.myshopify.com/collections/sid-hicks"
+    },
+    {
+      "text": "",
+      "url": "https://theme-studio-demo.myshopify.com/collections/misbah-ahmed"
+    },
+    {
+      "text": "",
+      "url": "https://theme-studio-demo.myshopify.com/collections/rachel-crummey"
+    },
+    {
+      "text": "",
+      "url": "https://theme-studio-demo.myshopify.com/collections/melanie-keay"
+    },
+    {
+      "text": "",
+      "url": "https://theme-studio-demo.myshopify.com/products/gift-card"
+    },
+    {
+      "text": "",
+      "url": "https://theme-studio-demo.myshopify.com/pages/about-us"
+    },
+    {
+      "text": "",
+      "url": "https://theme-studio-demo.myshopify.com/blogs/news"
+    },
+    {
+      "text": "",
+      "url": "https://theme-studio-demo.myshopify.com/pages/contact"
+    },
+    {
+      "text": "",
+      "url": "https://theme-studio-demo.myshopify.com/"
+    },
+    {
+      "text": "Cart",
+      "url": "https://theme-studio-demo.myshopify.com/cart"
+    },
+    {
+      "text": "Skip to product information",
+      "url": "https://theme-studio-demo.myshopify.com/products/seven-vessels#ProductInfo-template--17836821708968__main"
+    },
+    {
+      "text": "seven vessels 2",
+      "url": "https://theme-studio-demo.myshopify.com/products/seven-vessels"
+    },
+    {
+      "text": "eleven vessels",
+      "url": "https://theme-studio-demo.myshopify.com/products/eleven-vessels"
+    },
+    {
+      "text": "eleven vessels 2",
+      "url": "https://theme-studio-demo.myshopify.com/products/eleven-vessels-2"
+    },
+    {
+      "text": "Prints",
+      "url": "https://theme-studio-demo.myshopify.com/collections/prints"
+    },
+    {
+      "text": "Originals",
+      "url": "https://theme-studio-demo.myshopify.com/collections/originals"
+    },
+    {
+      "text": "Art Objects",
+      "url": "https://theme-studio-demo.myshopify.com/collections/art-objects"
+    },
+    {
+      "text": "Gift Cards",
+      "url": "https://theme-studio-demo.myshopify.com/products/gift-card"
+    },
+    {
+      "text": "Search",
+      "url": "https://theme-studio-demo.myshopify.com/search"
+    },
+    {
+      "text": "Our Story",
+      "url": "https://theme-studio-demo.myshopify.com/pages/about-us"
+    },
+    {
+      "text": "Journal",
+      "url": "https://theme-studio-demo.myshopify.com/blogs/news"
+    },
+    {
+      "text": "Contact",
+      "url": "https://theme-studio-demo.myshopify.com/pages/contact"
+    },
+    {
+      "text": "theme-studio-demo",
+      "url": "https://theme-studio-demo.myshopify.com/"
+    }
+  ],
+  "sections": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--17836821708968__main",
+      "rect": {
+        "height": 1495.3984375,
+        "width": 390,
+        "x": 0,
+        "y": 172.203125
+      },
+      "tag": "SECTION",
+      "text": "Skip to product information\nOpen media 1 in modal\nOpen media 2 in modal\n1\n/\nof\n2\nseven vessels 2\nRegular price\n$250.00 CAD\nAdd to cart\nBuy it now\nShare\n\nThis is a demonstration sto"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--17836821708968__1643899285fb6b3031",
+      "rect": {
+        "height": 519.984375,
+        "width": 390,
+        "x": 0,
+        "y": 1667.6015625
+      },
+      "tag": "SECTION",
+      "text": "Shipping\n\nShipping rates are calculated by the size of the package and shipped via Canada Post within 10 business days.\n\nReturns\n\nAll artworks can be returned in their original pac"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--17836821708968__1645473904ca6ed011",
+      "rect": {
+        "height": 435.796875,
+        "width": 390,
+        "x": 0,
+        "y": 2187.5859375
+      },
+      "tag": "DIV",
+      "text": "ARTIST\n\nLeia Bryans"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--17836821708968__1643845366bbc97aec",
+      "rect": {
+        "height": 580.265625,
+        "width": 390,
+        "x": 0,
+        "y": 2623.3828125
+      },
+      "tag": "DIV",
+      "text": "Leia Bryans is a self-taught artist working with painting, drawing, and illustration. Bryans' artistic practice experiments with the limitations of the feminine silhouette by creat"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--17836821708968__1645473908ac0a9e1a",
+      "rect": {
+        "height": 678.734375,
+        "width": 390,
+        "x": 0,
+        "y": 3203.6484375
+      },
+      "tag": "SECTION",
+      "text": "More by Leia\nseven vessels 2\nRegular price\n$250.00 CAD\neleven vessels\nRegular price\n$600.00 CAD\neleven vessels 2\nRegular price\n$600.00 CAD"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--17836821708968__16454742562de684b3",
+      "rect": {
+        "height": 646.0390625,
+        "width": 390,
+        "x": 0,
+        "y": 3882.3828125
+      },
+      "tag": "DIV",
+      "text": "Build your collection \n\nAll our pieces are carefully chosen to reflect a cohesive, contemporary aesthetic. Simply mix and match to create your unique gallery wall."
+    }
+  ],
+  "title": "seven vessels | Ninth Editions – theme-studio-demo",
+  "url": "https://theme-studio-demo.myshopify.com/products/seven-vessels",
+  "viewport": {
+    "dpr": 1,
+    "height": 844,
+    "width": 390
+  },
+  "formGroups": [],
+  "grids": [
+    {
+      "className": "product product--large product--stacked grid grid--1-col grid--2-col-tablet",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 1465.3984375,
+      "tag": "DIV",
+      "width": 357
+    },
+    {
+      "className": "product__media-list grid grid--peek list-unstyled slider slider--mobile",
+      "columns": "none",
+      "display": "flex",
+      "gap": "20px",
+      "height": 568.5,
+      "tag": "UL",
+      "width": 390
+    },
+    {
+      "className": "product__media-item grid__item slider__slide is-active",
+      "columns": "none",
+      "display": "flex",
+      "gap": "normal",
+      "height": 546.5,
+      "tag": "LI",
+      "width": 357
+    },
+    {
+      "className": "product__media-item grid__item slider__slide",
+      "columns": "none",
+      "display": "flex",
+      "gap": "normal",
+      "height": 546.5,
+      "tag": "LI",
+      "width": 357
+    },
+    {
+      "className": "multicolumn-list contains-content-container grid grid--1-col grid--2-col-desktop grid--3-col-tablet",
+      "columns": "none",
+      "display": "flex",
+      "gap": "20px",
+      "height": 450.984375,
+      "tag": "UL",
+      "width": 390
+    },
+    {
+      "className": "image-with-text__grid grid grid--gapless grid--1-col grid--3-col-tablet image-with-text__grid--reverse",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 408.796875,
+      "tag": "DIV",
+      "width": 357
+    },
+    {
+      "className": "image-with-text__grid grid grid--gapless grid--1-col grid--3-col-tablet",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 538.265625,
+      "tag": "DIV",
+      "width": 357
+    },
+    {
+      "className": "grid grid--2-col product-grid contains-card contains-card--standard grid--3-col-desktop grid--3-col-tablet",
+      "columns": "none",
+      "display": "flex",
+      "gap": "20px",
+      "height": 615.140625,
+      "tag": "UL",
+      "width": 357
+    },
+    {
+      "className": "image-with-text__grid grid grid--gapless grid--1-col grid--2-col-tablet image-with-text__grid--reverse",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 565.0390625,
+      "tag": "DIV",
+      "width": 357
+    }
+  ],
+  "images": [
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 325,
+      "rect": {
+        "height": 535.5,
+        "width": 357
+      }
+    },
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 325,
+      "rect": {
+        "height": 432.4375,
+        "width": 357
+      }
+    },
+    {
+      "alt": "",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 213.3984375,
+        "width": 357
+      }
+    },
+    {
+      "alt": "",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 182.765625,
+        "width": 357
+      }
+    },
+    {
+      "alt": "seven vessels 2",
+      "complete": true,
+      "naturalWidth": 177,
+      "rect": {
+        "height": 210.625,
+        "width": 168.5
+      }
+    },
+    {
+      "alt": "seven vessels 2",
+      "complete": true,
+      "naturalWidth": 177,
+      "rect": {
+        "height": 210.625,
+        "width": 168.5
+      }
+    },
+    {
+      "alt": "eleven vessels",
+      "complete": true,
+      "naturalWidth": 177,
+      "rect": {
+        "height": 210.625,
+        "width": 168.5
+      }
+    },
+    {
+      "alt": "eleven vessels",
+      "complete": true,
+      "naturalWidth": 177,
+      "rect": {
+        "height": 210.625,
+        "width": 168.5
+      }
+    },
+    {
+      "alt": "eleven vessels 2",
+      "complete": true,
+      "naturalWidth": 177,
+      "rect": {
+        "height": 210.625,
+        "width": 168.5
+      }
+    },
+    {
+      "alt": "eleven vessels 2",
+      "complete": true,
+      "naturalWidth": 177,
+      "rect": {
+        "height": 210.625,
+        "width": 168.5
+      }
+    },
+    {
+      "alt": "",
+      "complete": false,
+      "naturalWidth": 0,
+      "rect": {
+        "height": 238.2421875,
+        "width": 357
+      }
+    }
+  ],
+  "bodyText": "Skip to content\n\nDiscover our newest collection from Leia Bryans \n\nCart\nSkip to product information\nOpen media 1 in modal\nOpen media 2 in modal\n1\n/\nof\n2\nseven vessels 2\nRegular price\n$250.00 CAD\nAdd to cart\nBuy it now\nShare\n\nThis is a demonstration store. You can purchase products like this from Ninth Editions.\n\nDetails\n\n\nOriginal artwork, 2021\nGouache on paper with deckled edge\n10 x 12 inches\nUnframed \n\nSuggested Framing\n\nThin white or natural wood frame\nWe highly recommend UV protected glass to preserve the integrity of your artwork from prolonged light exposure \nAuthenticity\nArtwork is signed by the artist Leia Bryans \nShipping\n\nShipping rates are calculated by the size of the package and shipped via Canada Post within 10 business days.\n\nReturns\n\nAll artworks can be returned in their original packaging and original condition within 14 days of receipt if it is not to your liking.\n\nARTIST\n\nLeia Bryans\n\nLeia Bryans is a self-taught artist working with painting, drawing, and illustration. Bryans' artistic practice experiments with the limitations of the feminine silhouette by creating a fluid, exaggerated form—while the everyday object gives rise to a quiet joy in the ordinary. Bryans maintains a studio practice based in Toronto, ON.\n\nMore by Leia\nseven vessels 2\nRegular price\n$250.00 CAD\neleven vessels\nRegular price\n$600.00 CAD\neleven vessels 2\nRegular price\n$600.00 CAD\nBuild your collection \n\nAll our pieces are carefully chosen to reflect a cohesive, contemporary aesthetic. Simply mix and match to create your unique gallery wall.\n\nShop\nPrints\nOriginals\nArt Objects\nGift Cards\nSearch\nInfo\nOur Story\nJournal\nContact\nOur mission\n\nWe curate affordably priced pieces from the most exciting up-and-coming artists.\n\nSubscribe to our emails\nEmail\nPayment methods\n© 2026, theme-studio-demo Powered by Shopify"
+}

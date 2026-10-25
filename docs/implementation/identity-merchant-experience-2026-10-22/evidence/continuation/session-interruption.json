@@ -1,0 +1,11 @@
+{
+  "classification": "interrupted browser attempt; excluded from successful acceptance",
+  "observed": [
+    "An API request returned 401 while the synthetic account had an active session in the retained database.",
+    "Read-only diagnostic found zero session rows matching the refused cookie fingerprint.",
+    "The refused cookie issuer did not match the local identity origin on port 9002.",
+    "A fresh normal local sign-in resumed General Settings and the protected save reached Business details."
+  ],
+  "inference": "A different localhost test issuer overwrote the shared browser cookie. Different localhost ports share cookie scope.",
+  "cleanup": "Temporary diagnostics removed from merchant API transport and gateway middleware; both files match their pre-diagnostic content. No cookie, fingerprint, private issuer URL or token is exported."
+}

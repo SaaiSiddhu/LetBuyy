@@ -1,0 +1,14 @@
+{
+  "recordedAt": "2026-10-23T18:39:56.821943+00:00",
+  "runId": "f6074d90e894",
+  "scope": "READ_ONLY_PUBLIC_PROJECTION_AFTER_APPROVED_PRIVATE_MARKER_SETUP",
+  "httpStatus": 200,
+  "requestId": "0ce28805-2c60-436a-a5d7-4f05a5320dff",
+  "rows": 1,
+  "expectedCloudFound": true,
+  "privateMarkerValueLeaked": false,
+  "privateMarkerKeyLeaked": false,
+  "responseSha256": "c8b9cd8cfa618de133279d9563076ebcc9a35361e1c63e2f848bc1587a753b8d",
+  "rawPrivateEvidence0600": "/private/tmp/theme-editor-f607-cloud-marker-public-projection.json",
+  "noMutation": true
+}

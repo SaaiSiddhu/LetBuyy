@@ -1,0 +1,36 @@
+{
+  "status": "GRANTED_STANDALONE_PREFLIGHT_ONLY",
+  "requiredReviewedStatus": "GRANTED_STANDALONE_PREFLIGHT_ONLY",
+  "owner": "01a164ba-e017-7b90-9053-efc5357459a6",
+  "nativeExecutionGranted": false,
+  "materializations": [
+    {
+      "root": "/private/tmp/letbuyy-hosted-capture-native-red-20261025-01",
+      "manifestSha256": "52df919c780a7f25e4501b666b871a16d9add81141c5e0b82c2f4db489be6398"
+    },
+    {
+      "root": "/private/tmp/letbuyy-hosted-capture-native-green-20261025-01",
+      "manifestSha256": "761a9bbdf36f02e2a49013961f930c6621643446e0611d28813406105b3ee2c3"
+    }
+  ],
+  "vendorClosureSha256": "97ac14df6ed6e7590504899e2192c1a707d7b714aee60d7e2d31a0585a332c34",
+  "acceptedWitnessTestSha256": "4a7d1a5dfc21b3cd326a0fcb7a82fd778c20b313e383d8282a97f77077a8cf76",
+  "nodeRealPath": "/opt/homebrew/Cellar/node@22/22.23.3_2/bin/node",
+  "nodeSha256": "37c7004c9b9edfc14c5a31190d3c26e5a3fe669309b9e40f3f8dcb39ed31cca4",
+  "nodeVersion": "v22.23.3",
+  "instruction": "Themes alone writes the actual separately approved activation after review. This draft deliberately cannot activate the preflight.",
+  "recordedAt": "2026-10-25T00:44:21.340375+00:00",
+  "expiresAt": "2026-10-25T01:44:21.340375+00:00",
+  "authority": "RESUME_AUTHORITY_20261025_02.json",
+  "review": "HOSTED_CAPTURE_WITNESS_AND_SOURCE_REVIEW_02.json",
+  "maxAttemptsPerCandidate": 1,
+  "sequence": "RED then GREEN, standalone commands only, stop first refusal; never start native in the same execution cell",
+  "exactPreflightScriptSha256": "5a0a89e5c8a2aed2fd27ae08e4cad9031aa16cdfebb828e55cab77250fb758c7",
+  "commands": "Use only standalonePreflight entries in the exact PREPARED_COMMANDS_NOT_EXECUTED.json SHA80050b540392749945b2f93837bf4e2d63604dbe3f8e30c4f0068f1c8d0ce556",
+  "forbidden": [
+    "Native/Docker/DB/provider/browser calls",
+    "Main/current candidate or sealed source changes",
+    "Editing source/guards to force preflight PASS",
+    "Native invocation before separate terminal0 result review and explicit activation"
+  ]
+}

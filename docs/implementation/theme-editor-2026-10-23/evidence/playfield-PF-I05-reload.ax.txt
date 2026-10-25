@@ -1,0 +1,94 @@
+Browser tab: 11, Title: "Playfield lifecycle activity kit | Threadline", URL: "http://syn-threadline-ui-d11a8917.localhost:57226/product/db9fdd4f-da77-4d74-806b-759edce71270".
+1 AXWebArea Playfield lifecycle activity kit | Threadline, URL: syn-threadline-ui-d11a8917.localhost:57226/product/db9fdd4f-da77-4d74-806b-759edce71270
+	2 container
+		3 text Make room for a little curiosity.
+		4 container
+			5 button (collapsed) Description: Menu, Secondary Actions: Expand
+			6 link Description: Threadline, Value: syn-threadline-ui-d11a8917.localhost:57226/store/syn-threadline-ui-d11a8917
+			7 button (collapsed) Description: Search, Secondary Actions: Expand
+			8 link Description: Log in, Value: syn-threadline-ui-d11a8917.localhost:57226/store/syn-threadline-ui-d11a8917/customers/login
+			9 link Description: Cart ( 2 ), Value: syn-threadline-ui-d11a8917.localhost:57226/store/syn-threadline-ui-d11a8917/cart
+		10 container
+			11 container Breadcrumb
+				12 link Description: Home /, Value: syn-threadline-ui-d11a8917.localhost:57226/store/syn-threadline-ui-d11a8917
+				13 link Description: Shop /, Value: syn-threadline-ui-d11a8917.localhost:57226/store/syn-threadline-ui-d11a8917/products
+				14 text Playfield lifecycle activity kit
+			15 text Product image not supplied
+			16 heading Playfield lifecycle activity kit, Value: 1
+				17 text Playfield lifecycle activity kit
+			18 text INR 480.00 6–8 years
+			19 link Description: Contents, dimensions & materials, Value: syn-threadline-ui-d11a8917.localhost:57226/product/db9fdd4f-da77-4d74-806b-759edce71270#playfield-product-facts
+			20 container Merchant supplied warnings
+				21 heading Read before choosing, Value: 2
+					22 text Read before choosing
+				23 text Read the sample kit information.
+				24 text Source: Fictional integration fixture
+			25 text Edition
+			26 checkbox Inherited, Value: 0
+			27 checkbox Unknown facts, Value: 0
+			28 checkbox Paper, Value: 0
+			29 text Choose your options
+			30 container Selected variant facts
+				31 text Choose all options to see facts for the selected variant.
+			32 text Quantity
+			33 stepper (settable, integer) Quantity, Value: 1, ID: lb-quantity-product-detail-default
+			34 button (disabled) Add to cart
+			35 container Add Playfield lifecycle activity kit to wishlist
+				36 checkbox Description: Connect store account to use wishlist, Value: 0
+			37 button (collapsed) Description, Secondary Actions: Expand
+				38 text Description
+			39 container Description: Product contents and facts, ID: playfield-product-facts
+				40 text THE DETAILS, BEFORE YOU BUY
+				41 heading What’s in the box?, Value: 2
+					42 text What’s in the box?
+				43 content list
+					44 container
+						45 text 12 tiles
+					46 container
+						47 text 2 idea cards
+					48 container
+						49 text 1 tray
+				50 text 15 items in total, according to the merchant.
+				51 heading Know the object., Value: 2
+					52 text Know the object.
+				53 definition list
+					54 container Dimensions
+						55 text Dimensions
+					56 container
+						57 text Tray
+						58 text Length 24 cm · Width 19 cm · Height 1.5 cm
+					59 container Each tile
+						60 text Each tile
+					61 text Length 5 cm · Width 5 cm · Height 0.6 cm
+					62 container Materials
+						63 text Materials
+					64 text Wood
+				65 text Product information is supplied by the merchant. Age recommendations are guidance for the adult choosing the product.
+			66 container
+				67 heading Write a review, Value: 3
+					68 text Write a review
+				69 Your rating
+					70 radio button (settable, integer) Value: 0, ID: lb-review-star-1
+					71 checkbox Description: 1 star, Value: 0
+					72 radio button (settable, integer) Value: 0, ID: lb-review-star-2
+					73 checkbox Description: 2 stars, Value: 0
+					74 radio button (settable, integer) Value: 0, ID: lb-review-star-3
+					75 checkbox Description: 3 stars, Value: 0
+					76 radio button (settable, integer) Value: 0, ID: lb-review-star-4
+					77 checkbox Description: 4 stars, Value: 0
+					78 radio button (settable, integer) Value: 0, ID: lb-review-star-5
+					79 checkbox Description: 5 stars, Value: 0
+				80 text field (settable)
+				81 text field (settable)
+				82 text entry area (settable)
+				83 button Submit review
+		84 container
+			85 heading Threadline, Value: 3
+				86 text Threadline
+			87 heading CONTACT, Value: 4
+				88 text CONTACT
+			89 link Description: Contact us, Value: syn-threadline-ui-d11a8917.localhost:57226/store/syn-threadline-ui-d11a8917/contact
+			90 text © Threadline. All rights reserved.
+			91 link Description: Powered by LetBuyy, Value: letbuyy.com/
+
+The focused UI element is 1 AXWebArea Playfield lifecycle activity kit | Threadline, URL: syn-threadline-ui-d11a8917.localhost:57226/product/db9fdd4f-da77-4d74-806b-759edce71270

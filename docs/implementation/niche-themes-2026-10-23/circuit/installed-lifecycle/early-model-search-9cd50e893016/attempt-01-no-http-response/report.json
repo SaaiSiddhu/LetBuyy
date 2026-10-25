@@ -1,0 +1,42 @@
+{
+  "classification": "EARLY_REAL_PUBLIC_CANONICAL_SEARCH_DIAGNOSTIC_NOT_CIRCUIT_UI_ACCEPTANCE",
+  "runId": "9cd50e893016",
+  "gatewayOrigin": "http://127.0.0.1:57229",
+  "handle": "syn-threadline-ui-d11a8917",
+  "siteId": "7dfc2cb7-b06e-411c-9b2a-0b44882705be",
+  "hubId": "169ce9c6-d30a-4abf-b1e0-58a771ab88bd",
+  "grant": {
+    "sourceThreadId": "01a164a4-a342-76d3-ab33-65e021ed57db",
+    "scope": "4 logical SDK GETs, maximum6 HTTP; published Dewdrop context; no Circuit activation"
+  },
+  "startedAt": "2026-10-23T15:12:42.783Z",
+  "installedCircuitCasesCompleted": 0,
+  "installedCircuitStatus": "NOT_RUN",
+  "sdkCalls": [],
+  "exactHttpReadbacks": [],
+  "sourceStartHashes": {
+    "packages/typescript/api-client/src/index.ts": "bca9564794dc06352982fbcaa04d91bb095402d0b3f63cdeb8cfa7feab0bad47",
+    "packages/commerce-core/src/storefront-discovery.ts": "c8de3871a998df011de12791db90c868139903b5c84afb211d9e9de3a1997ff1",
+    "packages/commerce-core/src/circuit-facts.ts": "b95d4f2bc7c27bb8ebd5041d6dfb7fa42a6a9066d29e5a218e5b6f8daea0bbe6",
+    "services/api-gateway/src/lib/storefront-discovery.ts": "fa47b2c867e916ab082e5c420eed18751e4c313f98dd1ae2b19ec26de00afa37",
+    "database/supabase/migrations/386_storefront_discovery.sql": "33c2849f93fc594902e5017f00ab3141780bd06f856ce67f4a21aa77e87da81d",
+    "database/supabase/migrations/390_storefront_measurement_capabilities.sql": "6e5eb5e50cecd43acc9a663dd79c505db6c7bfdbe4e559b34d998065f88e9027",
+    "packages/theme-engine/src/circuit-discovery.ts": "160c6a61a567f87bbcab20bf337336ede6e748c1326110ab977f61ec9c14523b"
+  },
+  "sourceEndHashes": {
+    "packages/typescript/api-client/src/index.ts": "bca9564794dc06352982fbcaa04d91bb095402d0b3f63cdeb8cfa7feab0bad47",
+    "packages/commerce-core/src/storefront-discovery.ts": "c8de3871a998df011de12791db90c868139903b5c84afb211d9e9de3a1997ff1",
+    "packages/commerce-core/src/circuit-facts.ts": "b95d4f2bc7c27bb8ebd5041d6dfb7fa42a6a9066d29e5a218e5b6f8daea0bbe6",
+    "services/api-gateway/src/lib/storefront-discovery.ts": "fa47b2c867e916ab082e5c420eed18751e4c313f98dd1ae2b19ec26de00afa37",
+    "database/supabase/migrations/386_storefront_discovery.sql": "33c2849f93fc594902e5017f00ab3141780bd06f856ce67f4a21aa77e87da81d",
+    "database/supabase/migrations/390_storefront_measurement_capabilities.sql": "6e5eb5e50cecd43acc9a663dd79c505db6c7bfdbe4e559b34d998065f88e9027",
+    "packages/theme-engine/src/circuit-discovery.ts": "160c6a61a567f87bbcab20bf337336ede6e748c1326110ab977f61ec9c14523b"
+  },
+  "findings": [],
+  "status": "DIAGNOSTIC_REFUSED_OR_FAILED",
+  "error": "fetch failed",
+  "finishedAt": "2026-10-23T15:12:42.816Z",
+  "sourceStable": true,
+  "logicalSdkGetCalls": 0,
+  "additionalStatusGetCalls": 0
+}

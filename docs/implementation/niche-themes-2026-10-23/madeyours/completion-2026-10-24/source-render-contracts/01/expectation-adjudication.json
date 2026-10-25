@@ -1,0 +1,26 @@
+{
+  "classification": "SOURCE_PROBE_EXPECTATION_ADJUDICATION_PRESERVE_ORIGINAL_FAILURES",
+  "sourceSha256": "c4a294843b80b69c02863bdc51cf45a8dda2a2a2a07770bab10d07908d67fe2e",
+  "sourceCopy": "probe-source.mjs.txt",
+  "attempt01": {
+    "total": 7,
+    "pass": 3,
+    "fail": 4,
+    "error": 0
+  },
+  "corrections": [
+    {
+      "case": "SRC-TOKEN-headingFontFamily",
+      "finding": "Original oracle incorrectly expected unquoted single font. Actual renderer intentionally serializes a quoted named font with a system fallback. Check the actual first selected family and changed token instead."
+    },
+    {
+      "case": "SRC-META-DESCRIPTION",
+      "finding": "Original oracle incorrectly expected literal markup in description. Actual canonical layout explicitly uses strip_html then truncate160. Require intended plain text and no markup."
+    }
+  ],
+  "remainingOutputBindingWitnesses": [
+    "SRC-ORDER-HEADING",
+    "SRC-FAVICON"
+  ],
+  "scope": "No product source fix or runtime acceptance. Next corrected witness gets a new02 output directory."
+}

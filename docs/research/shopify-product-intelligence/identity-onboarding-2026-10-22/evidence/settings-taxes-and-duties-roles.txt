@@ -1,0 +1,61 @@
+- heading [level=1]: Taxes and duties
+- heading "Taxes and duties" [level=1]
+- heading "Tax service" [level=2]:
+- link "Manage tax service":
+- heading "Tax regions" [level=2]:
+- link "Learn more":
+- link "shipping zone":
+- textbox "Search"
+- button "Sort the results":
+- table:
+- link "India":
+- link "Australia":
+- link "Canada":
+- link "European Union":
+- link "Hong Kong SAR":
+- link "Israel":
+- link "Japan":
+- link "Malaysia":
+- link "New Zealand":
+- link "Norway":
+- link "Singapore":
+- link "South Korea":
+- link "Switzerland":
+- link "United Arab Emirates":
+- link "United Kingdom":
+- button "Previous" [disabled]:
+- button "Next":
+- link "Global collected tax report":
+- heading "Duties and import taxes" [level=2]:
+- link "Learn more":
+- paragraph:
+- paragraph:
+- button "Set up":
+- status:
+- heading "Customs information" [level=2]:
+- button "More actions":
+- paragraph:
+- paragraph:
+- paragraph:
+- paragraph:
+- heading "Additional configuration" [level=2]:
+- link "dynamic tax inclusion":
+- checkbox "Include sales tax in product price and shipping rate" [checked]
+- status:
+- paragraph:
+- paragraph:
+- checkbox "Charge sales tax on shipping"
+- link "digital products":
+- checkbox "Charge VAT on digital goods"
+- paragraph:
+- button "Learn more about sales tax":
+- status
+- status
+- status
+- paragraph
+- button "Close" [disabled]:
+- textbox "Work with Sidekick"
+- button "Add files and more":
+- button "Voice":
+- button "Open Sidekick":
+- status

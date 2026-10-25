@@ -1,0 +1,45 @@
+{
+  "runId": "ff9941a78139",
+  "merchantLookupPassword": true,
+  "merchantInitialReload": true,
+  "buyerAuthorize": {
+    "origin": "http://accounts.threadline-ff9941a78139.localhost:51235",
+    "path": "/buyer/authorize",
+    "client": "letbuyy-storefront",
+    "pkceMethod": "S256",
+    "callbackOrigin": "http://syn-threadline-ui-41eb3f07.localhost:51237",
+    "statePresent": true
+  },
+  "buyerCallback": true,
+  "buyerReload": true,
+  "merchantAfterBuyerLogin": true,
+  "buyerStoreLogoutAfterReload": true,
+  "buyerLogoutRequiredReload": true,
+  "merchantAfterBuyerLogout": true,
+  "identityBuyerRetainedAfterStoreLogout": true,
+  "buyerSecondCallback": true,
+  "finalMerchantAndBuyerRetained": true,
+  "noBrowserCookieInjection": true,
+  "ownerTabsNotNavigatedOrReloaded": true,
+  "initialTabIds": [
+    "1",
+    "19",
+    "21",
+    "22",
+    "23",
+    "26",
+    "35",
+    "37",
+    "38",
+    "39",
+    "43",
+    "44",
+    "45"
+  ],
+  "initialTabsStillPresent": true,
+  "createdTabIds": [
+    "46",
+    "47"
+  ],
+  "capturedAt": "2026-10-23T06:53:40.066Z"
+}

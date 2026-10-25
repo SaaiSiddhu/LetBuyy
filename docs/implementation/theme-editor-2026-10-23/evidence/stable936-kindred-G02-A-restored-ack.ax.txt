@@ -1,0 +1,65 @@
+Browser tab: 60, Title: "LetBuyy Admin", URL: "http://admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/online-store/themes/update?[query-redacted]".
+1 AXWebArea LetBuyy Admin, URL: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/online-store/themes/update?[query-redacted]
+	2 container
+		3 link Description: LetBuyy dashboard, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/dashboard
+		4 button Search
+		5 button Setup assistant
+		6 button Notifications
+		7 button (collapsed) Description: Switch store, current store Threadline, Secondary Actions: Expand
+			8 text TH
+			9 text Threadline
+	10 container admin-nav-drawer
+		11 container
+			12 container Primary navigation
+				13 content list
+					14 link Description: Home, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/dashboard
+					15 link Description: Orders, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/orders
+					16 container
+						17 link Description: Products, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/products
+						18 button (collapsed) Description: Toggle Products section, Secondary Actions: Expand
+					19 container
+						20 link Description: Inventory, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/products/inventory
+						21 button (collapsed) Description: Toggle Inventory section, Secondary Actions: Expand
+					22 container
+						23 link Description: Purchasing, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/products/purchase-orders
+						24 button (collapsed) Description: Toggle Purchasing section, Secondary Actions: Expand
+					25 container
+						26 link Description: Customers, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/customers
+						27 button (collapsed) Description: Toggle Customers section, Secondary Actions: Expand
+					28 container
+						29 link Description: Money, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/settings/billing
+						30 button (collapsed) Description: Toggle Money section, Secondary Actions: Expand
+					31 container
+						32 link Description: Marketing, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/coupons
+						33 button (collapsed) Description: Toggle Marketing section, Secondary Actions: Expand
+					34 container
+						35 link Description: Content, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/pages
+						36 button (collapsed) Description: Toggle Content section, Secondary Actions: Expand
+					37 link Description: Analytics, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/analytics
+			38 text Sales channels
+			39 container Sales channels
+				40 content list
+					41 container
+						42 link Description: Online Store, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/online-store
+						43 button (expanded) Description: Toggle Online Store section, Secondary Actions: Collapse
+						44 content list
+							45 link Description: Themes, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/online-store/themes
+							46 link Description: Store pages, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/online-store/pages
+							47 link Description: Preferences, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/online-store/preferences
+			48 text Apps
+			49 container Apps
+				50 content list
+					51 link Description: Add, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/apps
+		52 container Settings navigation
+			53 content list
+				54 link Description: Settings, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/settings
+	55 container Theme update — letbuyy-summit
+		56 container
+			57 heading 1
+		58 container Theme update status
+			59 button
+	60 container
+		61 text Rollback confirmed Version 28 is restored. Your newer saved draft remains available.
+		62 button Dismiss notification
+
+The focused UI element is 1 AXWebArea LetBuyy Admin, URL: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/online-store/themes/update?[query-redacted]

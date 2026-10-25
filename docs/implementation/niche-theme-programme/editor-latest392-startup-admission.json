@@ -1,0 +1,87 @@
+{
+  "recordedAt": "2026-10-23T17:45:30.006203+00:00",
+  "status": "ROOT_FRESH_CORRECTED_RUNTIME_READY_EDITOR_SOLE_UI_GRANTED",
+  "runId": "f6074d90e894",
+  "candidate": "/private/tmp/theme-editor-candidate-20261023-latest392-manualtls01",
+  "sourceCopyAdmission": {
+    "path": "docs/implementation/niche-theme-programme/editor-latest392-copy-admission.json",
+    "sha256": "d92a292c805bb9f16827f89af9e898481d5bb0db271cc4d2ece6dbff23a7f2dd"
+  },
+  "startupReadback": {
+    "path": "docs/implementation/niche-theme-programme/editor-latest392-startup-readback.json",
+    "sha256": "2aa553010e118cc8e2b8c49590338a5afbd2862496becf758f465737562a94fe"
+  },
+  "sessionId": 79090,
+  "fixtureRunnerPid": 3211,
+  "ownedIdentitySupervisorPid": 3913,
+  "origins": {
+    "identityOrigin": "http://accounts.threadline-f6074d90e894.localhost:62074",
+    "merchantOrigin": "http://admin.threadline-f6074d90e894.localhost:62075",
+    "commerceOrigin": "http://syn-threadline-ui-33be9d94.localhost:62076",
+    "checkoutOrigin": "https://checkout.localhost:62082",
+    "apiOrigin": "http://127.0.0.1:62083"
+  },
+  "site": {
+    "siteId": "f83e5e3d-1474-4378-b99b-55f8f4475b9f",
+    "subdomain": "syn-threadline-ui-33be9d94"
+  },
+  "privateStateReferenceOnly": "/private/tmp/threadline-f6074d90e894-state.json",
+  "privateStateMode": "0600",
+  "productionAppsReady": [
+    "identity",
+    "merchant",
+    "commerce"
+  ],
+  "publicHttpHealth": {
+    "identityLogin": 200,
+    "merchantUnauthenticatedRoot": 307,
+    "commerceBuyerSession": 200,
+    "ownedFixtureNonceProof": 200
+  },
+  "baseline": {
+    "products": 17,
+    "collections": 16,
+    "orders": 0,
+    "carts": 0,
+    "themesInstalled": 0,
+    "publishedRelease": null
+  },
+  "migrationBodiesVerified": {
+    "391": "f14f2252157119e56f6614decef4c4aa",
+    "392": "bdaec8db8f836e94294e4bdd9c449346"
+  },
+  "localTestEntitlement": {
+    "plan": "enterprise",
+    "canonicalLimit": null,
+    "canonicalPlanName": "enterprise",
+    "paymentOperation": false,
+    "amountPaid": 0,
+    "externalSubscriptionId": null,
+    "notPaidUpgradeAcceptance": true
+  },
+  "tls": {
+    "mode": "manual-os-trusted",
+    "actualOwnedHelperProvisioningSucceeded": true,
+    "normalBrowserPositive": "PENDING_EDITOR",
+    "trustScope": "User login SSL checkout.localhost only"
+  },
+  "sourceControls": {
+    "capturedConfirmConflict": "b7753b14",
+    "exactDefaultReplayPreserved": true,
+    "realWorkerConflict": "PENDING_AFTER_UI_ORDER"
+  },
+  "browserGrant": {
+    "soleController": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+    "phase": "Normalownerlogin/normalSave+reload/sameUUIDrename/preview+391groups/392modelquery/trustedcheckoutpositive, then all10 exactmatrices",
+    "noSessionInjection": true,
+    "primaryOrdersOnlyNormalUi": true,
+    "freshCartRestoration": "Establish fresh2Pink baseline through normalUI afterv1authoring; retain0cartstart and old2Pinkseparately; restorefreshbaselinebetweenslices"
+  },
+  "knownUnfixed": [
+    "PlayfieldPF05outercommonfacts",
+    "KindredKQA01humanfreeze"
+  ],
+  "oldFixtureRetained": "9cd50e893016/runner1337/oldtabs/drafts/twoPink/order0 unmodified",
+  "fullThemeAcceptance": false,
+  "deployed": false
+}

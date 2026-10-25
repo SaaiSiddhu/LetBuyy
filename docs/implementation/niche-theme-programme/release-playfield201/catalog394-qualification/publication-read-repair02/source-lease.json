@@ -1,0 +1,22 @@
+{
+  "recordedAt": "2026-10-24T12:01:37.522423+00:00",
+  "owner": "01a164a4-a342-76d3-ab33-65e021ed57db",
+  "status": "FRESH_THREE_PATH_SCOPE_READONLY_TENANT_CATALOGUE_AND_NATIVE_DIAGNOSTICS",
+  "files": [
+    {
+      "path": "services/api-gateway/src/lib/tenant-transaction.ts",
+      "beforeSHA256": "f0ea972435100e9a8673e9026d935ae29d58723a6063fdbce05f4ee6d13adade"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/tenant-transaction.test.ts",
+      "beforeSHA256": "a4e093d9ee492a8b7104865d228cea2e1cda04b40e90dfb4ee1aafaeec7e517c"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/playfield201-catalog394-qualification.manual.ts",
+      "beforeSHA256": "918e5a79333d1c8d47b727a80c65b8ddff4b733c1da9f93f326ec9179478dd95"
+    }
+  ],
+  "scope": "Tenant preflight reads onlyownedsite/instance; allglobalcapture/priorreleasereads andlocks occurafterexistingfixedactor/context/profilecapabilityguard underexistingservice_role; noACL/guard/schema changes. Addonlysafe ownednative privilege andshadowstage diagnostics tostopambiguous failure attribution.",
+  "native": "No retry under04; newsource/model/closure/freshgrant required",
+  "ends": "Firstsource seal"
+}

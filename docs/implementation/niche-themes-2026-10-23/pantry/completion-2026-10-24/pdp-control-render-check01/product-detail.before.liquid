@@ -1,0 +1,67 @@
+<div class="pn-theme"><section class="lb-product-detail" data-section-id="{{ section.id }}">
+  <nav class="lb-product-detail__breadcrumb" aria-label="Breadcrumb">
+    <a href="{{ routes.root_url }}">Home</a>
+    <a href="{{ routes.all_products_collection_url }}">Shop</a>
+    <span aria-current="page">{{ product.title }}</span>
+  </nav>
+  <div class="lb-product-detail__layout pn-product-layout">
+  {% if section.settings.showGallery and product.images.size > 0 %}
+  <lb-product-gallery class="lb-product-detail__gallery" data-lb-island="product-gallery">
+    <div class="lb-product-detail__gallery-main">
+      {% for image in product.images %}<img class="lb-product-detail__gallery-image" src="{{ image | image_url }}" alt="{{ product.title }}" data-lb-gallery-image data-index="{{ forloop.index0 }}"{% unless forloop.first %} hidden{% endunless %} loading="{% if forloop.first %}eager{% else %}lazy{% endif %}" decoding="async">{% endfor %}
+    </div>
+    {% if product.images.size > 1 %}
+    <div class="lb-product-detail__gallery-thumbs" role="tablist" aria-label="Product images">
+      {% for image in product.images %}<button type="button" class="lb-product-detail__gallery-thumb" data-lb-gallery-thumb data-index="{{ forloop.index0 }}" role="tab" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}" tabindex="{% if forloop.first %}0{% else %}-1{% endif %}" aria-label="Image {{ forloop.index }} of {{ product.images.size }}"><img src="{{ image | image_url }}" alt="" aria-hidden="true" loading="lazy" decoding="async"></button>{% endfor %}
+    </div>
+    {% endif %}
+  </lb-product-gallery>
+  {% endif %}
+{% if section.settings.showGallery and product.images.size == 0 %}<div class="lb-product-detail__gallery pn-empty">Product image not supplied</div>{% endif %}<section class="pn-food-facts" id="food-facts" aria-label="Ingredients and allergen information"><p class="pn-eyebrow">Read before choosing</p><h2>Inside the pack</h2><div class="pn-food-fact"><strong>Ingredients</strong><p>{% if product.food.ingredients != blank %}{{ product.food.ingredients }}{% else %}Not supplied by the merchant.{% endif %}</p></div><div class="pn-food-fact"><strong>Allergen information</strong>{% if product.food.allergens.status == 'supplied' %}<p>{{ product.food.allergens.statement }}</p><p class="pn-meta">Source: {{ product.food.allergens.source }}</p>{% else %}<p>Not supplied by the merchant.</p><div class="pn-food-unknown"><strong>Unknown is not allergen-free</strong><p>Ask the merchant before buying if this information matters for your diet.</p></div>{% endif %}</div>{% if product.food.storage != blank %}<div class="pn-food-fact"><strong>Storage</strong><p>{{ product.food.storage }}</p></div>{% endif %}{% if product.food.preparation != blank %}<div class="pn-food-fact"><strong>Preparation</strong><p>{{ product.food.preparation }}</p></div>{% endif %}{% if section.settings.showNutrition and product.food.nutritionText != blank %}<div class="pn-food-fact"><strong>Supplied nutrition information</strong><p>{{ product.food.nutritionText }}</p></div>{% endif %}</section>
+  <div class="lb-product-detail__info">
+  <h1>{{ product.title }}</h1>
+  {% if product.review_count > 0 %}<p class="lb-product-detail__rating" aria-label="Rated {{ product.rating }} out of 5">★ {{ product.rating }} <span class="lb-product-detail__rating-count">({{ product.review_count }})</span></p>{% endif %}
+  <div class="lb-product-detail__price">
+    <span class="lb-product-detail__price-current">{{ product.price | times: 100 | money_with_currency: product.currency }}</span>
+    {% if product.compare_at_price and product.compare_at_price > product.price %}
+    <s class="lb-product-detail__price-compare">{{ product.compare_at_price | times: 100 | money_with_currency: product.currency }}</s>
+    <span class="lb-product-detail__price-save">Save {{ product.compare_at_price | minus: product.price | times: 100.0 | divided_by: product.compare_at_price | round }}%</span>
+    {% endif %}
+  </div>
+<div class="pn-net-info" data-lb-food-presentation data-product-id="{{ product.id }}" data-facts="{{ product.facts_json }}">{% if product.options.size == 0 and product.food.netQuantityValue %}<p data-lb-food-net-quantity>{{ product.food.netQuantityValue }} {{ product.food.netQuantityUnit }} net per pack</p>{% if product.food.unitPriceMinor != nil %}<p data-lb-food-unit-price>{{ product.food.unitPriceMinor | money_with_currency: product.currency }} / {{ product.food.basisQuantity }} {{ product.food.netQuantityUnit }}</p>{% endif %}{% elsif product.options.size > 0 %}<p>Choose a pack. Net contents belong to the selected variant.</p>{% else %}<p>Net quantity not supplied.</p>{% endif %}<p>Quantity counts sellable packs. Shipping is calculated at checkout.</p></div>{% if product.options.size > 0 %}<details class="pn-pack-options"><summary>Pack facts by option</summary><ul>{% for variant in product.variants %}<li><strong>{{ variant.name | default: variant.title }}</strong>{% if variant.food.netQuantityValue %}: {{ variant.food.netQuantityValue }} {{ variant.food.netQuantityUnit }} net per pack{% else %}: net quantity not supplied{% endif %}{% if variant.food.unitPriceMinor != nil %} · {{ variant.food.unitPriceMinor | money_with_currency: product.currency }} / {{ variant.food.basisQuantity }} {{ variant.food.netQuantityUnit }}{% endif %}{% if variant.stock == 0 %} · unavailable{% endif %}</li>{% endfor %}</ul></details>{% endif %}
+  {% if product.options.size > 0 %}<lb-variant-picker data-lb-island="variant-picker" data-product-id="{{ product.id }}" data-variants="{{ product.variants | json }}" class="lb-product-detail__variants">{% for option in product.options %}<div class="lb-product-detail__variant-group"><span class="lb-variant-option__name">{{ option.name }}</span><div class="lb-product-detail__variant-values">{% for value in option.values %}<button type="button" data-lb-variant-option data-variant-name="{{ option.name }}" data-variant-value="{{ value }}" aria-pressed="false">{{ value }}</button>{% endfor %}</div></div>{% endfor %}<p class="lb-product-detail__variant-status" data-lb-variant-status role="status"></p></lb-variant-picker>{% endif %}
+  <div class="lb-product-detail__purchase">
+    <lb-add-to-cart data-lb-island="add-to-cart" data-product-id="{{ product.id }}" data-product-name="{{ product.title }}" data-product-price="{{ product.price }}" data-product-currency="{{ product.currency }}" data-product-url="{{ product.url }}">
+      <label class="pn-quantity-label" for="lb-quantity-{{ section.id }}">Number of packs</label>
+      <input type="number" name="quantity" id="lb-quantity-{{ section.id }}" class="lb-product-detail__quantity" value="1" min="1" inputmode="numeric">
+      <button type="button" class="lb-product-detail__cta lb-product-detail__cta--primary" data-lb-add-to-cart{% if product.available == false %} disabled{% endif %}>{% if product.available == false %}Sold out{% else %}Add to cart{% endif %}</button>
+      <span data-lb-add-to-cart-status aria-live="polite"></span>
+    </lb-add-to-cart>
+    <lb-wishlist-toggle data-lb-island="wishlist-toggle" data-product-id="{{ product.id }}" data-store-id="{{ shop.id }}" data-in-wishlist="{% if product.in_wishlist %}true{% endif %}"{% if buyer_wishlist.authenticated %} data-authenticated="true" data-account-type="buyer" data-buyer-id="{{ buyer_wishlist.buyerId }}" data-buyer-linked="{% if buyer_wishlist.linked %}true{% endif %}" data-buyer-unavailable="{% if buyer_wishlist.unavailable or buyer_wishlist.storeAccountUnavailable %}true{% endif %}"{% elsif customer %} data-authenticated="true" data-account-type="store_customer"{% endif %} data-base-path="/store/{{ shop.subdomain }}" aria-label="Add {{ product.title }} to wishlist"></lb-wishlist-toggle>
+  </div>
+  {% if section.settings.showDescription and product.description %}
+  <details class="lb-product-detail__accordion"><summary>Description</summary><div class="lb-product-detail__accordion-body">{{ product.description }}</div></details>
+  {% endif %}
+  {% if shop.policies contains 'shipping' %}
+  <details class="lb-product-detail__accordion"><summary>Shipping</summary><div class="lb-product-detail__accordion-body"><a href="{{ routes.root_url }}/shipping">Read our shipping policy</a></div></details>
+  {% endif %}
+  {% if shop.policies contains 'refund' or shop.policies contains 'returns' %}
+  <details class="lb-product-detail__accordion"><summary>Returns</summary><div class="lb-product-detail__accordion-body"><a href="{{ routes.root_url }}/returns">Read our returns policy</a></div></details>
+  {% endif %}
+  </div>
+  </div>
+  {% if section.settings.showReviews and product.reviews.size > 0 %}<div class="lb-product-reviews" data-section-id="{{ section.id }}-reviews">
+    <h2 class="lb-product-reviews__title">Customer reviews ({{ product.review_count }})</h2>
+    {% for review in product.reviews %}<article class="lb-product-review">
+      <header class="lb-product-review__head"><strong class="lb-product-review__author">{{ review.author }}</strong><span class="lb-product-review__stars" aria-label="Rated {{ review.rating }} out of 5">★ {{ review.rating }}</span>{% if review.is_verified %}<span class="lb-product-review__verified">Verified purchase</span>{% endif %}</header>
+      {% if review.title %}<h3 class="lb-product-review__heading">{{ review.title }}</h3>{% endif %}
+      {% if review.body %}<p class="lb-product-review__body">{{ review.body }}</p>{% endif %}
+      {% if review.helpful_count > 0 %}<footer class="lb-product-review__helpful">{{ review.helpful_count }} found this helpful</footer>{% endif %}
+    </article>{% endfor %}
+  </div>{% endif %}
+  {% if section.settings.showReviews %}<lb-review-form data-lb-island="review-form" data-product-id="{{ product.id }}" data-store-id="{{ shop.id }}"></lb-review-form>{% endif %}
+</section>
+</div>
+{% schema %}
+{"name":"Product Detail","tag":"section","settings":[{"type":"toggle","label":"Show gallery","default":true,"id":"showGallery"},{"type":"toggle","label":"Show description","default":true,"id":"showDescription"},{"type":"toggle","label":"Show reviews","default":true,"id":"showReviews"},{"id":"showNutrition","type":"toggle","label":"Show supplied nutrition text","default":true}],"blocks":[],"presets":[{"name":"Product Detail","settings":{},"blocks":[]}],"enabled_on":{"templates":["*"]},"disabled_on":{"templates":[]}}
+{% endschema %}

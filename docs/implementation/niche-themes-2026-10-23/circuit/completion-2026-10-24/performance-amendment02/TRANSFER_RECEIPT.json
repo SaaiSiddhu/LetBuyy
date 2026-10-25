@@ -1,0 +1,22 @@
+{
+  "recordedAt": "2026-10-24T21:00:53.486430+00:00",
+  "status": "TRANSFER_RECEIVED_EXACT_V1_COPY_CREATED_PRIVATE_ONLY",
+  "allocation": {
+    "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/CIRCUIT_PERFORMANCE_AMENDMENT_ALLOCATION_02.json",
+    "sha256": "ed2da0bcc1df517d1e87b42c736a73fb9bf9a7d6349728b2fcdce7990679a42e"
+  },
+  "priorOwnerAcknowledgment": {
+    "sourceThreadId": "01a16ce5-e5ba-7191-ab2c-a1b76947d2b5",
+    "receivedInThisCircuitTurn": true,
+    "statement": "Root has created/edited NOTHING in02 and will not compete; execute six private amendment issues, no native/DB/browser/build/provider granted."
+  },
+  "privateRoot": "/private/tmp/letbuyy-circuit-performance-prep-20261025-02",
+  "sealedV1HashesReverified": {
+    "handoff": "7a0c046f1e40b68ee7abafd8dd30a014ef207cc7a6c002bd22ebcda4dc17b1c2",
+    "protocol": "1da0007250957533dbde78864f268ad20d0437594503c28e8eefc816a547795d",
+    "suite": "f311aaaaa156dc9cbf21dd19efce7b9a1fa8eb4cd7dbc80056c177498e8d148d",
+    "manifest": "b10330b6bb862339ef678d5d9a437e48c038e3a47d57736bd70615c574c84488"
+  },
+  "currentNativeOrMainOrCandidateActions": 0,
+  "scope": "Six allowed private files plus owned evidence; no resource grant inferred."
+}

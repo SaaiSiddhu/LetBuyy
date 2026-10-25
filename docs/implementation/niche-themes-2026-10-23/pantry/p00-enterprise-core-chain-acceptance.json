@@ -1,0 +1,48 @@
+{
+  "recordedAt": "2026-10-23T16:10:29.341859+00:00",
+  "classification": "ACTUAL_ENTERPRISE_BASELINE_P00_CORE_CHAIN_PASS_ONLY",
+  "caseId": "P00",
+  "status": "PASS",
+  "runId": "9cd50e893016",
+  "candidateSourceManifestSha256": "c85083b28b6cfc8696679189d682a9e35b93f7603e54117e60a264aa109fcf0a",
+  "fixtureBaseline": "Same frozen candidate after direct-human-approved canonical synthetic Enterprise precondition; original Free refusal preserved separately",
+  "facts": {
+    "normalInstall": "Controller actual normal UI installed saved draft; existing2 instances confirmed in bounded publication proof",
+    "editorSave": "Controller actual headingA autosave to draft2",
+    "fullReloadExactMarker": "Pantry saved heading A 9cd50e893016",
+    "draftSourceVersion": 2,
+    "releaseId": "dee7f527-3b2b-43f3-aa88-18ee86599faa",
+    "releaseSha256": "0fff3985e633a547007aee9cbf9ef119e3f632d9094141ad813de7c84ad1e1be",
+    "packageVersion": "2.0.0",
+    "unauthenticatedBuyerStatus": 200,
+    "buyerResponseSha256": "cc89b36133d76f0a56fd51bcd1d014d1e9e5c83e21fb2c5d5753b4831abff2ff",
+    "markerPresent": true,
+    "pantryCssPresent": true,
+    "oldDewdropHeadingAbsent": true,
+    "orders": 0
+  },
+  "evidence": [
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/pantry-publication-A-proof.json",
+      "sha256": "39380432b7c9bf9756811fecae5a09ba341510960879a8ec70c2c43f56087777"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/pantry-public-A-readback.json",
+      "sha256": "9fc8022eb484db6b6cd1abdbc56e725cb05ab45410839dbc33c9de5595037c22"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/pantry-heading-A-reload.ax.txt",
+      "sha256": "c625e71d8864fd0cb5e65a0b22e533a7e7404fc2b1484b85d063d3792b92c873"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/pantry/enterprise-baseline-pantry-retry-observation.json",
+      "sha256": "3c67c9126074199a6456b260e874a13bff7b483a8554100949da29cc52d86ab1"
+    }
+  ],
+  "limits": [
+    "No responsive/screenshot acceptance at reported0x0 viewport",
+    "No merchant-origin runtime fix inferred",
+    "No buyer variant/cart/order/history/P12 acceptance inferred"
+  ],
+  "sharedSourcesEditedByPantry": false
+}

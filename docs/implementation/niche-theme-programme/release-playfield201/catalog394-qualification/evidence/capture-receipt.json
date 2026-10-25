@@ -1,0 +1,12 @@
+{
+  "status": "PRIVATE394_SOURCE_INPUT_PROPOSAL_NOT_ROOT_ADMISSION_NOT_NATIVE_QUALIFICATION",
+  "files": 1089,
+  "literalEdges": 1936,
+  "nonliteral": 0,
+  "sourceMigrationCount": 322,
+  "maximum": 393,
+  "closureSha256": "bc02ecb99fee93e9596f2b3a6623d743062bee0ba5bb5645828cab1d198f50e4",
+  "beforeAfterDiscoveryExact": true,
+  "noMainWrites": true,
+  "noNativeOrBuild": true
+}

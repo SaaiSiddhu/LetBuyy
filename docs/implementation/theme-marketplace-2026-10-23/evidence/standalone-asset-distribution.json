@@ -1,0 +1,7 @@
+{
+  "distributedAt": "2026-10-23T14:03:29+0530",
+  "source": "apps/commerce/web/public/theme-previews/threadline-2.0.0.webp",
+  "destination": "apps/frozen/theme-store/public/theme-previews/threadline-2.0.0.webp",
+  "sha256": "e7c4df735a07dbde53701aa23880a22d72b9ef3e2868dfe0f0bf3e8600794f53",
+  "reason": "Exact existing canonical catalog thumbnail was missing in the reopened standalone app; no new image or code import."
+}

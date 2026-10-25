@@ -1,0 +1,13 @@
+{
+  "status": "PRIVATE394_RUNTIME_AND_DECLARATION_INVENTORY_V4_NOT_ROOT_ADMISSION_NOT_NATIVE_QUALIFICATION",
+  "files": 1155,
+  "literalEdges": 1954,
+  "literalJsRuntimeEdgesAudited": 13,
+  "nonliteral": 0,
+  "sourceMigrationCount": 322,
+  "maximum": 393,
+  "closureSha256": "ea3a26dbd4016a8fc65b9c51410dcad2370391be452dfebd4888c4b1e7799608",
+  "beforeAfterDiscoveryExact": true,
+  "noMainWrites": true,
+  "noNativeOrBuild": true
+}

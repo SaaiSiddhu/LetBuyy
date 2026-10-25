@@ -1,0 +1,24 @@
+{
+  "recordedAt": "2026-10-24T03:37:03.882941+00:00",
+  "runId": "936e5f577646",
+  "case": "M01",
+  "status": "PASS",
+  "checks": {
+    "privateMetadataActuallyNonempty": true,
+    "siblingDigestExact": true,
+    "stockExact": true,
+    "inventoryDigestExact": true,
+    "v1Restored": true,
+    "allSixWereChanged": true
+  },
+  "setupClass": "Canonical API-only private sentinel setup, not merchant UI proof",
+  "setup": "stable936-M01-cloud-private-marker-setup.json",
+  "ui": "stable936-M01-private-siblings-six-fields-reloaded.ax.txt",
+  "readbacks": [
+    "stable936-cloud-private-before-readback.json",
+    "stable936-cloud-private-saved-readback.json",
+    "stable936-cloud-private-restored-readback.json"
+  ],
+  "publicAX": "stable936-M01-public-private-fields-absent.ax.txt",
+  "note": "CurrentpublicDOM read separately observed no supplier/cost values or private keys, ingredients present. Product version opaque9\u219211\u219213."
+}

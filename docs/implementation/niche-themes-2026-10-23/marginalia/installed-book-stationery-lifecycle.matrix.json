@@ -1,0 +1,478 @@
+{
+  "classification": "PREPARED_DATA_ONLY_ALL_ACTUAL_CASES_NOT_RUN",
+  "owner": "Editor owns the only fresh fixture/seed/publication helper; root routes this bounded data and matrix there.",
+  "productRequirement": {
+    "book": "book-editions-create-product.plan.json replaces the existing books plan entry before creation; same one product slot with3 canonical edition variants.",
+    "stationery": "stationery-create-product.plan.json is the distinct14th product; never combine book/stationery leaves.",
+    "additionalProductCount": 1,
+    "newFixtureHarness": false
+  },
+  "preconditions": [
+    "Root admits final whole-source/registry/Editor checkpoint and authorizes the sole fresh owned fixture.",
+    "Final immutable v2 catalog/install/publish receipts and real created product/variant/order UUIDs are available; proposal1686 itself remains held.",
+    "Use owner’s existing fresh INR store/buyer/COD/address/session workflow; no old fixture/session is repurposed.",
+    "Bind exact two-product collection membership using existing canonical collection controls; this matrix creates no alternate collection/API system.",
+    "Runtime commands revalidate actual store IDs, runId-substituted SKUs/handles and resolved local media URLs through canonical schemas."
+  ],
+  "bindings": {
+    "product.books": null,
+    "books.en_hardback": null,
+    "books.hi_paperback": null,
+    "books.en_paperback_oos": null,
+    "product.stationery": null,
+    "collection.books_and_paper": null,
+    "cart.book": null,
+    "cart.stationery": null,
+    "order.id": null,
+    "order.book": null,
+    "order.stationery": null
+  },
+  "existingHooks": {
+    "discovery": "form.mg-filters; name=search/sort/books_kind/books_author/books_language/books_format/books_ruling; nav[aria-label=\"Applied filters\"] a uses canonical clear_url.",
+    "edition": "lb-variant-picker[data-product-id], [data-lb-variant-option][data-variant-name=\"Edition\"], [data-lb-selected-variant-facts] current data-variant-id/state, .mg-edition[data-variant-id].",
+    "paper": "Scoped .mg-facts Paper and materials rows; no book-only controls or fabricated variant.",
+    "purchase": "Existing lb-add-to-cart, [name=\"quantity\"], [data-lb-add-to-cart], [data-lb-buy-now], lb-cart/lb-cart-drawer; no new cart code.",
+    "history": "Existing customer-order-detail template and .lb-order-facts/.lb-order-facts__text; canonical buyer/merchant readback maps saved niche facts, not live products.",
+    "merchant": "Existing MarginaliaFactsEditor/MarginaliaVariantFactsEditor inside the canonical product save/recovery path."
+  },
+  "expectedHistory": {
+    "book": {
+      "orderLineBinding": "order.book",
+      "productBinding": "product.books",
+      "variantBinding": "books.en_hardback",
+      "quantity": 1,
+      "unitPriceMajorInr": 590,
+      "snapshotOracleOnly": {
+        "version": 1,
+        "facts": {
+          "books": {
+            "kind": "book",
+            "subjects": [
+              "Essays"
+            ],
+            "authors": [
+              "Mira Sen"
+            ],
+            "language": "English",
+            "format": "hardback",
+            "edition": "Illustrated second printing",
+            "pages": 192,
+            "dimensions_mm": {
+              "width": 156,
+              "height": 234
+            }
+          }
+        },
+        "selected_options": [
+          {
+            "name": "Edition",
+            "value": "English hardback"
+          }
+        ]
+      },
+      "buyerOrderTextContains": [
+        "Saved options",
+        "Edition: English hardback",
+        "Authors: Mira Sen",
+        "Language: English",
+        "Format: Hardback",
+        "Edition: Illustrated second printing",
+        "Pages: 192",
+        "Dimensions: Width 156 mm · Height 234 mm"
+      ]
+    },
+    "stationery": {
+      "orderLineBinding": "order.stationery",
+      "productBinding": "product.stationery",
+      "variantBinding": null,
+      "quantity": 2,
+      "unitPriceMajorInr": 320,
+      "snapshotOracleOnly": {
+        "version": 1,
+        "facts": {
+          "books": {
+            "kind": "stationery",
+            "paper_gsm": 100,
+            "dimensions_mm": {
+              "width": 148,
+              "height": 210
+            },
+            "page_count": 96,
+            "sheet_count": 48,
+            "ruling": "lined",
+            "binding": "Thread sewn",
+            "included": [
+              "One lined notebook"
+            ],
+            "materials": "Paper pages with a synthetic olive cover."
+          }
+        }
+      },
+      "buyerOrderTextContains": [
+        "Item type: Stationery",
+        "Paper weight: 100 g/m²",
+        "Page count: 96",
+        "Sheet count: 48",
+        "Ruling: lined",
+        "Dimensions: Width 148 mm · Height 210 mm"
+      ]
+    }
+  },
+  "laterCatalogEdits": {
+    "book": {
+      "bindingKey": "books.en_hardback",
+      "retainDurableVariantUuid": true,
+      "fields": {
+        "title": "Marathi spiral edition",
+        "price": 690,
+        "options": {
+          "Edition": "Marathi spiral edition"
+        },
+        "metadata": {
+          "books": {
+            "kind": "book",
+            "authors": [
+              "Revised catalogue author"
+            ],
+            "language": "Marathi",
+            "format": "spiral-bound",
+            "edition": "Revised fixture printing",
+            "pages": 224,
+            "dimensions_mm": {
+              "width": 170,
+              "height": 240
+            }
+          }
+        }
+      },
+      "productOptionsAfter": [
+        {
+          "name": "Edition",
+          "values": [
+            "Marathi spiral edition",
+            "Hindi paperback",
+            "English paperback unavailable"
+          ]
+        }
+      ],
+      "stockPolicy": "Omit stock on the existing-variant edit to preserve the server quantity after checkout; retain both other durable variants and all unrelated metadata through the existing merchant save path."
+    },
+    "stationery": {
+      "bindingKey": "product.stationery",
+      "fields": {
+        "name": "Marginalia lifecycle dotted notebook",
+        "price": 380,
+        "metadata": {
+          "books": {
+            "kind": "stationery",
+            "paper_gsm": 120,
+            "dimensions_mm": {
+              "width": 150,
+              "height": 215
+            },
+            "page_count": 120,
+            "sheet_count": 60,
+            "ruling": "dotted",
+            "binding": "Thread sewn",
+            "included": [
+              "One dotted notebook"
+            ],
+            "materials": "Paper pages with a synthetic olive cover."
+          }
+        }
+      },
+      "stockPolicy": "Preserve current stock after ordered quantity2; do not reset it to initial6."
+    }
+  },
+  "cases": [
+    {
+      "id": "MG-ID-01",
+      "scope": "canonical creation/readback",
+      "status": "NOT_RUN",
+      "runtimeBindings": [
+        "product.books",
+        "books.en_hardback",
+        "books.hi_paperback",
+        "books.en_paperback_oos",
+        "product.stationery"
+      ],
+      "steps": [
+        "Sole Editor fixture owner validates and creates the books entry and separate14th stationery entry through its existing helper.",
+        "Record acknowledged product UUIDs and all three relational book variant UUIDs; read back exact inline metadata and options."
+      ],
+      "expected": [
+        "Distinct books.kind=book and books.kind=stationery products; no combined union leaves.",
+        "All book variant UUIDs distinct and owned by the acknowledged book product.",
+        "No IDs fabricated from title/SKU/option index; no stationery variant is invented."
+      ],
+      "evidence": null
+    },
+    {
+      "id": "MG-INSTALL-01",
+      "scope": "installed source/resource persistence",
+      "status": "NOT_RUN",
+      "runtimeBindings": [],
+      "steps": [
+        "Use the sole owner’s final admitted Marginalia2.0.0 package/catalog/instance IDs and immutable release bytes; do not use the public demo dispatcher.",
+        "Bind the subject-index product to product.books, the reading shelf to the owner’s canonical two-product collection, and the paper editorial link to the acknowledged stationery PDP.",
+        "Follow the parent Editor plan for save, local publish and reload."
+      ],
+      "expected": [
+        "Installed slug letbuyy-dawn and stable catalog UUID7b669c70-0000-4000-8000-000000000007; package/instance/version IDs come from real receipts.",
+        "Saved resource IDs survive reload; only explicit fixture products/membership are used.",
+        "No installation/default seed or second fixture/publish flow."
+      ],
+      "evidence": null
+    },
+    {
+      "id": "MG-BK-EN-01",
+      "scope": "selected edition",
+      "status": "NOT_RUN",
+      "runtimeBindings": [
+        "books.en_hardback"
+      ],
+      "steps": [
+        "Open the real book PDP and choose Edition=English hardback through the existing native picker."
+      ],
+      "expected": [
+        "Selected facts panel UUID=books.en_hardback; Authors=Mira Sen; Language=English; Format=hardback; Edition=Illustrated second printing; Dimensions=156 × 234 mm.",
+        "Matching .mg-edition row shows192 pages; price₹590 and purchase enabled.",
+        "Do not infer selected author/language from common facts, SKU or row position."
+      ],
+      "evidence": null
+    },
+    {
+      "id": "MG-BK-HI-01",
+      "scope": "selected edition switch",
+      "status": "NOT_RUN",
+      "runtimeBindings": [
+        "books.hi_paperback"
+      ],
+      "steps": [
+        "Switch the same PDP to Edition=Hindi paperback."
+      ],
+      "expected": [
+        "Selected panel UUID=books.hi_paperback; Authors=सिंथेटिक लेखक; Language=Hindi; Format=paperback; Edition=First printing; Dimensions=140 × 216 mm.",
+        "Matching comparison row has160 pages; price₹420 and purchase enabled.",
+        "No stale Mira Sen/hardback/156 × 234 facts in the selected panel."
+      ],
+      "evidence": null
+    },
+    {
+      "id": "MG-BK-OOS-01",
+      "scope": "unavailable edition",
+      "status": "NOT_RUN",
+      "runtimeBindings": [
+        "books.en_paperback_oos"
+      ],
+      "steps": [
+        "Select Edition=English paperback unavailable.",
+        "Attempt the normal purchase affordance; use the parent owner’s canonical negative stock check if a direct server rejection is required."
+      ],
+      "expected": [
+        "UUID=books.en_paperback_oos; Authors=Dev Rao; English/paperback/Third printing;176 pages;148 × 210 mm;₹450; stock0.",
+        "Unavailable status and both add/buy actions disabled; no line or stock effect on rejected acceptance."
+      ],
+      "evidence": null
+    },
+    {
+      "id": "MG-PAPER-01",
+      "scope": "separate stationery PDP",
+      "status": "NOT_RUN",
+      "runtimeBindings": [
+        "product.stationery"
+      ],
+      "steps": [
+        "Open the acknowledged stationery product."
+      ],
+      "expected": [
+        "Name=Marginalia lifecycle lined notebook;₹320; no variant picker required and canonical cart variant identity is null.",
+        "Paper and materials facts:100 gsm;148 × 210 mm;96 pages;48 sheets;lined;Thread sewn;One lined notebook.",
+        "96=2×48; page/sheet facts describe one notebook, never sellable quantity.",
+        "No authors/language/book-format/ISBN shown as stationery facts."
+      ],
+      "evidence": null
+    },
+    {
+      "id": "MG-RULING-01",
+      "scope": "real supplied ruling facets",
+      "status": "NOT_RUN",
+      "runtimeBindings": [],
+      "steps": [
+        "Use the real collection and search response for the owner’s two-product membership.",
+        "Choose books_kind=stationery and books_ruling=lined through the rendered form."
+      ],
+      "expected": [
+        "Real supplied books capability/ruling facet enables the Stationery chooser; submitted value=lined.",
+        "Only the separate stationery product matches; supplied count1 is a product count, not stock6/pages96/sheets48.",
+        "No invented blank/dotted/grid choices before the later catalog edit; a selected zero-result value remains recovery data."
+      ],
+      "evidence": null
+    },
+    {
+      "id": "MG-AUTHOR-01",
+      "scope": "same-variant author/language/format discovery",
+      "status": "NOT_RUN",
+      "runtimeBindings": [],
+      "steps": [
+        "Query books_author=Mira Sen, then add books_language=English and books_format=hardback.",
+        "Separately query books_language=Hindi and books_format=paperback.",
+        "Query the impossible author=Mira Sen + language=Hindi conjunction and English + paperback."
+      ],
+      "expected": [
+        "First positive has only books.en_hardback as the matching witness; second has books.hi_paperback.",
+        "Impossible conjunctions return zero, despite independent positive controls; do not combine facts across durable variants.",
+        "English paperback is unavailable, so it cannot supply a positive in-stock witness.",
+        "PDP selected price follows its UUID; do not silently replace the persisted listing price with a witness price."
+      ],
+      "evidence": null
+    },
+    {
+      "id": "MG-QUERY-01",
+      "scope": "search/sort/pagination",
+      "status": "NOT_RUN",
+      "runtimeBindings": [],
+      "steps": [
+        "On both collection and search, search Marginalia lifecycle with limit1; use sort=name/price-asc/price-desc.",
+        "Apply book or stationery category/kind/ruling filters using real supplied values, while retaining country_of_origin=India and collection scope."
+      ],
+      "expected": [
+        "Canonical server page/total/sort match the acknowledged dataset; no client-side catalog filtering.",
+        "Changing sort/Apply preserves all unedited canonical fields and resets page1; no duplicate scalar fields.",
+        "With the unfiltered two-product scope, ascending unit base price puts₹320 stationery before₹420 book; selected English hardback still costs₹590."
+      ],
+      "evidence": null
+    },
+    {
+      "id": "MG-CLEAR-01",
+      "scope": "independent clear/zero-result recovery",
+      "status": "NOT_RUN",
+      "runtimeBindings": [],
+      "steps": [
+        "Apply stationery/ruling and independent search/country/category/limit/sort/collection fields; follow only the ruling active-filter clear_url.",
+        "Use an impossible book author/language query and clear only its author.",
+        "On a valid zero-result cross-niche query, include repeated connector=usb-c&connector=hdmi and clear usb-c independently."
+      ],
+      "expected": [
+        "Each clear uses its exact canonical active_filters[].clear_url, resets page1 and retains all unedited values.",
+        "Clearing usb-c keeps hdmi; clearing author keeps language/format; clearing ruling keeps stationery kind/country/category/search/limit.",
+        "Missing/empty supplied metadata cannot invent capability or discard current hidden filters."
+      ],
+      "evidence": null
+    },
+    {
+      "id": "MG-CART-01",
+      "scope": "canonical cart",
+      "status": "NOT_RUN",
+      "runtimeBindings": [
+        "cart.book",
+        "cart.stationery"
+      ],
+      "steps": [
+        "Select books.en_hardback, quantity1, and use existing add-to-cart.",
+        "Add stationery quantity2 through its existing PDP/cart path."
+      ],
+      "expected": [
+        "Two distinct canonical lines; book variant UUID matches its acknowledgement, stationery variant=null.",
+        "Quantities are1 book and2 notebooks, not pages/sheets. Unit prices₹590 and₹320; line amounts₹590 and₹640.",
+        "Requests contain canonical product/variant/quantity only; no client-authored accepted facts/snapshot or trusted totals."
+      ],
+      "evidence": null
+    },
+    {
+      "id": "MG-CART-RELOAD-01",
+      "scope": "cart persistence",
+      "status": "NOT_RUN",
+      "runtimeBindings": [
+        "cart.book",
+        "cart.stationery"
+      ],
+      "steps": [
+        "Reload the owned buyer session/cart through existing canonical hydration and server cart readback."
+      ],
+      "expected": [
+        "Same two accepted line IDs/product IDs/selected variant IDs, quantities and facts after reload.",
+        "Do not rebuild selected edition by mutable title/SKU or replace server acceptance with a browser mock."
+      ],
+      "evidence": null
+    },
+    {
+      "id": "MG-COD-01",
+      "scope": "local COD",
+      "status": "NOT_RUN",
+      "runtimeBindings": [
+        "order.id",
+        "order.book",
+        "order.stationery"
+      ],
+      "steps": [
+        "Use the sole owner’s canonical local hosted checkout/customer/address/COD configuration.",
+        "Confirm once and exercise only its existing idempotent reload/receipt recovery."
+      ],
+      "expected": [
+        "Exactly one local COD order for the accepted cart; preserve canonical idempotency.",
+        "Item subtotal₹1230 before actual server tax/shipping/discount adjustments; record the server-computed grand total rather than inventing one.",
+        "No real PSP capture/message or live deployment. Capture acknowledged order/line IDs and accepted book+paper niche snapshots."
+      ],
+      "evidence": null
+    },
+    {
+      "id": "MG-HIST-BASELINE-01",
+      "scope": "historical snapshot baseline",
+      "status": "NOT_RUN",
+      "runtimeBindings": [],
+      "steps": [
+        "Read buyer and merchant order views/readback before any later catalog edit.",
+        "Record the immutable server product_snapshot.niche / canonical niche_snapshot and its line identity."
+      ],
+      "expected": [
+        "Book snapshot contains saved Edition:English hardback and original Mira Sen/English/hardback/192/156 × 234 facts.",
+        "Paper snapshot contains lined/100gsm/96pages/48sheets/148 × 210mm facts per notebook with line quantity2.",
+        "Use expectedHistory as an oracle only; never submit it to a cart/order API."
+      ],
+      "evidence": null
+    },
+    {
+      "id": "MG-LATE-EDIT-01",
+      "scope": "existing merchant product edit",
+      "status": "NOT_RUN",
+      "runtimeBindings": [],
+      "steps": [
+        "Using existing product/variant editors, apply laterCatalogEdits after COD acceptance.",
+        "Use the bound book variant UUID even after changing its visible title and Edition option; retain all other variant IDs and stock omissions."
+      ],
+      "expected": [
+        "The same book UUID now displays Marathi spiral edition, Revised catalogue author, Marathi/spiral-bound,224 pages,170 × 240mm and₹690.",
+        "The separate paper product now displays dotted,120gsm,120pages/60sheets,150 × 215mm and₹380.",
+        "No theme/source mutation or reseeding; original acknowledged IDs remain the identity."
+      ],
+      "evidence": null
+    },
+    {
+      "id": "MG-HIST-AFTER-EDIT-01",
+      "scope": "immutable historical facts/options",
+      "status": "NOT_RUN",
+      "runtimeBindings": [],
+      "steps": [
+        "Reload canonical buyer and merchant historical order views/readback after the live catalog changes.",
+        "Compare the exact prior accepted snapshots and selected_options for each acknowledged line."
+      ],
+      "expected": [
+        "Book historical line remains Edition:English hardback, Mira Sen, English, Hardback, Illustrated second printing,192 pages,Width156mm/Height234mm and₹590.",
+        "Paper historical line remains lined,100g/m²,96 pages,48 sheets,Width148mm/Height210mm,quantity2 and₹320/unit.",
+        "No current Marathi/spiral/dotted/120gsm/224-page catalog facts may replace the scoped historical facts.",
+        "Canonical stored snapshot/options and accepted totals remain unchanged; no live catalog fallback."
+      ],
+      "evidence": null
+    }
+  ],
+  "execution": {
+    "allActualStatuses": "NOT_RUN",
+    "productCreated": false,
+    "resourceStarted": false,
+    "editorFilesChanged": false,
+    "sharedSourceChanged": false,
+    "proposalRegenerated": false,
+    "sqlEmitted": false
+  }
+}

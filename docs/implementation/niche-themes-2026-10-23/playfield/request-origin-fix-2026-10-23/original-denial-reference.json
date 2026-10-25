@@ -1,0 +1,25 @@
+{
+  "recordedAt": "2026-10-23T15:12:57.020656+00:00",
+  "scope": "Sanitized original saved runtime denial reference; owner file left untouched.",
+  "ownerEvidence": {
+    "path": "docs/implementation/theme-editor-2026-10-23/evidence/dewdrop-browser-diagnostics.json",
+    "sha256AtRead": "cde0f8df848aec42c89bfd605f9a9e8fe3b6d7134fae58865232e234e354ef57"
+  },
+  "savedDenialFields": [
+    {
+      "path": [
+        "cases",
+        1,
+        "observations",
+        0
+      ],
+      "value": "ActualCloudRinse normalUI Directions edit→Saveproduct rejects This change must originate from this merchant app; unsaved draft kept and controls frozen."
+    }
+  ],
+  "originalGuard": {
+    "path": "docs/implementation/niche-themes-2026-10-23/playfield/request-origin-fix-2026-10-23/original-request-origin.ts",
+    "sha256": "c288af9f88b5919f09c28391625801ee0c1331544085e01a60ad9252e4934631"
+  },
+  "actualInternalNextUrlInspected": false,
+  "note": "Browser denial is saved by Editor. This task used only in-memory installed NextRequest; direct run URL remains intact. Normalized route-URL mismatch is a separate modeled reproduction; controlled-next-candidate browser retest remains required."
+}

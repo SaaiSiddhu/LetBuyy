@@ -1,0 +1,94 @@
+Browser tab: 8, Title: "LetBuyy Admin", URL: "http://localhost:9001/ux-audit-1022/analytics".
+0 AXWebArea LetBuyy Admin, URL: localhost:9001/ux-audit-1022/analytics
+	1 container
+		2 link Description: LetBuyy dashboard, Value: localhost:9001/ux-audit-1022/dashboard
+		3 button Search
+		4 button Setup assistant
+		5 button Notifications
+		6 button (collapsed) Description: Switch store, current store UX Research Fixture, Secondary Actions: Expand
+			7 text UR
+			8 text UX Research Fixture
+	9 container admin-nav-drawer
+		10 container
+			11 container Primary navigation
+				12 content list
+					13 link Description: Home, Value: localhost:9001/ux-audit-1022/dashboard
+					14 link Description: Orders, Value: localhost:9001/ux-audit-1022/orders
+					15 container
+						16 link Description: Products, Value: localhost:9001/ux-audit-1022/products
+						17 button (collapsed) Description: Toggle Products section, Secondary Actions: Expand
+					18 container
+						19 link Description: Inventory, Value: localhost:9001/ux-audit-1022/products/inventory
+						20 button (collapsed) Description: Toggle Inventory section, Secondary Actions: Expand
+					21 container
+						22 link Description: Purchasing, Value: localhost:9001/ux-audit-1022/products/purchase-orders
+						23 button (collapsed) Description: Toggle Purchasing section, Secondary Actions: Expand
+					24 container
+						25 link Description: Customers, Value: localhost:9001/ux-audit-1022/customers
+						26 button (collapsed) Description: Toggle Customers section, Secondary Actions: Expand
+					27 container
+						28 link Description: Money, Value: localhost:9001/ux-audit-1022/settings/billing
+						29 button (collapsed) Description: Toggle Money section, Secondary Actions: Expand
+					30 container
+						31 link Description: Marketing, Value: localhost:9001/ux-audit-1022/coupons
+						32 button (collapsed) Description: Toggle Marketing section, Secondary Actions: Expand
+					33 container
+						34 link Description: Content, Value: localhost:9001/ux-audit-1022/pages
+						35 button (collapsed) Description: Toggle Content section, Secondary Actions: Expand
+					36 link Description: Analytics, Value: localhost:9001/ux-audit-1022/analytics
+			37 text Sales channels
+			38 container Sales channels
+				39 content list
+					40 container
+						41 link Description: Online Store, Value: localhost:9001/ux-audit-1022/online-store
+						42 button (collapsed) Description: Toggle Online Store section, Secondary Actions: Expand
+			43 text Apps
+			44 container Apps
+				45 content list
+					46 link Description: Add, Value: localhost:9001/ux-audit-1022/apps
+		47 container Settings navigation
+			48 content list
+				49 link Description: Settings, Value: localhost:9001/ux-audit-1022/settings
+	50 container admin-page-scroll
+		51 text Your site is in 
+		52 text draft
+		53 text  mode. It is not visible to visitors yet.
+		54 container
+			55 heading Analytics, Value: 1
+				56 text Analytics
+			57 button Refresh
+			58 container
+				59 heading Reporting period, Value: 2
+					60 text Reporting period
+				61 text Choose the range used by the summary cards and order breakdown. Date range
+				62 pop up button (collapsed, settable) Date range, Value: Last 30 days, Secondary Actions: Expand
+					63 menu
+						64 Last 7 days
+						65 (selected) Last 30 days
+						66 Last 90 days
+			67 text Revenue ₹0 Last 30 days Orders 0 0 orders placed Average order value ₹0 Calculated from settled order data Products 0 No products yet
+			68 heading Analytics will appear after your first activity, Value: 3
+				69 text Analytics will appear after your first activity
+			70 text Add products, receive orders, and LetBuyy will summarize the performance signals here.
+			71 link Description: Customize storefront, Value: localhost:9001/ux-audit-1022/online-store/themes
+			72 link Description: Add product, Value: localhost:9001/ux-audit-1022/products/new
+			73 container
+				74 heading Orders by status, Value: 2
+					75 text Orders by status
+				76 text Monitor where orders are waiting for merchant action. Pending 0% 0 Confirmed 0% 0 Shipped 0% 0 Delivered 0% 0 Cancelled 0% 0
+			77 container
+				78 heading Monthly revenue, Value: 2
+					79 text Monthly revenue
+				80 text Revenue trend data appears when the analytics service returns monthly buckets.
+				81 heading Monthly revenue is not available yet, Value: 3
+					82 text Monthly revenue is not available yet
+				83 text The current analytics endpoint returns summary totals and order status counts. Monthly revenue buckets can be shown here when that field is populated.
+			84 container
+				85 heading Next best actions, Value: 2
+					86 text Next best actions
+				87 text Move from insight to action without leaving the analytics workspace.
+				88 link Description: Review orders Prioritize pending and confirmed orders., Value: localhost:9001/ux-audit-1022/orders
+				89 link Description: Tune catalog Update low-signal products and inventory., Value: localhost:9001/ux-audit-1022/products
+				90 link Description: Improve storefront Adjust theme, content, and conversion cues., Value: localhost:9001/ux-audit-1022/online-store/themes
+
+The focused UI element is 36 link Description: Analytics, URL: localhost:9001/ux-audit-1022/analytics

@@ -1,0 +1,44 @@
+{
+  "recordedAt": "2026-10-24T08:43:11.511268+00:00",
+  "classification": "OFFLINE_PACKET_INTEGRITY_NOT_APPLICATION_TEST_OR_INDEPENDENT_REVIEW",
+  "checks": {
+    "unique_case_ids": true,
+    "original_14_exact": true,
+    "all_current_cases_NOT_RUN": true,
+    "all_current_operations_NOT_RUN": true,
+    "all_current_runtime_and_observations_empty": true,
+    "new_certification_flags_false": true,
+    "all_templates_mapped": true,
+    "all_sectionDefinitions_mapped": true,
+    "all_sectionInstances_mapped": true,
+    "all_blockDefinitions_mapped": true,
+    "all_standalonePackageBlocks_mapped": true,
+    "all_fieldDeclarations_mapped": false,
+    "all_catalogueFactControls_mapped": true,
+    "original_failures_retained": true,
+    "all_saved_historical_evidence_hashes_exact": true,
+    "preexisting_owned_evidence_and_M1_preserved": true,
+    "pinned_read_inputs_unchanged": false,
+    "private_proposal_not_applied": true,
+    "templates_match_artifact": true,
+    "section_instances_match_artifact": true,
+    "section_types_match_artifact": true,
+    "field_count_matches_artifact": true
+  },
+  "checksPassed": 20,
+  "checksFailed": 2,
+  "preservedFiles": 896,
+  "preservationMismatches": [],
+  "changedReadInputs": [
+    "docs/implementation/niche-theme-programme/completion-2026-10-24/EXECUTION_RUNBOOK.md"
+  ],
+  "actualBrowserRuntimeDatabaseBuildProviderCasesExecuted": 0,
+  "mechanicalCaseGroups": 381,
+  "original14CurrentResults": {
+    "PASS": 0,
+    "FAIL": 0,
+    "NOT_RUN": 14
+  },
+  "privateProposal": "UNAPPLIED_UNTESTED",
+  "reviewer": "same author; independent review pending"
+}

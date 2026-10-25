@@ -1,0 +1,34 @@
+{
+  "recordedAt": "2026-10-23T15:09:02.523706+00:00",
+  "status": "SOURCE_RELEASED_FUTURE_CANDIDATE_ONLY_NOT_LIVE_FIXED",
+  "source": {
+    "path": "services/api-gateway/src/__tests__/owned-db/threadline-browser-fixture.ts",
+    "oldSha256": "0a8677cc7036fa773e66782a4d9772887897cc762ed88975fd9309afea9aecc4",
+    "sha256": "dbf1aa0cac8440de938ab1f151cd53112e3cd5915790a5b6b907258bf745c5ed"
+  },
+  "exactChange": "Only merchant app NEXT_PUBLIC_STOREFRONT_URL uses exact canonical platform http://localhost:sameCommercePort. Buyer commerceOrigin stays exact tenant origin. Existing CSP computes its existing exact origin allowlist.",
+  "validation": {
+    "existingFocusedTests": 17,
+    "failed": 0,
+    "skipped": 0,
+    "gatewayNoEmitExitCode": 0,
+    "livePreviewRetest": "NOT_RUN_CURRENT_CANDIDATE_FROZEN"
+  },
+  "logs": {
+    "tests": "/private/tmp/theme-editor-platform-preview-origin-tests.log",
+    "typecheck": "/private/tmp/theme-editor-platform-preview-origin-tsc.log"
+  },
+  "currentFixturePreserved": {
+    "runId": "9cd50e893016",
+    "candidate": "/private/tmp/theme-editor-candidate-20261023-final02",
+    "oldSourceStillRunning": true
+  },
+  "notChanged": [
+    "CSP/frameAncestors/securitylimits",
+    "identityhost/session",
+    "productrecipes",
+    "collectiondefinitions",
+    "observer/replay",
+    "currentruntimeprocesses"
+  ]
+}

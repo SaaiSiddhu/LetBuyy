@@ -1,0 +1,40 @@
+{
+  "name": "@letbuyy/theme-engine",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./theme-settings": "./src/theme-settings.ts",
+    "./theme-bundle": "./src/theme-bundle.ts",
+    "./theme-renderer": "./src/theme-renderer.ts",
+    "./theme-registry": "./src/theme-registry.ts",
+    "./editor-bridge-protocol": "./src/editor-bridge-protocol.ts",
+    "./server-dom": {
+      "worker": "./src/server-dom-unavailable.ts",
+      "browser": "./src/server-dom-unavailable.ts",
+      "default": "./src/server-dom-runtime.ts"
+    }
+  },
+  "bin": {
+    "letbuyy-theme": "./src/theme-cli.ts"
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "test": "tsx --test test/*.test.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@letbuyy/shared-types": "workspace:*",
+    "dompurify": "^3.4.9",
+    "jsdom": "^29.1.1",
+    "liquidjs": "^10.27.0",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/jsdom": "^28.0.3",
+    "typescript": "^5.9.3"
+  }
+}

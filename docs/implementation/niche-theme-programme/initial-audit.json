@@ -1,0 +1,40 @@
+{
+  "passed": false,
+  "themes": [
+    {
+      "theme": "playfield",
+      "passed": false,
+      "checks": {
+        "files": {
+          "screens": 0,
+          "boards": 0,
+          "pillowVerified": true
+        },
+        "localHtmlLinks": 0
+      },
+      "errors": [
+        "Expected 45 screen PNGs, found 0",
+        "Expected 15 board PNGs, found 0",
+        "Incomplete 15x3 filename matrix",
+        "Incomplete 15-scene board matrix",
+        "Missing scenes.json",
+        "Missing exports.json",
+        "Missing responsive-audit.json",
+        "scenes.json must list 15 scenes",
+        "exports.json must list 45 exports",
+        "responsive-audit.json must list 45 actual measurements",
+        "Missing README.md",
+        "Missing index.html",
+        "Missing generation-prompts.json",
+        "Missing validation.json",
+        "Missing editable source",
+        "Missing research/neutral comparisons",
+        "Missing mockup ZIP"
+      ],
+      "visualReview": "separate_pending",
+      "productionBehaviorCertified": false
+    }
+  ],
+  "requiredIndividualPngs": 45,
+  "requiredBoards": 15
+}

@@ -1,0 +1,12 @@
+Browser tab: 70, Title: "Collection Not Found", URL: "http://syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/collections/84a52d92-6cb4-46bb-b941-8d7f37e8cb74?collection_id=84a52d92-6cb4-46bb-b941-8d7f37e8cb74".
+1 AXWebArea Collection Not Found, URL: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/collections/84a52d92-6cb4-46bb-b941-8d7f37e8cb74?collection_id=84a52d92-6cb4-46bb-b941-8d7f37e8cb74
+	2 container
+		3 text LETBUYY
+		4 heading 404, Value: 1
+			5 text 404
+		6 heading Page not found, Value: 2
+			7 text Page not found
+		8 text The page you are looking for does not exist or may have been moved.
+		9 link Description: Continue shopping, Value: syn-threadline-ui-6815276b.localhost:50494/
+
+The focused UI element is 1 AXWebArea Collection Not Found, URL: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/collections/84a52d92-6cb4-46bb-b941-8d7f37e8cb74?collection_id=84a52d92-6cb4-46bb-b941-8d7f37e8cb74

@@ -37,6 +37,7 @@
     "apps/commerce/web/src/app/api/shipping/rates/route.ts",
     "apps/commerce/web/src/app/api/store-lookup/route.ts",
     "apps/commerce/web/src/app/api/store/[subdomain]/search-suggest/route.ts",
+    "apps/commerce/web/src/app/api/storefront/[subdomain]/cart/[cartToken]/route.ts",
     "apps/commerce/web/src/app/api/themes/install/route.ts",
     "apps/commerce/web/src/app/api/themes/route.ts",
     "apps/frozen/app-store/src/app/api/apps/[id]/install/route.ts",

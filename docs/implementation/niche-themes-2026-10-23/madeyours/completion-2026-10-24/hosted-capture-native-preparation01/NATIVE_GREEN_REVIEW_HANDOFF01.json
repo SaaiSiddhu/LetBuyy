@@ -1,0 +1,39 @@
+{
+  "recordedAt": "2026-10-25T01:59:54.480520+00:00",
+  "status": "ACTUAL_GREEN_25_PASS_CLEANUP_COMPLETE_READY_FOR_INDEPENDENT_REVIEW",
+  "runId": "0c9598fabf75",
+  "runnerPid": 41906,
+  "nativeExitCode": 0,
+  "tests": 25,
+  "pass": 25,
+  "fail": 0,
+  "skip": 0,
+  "cancel": 0,
+  "todo": 0,
+  "wholeParentSeconds": 36.813115208999996,
+  "allSixActualWitnessesTrue": true,
+  "full322OrderedMigrationPins": true,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "qualificationFailures": [],
+  "evidenceIndex": {
+    "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/hosted-capture-native-preparation01/NATIVE_GREEN_EVIDENCE_INDEX01.json",
+    "sha256": "432c4960794a16ba653087966c5451352f950d5dc28b984ca677c86cb03d93c9"
+  },
+  "redHandoff": {
+    "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/hosted-capture-native-preparation01/NATIVE_RED_REVIEW_HANDOFF01.json",
+    "sha256": "3045cc1de8d2d64e86652c58feef0686ac709eb7a45a704fbd7643b599f506a5"
+  },
+  "frozenSourceExact": true,
+  "artifactManifestMismatchCount": 8,
+  "artifactBytesUnchangedSinceRed": true,
+  "originalBrowserCasesClosed": 0,
+  "apparelStarted": false,
+  "requiredNext": "Independent Themes review through authorized Root coordination; no further execution by this owner under the GREEN-only grant."
+}

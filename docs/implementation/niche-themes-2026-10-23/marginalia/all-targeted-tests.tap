@@ -1,0 +1,334 @@
+TAP version 13
+# Subtest: unknown stays absent until deliberate type choice; actual bibliography edits produce canonical payload
+ok 1 - unknown stays absent until deliberate type choice; actual bibliography edits produce canonical payload
+  ---
+  duration_ms: 204.636084
+  type: 'test'
+  ...
+# Subtest: invalid ISBN is retained with the canonical associated error, then corrected or deliberately omitted
+ok 2 - invalid ISBN is retained with the canonical associated error, then corrected or deliberately omitted
+  ---
+  duration_ms: 17.288041
+  type: 'test'
+  ...
+# Subtest: partial numeric and dimension drafts remain editable; clearing both dimensions removes the optional object
+ok 3 - partial numeric and dimension drafts remain editable; clearing both dimensions removes the optional object
+  ---
+  duration_ms: 26.97275
+  type: 'test'
+  ...
+# Subtest: stationery keeps pages and sheets distinct and type changes remove book-only facts
+ok 4 - stationery keeps pages and sheets distinct and type changes remove book-only facts
+  ---
+  duration_ms: 32.101833
+  type: 'test'
+  ...
+# Subtest: excerpt never invents permission; incomplete text is retained until explicit rights and attribution or removal
+ok 5 - excerpt never invents permission; incomplete text is retained until explicit rights and attribution or removal
+  ---
+  duration_ms: 28.430084
+  type: 'test'
+  ...
+# Subtest: disabled controls cannot emit changes; controlled parent replacement is reflected without stale local state
+ok 6 - disabled controls cannot emit changes; controlled parent replacement is reflected without stale local state
+  ---
+  duration_ms: 23.642333
+  type: 'test'
+  ...
+# Subtest: unique labels and safe hostile text work in two real editors inside one parent form
+ok 7 - unique labels and safe hostile text work in two real editors inside one parent form
+  ---
+  duration_ms: 16.4685
+  type: 'test'
+  ...
+# Subtest: invalid historical fields remain visibly invalid until a deliberate clear, never silently accepted
+ok 8 - invalid historical fields remain visibly invalid until a deliberate clear, never silently accepted
+  ---
+  duration_ms: 9.116458
+  type: 'test'
+  ...
+# Subtest: book variant requires its own language and format without copying common facts or inventing identity
+ok 9 - book variant requires its own language and format without copying common facts or inventing identity
+  ---
+  duration_ms: 166.26125
+  type: 'test'
+  ...
+# Subtest: omitted optional overrides inherit through the canonical merger; clear emits null and leaves common facts intact
+ok 10 - omitted optional overrides inherit through the canonical merger; clear emits null and leaves common facts intact
+  ---
+  duration_ms: 26.008
+  type: 'test'
+  ...
+# Subtest: partial print dimensions/pages and invalid ISBN stay editable with canonical variant errors
+ok 11 - partial print dimensions/pages and invalid ISBN stay editable with canonical variant errors
+  ---
+  duration_ms: 24.499416
+  type: 'test'
+  ...
+# Subtest: stationery edits keep gsm, ruling, pages/sheets and contents distinct without book-only controls
+ok 12 - stationery edits keep gsm, ruling, pages/sheets and contents distinct without book-only controls
+  ---
+  duration_ms: 28.854834
+  type: 'test'
+  ...
+# Subtest: canonical merger detects an override that conflicts with an inherited sheet count without rewriting the draft
+ok 13 - canonical merger detects an override that conflicts with an inherited sheet count without rewriting the draft
+  ---
+  duration_ms: 13.181
+  type: 'test'
+  ...
+# Subtest: common kind constrains selection while an existing mismatched or incomplete draft is preserved for correction
+ok 14 - common kind constrains selection while an existing mismatched or incomplete draft is preserved for correction
+  ---
+  duration_ms: 14.008209
+  type: 'test'
+  ...
+# Subtest: disabled variant edits emit nothing and external value/common changes remain controlled
+ok 15 - disabled variant edits emit nothing and external value/common changes remain controlled
+  ---
+  duration_ms: 22.688458
+  type: 'test'
+  ...
+# Subtest: two editors keep labels unique, hostile text inert and all actions outside submission
+ok 16 - two editors keep labels unique, hostile text inert and all actions outside submission
+  ---
+  duration_ms: 18.666084
+  type: 'test'
+  ...
+# Subtest: unsupported nested IDs, SKU and excerpt are canonical errors, never fields or silently accepted data
+ok 17 - unsupported nested IDs, SKU and excerpt are canonical errors, never fields or silently accepted data
+  ---
+  duration_ms: 14.020041
+  type: 'test'
+  ...
+# Subtest: named and ID-addressed demo shelves have exact catalog members, counts and order
+ok 18 - named and ID-addressed demo shelves have exact catalog members, counts and order
+  ---
+  duration_ms: 0.9965
+  type: 'test'
+  ...
+# Subtest: intentionally empty shelf has an explicit empty array, with no all-products fallback
+ok 19 - intentionally empty shelf has an explicit empty array, with no all-products fallback
+  ---
+  duration_ms: 0.06425
+  type: 'test'
+  ...
+# Subtest: foreign theme, missing and product IDs are not collection membership entries
+ok 20 - foreign theme, missing and product IDs are not collection membership entries
+  ---
+  duration_ms: 0.042083
+  type: 'test'
+  ...
+# Subtest: actual collection resolver honors handle/id, explicit empty, foreign member and missing membership
+ok 21 - actual collection resolver honors handle/id, explicit empty, foreign member and missing membership
+  ---
+  duration_ms: 30.795958
+  type: 'test'
+  ...
+# Subtest: real app mapper derives public facts from canonical demo variant metadata
+ok 22 - real app mapper derives public facts from canonical demo variant metadata
+  ---
+  duration_ms: 0.467292
+  type: 'test'
+  ...
+# Subtest: actual mapped collection retains bibliography, stationery units and multiple-edition cue
+ok 23 - actual mapped collection retains bibliography, stationery units and multiple-edition cue
+  ---
+  duration_ms: 143.013917
+  type: 'test'
+  ...
+# Subtest: actual mapped PDP carries each durable edition with its own dimensions, price and stock
+ok 24 - actual mapped PDP carries each durable edition with its own dimensions, price and stock
+  ---
+  duration_ms: 68.521916
+  type: 'test'
+  ...
+# Subtest: stationery variants are presented as options and keep square media instead of book edition labels
+ok 25 - stationery variants are presented as options and keep square media instead of book edition labels
+  ---
+  duration_ms: 88.520625
+  type: 'test'
+  ...
+# Subtest: mapper rejects invalid/private facts and missing data remains explicit without fabricated details
+ok 26 - mapper rejects invalid/private facts and missing data remains explicit without fabricated details
+  ---
+  duration_ms: 81.872417
+  type: 'test'
+  ...
+# Subtest: mapped merchant edits render without raw markup execution or stale display strings
+ok 27 - mapped merchant edits render without raw markup execution or stale display strings
+  ---
+  duration_ms: 41.61925
+  type: 'test'
+  ...
+# Subtest: v2 dispatcher, Source Sans 3 and editable inline subject roots are explicit
+ok 28 - v2 dispatcher, Source Sans 3 and editable inline subject roots are explicit
+  ---
+  duration_ms: 16.257417
+  type: 'test'
+  ...
+# Subtest: subject root has its exact editor block identity only in preview, without an extra wrapper
+ok 29 - subject root has its exact editor block identity only in preview, without an extra wrapper
+  ---
+  duration_ms: 104.586125
+  type: 'test'
+  ...
+# Subtest: a cleared selected reading shelf cannot silently substitute the rest of the catalog
+ok 30 - a cleared selected reading shelf cannot silently substitute the rest of the catalog
+  ---
+  duration_ms: 57.61025
+  type: 'test'
+  ...
+# Subtest: save inspectable real mapper → Liquid → canonical page-assembly evidence
+ok 31 - save inspectable real mapper → Liquid → canonical page-assembly evidence
+  ---
+  duration_ms: 238.635042
+  type: 'test'
+  ...
+# Subtest: actual registered Marginalia picker shows the exact selected UUID, book measurements, price and unavailable edition
+ok 32 - actual registered Marginalia picker shows the exact selected UUID, book measurements, price and unavailable edition
+  ---
+  duration_ms: 178.693833
+  type: 'test'
+  ...
+# Subtest: partial and nonexistent combinations clear prior selected measurements through the real change/click path
+ok 33 - partial and nonexistent combinations clear prior selected measurements through the real change/click path
+  ---
+  duration_ms: 68.592083
+  type: 'test'
+  ...
+# Subtest: missing optional dimensions do not reuse the last edition and hostile bibliography remains inert
+ok 34 - missing optional dimensions do not reuse the last edition and hostile bibliography remains inert
+  ---
+  duration_ms: 64.62275
+  type: 'test'
+  ...
+# Subtest: two same-label product sections stay UUID-scoped and disconnect/reconnect restores the no-JS fallback
+ok 35 - two same-label product sections stay UUID-scoped and disconnect/reconnect restores the no-JS fallback
+  ---
+  duration_ms: 114.859042
+  type: 'test'
+  ...
+# Subtest: current SSR retains captured bibliography, edition comparison, options and excerpt semantics; pin new integration hashes separately
+ok 36 - current SSR retains captured bibliography, edition comparison, options and excerpt semantics; pin new integration hashes separately
+  ---
+  duration_ms: 91.523916
+  type: 'test'
+  ...
+# Subtest: book facts preserve supplied bibliography and omit absent ISBN
+ok 37 - book facts preserve supplied bibliography and omit absent ISBN
+  ---
+  duration_ms: 1.360083
+  type: 'test'
+  ...
+# Subtest: ISBN normalizes only a valid supplied identifier
+ok 38 - ISBN normalizes only a valid supplied identifier
+  ---
+  duration_ms: 0.732875
+  type: 'test'
+  ...
+# Subtest: stationery units/counts remain factual and distinct from bibliography
+ok 39 - stationery units/counts remain factual and distinct from bibliography
+  ---
+  duration_ms: 0.479875
+  type: 'test'
+  ...
+# Subtest: strict bounds reject extra/private fields and unbounded input
+ok 40 - strict bounds reject extra/private fields and unbounded input
+  ---
+  duration_ms: 0.382791
+  type: 'test'
+  ...
+# Subtest: excerpt requires a declared permission and attribution; no guessed rights
+ok 41 - excerpt requires a declared permission and attribution; no guessed rights
+  ---
+  duration_ms: 0.165083
+  type: 'test'
+  ...
+# Subtest: reader fails closed for absent, inherited, invalid and accessor facts and excludes private metadata
+ok 42 - reader fails closed for absent, inherited, invalid and accessor facts and excludes private metadata
+  ---
+  duration_ms: 0.558083
+  type: 'test'
+  ...
+# Subtest: inline canonical variant facts distinguish editions without a second ID map
+ok 43 - inline canonical variant facts distinguish editions without a second ID map
+  ---
+  duration_ms: 0.5295
+  type: 'test'
+  ...
+# Subtest: unknown facts remain absent and text is not silently rewritten as a claim
+ok 44 - unknown facts remain absent and text is not silently rewritten as a claim
+  ---
+  duration_ms: 0.050583
+  type: 'test'
+  ...
+# Subtest: pure v2 factory preserves v1 input and canonical template set, with a distinct home structure
+ok 45 - pure v2 factory preserves v1 input and canonical template set, with a distinct home structure
+  ---
+  duration_ms: 28.05075
+  type: 'test'
+  ...
+# Subtest: actual Liquid rendering carries original product identity, edition facts and scoped styles
+ok 46 - actual Liquid rendering carries original product identity, edition facts and scoped styles
+  ---
+  duration_ms: 223.671042
+  type: 'test'
+  ...
+# Subtest: collection bibliography and stationery dimensions survive the unchanged depth-four sandbox
+ok 47 - collection bibliography and stationery dimensions survive the unchanged depth-four sandbox
+  ---
+  duration_ms: 39.525291
+  type: 'test'
+  ...
+# Subtest: persisted variant UUIDs keep different dimensions attached to the matching edition
+ok 48 - persisted variant UUIDs keep different dimensions attached to the matching edition
+  ---
+  duration_ms: 42.353917
+  type: 'test'
+  ...
+# Subtest: merchant text, media, subject blocks and product resource changes affect Liquid output
+ok 49 - merchant text, media, subject blocks and product resource changes affect Liquid output
+  ---
+  duration_ms: 53.444625
+  type: 'test'
+  ...
+# Subtest: XSS payloads remain escaped text in bibliography, excerpt, links and edition attributes
+ok 50 - XSS payloads remain escaped text in bibliography, excerpt, links and edition attributes
+  ---
+  duration_ms: 37.775958
+  type: 'test'
+  ...
+# Subtest: missing facts and unlicensed excerpts never invent ISBN, dimensions, reviews or reading rights
+ok 51 - missing facts and unlicensed excerpts never invent ISBN, dimensions, reviews or reading rights
+  ---
+  duration_ms: 92.826333
+  type: 'test'
+  ...
+# Subtest: stationery is not relabelled as a book; dimensions and pages/sheets stay distinct
+ok 52 - stationery is not relabelled as a book; dimensions and pages/sheets stay distinct
+  ---
+  duration_ms: 28.171292
+  type: 'test'
+  ...
+# Subtest: discovery facets require a server capability and preserve filters/pagination without a second query engine
+ok 53 - discovery facets require a server capability and preserve filters/pagination without a second query engine
+  ---
+  duration_ms: 77.480708
+  type: 'test'
+  ...
+# Subtest: long English/Hindi strings remain intact and responsive rules contain narrow covers and wrapping
+ok 54 - long English/Hindi strings remain intact and responsive rules contain narrow covers and wrapping
+  ---
+  duration_ms: 54.641458
+  type: 'test'
+  ...
+1..54
+# tests 54
+# suites 0
+# pass 54
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 7512.025833

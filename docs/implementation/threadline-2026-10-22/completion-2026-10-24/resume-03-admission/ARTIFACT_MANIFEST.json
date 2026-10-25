@@ -1,0 +1,21 @@
+{
+  "recordedAt": "2026-10-24T12:07:48.123799+00:00",
+  "classification": "OWNED_ADMISSION_PREPARATION_ONLY",
+  "files": [
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/resume-03-admission/CANDIDATE_201_INVENTORY_DELTA.json",
+      "sha256": "c880e3fa84344158914d08814d063014e62d79249057a651ea79919712b155cc",
+      "bytes": 4457
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/resume-03-admission/CONTROLLER_REFERENCE_SLICE.json",
+      "sha256": "8581c02bb487339289f0a74a69edf1d6c478b45662bb24490cf67046c1d9fd14",
+      "bytes": 7449
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/resume-03-admission/CURRENT_STATUS.json",
+      "sha256": "bc0d82e4069320791d5c4ab2beb44687968243a862d062a8b2f6a1c2b42a4605",
+      "bytes": 2158
+    }
+  ]
+}

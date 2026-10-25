@@ -1,0 +1,73 @@
+{
+  "recordedAt": "2026-10-24T11:42:54.866768+00:00",
+  "allocation": "docs/implementation/niche-theme-programme/completion-circuit-central-source-preparation-20261024-02.json",
+  "status": "CURRENT_ADAPTER_RESOLVES_EDITOR03_NO_REBIND_NEEDED",
+  "oneSerialProbeExecuted": true,
+  "historical111Changed": false,
+  "rebindNeeded": false,
+  "sourcePinsExact": 100,
+  "extractedPageDeclarations": 28,
+  "importedHelperBoundary": "reusableSchemasFromBundle is an actual page declaration included automatically; all imported runtime identifiers in extracted code resolve existing injected public domain/token exports",
+  "next": "Allocator independently admits actual expected identity/hash/pins, then authorizes Marginalia owner to consume existing run.mjs unchanged with fresh output. Proposal input is not admission.",
+  "currentSourceHash": "d98a0388e3775d4f00dec8c992316af74d8255fd993cc08fc47032b7b4a8aee0",
+  "historicalMarginaliaPackageEquivalenceNotClaimed": true,
+  "actualFullHarnessCasesExecuted": 0,
+  "installedAcceptance": false,
+  "files": [
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/central-adapter-probe-02/adapters-source.json",
+      "sha256": "fbead4c0330cd670e86557854d6449bd1286889faaf46a5d064872c70a37825d",
+      "bytes": 1543
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/central-adapter-probe-02/editor.snapshot.tsx",
+      "sha256": "39bf43e867e33fb397c643ec474ffadd30ea9fd9004c6441b0cb6286cc7fdf1b",
+      "bytes": 105946
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/central-adapter-probe-02/extracted-editor.js",
+      "sha256": "88701568876ccadd48b4b96e466d33e58218427b443b8c496ae04e6092ac9634",
+      "bytes": 17349
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/central-adapter-probe-02/marginalia-input.PROPOSAL.json",
+      "sha256": "538f928377d481b4b2483b67c020ee989d64c08cdaea6f50067ba691cd3b23d9",
+      "bytes": 17343
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/central-adapter-probe-02/observed-source-input.json",
+      "sha256": "b5be84ebcfc461b68bde227ee4bbb2bdb9471c5fb9a995aac55be120b658a01c",
+      "bytes": 773
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/central-adapter-probe-02/probe-wire.json",
+      "sha256": "1e69012c691e1260059cb6fb32f4e51dea00fb4ebb895712908d9977b193bf73",
+      "bytes": 206355
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/central-adapter-probe-02/probe.mjs",
+      "sha256": "e29ed8d89436c7c50db9d969d6951579ca6fd617c1e11dcd0133f140a282cffc",
+      "bytes": 6139
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/central-adapter-probe-02/registry.snapshot.ts",
+      "sha256": "a742187900a03f2c1c74745c06bf46d797653d4e1309d98762332286972d5a43",
+      "bytes": 34535
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/central-adapter-probe-02/result.json",
+      "sha256": "ef4bbdb16b6d953ba583a6d4e49ceb7b7a7697c3cd934bde3381830ad9a7e1aa",
+      "bytes": 2486
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/central-adapter-probe-02/source-pins-after.json",
+      "sha256": "ea0b96f7bc57da9b5319c8802c8c833073dd4ad79cb5675cc3cc466eab95f475",
+      "bytes": 23535
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/central-adapter-probe-02/source-pins-before.json",
+      "sha256": "97460fff6254935e81d88a3063e2a09cb1e7a901d368d3cf214cf63f2c6ce284",
+      "bytes": 15335
+    }
+  ]
+}

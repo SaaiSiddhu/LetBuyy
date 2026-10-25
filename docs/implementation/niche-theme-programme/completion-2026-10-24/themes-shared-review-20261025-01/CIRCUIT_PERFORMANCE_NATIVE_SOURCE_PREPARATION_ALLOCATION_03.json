@@ -1,0 +1,27 @@
+{
+  "recordedAt": "2026-10-25T00:02:10.173924+00:00",
+  "status": "GRANTED_CONTAINED_SOURCE_MATERIALIZATION_AND_PREFLIGHT_PLAN_ONLY_NATIVE_QUEUED",
+  "authority": "RESUME_AUTHORITY_20261025_02.json",
+  "owner": "01a164ba-a97f-7d80-9430-57924218664b",
+  "review": "CIRCUIT_PERFORMANCE_AMENDMENT_REVIEW_02.json",
+  "sealedInputRoot": "/private/tmp/letbuyy-circuit-performance-prep-20261025-02",
+  "sealedPacketSha256": "3f92db4558a1ddd8a20531fab548444dfe6ac7a83d36a7e460c2168ce6e983a1",
+  "privateRoot": "/private/tmp/letbuyy-circuit-performance-native-source-20261025-01",
+  "expiresAt": "2026-10-25T01:32:10.173924+00:00",
+  "ends": "First sealed source/preflight-plan handoff or expiry",
+  "permitted": [
+    "Materialize exact pinned6547 candidate source inputs plus sealed suite/parser at their declared services/api-gateway owned-db paths and exact protocol at its declared data path. Include parser tests only as pure evidence; no Main/candidate mutation.",
+    "Capture and independently verify complete actual runtime/TypeScript/Node export/runner/bootstrap/all current forward+rollback+deploySQL/package manifests/lock/preparation protocol/SQL data closure. No discovered Worker execution. Prove missing/corrupt/incomplete runtime inputs fail.",
+    "Prepare a standalone canonical-owned bundled auto_explain/log parser probe source and exact proposed command/effect/record budget. It must not run, inspect any existing DB/container logs, install a module, change global settings or force planner.",
+    "Return exact future preflight resource requirements and one600s jobs1/no-reap/prepared2 qualification envelope. Actual module probe and qualification each require later precise exclusive resource activation after MadeYours slot closes.",
+    "Preserve sealed02 and original V1/evidence; no unchanged36test rerun or speculative index/SQL fix. Source/type checks only when changed preparation requires them."
+  ],
+  "notGranted": [
+    "Actual native/Docker/DB/module/log probe or existing-runtime sampling",
+    "Actual NATIVE_ADMISSION or fabricated preflight receipt",
+    "Main/candidate/SQL/index repair/build/browser/provider/public action"
+  ],
+  "soleNextNativeOwner": "MadeYours",
+  "resourceQueue": "Circuit after two admitted metadata cohorts, pending independent source and actual terminal preflight review",
+  "allThemeCertificatesGranted": 0
+}

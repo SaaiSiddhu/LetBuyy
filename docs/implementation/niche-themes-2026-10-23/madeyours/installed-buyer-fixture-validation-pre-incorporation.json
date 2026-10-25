@@ -1,0 +1,952 @@
+{
+  "classification": "STATIC_DATA_CONTRACT_ONLY_ALL_RUNTIME_CASES_NOT_RUN",
+  "preparedAt": "2026-10-23T12:56:34.965Z",
+  "planSha256": "c3045d3295669dd9c38dea65339857ccd7fb2e63e349b611aa98b1dbad89fd3d",
+  "schemaValidatedFields": [
+    {
+      "name": "Editor plan read unchanged; source recipe matches the shared personalization entry",
+      "result": "PASS",
+      "scope": "STATIC_DATA_CONTRACT_ONLY"
+    },
+    {
+      "name": "Contributed CreateProduct fields validate; only actual store UUID is deferred",
+      "result": "PASS",
+      "scope": "STATIC_DATA_CONTRACT_ONLY"
+    },
+    {
+      "name": "All drafted input shapes validate with the canonical draft schema",
+      "result": "PASS",
+      "scope": "STATIC_DATA_CONTRACT_ONLY"
+    },
+    {
+      "name": "Canonical review accepts expected asha data and strict frozen snapshot",
+      "result": "PASS",
+      "scope": "STATIC_DATA_CONTRACT_ONLY"
+    },
+    {
+      "name": "Canonical review accepts expected kabir data and strict frozen snapshot",
+      "result": "PASS",
+      "scope": "STATIC_DATA_CONTRACT_ONLY"
+    },
+    {
+      "name": "Canonical review accepts expected unicodeHindi data and strict frozen snapshot",
+      "result": "PASS",
+      "scope": "STATIC_DATA_CONTRACT_ONLY"
+    },
+    {
+      "name": "Canonical review accepts expected nfcAfterConsent data and strict frozen snapshot",
+      "result": "PASS",
+      "scope": "STATIC_DATA_CONTRACT_ONLY"
+    },
+    {
+      "name": "Canonical review accepts expected changedMethod data and strict frozen snapshot",
+      "result": "PASS",
+      "scope": "STATIC_DATA_CONTRACT_ONLY"
+    },
+    {
+      "name": "Canonical review accepts expected changedStyle data and strict frozen snapshot",
+      "result": "PASS",
+      "scope": "STATIC_DATA_CONTRACT_ONLY"
+    },
+    {
+      "name": "Canonical review accepts expected changedPlacement data and strict frozen snapshot",
+      "result": "PASS",
+      "scope": "STATIC_DATA_CONTRACT_ONLY"
+    },
+    {
+      "name": "NFC proposal requires explicit separate consent and review",
+      "result": "PASS",
+      "scope": "STATIC_DATA_CONTRACT_ONLY"
+    },
+    {
+      "name": "Markup, overlength and emoji are rejected by canonical domain review",
+      "result": "PASS",
+      "scope": "STATIC_DATA_CONTRACT_ONLY"
+    },
+    {
+      "name": "Actual Liquid cart templates preserve option properties and strict personalization; runtime identity/echo remain deferred",
+      "result": "PASS",
+      "scope": "STATIC_DATA_CONTRACT_ONLY"
+    },
+    {
+      "name": "Later product patch fields and variant edits validate; actual version/key/UUIDs are deferred",
+      "result": "PASS",
+      "scope": "STATIC_DATA_CONTRACT_ONLY"
+    },
+    {
+      "name": "Existing checkout step static fields validate while normal identity/intent/quote fields remain deferred",
+      "result": "PASS",
+      "scope": "STATIC_DATA_CONTRACT_ONLY"
+    },
+    {
+      "name": "Every runtime case remains NOT_RUN with no invented observations or purchase counts",
+      "result": "PASS",
+      "scope": "STATIC_DATA_CONTRACT_ONLY"
+    },
+    {
+      "name": "Frozen backend/core/SDK/factory/discovery bytes remain unchanged",
+      "result": "PASS",
+      "scope": "STATIC_DATA_CONTRACT_ONLY"
+    }
+  ],
+  "expectedAccepted": {
+    "asha": {
+      "version": 1,
+      "facts_revision": 1,
+      "method": {
+        "id": "engrave",
+        "label": "Front engraving"
+      },
+      "style": {
+        "id": "sans",
+        "label": "Sans"
+      },
+      "placement": {
+        "id": "front",
+        "label": "Front"
+      },
+      "text": "Asha"
+    },
+    "kabir": {
+      "version": 1,
+      "facts_revision": 1,
+      "method": {
+        "id": "engrave",
+        "label": "Front engraving"
+      },
+      "style": {
+        "id": "sans",
+        "label": "Sans"
+      },
+      "placement": {
+        "id": "front",
+        "label": "Front"
+      },
+      "text": "Kabir"
+    },
+    "unicodeHindi": {
+      "version": 1,
+      "facts_revision": 1,
+      "method": {
+        "id": "engrave",
+        "label": "Front engraving"
+      },
+      "style": {
+        "id": "sans",
+        "label": "Sans"
+      },
+      "placement": {
+        "id": "front",
+        "label": "Front"
+      },
+      "text": "आशा"
+    },
+    "nfcAfterConsent": {
+      "version": 1,
+      "facts_revision": 1,
+      "method": {
+        "id": "engrave",
+        "label": "Front engraving"
+      },
+      "style": {
+        "id": "sans",
+        "label": "Sans"
+      },
+      "placement": {
+        "id": "front",
+        "label": "Front"
+      },
+      "text": "José"
+    },
+    "changedMethod": {
+      "version": 1,
+      "facts_revision": 1,
+      "method": {
+        "id": "print",
+        "label": "Cover printing"
+      },
+      "style": {
+        "id": "sans",
+        "label": "Sans"
+      },
+      "placement": {
+        "id": "front",
+        "label": "Front"
+      },
+      "text": "Asha"
+    },
+    "changedStyle": {
+      "version": 1,
+      "facts_revision": 1,
+      "method": {
+        "id": "engrave",
+        "label": "Front engraving"
+      },
+      "style": {
+        "id": "serif",
+        "label": "Serif"
+      },
+      "placement": {
+        "id": "front",
+        "label": "Front"
+      },
+      "text": "Asha"
+    },
+    "changedPlacement": {
+      "version": 1,
+      "facts_revision": 1,
+      "method": {
+        "id": "engrave",
+        "label": "Front engraving"
+      },
+      "style": {
+        "id": "sans",
+        "label": "Sans"
+      },
+      "placement": {
+        "id": "back",
+        "label": "Back"
+      },
+      "text": "Asha"
+    }
+  },
+  "expectedSnapshots": {
+    "asha": {
+      "version": 1,
+      "facts": {
+        "personalization": {
+          "version": 1,
+          "revision": 1,
+          "methods": [
+            {
+              "id": "engrave",
+              "label": "Front engraving",
+              "min_graphemes": 1,
+              "max_graphemes": 18,
+              "character_set": "unicode-letters",
+              "styles": [
+                {
+                  "id": "sans",
+                  "label": "Sans"
+                },
+                {
+                  "id": "serif",
+                  "label": "Serif"
+                }
+              ],
+              "placements": [
+                {
+                  "id": "front",
+                  "label": "Front"
+                },
+                {
+                  "id": "back",
+                  "label": "Back"
+                }
+              ]
+            },
+            {
+              "id": "print",
+              "label": "Cover printing",
+              "min_graphemes": 1,
+              "max_graphemes": 18,
+              "character_set": "unicode-letters",
+              "styles": [
+                {
+                  "id": "sans",
+                  "label": "Sans"
+                },
+                {
+                  "id": "serif",
+                  "label": "Serif"
+                }
+              ],
+              "placements": [
+                {
+                  "id": "front",
+                  "label": "Front"
+                },
+                {
+                  "id": "back",
+                  "label": "Back"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "personalization": {
+        "version": 1,
+        "facts_revision": 1,
+        "method": {
+          "id": "engrave",
+          "label": "Front engraving"
+        },
+        "style": {
+          "id": "sans",
+          "label": "Sans"
+        },
+        "placement": {
+          "id": "front",
+          "label": "Front"
+        },
+        "text": "Asha"
+      },
+      "selected_options": [
+        {
+          "name": "Cover",
+          "value": "Moss"
+        }
+      ]
+    },
+    "kabir": {
+      "version": 1,
+      "facts": {
+        "personalization": {
+          "version": 1,
+          "revision": 1,
+          "methods": [
+            {
+              "id": "engrave",
+              "label": "Front engraving",
+              "min_graphemes": 1,
+              "max_graphemes": 18,
+              "character_set": "unicode-letters",
+              "styles": [
+                {
+                  "id": "sans",
+                  "label": "Sans"
+                },
+                {
+                  "id": "serif",
+                  "label": "Serif"
+                }
+              ],
+              "placements": [
+                {
+                  "id": "front",
+                  "label": "Front"
+                },
+                {
+                  "id": "back",
+                  "label": "Back"
+                }
+              ]
+            },
+            {
+              "id": "print",
+              "label": "Cover printing",
+              "min_graphemes": 1,
+              "max_graphemes": 18,
+              "character_set": "unicode-letters",
+              "styles": [
+                {
+                  "id": "sans",
+                  "label": "Sans"
+                },
+                {
+                  "id": "serif",
+                  "label": "Serif"
+                }
+              ],
+              "placements": [
+                {
+                  "id": "front",
+                  "label": "Front"
+                },
+                {
+                  "id": "back",
+                  "label": "Back"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "personalization": {
+        "version": 1,
+        "facts_revision": 1,
+        "method": {
+          "id": "engrave",
+          "label": "Front engraving"
+        },
+        "style": {
+          "id": "sans",
+          "label": "Sans"
+        },
+        "placement": {
+          "id": "front",
+          "label": "Front"
+        },
+        "text": "Kabir"
+      },
+      "selected_options": [
+        {
+          "name": "Cover",
+          "value": "Moss"
+        }
+      ]
+    },
+    "unicodeHindi": {
+      "version": 1,
+      "facts": {
+        "personalization": {
+          "version": 1,
+          "revision": 1,
+          "methods": [
+            {
+              "id": "engrave",
+              "label": "Front engraving",
+              "min_graphemes": 1,
+              "max_graphemes": 18,
+              "character_set": "unicode-letters",
+              "styles": [
+                {
+                  "id": "sans",
+                  "label": "Sans"
+                },
+                {
+                  "id": "serif",
+                  "label": "Serif"
+                }
+              ],
+              "placements": [
+                {
+                  "id": "front",
+                  "label": "Front"
+                },
+                {
+                  "id": "back",
+                  "label": "Back"
+                }
+              ]
+            },
+            {
+              "id": "print",
+              "label": "Cover printing",
+              "min_graphemes": 1,
+              "max_graphemes": 18,
+              "character_set": "unicode-letters",
+              "styles": [
+                {
+                  "id": "sans",
+                  "label": "Sans"
+                },
+                {
+                  "id": "serif",
+                  "label": "Serif"
+                }
+              ],
+              "placements": [
+                {
+                  "id": "front",
+                  "label": "Front"
+                },
+                {
+                  "id": "back",
+                  "label": "Back"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "personalization": {
+        "version": 1,
+        "facts_revision": 1,
+        "method": {
+          "id": "engrave",
+          "label": "Front engraving"
+        },
+        "style": {
+          "id": "sans",
+          "label": "Sans"
+        },
+        "placement": {
+          "id": "front",
+          "label": "Front"
+        },
+        "text": "आशा"
+      },
+      "selected_options": [
+        {
+          "name": "Cover",
+          "value": "Moss"
+        }
+      ]
+    },
+    "nfcAfterConsent": {
+      "version": 1,
+      "facts": {
+        "personalization": {
+          "version": 1,
+          "revision": 1,
+          "methods": [
+            {
+              "id": "engrave",
+              "label": "Front engraving",
+              "min_graphemes": 1,
+              "max_graphemes": 18,
+              "character_set": "unicode-letters",
+              "styles": [
+                {
+                  "id": "sans",
+                  "label": "Sans"
+                },
+                {
+                  "id": "serif",
+                  "label": "Serif"
+                }
+              ],
+              "placements": [
+                {
+                  "id": "front",
+                  "label": "Front"
+                },
+                {
+                  "id": "back",
+                  "label": "Back"
+                }
+              ]
+            },
+            {
+              "id": "print",
+              "label": "Cover printing",
+              "min_graphemes": 1,
+              "max_graphemes": 18,
+              "character_set": "unicode-letters",
+              "styles": [
+                {
+                  "id": "sans",
+                  "label": "Sans"
+                },
+                {
+                  "id": "serif",
+                  "label": "Serif"
+                }
+              ],
+              "placements": [
+                {
+                  "id": "front",
+                  "label": "Front"
+                },
+                {
+                  "id": "back",
+                  "label": "Back"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "personalization": {
+        "version": 1,
+        "facts_revision": 1,
+        "method": {
+          "id": "engrave",
+          "label": "Front engraving"
+        },
+        "style": {
+          "id": "sans",
+          "label": "Sans"
+        },
+        "placement": {
+          "id": "front",
+          "label": "Front"
+        },
+        "text": "José"
+      },
+      "selected_options": [
+        {
+          "name": "Cover",
+          "value": "Moss"
+        }
+      ]
+    },
+    "changedMethod": {
+      "version": 1,
+      "facts": {
+        "personalization": {
+          "version": 1,
+          "revision": 1,
+          "methods": [
+            {
+              "id": "engrave",
+              "label": "Front engraving",
+              "min_graphemes": 1,
+              "max_graphemes": 18,
+              "character_set": "unicode-letters",
+              "styles": [
+                {
+                  "id": "sans",
+                  "label": "Sans"
+                },
+                {
+                  "id": "serif",
+                  "label": "Serif"
+                }
+              ],
+              "placements": [
+                {
+                  "id": "front",
+                  "label": "Front"
+                },
+                {
+                  "id": "back",
+                  "label": "Back"
+                }
+              ]
+            },
+            {
+              "id": "print",
+              "label": "Cover printing",
+              "min_graphemes": 1,
+              "max_graphemes": 18,
+              "character_set": "unicode-letters",
+              "styles": [
+                {
+                  "id": "sans",
+                  "label": "Sans"
+                },
+                {
+                  "id": "serif",
+                  "label": "Serif"
+                }
+              ],
+              "placements": [
+                {
+                  "id": "front",
+                  "label": "Front"
+                },
+                {
+                  "id": "back",
+                  "label": "Back"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "personalization": {
+        "version": 1,
+        "facts_revision": 1,
+        "method": {
+          "id": "print",
+          "label": "Cover printing"
+        },
+        "style": {
+          "id": "sans",
+          "label": "Sans"
+        },
+        "placement": {
+          "id": "front",
+          "label": "Front"
+        },
+        "text": "Asha"
+      },
+      "selected_options": [
+        {
+          "name": "Cover",
+          "value": "Moss"
+        }
+      ]
+    },
+    "changedStyle": {
+      "version": 1,
+      "facts": {
+        "personalization": {
+          "version": 1,
+          "revision": 1,
+          "methods": [
+            {
+              "id": "engrave",
+              "label": "Front engraving",
+              "min_graphemes": 1,
+              "max_graphemes": 18,
+              "character_set": "unicode-letters",
+              "styles": [
+                {
+                  "id": "sans",
+                  "label": "Sans"
+                },
+                {
+                  "id": "serif",
+                  "label": "Serif"
+                }
+              ],
+              "placements": [
+                {
+                  "id": "front",
+                  "label": "Front"
+                },
+                {
+                  "id": "back",
+                  "label": "Back"
+                }
+              ]
+            },
+            {
+              "id": "print",
+              "label": "Cover printing",
+              "min_graphemes": 1,
+              "max_graphemes": 18,
+              "character_set": "unicode-letters",
+              "styles": [
+                {
+                  "id": "sans",
+                  "label": "Sans"
+                },
+                {
+                  "id": "serif",
+                  "label": "Serif"
+                }
+              ],
+              "placements": [
+                {
+                  "id": "front",
+                  "label": "Front"
+                },
+                {
+                  "id": "back",
+                  "label": "Back"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "personalization": {
+        "version": 1,
+        "facts_revision": 1,
+        "method": {
+          "id": "engrave",
+          "label": "Front engraving"
+        },
+        "style": {
+          "id": "serif",
+          "label": "Serif"
+        },
+        "placement": {
+          "id": "front",
+          "label": "Front"
+        },
+        "text": "Asha"
+      },
+      "selected_options": [
+        {
+          "name": "Cover",
+          "value": "Moss"
+        }
+      ]
+    },
+    "changedPlacement": {
+      "version": 1,
+      "facts": {
+        "personalization": {
+          "version": 1,
+          "revision": 1,
+          "methods": [
+            {
+              "id": "engrave",
+              "label": "Front engraving",
+              "min_graphemes": 1,
+              "max_graphemes": 18,
+              "character_set": "unicode-letters",
+              "styles": [
+                {
+                  "id": "sans",
+                  "label": "Sans"
+                },
+                {
+                  "id": "serif",
+                  "label": "Serif"
+                }
+              ],
+              "placements": [
+                {
+                  "id": "front",
+                  "label": "Front"
+                },
+                {
+                  "id": "back",
+                  "label": "Back"
+                }
+              ]
+            },
+            {
+              "id": "print",
+              "label": "Cover printing",
+              "min_graphemes": 1,
+              "max_graphemes": 18,
+              "character_set": "unicode-letters",
+              "styles": [
+                {
+                  "id": "sans",
+                  "label": "Sans"
+                },
+                {
+                  "id": "serif",
+                  "label": "Serif"
+                }
+              ],
+              "placements": [
+                {
+                  "id": "front",
+                  "label": "Front"
+                },
+                {
+                  "id": "back",
+                  "label": "Back"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "personalization": {
+        "version": 1,
+        "facts_revision": 1,
+        "method": {
+          "id": "engrave",
+          "label": "Front engraving"
+        },
+        "style": {
+          "id": "sans",
+          "label": "Sans"
+        },
+        "placement": {
+          "id": "back",
+          "label": "Back"
+        },
+        "text": "Asha"
+      },
+      "selected_options": [
+        {
+          "name": "Cover",
+          "value": "Moss"
+        }
+      ]
+    }
+  },
+  "nfc": {
+    "beforeCodePoints": [
+      "U+004A",
+      "U+006F",
+      "U+0073",
+      "U+0065",
+      "U+0301"
+    ],
+    "suggestion": "José",
+    "consentAndRenewedReviewRequired": true
+  },
+  "deferred": [
+    "Actual store/product/variant UUIDs",
+    "Real normal identity sessions",
+    "Server-produced review context/fingerprint",
+    "Live full CreateProduct/UpdateProduct/cart commands",
+    "Cart/session/checkout capability and keys",
+    "Actual delivery quote and money",
+    "Every installed browser/DB/runtime case"
+  ],
+  "runtimeCases": {
+    "status": "NOT_RUN",
+    "cases": [
+      {
+        "id": "MY-00",
+        "status": "NOT_RUN"
+      },
+      {
+        "id": "MY-01",
+        "status": "NOT_RUN"
+      },
+      {
+        "id": "MY-02",
+        "status": "NOT_RUN"
+      },
+      {
+        "id": "MY-03",
+        "status": "NOT_RUN"
+      },
+      {
+        "id": "MY-04",
+        "status": "NOT_RUN"
+      },
+      {
+        "id": "MY-05",
+        "status": "NOT_RUN"
+      },
+      {
+        "id": "MY-06",
+        "status": "NOT_RUN"
+      },
+      {
+        "id": "MY-07",
+        "status": "NOT_RUN"
+      },
+      {
+        "id": "MY-08",
+        "status": "NOT_RUN"
+      },
+      {
+        "id": "MY-09",
+        "status": "NOT_RUN"
+      },
+      {
+        "id": "MY-10",
+        "status": "NOT_RUN"
+      },
+      {
+        "id": "MY-11",
+        "status": "NOT_RUN"
+      },
+      {
+        "id": "MY-12",
+        "status": "NOT_RUN"
+      },
+      {
+        "id": "MY-13",
+        "status": "NOT_RUN"
+      },
+      {
+        "id": "MY-14",
+        "status": "NOT_RUN"
+      },
+      {
+        "id": "MY-15",
+        "status": "NOT_RUN"
+      },
+      {
+        "id": "MY-16",
+        "status": "NOT_RUN"
+      },
+      {
+        "id": "MY-17",
+        "status": "NOT_RUN"
+      },
+      {
+        "id": "MY-18",
+        "status": "NOT_RUN"
+      },
+      {
+        "id": "MY-19",
+        "status": "NOT_RUN"
+      },
+      {
+        "id": "MY-20",
+        "status": "NOT_RUN"
+      },
+      {
+        "id": "MY-21",
+        "status": "NOT_RUN"
+      },
+      {
+        "id": "MY-22",
+        "status": "NOT_RUN"
+      }
+    ],
+    "passed": 0,
+    "observations": []
+  },
+  "resourcesStarted": [],
+  "productionSourcesEdited": []
+}

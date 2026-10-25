@@ -1,0 +1,92 @@
+[
+  {
+    "id": "01-home-top",
+    "title": "Home \u00b7 opening",
+    "description": "Routine-led hero, explicit shop entry and step navigation.",
+    "source": "source/01-home-top.html"
+  },
+  {
+    "id": "02-home-bottom",
+    "title": "Home \u00b7 continuation",
+    "description": "Independent products, factual education, service links and footer.",
+    "source": "source/02-home-bottom.html"
+  },
+  {
+    "id": "03-collection",
+    "title": "Shop by use",
+    "description": "Routine shelves, typed facet proposal, sorting and pagination.",
+    "source": "source/03-collection.html"
+  },
+  {
+    "id": "04-product-selection",
+    "title": "PDP \u00b7 shade selection",
+    "description": "Gallery, actual named variants, ingredient/use summary and buy action.",
+    "source": "source/04-product-selection.html"
+  },
+  {
+    "id": "05-product-facts",
+    "title": "PDP \u00b7 ingredients & use",
+    "description": "Full ingredients, directions and honest missing facts.",
+    "source": "source/05-product-facts.html"
+  },
+  {
+    "id": "06-product-continuation",
+    "title": "PDP \u00b7 your routine",
+    "description": "Independent related items and truthful policy availability.",
+    "source": "source/06-product-continuation.html"
+  },
+  {
+    "id": "07-cart",
+    "title": "Your bag",
+    "description": "Named variants, quantity/remove, arithmetic and recoverable update.",
+    "source": "source/07-cart.html"
+  },
+  {
+    "id": "08-checkout-address",
+    "title": "Checkout \u00b7 address",
+    "description": "Canonical contact/address/shipping and server quote fixture.",
+    "source": "source/08-checkout-address.html"
+  },
+  {
+    "id": "09-checkout-review",
+    "title": "Checkout \u00b7 review & pay",
+    "description": "Full summary, eligible-method proposal and payment-start retry.",
+    "source": "source/09-checkout-review.html"
+  },
+  {
+    "id": "10-sign-in",
+    "title": "LetBuyy \u00b7 sign in",
+    "description": "Canonical shared identity with explicit Dewdrop destination.",
+    "source": "source/10-sign-in.html"
+  },
+  {
+    "id": "11-create-account",
+    "title": "LetBuyy \u00b7 create account",
+    "description": "Email/password creation followed by explicit signed-in Continue to Dewdrop state.",
+    "source": "source/11-create-account.html"
+  },
+  {
+    "id": "12-profile",
+    "title": "Profile overview",
+    "description": "Store account, supported editing and navigation.",
+    "source": "source/12-profile.html"
+  },
+  {
+    "id": "13-orders",
+    "title": "Order history",
+    "description": "Owned store orders with mock status and pagination.",
+    "source": "source/13-orders.html"
+  },
+  {
+    "id": "14-order-detail",
+    "title": "Owned order detail",
+    "description": "Exact selected variants, totals, status and support boundary.",
+    "source": "source/14-order-detail.html"
+  },
+  {
+    "id": "15-addresses",
+    "title": "Saved addresses",
+    "description": "Two address states plus edit validation/default.",
+    "source": "source/15-addresses.html"
+  }
+]

@@ -1,0 +1,13 @@
+{
+  "status": "EXISTING_METADATA_GUARD_PASS_CANONICAL_TSX_NO_NATIVE_STARTED",
+  "checkedAt": "2026-10-25T02:18:54.208Z",
+  "admissionSha256": "82c24b9532f9cd498e54efc48223e7b012affc9149a27e06bf6aaf4411c04000",
+  "sourceClosureSha256": "72d47209758ab5c503a91ebb36db3a62c62f0bd0d908dad74eb7a81ed7449f0b",
+  "sourceFiles": 1120,
+  "vendorFiles": 5411,
+  "nodePath": "/opt/homebrew/Cellar/node@22/22.23.3_2/bin/node",
+  "nodeSha256": "37c7004c9b9edfc14c5a31190d3c26e5a3fe669309b9e40f3f8dcb39ed31cca4",
+  "nodeVersion": "v22.23.3",
+  "nativeStarts": 0,
+  "priorUnsupportedPlainNodeFailureRetained": true
+}

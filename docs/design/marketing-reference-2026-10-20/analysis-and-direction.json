@@ -1,0 +1,258 @@
+{
+  "status": "DISCUSSION ONLY \u2014 no runtime source or UI changed",
+  "preservation": {
+    "archive": "marketing-before-redesign.tar.gz",
+    "verification": "Every archived file reread and SHA-256 checked",
+    "files": 170,
+    "screenshots": 18,
+    "restore": "Extract archive into a separate directory, compare manifest hashes, then selectively restore approved files. Do not overwrite the shared working checkout blindly.",
+    "limits": "Reference source, not a second runtime. Screenshots preserve sampled states; scroll-reveal animation can leave offscreen content hidden. Dependencies referenced by the captured lockfile; environments and database data intentionally excluded.",
+    "screenshot_manifest": [
+      {
+        "path": "changelog-desktop-before.png",
+        "sha256": "9ce566005cf8b3d1a24a0699bf8553d08443899029749491244fdfbc15c37388"
+      },
+      {
+        "path": "contact-desktop-before.png",
+        "sha256": "e861937f76278e7c0a4b117aa7cccc5b40a1c8d79634318a65bc59653d341dc4"
+      },
+      {
+        "path": "contact-mobile-before.png",
+        "sha256": "7b14d16e651a27299ddb7223e83c0a76703cefe76d5da4fc9426ab5bc68a09d2"
+      },
+      {
+        "path": "create-desktop-before.png",
+        "sha256": "10055401940c21b492a94d581870de82a07572a9735980a1ec68ca9640cd99ad"
+      },
+      {
+        "path": "demo-desktop-before.png",
+        "sha256": "2cc06c7f41562fb8829f091a58578e142872782e117bee32859f83aee39823ca"
+      },
+      {
+        "path": "demo-mobile-before.png",
+        "sha256": "123f9bd88ed4a6ac741034f42afe85b1fd251e1d7c3606093c62fdef49491238"
+      },
+      {
+        "path": "home-desktop-before.png",
+        "sha256": "213b380ab4ce27930e782f746229a77f12590f1b7bdaae41f45558e3457440df"
+      },
+      {
+        "path": "home-mobile-before.png",
+        "sha256": "31a18042806af6f57b4783434561d744f6d0d2069cd2dee126dab5d0ba668f14"
+      },
+      {
+        "path": "legal-desktop-before.png",
+        "sha256": "7a3199ac34bccd75a8fb0bf8526cce009bfcff1de33cbe247aed6d30b838e98a"
+      },
+      {
+        "path": "legal-privacy-desktop-before.png",
+        "sha256": "b05f41ad1ad1fcbf8ef8c63b765eefecac75995d0d7e83be5e9a6cc35d15903a"
+      },
+      {
+        "path": "pricing-desktop-before.png",
+        "sha256": "1a8d968ef0cfbf2f0e0e6f6bb25220dc865187c979a38251c1e6d7c3fe74fcdf"
+      },
+      {
+        "path": "releases-desktop-before.png",
+        "sha256": "1ab75e2a80c06a8e3366874005458a63903f7b8f8536f663069c2917cd2d6306"
+      },
+      {
+        "path": "resource-article-desktop-before.png",
+        "sha256": "cd9c82401295e637b7c3aef855f2fdc766a4166a717a9ff3c261a747ee49b3b3"
+      },
+      {
+        "path": "resource-category-desktop-before.png",
+        "sha256": "a3ecd4190a72835f246e6064e00e12df850e58334d25b8dbb46b4c2297656346"
+      },
+      {
+        "path": "resource-search-desktop-before.png",
+        "sha256": "6a857e67a8114bc11dc791a6cad5db491b8231c5abcb8e5f4e3d13d05f5786a1"
+      },
+      {
+        "path": "resources-desktop-before.png",
+        "sha256": "a7635e2afefc72fdd5c339844703505f2104557de3750fed79eefb6183937e93"
+      },
+      {
+        "path": "resources-mobile-before.png",
+        "sha256": "9bafce6d07ef687cc7052796ed7cde2e393bb91533a7536ed41fad602d009b59"
+      },
+      {
+        "path": "sitemap-desktop-before.png",
+        "sha256": "6564dc8c737cefdbc23f27b47a66093cd2f631a67f39a784183e859864342667"
+      }
+    ]
+  },
+  "coverage": {
+    "source_route_templates": 17,
+    "locales": [
+      "in",
+      "in-ta",
+      "in-hi"
+    ],
+    "legal_documents": 15,
+    "resources_categories": 7,
+    "browser": "Desktop 1440x1000; homepage at initial 511x1314; resources/contact/demo at 390x844",
+    "reviewed_browser_families": [
+      "home",
+      "pricing",
+      "resources hub",
+      "category",
+      "article",
+      "search",
+      "contact",
+      "demo",
+      "legal hub",
+      "privacy document",
+      "create",
+      "changelog",
+      "releases",
+      "sitemap"
+    ],
+    "not_claimed": [
+      "Every article/legal clause fact checked",
+      "Every form submitted",
+      "Full accessibility audit",
+      "Provider delivery acceptance",
+      "Production performance"
+    ]
+  },
+  "identity": {
+    "keep": [
+      "LetBuyy logo",
+      "Purple/violet/cyan brand",
+      "Geist fonts",
+      "Shared UI and Lucide ownership",
+      "India-first merchant vocabulary",
+      "Locale routing and legal draft notices",
+      "Live pricing source and canonical backend"
+    ],
+    "current": {
+      "purple": "#8B5CF6",
+      "violet": "#7C3AED",
+      "deep_violet": "#6D28D9",
+      "cyan": "#06B6D4",
+      "dark_canvas": "#0A0912"
+    },
+    "proposed_palette": {
+      "canvas": "#E7E3EF",
+      "raised_surface": "#F6F3FA",
+      "mid_surface": "#D6CEE5",
+      "deep_section_and_ink": "#292338",
+      "muted_text": "#62586F",
+      "brand_highlight": "#8B5CF6",
+      "primary_action": "#6D28D9",
+      "cyan_accent": "#06B6D4"
+    },
+    "explicit_contrast_pairs": [
+      {
+        "fg": "#292338",
+        "bg": "#E7E3EF",
+        "ratio": 11.94985
+      },
+      {
+        "fg": "#FFFFFF",
+        "bg": "#6D28D9",
+        "ratio": 7.10489
+      },
+      {
+        "fg": "#62586F",
+        "bg": "#E7E3EF",
+        "ratio": 5.28874
+      }
+    ],
+    "contrast_limit": "Opaque proposed pairs only; not page accessibility certification."
+  },
+  "findings": [
+    {
+      "kind": "observed/source-confirmed",
+      "finding": "Homepage repeatedly explains connected modules using an orbit diagram, capability map, journey and architecture graph; recommend one merchant narrative with progressive detail.",
+      "source": "apps/marketing/web/src/app/[locale]/page.tsx"
+    },
+    {
+      "kind": "source-confirmed",
+      "finding": "Watch 3-Min Demo links to #capabilities rather than video.",
+      "source": "apps/marketing/web/src/components/Hero.tsx"
+    },
+    {
+      "kind": "source-confirmed",
+      "finding": "Active resource newsletter forms show local success without a backend subscription command. The separate NewsletterCTA has a similar defect but is unused.",
+      "source": "apps/marketing/web/src/components/resources/NewsletterInline.tsx; NewsletterModal.tsx; PostArticleNewsletter.tsx"
+    },
+    {
+      "kind": "observed/source-confirmed",
+      "finding": "Apps and developer ecosystem surfaces are presented as Live despite frozen governance and stopped local destinations. Keep future capabilities visibly distinct from currently available ones.",
+      "source": "apps/marketing/web/src/components/EcosystemMap.tsx"
+    },
+    {
+      "kind": "source-confirmed",
+      "finding": "Architecture copy claims shared event bus, which conflicts with canonical transactional outbox architecture.",
+      "source": "apps/marketing/web/src/components/Features.tsx"
+    },
+    {
+      "kind": "source-confirmed",
+      "finding": "Demonstration metrics and activity are hardcoded; explicitly label illustrations as example data.",
+      "source": "apps/marketing/web/src/components/Features.tsx"
+    },
+    {
+      "kind": "observed/source-confirmed",
+      "finding": "Create page has separate zinc/blue styling and shell, interrupting the brand journey. Preserve identity-platform signup authority.",
+      "source": "apps/marketing/web/src/app/[locale]/create/page.tsx"
+    },
+    {
+      "kind": "source-confirmed",
+      "finding": "MaterialIcon usage and trophy emoji mix with Lucide on web. Standardize functional icons per CODE-R7.",
+      "source": "apps/marketing/web/src/components/{CapabilityMap,CommerceNetwork,EcosystemMap,Features,Pricing}.tsx"
+    },
+    {
+      "kind": "review-needed",
+      "finding": "Free forever and quantitative AI/newsletter claims need reconciliation against verified product and pricing authority; redesign must not invent or silently alter business policy.",
+      "source": "apps/marketing/web/src/components/{FinalCTA,FAQ}.tsx; src/app/layout.tsx; components/resources/NewsletterInline.tsx"
+    },
+    {
+      "kind": "source-risk",
+      "finding": "Home Lenis RAF loop does not cancel its scheduled frame on cleanup; reduced-motion behavior needs composed verification. No measured performance claim.",
+      "source": "apps/marketing/web/src/app/[locale]/page.tsx"
+    }
+  ],
+  "proposed_art": {
+    "direction": "User selected: product screens plus restrained 3D commerce objects, coordinated purple/lavender/cyan family.",
+    "core_subjects": [
+      "Merchant workspace",
+      "Branded storefront",
+      "Product catalog and variants",
+      "Orders to fulfilment",
+      "Inventory and stock alerts",
+      "UPI/COD/GST and provider-led funds flow",
+      "Customer relationships and scoped order updates",
+      "Analytics with clearly illustrative data"
+    ],
+    "support_subjects": [
+      "Store launch steps",
+      "Theme customization",
+      "Migration/import",
+      "Resources learning paths",
+      "Contact and demo",
+      "Trust/privacy and meaningful empty states"
+    ],
+    "rules": [
+      "Generate as many distinct assets as useful subjects require; no arbitrary quota",
+      "Real HTML for text/controls; no baked interface text in generated illustrations",
+      "Functional Lucide vectors stay separate from generated art",
+      "Purposeful transparent foreground artwork where suitable",
+      "Label illustrative data and coming-soon capabilities",
+      "No new runtime/schema/production activation for design work"
+    ],
+    "selection_date": "2026-10-20"
+  },
+  "backend_contract": {
+    "keep": "Existing Next marketing app, gateway /v1 and canonical PostgreSQL/PostgREST authority",
+    "live_reads": "Founding pricing via same-origin /api/founding-pricing",
+    "commands": "Contact intake, ticket lookup and demo intake remain real gateway contracts with validation and Turnstile",
+    "gaps": "Newsletter persistence/provider outcome requires existing-system discovery before any integration; no fabricated success",
+    "acceptance": "Keyboard, responsive, reflow, contrast, reduced motion, loading/failure/retry, authoritative pricing and form receipts"
+  },
+  "references": [
+    "https://www.w3.org/WAI/WCAG22/Understanding/",
+    "https://lucide.dev/guide/react/"
+  ]
+}

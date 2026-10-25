@@ -1,0 +1,102 @@
+Browser tab: 70, Title: "Search results for \"Synthetic H1\" | Threadline", URL: "http://syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/search?collection_id=01f56eb8-89fa-4fc5-be47-02f3ec591f2f&search=Synthetic+H1".
+1 AXWebArea Search results for "Synthetic H1" | Threadline, URL: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/search?collection_id=01f56eb8-89fa-4fc5-be47-02f3ec591f2f&search=Synthetic+H1
+	2 container
+		3 text Circuit 936 B — saved recovery draft.
+		4 container Description: Primary, ID: lb-nav-panel-header-default
+		5 link Description: Threadline, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b
+		6 container
+			7 text Search products, models and connectors
+			8 search text field (settable) Search products, models and connectors, Value: Synthetic H1, ID: ct-header-search-header-default
+			9 button Search
+		10 link Description: Log in, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/customers/login
+		11 link Description: Cart ( 2 ), Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/cart
+		12 container Filter products by country of origin
+			13 container
+				14 text Country of origin
+				15 text field (settable) Country of origin, ID: lb-product-origin-filter
+				16 button Apply filter
+		17 text THE CONNECTION DESK
+		18 heading Search products, Value: 1
+			19 text Search products
+		20 text 1 products
+		21 container
+			22 text Search products, models and connectors
+			23 search text field (settable) Search products, models and connectors, Value: Synthetic H1, ID: ct-search-forge-discovery-search
+			24 button Search
+		25 text Results for “Synthetic H1”
+		26 container
+			27 heading Filter accessories, Value: 2
+				28 text Filter accessories
+			29 container Connector
+				30 text Connector
+				31 container
+					32 checkbox (settable, integer) Description: usb-a (1 matching product), Value: 0
+					33 text usb-a (1 matching product)
+				34 container
+					35 checkbox (settable, integer) Description: usb-c (1 matching product), Value: 0
+					36 text usb-c (1 matching product)
+			37 container Accessory type
+				38 text Accessory type
+				39 radio button (settable, integer) Description: Any, Value: 1
+				40 container
+					41 radio button (settable, integer) Description: hub (1 matching product), Value: 0
+					42 text hub (1 matching product)
+			43 container Pass-through output (W)
+				44 text Pass-through output (W)
+				45 radio button (settable, integer) Description: Any, Value: 1
+				46 container
+					47 radio button (settable, integer) Description: 60 (1 matching product), Value: 0
+					48 text 60 (1 matching product)
+			49 container Power input (W)
+				50 text Power input (W)
+				51 radio button (settable, integer) Description: Any, Value: 1
+				52 container
+					53 radio button (settable, integer) Description: 65 (1 matching product), Value: 0
+					54 text 65 (1 matching product)
+			55 container Power output (W)
+				56 text Power output (W)
+				57 radio button (settable, integer) Description: Any, Value: 1
+				58 container
+					59 radio button (settable, integer) Description: 45 (1 matching product), Value: 0
+					60 text 45 (1 matching product)
+			61 button Apply filters
+			62 link Description: Clear filters, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/search?limit=20&search=Synthetic+H1&sort=display_order
+		63 container
+			64 text Sort by
+			65 pop up button (collapsed, settable) Sort by, Value: Featured, ID: ct-sort-forge-results-search, Secondary Actions: Expand
+				66 menu
+					67 (selected) Featured
+					68 Price: low to high
+					69 Price: high to low
+					70 Newest
+					71 Name
+			72 button Sort
+		73 container Applied filters
+			74 link Description: Remove Collection: 01f56eb8-89fa-4fc5-be47-02f3ec591f2f, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/search?limit=20&search=Synthetic+H1&sort=display_order
+		75 container
+			76 link Description: Product image not supplied, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/product/61d34f39-5c67-4e1f-88c8-549674f35b24
+			77 text Synthetic Lab · Synthetic H1
+			78 heading Circuit lifecycle hub, Value: 3
+				79 link Description: Circuit lifecycle hub, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/product/61d34f39-5c67-4e1f-88c8-549674f35b24
+			80 definition list
+				81 container Output maximum
+					82 text Output maximum
+				83 text 45 W
+				84 container Power outputs
+					85 text Power outputs
+				86 text 2 × USB-C
+			87 text INR 1,200.00
+			88 link Description: View product →, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/product/61d34f39-5c67-4e1f-88c8-549674f35b24
+			89 text Available
+		90 container Product pages
+			91 text Page 1 of 1
+		92 heading Threadline, Value: 3
+			93 text Threadline
+		94 text Circuit 936 B footer saved
+		95 heading CONTACT, Value: 4
+			96 text CONTACT
+		97 link Description: Contact us, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/contact
+		98 text © Threadline. All rights reserved.
+		99 link Description: Powered by LetBuyy, Value: letbuyy.com/
+
+The focused UI element is 1 AXWebArea Search results for "Synthetic H1" | Threadline, URL: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/search?collection_id=01f56eb8-89fa-4fc5-be47-02f3ec591f2f&search=Synthetic+H1

@@ -7,6 +7,8 @@ import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import {
+    Section,
+    Card,
     Badge,
     Banner,
     Button,
@@ -240,13 +242,13 @@ export default function BillingSettingsPage() {
 
     if (loading) {
         return (
-            <SettingsPane title="Billing" description="Your LetBuyy subscription bills, payment method, and invoice history." store={store}>
+            <SettingsPane navigationKey="billing" title="Billing" description="Your LetBuyy subscription bills, payment method, and invoice history." store={store}>
                 <div className="settings-general-stack">
                     {[1, 2, 3].map((i) => (
-                        <div key={i} className="settings-home-card">
-                            <div className="settings-home-section-label"><Skeleton variant="text" lines={1} /></div>
+                        <Card key={i}>
+                            <Section><Skeleton variant="text" lines={1} /></Section>
                             <div className="settings-form-body"><Skeleton variant="text" lines={3} /></div>
-                        </div>
+                        </Card>
                     ))}
                 </div>
             </SettingsPane>
@@ -261,6 +263,7 @@ export default function BillingSettingsPage() {
 
     return (
         <SettingsPane
+                navigationKey="billing"
             title="Billing"
             description="Your LetBuyy subscription bills, payment method, and invoice history."
             store={store}
@@ -294,32 +297,31 @@ export default function BillingSettingsPage() {
 
             {/* ── Stats ─────────────────────────────────────────────────────── */}
             <div className="billing-stat-grid">
-                <div className="billing-stat-card">
+                <Card className="billing-stat-card">
                     <span className="billing-stat-icon billing-stat-icon--rupee">₹</span>
                     <div className="billing-stat-body">
                         <span className="billing-stat-label">Paid to date</span>
                         <span className="billing-stat-value">{formatInrCurrency(totalPaid / 100, { minimumFractionDigits: 2 })}</span>
                     </div>
-                </div>
-                <div className="billing-stat-card">
+                </Card>
+                <Card className="billing-stat-card">
                     <span className="billing-stat-icon billing-stat-icon--info"><FileText className="letbuyy-icon" aria-hidden="true" /></span>
                     <div className="billing-stat-body">
                         <span className="billing-stat-label">Invoices</span>
                         <span className="billing-stat-value">{billing.invoices.length}</span>
                     </div>
-                </div>
-                <div className="billing-stat-card">
+                </Card>
+                <Card className="billing-stat-card">
                     <span className="billing-stat-icon billing-stat-icon--ok"><CreditCard className="letbuyy-icon" aria-hidden="true" /></span>
                     <div className="billing-stat-body">
                         <span className="billing-stat-label">Payment methods</span>
                         <span className="billing-stat-value">{billing.mandates.length}</span>
                     </div>
-                </div>
+                </Card>
             </div>
 
             {/* ── Upcoming bill ─────────────────────────────────────────────── */}
-            <div className="settings-home-card">
-                <div className="settings-home-section-label">Upcoming bill</div>
+            <Section variant="grouped" title="Upcoming bill" >
                 <div className="billing-upcoming">
                     <div className="billing-upcoming-main">
                         <span className="billing-upcoming-amount">{upcomingAmount} <small>INR</small></span>
@@ -350,12 +352,11 @@ export default function BillingSettingsPage() {
                 <div className="billing-upcoming-foot">
                     To change what you&apos;re billed for, <Link href={`/${store}/settings/plan`} className="settings-business-link">visit plan settings</Link>.
                 </div>
-            </div>
+            </Section>
 
             {/* ── Payment method ────────────────────────────────────────────── */}
-            <div className="settings-home-card">
-                <div className="settings-home-section-label">Payment method</div>
-                <div className="settings-form-body">
+            <Section variant="grouped" title="Payment method" >
+
                     <div className="settings-general-hint">
                         How you pay for your LetBuyy subscription. Storefront payment methods (how you collect from
                         customers) are managed in <Link href={`/${store}/settings/payments`} className="settings-business-link">Payments</Link>.
@@ -369,12 +370,11 @@ export default function BillingSettingsPage() {
                         addOpen={addOpen}
                         onAddOpenChange={setAddOpen}
                     />
-                </div>
-            </div>
+
+            </Section>
 
             {/* ── Past bills ────────────────────────────────────────────────── */}
-            <div className="settings-home-card">
-                <div className="settings-home-section-label">Past bills</div>
+            <Section variant="grouped" title="Past bills" >
                 <Table
                     columns={invoiceColumns}
                     rows={filteredInvoices}
@@ -400,7 +400,7 @@ export default function BillingSettingsPage() {
                         />
                     }
                 />
-            </div>
+            </Section>
         </SettingsPane>
     )
 }

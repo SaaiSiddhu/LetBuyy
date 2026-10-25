@@ -1,0 +1,99 @@
+{
+  "recordedAt": "2026-10-25T00:02:10.173924+00:00",
+  "status": "ACCEPT_SIX_SOURCE_AMENDMENTS_FOR_NATIVE_PREPARATION_NOT_ACTUAL_INDEX_PERFORMANCE_ACCEPTANCE",
+  "reviewer": "Themes",
+  "packet": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/performance-amendment02/SEALED_REVIEW_PACKET.json",
+  "packetSha256": "3f92db4558a1ddd8a20531fab548444dfe6ac7a83d36a7e460c2168ce6e983a1",
+  "hashVerification": {
+    "sealedFiles": 6,
+    "qualificationEvidence": 4,
+    "candidateInputs": 6547,
+    "explicitMainInputs": 14,
+    "V1Inputs": 4,
+    "mismatches": []
+  },
+  "sourceFindingsClosed": [
+    {
+      "id": "PERF-R01",
+      "review": "Exact protocol byte SHA/effective values/current closure/preflight receipt checked before owned database entry. Detached actual six-file seal avoids circular hashes."
+    },
+    {
+      "id": "PERF-R02",
+      "review": "Requires owned pg_index index-name membership, actual public.products relation or correct bitmap ancestry, exact store_id literal site predicate; foreign relation/column/filter-only/generic parameters not accepted."
+    },
+    {
+      "id": "PERF-R03",
+      "review": "All-public SQL witness before/after; HTTP preserves every prior base/parent/leaf row, exactly nine observed request/trace additions per family, mirrors/fields/cardinality, all other tables unchanged, fresh postHTTP witness for DOWN/UP."
+    },
+    {
+      "id": "PERF-R04",
+      "review": "Canonical payload schema/reader plus independently derived exact expected product IDs/order/cardinality and Graphite variant UUID/1900 price; exact one browse RPC and bounded hydration/cached disposition across nine Worker pages."
+    },
+    {
+      "id": "PERF-R05",
+      "review": "Complete one-record PID/time JSON parser refuses truncated/stolen/overbound records; zero-ms log capture scoped future fresh session only. Actual bundled module/log prefix remains a hard unrun preflight."
+    },
+    {
+      "id": "PERF-R06",
+      "review": "checkedStage captures failed awaited child and propagates it; missing/failed phases cannot emit success terminal."
+    }
+  ],
+  "retainedPureEvidence": {
+    "tests": 36,
+    "pass": 36,
+    "fail": 0,
+    "skip": 0,
+    "scopedSourceFiles": 948,
+    "reportedIntroducedDiagnostics": 0,
+    "notRerunByReviewer": true
+  },
+  "acceptedProtocol": {
+    "loads": [
+      100,
+      1000,
+      5000
+    ],
+    "foreignTenants": 10,
+    "foreignProductsEach": 1000,
+    "samples": 10,
+    "warmSamples": 9,
+    "workerLoad": 1000,
+    "workerPages": [
+      1,
+      2,
+      3
+    ],
+    "workerKeys": [
+      "manufacturer",
+      "manufacturer-evidence",
+      "variant-positive"
+    ],
+    "limit": 20,
+    "statementTimeoutMs": 30000,
+    "nativeBudgetSeconds": 600,
+    "jobs": 1,
+    "logDurationMs": 0,
+    "logReadBytes": 8388608,
+    "logLines": 4000,
+    "logRecordBytes": 2097152,
+    "logReadTimeoutMs": 15000,
+    "legacyP95Ratio": 1.25,
+    "legacyNoiseAllowanceMs": 25,
+    "allowedRestResources": [
+      "sites",
+      "rpc/browse_storefront_products_v1",
+      "product_variants",
+      "product_options",
+      "rpc/product_price_reference_window"
+    ],
+    "maxRestCallsPerRequest": 9
+  },
+  "acceptanceLimits": [
+    "Relative guard applies primary local1000 legacy-query p95 only; nine warm nearest-rank p95 is max of nine. No production SLA or scale proof.",
+    "5000 is reported stress diagnostic; actual primary products tenant index observed still required. Generic parameterized plans remain unproven, never remapped to site by assumption.",
+    "No actual runtime/index/DB/module evidence exists in sealed packet. Prepare full recursive source/dependency materialization and actual future bundled module/log preflight plan; inherited6547 manifest is only a starting point."
+  ],
+  "resourceDisposition": "No native or module/log probe allocated. MadeYours exact two red/green cohorts retain reserved sole next native lane. Circuit preflight/performance remains queued.",
+  "MainCandidateBrowserProviderChanges": false,
+  "fullThemeCertificate": false
+}

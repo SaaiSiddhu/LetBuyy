@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "recordedAtUtc": "2026-10-24T20:48:47.909438+00:00",
+  "classification": "FINITE_OWNER_HANDOFF_ACTUAL_RESULTS_RECONCILED_RETAINED_MATRIX_NOT_COMPLETE",
+  "runId": "49ada80bc494",
+  "sourceCandidate": "/private/tmp/letbuyy-shared-completion-20261024-06",
+  "expectedPackage": "letbuyy-aura@2.1.0",
+  "actualNewScopedPasses": [
+    "DD-PAY-02"
+  ],
+  "sharedPrerequisitePass": [
+    "DD-PAY-01"
+  ],
+  "historicalOriginal30": {
+    "PASS": 26,
+    "FAIL": 1,
+    "BLOCKED": 3
+  },
+  "runtime07Original30": {
+    "PARTIAL": 5,
+    "NOT_RUN": 25
+  },
+  "currentExpandedTotals": {
+    "NOT_RUN": 299,
+    "PARTIAL": 4,
+    "PASS": 2
+  },
+  "orderJoin": {
+    "runId": "49ada80bc494",
+    "siteId": "02049de4-41c3-4b10-b5b2-a60a6b5e82bf",
+    "orderId": "5b7e729e-46dd-4bfd-b040-fcd44a534e9d",
+    "paymentId": "pay_TrsWOjFmQm62M0",
+    "providerOrderId": "order_TrsW9LtFDH9nrZ",
+    "variantId": "3f9775d7-4563-4c5d-ad1f-708f13b52c79",
+    "snapshotSha256": "0d5c1d2b5ba1582e79857644a4553df4bcc69eb558729ba7947801c4f56097fb"
+  },
+  "preservation": {
+    "variantAvailabilityBefore": 4,
+    "variantAvailabilityAfter": 3,
+    "snapshotSha256": "0d5c1d2b5ba1582e79857644a4553df4bcc69eb558729ba7947801c4f56097fb",
+    "sameUuidEditsOrArchiveByOwner": 0,
+    "stockRefills": 0,
+    "userAppsDraftsDataTouchedByOwner": 0
+  },
+  "actualFindings": [
+    "R07-HOSTED-CAPTURE-FLAG-01 open; Themes assigned an existing private shared correction proposal",
+    "DD-R07-UI-001 normal saved-cart recovery succeeded; exact initial failure cause not established",
+    "DD-R07-VIS-01 merchant thumbnail screenshot observation; normal retest pending",
+    "Canonical order themeInstanceId/themeReleaseId both null; independent installed/release lineage reconciliation pending"
+  ],
+  "nextAdmittedControllerInput": "RUNTIME07_NEXT_UI_SLICE.json / DD-R07-02",
+  "remainingPriorityCases": [
+    "M05",
+    "D02",
+    "O05",
+    "S01"
+  ],
+  "dependency": "Coordinator owns the single browser queue and is batching remaining themes Test purchases. This owner has no browser/source/native/build lease. Normal M05 is ready; D02/O05/S01 need their declared scoped fault/network controls. No new human pause or repeated approval request is created.",
+  "outgoingMessagesByOwner": 0,
+  "sharedQueueOrMainCandidateWritesByOwner": 0,
+  "all30Complete": false,
+  "FULL_THEME_CERTIFIED": false
+}

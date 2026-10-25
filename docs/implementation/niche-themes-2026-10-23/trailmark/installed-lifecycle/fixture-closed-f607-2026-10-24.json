@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "classification": "ROOT_REPORTED_FIXTURE_TERMINATION_NOT_TRAILMARK_EXECUTION",
+  "recordedAt": "2026-10-24T00:33:27.810464+00:00",
+  "sourceThreadId": "01a164a4-a342-76d3-ab33-65e021ed57db",
+  "runId": "f6074d90e894",
+  "termination": {
+    "resultCode": 124,
+    "timedOut": true,
+    "suiteSeconds": 24452.7,
+    "ownedCleanupReportedComplete": true,
+    "cleanupFailuresReported": [],
+    "reapingUsed": false,
+    "allOriginalAndSupplementalPidsReportedAbsent": true,
+    "supplementalParentsReportedOwnCleanupComplete": true,
+    "testDatabaseRemoved": true,
+    "browserNetworkDataLeasesClosed": true,
+    "processOrPortProbeExecutedHere": false
+  },
+  "baselineRestoration": "TWO_PINK_CART_NOT_RESTORED_BEFORE_INTERRUPTION",
+  "historicalOtherThemeResultsReported": {
+    "Pantry": {
+      "attempted": 13,
+      "PASS": 11,
+      "PARTIAL": 2
+    },
+    "Habitat": {
+      "cases": 26,
+      "PASS": 23,
+      "PARTIAL": 2,
+      "conditionalNOT_RUN": 1
+    },
+    "localCodOrders": 2,
+    "limits": "Other-theme historical evidence only; do not count as Trailmark results or current live state."
+  },
+  "Trailmark": {
+    "slotEverAllocated": false,
+    "runtimeExecuted": false,
+    "stagesNotRun": 12,
+    "discoveryRecipesNotRun": 17,
+    "localCodOrdersCreatedHere": 0
+  },
+  "prohibitions": [
+    "No cached UI/credentials/residual ports/restart/adoption of children",
+    "No guard/deadline bypass",
+    "No resurrection or silent copying of old carts/orders into a new fixture",
+    "No new fixture/browser/DB/API allocation from this chat"
+  ],
+  "nextPrerequisite": "Genuinely fresh coordinator-owned fixture with new actual runtime/release/product/variant/identity bindings, normal authentication and explicit Trailmark lease.",
+  "releasedSourceModifiedHere": false,
+  "monitorContinues": true
+}

@@ -1,0 +1,17 @@
+{
+  "runId": "786c7515c57a",
+  "operation": "native-normalization",
+  "value": {
+    "manufacturer": "ΟΣ",
+    "value": "ΟΣ",
+    "normalized": "οσ",
+    "frontendKey": "οσ",
+    "matchedId": "7a560424-00ea-4714-9eac-ee2059d6a9af",
+    "facet": {
+      "key": "electronics_manufacturer",
+      "value": "οσ",
+      "label": "ΟΣ",
+      "count": 1
+    }
+  }
+}

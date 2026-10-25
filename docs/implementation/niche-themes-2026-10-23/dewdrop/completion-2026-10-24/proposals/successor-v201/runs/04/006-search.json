@@ -1,0 +1,11 @@
+{
+  "key": "search",
+  "bundleSHA256": "1ce0ccb4d7513d8a3236d1c15e45b7a132e186687acf84c96efc16fd00584301",
+  "status": "rendered",
+  "warnings": [],
+  "htmlSHA256": "faebdd5f9298cbc57041ef695d951949a0fa6d0bffac65582528f529407a6b60",
+  "headerSHA256": "6d98e1f659482b7886336732ae5dcb5969fee5198182771b02bdc7e297638812",
+  "footerSHA256": "cb53e6e9f17e552f2fe3981614681e9ec40e16b5483e89cad6fd0eda21371e10",
+  "styleSHA256": "fe75592d6067e745af76a0c36b8cfc80179eb47c82d82ecd8348f8f56599cc39",
+  "syntheticOnly": true
+}

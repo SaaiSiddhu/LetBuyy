@@ -1,0 +1,190 @@
+TAP version 13
+# Subtest: public catalog opts into Playfield v2 while the default Bloom package stays v1
+ok 1 - public catalog opts into Playfield v2 while the default Bloom package stays v1
+  ---
+  duration_ms: 43.249583
+  type: 'test'
+  ...
+# Subtest: real app collection mapper preserves age, contents and edition choice through the generic depth4 cap
+ok 2 - real app collection mapper preserves age, contents and edition choice through the generic depth4 cap
+  ---
+  duration_ms: 680.376584
+  type: 'test'
+  ...
+# Subtest: partial merchant contents are labelled partial on both actual home and collection cards
+ok 3 - partial merchant contents are labelled partial on both actual home and collection cards
+  ---
+  duration_ms: 107.661875
+  type: 'test'
+  ...
+# Subtest: actual app PDP keeps labelled tray/tile dimensions and full merchant-supplied facts
+ok 4 - actual app PDP keeps labelled tray/tile dimensions and full merchant-supplied facts
+  ---
+  duration_ms: 65.617791
+  type: 'test'
+  ...
+# Subtest: shared variant projection preserves strict partial input and derives inherited or explicitly cleared card facts
+ok 5 - shared variant projection preserves strict partial input and derives inherited or explicitly cleared card facts
+  ---
+  duration_ms: 0.743083
+  type: 'test'
+  ...
+# Subtest: invalid or missing public toy facts stay unknown in the real app mapper and collection render
+ok 6 - invalid or missing public toy facts stay unknown in the real app mapper and collection render
+  ---
+  duration_ms: 46.150833
+  type: 'test'
+  ...
+# Subtest: actual projected age/interest rows, labels and selection survive the unchanged generic depth4 cap
+ok 7 - actual projected age/interest rows, labels and selection survive the unchanged generic depth4 cap
+  ---
+  duration_ms: 703.168292
+  type: 'test'
+  ...
+# Subtest: missing metadata keeps ordinary home search/browse and collection search/sort despite local toy facts or query presence
+ok 8 - missing metadata keeps ordinary home search/browse and collection search/sort despite local toy facts or query presence
+  ---
+  duration_ms: 103.7695
+  type: 'test'
+  ...
+# Subtest: selected zero-result synthetic rows never enable unsupported choosers; their valid query remains clearable
+ok 9 - selected zero-result synthetic rows never enable unsupported choosers; their valid query remains clearable
+  ---
+  duration_ms: 50.312167
+  type: 'test'
+  ...
+# Subtest: each missing actual facet independently hides its chooser and age entry links
+ok 10 - each missing actual facet independently hides its chooser and age entry links
+  ---
+  duration_ms: 179.864334
+  type: 'test'
+  ...
+# Subtest: actual generic GET forms retain search/sort and independent filters while resetting pagination
+ok 11 - actual generic GET forms retain search/sort and independent filters while resetting pagination
+  ---
+  duration_ms: 48.245417
+  type: 'test'
+  ...
+# Subtest: supplied option labels remain escaped literal text inside the real DOM
+ok 12 - supplied option labels remain escaped literal text inside the real DOM
+  ---
+  duration_ms: 54.831625
+  type: 'test'
+  ...
+# Subtest: nonboolean or incomplete capability aliases cannot enable selectors merely because rows are present
+ok 13 - nonboolean or incomplete capability aliases cannot enable selectors merely because rows are present
+  ---
+  duration_ms: 135.148042
+  type: 'test'
+  ...
+# Subtest: invalid server age/interest values are rejected before a projected capability can be rendered
+ok 14 - invalid server age/interest values are rejected before a projected capability can be rendered
+  ---
+  duration_ms: 0.737334
+  type: 'test'
+  ...
+# Subtest: fresh public Playfield config validates against its actual matching manifest before normalization and over JSON wire
+ok 15 - fresh public Playfield config validates against its actual matching manifest before normalization and over JSON wire
+  ---
+  duration_ms: 30.871209
+  type: 'test'
+  ...
+# Subtest: actual JSON-wire ThemeDocument V2 roundtrip retains every buyer template and remains manifest-valid
+ok 16 - actual JSON-wire ThemeDocument V2 roundtrip retains every buyer template and remains manifest-valid
+  ---
+  duration_ms: 29.996792
+  type: 'test'
+  ...
+# Subtest: strict gate still rejects the two unsupported fields; the runtime document adapter never silently strips them
+ok 17 - strict gate still rejects the two unsupported fields; the runtime document adapter never silently strips them
+  ---
+  duration_ms: 20.9655
+  type: 'test'
+  ...
+# Subtest: Playfield is a distinct v2 package and leaves its supplied v1 release untouched
+ok 18 - Playfield is a distinct v2 package and leaves its supplied v1 release untouched
+  ---
+  duration_ms: 24.549708
+  type: 'test'
+  ...
+# Subtest: fresh inherited buyer templates contain only supported replacement settings and survive JSON-wire documents
+ok 19 - fresh inherited buyer templates contain only supported replacement settings and survive JSON-wire documents
+  ---
+  duration_ms: 208.800709
+  type: 'test'
+  ...
+# Subtest: retained editable inline blocks expose the preview attribute hook on their existing root
+ok 20 - retained editable inline blocks expose the preview attribute hook on their existing root
+  ---
+  duration_ms: 6.419292
+  type: 'test'
+  ...
+# Subtest: actual inline FAQ roots expose stable block identity only in editor preview
+ok 21 - actual inline FAQ roots expose stable block identity only in editor preview
+  ---
+  duration_ms: 60.924625
+  type: 'test'
+  ...
+# Subtest: actual Liquid home, collection and product render real merchandise and scoped styles
+ok 22 - actual Liquid home, collection and product render real merchandise and scoped styles
+  ---
+  duration_ms: 109.743625
+  type: 'test'
+  ...
+# Subtest: an unconfigured announcement has no empty focusable link
+ok 23 - an unconfigured announcement has no empty focusable link
+  ---
+  duration_ms: 38.211
+  type: 'test'
+  ...
+# Subtest: contents and measured dimensions are exact, escaped and present before purchase
+ok 24 - contents and measured dimensions are exact, escaped and present before purchase
+  ---
+  duration_ms: 33.305042
+  type: 'test'
+  ...
+# Subtest: missing media, age, contents, dimensions and warnings remain visibly unknown
+ok 25 - missing media, age, contents, dimensions and warnings remain visibly unknown
+  ---
+  duration_ms: 62.007
+  type: 'test'
+  ...
+# Subtest: age and interest selectors preserve both choices and each clear action removes one
+ok 26 - age and interest selectors preserve both choices and each clear action removes one
+  ---
+  duration_ms: 66.709333
+  type: 'test'
+  ...
+# Subtest: query attributes and merchant warning text cannot introduce active markup
+ok 27 - query attributes and merchant warning text cannot introduce active markup
+  ---
+  duration_ms: 64.674125
+  type: 'test'
+  ...
+# Subtest: editor mutation changes the rendered campaign and clearing media removes the image
+ok 28 - editor mutation changes the rendered campaign and clearing media removes the image
+  ---
+  duration_ms: 57.893
+  type: 'test'
+  ...
+# Subtest: empty collections expose recovery and do not fabricate products or counts
+ok 29 - empty collections expose recovery and do not fabricate products or counts
+  ---
+  duration_ms: 26.089917
+  type: 'test'
+  ...
+# Subtest: a resolved selected-edition DTO renders explicit clears and different measured objects without stale kit facts
+ok 30 - a resolved selected-edition DTO renders explicit clears and different measured objects without stale kit facts
+  ---
+  duration_ms: 57.780083
+  type: 'test'
+  ...
+1..30
+# tests 30
+# suites 0
+# pass 30
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1865.252333

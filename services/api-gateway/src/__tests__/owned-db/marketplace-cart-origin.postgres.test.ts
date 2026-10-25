@@ -6,10 +6,11 @@ import { readFileSync } from 'node:fs';
 import { createServer, type IncomingMessage } from 'node:http';
 import { once } from 'node:events';
 import { join } from 'node:path';
-import test, { afterEach, before } from 'node:test';
+import test, { after, afterEach, before } from 'node:test';
+import {closePooledSqlClients} from '@letbuyy/infrastructure/pooled-sql-adapter';
 import { LETBUYY_STOREFRONT_SESSION_HEADER } from '@letbuyy/auth-core';
 import { Gateway, gatewayEnv, mintSession, newIdentityKeys, seedBuyerAccount, type IdentityKeys } from './gateway-harness';
-import { requireOwnedDatabase, startOwnedClientRuntime, stopOwnedClientRuntime } from './owned-db-support';
+import { requireOwnedDatabase, startOwnedPooledSqlProxy, type OwnedPooledSqlProxy, startOwnedClientRuntime, stopOwnedClientRuntime } from './owned-db-support';
 import { newSyntheticTenant, seedSyntheticTenant } from './synthetic-tenant';
 import worker from '../../index';
 
@@ -24,6 +25,7 @@ const shippingRateId = crypto.randomUUID();
 const marketplaceCategoryMigration = readFileSync(new URL('../../../../../database/supabase/migrations/296_marketplace_order_category_snapshot.sql', import.meta.url), 'utf8');
 const marketplaceCategoryRollback = readFileSync(new URL('../../../../../database/supabase/rollback/296_marketplace_order_category_snapshot.rollback.sql', import.meta.url), 'utf8');
 let gateway: Gateway;
+let sqlProxy:OwnedPooledSqlProxy;
 let keys: IdentityKeys;
 let approved: { listingId: string; productId: string };
 let pending: { listingId: string; productId: string };
@@ -32,11 +34,13 @@ let otherSellerApproved: { listingId: string; productId: string };
 
 before(async () => {
     keys = await newIdentityKeys();
+    sqlProxy=await startOwnedPooledSqlProxy(owned);
     seedSyntheticTenant(psql, seller);
     seedSyntheticTenant(psql, otherSeller);
     psql(`INSERT INTO marketplace_categories (id, slug, name, is_active)
       VALUES ('${categoryId}', 'marketplace-cart-fixture', 'Marketplace cart fixture', true);`);
     gateway = new Gateway(gatewayEnv(owned, keys, {
+        ...sqlProxy.env(),
         CHECKOUT_SIGNING_SECRET: 'synthetic-marketplace-cart-handoff-secret',
         RAZORPAY_KEY_ID: 'rzp_test_synthetic',
         RAZORPAY_KEY_SECRET: 'synthetic-marketplace-razorpay-secret',
@@ -57,6 +61,7 @@ before(async () => {
       VALUES ('${shippingRateId}','${shippingZoneId}','${seller.siteId}','Standard delivery','flat',60,true,true);`);
 });
 afterEach(async () => { await gateway.settle(); });
+after(async()=>{await closePooledSqlClients();await sqlProxy?.stop();});
 
 test('migration 296 safely rolls back before category evidence exists and reapplies cleanly', () => {
     assert.equal(psql(`SELECT count(*) FROM order_items WHERE marketplace_category_id IS NOT NULL;`), '0');
@@ -120,6 +125,9 @@ async function deliveryRate(cartId: string, handoffQuery: string, pincode = '560
 }
 
 test('marketplace cart stores server-validated listing identity and distinct sales origin', async () => {
+    const env=owned.restEnv();
+    const listingRead=await fetch(env.SUPABASE_URL+'/rest/v1/rpc/marketplace_listing_detail',{method:'POST',headers:{'Content-Type':'application/json',apikey:env.SUPABASE_SERVICE_ROLE_KEY,Authorization:'Bearer '+env.SUPABASE_SERVICE_ROLE_KEY},body:JSON.stringify({p_listing_id:approved.listingId})});
+    assert.equal(listingRead.status,200,await listingRead.text());
     const input = cartBody(approved.listingId, approved.productId);
     input.channel = 'whatsapp';
     const response = await gateway.request(`/v1/storefront/${seller.subdomain}/marketplace-cart`, {
@@ -578,6 +586,7 @@ if (process.env.LETBUYY_ENABLE_MARKETPLACE_MOBILE_OWNED_E2E === '1') {
 
         const keys = await newIdentityKeys('market-mobile-e2e');
         const env = gatewayEnv(owned, keys, {
+        ...sqlProxy.env(),
             CHECKOUT_SIGNING_SECRET: 'synthetic-marketplace-mobile-checkout-secret',
             CHECKOUT_ORIGIN: 'https://checkout.letbuyy.test',
         });

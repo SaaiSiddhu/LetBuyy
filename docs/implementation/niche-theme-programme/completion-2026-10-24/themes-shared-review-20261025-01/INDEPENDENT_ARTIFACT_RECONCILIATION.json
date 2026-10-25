@@ -1,0 +1,193 @@
+{
+  "recordedAt": "2026-10-24T19:53:28.620379+00:00",
+  "candidate": "/private/tmp/letbuyy-shared-completion-20261024-06",
+  "sourceManifestSha256": "44049b9b9f9ac17295d2b590199d447b4da42796f9b9a995d01b3ba2367981c4",
+  "sourceFilesReviewed": 6547,
+  "candidateHashMismatches": [],
+  "sourceSymlinkEscapes": [],
+  "secretLikeFilesExcludedNotRead": [],
+  "currentMainDrifts": [],
+  "priorCandidateSourceDeltas": [
+    "apps/commerce/web/next.config.ts",
+    "config/security/next-security-headers.ts",
+    "tests/contracts/security-headers.test.ts"
+  ],
+  "nativeCohorts": [
+    {
+      "gate": "catalog394",
+      "path": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/native-runs/08/result.json",
+      "sha256": "d29367666294ad18e8506b0e94388f1ada10de7368cd561002e03c8a3bdfe8a8",
+      "runId": "0c23ed799a87",
+      "passed": 9,
+      "failed": 0,
+      "skipped": 0,
+      "exitCode": 0,
+      "timedOut": false,
+      "ownedDatabase": "verified before start",
+      "migrationCount": 322,
+      "maxMigration": 393,
+      "migrationCeiling": null,
+      "migrationCurrentSourceMismatches": [],
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "reaped": [],
+      "suite": "services/api-gateway/src/__tests__/owned-db/playfield201-catalog394-qualification.manual.ts",
+      "suiteCandidateSha256": "c40f1a77d45b01d35e90cffc8e5d39fe6421856a3ab580d5ec8ac0d784b900ec",
+      "resultInternalTestCount": 9,
+      "suites": 1
+    },
+    {
+      "gate": "circuit-facets",
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-native-runs/06/result.json",
+      "sha256": "fe20957711d91c0ac442ea9eb0fa21e90c18764b2143e7dee85697182c22528f",
+      "runId": "786c7515c57a",
+      "passed": 9,
+      "failed": 0,
+      "skipped": 0,
+      "exitCode": 0,
+      "timedOut": false,
+      "ownedDatabase": "verified before start",
+      "migrationCount": 322,
+      "maxMigration": 393,
+      "migrationCeiling": null,
+      "migrationCurrentSourceMismatches": [],
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "reaped": [],
+      "suite": "services/api-gateway/src/__tests__/owned-db/circuit-facets-qualification.manual.ts",
+      "suiteCandidateSha256": "689047487002d9a27fc0b059948abca7fce29c3601d7121e1df7ed566da26b83",
+      "resultInternalTestCount": 9,
+      "suites": 1
+    },
+    {
+      "gate": "converted-cart",
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/razorpay-converted-cart-repair01/native04/result.json",
+      "sha256": "aa531746cbc467903cef2101a037b8575f6202398a7bdf30618cd73e4e160f83",
+      "runId": "06fe9e80f1ae",
+      "passed": 18,
+      "failed": 0,
+      "skipped": 0,
+      "exitCode": 0,
+      "timedOut": false,
+      "ownedDatabase": "verified before start",
+      "migrationCount": 322,
+      "maxMigration": 393,
+      "migrationCeiling": null,
+      "migrationCurrentSourceMismatches": [],
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "reaped": [],
+      "suite": "services/api-gateway/src/__tests__/owned-db/hosted-checkout-buyer-ownership.postgres.test.ts",
+      "suiteCandidateSha256": "b0ed45ce28a0bb5d1b452fa1113058a9710ec5880f0eca1b2c9861479131a63d",
+      "resultInternalTestCount": 18,
+      "suites": 1
+    },
+    {
+      "gate": "configured-cart",
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-integration01/native07/result.json",
+      "sha256": "0197196a87926fff98e522b872b1eb1a769b85138ec6d34f4c4216991dda7850",
+      "runId": "3cafad0d3fe7",
+      "passed": 16,
+      "failed": 0,
+      "skipped": 0,
+      "exitCode": 0,
+      "timedOut": false,
+      "ownedDatabase": "verified before start",
+      "migrationCount": 322,
+      "maxMigration": 393,
+      "migrationCeiling": null,
+      "migrationCurrentSourceMismatches": [],
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "reaped": [],
+      "suite": "services/api-gateway/src/__tests__/owned-db/configured-cart-qualification.manual.ts",
+      "suiteCandidateSha256": null,
+      "resultInternalTestCount": 16,
+      "suites": 1
+    },
+    {
+      "gate": "child-customization",
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/child-customization-integration01/native03/result.json",
+      "sha256": "8b45d0e6a5d11b9e04f32ea9b99a912019ed5c95f0838beaa6609e4ce63158b6",
+      "runId": "909a07fa1663",
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "exitCode": 0,
+      "timedOut": false,
+      "ownedDatabase": "verified before start",
+      "migrationCount": 322,
+      "maxMigration": 393,
+      "migrationCeiling": null,
+      "migrationCurrentSourceMismatches": [],
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "reaped": [],
+      "suite": "services/api-gateway/src/__tests__/owned-db/first-party-customization-qualification.manual.ts",
+      "suiteCandidateSha256": "7e5e7b3ac1cf2a59893714d09a62a0a0c93728331e3bf579e8f5f22398ed2fbf",
+      "resultInternalTestCount": 1,
+      "suites": 1
+    },
+    {
+      "gate": "webhook-first",
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/razorpay-webhook-first-repair01/native04/result.json",
+      "sha256": "81283970f36970bc4c3bb490ed8b0197e95e418458b2213511f1351a90657033",
+      "runId": "29f1032eaf9e",
+      "passed": 20,
+      "failed": 0,
+      "skipped": 0,
+      "exitCode": 0,
+      "timedOut": false,
+      "ownedDatabase": "verified before start",
+      "migrationCount": 322,
+      "maxMigration": 393,
+      "migrationCeiling": null,
+      "migrationCurrentSourceMismatches": [],
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "reaped": [],
+      "suite": "services/api-gateway/src/__tests__/owned-db/hosted-checkout-webhook-first-qualification.manual.ts",
+      "suiteCandidateSha256": "2f09a51690608ef28130e7d8559fe4af0f96f9bd6a9db474a29cfbc0d22bca14",
+      "resultInternalTestCount": 20,
+      "suites": 1
+    }
+  ],
+  "noNewNativeExecuted": true,
+  "noPrivateStateOrCredentialRead": true
+}

@@ -33,6 +33,7 @@ export function stripTruncateGuardDeclarations(sql) {
   const array = String.raw`ARRAY\s*\[\s*${privileges}(?:\s*,\s*${privileges})*\s*\]`;
   const aclColumn = String.raw`(?:split_part\(\s*privilege\s*,\s*' WITH GRANT OPTION'\s*,\s*1\s*\)|(?:[A-Za-z_]\w*\.)?privilege_type)`;
   const check = new RegExp(String.raw`\b${aclColumn}\s*=\s*ANY\(\s*${array}\s*\)`, 'gi');
+  const inCheck = new RegExp(String.raw`\b${aclColumn}\s+IN\s*\(\s*${privileges}(?:\s*,\s*${privileges})*\s*\)`, 'gi');
   const snapshot = new RegExp(String.raw`\bSELECT\s+jsonb_object_agg\(\s*p\s*,\s*has_table_privilege\(\s*'service_role'\s*,\s*v_table\s*,\s*p\s*\)\s*\)\s+INTO\s+[A-Za-z_]\w*\s+FROM\s+unnest\(\s*${array}\s*\)\s+p\s*;`, 'gi');
   const aclRead = (projection) => projection.replace(/\bTRUNCATE\b/gi, "CHECKED_PRIVILEGE");
   const metadataArray = new RegExp(String.raw`\bARRAY\s*\[\s*${privileges}(?:\s*,\s*${privileges})*\s*\]`, 'gi');
@@ -46,6 +47,7 @@ export function stripTruncateGuardDeclarations(sql) {
       (declaration) => declaration.replace(/\bTRUNCATE\b/gi, 'GUARDED_EVENT'))
     .replace(/\bTG_OP\s*=\s*'TRUNCATE'/gi, "TG_OP='GUARDED_EVENT'")
     .replace(check, aclRead)
+    .replace(inCheck, aclRead)
     .replace(snapshot, aclRead);
 }
 

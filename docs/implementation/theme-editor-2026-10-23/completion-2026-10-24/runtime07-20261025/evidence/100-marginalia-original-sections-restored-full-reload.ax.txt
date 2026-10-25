@@ -1,0 +1,159 @@
+Browser tab: 173052882, Title: "LetBuyy Admin", URL: "http://admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes/letbuyy-dawn/editor".
+1 AXWebArea LetBuyy Admin, URL: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes/letbuyy-dawn/editor
+	2 container
+		3 link Description: Back to themes, Value: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes
+		4 checkbox Description: Toggle navigation panel, Value: 1
+		5 button Sections
+		6 button Theme settings
+		7 button Theme styles
+		8 button Versions
+		9 text Marginalia Active
+		10 text Saved
+		11 container Template
+			12 pop up button (collapsed, settable) Description: Template, Value: Marginalia bookshop, Secondary Actions: Expand
+				13 menu
+					14 (selected) Marginalia bookshop
+					15 LetBuyy Core product
+					16 Marginalia catalog
+					17 Page
+					18 LetBuyy Core cart
+					19 Blog
+					20 Article
+					21 Policy page
+					22 Marginalia search
+					23 Contact
+					24 Password
+					25 404 Not Found
+					26 Login
+					27 Order detail
+					28 Order history
+					29 All collections
+					30 Account
+					31 Register
+					32 Account settings
+					33 Wishlist
+					34 Addresses
+		35 button (disabled) Undo
+		36 button (disabled) Redo
+		37 button (disabled) Save
+		38 button Publish
+		39 container Theme editor navigation
+			40 heading Marginalia bookshop, Value: 2
+				41 text Marginalia bookshop
+			42 text v22
+			43 outline Theme sections
+				44 container
+					45 text HEADER
+					46 button Header
+					47 checkbox Description: Toggle Header visibility, Value: 1
+				48 container
+					49 text TEMPLATE
+					50 container Template sections
+						51 row (selectable) Bookshop opening and search
+							52 button Bookshop opening and search
+						53 row (selectable) Subject index and reading pick
+							54 button Subject index and reading pick
+						55 row (selectable) Reading shelf
+							56 button Reading shelf
+						57 row (selectable) Paper and bookshop editorial
+							58 button Paper and bookshop editorial
+					59 pop up button (collapsed, settable) Value: Marquee, Secondary Actions: Expand
+						60 menu
+							61 (selected) Marquee
+							62 404 Not Found
+							63 Spotlight
+							64 Search
+							65 Video Hero
+							66 Call to Action
+							67 Bookshop opening and search
+							68 Blog Listing
+							69 Cart
+							70 Contact Form
+							71 Page Content
+							72 Reading shelf
+							73 Rich Content
+							74 Testimonials
+							75 Trust Badges
+							76 Paper and bookshop editorial
+							77 Brand Marquee
+							78 Subject index and reading pick
+							79 FAQ Accordion
+							80 Password Gate
+							81 Services Grid
+							82 App Block Slot
+							83 Customer Login
+							84 Policy Content
+							85 Portfolio Grid
+							86 Product Detail
+							87 Skills Section
+							88 Article Content
+							89 Banner Carousel
+							90 Order History
+							91 Announcement Bar
+							92 Customer Account
+							93 Collection Banner
+							94 Book and paper discovery
+							95 Customer Register
+							96 Account Settings
+							97 Wishlist
+							98 Selected reading shelf
+							99 Newsletter Signup
+							100 Addresses
+							101 Experience Timeline
+							102 Order Detail
+							103 Bibliography product list
+					104 button Add
+				105 container
+					106 text FOOTER
+					107 button Footer
+		108 container Live theme preview
+			109 text Live preview
+			110 text syn-threadline-ui-ae3f0477 . localhost  -  1440 px
+			111 container Preview device
+				112 checkbox Desktop, Value: 1
+				113 checkbox Tablet, Value: 0
+				114 checkbox Mobile, Value: 0
+			115 container
+				116 text syn-threadline-ui-ae3f0477 . localhost
+				117 checkbox Description: Inspect preview, Value: 1
+				118 container syn-threadline-ui-ae3f0477 storefront preview
+					119 AXWebArea about:blank
+		120 container Theme properties
+			121 text Selected section
+			122 heading Header, Value: 2
+				123 text Header
+			124 container Smart defaults
+				125 button (collapsed) Smart defaults, Secondary Actions: Expand
+					126 text Smart defaults
+			127 container
+				128 text Menu
+				129 pop up button (collapsed, settable) Menu, Value: Main menu, Secondary Actions: Expand
+					130 menu
+						131 (disabled) Saved value unavailable
+						132 (selected) Main menu
+						133 Footer menu
+						134 Policy menu
+				135 text Layout
+				136 pop up button (collapsed, settable) Layout, Value: Inline, Secondary Actions: Expand
+					137 menu
+						138 (disabled) Saved value unavailable
+						139 (selected) Inline
+						140 Centered
+				141 text Header behavior
+				142 pop up button (collapsed, settable) Header behavior, Value: Sticky, Secondary Actions: Expand
+					143 menu
+						144 (disabled) Saved value unavailable
+						145 Static
+						146 (selected) Sticky
+				147 text Show cart
+				148 switch Description: Show cart, Value: 1
+				149 text Store name
+				150 text field (settable) Store name
+				151 text Show search
+				152 switch Description: Show search, Value: 1
+				153 text BLOCKS
+				154 button Add Link
+					155 text Add 
+					156 text Link
+
+The focused UI element is 1 AXWebArea LetBuyy Admin, URL: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes/letbuyy-dawn/editor

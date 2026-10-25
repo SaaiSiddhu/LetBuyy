@@ -135,6 +135,9 @@ importers:
       tailwind-merge:
         specifier: ^3.4.0
         version: 3.4.1
+      zod:
+        specifier: ^4.3.6
+        version: 4.3.6
     devDependencies:
       '@tailwindcss/postcss':
         specifier: ^4
@@ -526,6 +529,9 @@ importers:
       '@letbuyy/cms-core':
         specifier: workspace:*
         version: link:../../../packages/cms-core
+      '@letbuyy/commerce-core':
+        specifier: workspace:*
+        version: link:../../../packages/commerce-core
       '@letbuyy/shared-types':
         specifier: workspace:*
         version: link:../../../packages/shared-types

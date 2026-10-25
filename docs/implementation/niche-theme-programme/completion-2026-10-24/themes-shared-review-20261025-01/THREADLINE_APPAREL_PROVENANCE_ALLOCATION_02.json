@@ -1,0 +1,120 @@
+{
+  "recordedAt": "2026-10-24T20:49:58.486938+00:00",
+  "status": "GRANTED_PRIVATE_COHERENT_APPAREL_PROVENANCE_PREPARATION_ONLY",
+  "owner": "01a16d03-613e-71b0-a591-07d4d24347d4",
+  "authority": "Verified human complete-all10 mandate and concrete current-source/UI gap; canonical existing commerce/Liquid winners only",
+  "privateRoot": "/private/tmp/letbuyy-apparel-provenance-prep-20261025-02",
+  "expiresAt": "2026-10-24T22:49:58.486938+00:00",
+  "ends": "First sealed coherent private handoff or expiry",
+  "priorProposal": {
+    "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/HANDOFF.json",
+    "sha256": "d3bda23e907304854e41b8a6644b85d4d7f5bc98adecf217c733112fa0a6632c",
+    "disposition": "SOURCE_STARTING_POINT_NOT_APPLY_READY;8new source cases and overlapping37 executions are not native/UI proof"
+  },
+  "exactPrivateSourceOverlayPaths": [
+    {
+      "path": "packages/commerce-core/src/product-fact-snapshot.ts",
+      "beforeSha256": "0cbc6299ed4464bf7b46141ca786c98c7a01c2bea0ac93bb975caa790a1f3582"
+    },
+    {
+      "path": "packages/commerce-core/src/product-facts-summary.ts",
+      "beforeSha256": "d6697c70abaee0b1be3f94c1737eba1c2de8852b211b09225601d5080eacf0c8"
+    },
+    {
+      "path": "packages/theme-engine/src/niche-order-presentation.ts",
+      "beforeSha256": "5683e413e48bc11d6b0906dc344ec6c3b0c7413113172b11bda91c49d08cb444"
+    },
+    {
+      "path": "services/api-gateway/src/lib/cart-product-facts.ts",
+      "beforeSha256": "19140df6be21304d0e5c764ad5175d55971253d45cf9255d32415c2f15d29c98"
+    },
+    {
+      "path": "packages/commerce-core/test/apparel-order-history.test.ts",
+      "beforeSha256": null
+    },
+    {
+      "path": "packages/theme-engine/test/threadline-order-facts-v211.test.ts",
+      "beforeSha256": null
+    },
+    {
+      "path": "apps/commerce/web/src/lib/order-fact-readback.test.ts",
+      "beforeSha256": "b213568c4de27af8dd2963a7669a43e9b280eb7cb84573ae296fb1a464bbfc73"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/apparel-cart-order-provenance-qualification.manual.ts",
+      "beforeSha256": null
+    }
+  ],
+  "readOnlyInputPins": [
+    {
+      "path": "packages/commerce-core/src/apparel.ts",
+      "candidatePath": "/private/tmp/letbuyy-shared-completion-20261024-06/packages/commerce-core/src/apparel.ts",
+      "sha256": "2d8833f58ac431a0f0acf4e348906476758240606f2d5ddb7014be7426040b3e"
+    },
+    {
+      "path": "packages/commerce-core/src/niche-product-facts.ts",
+      "candidatePath": "/private/tmp/letbuyy-shared-completion-20261024-06/packages/commerce-core/src/niche-product-facts.ts",
+      "sha256": "efdefb2c5a20306a6b80afa133a962d873341b01df51ac701696d8256c13eb2e"
+    },
+    {
+      "path": "packages/commerce-core/src/product-fact-snapshot.ts",
+      "candidatePath": "/private/tmp/letbuyy-shared-completion-20261024-06/packages/commerce-core/src/product-fact-snapshot.ts",
+      "sha256": "0cbc6299ed4464bf7b46141ca786c98c7a01c2bea0ac93bb975caa790a1f3582"
+    },
+    {
+      "path": "packages/commerce-core/src/product-facts-summary.ts",
+      "candidatePath": "/private/tmp/letbuyy-shared-completion-20261024-06/packages/commerce-core/src/product-facts-summary.ts",
+      "sha256": "d6697c70abaee0b1be3f94c1737eba1c2de8852b211b09225601d5080eacf0c8"
+    },
+    {
+      "path": "services/api-gateway/src/lib/cart-product-facts.ts",
+      "candidatePath": "/private/tmp/letbuyy-shared-completion-20261024-06/services/api-gateway/src/lib/cart-product-facts.ts",
+      "sha256": "19140df6be21304d0e5c764ad5175d55971253d45cf9255d32415c2f15d29c98"
+    },
+    {
+      "path": "database/supabase/migrations/388_cart_order_fact_snapshots.sql",
+      "candidatePath": "/private/tmp/letbuyy-shared-completion-20261024-06/database/supabase/migrations/388_cart_order_fact_snapshots.sql",
+      "sha256": "9de7c35b68684cd5d3c752166e5c6ae0b33c64c6b1ea8ac353a82bcac936d2c3"
+    },
+    {
+      "path": "packages/theme-engine/src/niche-order-presentation.ts",
+      "candidatePath": "/private/tmp/letbuyy-shared-completion-20261024-06/packages/theme-engine/src/niche-order-presentation.ts",
+      "sha256": "5683e413e48bc11d6b0906dc344ec6c3b0c7413113172b11bda91c49d08cb444"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/order-fact-readback.ts",
+      "candidatePath": "/private/tmp/letbuyy-shared-completion-20261024-06/apps/commerce/web/src/lib/order-fact-readback.ts",
+      "sha256": "90c4e486175c53945f7df7310b1ddb770b0edd6d815a3cf812a90ca3aded4f5d"
+    }
+  ],
+  "privateSQLArtifacts": [
+    "UNNUMBERED_apparel_order_facts.up.proposal.sql",
+    "UNNUMBERED_apparel_order_facts.down.proposal.sql",
+    "SQL_SOURCE_CONSERVATION.json",
+    "SOURCE_MANIFEST.json",
+    "HANDOFF.json"
+  ],
+  "requirements": [
+    "Complete the existing canonical ApparelFactsSchema -> strict accepted snapshot -> bounded summary -> current private cart source -> current SQL provenance path coherently. Reuse existing schema/domain contracts; no app-local commerce DTO, second snapshot store or client-authoritative facts.",
+    "Keep namespace source selections identical across TS and CURRENT ACTIVE SQL bodies, including qualified configured-line/cart writer where relevant. Apparel is product-level; do not widen variant metadata/app/unknown namespaces or leak unrelated private metadata. Preserve other nine namespaces and mixed valid metadata, getter/invalid/size bounds, cm/in facts and exact selected variant/options/price/stock.",
+    "Historical388 and all old proposal/capture bytes are READ_ONLY. Prepare one NEW unnumbered paired SQL proposal guarded against exact current function signature/body/owner/ACL/security/search_path/volatility profiles over full322/max393 plus the exact existing four admitted UPs. Only named minimal product-fact whitelist/provenance bodies may change; no GRANT bypass, disabled guard or table/data rewrite.",
+    "Prepare actual Worker/cart/order provenance native CASE SOURCE proving baseline refusal/loss and corrected acceptance, hostile/invalid/foreign/stale/cross-variant refusal, exact selected facts/quantity/price, same-intent replay, per-source conservation and actual pairedDOWN/UP profile/table conservation. Do not execute it under this grant.",
+    "Rollback must retain all old/new cart/order/snapshot records. Show explicit safe refusal where reverted SQL cannot accept an active new-apparel cart, then correct replay after reapply; never strip or fabricate facts to make rollback green.",
+    "For Liquid use only explicit NEW Sense successor caller through the existing helper; frozen Sense200/201/210 outputs remain byte-exact. Current old10001 has options but empty apparel facts and stays unchanged with its original recorded hash/algorithm; do not read current catalogue as historical fallback.",
+    "Run bounded source/pure/type checks only and preserve each failed attempt/overlap. Seal exact before/after path hashes, SQL semantic delta and known native/runtime limitations."
+  ],
+  "versionAndSharedPathOwnership": {
+    "reservedSenseSuccessor": "2.1.1/version_number6 only after coherent qualification; no emitted capture now",
+    "catalogueQualificationAndCaptureOwner": "Habitat /01a164ba-c402-7212-990d-ed4792274b37 under a separately granted follow-up after its current FOUR-heading proposal seals",
+    "ThreadlineDoesNotEdit": [
+      "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "Existing frozen210/200 distributions",
+      "Habitat current four-theme capture generator or Editor eligibility files"
+    ],
+    "coordination": "Return proposed exact helper/Sense builder contract for the existing single catalog/version owner. No competing catalogue, renderer, serializer or partial Main application."
+  },
+  "mainCandidateWritesOrMigrationNumberGranted": false,
+  "nativeDatabaseProviderBrowserBuildOrExposureGranted": false,
+  "currentSourceApplicationGranted": false,
+  "currentPurchaseQueueUnaffected": true
+}

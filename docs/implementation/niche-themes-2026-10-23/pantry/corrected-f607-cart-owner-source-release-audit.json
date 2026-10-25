@@ -1,0 +1,173 @@
+{
+  "recordedAt": "2026-10-23T20:14:11.508281+00:00",
+  "classification": "READ_ONLY_RELEASE_HASH_AND_SAVED_SOURCE_VALIDATION_AUDIT_NOT_RUNTIME_ACCEPTANCE",
+  "status": "OWNER_SOURCE_RELEASE_MATCHES_RETAINED_ARTIFACTS_ROOT_ADMISSION_AND_LIVE_RETEST_PENDING",
+  "sourceRelease": {
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/cart-recovery-2026-10-24/SOURCE_RELEASE.json",
+    "sha256": "47366e5ddf86b94897538b50759d605ca2b229f371c4503ead78560107a2b50c"
+  },
+  "writerRelease": {
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/cart-recovery-2026-10-24/writer-release.json",
+    "sha256": "ddeb082535b62259cd274496f09a71d685f53b7c33507f1b0ef062c63ba31434"
+  },
+  "releasedSourceFilesChecked": [
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx",
+      "sha256": "db6f884364955b8f9c3687bead875a7211b87b575a9b478f4520b2dc1f6c9712",
+      "matchesReleasedHash": true
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/liquid-cart-recovery.test.ts",
+      "sha256": "1cc8bd46a88302dc9319f00d8e4a3c5688760bfcc8a76f494936b83943245070",
+      "matchesReleasedHash": true
+    }
+  ],
+  "releasedReferencedArtifactHashesChecked": [
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/cart-recovery-2026-10-24/REPORT.md",
+      "matchesReleasedHash": true
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/cart-recovery-2026-10-24/allocated-diff.patch",
+      "matchesReleasedHash": true
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/cart-recovery-2026-10-24/before/liquid-cart-island.test.ts",
+      "matchesReleasedHash": true
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/cart-recovery-2026-10-24/before/liquid-hydration-islands.tsx",
+      "matchesReleasedHash": true
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/cart-recovery-2026-10-24/cart-regression-final.tap",
+      "matchesReleasedHash": true
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/cart-recovery-2026-10-24/cart-regression.tap",
+      "matchesReleasedHash": true
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/cart-recovery-2026-10-24/commerce-noemit-complete.log",
+      "matchesReleasedHash": true
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/cart-recovery-2026-10-24/commerce-noemit-final.log",
+      "matchesReleasedHash": true
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/cart-recovery-2026-10-24/commerce-noemit.log",
+      "matchesReleasedHash": true
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/cart-recovery-2026-10-24/eslint-after.json",
+      "matchesReleasedHash": true
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/cart-recovery-2026-10-24/eslint-before.json",
+      "matchesReleasedHash": true
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/cart-recovery-2026-10-24/eslint-complete.json",
+      "matchesReleasedHash": true
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/cart-recovery-2026-10-24/eslint-new-test-final.json",
+      "matchesReleasedHash": true
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/cart-recovery-2026-10-24/focused-edge-cases.tap",
+      "matchesReleasedHash": true
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/cart-recovery-2026-10-24/focused-final.tap",
+      "matchesReleasedHash": true
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/cart-recovery-2026-10-24/focused-first.tap",
+      "matchesReleasedHash": true
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/cart-recovery-2026-10-24/inherited-source-pins.json",
+      "matchesReleasedHash": true
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/cart-recovery-2026-10-24/qualification.json",
+      "matchesReleasedHash": true
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/cart-recovery-2026-10-24/red-native-cart.tap",
+      "matchesReleasedHash": true
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-shared-cart-recovery-audit.json",
+      "matchesReleasedHash": true
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/pantry/corrected-f607-p08-cart-recovery-failure.json",
+      "matchesReleasedHash": true
+    }
+  ],
+  "originalProtectedCandidatePins": [
+    {
+      "path": "/private/tmp/theme-editor-candidate-20261023-latest392-manualtls01/apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx",
+      "sha256": "9e87ff6b8b18a8e2208ca770fc44c282a03632d575973e26f1cd34f1656088b4",
+      "originalCandidateUnchanged": true
+    },
+    {
+      "path": "/private/tmp/theme-editor-candidate-20261023-final02/apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx",
+      "sha256": "9e87ff6b8b18a8e2208ca770fc44c282a03632d575973e26f1cd34f1656088b4",
+      "originalCandidateUnchanged": true
+    }
+  ],
+  "savedTapSummaries": {
+    "red-native-cart.tap": {
+      "tests": 1,
+      "pass": 0,
+      "fail": 1,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    "cart-regression-final.tap": {
+      "tests": 61,
+      "pass": 61,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    }
+  },
+  "savedLintDiagnosticCounts": {
+    "eslint-before.json": {
+      "errors": 1,
+      "warnings": 23,
+      "hasTrailingCommandFailureText": true
+    },
+    "eslint-complete.json": {
+      "errors": 1,
+      "warnings": 23,
+      "hasTrailingCommandFailureText": true
+    },
+    "eslint-new-test-final.json": {
+      "errors": 0,
+      "warnings": 0,
+      "hasTrailingCommandFailureText": false
+    }
+  },
+  "ownerRecordedNoEmitExitCode": 0,
+  "runtimeEffect": {
+    "fixLiveInOriginalF607": false,
+    "PantryP08": "FAIL",
+    "PantryP09ToP12": "NOT RUN",
+    "P12ActualStaleResult": "NOT RUN"
+  },
+  "limits": [
+    "No source tests, noEmit, lint, browser, runtime, API or DB operations reexecuted by Pantry.",
+    "TAP summaries and JSON diagnostic counts verified from saved artifacts; whole-file lint still fails on inherited1error/23warnings, new test lint is clean.",
+    "Post-JSON command-failure text in owner eslint logs retained and accounted for; not a full lint PASS.",
+    "Root peer review, combined source gate and controlled integration/browser recheck are still required before any Pantry acceptance status advances.",
+    "Reported real normal COD order is Habitat/furniture only and not a Pantry order; no transferable P09/P10/P12 acceptance."
+  ],
+  "sourceChangesByPantry": []
+}

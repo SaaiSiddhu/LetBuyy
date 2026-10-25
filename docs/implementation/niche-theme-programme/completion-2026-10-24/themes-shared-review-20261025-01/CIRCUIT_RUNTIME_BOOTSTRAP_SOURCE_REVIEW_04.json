@@ -1,0 +1,38 @@
+{
+  "recordedAt": "2026-10-25T04:02:14.061161+00:00",
+  "status": "ACCEPT_ADDITIVE_NODE_DYLIB_TOOL_BOOTSTRAP_SOURCE_METADATA_ONLY_NOT_NATIVE_PERMISSION",
+  "handoff": {
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/performance-native-runtime-bootstrap02/HANDOFF.json",
+    "sha256": "550f4893b07ed194953d37ee888a2e8a868e942ef7aa0a163bceb1bf93c7245c"
+  },
+  "runtimeInventory": {
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/performance-native-runtime-bootstrap02/RUNTIME_BOOTSTRAP02.json",
+    "sha256": "3a60eb62641301a0f1219e974d7647012d11567d32b3387affba7512ce575483"
+  },
+  "sourceClosureReference": {
+    "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/performance-native-runtime-bootstrap02/SOURCE_CLOSURE02.json",
+    "sha256": "3c212364d9ee2fc8e550dbbca8228c553868b1d4ee78d33360b65da71f59028e"
+  },
+  "physicallyRehashed": {
+    "newArtifacts": 5,
+    "binaryFiles": 39,
+    "binaryBytes": 163246110,
+    "pathTools": 8,
+    "actualWrapper": true
+  },
+  "OSBuild": "26A434",
+  "issues": [],
+  "sourceFindingDisposition": "CIRCUIT-S03-R01 addressed: actualNode libnode/Homebrew recursiveMachO/vendor-native/esbuild/systemOScache/selectedtools/interpreter paths bound; no source/library mutation or discoveredmoduleevaluation.",
+  "assessment": "Sourcecapture/verifier inspected for boundedotool/xcrun/sw_vers whitelist, actualarm64/arm64e selectedslices/contextualrpath resolution, separateOSbuildsystemcachebindings and absentdynamicloaderoverrides. Source/33oldartifacts/6555+6037closure acceptance reused, no full-universe recopy/rerun.",
+  "retainedOwnerControls": "Sixnewmissing/corruptdynamicNode/native/Dockerpath/systemcache guards passed; old36parsertests notrerun. No actualmodule/log/index/performance result.",
+  "requiredBeforeFutureResource": [
+    "Currentexactsource/tool/Node/OS/no-loader-override gate; failondrift",
+    "ActualSAMEcanonicalroot.bin/tsx realpath/stat/executableandharmlessCLIbootstrap preflight BEFORE Docker provisioning; metadataonlydoesnotprove launchability, perobservedunrelatedapparel04ELOOP",
+    "Freshseparatespecificresourcepermission; approval04threecohortbudgetnowexhausted",
+    "Separate180sWHOLEparentmoduleprobe,migration322actualorder/realflatreceipt/PIDtime/log/canonicalcleanup review",
+    "Thenanotherfresh600swholeparentqualificationadmission; noautomaticchain or productionSLO claim"
+  ],
+  "actualDockerDbNativeActionsByThemes": 0,
+  "actualNativeGrant": false,
+  "fullThemeCertificates": 0
+}

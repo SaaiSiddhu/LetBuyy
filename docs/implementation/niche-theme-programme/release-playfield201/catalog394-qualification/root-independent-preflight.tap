@@ -1,0 +1,58 @@
+TAP version 13
+# Subtest: exact current393 source/pair/public package passes only an in-memory proposed fresh394 grant
+ok 1 - exact current393 source/pair/public package passes only an in-memory proposed fresh394 grant
+  ---
+  duration_ms: 455.750959
+  type: 'test'
+  ...
+# Subtest: actual absent and pending394 admissions fail before any owned boundary
+ok 2 - actual absent and pending394 admissions fail before any owned boundary
+  ---
+  duration_ms: 3.075416
+  type: 'test'
+  ...
+# Subtest: old393-on392 admission and wrong baseline394 fields are rejected, with no fallback
+ok 3 - old393-on392 admission and wrong baseline394 fields are rejected, with no fallback
+  ---
+  duration_ms: 2.79325
+  type: 'test'
+  ...
+# Subtest: suite,proposal,manifest and complete closure mismatches fail the pure boundary
+ok 4 - suite,proposal,manifest and complete closure mismatches fail the pure boundary
+  ---
+  duration_ms: 37.059125
+  type: 'test'
+  ...
+# Subtest: a changed SQL proposal, public bundle or canonical update helper cannot reuse the source pin
+ok 5 - a changed SQL proposal, public bundle or canonical update helper cannot reuse the source pin
+  ---
+  duration_ms: 204.0025
+  type: 'test'
+  ...
+# Subtest: fresh SQL394 emission or missing/extra source migration makes393-only admission fail
+ok 6 - fresh SQL394 emission or missing/extra source migration makes393-only admission fail
+  ---
+  duration_ms: 465.66675
+  type: 'test'
+  ...
+# Subtest: an unapproved or altered proposal cannot be elevated by an otherwise fresh in-memory grant
+ok 7 - an unapproved or altered proposal cannot be elevated by an otherwise fresh in-memory grant
+  ---
+  duration_ms: 1.942
+  type: 'test'
+  ...
+# Subtest: no actual grant, DB import, runtime, build or source promotion is created by pure admission fixtures
+ok 8 - no actual grant, DB import, runtime, build or source promotion is created by pure admission fixtures
+  ---
+  duration_ms: 0.086417
+  type: 'test'
+  ...
+1..8
+# tests 8
+# suites 0
+# pass 8
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 3141.911584

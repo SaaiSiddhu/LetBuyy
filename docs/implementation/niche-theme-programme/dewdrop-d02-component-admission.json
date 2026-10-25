@@ -1,0 +1,20 @@
+{
+  "recordedAt": "2026-10-24T03:11:33.391874+00:00",
+  "status": "ROOT_COMPONENT_CONTRACT20_ACCEPTED_LIVE_D02_NOT_ACCEPTED",
+  "ownerResult": {
+    "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/d02-component-stable392-936e5f577646-result.json",
+    "sha256": "904e7e02d5d208b4b4545f75fe49479ce181ad0d27a72afe3e6d4215505fcf6e"
+  },
+  "runContext": "936e5f577646",
+  "sourcePinsIndependentlyVerified": 8,
+  "tests": 20,
+  "pass": 20,
+  "fail": 0,
+  "skipped": 0,
+  "cancelled": 0,
+  "todo": 0,
+  "scope": "Existing injected transport -> actual SDK/ProductService/projection/Liquid component contract. Missing capability, unsupported filters and malformed responses fail closed.",
+  "browserOrLiveMissingMetadataProof": false,
+  "wholeD02Pass": false,
+  "remaining": "Actual reachable installed discovery/basic empty-or-unknown cohort behavior and explicit classification of unreachable transport branches. No fabricated malformed endpoint or metadata stripping."
+}

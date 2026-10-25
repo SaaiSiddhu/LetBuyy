@@ -1,0 +1,140 @@
+Browser tab: 60, Title: "LetBuyy Admin", URL: "http://admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/online-store/themes/letbuyy-craft/editor".
+1 AXWebArea LetBuyy Admin, URL: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/online-store/themes/letbuyy-craft/editor
+	2 container
+		3 link Description: Back to themes, Value: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/online-store/themes
+		4 checkbox Description: Toggle navigation panel, Value: 1
+		5 button Sections
+		6 button Theme settings
+		7 button Theme styles
+		8 button Versions
+		9 text Habitat Active
+		10 text Saved
+		11 container Template
+			12 pop up button (collapsed, settable) Description: Template, Value: Habitat rooms and furniture, Secondary Actions: Expand
+				13 menu
+					14 (selected) Habitat rooms and furniture
+					15 Habitat spatial product
+					16 Habitat furniture collection
+					17 Page
+					18 LetBuyy Core cart
+					19 Blog
+					20 Article
+					21 Policy page
+					22 LetBuyy Core search
+					23 Contact
+					24 Password
+					25 404 Not Found
+					26 Login
+					27 Order detail
+					28 Order history
+					29 All collections
+					30 Account
+					31 Register
+					32 Account settings
+					33 Wishlist
+					34 Addresses
+		35 button (disabled) Undo
+		36 button (disabled) Redo
+		37 button (disabled) Save
+		38 button Publish
+		39 container Theme editor navigation
+			40 heading Habitat rooms and furniture, Value: 2
+				41 text Habitat rooms and furniture
+			42 text v8
+			43 outline Theme sections
+				44 container
+					45 text HEADER
+					46 button Announcement Bar
+					47 checkbox Description: Toggle Announcement Bar visibility, Value: 1
+					48 button Header
+				49 container
+					50 text TEMPLATE
+					51 container Template sections
+						52 row (selectable) Room index and panorama
+							53 button Room index and panorama
+						54 row (selectable) Furniture object grid
+							55 button Furniture object grid
+						56 row (selectable) Materials and care editorial
+							57 button Materials and care editorial
+						58 row (selectable) Measurement guide
+							59 button Measurement guide
+						60 row (selectable) Supplied service information
+							61 button Supplied service information
+					62 pop up button (collapsed, settable) Value: Marquee, Secondary Actions: Expand
+						63 menu
+							64 (selected) Marquee
+							65 404 Not Found
+							66 Spotlight
+							67 Search
+							68 Video Hero
+							69 Call to Action
+							70 Room index and panorama
+							71 Blog Listing
+							72 Cart
+							73 Contact Form
+							74 Page Content
+							75 Furniture object grid
+							76 Rich Content
+							77 Testimonials
+							78 Supplied service information
+							79 Materials and care editorial
+							80 Brand Marquee
+							81 Category Grid
+							82 FAQ Accordion
+							83 Password Gate
+							84 Services Grid
+							85 App Block Slot
+							86 Customer Login
+							87 Policy Content
+							88 Portfolio Grid
+							89 Product Detail
+							90 Skills Section
+							91 Article Content
+							92 Banner Carousel
+							93 Order History
+							94 Announcement Bar
+							95 Customer Account
+							96 Collection Banner
+							97 Room and furniture discovery
+							98 Customer Register
+							99 Account Settings
+							100 Wishlist
+							101 Independent related furniture
+							102 Newsletter Signup
+							103 Addresses
+							104 Experience Timeline
+							105 Order Detail
+							106 Furniture search results
+							107 Measurement guide
+					108 button Add
+				109 container
+					110 text FOOTER
+					111 button Footer
+		112 container Live theme preview
+			113 text Live preview
+			114 text syn-threadline-ui-6815276b . localhost  -  1440 px
+			115 container Preview device
+				116 checkbox Desktop, Value: 1
+				117 checkbox Tablet, Value: 0
+				118 checkbox Mobile, Value: 0
+			119 container
+				120 text syn-threadline-ui-6815276b . localhost
+				121 checkbox Description: Inspect preview, Value: 1
+				122 container syn-threadline-ui-6815276b storefront preview
+		123 container Theme properties
+			124 text Selected section
+			125 heading Announcement Bar, Value: 2
+				126 text Announcement Bar
+			127 container Smart defaults
+				128 button (collapsed) Smart defaults, Secondary Actions: Expand
+					129 text Smart defaults
+			130 container
+				131 text Message
+				132 text field (settable) Message, Value: Habitat 936 B — saved recovery draft.
+				133 text Link URL
+				134 text field (settable) Link URL
+				135 text Link label
+				136 text field (settable) Link label
+				137 text BLOCKS
+
+The focused UI element is 1 AXWebArea LetBuyy Admin, URL: admin.threadline-936e5f577646.localhost:58090/syn-threadline-ui-6815276b/online-store/themes/letbuyy-craft/editor

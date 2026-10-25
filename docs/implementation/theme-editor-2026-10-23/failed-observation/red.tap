@@ -1,0 +1,348 @@
+TAP version 13
+# Subtest: actual recorded successful command replays byte-for-byte without exposing body, path capabilities or auth
+ok 1 - actual recorded successful command replays byte-for-byte without exposing body, path capabilities or auth
+  ---
+  duration_ms: 28.957709
+  type: 'test'
+  ...
+# Subtest: only exact successful confirm POSTs are captured; malformed, foreign, unsuccessful and oversized traffic stays out
+ok 2 - only exact successful confirm POSTs are captured; malformed, foreign, unsuccessful and oversized traffic stays out
+  ---
+  duration_ms: 2.009958
+  type: 'test'
+  ...
+# Subtest: finite controls reject wrong nonce/method and all caller-supplied paths, headers, bodies, indices and duplicate selectors
+ok 3 - finite controls reject wrong nonce/method and all caller-supplied paths, headers, bodies, indices and duplicate selectors
+  ---
+  duration_ms: 2.208667
+  type: 'test'
+  ...
+# Subtest: owned proof returns only hashes/counts, denies foreign selectors and checks bounded inventory before aggregation
+ok 4 - owned proof returns only hashes/counts, denies foreign selectors and checks bounded inventory before aggregation
+  ---
+  duration_ms: 0.55725
+  type: 'test'
+  ...
+# Subtest: replays are bounded, reject concurrent work, and disposal retires private records
+ok 5 - replays are bounded, reject concurrent work, and disposal retires private records
+  ---
+  duration_ms: 0.842292
+  type: 'test'
+  ...
+# Subtest: non-Editor/unbound construction fails, and the capture count is finite
+ok 6 - non-Editor/unbound construction fails, and the capture count is finite
+  ---
+  duration_ms: 1.255167
+  type: 'test'
+  ...
+# Subtest: a failed normal Gateway replay stays failed and cannot be credited from a control acknowledgement
+ok 7 - a failed normal Gateway replay stays failed and cannot be credited from a control acknowledgement
+  ---
+  duration_ms: 0.15775
+  type: 'test'
+  ...
+# Subtest: same-key conflict copies only a captured owned COD command, changes one nonkey field and reports the Gateway result
+ok 8 - same-key conflict copies only a captured owned COD command, changes one nonkey field and reports the Gateway result
+  ---
+  duration_ms: 0.497291
+  type: 'test'
+  ...
+# Subtest: fixed conflict mutation remains different when the captured intent already equals the first sentinel
+ok 9 - fixed conflict mutation remains different when the captured intent already equals the first sentinel
+  ---
+  duration_ms: 0.633667
+  type: 'test'
+  ...
+# Subtest: conflict mode is a strict selector and never accepts caller-controlled commands or capabilities
+ok 10 - conflict mode is a strict selector and never accepts caller-controlled commands or capabilities
+  ---
+  duration_ms: 0.560083
+  type: 'test'
+  ...
+# Subtest: conflict and exact replay share the same finite budget and busy guard
+ok 11 - conflict and exact replay share the same finite budget and busy guard
+  ---
+  duration_ms: 0.5415
+  type: 'test'
+  ...
+# Subtest: conflict replay rechecks current ownership and cannot use a retired capture
+ok 12 - conflict replay rechecks current ownership and cannot use a retired capture
+  ---
+  duration_ms: 0.150916
+  type: 'test'
+  ...
+# Subtest: conflict report preserves real failure codes/status and effect differences without leaking arbitrary errors
+ok 13 - conflict report preserves real failure codes/status and effect differences without leaking arbitrary errors
+  ---
+  duration_ms: 0.44875
+  type: 'test'
+  ...
+# Subtest: failed owned confirmation retains actual status/code/hashes without becoming a successful replay candidate
+not ok 14 - failed owned confirmation retains actual status/code/hashes without becoming a successful replay candidate
+  ---
+  duration_ms: 3.361458
+  type: 'test'
+  location: '/Volumes/Projects/LetBuyy/services/api-gateway/src/__tests__/theme-editor-fixture-observation.test.ts:2:18035'
+  failureType: 'testCodeFailure'
+  error: |-
+    previously dropped non-2xx confirmation
+    
+    0 !== 1
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 1
+  actual: 0
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/Volumes/Projects/LetBuyy/services/api-gateway/src/__tests__/theme-editor-fixture-observation.test.ts:233:10)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: failed canonical cart replace binds the actual owned cart and leaves the Gateway response intact
+not ok 15 - failed canonical cart replace binds the actual owned cart and leaves the Gateway response intact
+  ---
+  duration_ms: 0.340792
+  type: 'test'
+  location: '/Volumes/Projects/LetBuyy/services/api-gateway/src/__tests__/theme-editor-fixture-observation.test.ts:2:19351'
+  failureType: 'testCodeFailure'
+  error: |-
+    previously dropped non-2xx cart update
+    
+    0 !== 1
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 1
+  actual: 0
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/Volumes/Projects/LetBuyy/services/api-gateway/src/__tests__/theme-editor-fixture-observation.test.ts:254:10)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: POST replacement diagnostics require an existing owned token, and never infer a cart from an unsuccessful create
+not ok 16 - POST replacement diagnostics require an existing owned token, and never infer a cart from an unsuccessful create
+  ---
+  duration_ms: 0.329958
+  type: 'test'
+  location: '/Volumes/Projects/LetBuyy/services/api-gateway/src/__tests__/theme-editor-fixture-observation.test.ts:2:20485'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    0 !== 1
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 1
+  actual: 0
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/Volumes/Projects/LetBuyy/services/api-gateway/src/__tests__/theme-editor-fixture-observation.test.ts:269:10)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: failed diagnostics recheck fixture-site cart ownership before either operation
+not ok 17 - failed diagnostics recheck fixture-site cart ownership before either operation
+  ---
+  duration_ms: 0.190875
+  type: 'test'
+  location: '/Volumes/Projects/LetBuyy/services/api-gateway/src/__tests__/theme-editor-fixture-observation.test.ts:2:21281'
+  failureType: 'testCodeFailure'
+  error: |-
+    positive first
+    
+    0 !== 1
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 1
+  actual: 0
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/Volumes/Projects/LetBuyy/services/api-gateway/src/__tests__/theme-editor-fixture-observation.test.ts:280:47)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: noncanonical paths, SQL-shaped tokens and conflicting signed sites cannot create failed diagnostics
+not ok 18 - noncanonical paths, SQL-shaped tokens and conflicting signed sites cannot create failed diagnostics
+  ---
+  duration_ms: 0.151875
+  type: 'test'
+  location: '/Volumes/Projects/LetBuyy/services/api-gateway/src/__tests__/theme-editor-fixture-observation.test.ts:2:21824'
+  failureType: 'testCodeFailure'
+  error: |-
+    positive first
+    
+    0 !== 1
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 1
+  actual: 0
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/Volumes/Projects/LetBuyy/services/api-gateway/src/__tests__/theme-editor-fixture-observation.test.ts:290:47)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: unknown or malformed error codes and request IDs stay redacted while real response status is retained
+not ok 19 - unknown or malformed error codes and request IDs stay redacted while real response status is retained
+  ---
+  duration_ms: 0.251583
+  type: 'test'
+  location: '/Volumes/Projects/LetBuyy/services/api-gateway/src/__tests__/theme-editor-fixture-observation.test.ts:2:22908'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    0 !== 3
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 3
+  actual: 0
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/Volumes/Projects/LetBuyy/services/api-gateway/src/__tests__/theme-editor-fixture-observation.test.ts:311:10)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: failed request/response/header size bounds never alter acknowledgements or expose private contents
+not ok 20 - failed request/response/header size bounds never alter acknowledgements or expose private contents
+  ---
+  duration_ms: 0.121709
+  type: 'test'
+  location: '/Volumes/Projects/LetBuyy/services/api-gateway/src/__tests__/theme-editor-fixture-observation.test.ts:2:23610'
+  failureType: 'testCodeFailure'
+  error: |-
+    positive first
+    
+    0 !== 1
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 1
+  actual: 0
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/Volumes/Projects/LetBuyy/services/api-gateway/src/__tests__/theme-editor-fixture-observation.test.ts:318:10)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: failed diagnostic storage is separately bounded and cannot consume or address successful replay indices
+not ok 21 - failed diagnostic storage is separately bounded and cannot consume or address successful replay indices
+  ---
+  duration_ms: 1.203709
+  type: 'test'
+  location: '/Volumes/Projects/LetBuyy/services/api-gateway/src/__tests__/theme-editor-fixture-observation.test.ts:2:24341'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    0 !== 128
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 128
+  actual: 0
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/Volumes/Projects/LetBuyy/services/api-gateway/src/__tests__/theme-editor-fixture-observation.test.ts:331:10)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: failed diagnostics remain behind the existing nonce/profile gate and disposal retires them
+not ok 22 - failed diagnostics remain behind the existing nonce/profile gate and disposal retires them
+  ---
+  duration_ms: 0.296792
+  type: 'test'
+  location: '/Volumes/Projects/LetBuyy/services/api-gateway/src/__tests__/theme-editor-fixture-observation.test.ts:2:25079'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    0 !== 1
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 1
+  actual: 0
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/Volumes/Projects/LetBuyy/services/api-gateway/src/__tests__/theme-editor-fixture-observation.test.ts:341:68)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: a failed diagnostic ownership read fails closed without throwing or changing the actual response
+not ok 23 - a failed diagnostic ownership read fails closed without throwing or changing the actual response
+  ---
+  duration_ms: 0.152834
+  type: 'test'
+  location: '/Volumes/Projects/LetBuyy/services/api-gateway/src/__tests__/theme-editor-fixture-observation.test.ts:2:25914'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    0 !== 1
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 1
+  actual: 0
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/Volumes/Projects/LetBuyy/services/api-gateway/src/__tests__/theme-editor-fixture-observation.test.ts:353:62)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+1..23
+# tests 23
+# suites 0
+# pass 13
+# fail 10
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 665.285375

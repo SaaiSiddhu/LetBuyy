@@ -1,0 +1,90 @@
+{
+  "theme": "Trailmark",
+  "version": "2.0.0",
+  "fixtureScope": "Actual v2 catalog dispatch + canonical app ProductModel mapper + LiquidRenderer + app page assembly and storefront CSS. Static visual fixture; no Next routing, DB, identity, hydration, purchase, filter-query or lifecycle certification.",
+  "captures": 32,
+  "stressAndPresentationStates": 6,
+  "status": "baseline_and_final_affected_supplemental_pass",
+  "viewports": [
+    {
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "width": 834,
+      "height": 1112
+    },
+    {
+      "width": 390,
+      "height": 844
+    },
+    {
+      "width": 320,
+      "height": 844
+    }
+  ],
+  "documentOverflowFailures": 0,
+  "visibleElementOverflowFailures": 0,
+  "brokenImages": 0,
+  "fontReadiness": "Inter regular andbold loaded in everycase; locally served fixture fonts",
+  "smallFormControls": 0,
+  "contrastFailures": 0,
+  "minimumMeasuredContrast": 6.349462396697187,
+  "keyboard": {
+    "closedMobileNavSkipped": true,
+    "variantFocus": {
+      "active": true,
+      "outline": "solid",
+      "outlineWidth": "3px"
+    },
+    "nativeDisclosure": true
+  },
+  "presentationOnlyStates": [
+    "mobile menu",
+    "header search overlay"
+  ],
+  "nativeIslandsHydrated": false,
+  "reviewedVisually": [
+    "home desktop/mobile",
+    "collection tablet",
+    "product desktop/mobile",
+    "missing-product mobile",
+    "mobile menu open"
+  ],
+  "repairs": [
+    "Card image anchors are block boxes and product photography retains a4:3 stage",
+    "Price and product link separated",
+    "Header uses inline/static contract; scoped long-brand wrapping and matching content alignment",
+    "Light search/drawer surfaces inherit readable text; closed mobile nav hidden from tab order",
+    "Product-level measurements distinguished from per-variant resolved facts",
+    "Preview attributes rendered as server-supplied raw attributes on real inline roots only"
+  ],
+  "lease": {
+    "port": 43278,
+    "browser": "closed",
+    "serverPid": 5208,
+    "server": "stopped",
+    "slot": "explicitly released"
+  },
+  "notCertified": [
+    "Next routing/hydration",
+    "merchant save/conflict/version lifecycle",
+    "public server sports filters",
+    "DB/tenant ownership",
+    "checkout/payment/order/account lifecycle",
+    "production/provider/performance"
+  ],
+  "supplemental": {
+    "file": "browser-supplemental-audit.json",
+    "cases": 7,
+    "textBoundsOverflow": 0,
+    "headerFocusContrast": 13.458230121416461,
+    "visualReview": [
+      "measurement tiles390",
+      "measurement tiles320",
+      "measurement tiles200%text",
+      "header focus390"
+    ],
+    "result": "pass"
+  }
+}

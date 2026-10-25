@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-24T03:14:04.644162+00:00",
+  "runId": "936e5f577646",
+  "classification": "INDEPENDENT_LOCAL_ACTUAL_RECEIPT_AUDIT_NO_LIVE_PROBE",
+  "evidence": [
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-b00-a-published-readback.json",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-b00-a-published-readback.json",
+      "sha256": "db58ab173d8ea87adccbcb9a3df36a00a25c3edec0b0b5e0a5082df7128d3801"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-b00-b-saved-readback.json",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-b00-b-saved-readback.json",
+      "sha256": "a6ae485bf1a2d68f729d575e52eb09432454cbbd0bcc6173bd8f5fd3fc3d3ee3"
+    },
+    {
+      "source": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-b00-b-published-readback.json",
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/fresh-run-936e5f577646-evidence/stable936-b00-b-published-readback.json",
+      "sha256": "8c4d4c1168143e132502951ca5ff256ea0176eb44e374ad4722559b41820c2fc"
+    }
+  ],
+  "actualBindings": {
+    "site": {
+      "siteId": "2f958a36-71bf-4e8f-89fd-d3363f4fe42c",
+      "locationId": "d1829143-baea-4ca4-b08b-a6f1d4f97de9",
+      "subdomain": "syn-threadline-ui-6815276b"
+    },
+    "instanceId": "a2a027ec-0215-44bf-b7b3-7b38b86586c2",
+    "packageId": "3117f19d-8171-4e55-a3a7-8da90c5ebd8e",
+    "packageVersionId": "3747ef06-f0b2-4071-bffb-6b2fd4da77a6",
+    "version": "2.0.0",
+    "bundleVersion": "2.0.0",
+    "catalogChecksum": null
+  },
+  "checks": {
+    "oneBoundInstalledDewdropV2Instance": true,
+    "allThreeMarkersStoredInEachPhase": true,
+    "AReleasePointerAndPublishedDraftUnchangedDuringBSave": true,
+    "BDraftPublishedToDistinctBoundRelease": true,
+    "BPublishedDraftMatchesSavedBDraftManifestHash": true,
+    "products17AndOrders0AcrossThreeObservedPhases": true
+  },
+  "releaseA": {
+    "id": "60b23f05-240a-4daa-8dbc-403ad3190ca5",
+    "draftManifestSha256": "bc5824187b5a3baffa89340ad3d654c709c3fbf6fe12fb2f5a1e6573ec9d0673"
+  },
+  "releaseB": {
+    "id": "69030193-7a41-4d2c-a84b-10ea6d49b4c3",
+    "draftManifestSha256": "149c3a3f3409162a3a66256826580eb6f50a8811b3382a9efbd5f6111f005bae"
+  },
+  "hashInterpretation": "These are actual draft manifest hashes, not claimed to be immutable release snapshot hashes.",
+  "ownerReportedNotYetIndependentlyArchived": {
+    "normalMerchantSigninInstallSavePublish": true,
+    "APublicWhileBPrivate": true,
+    "publishedMarkers3PerPage": true,
+    "heroNaturalSize": [
+      960,
+      1200
+    ],
+    "normalRollbackA": true,
+    "retainedBReapply": "IN_PROGRESS"
+  },
+  "remainingB00": "Completed controller/UI/public/preview and restore-A/retained-B/reapply receipts required; no whole-row PASS yet.",
+  "wholeB00Accepted": false
+}

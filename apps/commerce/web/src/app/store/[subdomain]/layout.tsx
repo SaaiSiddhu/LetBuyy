@@ -15,30 +15,14 @@ import type { SectionRenderData } from '@/lib/theme-engine/types';
 import { resolveThemePreviewToken } from '@/lib/theme-preview-server';
 import { buildStoreMetadata, isStorefrontIndexable } from '@/lib/seo';
 // D7: wire experience font hrefs into the store layout head.
-import { buildGoogleFontsHref } from '@letbuyy/theme-engine';
+import { buildGoogleFontsHref, fontFamilyWithFallback } from '@letbuyy/theme-engine';
 import './liquid-theme.css';
 
 export const revalidate = 60;
 
 // ============= THEME FONT MAPPING =============
 // D7: extended with the four missing experience font families.
-const FONT_MAP: Record<string, string> = {
-    'Inter': 'var(--font-inter)',
-    'Outfit': 'var(--font-outfit)',
-    'Poppins': 'var(--font-poppins)',
-    'Lora': 'var(--font-lora)',
-    'Space Grotesk': 'var(--font-space-grotesk)',
-    'Playfair Display': 'var(--font-playfair)',
-    'Nunito': 'var(--font-nunito)',
-    'Open Sans': 'var(--font-open-sans)',
-    'DM Sans': 'var(--font-dm-sans)',
-    'Montserrat': 'var(--font-montserrat)',
-    // D7 additions:
-    'Cormorant Garamond': 'var(--font-cormorant)',
-    'Libre Baskerville': 'var(--font-libre-baskerville)',
-    'Source Sans Pro': 'var(--font-source-sans)',
-    'Lato': 'var(--font-lato)',
-};
+const FONT_MAP: Record<string, string> = Object.fromEntries(['Inter', 'Outfit', 'Poppins', 'Lora', 'Space Grotesk', 'Playfair Display', 'Nunito', 'Open Sans', 'DM Sans', 'Montserrat', 'Cormorant Garamond', 'Libre Baskerville', 'Source Sans Pro', 'Lato'].map(family => [family, fontFamilyWithFallback(family)]));
 
 type Props = {
     children: React.ReactNode;
@@ -184,6 +168,7 @@ export default async function StoreLayout({ children, params }: Props) {
           --accent: ${ts.accentColor || ts.primaryColor};
           --background: ${backgroundColor};
           --text: ${textColor};
+          --foreground: ${textColor};
           --radius: ${ts.borderRadius}px;
           --font-main: ${fontCss}, system-ui, sans-serif;
           --font-heading: ${headingFontCss}, system-ui, sans-serif;
@@ -195,7 +180,7 @@ export default async function StoreLayout({ children, params }: Props) {
           --text-hint: ${isDark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)'};
           --text-inverse: ${isDark ? 'rgb(0 0 0)' : 'rgb(255 255 255)'};
           --border-color: ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'};
-          --surface: ${isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)'};
+          --surface: ${surfaceColor};
           --surface-hover: ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'};
           --card-bg: ${isDark ? surfaceColor : 'rgb(255 255 255)'};
           --card-bg-secondary: ${isDark ? 'rgba(255,255,255,0.08)' : surfaceColor};

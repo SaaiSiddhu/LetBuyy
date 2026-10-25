@@ -1,0 +1,594 @@
+[
+  {
+    "main": {
+      "childCount": 3,
+      "children": [
+        {
+          "after": {
+            "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+            "content": "none"
+          },
+          "before": {
+            "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+            "content": "none"
+          },
+          "className": "Polaris-Scroll Polaris-Scroll--spacious _Scrollable_bbs9z_887 Polaris-Scrollable Polaris-Scrollable--vertical Polaris-Scroll",
+          "css": {
+            "animation": "none",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "backgroundImage": "none",
+            "height": "992px",
+            "opacity": "1",
+            "position": "relative",
+            "transform": "none",
+            "transition": "all",
+            "width": "1216px",
+            "zIndex": "auto"
+          },
+          "label": null,
+          "rect": {
+            "height": 992,
+            "width": 1216,
+            "x": 220,
+            "y": 4
+          },
+          "role": null,
+          "tag": "DIV",
+          "valueNow": null
+        },
+        {
+          "after": {
+            "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+            "content": "none"
+          },
+          "before": {
+            "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+            "content": "none"
+          },
+          "className": "_MainOverlay_bbs9z_392",
+          "css": {
+            "animation": "none",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "backgroundImage": "none",
+            "height": "992px",
+            "opacity": "1",
+            "position": "absolute",
+            "transform": "none",
+            "transition": "all",
+            "width": "1216px",
+            "zIndex": "510"
+          },
+          "label": null,
+          "rect": {
+            "height": 992,
+            "width": 1216,
+            "x": 220,
+            "y": 4
+          },
+          "role": null,
+          "tag": "DIV",
+          "valueNow": null
+        },
+        {
+          "after": {
+            "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+            "content": "none"
+          },
+          "before": {
+            "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+            "content": "none"
+          },
+          "className": "_MobileNavScrim_bbs9z_945",
+          "css": {
+            "animation": "none",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "backgroundImage": "none",
+            "height": "auto",
+            "opacity": "1",
+            "position": "static",
+            "transform": "none",
+            "transition": "all",
+            "width": "auto",
+            "zIndex": "auto"
+          },
+          "label": null,
+          "rect": {
+            "height": 0,
+            "width": 0,
+            "x": 0,
+            "y": 0
+          },
+          "role": null,
+          "tag": "DIV",
+          "valueNow": null
+        }
+      ],
+      "styles": {
+        "after": {
+          "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+          "content": "none"
+        },
+        "before": {
+          "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+          "content": "none"
+        },
+        "className": "_Main_bbs9z_392 _NoScrollbarGutterLine_bbs9z_507",
+        "css": {
+          "animation": "none",
+          "backgroundColor": "rgb(255, 255, 255)",
+          "backgroundImage": "none",
+          "height": "992px",
+          "opacity": "1",
+          "position": "relative",
+          "transform": "none",
+          "transition": "padding-inline-end 0.5s cubic-bezier(0.2, 0.8, 0, 1), margin-inline-end 0.5s cubic-bezier(0.2, 0.8, 0, 1), margin-block-start 0.4s cubic-bezier(0.2, 0.8, 0, 1), margin-inline-start 0.25s cubic-bezier(0.2, 0.8, 0, 1), height 0.4s cubic-bezier(0.2, 0.8, 0, 1)",
+          "width": "1216px",
+          "zIndex": "auto"
+        },
+        "label": null,
+        "rect": {
+          "height": 992,
+          "width": 1216,
+          "x": 220,
+          "y": 4
+        },
+        "role": null,
+        "tag": "MAIN",
+        "valueNow": null
+      },
+      "text": "Add customer\n0 customers\n0% of your customer base\n1\nStart a query\n\n\nDescribe your segment\nSave\nNo customers match this segment criteria\nTry editing the segment to view matching cus",
+      "textLength": 214
+    },
+    "progress": [],
+    "viewport": {
+      "dpr": 1,
+      "height": 1000,
+      "width": 1440
+    },
+    "elapsedWithAutomationMs": 455
+  },
+  {
+    "main": {
+      "childCount": 3,
+      "children": [
+        {
+          "after": {
+            "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+            "content": "none"
+          },
+          "before": {
+            "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+            "content": "none"
+          },
+          "className": "Polaris-Scroll Polaris-Scroll--spacious _Scrollable_bbs9z_887 Polaris-Scrollable Polaris-Scrollable--vertical Polaris-Scroll",
+          "css": {
+            "animation": "none",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "backgroundImage": "none",
+            "height": "992px",
+            "opacity": "1",
+            "position": "relative",
+            "transform": "none",
+            "transition": "all",
+            "width": "1216px",
+            "zIndex": "auto"
+          },
+          "label": null,
+          "rect": {
+            "height": 992,
+            "width": 1216,
+            "x": 220,
+            "y": 4
+          },
+          "role": null,
+          "tag": "DIV",
+          "valueNow": null
+        },
+        {
+          "after": {
+            "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+            "content": "none"
+          },
+          "before": {
+            "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+            "content": "none"
+          },
+          "className": "_MainOverlay_bbs9z_392",
+          "css": {
+            "animation": "none",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "backgroundImage": "none",
+            "height": "992px",
+            "opacity": "1",
+            "position": "absolute",
+            "transform": "none",
+            "transition": "all",
+            "width": "1216px",
+            "zIndex": "510"
+          },
+          "label": null,
+          "rect": {
+            "height": 992,
+            "width": 1216,
+            "x": 220,
+            "y": 4
+          },
+          "role": null,
+          "tag": "DIV",
+          "valueNow": null
+        },
+        {
+          "after": {
+            "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+            "content": "none"
+          },
+          "before": {
+            "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+            "content": "none"
+          },
+          "className": "_MobileNavScrim_bbs9z_945",
+          "css": {
+            "animation": "none",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "backgroundImage": "none",
+            "height": "auto",
+            "opacity": "1",
+            "position": "static",
+            "transform": "none",
+            "transition": "all",
+            "width": "auto",
+            "zIndex": "auto"
+          },
+          "label": null,
+          "rect": {
+            "height": 0,
+            "width": 0,
+            "x": 0,
+            "y": 0
+          },
+          "role": null,
+          "tag": "DIV",
+          "valueNow": null
+        }
+      ],
+      "styles": {
+        "after": {
+          "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+          "content": "none"
+        },
+        "before": {
+          "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+          "content": "none"
+        },
+        "className": "_Main_bbs9z_392 _NoScrollbarGutterLine_bbs9z_507",
+        "css": {
+          "animation": "none",
+          "backgroundColor": "rgb(255, 255, 255)",
+          "backgroundImage": "none",
+          "height": "992px",
+          "opacity": "1",
+          "position": "relative",
+          "transform": "none",
+          "transition": "padding-inline-end 0.5s cubic-bezier(0.2, 0.8, 0, 1), margin-inline-end 0.5s cubic-bezier(0.2, 0.8, 0, 1), margin-block-start 0.4s cubic-bezier(0.2, 0.8, 0, 1), margin-inline-start 0.25s cubic-bezier(0.2, 0.8, 0, 1), height 0.4s cubic-bezier(0.2, 0.8, 0, 1)",
+          "width": "1216px",
+          "zIndex": "auto"
+        },
+        "label": null,
+        "rect": {
+          "height": 992,
+          "width": 1216,
+          "x": 220,
+          "y": 4
+        },
+        "role": null,
+        "tag": "MAIN",
+        "valueNow": null
+      },
+      "text": "Add customer\n0 customers\n0% of your customer base\n1\nStart a query\n\n\nDescribe your segment\nSave\nNo customers match this segment criteria\nTry editing the segment to view matching cus",
+      "textLength": 214
+    },
+    "progress": [],
+    "viewport": {
+      "dpr": 1,
+      "height": 1000,
+      "width": 1440
+    },
+    "elapsedWithAutomationMs": 566
+  },
+  {
+    "main": {
+      "childCount": 3,
+      "children": [
+        {
+          "after": {
+            "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+            "content": "none"
+          },
+          "before": {
+            "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+            "content": "none"
+          },
+          "className": "Polaris-Scroll Polaris-Scroll--spacious _Scrollable_bbs9z_887 Polaris-Scrollable Polaris-Scrollable--vertical Polaris-Scroll",
+          "css": {
+            "animation": "none",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "backgroundImage": "none",
+            "height": "992px",
+            "opacity": "1",
+            "position": "relative",
+            "transform": "none",
+            "transition": "all",
+            "width": "1216px",
+            "zIndex": "auto"
+          },
+          "label": null,
+          "rect": {
+            "height": 992,
+            "width": 1216,
+            "x": 220,
+            "y": 4
+          },
+          "role": null,
+          "tag": "DIV",
+          "valueNow": null
+        },
+        {
+          "after": {
+            "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+            "content": "none"
+          },
+          "before": {
+            "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+            "content": "none"
+          },
+          "className": "_MainOverlay_bbs9z_392",
+          "css": {
+            "animation": "none",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "backgroundImage": "none",
+            "height": "992px",
+            "opacity": "1",
+            "position": "absolute",
+            "transform": "none",
+            "transition": "all",
+            "width": "1216px",
+            "zIndex": "510"
+          },
+          "label": null,
+          "rect": {
+            "height": 992,
+            "width": 1216,
+            "x": 220,
+            "y": 4
+          },
+          "role": null,
+          "tag": "DIV",
+          "valueNow": null
+        },
+        {
+          "after": {
+            "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+            "content": "none"
+          },
+          "before": {
+            "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+            "content": "none"
+          },
+          "className": "_MobileNavScrim_bbs9z_945",
+          "css": {
+            "animation": "none",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "backgroundImage": "none",
+            "height": "auto",
+            "opacity": "1",
+            "position": "static",
+            "transform": "none",
+            "transition": "all",
+            "width": "auto",
+            "zIndex": "auto"
+          },
+          "label": null,
+          "rect": {
+            "height": 0,
+            "width": 0,
+            "x": 0,
+            "y": 0
+          },
+          "role": null,
+          "tag": "DIV",
+          "valueNow": null
+        }
+      ],
+      "styles": {
+        "after": {
+          "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+          "content": "none"
+        },
+        "before": {
+          "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+          "content": "none"
+        },
+        "className": "_Main_bbs9z_392 _NoScrollbarGutterLine_bbs9z_507",
+        "css": {
+          "animation": "none",
+          "backgroundColor": "rgb(255, 255, 255)",
+          "backgroundImage": "none",
+          "height": "992px",
+          "opacity": "1",
+          "position": "relative",
+          "transform": "none",
+          "transition": "padding-inline-end 0.5s cubic-bezier(0.2, 0.8, 0, 1), margin-inline-end 0.5s cubic-bezier(0.2, 0.8, 0, 1), margin-block-start 0.4s cubic-bezier(0.2, 0.8, 0, 1), margin-inline-start 0.25s cubic-bezier(0.2, 0.8, 0, 1), height 0.4s cubic-bezier(0.2, 0.8, 0, 1)",
+          "width": "1216px",
+          "zIndex": "auto"
+        },
+        "label": null,
+        "rect": {
+          "height": 992,
+          "width": 1216,
+          "x": 220,
+          "y": 4
+        },
+        "role": null,
+        "tag": "MAIN",
+        "valueNow": null
+      },
+      "text": "Last refreshed: 9:00 AMNew exploration\nBeginning Sept 21, 2026, sessions and related metrics may shift as Shopify Analytics enables better visibility into real shopper activity. Le",
+      "textLength": 222
+    },
+    "progress": [],
+    "viewport": {
+      "dpr": 1,
+      "height": 1000,
+      "width": 1440
+    },
+    "elapsedWithAutomationMs": 1313
+  },
+  {
+    "main": {
+      "childCount": 3,
+      "children": [
+        {
+          "after": {
+            "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+            "content": "none"
+          },
+          "before": {
+            "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+            "content": "none"
+          },
+          "className": "Polaris-Scroll Polaris-Scroll--spacious _Scrollable_bbs9z_887 Polaris-Scrollable Polaris-Scrollable--vertical Polaris-Scroll",
+          "css": {
+            "animation": "none",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "backgroundImage": "none",
+            "height": "992px",
+            "opacity": "1",
+            "position": "relative",
+            "transform": "none",
+            "transition": "all",
+            "width": "1216px",
+            "zIndex": "auto"
+          },
+          "label": null,
+          "rect": {
+            "height": 992,
+            "width": 1216,
+            "x": 220,
+            "y": 4
+          },
+          "role": null,
+          "tag": "DIV",
+          "valueNow": null
+        },
+        {
+          "after": {
+            "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+            "content": "none"
+          },
+          "before": {
+            "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+            "content": "none"
+          },
+          "className": "_MainOverlay_bbs9z_392",
+          "css": {
+            "animation": "none",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "backgroundImage": "none",
+            "height": "992px",
+            "opacity": "1",
+            "position": "absolute",
+            "transform": "none",
+            "transition": "all",
+            "width": "1216px",
+            "zIndex": "510"
+          },
+          "label": null,
+          "rect": {
+            "height": 992,
+            "width": 1216,
+            "x": 220,
+            "y": 4
+          },
+          "role": null,
+          "tag": "DIV",
+          "valueNow": null
+        },
+        {
+          "after": {
+            "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+            "content": "none"
+          },
+          "before": {
+            "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+            "content": "none"
+          },
+          "className": "_MobileNavScrim_bbs9z_945",
+          "css": {
+            "animation": "none",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "backgroundImage": "none",
+            "height": "auto",
+            "opacity": "1",
+            "position": "static",
+            "transform": "none",
+            "transition": "all",
+            "width": "auto",
+            "zIndex": "auto"
+          },
+          "label": null,
+          "rect": {
+            "height": 0,
+            "width": 0,
+            "x": 0,
+            "y": 0
+          },
+          "role": null,
+          "tag": "DIV",
+          "valueNow": null
+        }
+      ],
+      "styles": {
+        "after": {
+          "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+          "content": "none"
+        },
+        "before": {
+          "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+          "content": "none"
+        },
+        "className": "_Main_bbs9z_392 _NoScrollbarGutterLine_bbs9z_507",
+        "css": {
+          "animation": "none",
+          "backgroundColor": "rgb(255, 255, 255)",
+          "backgroundImage": "none",
+          "height": "992px",
+          "opacity": "1",
+          "position": "relative",
+          "transform": "none",
+          "transition": "padding-inline-end 0.5s cubic-bezier(0.2, 0.8, 0, 1), margin-inline-end 0.5s cubic-bezier(0.2, 0.8, 0, 1), margin-block-start 0.4s cubic-bezier(0.2, 0.8, 0, 1), margin-inline-start 0.25s cubic-bezier(0.2, 0.8, 0, 1), height 0.4s cubic-bezier(0.2, 0.8, 0, 1)",
+          "width": "1216px",
+          "zIndex": "auto"
+        },
+        "label": null,
+        "rect": {
+          "height": 992,
+          "width": 1216,
+          "x": 220,
+          "y": 4
+        },
+        "role": null,
+        "tag": "MAIN",
+        "valueNow": null
+      },
+      "text": "Last refreshed: 9:01 AMNew exploration\nBeginning Sept 21, 2026, sessions and related metrics may shift as Shopify Analytics enables better visibility into real shopper activity. Le",
+      "textLength": 222
+    },
+    "progress": [],
+    "viewport": {
+      "dpr": 1,
+      "height": 1000,
+      "width": 1440
+    },
+    "elapsedWithAutomationMs": 1686
+  }
+]

@@ -1,0 +1,9 @@
+{
+  "recordedAt": "2026-10-24T23:50:05.642299+00:00",
+  "source": "Direct human message in root chat 01a16ce5-e5ba-7191-ab2c-a1b76947d2b5",
+  "instruction": "Broooo resume now. This overrides my earlier pause. Resume all 10 themes and both shared owners on runtime07, finish the remaining blockers and Razorpay Test Mode certification, and preserve all apps, drafts and data.",
+  "confirmation": "Yes\u2014resume all ten and both shared owners now",
+  "supersedes": "Every earlier human pause and the auto-review hold",
+  "scope": "Existing ten themes plus Themes and Theme Editor; preserve runtime07 persistent state; no live money/production deployment",
+  "automations": "Remain paused; direct chat work only"
+}

@@ -1,0 +1,203 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-24T09:23:23.196810+00:00",
+  "classification": "APPLIED_SHARED_EDITOR_SOURCE_REPAIR_FOCUSED_VERIFICATION_NOT_BROWSER_ACCEPTANCE",
+  "allocation": "docs/implementation/niche-theme-programme/completion-shared-allocation-20261024-01.json",
+  "lease": "completion-editor-block-actions-20261024-01",
+  "owner": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+  "baseHEAD": "85aac99043d8dc10469e12cbb810609a3b6f1b0d",
+  "branch": "letbuyy/theme-release-performance-resume",
+  "rules": [
+    "WIN-R4",
+    "WIN-R6",
+    "NEVER-R3",
+    "AGENT-R13",
+    "CODE-R1",
+    "ARCH-R17",
+    "TEST-R6"
+  ],
+  "files": [
+    {
+      "path": "apps/merchant/web/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx",
+      "beforeSHA256": "8fe3b25fa551758fd4b9bf2c040b9cbc8810f71df331f5b1b39559790c2c637c",
+      "existed": true,
+      "afterSHA256": "9dcee0fa73d47e3991faad1bd92dc5c259bbd1b6fe142d31cafadb4f6a495a90",
+      "bytes": 104608
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/SectionTreePanel.tsx",
+      "beforeSHA256": "fa4e30236d9f00af2276bcc0ed7c75a6e010923035bc678770ac74288e8ea0c5",
+      "existed": true,
+      "afterSHA256": "48d66fbaf330959fa9bd86081eff102389c84264eb437f623ea687281c9e9156",
+      "bytes": 23328
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/BlockChildRow.tsx",
+      "beforeSHA256": "2ea8f4a5b10df83db4d12cf4821ca78700027f1edefcb6c852e0d22050eec7d9",
+      "existed": true,
+      "afterSHA256": "dc5de479b5c233e51a85a2d1828fbe6b701ecdad5ed0068fb1e58c39b33956a2",
+      "bytes": 13887
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/editor-block-actions.ts",
+      "beforeSHA256": null,
+      "existed": false,
+      "afterSHA256": "4666df7afa9ad9a594c946ea5e5f350294e84606978809d3035ddcc391de34e3",
+      "bytes": 5873
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/editor-block-actions.test.ts",
+      "beforeSHA256": null,
+      "existed": false,
+      "afterSHA256": "7c6f17831475b91373756e1fe48f086fc50867079d7e0d46df65373c0fcdcdd6",
+      "bytes": 5399
+    },
+    {
+      "path": "apps/merchant/web/tests/theme-editor-block-actions.test.mjs",
+      "beforeSHA256": null,
+      "existed": false,
+      "afterSHA256": "a337174e88fe69e145d01af91e7289d1c5175ecc02b9f1cb1d5c657cc3755aa6",
+      "bytes": 10729
+    }
+  ],
+  "beforeImageSource": "/private/tmp/theme-editor-font-axis-20261024-01",
+  "beforeImageNote": "All three before-image hashes independently match the exact grant. Git HEAD diff includes unrelated prior dirty edits; source-six-files.diff isolates this repair.",
+  "changes": [
+    "Page wires supported child add/remove/move and flat move/visibility into existing applyChange/CAS/autosave/history.",
+    "Installed explicit reusable child declarations provide settings and add choices. No undeclared hierarchy or app activation.",
+    "Exact sibling and UUID operations, root/type/count/depth limits, disabled boundary controls, and existing ConfirmDialog deletion are preserved.",
+    "Canonical serializer/compiler remains unchanged; stable order/visibility/nested settings roundtrip is exercised."
+  ],
+  "checks": {
+    "editorActionAndRetainedRegression": {
+      "exitCode": 0,
+      "tests": 109,
+      "pass": 109,
+      "fail": 0,
+      "skip": 0,
+      "log": "editor-retained-03",
+      "includes": "7 new action/UI integration cases +12 existing document cases and90 retained draft/tree checks; focused19 overlap is not added again."
+    },
+    "canonicalNestedBlocks": {
+      "exitCode": 0,
+      "tests": 15,
+      "pass": 15,
+      "fail": 0,
+      "skip": 0,
+      "log": "canonical-nested-security-01"
+    },
+    "merchantTypecheck": {
+      "exitCode": 0,
+      "log": "typecheck-04"
+    },
+    "touchedLint": {
+      "exitCode": 0,
+      "errors": 0,
+      "warnings": 2,
+      "existingWarnings": [
+        "page optionalString unused",
+        "SectionTreePanel BlockEntry import unused"
+      ],
+      "log": "lint-03"
+    },
+    "targetedGovernance": [
+      {
+        "name": "theme-governance",
+        "exitCode": 0,
+        "mode": "existing WARN validator; structural only",
+        "log": "theme-governance-01"
+      },
+      {
+        "name": "no-rejected-package-imports",
+        "exitCode": 0,
+        "log": "rejected-imports-01"
+      }
+    ],
+    "diffCheck": {
+      "exitCode": 0
+    }
+  },
+  "controllerFailuresPreserved": [
+    {
+      "log": "focused-01",
+      "status": "17PASS2FAIL",
+      "cause": "New test harness CJS namespace/exports binding; corrected in focused02 and retained03. Not a product defect."
+    },
+    {
+      "log": "typecheck-03",
+      "cause": "Wrong relative compiler path in controller invocation; corrected root invocation typecheck04 exits0."
+    },
+    {
+      "log": "lint-01",
+      "cause": "Controller invoked shell eslint shim with Node; corrected actual JS entry exits0."
+    },
+    {
+      "cause": "Initial root-context theme-engine probe could not resolve app dependency; corrected app createRequire. No runtime or DB implication."
+    }
+  ],
+  "logs": {
+    "focused-01": {
+      "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/evidence/focused-01.log",
+      "sha256": "a7f5ed8d13bbe146fe1949aca9cc44d824f98fed1eb03cb88d497c8543080643"
+    },
+    "focused-02": {
+      "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/evidence/focused-02.log",
+      "sha256": "847ea4e7bdefdf25641e7e2130a976d6d21594fbc796b82d0f43467ef97f6cc6"
+    },
+    "editor-retained-03": {
+      "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/evidence/editor-retained-03.log",
+      "sha256": "d68cbae55b310529800ec9356b517296df285b5d382f338687ac591ed90c82fd"
+    },
+    "canonical-nested-security-01": {
+      "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/evidence/canonical-nested-security-01.log",
+      "sha256": "d173e6b242500f90388be7f6a2bfaaf0c87097e9fe44054a270b737925b6d239"
+    },
+    "typecheck-03": {
+      "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/evidence/typecheck-03.log",
+      "sha256": "2e5d43fe441809d8bd357c540a43f7e4d231f63209f3787829e6e33f91a99757"
+    },
+    "typecheck-04": {
+      "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/evidence/typecheck-04.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "lint-01": {
+      "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/evidence/lint-01.log",
+      "sha256": "d77ca19a4ca0e2e96916a16e7d9ef9b4664194f3f47a2fa0826f3d8f98ef1914"
+    },
+    "lint-03": {
+      "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/evidence/lint-03.log",
+      "sha256": "edd60708e6a8b9fed0a8668dc8be62768f925892ab61173f313a8995d2c038a1"
+    },
+    "theme-governance-01": {
+      "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/evidence/theme-governance-01.log",
+      "sha256": "7544f16c21c2dba16c1d21509b3cfd2fb5e9a2d3afac98da8e92ea1555795f57"
+    },
+    "rejected-imports-01": {
+      "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/evidence/rejected-imports-01.log",
+      "sha256": "b3173f9591ddf6cb488128f4487368175f11d68fef0989e31fc14988e766b0cb"
+    }
+  },
+  "kindredDiagnosis": "kindred-G08-retained-log-diagnosis.json",
+  "browserAcceptance": "NOT_RUN",
+  "freshRuntimeAdmission": "PENDING_ALLOCATOR",
+  "fullThemeCertification": false,
+  "review": "PENDING_INDEPENDENT_ALLOCATOR_REVIEW",
+  "sourceWritesSealed": true,
+  "leaseRelease": "Six source files sealed at this handoff. Further shared edits require renewed allocation.",
+  "notRun": [
+    "Fresh actual UI save/reload/preview/publish/public section and block operations for all10",
+    "Kindred fresh expiry/retry/device widths and KQA01 long-brand768",
+    "Full build/global governance/owned PG/native/provider lanes remain allocator or independent reviewer work"
+  ],
+  "preservation": {
+    "fixture936Actions": 0,
+    "browserActions": 0,
+    "databaseActions": 0,
+    "nativeRuns": 0,
+    "heavyBuilds": 0,
+    "runtimeRestarts": 0,
+    "packageOrMigrationOrCSSWrites": 0,
+    "frozenThemeBytesEdited": false,
+    "commitPushResetClean": false
+  }
+}

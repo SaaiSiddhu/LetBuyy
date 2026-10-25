@@ -81,10 +81,13 @@ class _CouponFormScreenState extends State<CouponFormScreen> {
         'minimum_order_amount': _numberOrNull(_minimumController.text),
         'maximum_discount': _numberOrNull(_maximumController.text),
         'usage_limit': _intOrNull(_usageLimitController.text),
-        'per_customer_limit': _intOrNull(_perCustomerLimitController.text),
+        'per_customer_limit': _intOrNull(_perCustomerLimitController.text) ?? 1,
         'expires_at': _textOrNull(_expiresAtController.text),
         'is_active': _isActive,
       };
+
+      // Optional create fields must be omitted; null is a patch-only clear.
+      if (widget.coupon == null) payload.removeWhere((_, value) => value == null);
 
       final service = context.read<CouponService>();
       if (widget.coupon == null) {
@@ -258,7 +261,7 @@ class _CouponFormScreenState extends State<CouponFormScreen> {
         decoration: _inputDecoration('Discount type'),
         items: const [
           DropdownMenuItem(value: 'percentage', child: Text('Percentage')),
-          DropdownMenuItem(value: 'fixed_amount', child: Text('Fixed amount')),
+          DropdownMenuItem(value: 'fixed', child: Text('Fixed amount')),
           DropdownMenuItem(
             value: 'free_shipping',
             child: Text('Free shipping'),

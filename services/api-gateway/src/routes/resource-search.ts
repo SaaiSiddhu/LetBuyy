@@ -30,6 +30,7 @@ const ResourceSearchQuerySchema = z.object({
     type: z.enum(['product', 'collection', 'page', 'blog', 'menu']),
     q: z.string().trim().max(200).default(''),
     limit: z.coerce.number().int().min(1).max(50).default(20),
+    page: z.coerce.number().int().min(1).max(1000).default(1),
 });
 
 type ResourceType = 'product' | 'collection' | 'page' | 'blog' | 'menu';
@@ -45,7 +46,7 @@ type SlimResource = {
 
 // ── DB error helpers ──────────────────────────────────────────────────────────
 
-type DbError = { message?: string; details?: string; hint?: string } | null | undefined;
+type DbError = { code?: string; message?: string; details?: string; hint?: string } | null | undefined;
 
 function dbErrorText(error: DbError): string {
     return [error?.message, error?.details, error?.hint].filter(Boolean).join(' ').toLowerCase();
@@ -53,11 +54,8 @@ function dbErrorText(error: DbError): string {
 
 function isMissingTableError(error: DbError, tableName: string): boolean {
     const text = dbErrorText(error);
-    return text.includes(tableName.toLowerCase()) && (
-        text.includes('does not exist') ||
-        text.includes('schema cache') ||
-        text.includes('could not find')
-    );
+    // Missing columns are schema defects, not an empty resource catalog.
+    return text.includes(tableName.toLowerCase()) && (error?.code === '42P01' || error?.code === 'PGRST205');
 }
 
 // ── Per-type search adapters (all tenant-scoped by store_id) ──────────────────
@@ -67,10 +65,11 @@ async function searchProducts(
     store_id: string,
     q: string,
     limit: number,
+    page: number,
 ): Promise<SlimResource[]> {
     let dbQuery = db
         .from('products')
-        .select('id,name,handle')
+        .select('id,name,slug')
         .eq('store_id', store_id)
         .is('deleted_at', null);
 
@@ -78,7 +77,8 @@ async function searchProducts(
 
     const { data, error } = await dbQuery
         .order('name', { ascending: true })
-        .limit(limit);
+        .order('id', { ascending: true })
+        .range((page - 1) * limit, page * limit);
 
     if (error) {
         if (isMissingTableError(error, 'products')) return [];
@@ -88,7 +88,7 @@ async function searchProducts(
     return (data || []).map((r: Record<string, unknown>) => ({
         id: String(r.id ?? ''),
         title: String(r.name ?? ''),
-        handle: r.handle ? String(r.handle) : null,
+        slug: r.slug ? String(r.slug) : null,
     }));
 }
 
@@ -97,10 +97,11 @@ async function searchCollections(
     store_id: string,
     q: string,
     limit: number,
+    page: number,
 ): Promise<SlimResource[]> {
     let dbQuery = db
         .from('collections')
-        .select('id,title,handle')
+        .select('id,title')
         .eq('store_id', store_id)
         .is('deleted_at', null);
 
@@ -108,7 +109,8 @@ async function searchCollections(
 
     const { data, error } = await dbQuery
         .order('title', { ascending: true })
-        .limit(limit);
+        .order('id', { ascending: true })
+        .range((page - 1) * limit, page * limit);
 
     if (error) {
         if (isMissingTableError(error, 'collections')) return [];
@@ -118,7 +120,6 @@ async function searchCollections(
     return (data || []).map((r: Record<string, unknown>) => ({
         id: String(r.id ?? ''),
         title: String(r.title ?? ''),
-        handle: r.handle ? String(r.handle) : null,
     }));
 }
 
@@ -127,6 +128,7 @@ async function searchPages(
     store_id: string,
     q: string,
     limit: number,
+    page: number,
 ): Promise<SlimResource[]> {
     // Primary: storefront_pages table (current schema)
     let primaryQuery = db
@@ -139,7 +141,8 @@ async function searchPages(
 
     const { data, error } = await primaryQuery
         .order('title', { ascending: true })
-        .limit(limit);
+        .order('id', { ascending: true })
+        .range((page - 1) * limit, page * limit);
 
     if (!error) {
         return (data || []).map((r: Record<string, unknown>) => ({
@@ -161,7 +164,8 @@ async function searchPages(
 
         const { data: legacyData, error: legacyError } = await legacyQuery
             .order('title', { ascending: true })
-            .limit(limit);
+            .order('id', { ascending: true })
+        .range((page - 1) * limit, page * limit);
 
         if (legacyError) {
             if (isMissingTableError(legacyError, 'pages')) return [];
@@ -183,6 +187,7 @@ async function searchBlogPosts(
     store_id: string,
     q: string,
     limit: number,
+    page: number,
 ): Promise<SlimResource[]> {
     let dbQuery = db
         .from('blog_posts')
@@ -194,7 +199,8 @@ async function searchBlogPosts(
 
     const { data, error } = await dbQuery
         .order('title', { ascending: true })
-        .limit(limit);
+        .order('id', { ascending: true })
+        .range((page - 1) * limit, page * limit);
 
     if (error) {
         if (isMissingTableError(error, 'blog_posts')) return [];
@@ -213,6 +219,7 @@ async function searchMenus(
     store_id: string,
     q: string,
     limit: number,
+    page: number,
 ): Promise<SlimResource[]> {
     // Query navigation_menus directly to list all menus for the picker.
     // GET /pages/navigation returns items for ONE menu by location — not a menu list.
@@ -226,7 +233,8 @@ async function searchMenus(
 
     const { data, error } = await dbQuery
         .order('name', { ascending: true })
-        .limit(limit);
+        .order('id', { ascending: true })
+        .range((page - 1) * limit, page * limit);
 
     if (error) {
         if (isMissingTableError(error, 'navigation_menus')) return [];
@@ -259,6 +267,7 @@ router.get('/', async (c) => {
         type: c.req.query('type'),
         q: c.req.query('q'),
         limit: c.req.query('limit'),
+        page: c.req.query('page'),
     });
 
     if (!parsed.success) {
@@ -274,7 +283,7 @@ router.get('/', async (c) => {
         );
     }
 
-    const { store_id, type, q, limit } = parsed.data;
+    const { store_id, type, q, limit, page } = parsed.data;
     const db = getSupabaseAdmin(c);
 
     // TENANCY CHECK 1: Merchant gate.
@@ -299,16 +308,16 @@ router.get('/', async (c) => {
 
     try {
         if (type === 'product') {
-            results = await searchProducts(db, store_id, q, limit);
+            results = await searchProducts(db, store_id, q, limit, page);
         } else if (type === 'collection') {
-            results = await searchCollections(db, store_id, q, limit);
+            results = await searchCollections(db, store_id, q, limit, page);
         } else if (type === 'page') {
-            results = await searchPages(db, store_id, q, limit);
+            results = await searchPages(db, store_id, q, limit, page);
         } else if (type === 'blog') {
-            results = await searchBlogPosts(db, store_id, q, limit);
+            results = await searchBlogPosts(db, store_id, q, limit, page);
         } else {
             // type === 'menu' (exhaustive: zod already validated the enum)
-            results = await searchMenus(db, store_id, q, limit);
+            results = await searchMenus(db, store_id, q, limit, page);
         }
     } catch (err) {
         console.error(JSON.stringify({
@@ -326,7 +335,9 @@ router.get('/', async (c) => {
         );
     }
 
-    return c.json({ data: results, meta: { type: type as ResourceType, count: results.length } });
+    const hasMore = results.length > limit;
+    const data = results.slice(0, limit);
+    return c.json({ data, meta: { type: type as ResourceType, resource_kind: type === 'blog' ? 'article' : type, count: data.length, page, limit, has_more: hasMore, next_page: hasMore && page < 1000 ? page + 1 : null } });
 });
 
 export default router;

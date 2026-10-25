@@ -5,6 +5,8 @@ import { useReadRequest } from '@/lib/api/use-read-request'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import {
+    Section,
+    Card,
     Avatar,
     Badge,
     Banner,
@@ -305,13 +307,13 @@ export default function UsersSettingsPage() {
 
     if (loading) {
         return (
-            <SettingsPane title="Users and permissions" description="Add staff and control who can access this store." store={store}>
+            <SettingsPane navigationKey="users" title="Users and permissions" description="Add staff and control who can access this store." store={store}>
                 <div className="settings-general-stack">
                     {[1, 2, 3].map((i) => (
-                        <div key={i} className="settings-home-card">
-                            <div className="settings-home-section-label"><Skeleton variant="text" lines={1} /></div>
+                        <Card key={i}>
+                            <Section><Skeleton variant="text" lines={1} /></Section>
                             <div className="settings-form-body"><Skeleton variant="text" lines={2} /></div>
-                        </div>
+                        </Card>
                     ))}
                 </div>
             </SettingsPane>
@@ -323,6 +325,7 @@ export default function UsersSettingsPage() {
     return (
         <>
             <SettingsPane
+                navigationKey="users"
                 title="Users and permissions"
                 description="Add staff and control who can access this store."
                 store={store}
@@ -396,9 +399,8 @@ export default function UsersSettingsPage() {
                 </div>
 
                 {/* ── Store owner ───────────────────────────────────────────── */}
-                <div className="settings-home-card">
-                    <div className="settings-home-section-label">Store owner</div>
-                    <div className="settings-form-body">
+                <Section variant="grouped" title="Store owner" >
+
                         <div className="settings-general-hint">The store owner has full access to every setting, workflow, and billing action.</div>
                         <div className="users-staff-row">
                             <span className="users-staff-avatar"><Crown className="letbuyy-icon" aria-hidden="true" /></span>
@@ -408,13 +410,12 @@ export default function UsersSettingsPage() {
                             </div>
                             <Badge label="Primary owner" variant="success" />
                         </div>
-                    </div>
-                </div>
+
+                </Section>
 
                 {/* ── Staff ─────────────────────────────────────────────────── */}
-                <div className="settings-home-card">
-                    <div className="settings-home-section-label">Staff</div>
-                    <div className="settings-form-body">
+                <Section variant="grouped" title="Staff" >
+
                         <div className="settings-general-hint">
                             Staff help manage store operations based on their assigned role.{' '}
                             {!limit ? 'Staff plan capacity is temporarily unavailable.' : isUnlimited ? 'Your plan includes unlimited staff.' : `Your ${limit?.plan_name || 'plan'} includes ${staffLimit} staff ${staffLimit === 1 ? 'account' : 'accounts'}.`}
@@ -479,13 +480,12 @@ export default function UsersSettingsPage() {
                                 </div>
                             </div>
                         )}
-                    </div>
-                </div>
+
+                </Section>
 
                 {/* ── Roles & permissions reference ─────────────────────────── */}
-                <div className="settings-home-card">
-                    <div className="settings-home-section-label">Roles &amp; permissions</div>
-                    <div className="settings-form-body">
+                <Section variant="grouped" title="Roles &amp; permissions" >
+
                         <div className="settings-general-hint">
                             Each role is a preset bundle of permissions. Assign the role that matches what a teammate needs to do.
                         </div>
@@ -508,8 +508,8 @@ export default function UsersSettingsPage() {
                                 )
                             })}
                         </div>
-                    </div>
-                </div>
+
+                </Section>
             </SettingsPane>
 
             {/* ── Add staff modal ───────────────────────────────────────────── */}

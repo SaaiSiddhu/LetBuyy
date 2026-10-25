@@ -1,0 +1,44 @@
+{
+  "recordedAt": "2026-10-23T15:01:27.309152+00:00",
+  "classification": "EDITOR_REPORTED_REAL_BROWSER_PRODUCT_SAVE_FAILURE_NOT_PANTRY_EXECUTION",
+  "runId": "9cd50e893016",
+  "candidateSourceManifestSha256": "c85083b28b6cfc8696679189d682a9e35b93f7603e54117e60a264aa109fcf0a",
+  "owner": "Theme Editor \u2014 End-to-End tracing current browser failure; Themes assigns any source lease",
+  "sourceEvidence": {
+    "threadId": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+    "cursor": "a502d68b-ae9a-49bd-b5c0-f4b6d4a20aa3:229",
+    "messageId": "msg_00c008c4c24207f9016adb75d1e9ec81918aaef31e5abe453c",
+    "observed": "First merchant fact edit in current buyer slice: Save product rejected with This change must originate from this merchant app; form kept unsaved draft for recovery. Editor tracing origin check."
+  },
+  "reproduction": "In the existing Editor-owned fresh-run browser during Dewdrop merchant fact edit, edit facts and press Save product; error is shown and draft remains unsaved. Exact product UUID, request/response and origin-check diagnostic await owner receipt.",
+  "requestTrace": {
+    "httpStatus": null,
+    "requestId": null,
+    "productId": null,
+    "method": null,
+    "receiptState": "NOT_YET_PROVIDED_TO_PANTRY"
+  },
+  "relatedPantryRows": [
+    "P01",
+    "P02",
+    "P11",
+    "P12"
+  ],
+  "risk": "Required normal merchant fact mutation/cutover cannot be accepted until the actual mutation succeeds with saved readback; no Pantry case has been executed.",
+  "pantryCasesExecuted": 0,
+  "separateExistingOwnerFailures": {
+    "source": "docs/implementation/theme-editor-2026-10-23/evidence/fresh-fixture-lifecycle.json",
+    "sha256": "3f430024a7cc945ac9a2bc67bf36d272cf97b1f307d9c895260014a5c6864ef9",
+    "observedScopes": [
+      {
+        "scope": "shared-header-persistence",
+        "status": "FAIL"
+      },
+      {
+        "scope": "preview",
+        "status": "FAIL"
+      }
+    ],
+    "handling": "Existing shared-header-persistence and preview failures already recorded/being assigned by Editor/Themes; no Pantry source edit."
+  }
+}

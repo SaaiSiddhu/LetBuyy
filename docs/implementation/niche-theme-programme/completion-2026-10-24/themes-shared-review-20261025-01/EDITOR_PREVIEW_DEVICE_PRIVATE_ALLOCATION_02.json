@@ -1,0 +1,42 @@
+{
+  "recordedAt": "2026-10-25T01:35:14.167059+00:00",
+  "expiresAt": "2026-10-25T02:25:14.167059+00:00",
+  "ends": "First sealed handoff or expiry",
+  "status": "EXACT_PRIVATE_SOURCE_AND_PURE_TEST_PREPARATION_ONLY",
+  "authority": "Current verified human alltheme/sharedowner resume; Root source allocation request. Native approval04 does not cover these repairs.",
+  "diagnosis": {
+    "path": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/PREVIEW_DEVICE_DIAGNOSIS_20261025_01.json",
+    "sha256": "366872a8c1d85d3b07534ec10ce62fb5065d22cd224be561ee5e79df2cfff9c6"
+  },
+  "forbidden": [
+    "No Main/sealed candidate/other private source-root edits",
+    "No runtime/build/browser/native/DB/Docker daemon/provider/network actions",
+    "No actual token/key/archive/private state/env reads",
+    "No weakened bridge origin/source/context/revision checks",
+    "No extra native cohort under current three-cohort human approval"
+  ],
+  "retainedSourceEvidence": "Reuse exact immutable diagnosis/current source inputs and existing tests without duplicate broad gates/copies. New focused tests must execute actual component/handler behavior.",
+  "certification": "Source acceptance cannot close captured v23 device failure or any fulltheme certificate",
+  "owner": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+  "privateRoot": "/private/tmp/letbuyy-editor-preview-device-prep-20261025-01",
+  "durableOutput": "docs/implementation/theme-editor-2026-10-23/completion-2026-10-24/runtime07-20261025/private-preview-device01",
+  "mutablePaths": [
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/CenterPanel.tsx",
+      "beforeSha256": "9f1f7e384214bdee7d3d8ce9956e3b849043e281d4c242c36aa6d27c1547f453"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/CenterPanel.preview-device.test.tsx",
+      "beforeSha256": null
+    }
+  ],
+  "scope": "Keep device-only changes within existing iframe/URL and emit canonical EDITOR_VIEWPORT_MESSAGE through exact current protocol; retain token/template/resource/page remounts and existing readiness timeout. Existing child protocol and page context stay read-only.",
+  "requiredChecks": [
+    "Mount actual CenterPanel component with controlled iframe/window/message/timer boundaries; no source-extraction/string-only test stands in for lifecycle behavior",
+    "Devicechange retains frame identity/src and readiness lifecycle while correct viewport message is sent with inspector off; verifiedREADY/load reapply correctly",
+    "Token/template/resource/page changes still remount; real navigation timeout/retry remains observable",
+    "Wrong origin/source/stale context/invalid viewport/unloaded frame produce no accepted action; strict equality intact",
+    "PostCSS/CSS proposal remains separate frozen b937e271; no style redesign or source change there",
+    "Focused pure mounted-unit/contract checks and type/syntax only; retain actual failures, exact source/patch/manifest and future restored-runtime browser matrix"
+  ]
+}

@@ -1,0 +1,202 @@
+{
+  "theme": "Trailmark",
+  "milestone": "1_mockups",
+  "date": "2026-10-23",
+  "passed": true,
+  "errors": [],
+  "counts": {
+    "scenes": 15,
+    "images": 45,
+    "boards": 15,
+    "zipPngs": 45,
+    "originalBitmapAssets": 5
+  },
+  "actualViewports": [
+    {
+      "device": "desktop",
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    {
+      "device": "tablet",
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    {
+      "device": "mobile",
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    }
+  ],
+  "allRequiredExportsNoOverflow": true,
+  "allFontsLoaded": true,
+  "allImagesReady": true,
+  "localHtmlLinks": 615,
+  "pngDecoded": true,
+  "uniqueImageBytes": true,
+  "zipMatchesCurrentPngs": true,
+  "arithmetic": {
+    "subtotalMinor": 347000,
+    "shippingMinor": 9000,
+    "totalMinor": 356000,
+    "shuttles": 6
+  },
+  "stress": {
+    "records": 22,
+    "overflow": []
+  },
+  "palettePairs": [
+    {
+      "role": "text",
+      "foreground": "#222B22",
+      "background": "#F5F6F1",
+      "ratio": 13.46,
+      "minimum": 4.5,
+      "pass_": true
+    },
+    {
+      "role": "support",
+      "foreground": "#53604C",
+      "background": "#F5F6F1",
+      "ratio": 6.15,
+      "minimum": 4.5,
+      "pass_": true
+    },
+    {
+      "role": "action",
+      "foreground": "#FFFFFF",
+      "background": "#314E3B",
+      "ratio": 9.2,
+      "minimum": 4.5,
+      "pass_": true
+    },
+    {
+      "role": "boundary",
+      "foreground": "#708064",
+      "background": "#FFFFFF",
+      "ratio": 4.23,
+      "minimum": 3,
+      "pass_": true
+    },
+    {
+      "role": "focus",
+      "foreground": "#005FCC",
+      "background": "#FFFFFF",
+      "ratio": 5.98,
+      "minimum": 3,
+      "pass_": true
+    },
+    {
+      "role": "inverse",
+      "foreground": "#FFFFFF",
+      "background": "#222B22",
+      "ratio": 14.62,
+      "minimum": 4.5,
+      "pass_": true
+    },
+    {
+      "role": "error",
+      "foreground": "#B42318",
+      "background": "#FFF4F2",
+      "ratio": 6.1,
+      "minimum": 4.5,
+      "pass_": true
+    },
+    {
+      "role": "warning",
+      "foreground": "#7A3E00",
+      "background": "#FFF4CE",
+      "ratio": 7.58,
+      "minimum": 4.5,
+      "pass_": true
+    }
+  ],
+  "visualReview": "visual-review.json; separate from structural validation",
+  "limits": [
+    "No production integration or account/payment mutation",
+    "No full screen-reader/conformance/performance certification",
+    "Current mockups are proposed controls with dependencies in capabilities.json",
+    "Shared production build/governance not run per coordinator design-only resource instructions"
+  ],
+  "sourceHashes": {
+    "source/01-home-top.html": "59cf119b8f48b82e125d702c9e0cfba69f83028cda5565fe70b3994c1985d23c",
+    "source/02-home-bottom.html": "fa5cb9d6b16310d3ab64c2be2ea7f9924b407bcfa70fe76bbebf3901ef570cf3",
+    "source/03-collection.html": "dfbb2bff2607e5eef7f83832c8cb6f478a973d7e784b181fa43cba49fee29af4",
+    "source/04-product-main.html": "e87a7fb0ab5aee5dd6041b4e56d7966d22a470ec35fb3afc736cadcda13050aa",
+    "source/05-product-specs.html": "515304ffe40e8eefc3e30de241748569afce3fd59a1695ca7dc198114f45f63c",
+    "source/06-product-continuation.html": "032cbfe276a5876c0f52cac7d76eeda1b292cccd4f806cfc06e289b4bf088717",
+    "source/07-cart.html": "f04beaee57fbec7675092d938ab53e2c353af26dc2bea0040db3fff612c31f63",
+    "source/08-checkout-address.html": "d4130ec7686a84bc81eb6a6ae79715a1d86061157eab51bb0d9415626e9915a6",
+    "source/09-checkout-review.html": "6a710bc2cb949559e02ac5919e95334b070309e797d7384ec089789322cfff13",
+    "source/10-sign-in.html": "84fd3adf6e537c73c0b76f326cdbd90b62f3e9c94ebc2ee74f70e175f8ef3918",
+    "source/11-sign-up.html": "68be808f0cf81ecb9187f1b25744d1586163c044fe0e470212a5a84a067f4629",
+    "source/12-profile.html": "bbab39033cf30c34f22814f12c7e618e3c8384530e38b807fef3e35b8c7506f8",
+    "source/13-orders.html": "6ee90f03884808300e97bc38cbd4c4b51e61b38c1aaf919c730315ae83d2364e",
+    "source/14-order-detail.html": "fb3048b2c1b6bde448d1b8fda7b53d02c89ec8e2f76a9550ee1240fb2a8b7883",
+    "source/15-addresses.html": "132aa19c560f2e6c164194569d1f632c3b0e0fbdd90b4a433a0360f78d5f94c3",
+    "source/attribute-model.html": "4a599f6114b8be72a0f0b6b7fa748bb7843b4fd7326141bc1284ea1580735338",
+    "source/build.py": "0591306be2a7b3eac839a921efe3a01e04198ef047e3a13cd285622f11740ef3",
+    "source/capture-comparisons.mjs": "077df3f80bffa00843778ffca1c264130b91c09b4f51434966e1c452ed2ae07b",
+    "source/capture.mjs": "12e89a9b153a12b38653cb0a8dfba8b14230f0b9022f01653497856b17028d1c",
+    "source/catalog-fixtures.json": "263fb943fd4889c14fbaeb2955945c53b86a2aed154c8b0b9c312eff1b46c5f2",
+    "source/check-interactions.mjs": "a7adcddffb81f2c93b804484a7373099ab5ccbee1c59b084f70091294bbdc758",
+    "source/comparisons.py": "a154f9794756e5ca1b19a20118793eb7d219ad25130b345fb0f33b929b3a8abc",
+    "source/icons.json": "80b0c0209f5de86eab7b4e610549d12902a201563b16723e96142bb753d9234b",
+    "source/package.py": "5f304947a8f0fd839671b8e5c7d89ba7b6d54c56419278d0caddda7c0d8c4d70",
+    "source/product-shuttles.html": "61472846e2fffb63fdd122267c2d12e3238f60d87902c14400e32181396cf986",
+    "source/product-sleeve.html": "32c36e4b8b43bc7e801cc93ac7a1b205841040118a0f22726ec6ff2f4f1d414d",
+    "source/prototype.js": "74a3e2b930f742ebc3de9efe047ad3b5f0af6a9fb614839212902b90f529bc71",
+    "source/styles.css": "84b3f5efe154529034f5df563d00973643c2fcbe39dcad0bc2fa4f236083aed9",
+    "source/validate.py": "79c72c47d44b38eca7f514b6f1bc0dbebba0369e724db3e39e3fd70d36cca01f"
+  },
+  "imageHashes": {
+    "01-home-top-desktop.png": "27b13f03949c059d5283df4a5245d22c05059446316aed5d196f8cb89b8c2543",
+    "01-home-top-mobile.png": "d0898f07c1903057c0d78c8770640d4a9b31ba8f83e54e8f7e2a62ffa61a0f09",
+    "01-home-top-tablet.png": "37a0314309fb9dbe80bcb56914d1f8d2f41b17ed7956a270d52c57ff2118d3ac",
+    "02-home-bottom-desktop.png": "47a99aff7b960d491294aa0022fc84c1d88855bc69cec5922485bbe7f03a70d1",
+    "02-home-bottom-mobile.png": "82a13f2683de1950f9345a9700ac29e8744b85306e8385216d1637195db9be8d",
+    "02-home-bottom-tablet.png": "dce50916b90e43669e07d4d6e7e2b94b2dfc80d9592a760c8ea29e2c5f2e33d1",
+    "03-collection-desktop.png": "5c7cabcae4b56a54736fc9cdc812acc6c7ccd0c7028c8e0e979c6dde77bf1e8c",
+    "03-collection-mobile.png": "fa3a774fb42d525bef26a7f252094c7b3b7d3001aa251b0f5b0f92ffa0e3faaa",
+    "03-collection-tablet.png": "f6ea7c875113ea5d9d7d95f0255aa543d9910cb2657c23486e52fda60c776bb3",
+    "04-product-main-desktop.png": "05b448d5f843d9e3c78bfedb9fa4f4011b7aaed5854459a0c6a424736ad471d8",
+    "04-product-main-mobile.png": "b8d4a817544f12601277339b7897aad9e6eb832a7fc475d7b95d9dfd4d4ffa10",
+    "04-product-main-tablet.png": "e4cd73a43322342e2f7508fb82762c4735884ba7bb1d8599d63bec30e27bc755",
+    "05-product-specs-desktop.png": "0a28e4fc906d9c5887777cb28a7b1e4c4365696d6833bbf25b120922e9d91db0",
+    "05-product-specs-mobile.png": "6d80dea7471685ecac44b3958398ab37bf2c10a58383da0b5bff466b50a635ce",
+    "05-product-specs-tablet.png": "3841980b8df736b1087dedbb45a4d67cd5d11d9c19a98e5ea87ea787cb3b1f38",
+    "06-product-continuation-desktop.png": "3e30c3648eb7aee8578b4a6021a5810b5ec348cfb5d3e1e29a25db2ff09b8989",
+    "06-product-continuation-mobile.png": "3e68b5e8eed9aa01529676757bd16b914cc18576de23c02e62db77153040b691",
+    "06-product-continuation-tablet.png": "69b24d5d70b240dfc7e2b2100f32ea528c14bb0b3306a276c5c446fd6a16fa83",
+    "07-cart-desktop.png": "d2dbd2315305b54305c907c1c60545f1d7968ba7ebace09fcc6f010ec0a851c8",
+    "07-cart-mobile.png": "86067b906f88fef0954f6575064e7897f4141df883ec0aa5f369765332ef8a29",
+    "07-cart-tablet.png": "0288f77b27ab4a644e045c1e9a41a3eac6f3352ccec4821804f2eaf408c97b94",
+    "08-checkout-address-desktop.png": "af7254045f54014ce35a976e6e3159aae3546276fa9ea59cdfd82c49083b3e47",
+    "08-checkout-address-mobile.png": "f35780916570780d809b0aa4f85c4d91f3b7098998610b61fb78e35a387512ce",
+    "08-checkout-address-tablet.png": "7a44444e8362428e93b6f94723ac6d45376a99fb4a22e5960940f53f8cd3f32d",
+    "09-checkout-review-desktop.png": "2a3fdf812bf73a55223c95c30d9aca03c698c47d4e6a2aaee27e9778abae7242",
+    "09-checkout-review-mobile.png": "1a40f5f948b54594ffe7f125905c83991e4fb7433e46e6ff3eff6f7d9300938f",
+    "09-checkout-review-tablet.png": "322241c715998f67b10ccbc130e73eb7287056a715c25089b7bb38d04dedb1d9",
+    "10-sign-in-desktop.png": "a51f65360524c29d7a2e28388717c8c097b0e1e791ecce538cccb71d8cf9cf20",
+    "10-sign-in-mobile.png": "5207aa4452823b71ba334d15da1241530d9628b1890cc83dc78bb1cae27f1d81",
+    "10-sign-in-tablet.png": "1adf765aaa8e5923e2e1c521aaa289b951d99e0d3b89fb6096ca1d46e8a4fd7d",
+    "11-sign-up-desktop.png": "92768239211cb547243410a9f0eb12feb474d5e7065247006e4edd587dbcfd5f",
+    "11-sign-up-mobile.png": "de408a8ad85a4aea340e8f5a531de55b20f286d6f2066c8283a72ee83e2a2f45",
+    "11-sign-up-tablet.png": "03516668b75469875704499afd3fcd3411255b44f9875b67844012d62c2bb673",
+    "12-profile-desktop.png": "0718128160c3a71b58b5b422de92bf875ebe1b4dd333110b6db7b8fa399412ab",
+    "12-profile-mobile.png": "993550fe0731fcb8b4086306168c7a5dbf2797f9fe5ac6fae707f09a1a520d2f",
+    "12-profile-tablet.png": "d8728e038edafd77b8a2a256f67cccffc08aba0144ea3049234caf9d85757490",
+    "13-orders-desktop.png": "fe5ec790d124572a9d38b9ee12c6fa9aa12538a7cde717d64f50c2a24d5e7510",
+    "13-orders-mobile.png": "a39d585c13eac3d211efa78374e45d81973cd8b46b2c22136c7492ef4e24dedb",
+    "13-orders-tablet.png": "b94bfb2a3fb20d67fe610e14f6c3f400c7fb61e380dc77546f8eb3c35daea9e3",
+    "14-order-detail-desktop.png": "b53982a94073770c62cad72a72a6053ab8583a245e0879c78f6640eeb82fd39d",
+    "14-order-detail-mobile.png": "b9a13c26538f504f60e94df5171e0d56c2b075108c1b85497171ee5e28c595e0",
+    "14-order-detail-tablet.png": "ca67e3e048c0acfda21a53e718358811b929a0cae4e6cae6db6c2bd3a316034d",
+    "15-addresses-desktop.png": "e35780460db15fee44791185ac35796ed90e4189b8cc17ea3b996da9c91eb1bc",
+    "15-addresses-mobile.png": "3651bce4b66a4a3b1fe0586d2e6eb474ddfd5ed5cfa9bf1824757ff7103ed376",
+    "15-addresses-tablet.png": "3afaa53386bd006d4e80f4a6dd66cfbe3ecdef62c994e1a0a2a7e3f23ad5c2c2"
+  }
+}

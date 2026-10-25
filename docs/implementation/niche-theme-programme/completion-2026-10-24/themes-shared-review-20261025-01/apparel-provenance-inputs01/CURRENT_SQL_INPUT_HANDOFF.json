@@ -1,0 +1,129 @@
+{
+  "recordedAt": "2026-10-24T21:03:38.369699+00:00",
+  "status": "READ_ONLY_RETAINED_SQL_INPUT_HANDOFF_NO_EXECUTION",
+  "recipient": "Threadline existing apparel-provenance private02 owner",
+  "baseline": {
+    "canonicalMigrationCount": 322,
+    "canonicalMax": 393,
+    "migrationCeiling": null
+  },
+  "exactUPOrder": [
+    {
+      "path": "docs/implementation/niche-theme-programme/release-playfield201/proposals394/f5f54a8009732ff71ba248e1f3356f58441e8b2340225c47b19e5ac386ac790e/394_playfield_catalog_201.up.draft.sql",
+      "sha256": "7d3c4991c84c128cfba8aff096c04a0288d9142a144c97dddac8d0072633aa1e",
+      "ordinal": 1
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-integration01/cart-edit03.qualified-up.proposal.sql",
+      "sha256": "830259374dbc0692f7d5d07651f7bc1028d8689452ad9dc7544aba99bef545a1",
+      "ordinal": 2
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-private-implementation-03/UNNUMBERED_circuit_facets.up.proposal.sql",
+      "sha256": "3127cff5318a958b490c5c8faea2719b3d49fc208ffa195350b52e109dc20224",
+      "ordinal": 3
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/child-customization-integration01/customization210.up.proposal.sql",
+      "sha256": "2266fe0f95b7fcb1364dfded188b318a311d91c7431c67af7c0c78d3707cfa29",
+      "ordinal": 4
+    }
+  ],
+  "sharedAdmission": {
+    "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/SHARED_RUNTIME_ADMISSION.json",
+    "sha256": "6fb1d78f14a366666687ccd480c4f52ccbeeddde2295c7533e3b850656f4c188",
+    "orderEvidence": "tests/owned-db/theme-completion-razorpay-browser.manual.ts loops upProposals in array order before normal fixture startup"
+  },
+  "savedNativeCartProfiles": [
+    {
+      "name": "edit_storefront_configured_cart_line",
+      "signature": "public.edit_storefront_configured_cart_line(uuid,uuid,text,timestamp with time zone,text,uuid,text,uuid,integer,jsonb)",
+      "nativeRunId": "3cafad0d3fe7",
+      "evidenceClass": "SAVED_OWNED_NATIVE_PROFILE_NOT_CURRENT_LIVE_PROBE",
+      "profileFile": "docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/apparel-provenance-inputs01/edit_storefront_configured_cart_line.native-profile.json",
+      "profileSha256": "46f1fe1b8b034ee544942af37afada4cf8739baecbe3a2c096ee57d364374e1d",
+      "definitionFile": "docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/apparel-provenance-inputs01/edit_storefront_configured_cart_line.native-definition.sql",
+      "definitionSha256": "28e798c3c312509d3af51b93f7d471d4908b73298cc4901b20822da6cf71483f",
+      "bodyMd5": "91e086f9e1cfad35335b949fe3c23a51",
+      "bodySha256": "4255c594f4c21ad0f0cc05cd743c4eb2cece5fe40b571751678e7412f6a69dfb",
+      "bodyMatchesQualifiedCart03UPExactly": true,
+      "recordedProfileFields": [
+        "acl",
+        "owner",
+        "config",
+        "signature",
+        "definition",
+        "securityDefiner"
+      ]
+    },
+    {
+      "name": "write_storefront_cart",
+      "signature": "public.write_storefront_cart(uuid,uuid,text,timestamp with time zone,jsonb,uuid,integer)",
+      "nativeRunId": "3cafad0d3fe7",
+      "evidenceClass": "SAVED_OWNED_NATIVE_PROFILE_NOT_CURRENT_LIVE_PROBE",
+      "profileFile": "docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/apparel-provenance-inputs01/write_storefront_cart.native-profile.json",
+      "profileSha256": "76676d7c7ec33dd6124dea7a022bb19f3622f2ab407fb81be4e5e9e10f05a70c",
+      "definitionFile": "docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/apparel-provenance-inputs01/write_storefront_cart.native-definition.sql",
+      "definitionSha256": "82831ecc3f0ee281eb6cd51d99b406ec0c18e5edb1f7df9b710a841d1bb747a5",
+      "bodyMd5": "245ea1fa888e09b93163b065b07892ca",
+      "bodySha256": "b0380a9dd568019d0f311f56eaba5ddf4c89e9483b1eb79009b6bac65e63d133",
+      "bodyMatchesQualifiedCart03UPExactly": true,
+      "recordedProfileFields": [
+        "acl",
+        "owner",
+        "config",
+        "signature",
+        "definition",
+        "securityDefiner"
+      ]
+    }
+  ],
+  "orderWriterSourceReconstruction": {
+    "name": "create_order_with_inventory_reservations",
+    "signature": "public.create_order_with_inventory_reservations(uuid,text,text,text,jsonb,jsonb,text,text,text,uuid,text)",
+    "evidenceClass": "PINNED_SOURCE_RECONSTRUCTION_WITH_PAIRED_ROLLBACK_BODY_GUARD_NOT_NATIVE_PROFILE_DUMP",
+    "definitionFile": "docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/apparel-provenance-inputs01/create_order_with_inventory_reservations.source388-definition.sql",
+    "definitionFileSha256": "9f7e2edaf46206ce282fc3be8ec403222bbb7288bc17e0ed0ced421c35215048",
+    "sourceUP": {
+      "path": "database/supabase/migrations/388_cart_order_fact_snapshots.sql",
+      "sha256": "9de7c35b68684cd5d3c752166e5c6ae0b33c64c6b1ea8ac353a82bcac936d2c3"
+    },
+    "pairedDOWN": {
+      "path": "database/supabase/rollback/388_cart_order_fact_snapshots.rollback.sql",
+      "sha256": "12d10a0ef5043cfa330356dfae1b31b58df3c06f393c1d0db208ee4a9513ac5b"
+    },
+    "bodyMd5": "fff80af060ac84b405796811f0e63fd3",
+    "bodySha256": "4f2f31d878288360cf6086b6198adc7bfc166991f8377620ffb50d838c1b10fe",
+    "pairedRollbackGuardMatch": true,
+    "laterNumberedMigrations389Through393DoNotReplaceFunction": true,
+    "sourceGuardExpectations": {
+      "securityDefiner": true,
+      "argumentCount": 11,
+      "config": [
+        "search_path=public"
+      ],
+      "returnType": "jsonb",
+      "owner": "Same owner as public.orders, a relational invariant; do not assume a runtime username"
+    },
+    "nativeFullProfile": "NOT_LOCATED_IN_BOUNDED_RETAINED_EVIDENCE_SEARCH; do not fabricate ACL/volatility/strictness/parallel/argument metadata. Verify full actual profile only in separately admitted fresh owned qualification."
+  },
+  "provenanceCopies": [
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/apparel-provenance-inputs01/native07-before-paired-down.provenance.json",
+      "sha256": "441e1941b8483f448974e0e15f41959947acb5a3000d17d60e921d6aa50a2b23"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/apparel-provenance-inputs01/native07-paired-down-replay-pass.provenance.json",
+      "sha256": "c0e1b473081f82c3dfb8c2d29eb8e797c412e864678259ea9a638d866eb60a0c"
+    }
+  ],
+  "guardRules": [
+    "Use qualified cart03 UP; unused old cart02 paths are not the admitted SQL.",
+    "Catalog394/customization210 only promote data/captures; Circuit facet proposal modifies named discovery functions, not these cart/order writers. Fail closed on a different current target profile.",
+    "Historical388 and all four existing admitted proposals remain read-only; new apparel paired proposal preserves unrelated bodies and access/security profiles.",
+    "Native cart dumps record only ACL,owner,config,signature,definition,securityDefiner. Do not invent additional measured metadata.",
+    "Reconstructed order body and guard expectations are source evidence, not a full actual native profile. Fresh owned qualification remains mandatory.",
+    "No live database query, module/native/browser/provider action, source application or migration number is granted by this handoff."
+  ],
+  "futureAdmission": "Existing private02 scope unchanged; actual source/dependency/protocol closure and native execution need separate Themes grant."
+}

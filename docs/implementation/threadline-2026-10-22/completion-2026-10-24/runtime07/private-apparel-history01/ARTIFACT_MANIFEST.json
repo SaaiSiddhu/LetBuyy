@@ -1,0 +1,293 @@
+{
+  "recordedAt": "2026-10-24T20:42:32.435523+00:00",
+  "classification": "PRIVATE_SOURCE_FIXTURE_AND_PROOF_MANIFEST",
+  "files": [
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/ASSEMBLY_ATTEMPT01_FAILURE.json",
+      "sha256": "ee303839d5201e76e3c053ec19f899d64451a373e151970d6c7c5e7eddbbae4e",
+      "bytes": 618
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/BASE_INPUTS.json",
+      "sha256": "80ee8de3757bc98a3728364bac1f3a75b82e462eb624a4c246912a464eca4480",
+      "bytes": 2591
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/HANDOFF.json",
+      "sha256": "d3bda23e907304854e41b8a6644b85d4d7f5bc98adecf217c733112fa0a6632c",
+      "bytes": 2256
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/PRIVATE_BOUNDARY.json",
+      "sha256": "8f067e6436311df15343f746133f18ec3e0a09a04960ccf8073f75db4923cf38",
+      "bytes": 1016
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/README.md",
+      "sha256": "c80db75481fe1b307d312204e71e1736bc79e93c5b1e7f3c46e2daa0cee18886",
+      "bytes": 1438
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/RESULTS.json",
+      "sha256": "e72d164ebe6b00806d7d7f00a4130f4c1691d9f028021900ce9a97ef450d0c2d",
+      "bytes": 4501
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/SOURCE_TESTS01_LOADER_FAILURE.json",
+      "sha256": "16ea129d454f9565e1cee15a0e1b0ef76ff40863fe93365528b7f8016e490aa2",
+      "bytes": 516
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/baseline-probe.mjs",
+      "sha256": "c0e8bf4fb523b29590a50b8a1a59a1f9096928622a56f420b8f43e75c77f01c0",
+      "bytes": 1492
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/baseline.stderr",
+      "sha256": "6fed1118b3b434b368bc771ea73505ddba6a9a95ae5eb9fcad6bd6b99c36dc04",
+      "bytes": 932
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/baseline.stdout",
+      "sha256": "fe7cc2e24f5e70408b29b799fb4e1f518039b439bb16e2727ec00e05b7b8e0fc",
+      "bytes": 702
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/check-private-types.mjs",
+      "sha256": "58cb4e0c119e12a5e0e0e936305be28c16eb796a08c8e3478cfc2716b9b6e537",
+      "bytes": 1910
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/core/package.json",
+      "sha256": "b9e2b19585b35d9534ba67825236d99f4186ccf9330670a6016d9a9cf7bdb858",
+      "bytes": 422
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/core/src/apparel.ts",
+      "sha256": "2d8833f58ac431a0f0acf4e348906476758240606f2d5ddb7014be7426040b3e",
+      "bytes": 2286
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/core/src/circuit-facts.ts",
+      "sha256": "b95d4f2bc7c27bb8ebd5041d6dfb7fa42a6a9066d29e5a218e5b6f8daea0bbe6",
+      "bytes": 4984
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/core/src/dewdrop-facts.ts",
+      "sha256": "5f4aee4b13d48a8575464a4ace5abb217eac029491ea3ac00b2dcf2e92b5aaed",
+      "bytes": 2173
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/core/src/habitat-facts.ts",
+      "sha256": "a77bd48835b094b3136b12a055b38485ce55b461c6cf743f6f54f8323ced0a36",
+      "bytes": 3534
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/core/src/index.ts",
+      "sha256": "d1b989d0e6ba07e0a5419a601becea3cef7f94fdfe01ee18d73639a9187f4239",
+      "bytes": 47396
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/core/src/kindred-facts.ts",
+      "sha256": "f227bfe56432182fffce4ccfda347785d28568f4bdd787e96ea82dd18ade58f4",
+      "bytes": 5059
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/core/src/madeyours-facts.ts",
+      "sha256": "4428e76412e4189fe09815d18b9c2d7d8643c95f01822d783e536a6304b22813",
+      "bytes": 7554
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/core/src/marginalia-facts.ts",
+      "sha256": "891d8e5f77cf301213421b1fd945746fb22a887cc024f2ad4ca5d1cd0d2071c0",
+      "bytes": 4326
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/core/src/niche-product-facts.ts",
+      "sha256": "efdefb2c5a20306a6b80afa133a962d873341b01df51ac701696d8256c13eb2e",
+      "bytes": 5187
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/core/src/pantry-facts.ts",
+      "sha256": "1166f6ff89be545b446e0e072575b9bb761f9ddf81b39164d9579ce3206b396a",
+      "bytes": 3341
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/core/src/playfield-facts.ts",
+      "sha256": "96c17f8c65c1aa1e12233b00368ba29f4e76eb07dcf0374f822747f4f472e9a4",
+      "bytes": 5022
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/core/src/product-fact-presentation.ts",
+      "sha256": "17f291e91a8888d943363643f2f203ec52b95d308b999865fd9df6cd91947084",
+      "bytes": 7396
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/core/src/product-fact-snapshot.ts",
+      "sha256": "2f20d1555ff729e11215d8bee70a85391d7f473523b3a75b2b9e2b6ed1723ae3",
+      "bytes": 15150
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/core/src/product-facts-summary.ts",
+      "sha256": "e9ead6d7d043022ab1886a9a75fde03ba088ffcaaa2a748e5d5dcf5722560913",
+      "bytes": 14759
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/core/src/storefront-discovery.ts",
+      "sha256": "3af07abe9670cd7ea973c028a28570cd3f21542b5d20d8245b3138e6eb7b1691",
+      "bytes": 10749
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/core/src/trailmark-facts.ts",
+      "sha256": "9d8bb5ae2f033858ed77a48bd8425dbbd169c724021ae42835abf7993a4a903d",
+      "bytes": 3046
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/core/test/apparel.test.ts",
+      "sha256": "13051f35f4d60c087f3cf26a8573a2dafcb25893e625668f0d3442bb7809e8f0",
+      "bytes": 917
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/core/test/circuit-facts.test.ts",
+      "sha256": "5b6737f87dc5c303d26d0fc5e36751a541d0440b426cbd04c1678fb5abd5834b",
+      "bytes": 4022
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/core/test/dewdrop-facts.test.ts",
+      "sha256": "cc72f516f825fef57881ba08bb0085556c12c6b8f7c31c4bdd2fec51bf3767e0",
+      "bytes": 3273
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/core/test/habitat-facts.test.ts",
+      "sha256": "96672adf296af231862723968efafcee1a72de45fed9b5ef193b568d6d665595",
+      "bytes": 3719
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/core/test/kindred-facts.test.ts",
+      "sha256": "63ab3eecd296233ae9a11b971d1fb204090fa557969364530263ca6a6464ab5d",
+      "bytes": 6648
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/core/test/madeyours-facts.test.ts",
+      "sha256": "5546ef3cee097abe41258b88e087eef6cc53f8ece7047d97547496ad879b4218",
+      "bytes": 6869
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/core/test/marginalia-facts.test.ts",
+      "sha256": "afbe5171e52a7531e43271ae946a81a9a176f94c7a081b33354eaa9c29f3e2f7",
+      "bytes": 4177
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/core/test/niche-order-snapshot-acceptance.test.ts",
+      "sha256": "bb0af5f8b0e7ace5f46567d6343d07949a1a2e3876514f3ddefc2b6f53a46f4d",
+      "bytes": 27582
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/core/test/niche-product-facts.test.ts",
+      "sha256": "b96674222a52fb70809dee805b97fd41952f545700674e03f81defc913c7763c",
+      "bytes": 2361
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/core/test/pantry-facts.test.ts",
+      "sha256": "5524b6829ce66e7a82e1c16447eb7e3a419fb2d1dd78ad8b3be7bceb16a45e71",
+      "bytes": 3819
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/core/test/pantry-variant-metadata.test.ts",
+      "sha256": "ed887fd3f663c2ee54c12db346b816b6c62f618ab6faa1bb9b0f9501e24ec317",
+      "bytes": 3940
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/core/test/playfield-facts.test.ts",
+      "sha256": "f3c6597abccae999a34eaeb04401f7e0065f3505475b72f9b3838b9df0acf188",
+      "bytes": 6269
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/core/test/product-fact-presentation.test.ts",
+      "sha256": "2e806a1787fe4aa8f48378a8ca9eb8ad81dc890bf1504e4e2995ce4588581761",
+      "bytes": 3888
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/core/test/product-fact-snapshot.test.ts",
+      "sha256": "9408b77b8a08e72574fde966e71dfe28d6fa9a08db371da9e64e11f31065bd81",
+      "bytes": 22087
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/core/test/product-facts-summary.test.ts",
+      "sha256": "9b780afcd56d2535a1bb448b3f8c4f840df7df5dbdb12a2e6fefb9bea488af43",
+      "bytes": 13946
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/core/test/storefront-discovery.test.ts",
+      "sha256": "83d513924042beaed65964ae4b4f2c8821a6a851a4db0e673a77f17830ddb361",
+      "bytes": 9521
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/core/test/trailmark-facts.test.ts",
+      "sha256": "ae143bca2191fe072b45513edee058f03e12ef3b3975e497e0e9b9ea5932c70e",
+      "bytes": 3332
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/niche-order-presentation.private.ts",
+      "sha256": "557b40b4aaf3c6def2a31657718425c24a23c432bb8e50d78539789ed9610ee4",
+      "bytes": 4360
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/order-fact-readback.private.ts",
+      "sha256": "90c4e486175c53945f7df7310b1ddb770b0edd6d815a3cf812a90ca3aded4f5d",
+      "bytes": 1569
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/private-apparel.test.mjs",
+      "sha256": "98b421f167cd1855b2e15a49b08edb8c2f27dc3acddb2705eab99db49b34a957",
+      "bytes": 7151
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/private-order-facts.html",
+      "sha256": "013e8dec81c3a4fc14b26eae97c91ad58395bb000d2acc4269cd692cf118a505",
+      "bytes": 879
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/source-correction.UNAPPLIED.diff",
+      "sha256": "0111da0b7ab4abd9c0c2e7e56d523fe6b1525f42661eb3c929c8e57557b604ca",
+      "bytes": 7305
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/source-tests01.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/source-tests01.tap",
+      "sha256": "a481d5b93e9e405e7daaa3ce00ce390c33885464a53dd85bfc838d92db6c691c",
+      "bytes": 10929
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/source-tests02.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/source-tests02.tap",
+      "sha256": "6daecc61b9ee25454d3db8b4f2aec8fbf40999414eadfc1e6976a81f6ef2b12f",
+      "bytes": 2098
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/typecheck01.json",
+      "sha256": "35e0b9354083de31c771be99c626bb7484ba4c1cd5bfde3b392f80652c798e4e",
+      "bytes": 844
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/typecheck01.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-history01/typecheck01.stdout",
+      "sha256": "9f924e2515c905aba369a947747b4a9a3e5bbe5c9ce38017992d92aba93bc955",
+      "bytes": 67
+    }
+  ],
+  "dependencyLinks": "Approvedzod4.3.6/tsx4.20.6vendordepsandsealedcandidateSharedTypes;privateCorealias;noMainbusinessmodule.",
+  "selfExcluded": true
+}

@@ -1,0 +1,21 @@
+{
+  "recordedAt": "2026-10-23T21:06:08.523Z",
+  "runId": "f6074d90e894",
+  "guardVerified": true,
+  "readOnly": true,
+  "rows": [
+    {
+      "id": "2fd10b2d-140e-43f2-9060-7bbebc706b72",
+      "createdAt": "2026-10-23T21:03:27.765273+00:00",
+      "eventType": "checkout.started",
+      "aggregateId": "784f7bfa-9aba-4425-baa1-bec94ed0d5b7",
+      "payloadKeys": [
+        "cart_id",
+        "channel",
+        "site_id",
+        "checkout_id"
+      ],
+      "aggregateType": "checkout"
+    }
+  ]
+}

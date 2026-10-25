@@ -1,0 +1,36 @@
+{
+  "runId": "936e5f577646",
+  "source": "Normal browser navigated private BFF with existing normal Buyer A session",
+  "orderId": "36b89194-f491-49ab-b42c-401029a4a58c",
+  "number": "ORD-20261024-10001",
+  "total": 560,
+  "items": [
+    {
+      "keys": [
+        "id",
+        "product_id",
+        "variant_id",
+        "name",
+        "title",
+        "sku",
+        "quantity",
+        "price",
+        "unit_price",
+        "total",
+        "variant_title"
+      ],
+      "id": "899f85b0-84d8-445b-86c2-5be11541f035",
+      "name": "Synthetic legacy beauty control",
+      "title": "Synthetic legacy beauty control",
+      "quantity": 1,
+      "unitPrice": 560,
+      "price": 560,
+      "total": 560,
+      "nicheSnapshot": null,
+      "rawProductSnapshotPresent": false
+    }
+  ],
+  "bodySha256": "4abc4569e50b5ebfe11e06e5eb30aba294e82d2f07654bcb5676273f177b9adb",
+  "privateMarkerAbsent": true,
+  "currentBeautyFactsAbsent": true
+}

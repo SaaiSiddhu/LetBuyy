@@ -1,0 +1,12 @@
+{
+  "recordedAt": "2026-10-24T08:50:17.056253+00:00",
+  "attempt": 1,
+  "command": "node --import tsx docs/implementation/niche-themes-2026-10-23/pantry/completion-2026-10-24/private-proposals/heading-render-qualification.mjs",
+  "exitCode": 1,
+  "classification": "SOURCE_WITNESS_BOOTSTRAP_FAILED_BEFORE_CASES",
+  "errorCode": "ERR_MODULE_NOT_FOUND",
+  "message": "jsdom was not resolvable from the documentation script directory.",
+  "caseAssertionsExecuted": 0,
+  "correction": "Resolve the already installed jsdom dependency from its canonical theme-engine package using createRequire; no package/config edit or installation.",
+  "sourceOrRuntimeOrBrowserMutation": false
+}

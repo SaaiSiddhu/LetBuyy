@@ -283,6 +283,7 @@ export default function ExperiencePage() {
         return (
             <Page>
                 <PageHeader
+                    recipe="index"
                     title="Experience"
                     description="Build a clean work-history timeline for your resume or portfolio."
                     breadcrumbs={[{ label: 'Resume' }, { label: 'Experience' }]}
@@ -299,6 +300,7 @@ export default function ExperiencePage() {
     return (
         <Page>
             <PageHeader
+                recipe="index"
                 title="Experience"
                 description="Build a clean work-history timeline for your resume or portfolio."
                 breadcrumbs={[{ label: 'Resume' }, { label: 'Experience' }]}

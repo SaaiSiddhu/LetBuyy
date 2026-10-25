@@ -1,0 +1,70 @@
+{
+  "generatedAt": "2026-10-23T05:01:50.660Z",
+  "images": [
+    {
+      "source": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/dewdrop-storybook/assets/hero.png",
+      "sourceSha256": "390acca52221e745cdc3a9694d28210f6e58e44ed4a9bfd0d2cfebf7aa76e349",
+      "output": "apps/commerce/web/public/theme-assets/dewdrop/v2/care-still-life.webp",
+      "bytes": 98062,
+      "sha256": "793db28ec505733a363c35edd4ffd1e3d12a5e73312430d1728c735cc77f65ea",
+      "width": 1536,
+      "height": 1024,
+      "format": "webp",
+      "origin": "Approved original M1 ImageGen artwork; optimization only"
+    },
+    {
+      "source": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/dewdrop-storybook/assets/cleanser.png",
+      "sourceSha256": "453cf5bbf0ab825f82764a957137197b38a36ea0064cd27d0b10d6c8a88615c8",
+      "output": "apps/commerce/web/public/theme-assets/dewdrop/v2/cloud-rinse.webp",
+      "bytes": 77310,
+      "sha256": "214cf097fe6933dc068f12624fff6c2444f88305efffd4b954614bc4519126e1",
+      "width": 960,
+      "height": 1200,
+      "format": "webp",
+      "origin": "Approved original M1 ImageGen artwork; optimization only"
+    },
+    {
+      "source": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/dewdrop-storybook/assets/cream.png",
+      "sourceSha256": "d2719c7175d0f275338635caee8392f4c8f2e805058df2d744723dd05933a26f",
+      "output": "apps/commerce/web/public/theme-assets/dewdrop/v2/daily-veil.webp",
+      "bytes": 74740,
+      "sha256": "45d66018c9b56ac9290eed510f135a3dd3a45223454c3c85aaababb1f88998f2",
+      "width": 960,
+      "height": 1200,
+      "format": "webp",
+      "origin": "Approved original M1 ImageGen artwork; optimization only"
+    },
+    {
+      "source": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/dewdrop-storybook/assets/tint.png",
+      "sourceSha256": "1b2e2227f86371646ec4bc555e673dfab247e173a23b75cd2d75f2c69e120386",
+      "output": "apps/commerce/web/public/theme-assets/dewdrop/v2/lip-tint.webp",
+      "bytes": 62664,
+      "sha256": "cd526e8f0cec5e11bf2d1f897de9a4b6caef970c392bf7ca41779edb5e2764a6",
+      "width": 960,
+      "height": 1200,
+      "format": "webp",
+      "origin": "Approved original M1 ImageGen artwork; optimization only"
+    }
+  ],
+  "fonts": [
+    {
+      "file": "apps/commerce/web/public/theme-assets/dewdrop/v2/cormorant-garamond-500.ttf",
+      "source": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/dewdrop-storybook/assets/cormorant-garamond-500.ttf",
+      "bytes": 290496,
+      "sha256": "1724047c8988ca5155bff667bc48fa52e97d57aabc6b42eebbf986f21a4be20b"
+    },
+    {
+      "file": "apps/commerce/web/public/theme-assets/dewdrop/v2/lato-400.ttf",
+      "source": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/dewdrop-storybook/assets/lato-400.ttf",
+      "bytes": 72312,
+      "sha256": "f43f1c7780d69792278f04b136c934a0298fc66f2e974bac13dd2e53adc52bde"
+    },
+    {
+      "file": "apps/commerce/web/public/theme-assets/dewdrop/v2/lato-700.ttf",
+      "source": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/dewdrop-storybook/assets/lato-700.ttf",
+      "bytes": 70576,
+      "sha256": "02e8f4be57ddc47cb7882c41b60216b6085b1ceaf717514be2b88fa15396238d"
+    }
+  ],
+  "fontProvenance": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/dewdrop-storybook/assets/font-provenance.json"
+}

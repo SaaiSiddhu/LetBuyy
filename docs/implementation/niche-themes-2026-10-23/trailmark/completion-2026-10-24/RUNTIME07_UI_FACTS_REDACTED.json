@@ -1,0 +1,123 @@
+{
+  "recordedAt": "2026-10-24T21:26:10.548735+00:00",
+  "classification": "WHITELISTED_PUBLIC_ORDER_TEXT_FROM_CONTROLLER_CAPTURED_AX_NOT_A_LIVE_BROWSER_RERUN",
+  "runId": "49ada80bc494",
+  "orderId": "c2991cb7-d637-4f11-86d4-fe02252dfc7f",
+  "orderNumber": "ORD-20261024-10006",
+  "views": [
+    {
+      "source": {
+        "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/trailmark-buyer-equipment-details.ax.txt",
+        "sha256": "b505d69092817e4369fd490262549cc69bcd7fb55cf6ddab7a5a70f656001e53"
+      },
+      "publicOrderFactLinesOnly": [
+        {
+          "line": 19,
+          "text": "- 'heading \"Order #ORD-20261024-10006\" [level=1]'"
+        },
+        {
+          "line": 20,
+          "text": "- paragraph: \"Status: confirmed\""
+        },
+        {
+          "line": 24,
+          "text": "- generic: INR 1,800.00"
+        },
+        {
+          "line": 26,
+          "text": "- paragraph: \"Saved options Length: 26.5 in Equipment details Activity: Badminton Equipment type: racket Length: 26.5 in Weight: 80 g Dimensions: Length 26.5 in · Width 10 in Materials: Not recorded with this order. Contents: Not recorded with this order. Use conditions: Not recorded with this order. Compatibility status: Unconfirmed. Compatibility reference: Not recorded with this order.\""
+        },
+        {
+          "line": 27,
+          "text": "- paragraph: \"Total: INR 1,820.00\""
+        },
+        {
+          "line": 30,
+          "text": "- listitem: Confirmed"
+        }
+      ]
+    },
+    {
+      "source": {
+        "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/trailmark-merchant-equipment-details.ax.txt",
+        "sha256": "0345dabd3550537e9b85b8e3d74442e88654f83f61f3fc8420014e512f89d713"
+      },
+      "publicOrderFactLinesOnly": [
+        {
+          "line": 79,
+          "text": "- 'heading \"Order #ORD-20261024-10006\" [level=1]'"
+        },
+        {
+          "line": 83,
+          "text": "- text: Confirmed"
+        },
+        {
+          "line": 84,
+          "text": "- text: \"Payment: Paid\""
+        },
+        {
+          "line": 88,
+          "text": "- generic: \"#ORD-20261024-10006\""
+        },
+        {
+          "line": 113,
+          "text": "- paragraph: 26.5 in / SYN-EDITOR-sports-49ada80bc494"
+        },
+        {
+          "line": 114,
+          "text": "- generic: 1 × ₹1,800.00"
+        },
+        {
+          "line": 115,
+          "text": "- generic: ₹1,800.00"
+        },
+        {
+          "line": 120,
+          "text": "- definition: 26.5 in"
+        },
+        {
+          "line": 121,
+          "text": "- region \"Equipment details\":"
+        },
+        {
+          "line": 122,
+          "text": "- heading \"Equipment details\" [level=3]"
+        },
+        {
+          "line": 124,
+          "text": "- definition: Badminton"
+        },
+        {
+          "line": 125,
+          "text": "- term: Equipment type"
+        },
+        {
+          "line": 128,
+          "text": "- definition: 26.5 in"
+        },
+        {
+          "line": 130,
+          "text": "- definition: 80 g"
+        },
+        {
+          "line": 132,
+          "text": "- definition: Length 26.5 in · Width 10 in"
+        },
+        {
+          "line": 140,
+          "text": "- definition: Unconfirmed."
+        },
+        {
+          "line": 154,
+          "text": "- generic: ₹1,800.00"
+        },
+        {
+          "line": 160,
+          "text": "- generic: ₹1,820.00"
+        }
+      ]
+    }
+  ],
+  "redaction": "Only public order number/status/amount/selected sports facts retained; contact/address/identity/session/capability content excluded.",
+  "limits": "Both views are pre-catalogue-edit positive controls. No after-edit immutable history or unauthorized denial was exercised."
+}

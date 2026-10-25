@@ -6,6 +6,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import {
+    Section,
+    Card,
     AlertCircle,
     AlertTriangle,
     Banner,
@@ -406,13 +408,13 @@ export default function BusinessSettingsPage() {
 
     if (loading) {
         return (
-            <SettingsPane title="Business details" description="Legal identity, GST registration, verification, and settlement fees." store={store}>
+            <SettingsPane navigationKey="business" title="Business details" description="Legal identity, GST registration, verification, and settlement fees." store={store}>
                 <div className="settings-general-stack">
                     {[1, 2, 3].map((i) => (
-                        <div key={i} className="settings-home-card">
-                            <div className="settings-home-section-label"><Skeleton variant="text" lines={1} /></div>
+                        <Card key={i}>
+                            <Section><Skeleton variant="text" lines={1} /></Section>
                             <div className="settings-form-body"><Skeleton variant="text" lines={3} /></div>
-                        </div>
+                        </Card>
                     ))}
                 </div>
             </SettingsPane>
@@ -440,6 +442,7 @@ export default function BusinessSettingsPage() {
 
     return (
         <SettingsPane
+                navigationKey="business"
             title="Business details"
             description="Legal identity, GST registration, verification, and settlement fees."
             store={store}
@@ -470,9 +473,8 @@ export default function BusinessSettingsPage() {
 
             {/* ── Business identity (reference) ─────────────────────────────── */}
             <form className="settings-general-stack" onSubmit={(e) => { e.preventDefault(); void handleSave() }}>
-                <div className="settings-home-card">
-                    <div className="settings-home-section-label">Business identity</div>
-                    <div className="settings-form-body">
+                <Section variant="grouped" title="Business identity" >
+
                         <div className="settings-general-hint">
                             Used on GST invoices and shared with payment partners for settlements. Keep this exactly as on your registration documents.
                         </div>
@@ -505,13 +507,12 @@ export default function BusinessSettingsPage() {
                             maxLength={4}
                             helperText="We only store the last 4 characters of your PAN. Upload the full PAN under verification below."
                         />
-                    </div>
-                </div>
+
+                </Section>
 
                 {/* ── GST registration ─────────────────────────────────────── */}
-                <div className="settings-home-card">
-                    <div className="settings-home-section-label">GST registration</div>
-                    <div className="settings-form-body">
+                <Section variant="grouped" title="GST registration" >
+
                         <div className="settings-general-hint">
                             If your business is GST-registered, add your GSTIN to issue compliant GST tax invoices. The state code is derived from your GSTIN automatically.
                         </div>
@@ -540,14 +541,13 @@ export default function BusinessSettingsPage() {
                             maxLength={20}
                             helperText="Appears before invoice numbers, e.g. LBY-0001."
                         />
-                    </div>
-                </div>
+
+                </Section>
             </form>
 
             {/* ── KYC / verification documents ──────────────────────────────── */}
-            <div className="settings-home-card">
-                <div className="settings-home-section-label">Verification &amp; KYC</div>
-                <div className="settings-form-body">
+            <Section variant="grouped" title="Verification &amp; KYC" >
+
                     <div className="settings-general-hint">
                         Verified businesses can receive payouts. We store only the last 4 digits of each document number. Add a secure link only if your document is hosted privately (for example DigiLocker).
                     </div>
@@ -636,13 +636,12 @@ export default function BusinessSettingsPage() {
                             )
                         })}
                     </div>
-                </div>
-            </div>
+
+            </Section>
 
             {/* ── Fees & settlements ────────────────────────────────────────── */}
-            <div className="settings-home-card">
-                <div className="settings-home-section-label">Fees &amp; settlements</div>
-                <div className="settings-form-body">
+            <Section variant="grouped" title="Fees &amp; settlements" >
+
                     <div className="settings-business-fees">
                         <div className="settings-business-fee-row settings-business-fee-row--hero">
                             <span className="settings-business-fee-icon"><IndianRupee className="letbuyy-icon" aria-hidden="true" /></span>
@@ -711,21 +710,20 @@ export default function BusinessSettingsPage() {
                             LetBuyy&apos;s 0% commission is permanent.
                         </span>
                     </div>
-                </div>
-            </div>
+
+            </Section>
 
             {/* ── Site type / governance note ───────────────────────────────── */}
-            <div className="settings-home-card">
-                <div className="settings-home-section-label">Data &amp; privacy</div>
-                <div className="settings-form-body">
+            <Section variant="grouped" title="Data &amp; privacy" >
+
                     <div className="settings-business-privacy">
                         <Info className="letbuyy-icon" aria-hidden="true" />
                         <span>
                             We follow data minimisation: only the last 4 digits of PAN, bank, and ID numbers are stored. Full documents are verified by our KYC partner and never kept in your store&apos;s media library.
                         </span>
                     </div>
-                </div>
-            </div>
+
+            </Section>
         </SettingsPane>
     )
 }

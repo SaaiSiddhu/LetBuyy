@@ -1,0 +1,46 @@
+Browser tab: 36, Title: "Circuit lifecycle unknown accessory | Threadline", URL: "http://syn-threadline-ui-33be9d94.localhost:62076/product/da957f8e-aa00-4b2a-98b6-149398daf941".
+1 AXWebArea Circuit lifecycle unknown accessory | Threadline, URL: syn-threadline-ui-33be9d94.localhost:62076/product/da957f8e-aa00-4b2a-98b6-149398daf941
+	2 container
+		3 text Circuit shared header f6074d90e894
+		4 container Description: Primary, ID: lb-nav-panel-header-default
+		5 link Description: Threadline, Value: syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94
+		6 container
+			7 text Search products, models and connectors
+			8 search text field (settable) Search products, models and connectors, ID: ct-header-search-header-default
+			9 button Search
+		10 link Description: Log in, Value: syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94/customers/login
+		11 link Description: Cart ( 1 ), Value: syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94/cart
+		12 container Breadcrumb
+			13 link Description: Home /, Value: syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94
+			14 link Description: Shop /, Value: syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94/products
+			15 text Circuit lifecycle unknown accessory
+		16 heading Circuit lifecycle unknown accessory, Value: 1
+			17 text Circuit lifecycle unknown accessory
+		18 text INR 600.00
+		19 heading Device compatibility, Value: 2
+			20 text Device compatibility
+		21 container
+			22 text Unconfirmed.  Check your exact device model and host requirements before choosing. A connector match alone does not establish compatibility.
+		23 link Description: Read specifications and requirements, Value: syn-threadline-ui-33be9d94.localhost:62076/product/da957f8e-aa00-4b2a-98b6-149398daf941#circuit-specifications
+		24 container
+			25 text Quantity
+			26 stepper (settable, integer) Quantity, Value: 1, ID: lb-quantity-forge-detail-product
+			27 button Add to cart
+		28 container Add Circuit lifecycle unknown accessory to wishlist
+			29 checkbox Description: Connect store account to use wishlist, Value: 0
+		30 button (collapsed) Description, Secondary Actions: Expand
+			31 text Description
+		32 container Description: Electronics specifications, ID: circuit-specifications
+			33 heading Know the model. Read the limits., Value: 2
+				34 text Know the model. Read the limits.
+			35 text Technical facts have not been supplied. Device compatibility remains unconfirmed.
+		36 heading Threadline, Value: 3
+			37 text Threadline
+		38 text Circuit shared footer f6074d90e894
+		39 heading CONTACT, Value: 4
+			40 text CONTACT
+		41 link Description: Contact us, Value: syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94/contact
+		42 text © Threadline. All rights reserved.
+		43 link Description: Powered by LetBuyy, Value: letbuyy.com/
+
+The focused UI element is 1 AXWebArea Circuit lifecycle unknown accessory | Threadline, URL: syn-threadline-ui-33be9d94.localhost:62076/product/da957f8e-aa00-4b2a-98b6-149398daf941

@@ -149,3 +149,10 @@ test('writeWithOutbox validates the catalog and inserts one queued outbox row af
   assert.equal(inserts[0]?.site_id, '11111111-1111-4111-8111-111111111111');
   assert.equal(inserts[0]?.event_type, 'cart.created');
 });
+
+test('in-app notification events retain the canonical notification identity', () => {
+  const payload = parseDomainEventPayload('notification.sent', {site_id: ORDER_ID, notification_id: ORDER_ID, channel: 'in_app'});
+  assert.equal(payload.notification_id, ORDER_ID);
+  assert.equal(payload.channel, 'in_app');
+  assert.throws(() => parseDomainEventPayload('notification.sent', {site_id: ORDER_ID, channel: 'in_app'}), /notification_id/);
+});

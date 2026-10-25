@@ -1,0 +1,63 @@
+{
+  "classification": "PREPARED_NOT_ADMITTED_OR_NATIVE_EXECUTED",
+  "recordedAt": "2026-10-23T15:42:51.423153+00:00",
+  "migration": 392,
+  "finding": "CIRCUIT-SEARCH-MODEL-001",
+  "baseline": "Qualified390browsebody95cda4d15f36172c5457ad5045600cde plus actual emitted/admitted391 shared-group function",
+  "target": "public.browse_storefront_products_v1(uuid,jsonb,uuid[])",
+  "proposedMd5": "bdaec8db8f836e94294e4bdd9c449346",
+  "drafts": [
+    {
+      "path": "392_electronics_search.up.draft.sql",
+      "sha256": "f17f659b8d037c34f02b9cc1cda912ede406bda7950f99310ebae5ca77c61171"
+    },
+    {
+      "path": "392_electronics_search.down.draft.sql",
+      "sha256": "b66f348b56f8f45c60eacf1ba63e1f10177a2be6c0e9d33eb829649838d6a73e"
+    }
+  ],
+  "nativeSuite": {
+    "path": "services/api-gateway/src/__tests__/owned-db/storefront-electronics-search.postgres.test.ts",
+    "sha256": "46521c9926ed5f34d6b63071e6ef0e38e199075d842e8b9e85b36c54e58820b0",
+    "tests": 8,
+    "nativeExecuted": false,
+    "requiredAdmission": "admission.json must be written by Root as ROOT_ACCEPTED_FOR_OWNED_NATIVE_QUALIFICATION with exact392 pair hashes and emitted391 pair/function pins before any DDL."
+  },
+  "ownedCommandAfterRootLease": [
+    "node",
+    "scripts/governance/run-executable-suites.mjs",
+    "--suite",
+    "services/api-gateway/src/__tests__/owned-db/storefront-electronics-search.postgres.test.ts",
+    "--kind",
+    "gateway-db",
+    "--through-migration",
+    "391",
+    "--jobs",
+    "1",
+    "--no-reap",
+    "--timeout",
+    "600"
+  ],
+  "prohibitions": [
+    "No current9cd application",
+    "No second user-facing runtime",
+    "No applied392source pair before391emission and Rootexactadmission",
+    "No shared runner/schema/SDK/theme changes in this preparation",
+    "No skips or lowered profile/tenant/witness invariants"
+  ],
+  "latestSupport": {
+    "new392Suite": "Accepts only exactadmitted390or392 discoverybody after emitted391hashcheck. In exact392 entry, strict paired392DOWN restores390, full seven tests execute, finalUP restores392. Unknownbody refuses beforeDDL. Default runner ceiling remains unchanged.",
+    "existingNichePromotion": "Owner must add exactROOT-ADMITTED392 pair/body support to niche-theme-promotion.postgres.test.ts, ordered392DOWN\u2192390DOWN\u2192389DOWN; run existing nine install/save/publish/refusal/conservation phases, restore389UP\u2192390UP\u2192392UP when original entry392. No skipping phases or accepting arbitrary hash. Preserve391 shared-group body throughout because it is a different function.",
+    "existing391Suite": "Owner must recognize exactROOT-ADMITTED392 body at defaultLATEST, validate its pair/admission and strict392DOWN before asserting390 discovery baseline, run full391qualification/rollback semantics, and restore exact392 at end. No broad script reordering or guessing future bodies.",
+    "historicalCeilings": "Historical386through385 and390through388 qualification remain explicitly named ceiling lanes. They must not be described as defaultLATEST acceptance. Keep actual migration-order guards and strict known-state rejection; no silent downgrade/skip to obtain green."
+  },
+  "nativeProofs": [
+    "Reproduce actual390model andconnector miss with namepositive before applying draft.",
+    "Canonical public Worker/API, SQL, same-available-variant, cross-tenant/collection/IDscope, sortedcounts/facets and all9domainsearch/filter parity.",
+    "Missing/malformed namespaces/privateJSON/unsupported electronicsvariant model cannot contribute. Hyphen/Unicode/case search uses exact supplied values.",
+    "ACL/grantor/effective-inheritedrole/cost/default-AST poison refused atomically on both legs; business and helpercatalog conserved; UP-DOWN-UP exact390/392 and390capabilities preserved.",
+    "EXPLAIN ANALYZE reports finite-owned-fixture execution under5000ms; explicitly not production/load qualification."
+  ],
+  "runtimeAcceptance": "Circuit25 remains unaccepted; early public finding is separate.",
+  "emissionGate": "No production392pair emission/current9cdapply before actual391paired emission, Rootexact392admission and allocated nativegreen. Before eventual392emission, named owners must also retarget/run exactadmitted392 defaultLATEST qualification consumers (nichepromotion/shared391) without skips or relaxed guards."
+}

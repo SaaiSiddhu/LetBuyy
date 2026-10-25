@@ -1,0 +1,138 @@
+{
+  "recordedAt": "2026-10-24T12:07:48.123799+00:00",
+  "classification": "NONEXECUTABLE_CONTROLLER_HANDOFF_NO_BROWSER_OR_RUNTIME_LEASE",
+  "soleController": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+  "allocator": "01a164a4-a342-76d3-ab33-65e021ed57db",
+  "sourceCandidate": {
+    "slug": "letbuyy-sense",
+    "version": "2.0.1",
+    "bundleSHA256": "bc53034a4b715778036e80bebd24ead37babe9c0a86b1e6831d8c7933ea45ab2"
+  },
+  "installedCandidate": null,
+  "currentBrowserLease": null,
+  "coverageAuthority": "../COVERAGE.json and ../resume-02/ACCEPTANCE_MAPPING_201.json; original clauses are unchanged, related IDs are navigation hints only",
+  "nestedCoverage": "../resume-02/NESTING_APPLICABILITY_ADDENDUM.json",
+  "steps": [
+    {
+      "stepId": "TL-REF-00",
+      "title": "Admission and preservation",
+      "requiredObservation": "Bind current allocator grant, complete source closure, catalog/package/install IDs, actual2.0.1 bundle hash, compiled source/build, owned site/merchant/buyer realms, DB identity, normal trusted TLS, expiry and cleanup ownership. Record preexisting user app/draft/release/data boundaries. Refuse mismatches before writes.",
+      "relatedCoverageIds": [
+        "TL-NEXT-01",
+        "TL-NEXT-02"
+      ],
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "stepId": "TL-REF-01",
+      "title": "Normal catalogue preview and Add",
+      "requiredObservation": "Through actual merchant UI, preview advertised Threadline2.0.1 and Add to a new admitted synthetic site. Capture catalogue/package version and one private installation; repeat Add must not duplicate or alter any live release. Preserve2.0.0 source and all user sites.",
+      "relatedCoverageIds": [
+        "TL-NEXT-01",
+        "TL-NEXT-02"
+      ],
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "stepId": "TL-REF-02",
+      "title": "Configured copy and pinned groups",
+      "requiredObservation": "Use actual controls and exact section identities from the delta record. Set category subtitle, collection heading override and order heading. Include existing header/footer/global field reference edits using canonical UI. Save acknowledgement must bind revision. Full-page reload must retain values and untouched templates/groups.",
+      "relatedCoverageIds": [
+        "TL-NEXT-03",
+        "TL-NEXT-04",
+        "TL-NEXT-05"
+      ],
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "stepId": "TL-REF-03",
+      "title": "Preview output and clearing",
+      "requiredObservation": "Preview category copy with nonblank and blank subtitle; blank must preserve original heading wrapper. On a real owned collection, trimmed override wins; blank/whitespace uses its actual title, with Clothing only if no title. Order heading uses current configured copy plus actual canonical order number; guest/unavailable branches must not leak an order. Actual authenticated order output requires the later normal checkout order, not a seeded substitute.",
+      "relatedCoverageIds": [
+        "TL-NEXT-06",
+        "TL-ED-FIELD-section/category-grid/subtitle",
+        "TL-ED-FIELD-section/collection-product-list/title",
+        "TL-ED-FIELD-section/customer-order-detail/heading"
+      ],
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "stepId": "TL-REF-04",
+      "title": "Revision A public readback",
+      "requiredObservation": "Publish the acknowledged draft as A. Capture immutable release/revision/package hash and actual public output in a separate buyer/anonymous context as appropriate. Private customer-order content requires its owner session and must be denied to guests/other buyers.",
+      "relatedCoverageIds": [
+        "TL-NEXT-07"
+      ],
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "stepId": "TL-REF-05",
+      "title": "Draft B and publication recovery",
+      "requiredObservation": "Make B, save/reload and preview B while actual public release remains A. Publish B, restore A, prove saved B survives, then reapply B. Bind original intent/idempotency for uncertain responses through admitted shared controls. Do not overwrite a user draft or change current user app publication.",
+      "relatedCoverageIds": [
+        "TL-NEXT-08"
+      ],
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "stepId": "TL-REF-06",
+      "title": "Full declared control execution",
+      "requiredObservation": "Consume all existing318 requirement IDs and operation slots, plus resume02 nested addendum; no sampling closes the full gate. Include all21page templates/2shared groups,45sections,11first-party block contexts and reusable badge in actual spotlight host,141field descriptors, alternate template creation/recovery, media/resource ownership and negative boundaries. App activation stays constitutionally excluded; restriction/nonexecution/honest inactive UI remains required.",
+      "relatedCoverageIds": [
+        "TL-NEXT-03",
+        "TL-NEXT-04",
+        "TL-NEXT-05"
+      ],
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "stepId": "TL-REF-07",
+      "title": "Canonical buyer to payment and history",
+      "requiredObservation": "Complete editorial/navigation/assets, discovery/filter/back state and predictive/full search on the actual published Threadline candidate. Perform normal new buyer signup/verification/login/consent/callback, store customer entry/profile/addresses/logout and isolation, exact owned variant UUID/size/colour/OOS/cart/reload/quotes, normal hosted COD, then actual Razorpay Test Mode browser purchase through real adapter. Require provider order/payment signatures, actual verified webhook and durable dedup, canonical once-only inventory/order/ledger/reconciliation and buyer/merchant history. Retain consumed stock and immutable snapshots through sameUUID catalogue edits.",
+      "relatedCoverageIds": [
+        "TL-NEXT-09",
+        "TL-NEXT-10",
+        "TL-NEXT-11",
+        "TL-NEXT-12",
+        "TL-NEXT-13",
+        "TL-NEXT-14",
+        "TL-NEXT-15",
+        "TL-NEXT-16",
+        "TL-NEXT-17",
+        "TL-NEXT-18",
+        "TL-NEXT-19",
+        "TL-NEXT-20",
+        "TL-NEXT-21",
+        "TL-NEXT-22",
+        "TL-NEXT-23",
+        "TL-NEXT-24"
+      ],
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "stepId": "TL-REF-08",
+      "title": "Quality and independent acceptance",
+      "requiredObservation": "Complete existing security/negative/recovery/quality/performance clauses on this exact installed candidate. Preserve failed attempts and limits, then independent reviewer accepts source/artifact/runtime/case lineage. None of the source20/composed55/credentialHTTP200 counts closes browser/provider gates.",
+      "relatedCoverageIds": [
+        "TL-NEXT-23",
+        "TL-NEXT-24",
+        "TL-NEXT-25",
+        "TL-NEXT-26"
+      ],
+      "status": "NOT_RUN",
+      "evidence": []
+    }
+  ],
+  "resourceAndProviderFixture": "Use only admitted current synthetic owned fixture from Themes; no old936/private UUID ownership claim; no injected payment adapter may satisfy Razorpay Test Mode.",
+  "preservation": "No user app restart/replacement, no existing draft rewrite, no reseed/prune/reset, no stock replenishment or order rewrite, no frozen package mutation, no production action. Test removal only on an admitted disposable new draft with supported recovery.",
+  "doesNotReplaceOriginal26": true,
+  "FULL_THEME_CERTIFIED": false
+}

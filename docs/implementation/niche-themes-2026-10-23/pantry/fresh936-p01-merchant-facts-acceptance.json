@@ -1,0 +1,92 @@
+{
+  "recordedAt": "2026-10-24T05:09:59.484379+00:00",
+  "runId": "936e5f577646",
+  "case": "P01",
+  "status": "PASS",
+  "sourceRefs": {
+    "runtimeAdmission": {
+      "path": "docs/implementation/niche-theme-programme/editor-stable392-02-runtime-admission.json",
+      "sha256": "33b3d8c93eb9a63a7833ed4ae9a15faedde06a6ff44706d862cce773cc0cb174"
+    },
+    "correctedClientAdmission": {
+      "path": "docs/implementation/niche-theme-programme/editor-font-axis-runtime-admission-02.json",
+      "sha256": "340d49dce2d88afb051bf8fb6573c01a512b0d59efaee3bebd76fe6d3fba4b5c"
+    },
+    "apiSourceProofSha256": "ca4eb60667972e4a8c8ac61a78a0303fcdaca10b1d9189e9f5675864f689fe6a",
+    "frontendSourceProof": {
+      "path": "/private/tmp/theme-editor-font-axis-20261024-01/font-axis-source-proof.json",
+      "sha256": "4da3248de49a0c828f6e1daeaacb35d5c361bf11dc1f3d90bb34eea5c48979a0"
+    }
+  },
+  "lentilsId": "c3740e30-8c62-45f8-9ba4-0d21caabafdf",
+  "riceId": "c0919503-a07e-4144-9efe-af7a686b8333",
+  "observedOpaqueVersions": {
+    "lentils": [
+      9,
+      13,
+      17
+    ],
+    "rice": [
+      3,
+      5,
+      7
+    ]
+  },
+  "claims": [
+    "Normal common-storage marker save/fullreload on same lentils and rice IDs, then canonical facts restored.",
+    "Unknown allergen status retained; unvarianted rice1000g and variant-product common netnull preserved.",
+    "Actual variant-net0 Save rejected with useful nested field error; draft0/unsaved state retained; canonical lentils product/version/inventory exactly equals pre-Save baseline.",
+    "Stock/inventory/other metadata/price/identity retained in inspected own product/rice readbacks."
+  ],
+  "limits": [
+    "Negative zero was in unknown variant net facts, not a rice common-net request.",
+    "No unretained raw HTTP mutation-body or all-protected-tables invariance claim; actual native Save/reload plus guarded canonical readbacks."
+  ],
+  "evidence": [
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-pantry-lifecycle-before-ui.json",
+      "sha256": "fc1a9bfbcf558bcdcb7211a0f86273aef4a1e27c8a285413563e1c4375f34de8"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-pantry-lifecycle-after-invalid-net.json",
+      "sha256": "7348083f8d77816335a4c07e60ae45beca52b6cc9e9d12f4eb2484e2277a0fac"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-pantry-lifecycle-known750-saved.json",
+      "sha256": "bc78ad427b425f94d1a11c97f22a4a3118e0a91fc146339d9b751c4001f96f06"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-pantry-lifecycle-unknown-cleared-restored.json",
+      "sha256": "efbcdb938d197bbe6a15f9e5ab4110409219ad3a420366f7df1828270574725d"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-pantry-rice-before-readback.json",
+      "sha256": "e1c3148c264b566bcbd75db334956223611499f2ea9a790c00a596be81a20520"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-pantry-rice-saved-readback.json",
+      "sha256": "5fcee71af2293cee027d7817ccdf1800a22f2929e2495b2d8a041871d2a9ef53"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-pantry-rice-restored-readback.json",
+      "sha256": "db9f09760682d1cd884ad32017022b720253cbf7a10871bc9ac738d598139c16"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-pantry-P01-invalid-net-draft-kept.ax.txt",
+      "sha256": "b70334aa14353f242609fad0433b38aac9e7fe209deeeb95bcfcc2fc1b9641b5"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-pantry-P02-unknown-explicit750-reloaded.ax.txt",
+      "sha256": "1ea67b1646ce667e0b07da1d3eda4bc8896569fcc3097b109facb49539056a41"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-pantry-P01-rice-save-reloaded.ax.txt",
+      "sha256": "1db53c17522214e47b1e1135b46c0e7645f22ff68f6f214e5b37786c5b3c5c97"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/stable936-pantry-P01-rice-restored.ax.txt",
+      "sha256": "e74570c688bce052bbcfb65e666de3861ebcb0685618b6ccd5d597d22a8f2f68"
+    }
+  ],
+  "runtimeActionsByPantry": false
+}

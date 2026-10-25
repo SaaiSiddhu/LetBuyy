@@ -1,0 +1,91 @@
+{
+  "recordedAt": "2026-10-24T19:58:24.650Z",
+  "runId": "49ada80bc494",
+  "observation": "All12 resumed chats observed active; not an acceptance-case metric or certificate",
+  "polls": [
+    {
+      "threadId": "01a164a4-a342-76d3-ab33-65e021ed57db",
+      "cursor": "4a88ad91-a502-40c5-8554-f10ec1e43e00:94",
+      "status": "active",
+      "turnStatus": "inProgress",
+      "latestMessage": "The sealed candidate’s 6,547 source files match their hashes and current Main. All six recorded native cohorts passed with no skips or cleanup leftovers. The cart browser evidence also applies to this candidate: its only three changes concern checkout CSP."
+    },
+    {
+      "threadId": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+      "cursor": "55b3b7e5-65f2-4e37-bfbe-f3ebbd81cba2:129",
+      "status": "active",
+      "turnStatus": "inProgress",
+      "latestMessage": "I’ll verify the current lease and handoff, then take over the single browser queue. I’ll start with the theme-specific Test Mode purchases while the HTTPS window is open, preserving the existing apps, drafts and order evidence."
+    },
+    {
+      "threadId": "01a16d03-613e-71b0-a591-07d4d24347d4",
+      "cursor": "c84aa8c2-a9f1-49a3-aba2-a6d4bce3958a:10",
+      "status": "active",
+      "turnStatus": "inProgress",
+      "latestMessage": "I’ll verify the new resume authority and Runtime07 admission, then submit Threadline’s exact next cases to Editor’s shared queue. The shared payment smoke will stay separate from Threadline’s own certification."
+    },
+    {
+      "threadId": "01a164ba-b882-7bd3-9d94-af94e6c0b4f2",
+      "cursor": "1c165398-9db6-4e47-abac-66e744d53a04:3",
+      "status": "active",
+      "turnStatus": "inProgress",
+      "latestMessage": "I’ll verify the new resume receipt and Runtime07 Pantry handoff, then put the exact next cases into the existing browser queue. I’ll preserve P00–P08 and work through the remaining checks on the shared environment."
+    },
+    {
+      "threadId": "01a164ba-ec9f-7073-8f2a-66878e99b008",
+      "cursor": "b2c2999d-c8e1-41b2-bef6-984beae8f4b8:7",
+      "status": "active",
+      "turnStatus": "inProgress",
+      "latestMessage": "The later human resume is verified. Runtime07 is admitted, and the webhook window has about 2½ hours left, until 03:50 IST. I’ll put Dewdrop’s intended variant purchase and immediate history checks first, followed by M05 and the retained D02/O05/S01 branches. Shared smoke remains separate from Dewdrop’s results."
+    },
+    {
+      "threadId": "01a164ba-c402-7212-990d-ed4792274b37",
+      "cursor": "6d5551df-9e7f-464d-a161-e268a9a93902:10",
+      "status": "active",
+      "turnStatus": "inProgress",
+      "latestMessage": "The coordinator’s direct human resume is verified, and Runtime07 is admitted for controlled theme execution. Editor holds the browser lease. I’m checking Habitat’s 26 case definitions against the 2.1.0 package and preparing the furniture inputs and purchase order; none of the fresh Habitat cases has evidence yet."
+    },
+    {
+      "threadId": "01a164ba-a97f-7d80-9430-57924218664b",
+      "cursor": "64126e4f-c431-41f2-bb55-d394bba13ccf:11",
+      "status": "active",
+      "turnStatus": "inProgress",
+      "latestMessage": "Runtime07 is ready, and the existing shared smoke order has already consumed one Circuit hub. The controller will need to read current availability before Circuit’s purchase rather than reuse the old stock baseline. I’ll queue a Circuit 2.1.0 Test purchase with the unchanged hub first, while keeping the original COD cases separate. The facet slice also needs the charger, cable and unknown-facts cohort recreated through the merchant UI; warranty remains “not supplied” unless an approved merchant policy provides it."
+    },
+    {
+      "threadId": "01a164ba-f650-7f00-beea-90431a510973",
+      "cursor": "9580e918-3773-4b6d-8ca4-487268c063c5:7",
+      "status": "active",
+      "turnStatus": "inProgress",
+      "latestMessage": "The new human resume is verified, and Runtime07’s functional gate is recorded as passed. The receiver window ends at 03:50 IST, about 2½ hours from now, so I’ll submit a purchase-first Trailmark slice to Editor’s queue. Shared smoke evidence will remain separate from Trailmark’s certificate."
+    },
+    {
+      "threadId": "01a164bb-0749-7073-aef0-295ae3f64541",
+      "cursor": "fda5ce4b-8c58-48b5-b743-3929570b2fd8:3",
+      "status": "active",
+      "turnStatus": "inProgress",
+      "latestMessage": "The newer human instruction supersedes the pause, and Runtime07 is admitted for controlled testing. Its shared Razorpay smoke passed, but Marginalia still has seven original cases open. I’m preparing a purchase-first packet for Editor so its own payment and history evidence can be captured before the receiver expires at 03:50 IST."
+    },
+    {
+      "threadId": "01a164ba-d306-7953-9745-b375f5cf21c9",
+      "cursor": "3a0ac3f9-d649-4977-84c6-69d3cfd1abb5:9",
+      "status": "active",
+      "turnStatus": "inProgress",
+      "latestMessage": "The human resume is verified, and Runtime07 is cleared for controlled theme execution. I’m prioritizing Kindred’s gift-specific Test Mode purchase before the 03:50 IST webhook deadline, while preparing the retained G08 and remaining-case checks. Shared smoke will keep its own run labels and will not count as Kindred acceptance."
+    },
+    {
+      "threadId": "01a164ba-e017-7b90-9053-efc5357459a6",
+      "cursor": "5ee2080b-fef7-475a-81b0-a516070215f1:7",
+      "status": "active",
+      "turnStatus": "inProgress",
+      "latestMessage": "Runtime07 is admitted, with the public webhook window ending at 03:50 IST. I’m preparing a payment-first request for the intended MadeYours notebook on Oat, preserving Moss stock for the retained quantity and overstock cases. That purchase will target MY-C-RZ02. It will not substitute for MY-15, which specifically requires COD, or count as signup verification."
+    },
+    {
+      "threadId": "01a164ba-4751-75e1-8148-605cd263848e",
+      "cursor": "478540bc-d7e8-4197-a46f-ccea0116a4b8:5",
+      "status": "active",
+      "turnStatus": "inProgress",
+      "latestMessage": "The human resume and shared readiness gate are verified. Runtime07 is available, but Playfield’s own purchase and retained cases still need evidence. I’m preparing a purchase-first queue slice before the webhook deadline, followed by the remaining lifecycle cases."
+    }
+  ]
+}

@@ -1,0 +1,215 @@
+{
+  "recordedAt": "2026-10-24T00:32:45.827491+00:00",
+  "runId": "f6074d90e894",
+  "classification": "FINITE_CIRCUIT_LEDGER_BEFORE_TIMEOUT_NO_WHOLE_ACCEPTANCE",
+  "cases": [
+    {
+      "id": "CL-01",
+      "title": "Bind the ONE Editor fixture and exact installed release",
+      "status": "PARTIAL",
+      "actual": "Actual Circuit2.0 editor install and full release cycle, baseline hub guard readback/sourcecandidate. Actual instance/config/catalogmanifest binding was not captured before timeout.",
+      "evidence": [
+        "corrected-circuit-editor-cycle.json",
+        "corrected-circuit-cohort-created-readback.json"
+      ]
+    },
+    {
+      "id": "CL-02",
+      "title": "Create only supplemental records and exact memberships through merchant UI",
+      "status": "PARTIAL",
+      "actual": "All3 exactsupplementalproducts created normally54183, durableGraphite/SilverUUIDs and exactguardedfacts/stock afterSave/fullreload. All4 and intentionalemptycollections NOT_CREATED; writesyielded for HI16, timeout before resume.",
+      "evidence": [
+        "corrected-circuit-current-bindings.json",
+        "corrected-circuit-cohort-created-readback.json"
+      ]
+    },
+    {
+      "id": "CL-03",
+      "title": "Installed baseline hub PDP facts and missing information",
+      "status": "PASS",
+      "actual": "Actual installedbaselinehub PDP showsdistinct65input/45output/60passthrough, exactconnectorroles/counts,Hub1, compatibilityunconfirmed/nooptionpicker/noinventedfacts.",
+      "evidence": [
+        "corrected-circuit-baseline-hub-PDP.ax.txt"
+      ]
+    },
+    {
+      "id": "CL-04",
+      "title": "Available/OOS native charger selection",
+      "status": "PARTIAL",
+      "actual": "ActualchargerunselectedAdddisabled; Silverstock0/unavailable/Adddisabled; Graphiteenabled/currentcommon70/65facts. NativeAdd notperformed whileHabitatpreeditcartheld.",
+      "evidence": [
+        "corrected-circuit-charger-unselected-PDP.ax.txt",
+        "corrected-circuit-charger-Silver-OOS.ax.txt",
+        "corrected-circuit-charger-Graphite-selected.ax.txt"
+      ]
+    },
+    {
+      "id": "CL-05",
+      "title": "Unsupported electronics variant overrides stay unsupported",
+      "status": "PARTIAL",
+      "actual": "Actualvariantfactmenu onlyToys/Food/Furniture/Sports/Books; noElectronicsnamespace. Existingvariantmetadata{}guarded; dedicatednegativecommand was notallocated/executed.",
+      "evidence": [
+        "corrected-circuit-supported-variant-fact-options.ax.txt",
+        "corrected-circuit-current-bindings.json"
+      ]
+    },
+    {
+      "id": "CL-06",
+      "title": "Cable capacity/length vs output, and wholly unknown facts",
+      "status": "PASS",
+      "actual": "ActualcablePDP100Wcapacity/1000mm/480Mb/s andunknownPDP technicalfactsnot supplied/compatibilityunconfirmed. Placeholdernotmerchantmedia.",
+      "evidence": [
+        "corrected-circuit-cable-PDP.ax.txt",
+        "corrected-circuit-unknown-PDP.ax.txt"
+      ]
+    },
+    {
+      "id": "CL-07",
+      "title": "Roles are display facts; connector choices are kind OR",
+      "status": "NOT_RUN",
+      "actual": "No actual execution before sharedfixturetimeout. Source/preflight/historical9cd evidence does not count as installedf607case. ",
+      "evidence": []
+    },
+    {
+      "id": "CL-08",
+      "title": "Scalar power predicates remain distinct and conjunctive",
+      "status": "NOT_RUN",
+      "actual": "No actual execution before sharedfixturetimeout. Source/preflight/historical9cd evidence does not count as installedf607case. ",
+      "evidence": []
+    },
+    {
+      "id": "CL-09",
+      "title": "Canonical units and matching-variant price",
+      "status": "NOT_RUN",
+      "actual": "No actual execution before sharedfixturetimeout. Source/preflight/historical9cd evidence does not count as installedf607case. ",
+      "evidence": []
+    },
+    {
+      "id": "CL-10",
+      "title": "Product-name search remains scoped to selected collection",
+      "status": "NOT_RUN",
+      "actual": "No actual execution before sharedfixturetimeout. Source/preflight/historical9cd evidence does not count as installedf607case. ",
+      "evidence": []
+    },
+    {
+      "id": "CL-11",
+      "title": "Actual sort/page metadata is stable and server-counted",
+      "status": "NOT_RUN",
+      "actual": "No actual execution before sharedfixturetimeout. Source/preflight/historical9cd evidence does not count as installedf607case. ",
+      "evidence": []
+    },
+    {
+      "id": "CL-12",
+      "title": "Independent clear/sort preserves remaining scope and resets page",
+      "status": "NOT_RUN",
+      "actual": "No actual execution before sharedfixturetimeout. Source/preflight/historical9cd evidence does not count as installedf607case. ",
+      "evidence": []
+    },
+    {
+      "id": "CL-13",
+      "title": "Known-empty and foreign collection recovery",
+      "status": "NOT_RUN",
+      "actual": "No actual execution before sharedfixturetimeout. Source/preflight/historical9cd evidence does not count as installedf607case. ",
+      "evidence": []
+    },
+    {
+      "id": "CL-14",
+      "title": "Hub native add and client-authority refusal",
+      "status": "NOT_RUN",
+      "actual": "No actual execution before sharedfixturetimeout. Source/preflight/historical9cd evidence does not count as installedf607case. ",
+      "evidence": []
+    },
+    {
+      "id": "CL-15",
+      "title": "Cart reload retains exact accepted line/snapshot",
+      "status": "NOT_RUN",
+      "actual": "No actual execution before sharedfixturetimeout. Source/preflight/historical9cd evidence does not count as installedf607case. ",
+      "evidence": []
+    },
+    {
+      "id": "CL-16",
+      "title": "Stock rejection is visible and recoverable",
+      "status": "NOT_RUN",
+      "actual": "No actual execution before sharedfixturetimeout. Source/preflight/historical9cd evidence does not count as installedf607case. ",
+      "evidence": []
+    },
+    {
+      "id": "CL-17",
+      "title": "Buyer/site capability boundaries",
+      "status": "NOT_RUN",
+      "actual": "No actual execution before sharedfixturetimeout. Source/preflight/historical9cd evidence does not count as installedf607case. ",
+      "evidence": []
+    },
+    {
+      "id": "CL-18",
+      "title": "Hosted localCOD contact/delivery/quote",
+      "status": "NOT_RUN",
+      "actual": "No actual execution before sharedfixturetimeout. Source/preflight/historical9cd evidence does not count as installedf607case. ",
+      "evidence": []
+    },
+    {
+      "id": "CL-19",
+      "title": "COD intent and strict confirm idempotency",
+      "status": "NOT_RUN",
+      "actual": "No actual execution before sharedfixturetimeout. Source/preflight/historical9cd evidence does not count as installedf607case. ",
+      "evidence": []
+    },
+    {
+      "id": "CL-20",
+      "title": "Confirm stock/ledger effects reconcile once",
+      "status": "NOT_RUN",
+      "actual": "No actual execution before sharedfixturetimeout. Source/preflight/historical9cd evidence does not count as installedf607case. ",
+      "evidence": []
+    },
+    {
+      "id": "CL-21",
+      "title": "Buyer/merchant/Liquid saved history before mutation",
+      "status": "NOT_RUN",
+      "actual": "No actual execution before sharedfixturetimeout. Source/preflight/historical9cd evidence does not count as installedf607case. ",
+      "evidence": []
+    },
+    {
+      "id": "CL-22",
+      "title": "Later product edits do not rewrite immutable order history",
+      "status": "NOT_RUN",
+      "actual": "No actual execution before sharedfixturetimeout. Source/preflight/historical9cd evidence does not count as installedf607case. ",
+      "evidence": []
+    },
+    {
+      "id": "CL-23",
+      "title": "Stale active cart/quote refuses changed facts safely",
+      "status": "NOT_RUN",
+      "actual": "No actual execution before sharedfixturetimeout. Source/preflight/historical9cd evidence does not count as installedf607case. ",
+      "evidence": []
+    },
+    {
+      "id": "CL-24",
+      "title": "Trusted catalogue demo never becomes a mutation environment",
+      "status": "NOT_RUN",
+      "actual": "No actual execution before sharedfixturetimeout. Source/preflight/historical9cd evidence does not count as installedf607case. ",
+      "evidence": []
+    },
+    {
+      "id": "CL-25",
+      "title": "Model-only search copy diagnostic",
+      "status": "NOT_RUN",
+      "actual": "No actual execution before sharedfixturetimeout. Source/preflight/historical9cd evidence does not count as installedf607case. ",
+      "evidence": []
+    }
+  ],
+  "totals": {
+    "PASS": 2,
+    "PARTIAL": 4,
+    "NOT_RUN": 19
+  },
+  "bindings": {
+    "electronics": "8a85a44b-cb98-4b1b-a94d-2c2c395d6c1b",
+    "unknown": "da957f8e-aa00-4b2a-98b6-149398daf941",
+    "cable": "bb6dfffe-7141-4765-a1cc-5e865f51932a",
+    "charger": "40c09bce-03ed-4c1f-8975-49aa8690192e"
+  },
+  "editorPublicationRecoveryComponent": "PASS exactA/B/restore/retainedB/reapply release hashes; not substitute for remaining25-case obligations",
+  "runtimeDisposition": "Root confirms runner timeout and database cleanup; no resource/session/ID reuse. Fresh explicit admission required.",
+  "installedAccepted": false,
+  "next": "New admittedrun requires actualnewbindings/setup throughnormalUI; completeCircuitall4+emptycollections/discovery/cart/COD/histories/stalecase/actualmodelsearch thenDewdropreturn. No Circuitcasecredit fromPantry/Habitatorders."
+}

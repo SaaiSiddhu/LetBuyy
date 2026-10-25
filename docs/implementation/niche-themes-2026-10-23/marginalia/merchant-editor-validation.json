@@ -1,0 +1,23 @@
+{
+  "validatedAt": "2026-10-23T05:54:40.487179+00:00",
+  "export": "MarginaliaFactsEditor",
+  "component": "apps/merchant/web/src/components/products/niche-facts/marginalia-facts-editor.tsx",
+  "propsContract": "../niche-facts-editor-types.ts",
+  "schema": "BooksFactsSchema",
+  "namespace": "metadata.books",
+  "tests": {
+    "passed": 8,
+    "failed": 0,
+    "evidence": "merchant-editor-tests.tap"
+  },
+  "focusedTypecheck": {
+    "passed": true,
+    "command": "node node_modules/typescript/bin/tsc -p docs/implementation/niche-themes-2026-10-23/marginalia/editor-typecheck.json"
+  },
+  "parentIntegration": "merchant-editor.md",
+  "parentFormEdited": false,
+  "newCSSRequired": false,
+  "networkOrStorage": false,
+  "browserAcceptance": false,
+  "canonicalSaveReadbackVersionRecoveryProven": false
+}

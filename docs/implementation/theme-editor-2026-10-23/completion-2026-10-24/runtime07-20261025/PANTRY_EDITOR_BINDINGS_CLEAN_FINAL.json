@@ -1,0 +1,118 @@
+{
+  "recordedAt": "2026-10-25T00:57:14.171833+00:00",
+  "runId": "49ada80bc494",
+  "theme": "Pantry",
+  "slug": "letbuyy-refresh",
+  "phase": "clean-final",
+  "classification": "BOUNDED_READONLY_ACTIVE_EDITOR_INSTANCE_DRAFT_RELEASE_BINDING",
+  "ownership": {
+    "container": "letbuyy-exec-54685-mvmssydy-fe81e9",
+    "database": "letbuyy_exec_theme_completion_razorpay_browser_manual_ts",
+    "labelsAndRunMarkerVerified": true,
+    "originalOwnerPid": 54685
+  },
+  "binding": {
+    "draft": {
+      "id": "3d10deb9-d651-440f-96a1-389e14b93bb0",
+      "status": "active",
+      "version": 20,
+      "updatedAt": "2026-10-25T00:43:38.856042+00:00",
+      "workingManifestSha256": "9631214c59ffa627f1e3369f176db39f84c2db869d35a90a4a8ffb2a0ed702ae",
+      "ownedTemporaryAndHostNodes": [
+        {
+          "path": "/sections/template/5",
+          "idField": "pantry-information",
+          "mapKey": null,
+          "type": "trust-badges",
+          "order": 50,
+          "visibleRaw": true,
+          "disabledRaw": null,
+          "label": null,
+          "title": null
+        },
+        {
+          "path": "/templates/index/sections/pantry-information",
+          "idField": null,
+          "mapKey": "pantry-information",
+          "type": "trust-badges",
+          "order": null,
+          "visibleRaw": true,
+          "disabledRaw": null,
+          "label": null,
+          "title": null
+        },
+        {
+          "path": "/liquidBundle/templates/index/sections/pantry-information",
+          "idField": null,
+          "mapKey": "pantry-information",
+          "type": "trust-badges",
+          "order": null,
+          "visibleRaw": null,
+          "disabledRaw": false,
+          "label": null,
+          "title": null
+        }
+      ]
+    },
+    "release": {
+      "id": "ecf29a70-c44f-45fa-a9b2-b2e44a3d5b87",
+      "createdAt": "2026-10-25T00:43:38.717264+00:00",
+      "snapshotSha256": "9631214c59ffa627f1e3369f176db39f84c2db869d35a90a4a8ffb2a0ed702ae",
+      "sourceDraftVersion": 18,
+      "ownedTemporaryAndHostNodes": [
+        {
+          "path": "/sections/template/5",
+          "idField": "pantry-information",
+          "mapKey": null,
+          "type": "trust-badges",
+          "order": 50,
+          "visibleRaw": true,
+          "disabledRaw": null,
+          "label": null,
+          "title": null
+        },
+        {
+          "path": "/templates/index/sections/pantry-information",
+          "idField": null,
+          "mapKey": "pantry-information",
+          "type": "trust-badges",
+          "order": null,
+          "visibleRaw": true,
+          "disabledRaw": null,
+          "label": null,
+          "title": null
+        },
+        {
+          "path": "/liquidBundle/templates/index/sections/pantry-information",
+          "idField": null,
+          "mapKey": "pantry-information",
+          "type": "trust-badges",
+          "order": null,
+          "visibleRaw": null,
+          "disabledRaw": false,
+          "label": null,
+          "title": null
+        }
+      ]
+    },
+    "instance": {
+      "id": "221891d7-e75e-489a-8afa-ff381e71d6fe",
+      "slug": "letbuyy-refresh",
+      "siteId": "02049de4-41c3-4b10-b5b2-a60a6b5e82bf",
+      "packageId": "13d193ec-269a-41b8-9e88-8b54ade06a64",
+      "updatedAt": "2026-10-25T00:45:32.987005+00:00",
+      "currentDraftId": "3d10deb9-d651-440f-96a1-389e14b93bb0",
+      "instanceStatus": "inactive",
+      "activeReleaseId": "ecf29a70-c44f-45fa-a9b2-b2e44a3d5b87",
+      "packageVersionId": "1889bac2-641d-44de-b94d-bfe49c306739"
+    },
+    "siteCurrentTheme": {
+      "slug": "letbuyy-bloom",
+      "releaseId": "1a53db11-eda2-45db-8ba7-077fac56cdfa"
+    }
+  },
+  "nodeScope": "Only actual trust-badges hosts and uniquely labelled owned temporary nodes; schema declarations excluded. IDs and map keys are raw stored values, not inferred UUIDs.",
+  "browserActions": 0,
+  "businessMutations": 0,
+  "fullThemeCertified": false
+}

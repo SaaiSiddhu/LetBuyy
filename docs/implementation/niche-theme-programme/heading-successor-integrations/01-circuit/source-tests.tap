@@ -1,0 +1,100 @@
+TAP version 13
+# Subtest: Circuit successor selection is explicit; package identity is stable and version advances
+ok 1 - Circuit successor selection is explicit; package identity is stable and version advances
+  ---
+  duration_ms: 35.839334
+  type: 'test'
+  ...
+# Subtest: all ten default 2.0.0 and legacy catalog outputs remain exactly equal to current Main
+ok 2 - all ten default 2.0.0 and legacy catalog outputs remain exactly equal to current Main
+  ---
+  duration_ms: 177.070416
+  type: 'test'
+  ...
+# Subtest: Circuit explicit option does not change another theme or opt a legacy package into v2
+ok 3 - Circuit explicit option does not change another theme or opt a legacy package into v2
+  ---
+  duration_ms: 56.760917
+  type: 'test'
+  ...
+# Subtest: actual successor schema/manifest and JSON document roundtrip preserve explicit heading edits
+ok 4 - actual successor schema/manifest and JSON document roundtrip preserve explicit heading edits
+  ---
+  duration_ms: 12.866125
+  type: 'test'
+  ...
+# Subtest: collection: editing the declared title changes actual Liquid heading output
+ok 5 - collection: editing the declared title changes actual Liquid heading output
+  ---
+  duration_ms: 627.36025
+  type: 'test'
+  ...
+# Subtest: collection: clearing removes only the optional heading and restores exact default HTML/styles
+ok 6 - collection: clearing removes only the optional heading and restores exact default HTML/styles
+  ---
+  duration_ms: 89.430542
+  type: 'test'
+  ...
+# Subtest: collection: merchant heading markup is escaped as text
+ok 7 - collection: merchant heading markup is escaped as text
+  ---
+  duration_ms: 32.854625
+  type: 'test'
+  ...
+# Subtest: search: editing the declared title changes actual Liquid heading output
+ok 8 - search: editing the declared title changes actual Liquid heading output
+  ---
+  duration_ms: 57.688833
+  type: 'test'
+  ...
+# Subtest: search: clearing removes only the optional heading and restores exact default HTML/styles
+ok 9 - search: clearing removes only the optional heading and restores exact default HTML/styles
+  ---
+  duration_ms: 78.415459
+  type: 'test'
+  ...
+# Subtest: search: merchant heading markup is escaped as text
+ok 10 - search: merchant heading markup is escaped as text
+  ---
+  duration_ms: 24.952209
+  type: 'test'
+  ...
+# Subtest: order: declared heading edits render with the authoritative order number retained
+ok 11 - order: declared heading edits render with the authoritative order number retained
+  ---
+  duration_ms: 48.208833
+  type: 'test'
+  ...
+# Subtest: order: clear falls back to Order; default HTML/styles and immutable saved facts stay unchanged
+ok 12 - order: clear falls back to Order; default HTML/styles and immutable saved facts stay unchanged
+  ---
+  duration_ms: 63.885708
+  type: 'test'
+  ...
+# Subtest: order: merchant heading markup is escaped without changing the order number
+ok 13 - order: merchant heading markup is escaped without changing the order number
+  ---
+  duration_ms: 21.383208
+  type: 'test'
+  ...
+# Subtest: only package version and the two Circuit section outputs differ; electronics facts and styles unchanged
+ok 14 - only package version and the two Circuit section outputs differ; electronics facts and styles unchanged
+  ---
+  duration_ms: 12.224375
+  type: 'test'
+  ...
+# Subtest: new successor factory is idempotent and does not mutate its frozen input
+ok 15 - new successor factory is idempotent and does not mutate its frozen input
+  ---
+  duration_ms: 22.00975
+  type: 'test'
+  ...
+1..15
+# tests 15
+# suites 0
+# pass 15
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1606.466917

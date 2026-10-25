@@ -1,0 +1,74 @@
+{
+  "id": "section-newsletter-signup",
+  "status": "PASS_SOURCE_DATA_CONTRACT",
+  "observed": {
+    "type": "newsletter-signup",
+    "group": "template",
+    "firstId": "section-4bda5882-1ff1-457c-bdd2-0a28735cda3d",
+    "finalId": "section-a8178cfd-79c2-4f67-9a4f-e4cf7cb06aa8",
+    "phases": [
+      {
+        "phase": "edited",
+        "data": {
+          "type": "newsletter-signup",
+          "settings": {
+            "title": "Source fixture title",
+            "subtitle": "Source fixture subtitle",
+            "buttonLabel": "Source fixture buttonLabel"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      {
+        "phase": "hidden-reordered",
+        "data": {
+          "type": "newsletter-signup",
+          "settings": {
+            "title": "Source fixture title",
+            "subtitle": "Source fixture subtitle",
+            "buttonLabel": "Source fixture buttonLabel"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": true
+        }
+      },
+      {
+        "phase": "shown",
+        "data": {
+          "type": "newsletter-signup",
+          "settings": {
+            "title": "Source fixture title",
+            "subtitle": "Source fixture subtitle",
+            "buttonLabel": "Source fixture buttonLabel"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      {
+        "phase": "removed",
+        "pinnedGroupSectionRetained": false
+      },
+      {
+        "phase": "readded",
+        "data": {
+          "type": "newsletter-signup",
+          "settings": {
+            "title": "Source fixture title",
+            "subtitle": "Source fixture subtitle",
+            "buttonLabel": "Source fixture buttonLabel"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      }
+    ],
+    "actualUICallbacksExecuted": false,
+    "resourceAuthorityProved": false
+  }
+}

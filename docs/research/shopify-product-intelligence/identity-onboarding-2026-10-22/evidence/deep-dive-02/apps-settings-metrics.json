@@ -1,0 +1,165 @@
+{
+  "viewport": {
+    "dpr": 1,
+    "height": 1000,
+    "width": 1440
+  },
+  "elements": [
+    {
+      "className": "_Main_bbs9z_392 _NoScrollbarGutterLine_bbs9z_507",
+      "label": "Shopify App Store\n\nAdd apps to your store\n\nApps and sales channels add features and tools ",
+      "rect": {
+        "height": 992,
+        "width": 1136,
+        "x": 300,
+        "y": 4
+      },
+      "styles": {
+        "backgroundColor": "rgb(255, 255, 255)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(16, 16, 16)",
+        "borderRadius": "16px",
+        "boxShadow": "none",
+        "color": "rgb(16, 16, 16)",
+        "fontSize": "13px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "gridTemplateColumns": "none",
+        "lineHeight": "20px",
+        "margin": "4px 4px 4px 300px",
+        "padding": "0px"
+      },
+      "tag": "MAIN"
+    },
+    {
+      "className": "Polaris-BlockStack",
+      "label": "Add apps to your store\n\nApps and sales channels add features and tools that take your busi",
+      "rect": {
+        "height": 334,
+        "width": 784,
+        "x": 468,
+        "y": 129
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(16, 16, 16)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(16, 16, 16)",
+        "fontSize": "13px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "gridTemplateColumns": "none",
+        "lineHeight": "20px",
+        "margin": "0px",
+        "padding": "0px"
+      },
+      "tag": "DIV"
+    },
+    {
+      "className": "Polaris-EmptyState__Image Polaris-EmptyState--loaded",
+      "label": "",
+      "rect": {
+        "height": 226,
+        "width": 226,
+        "x": 747,
+        "y": 129
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(16, 16, 16)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(16, 16, 16)",
+        "fontSize": "13px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "gridTemplateColumns": "none",
+        "lineHeight": "20px",
+        "margin": "0px",
+        "padding": "0px"
+      },
+      "tag": "IMG"
+    },
+    {
+      "className": "Polaris-BlockStack",
+      "label": "Add apps to your store\n\nApps and sales channels add features and tools that take your busi",
+      "rect": {
+        "height": 108,
+        "width": 784,
+        "x": 468,
+        "y": 355
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(16, 16, 16)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(16, 16, 16)",
+        "fontSize": "13px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "gridTemplateColumns": "none",
+        "lineHeight": "20px",
+        "margin": "0px",
+        "padding": "0px"
+      },
+      "tag": "DIV"
+    },
+    {
+      "className": "Polaris-InlineStack",
+      "label": "Explore apps",
+      "rect": {
+        "height": 28,
+        "width": 98.3125,
+        "x": 810.84375,
+        "y": 435
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(16, 16, 16)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(16, 16, 16)",
+        "fontSize": "13px",
+        "fontWeight": "400",
+        "gap": "8px",
+        "gridTemplateColumns": "none",
+        "lineHeight": "20px",
+        "margin": "0px",
+        "padding": "0px"
+      },
+      "tag": "DIV"
+    },
+    {
+      "className": "Polaris-Button Polaris-Button--pressable Polaris-Button--variantSecondary Polaris-Button--sizeMedium Polaris-Button--textAlignCenter Polaris-Button--adminNext Polaris-Button--adminNextLight",
+      "label": "Explore apps",
+      "rect": {
+        "height": 28,
+        "width": 98.3125,
+        "x": 810.84375,
+        "y": 435
+      },
+      "styles": {
+        "backgroundColor": "rgb(235, 235, 235)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(16, 16, 16)",
+        "borderRadius": "9999px",
+        "boxShadow": "none",
+        "color": "rgb(16, 16, 16)",
+        "fontSize": "13px",
+        "fontWeight": "400",
+        "gap": "2px",
+        "gridTemplateColumns": "none",
+        "lineHeight": "20px",
+        "margin": "0px",
+        "padding": "6px 12px"
+      },
+      "tag": "A"
+    }
+  ]
+}

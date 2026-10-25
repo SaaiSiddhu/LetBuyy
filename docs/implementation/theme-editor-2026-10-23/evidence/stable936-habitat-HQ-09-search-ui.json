@@ -1,0 +1,97 @@
+{
+  "runId": "936e5f577646",
+  "id": "HQ-09",
+  "route": "search",
+  "evidenceClass": "Observed actual browser URL/visible controls/DOM; canonical matching semantics in separate native receipt",
+  "actual": {
+    "pathname": "/search",
+    "productLinks": [
+      "http://syn-threadline-ui-6815276b.localhost:50494/product/29c731cc-8b16-4e08-8f50-11e219310844"
+    ],
+    "query": [
+      [
+        "page",
+        "1"
+      ],
+      [
+        "limit",
+        "20"
+      ],
+      [
+        "sort",
+        "display_order"
+      ],
+      [
+        "search",
+        "Habitat width-only shelf"
+      ],
+      [
+        "category",
+        "Habitat dimensional controls"
+      ],
+      [
+        "country_of_origin",
+        "India"
+      ]
+    ],
+    "selects": [
+      {
+        "choices": [
+          {
+            "label": "Featured",
+            "value": "display_order"
+          },
+          {
+            "label": "Price: low to high",
+            "value": "price-asc"
+          },
+          {
+            "label": "Price: high to low",
+            "value": "price-desc"
+          },
+          {
+            "label": "Newest",
+            "value": "newest"
+          },
+          {
+            "label": "Name",
+            "value": "name"
+          }
+        ],
+        "name": "sort",
+        "value": "display_order"
+      }
+    ],
+    "text": "Habitat 936 B — saved recovery draft.\nTHREADLINE\nSearch\nLog in\nCart\n(\n2\n)\nCountry of origin\nApply filter\nClear origin filter\nSearch products\nSearch\n\nResults for \"Habitat width-only shelf\"\n\nSearch products\nSearch furniture\nMaximum assembled width (cm)\nSort\nFeatured\nPrice: low to high\nPrice: high to low\nNewest\nName\nApply\nClear filters\nCategory: Habitat dimensional controls\n×\nCountry of origin: India\n×\n\n1 pieces\n\nProduct photograph not supplied\nHabitat width-only shelf\nINR 1,400.00\n\n80 W cm\n\nView dimensions & options\n→\nPage 1\nThreadline\n\nHabitat 936 B footer saved\n\nCONTACT\nContact us\n\n© Threadline. All rights reserved.\n\nPowered by LetBuyy",
+    "viewport": {
+      "height": 720,
+      "width": 1280
+    },
+    "visibleInputs": [
+      {
+        "label": null,
+        "name": "country_of_origin",
+        "type": "text",
+        "value": "India"
+      },
+      {
+        "label": "Search products",
+        "name": "search",
+        "type": "search",
+        "value": "Habitat width-only shelf"
+      },
+      {
+        "label": null,
+        "name": "search",
+        "type": "search",
+        "value": "Habitat width-only shelf"
+      },
+      {
+        "label": null,
+        "name": "max_width_cm",
+        "type": "number",
+        "value": ""
+      }
+    ]
+  }
+}

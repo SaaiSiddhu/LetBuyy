@@ -1,0 +1,19 @@
+--- a/services/api-gateway/src/__tests__/owned-db/threadline-browser-fixture.ts
++++ b/services/api-gateway/src/__tests__/owned-db/threadline-browser-fixture.ts
+@@ -121,6 +121,16 @@
+   const owner = randomUUID(), password = `Synthetic-${randomUUID()}!`, email = `syn-threadline-${owner}@example.invalid`;
+   const quote = (value: unknown) => JSON.stringify(value).replaceAll("'", "''");
+   owned.psql(`INSERT INTO users_custom(id,email,email_verified,full_name,password_hash) VALUES('${owner}','${email}',true,'Synthetic Threadline Owner','${await hashMerchantPassword(password)}'); UPDATE sites SET custom_user_id='${owner}',name='Threadline',store_name='Threadline',theme_id='letbuyy-core',published=false,status='draft' WHERE id='${site.siteId}';`);
++  // Explicit Editor-only test entitlement; no provider payment or paid-upgrade claim.
++  if (profile === 'editor') {
++    assert.match(email, /^syn-threadline-[0-9a-f-]+@example\.invalid$/);
++    assert.match(site.subdomain, /^syn-/);
++    owned.psql(`DO $editor_billing$ BEGIN
++      IF NOT EXISTS (SELECT 1 FROM sites s JOIN users_custom u ON u.id=s.custom_user_id WHERE s.id='${site.siteId}' AND s.subdomain='${site.subdomain}' AND u.id='${owner}' AND u.email='${email}' AND u.email LIKE '%@example.invalid') THEN RAISE EXCEPTION 'EDITOR_SYNTHETIC_BILLING_SCOPE_REFUSED'; END IF;
++      IF EXISTS (SELECT 1 FROM subscriptions WHERE store_id='${site.siteId}' AND status IN ('active','past_due','failed')) THEN RAISE EXCEPTION 'EDITOR_ELIGIBLE_SUBSCRIPTION_EXISTS'; END IF;
++      INSERT INTO subscriptions(user_id,store_id,plan,status) VALUES('${owner}','${site.siteId}','enterprise','active');
++    END $editor_billing$;`);
++  }
+   const names = ['The Everyday Linen Shirt', 'Tailored Straight Trouser', 'The Everyday Cotton Dress'];
+   const photos = ['linen-shirt','trousers','cotton-dress'], colors = ['Oat','Ink','Rust'], prices = [2490,3290,3990];
+   const products: string[] = [], collections: string[] = [];

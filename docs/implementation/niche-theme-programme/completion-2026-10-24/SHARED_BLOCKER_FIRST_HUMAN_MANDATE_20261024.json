@@ -1,0 +1,20 @@
+{
+  "recordedAt": "2026-10-24T14:04:24.048299+00:00",
+  "targetBy": "2026-10-25T14:04:24.048299+00:00",
+  "authority": "Latest direct human instruction in this requesting chat",
+  "instruction": "Fix all shared blockers one by one before resuming the ten theme chats and shared owners; deliver one stable isolated test environment, complete every theme and Razorpay Test Mode verification, issue only evidence-backed production release readiness acceptance. Preserve existing canonical systems/UI/apps/drafts/data.",
+  "executionOwner": "01a16ce5-e5ba-7191-ab2c-a1b76947d2b5",
+  "otherThemeChats": "REMAIN_PAUSED_UNTIL_SHARED_READINESS",
+  "sourceLane": "One writer in this chat during shared repair; one owned native/build job at a time",
+  "scope": [
+    "catalogue/publication qualification",
+    "isolated current runtime",
+    "canonical customization integration",
+    "configured-cart qualification/integration",
+    "protected Test provider bindings and owned HTTPS proposal/setup",
+    "actual all-ten acceptance after shared readiness"
+  ],
+  "productionTrafficActivation": "Not performed by this mandate; prepare concrete release readiness first",
+  "preservation": "No user app restart, restored DB mutation, old fixture adoption, broad cleanup/reap, reset/revert or secret output",
+  "allTenCertified": false
+}

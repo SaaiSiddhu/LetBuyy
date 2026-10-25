@@ -1,0 +1,108 @@
+{
+  "recordedAt": "2026-10-24T08:43:17.922280+00:00",
+  "classification": "OFFLINE_PREPARATION_INTEGRITY_ONLY",
+  "jsonDocumentsParsed": [
+    "ACKNOWLEDGEMENT.json",
+    "CAPABILITY_INVENTORY.json",
+    "SOURCE_MANIFEST.json",
+    "COVERAGE.json",
+    "CERTIFICATION.json"
+  ],
+  "originalIdsMapped": 16,
+  "originalOutcomesPreserved": {
+    "PASS": 9,
+    "NOT_RUN": 7
+  },
+  "additiveCompositeCases": 286,
+  "allNewRowsNotRun": true,
+  "allCapabilityCaseReferencesResolve": true,
+  "allCurrentSourcePathsExist": true,
+  "candidateOrSourceTestsRun": false,
+  "browserDatabaseProviderActions": 0,
+  "fullRepositoryBuildGovernanceSecurityProviderAcceptance": "NOT_RUN; no merge/shared-source/candidate admission claimed",
+  "certification": false,
+  "controlTraceAddendum": {
+    "recordedAt": "2026-10-24T08:53:11.570449+00:00",
+    "classification": "DOCUMENT_AND_STATIC_TEXT_INTEGRITY_ONLY",
+    "jsonDocumentsParsed": [
+      "ACKNOWLEDGEMENT.json",
+      "CAPABILITY_INVENTORY.json",
+      "CERTIFICATION.json",
+      "COVERAGE.json",
+      "SOURCE_CONTROL_TRACE.json",
+      "SOURCE_MANIFEST.json",
+      "VALIDATION.json"
+    ],
+    "sourceWitnessFragmentsChecked": 6,
+    "newSourceFindings": 3,
+    "newlyInspectedBoundaryFiles": 3,
+    "compositeCaseIdsUnique": true,
+    "all286NewCasesNotRun": true,
+    "appActivationExcludedRows": 2,
+    "requiredAppGuardSubchecks": 10,
+    "firstPartyRequirementsRemoved": 0,
+    "installedCaseStatusChanges": 0,
+    "applicationModulesOrTestsExecuted": false,
+    "browserDatabaseProviderActions": false,
+    "sharedSourceChanged": false,
+    "fullCertification": false
+  },
+  "resumptionAddendum": {
+    "recordedAt": "2026-10-24T11:34:15.882325+00:00",
+    "classification": "OWN_DOCUMENT_AND_CHANGED_DEPENDENCY_RECONCILIATION_ONLY",
+    "jsonDocumentsParsed": [
+      "ACKNOWLEDGEMENT.json",
+      "BADGE_CONTEXT_HANDOFF.json",
+      "BLOCKED_AUDIT.json",
+      "CAPABILITY_INVENTORY.json",
+      "CERTIFICATION.json",
+      "COVERAGE.json",
+      "DEPENDENCY_WAIT.json",
+      "HARNESS_SLICE_REQUEST.json",
+      "RESUMPTION_ACK_20261024.json",
+      "SOURCE_CONTROL_TRACE.json",
+      "SOURCE_MANIFEST.json",
+      "VALIDATION.json"
+    ],
+    "humanReplyVerified": true,
+    "original16LedgerCountsRetained": {
+      "PASS": 9,
+      "FAIL": 0,
+      "NOT_RUN": 7
+    },
+    "expandedRowsNotRun": 286,
+    "badgeContextsMapped": 6,
+    "sharedHarnessUsed": "REQUESTED_NOT_RUN",
+    "appOrNativeOrBrowserDatabaseProviderTests": 0,
+    "mainSourceWrites": 0,
+    "fullThemeCertified": false
+  },
+  "reservedHarnessCaseMap": {
+    "recordedAt": "2026-10-24T11:42:20.933406+00:00",
+    "classification": "STATIC_MAPPING_INTEGRITY_NOT_HARNESS_EXECUTION",
+    "expandedRowsMapped": 286,
+    "originalRowsMapped": 16,
+    "expectedSourceChecks": 46,
+    "predictedFieldKeys": 138,
+    "candidateFieldOverridesAllDeclared": true,
+    "harnessRuns": 0,
+    "adaptersCopied": 0,
+    "sourceRuntimeBrowserDatabaseBuildProviderActions": 0,
+    "wholeCaseStatusChanges": 0
+  },
+  "sourceRun01": {
+    "recordedAt": "2026-10-24T12:06:59.877654+00:00",
+    "classification": "ACTUAL_SOURCE_GATE_AND_OWN_OUTPUT_RECONCILIATION_ONLY",
+    "runnerInvocations": 1,
+    "exitCode": 0,
+    "sourceChecksPass": 46,
+    "sourceChecksFail": 0,
+    "actualEditedFieldKeys": 138,
+    "predictedAndActualCaseFieldSetsMatch": true,
+    "pinsBeforeAfterExact": 102,
+    "sealedArtifacts": 100,
+    "wholeInstalledOrExpandedStatusChanges": 0,
+    "browserDatabaseProviderActions": 0,
+    "independentReview": "PENDING_ROOT"
+  }
+}

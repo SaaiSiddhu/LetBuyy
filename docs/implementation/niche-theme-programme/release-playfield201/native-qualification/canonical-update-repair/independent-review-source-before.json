@@ -1,0 +1,45 @@
+{
+  "status": "FIRST_REPAIR_SOURCE_RELEASE_PRESERVED_BEFORE_CODE_R3_AND_DRIVER_DATE_COMPLETION",
+  "files": [
+    {
+      "path": "docs/implementation/niche-theme-programme/release-playfield201/native-qualification/canonical-update-repair/source-release.json",
+      "sha256": "38554d52836134887794ca46b926e0e427914a0e79f89c9b25de78c0d13bfd2c",
+      "snapshot": "docs/implementation/niche-theme-programme/release-playfield201/native-qualification/canonical-update-repair/source-release.json.before-independent-review.snapshot"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/release-playfield201/native-qualification/canonical-update-repair/source-after.json",
+      "sha256": "ad42ae621c0cb59eb8a5047337bc6914ecd31a87b0b564af7b04b689097f717f",
+      "snapshot": "docs/implementation/niche-theme-programme/release-playfield201/native-qualification/canonical-update-repair/source-after.json.before-independent-review.snapshot"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/release-playfield201/native-qualification/canonical-update-repair/canonical-update-repair.diff",
+      "sha256": "6bedf5ddac0be8a6794cf88408a652f12690911d21f1214391f5769f28f2e6a5",
+      "snapshot": "docs/implementation/niche-theme-programme/release-playfield201/native-qualification/canonical-update-repair/canonical-update-repair.diff.before-independent-review.snapshot"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/release-playfield201/native-qualification/canonical-update-repair/REPAIR-RELEASE.md",
+      "sha256": "5cb34fbc29fa600d05f7570a285848f6be8992ade5885f7dd20f7b1262342bd5",
+      "snapshot": "docs/implementation/niche-theme-programme/release-playfield201/native-qualification/canonical-update-repair/REPAIR-RELEASE.md.before-independent-review.snapshot"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/release-playfield201/native-qualification/canonical-update-repair/lint-final-comparison.json",
+      "sha256": "fa971ac293623d702b1a55403d87bd446165398ee2092fd02761b2ce178739ab",
+      "snapshot": "docs/implementation/niche-theme-programme/release-playfield201/native-qualification/canonical-update-repair/lint-final-comparison.json.before-independent-review.snapshot"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/release-playfield201/native-qualification/source-input-closure.json",
+      "sha256": "104aec2bf16fe1688e746bbdb749394235b94e4dfae7ee867aed97b0aa1b61d0",
+      "snapshot": "docs/implementation/niche-theme-programme/release-playfield201/native-qualification/canonical-update-repair/source-input-closure.json.before-independent-review.snapshot"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/release-playfield201/native-qualification/existing-update-source-probe.json",
+      "sha256": "079add7ba492b0f98ec5495172b7fd6f1111a99aaa0e4c97acb04866bb411013",
+      "snapshot": "docs/implementation/niche-theme-programme/release-playfield201/native-qualification/canonical-update-repair/existing-update-source-probe.json.before-independent-review.snapshot"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/release-playfield201/native-qualification/admission.template.json",
+      "sha256": "af005a915b3af1c18658285e9af1ec3aa83b8083f40c3a6708b803d021094148",
+      "snapshot": "docs/implementation/niche-theme-programme/release-playfield201/native-qualification/canonical-update-repair/admission.template.json.before-independent-review.snapshot"
+    }
+  ]
+}

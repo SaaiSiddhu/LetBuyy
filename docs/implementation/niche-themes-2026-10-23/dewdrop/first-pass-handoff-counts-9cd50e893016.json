@@ -1,0 +1,11 @@
+{
+  "recordedAt": "2026-10-23T15:45:50.192065+00:00",
+  "runId": "9cd50e893016",
+  "classification": "READ_ONLY_SHARED_FIXTURE_COUNTS_AFTER_DEWDROP_FIRST_PASS_NOT_CURRENT_THEME_ASSERTION",
+  "status": 200,
+  "siteOrderCount": 0,
+  "installedInstanceCount": 1,
+  "confirmationCaptureFailures": 0,
+  "confirmationRecords": [],
+  "limits": "Editor has advanced the finite theme queue; current release metadata is deliberately omitted. This is not another-theme acceptance or a Dewdrop order claim."
+}

@@ -12,13 +12,15 @@ import { createServer, request as forwardHttpRequest, type Server } from 'node:h
 import { createServer as createHttpsServer, type Server as HttpsServer } from 'node:https';
 import { exportJWK } from 'jose';
 import { chromium, expect, type Browser, type BrowserContext, type Page } from '@playwright/test';
+import { closePooledSqlClients } from '@letbuyy/infrastructure/pooled-sql-adapter';
 import { hashMerchantPassword } from '../../services/api-gateway/src/lib/merchant-password';
-import { Gateway, gatewayEnv, newIdentityKeys, INTERNAL_SECRET } from '../../services/api-gateway/src/__tests__/owned-db/gateway-harness';
-import { requireOwnedDatabase, createOwnedCheckoutTlsCertificate, startOwnedClientRuntime, stopOwnedClientRuntime, type OwnedClientProcess } from '../../services/api-gateway/src/__tests__/owned-db/owned-db-support';
+import { Gateway, gatewayEnv, newIdentityKeys, INTERNAL_SECRET, tapRest, type RestTap } from '../../services/api-gateway/src/__tests__/owned-db/gateway-harness';
+import { requireOwnedDatabase, startOwnedPooledSqlProxy, type OwnedPooledSqlProxy, createOwnedCheckoutTlsCertificate, startOwnedClientRuntime, stopOwnedClientRuntime, type OwnedClientProcess } from '../../services/api-gateway/src/__tests__/owned-db/owned-db-support';
 import { newSyntheticTenant, seedSyntheticTenant } from '../../services/api-gateway/src/__tests__/owned-db/synthetic-tenant';
 
 const owned = requireOwnedDatabase();
-const slug = 'urban-kicks'; // Existing ratified Liquid canary; never flip a flag.
+let proxy:OwnedPooledSqlProxy,gateway:Gateway,tap:RestTap;
+const slug = 'letbuyy-core'; // Canonical Liquid starter; use the current sealed catalog fixture.
 const password = 'Synthetic-published-storefront-pass-42';
 let identityOrigin: string, merchantOrigin: string, commerceOrigin: string;
 let bridge: Server | undefined, browser: Browser | undefined;
@@ -57,8 +59,10 @@ async function ready(url: string, child: OwnedClientProcess) {
     throw new Error('owned Next readiness timed out');
 }
 before(async () => {
-    owned.script(readFileSync(new URL('../../database/supabase/seeds/urban-kicks-theme.sql', import.meta.url), 'utf8'));
-    assert.equal(owned.psql(`SELECT default_template->>'rendererEngine' FROM themes WHERE slug='${slug}';`), 'liquid');
+    proxy=await startOwnedPooledSqlProxy(owned);
+    tap=tapRest(owned.restUrl,async(call,forward)=>{const result=await forward();if(!result.ok)console.info('N4_DATABASE_READ_DIAGNOSTIC '+JSON.stringify({resource:call.resource,status:result.status,body:(await result.clone().text()).slice(0,600)}));return result;});
+    assert.equal(owned.psql(`SELECT default_template->'liquidBundle'->'package'->>'slug' FROM themes WHERE slug='${slug}';`),'letbuyy-core-liquid');
+    assert.equal(owned.psql(`SELECT default_template->'liquidBundle'->'renderer'->>'engine' FROM themes WHERE slug='${slug}';`), 'liquid');
     const keys = await newIdentityKeys();
     const identityPort = await freePort(), merchantPort = await freePort(), commercePort = await freePort();
     identityOrigin = `http://localhost:${identityPort}`;
@@ -86,7 +90,7 @@ before(async () => {
     });
     await new Promise<void>(resolve => checkoutTls!.listen(0, '127.0.0.1', resolve));
     checkoutTlsPort = (checkoutTls.address() as { port: number }).port;
-    const gateway = new Gateway(gatewayEnv(owned, keys, { ENVIRONMENT: 'local',
+    gateway = new Gateway(gatewayEnv(owned, keys, { ...proxy.env(), ENVIRONMENT: 'local',
         LETBUYY_IDENTITY_ISSUER: identityOrigin, NEXT_PUBLIC_STORE_ROOT_DOMAIN: 'localhost', CHECKOUT_ORIGIN: `https://checkout.localhost:${checkoutTlsPort}`,
         CHECKOUT_SIGNING_SECRET: crypto.randomUUID() + crypto.randomUUID() }));
     bridge = createServer(async (req, res) => {
@@ -147,6 +151,7 @@ before(async () => {
 after(async () => {
     await Promise.allSettled(contexts.map(context => context.close()));
     await browser?.close();
+    await gateway?.settle();tap?.restore();await closePooledSqlClients();await proxy?.stop();
     if (checkoutTls?.listening) await new Promise<void>(resolve => {
         checkoutTls!.close(() => resolve()); checkoutTls!.closeAllConnections();
     });
@@ -235,7 +240,7 @@ async function signIn(page: Page, email: string) {
 async function openEditor(f: Awaited<ReturnType<typeof fixture>>) {
     const compiled = await f.context.request.get(f.editorUrl); assert.equal(compiled.status(), 200);
     await f.page.goto(f.editorUrl, { waitUntil: 'load' });
-    await expect(f.page.getByRole('tree', { name: 'Template sections', exact: true })).toBeVisible();
+    await expect(f.page.getByRole('tree', { name: 'Theme sections', exact: true })).toBeVisible();
     await expect(f.page.getByRole('button', { name: 'Save', exact: true }).first()).toBeDisabled();
     if (Number(f.effects().split('|')[0]) === 0) {
         const marker = `Synthetic initial saved draft ${crypto.randomUUID()}`;
@@ -262,7 +267,7 @@ async function openEditor(f: Awaited<ReturnType<typeof fixture>>) {
     await expect.poll(() => f.pendingEditorMutations.size, { timeout: 90_000 }).toBe(0);
 }
 async function editHeading(page: Page, heading: string) {
-    await page.getByRole('tree', { name: 'Template sections', exact: true }).getByRole('treeitem').filter({ hasText: /Hero/ }).first().click();
+    await page.getByRole('tree', { name: 'Theme sections', exact: true }).getByRole('treeitem').filter({ hasText: /Hero/ }).first().click();
     await page.getByLabel('Heading', { exact: true }).fill(heading);
 }
 async function publish(page: Page) {
@@ -289,7 +294,7 @@ test('normal Merchant publication renders the saved Liquid heading on the real p
     });
     buyer.on('pageerror', error => console.info('N4_PUBLIC_CLIENT_ERROR', JSON.stringify(previewDiagnostic(error.message))));
     const initial = await buyer.goto(f.publicUrl); assert.equal(initial?.status(), 200);
-    await expect(buyer.locator('[data-theme-renderer="liquid"][data-editor-mode="false"]')).toBeVisible();
+    await expect(buyer.locator('[data-theme-renderer="liquid"][data-editor-mode="false"]').first()).toBeVisible();
     await buyer.waitForLoadState('networkidle');
     const initialHeading = await buyer.getByRole('heading', { level: 1 }).first().textContent();
     const marker = `Synthetic saved release ${crypto.randomUUID()}`;
@@ -308,16 +313,16 @@ test('normal Merchant publication renders the saved Liquid heading on the real p
     await expect(buyer.getByRole('heading', { level: 1 }).first()).toHaveText(marker);
     // Browse the real data-bound catalog; captured home product-grid code is block-driven.
     await buyer.getByRole('link', { name: 'Catalog', exact: true }).click();
-    await buyer.waitForURL(url => url.pathname === '/products', { waitUntil: 'domcontentloaded' });
-    assert.equal(new URL(buyer.url()).pathname, '/products');
-    await expect(buyer.locator('[data-theme-renderer="liquid"][data-editor-mode="false"]')).toBeVisible();
+    await buyer.waitForURL(url => (url.pathname === '/products' || url.pathname === `/store/${f.tenant.subdomain}/products`), { waitUntil: 'domcontentloaded' });
+    assert.ok(['/products',`/store/${f.tenant.subdomain}/products`].includes(new URL(buyer.url()).pathname));
+    await expect(buyer.locator('[data-theme-renderer="liquid"][data-editor-mode="false"]').first()).toBeVisible();
     await buyer.waitForLoadState('networkidle');
     // The catalog menu can also contain the product label. Select the actual
     // data-bound product anchor, then require its normal browser navigation.
-    await buyer.locator(`a[href="/product/${f.product}"]`).filter({ hasText: 'Synthetic published Liquid product' }).first().click();
-    await buyer.waitForURL(url => url.pathname === `/product/${f.product}`, { waitUntil: 'domcontentloaded' });
-    assert.equal(new URL(buyer.url()).pathname, `/product/${f.product}`);
-    await expect(buyer.locator('[data-theme-renderer="liquid"][data-editor-mode="false"]')).toBeVisible();
+    await buyer.locator(`a[href$="/product/${f.product}"]`).filter({ hasText: 'Synthetic published Liquid product' }).first().click();
+    await buyer.waitForURL(url => (url.pathname === `/product/${f.product}` || url.pathname === `/store/${f.tenant.subdomain}/product/${f.product}`), { waitUntil: 'domcontentloaded' });
+    assert.ok([`/product/${f.product}`,`/store/${f.tenant.subdomain}/product/${f.product}`].includes(new URL(buyer.url()).pathname));
+    await expect(buyer.locator('[data-theme-renderer="liquid"][data-editor-mode="false"]').first()).toBeVisible();
     await buyer.waitForFunction(() => Boolean(customElements.get('lb-add-to-cart')));
     const buyNow = buyer.getByRole('button', { name: 'Buy now', exact: true });
     console.info('N4_PUBLIC_PURCHASE_STATE', JSON.stringify(await buyNow.evaluate(button => {

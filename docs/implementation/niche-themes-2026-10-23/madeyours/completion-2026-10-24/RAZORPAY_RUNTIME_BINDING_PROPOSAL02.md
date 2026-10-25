@@ -1,0 +1,13 @@
+# Razorpay runtime and public receiver proposal02
+
+The supplied Test API pair has authenticated with HTTP200 in the requesting chat. This proposal performs no credential read, provider call, binding, deployment or runtime start. [Exact source/binding/phase/decision packet](RAZORPAY_RUNTIME_BINDING_PROPOSAL02.json).
+
+Use the existing `api-gateway` real Razorpay adapter, buyer checkout and `webhook-service` receiver. The admitted gateway must omit `HOSTED_RAZORPAY_TEST_ADAPTER`; pin sandbox mode and nonproduction classifier inputs. Receiver `POST /razorpay` preserves raw-body verification and durable event claims, then uses `API_GATEWAY_SERVICE` plus the isolated internal secret for gateway-owned payment transitions. Both runtimes must reach the same fresh owned canonical PostgREST/DB. A remote Worker cannot reach loopback-only fixture PostgREST.
+
+Source declares `webhooks-staging.letbuyy.com` and `webhooks.staging.letbuyy.com`; neither has been verified or allocated for this run. Do not repoint an existing staging service or adopt its DB. The allocator must admit an exact isolated gateway/receiver/DB tuple and owned public HTTPS URL. A local fixture instead needs an explicitly approved public ingress to the existing receiver that preserves request bytes and exposes no internal dispatcher. No tunnel or new proxy has been created.
+
+Only after concrete runtime admission may the single owner read the designated CSV and inject the Test pair through an allowlisted protected in-memory/secret mechanism. No secret values in arguments, environment dumps, logs, generated config or reports. The independent webhook secret must match one owned TEST Dashboard webhook; record only references/presence. Worker secret updates may activate a version, so they require the precise target and recovery plan.
+
+Five missing decisions are explicit in the packet: fresh coherent runtime/DB/source; owned reachable receiver; authorized TEST Dashboard/alert-email/secret channel; exact protected binding admission; and Editor browser/current-source plus finite adversarial acceptance leases. Then qualify shared negatives/races/deduplication once, followed by ten actual browser Test Mode purchases and immutable order/history reconciliation. MadeYours retains all23 unrun browser cases and real inline cart editing.
+
+Official checks: [Razorpay Standard Checkout](https://razorpay.com/docs/payments/payment-gateway/web-integration/standard/integration-steps/), [webhook setup](https://razorpay.com/docs/webhooks/setup-edit-payments/), [raw signatures and retries](https://razorpay.com/docs/webhooks/validate-test/), [Cloudflare secret lifecycle](https://developers.cloudflare.com/workers/configuration/secrets/).

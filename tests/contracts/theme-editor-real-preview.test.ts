@@ -44,7 +44,7 @@ test('center preview panel targets storefront preview route and bridges section 
     assert.match(centerPanelSource, /url\.searchParams\.set\('subdomain', storeName\)/);
     assert.match(centerPanelSource, /theme_preview_token/);
     assert.match(centerPanelSource, /EDITOR_SECTION_SELECT_MESSAGE|letbuyy:theme-editor:section-select/);
-    assert.match(centerPanelSource, /onSelectSection\?\.\(sectionId\)|onSelectSection\?\.\(message\.sectionId\)/);
+    assert.match(centerPanelSource, /onSelectSection\?\.\(selected\.sectionId\)/);
     assert.match(centerPanelSource, /EDITOR_LEGACY_SELECTION_MESSAGE|LETBUYY_THEME_EDITOR_SELECTION/);
 });
 

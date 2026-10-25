@@ -1,0 +1,2496 @@
+{
+  "query": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "page": {
+        "default": 1,
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 10000
+      },
+      "limit": {
+        "default": 20,
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 100
+      },
+      "search": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 200
+      },
+      "category": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 100
+      },
+      "country_of_origin": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 100
+      },
+      "sort": {
+        "default": "display_order",
+        "type": "string",
+        "enum": [
+          "display_order",
+          "price-asc",
+          "price-desc",
+          "newest",
+          "name"
+        ]
+      },
+      "collection_id": {
+        "type": "string",
+        "format": "uuid",
+        "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+      },
+      "size": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 100
+      },
+      "color": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 100
+      },
+      "min_price": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 100000000
+      },
+      "max_price": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 100000000
+      },
+      "age_band": {
+        "type": "string",
+        "enum": [
+          "3-5",
+          "6-8",
+          "9-12"
+        ]
+      },
+      "interest": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 40,
+        "pattern": "^[a-z][a-z0-9-]*$"
+      },
+      "electronics_kind": {
+        "type": "string",
+        "enum": [
+          "hub",
+          "adapter",
+          "charger",
+          "cable",
+          "audio",
+          "device",
+          "other"
+        ]
+      },
+      "connector": {
+        "anyOf": [
+          {
+            "type": "string",
+            "enum": [
+              "usb-c",
+              "usb-a",
+              "hdmi",
+              "displayport",
+              "sd",
+              "microsd",
+              "audio-3.5mm",
+              "ac-plug",
+              "other"
+            ]
+          },
+          {
+            "minItems": 1,
+            "maxItems": 9,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "usb-c",
+                "usb-a",
+                "hdmi",
+                "displayport",
+                "sd",
+                "microsd",
+                "audio-3.5mm",
+                "ac-plug",
+                "other"
+              ]
+            }
+          }
+        ]
+      },
+      "power_input_w": {
+        "type": "number",
+        "minimum": 5e-324,
+        "maximum": 10000
+      },
+      "power_output_w": {
+        "type": "number",
+        "minimum": 5e-324,
+        "maximum": 10000
+      },
+      "power_capacity_w": {
+        "type": "number",
+        "minimum": 5e-324,
+        "maximum": 10000
+      },
+      "pass_through_output_w": {
+        "type": "number",
+        "minimum": 5e-324,
+        "maximum": 10000
+      },
+      "data_rate_mbps": {
+        "type": "number",
+        "minimum": 5e-324,
+        "maximum": 1000000
+      },
+      "length_mm": {
+        "type": "number",
+        "minimum": 5e-324,
+        "maximum": 100000
+      },
+      "pack_size": {
+        "type": "string",
+        "pattern": "^(g|ml):[1-9]\\d{0,9}$"
+      },
+      "material": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 200
+      },
+      "finish": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 200
+      },
+      "max_width_cm": {
+        "type": "number",
+        "minimum": 5e-324,
+        "maximum": 1000000
+      },
+      "max_depth_cm": {
+        "type": "number",
+        "minimum": 5e-324,
+        "maximum": 1000000
+      },
+      "occasion": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 40,
+        "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+      },
+      "recipient": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 40,
+        "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+      },
+      "personalization_method": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 40,
+        "pattern": "^[a-z][a-z0-9_-]*$"
+      },
+      "routine_stage": {
+        "type": "string",
+        "enum": [
+          "cleanse",
+          "care",
+          "colour"
+        ]
+      },
+      "format": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 80
+      },
+      "shade": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 100
+      },
+      "activity": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 80
+      },
+      "equipment_type": {
+        "type": "string",
+        "enum": [
+          "racket",
+          "shuttles",
+          "storage",
+          "recreational-accessory"
+        ]
+      },
+      "length_value": {
+        "type": "number",
+        "minimum": 5e-324,
+        "maximum": 100000
+      },
+      "length_unit": {
+        "type": "string",
+        "enum": [
+          "mm",
+          "cm",
+          "m",
+          "in"
+        ]
+      },
+      "books_kind": {
+        "type": "string",
+        "enum": [
+          "book",
+          "stationery"
+        ]
+      },
+      "books_author": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 200
+      },
+      "books_subject": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 100
+      },
+      "books_language": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 80
+      },
+      "books_format": {
+        "type": "string",
+        "enum": [
+          "paperback",
+          "hardback",
+          "board-book",
+          "spiral-bound",
+          "other"
+        ]
+      },
+      "books_ruling": {
+        "type": "string",
+        "enum": [
+          "blank",
+          "lined",
+          "dotted",
+          "grid",
+          "other"
+        ]
+      }
+    },
+    "required": [
+      "page",
+      "limit",
+      "sort"
+    ],
+    "additionalProperties": false
+  },
+  "product": {
+    "toys": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "default": 1,
+          "type": "number",
+          "const": 1
+        },
+        "ageBands": {
+          "default": [],
+          "maxItems": 3,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "3-5",
+              "6-8",
+              "9-12"
+            ]
+          }
+        },
+        "ageStatement": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "interests": {
+          "default": [],
+          "maxItems": 12,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40,
+            "pattern": "^[a-z][a-z0-9-]*$"
+          }
+        },
+        "productType": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40,
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "contents": {
+          "default": [],
+          "maxItems": 30,
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "quantity": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 10000
+              }
+            },
+            "required": [
+              "label",
+              "quantity"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "contentsComplete": {
+          "default": false,
+          "type": "boolean"
+        },
+        "dimensions": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string",
+                  "maxLength": 160
+                },
+                "length": {
+                  "type": "number",
+                  "exclusiveMinimum": 0,
+                  "maximum": 10000
+                },
+                "width": {
+                  "type": "number",
+                  "exclusiveMinimum": 0,
+                  "maximum": 10000
+                },
+                "height": {
+                  "type": "number",
+                  "exclusiveMinimum": 0,
+                  "maximum": 10000
+                },
+                "unit": {
+                  "type": "string",
+                  "enum": [
+                    "cm",
+                    "mm"
+                  ]
+                }
+              },
+              "required": [
+                "unit"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "additionalDimensions": {
+          "default": [],
+          "maxItems": 20,
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "label": {
+                "type": "string",
+                "maxLength": 160
+              },
+              "length": {
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "maximum": 10000
+              },
+              "width": {
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "maximum": 10000
+              },
+              "height": {
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "maximum": 10000
+              },
+              "unit": {
+                "type": "string",
+                "enum": [
+                  "cm",
+                  "mm"
+                ]
+              }
+            },
+            "required": [
+              "unit"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "materials": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "finish": {
+          "type": "string",
+          "maxLength": 1000
+        },
+        "care": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "warnings": {
+          "default": [],
+          "maxItems": 20,
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "text": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2000
+              },
+              "sourceLabel": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "editionLabel": {
+                "type": "string",
+                "maxLength": 120
+              }
+            },
+            "required": [
+              "text",
+              "sourceLabel"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "electronics": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "version": {
+          "default": 1,
+          "type": "number",
+          "const": 1
+        },
+        "manufacturer": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "model": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "hub",
+            "adapter",
+            "charger",
+            "cable",
+            "audio",
+            "device",
+            "other"
+          ]
+        },
+        "connectors": {
+          "default": [],
+          "maxItems": 20,
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "usb-c",
+                  "usb-a",
+                  "hdmi",
+                  "displayport",
+                  "sd",
+                  "microsd",
+                  "audio-3.5mm",
+                  "ac-plug",
+                  "other"
+                ]
+              },
+              "role": {
+                "type": "string",
+                "enum": [
+                  "host",
+                  "power-input",
+                  "power-output",
+                  "data",
+                  "video",
+                  "card-reader",
+                  "audio"
+                ]
+              },
+              "count": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 16
+              }
+            },
+            "required": [
+              "kind",
+              "role",
+              "count"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "power_input_w": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 10000
+        },
+        "power_output_w": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 10000
+        },
+        "power_capacity_w": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 10000
+        },
+        "pass_through_output_w": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 10000
+        },
+        "data_rate_mbps": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1000000
+        },
+        "length_mm": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 100000
+        },
+        "dimensions_mm": {
+          "type": "object",
+          "properties": {
+            "length": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 100000
+            },
+            "width": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 100000
+            },
+            "height": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 100000
+            }
+          },
+          "required": [
+            "length",
+            "width",
+            "height"
+          ],
+          "additionalProperties": false
+        },
+        "video": {
+          "type": "object",
+          "properties": {
+            "width_px": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 16384
+            },
+            "height_px": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 16384
+            },
+            "refresh_hz": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 1000
+            }
+          },
+          "required": [
+            "width_px",
+            "height_px",
+            "refresh_hz"
+          ],
+          "additionalProperties": false
+        },
+        "box_contents": {
+          "default": [],
+          "maxItems": 30,
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              },
+              "quantity": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 1000
+              }
+            },
+            "required": [
+              "label",
+              "quantity"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "host_requirements": {
+          "default": [],
+          "maxItems": 20,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          }
+        },
+        "fact_sheet": {
+          "type": "object",
+          "properties": {
+            "reference": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "source_date": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+            }
+          },
+          "required": [
+            "reference",
+            "source_date"
+          ],
+          "additionalProperties": false
+        },
+        "compatible_devices": {
+          "default": [],
+          "maxItems": 30,
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "manufacturer": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "model": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "reference": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 500
+              },
+              "source_date": {
+                "type": "string",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+              }
+            },
+            "required": [
+              "manufacturer",
+              "model",
+              "reference",
+              "source_date"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "notes": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        }
+      },
+      "additionalProperties": false
+    },
+    "food": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "ingredients": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 6000
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "allergens": {
+          "default": {
+            "status": "not_supplied"
+          },
+          "oneOf": [
+            {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "const": "not_supplied"
+                }
+              },
+              "required": [
+                "status"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "const": "supplied"
+                },
+                "statement": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 4000
+                },
+                "source": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1000
+                }
+              },
+              "required": [
+                "status",
+                "statement",
+                "source"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "storage": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "preparation": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4000
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "nutritionText": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4000
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "netQuantity": {
+          "default": null,
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "type": "integer",
+                  "exclusiveMinimum": 0,
+                  "maximum": 1000000000
+                },
+                "unit": {
+                  "type": "string",
+                  "enum": [
+                    "g",
+                    "ml"
+                  ]
+                }
+              },
+              "required": [
+                "value",
+                "unit"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "furniture": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "assembled": {
+          "type": "object",
+          "properties": {
+            "unit": {
+              "type": "string",
+              "enum": [
+                "mm",
+                "cm",
+                "in"
+              ]
+            },
+            "width": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 100000
+            },
+            "depth": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 100000
+            },
+            "height": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 100000
+            },
+            "diameter": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 100000
+            }
+          },
+          "required": [
+            "unit"
+          ],
+          "additionalProperties": false
+        },
+        "package": {
+          "type": "object",
+          "properties": {
+            "unit": {
+              "type": "string",
+              "enum": [
+                "mm",
+                "cm",
+                "in"
+              ]
+            },
+            "width": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 100000
+            },
+            "depth": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 100000
+            },
+            "height": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 100000
+            },
+            "diameter": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 100000
+            }
+          },
+          "required": [
+            "unit"
+          ],
+          "additionalProperties": false
+        },
+        "seat_height": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 100000
+            },
+            "unit": {
+              "type": "string",
+              "enum": [
+                "mm",
+                "cm",
+                "in"
+              ]
+            }
+          },
+          "required": [
+            "value",
+            "unit"
+          ],
+          "additionalProperties": false
+        },
+        "weight": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 100000
+            },
+            "unit": {
+              "type": "string",
+              "enum": [
+                "g",
+                "kg"
+              ]
+            }
+          },
+          "required": [
+            "value",
+            "unit"
+          ],
+          "additionalProperties": false
+        },
+        "materials": {
+          "minItems": 1,
+          "maxItems": 20,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          }
+        },
+        "finish": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "assembly": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "assembled",
+                "required",
+                "not_supplied"
+              ]
+            },
+            "instructions": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "tools": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            }
+          },
+          "required": [
+            "status"
+          ],
+          "additionalProperties": false
+        },
+        "care": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        }
+      },
+      "additionalProperties": false
+    },
+    "gifts": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "default": 1,
+          "type": "number",
+          "const": 1
+        },
+        "occasions": {
+          "maxItems": 12,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40,
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+          }
+        },
+        "recipients": {
+          "maxItems": 12,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40,
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+          }
+        },
+        "suitabilityNote": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "contents": {
+          "minItems": 1,
+          "maxItems": 30,
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              },
+              "quantity": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 100
+              },
+              "detail": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1000
+              },
+              "care": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1000
+              }
+            },
+            "required": [
+              "label",
+              "quantity"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "mediaRoles": {
+          "type": "object",
+          "properties": {
+            "openBox": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 19
+            },
+            "closedBox": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 19
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "personalization": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "version": {
+          "type": "number",
+          "const": 1
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "methods": {
+          "minItems": 1,
+          "maxItems": 4,
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9_-]{0,39}$"
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 100
+              },
+              "min_graphemes": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 80
+              },
+              "max_graphemes": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 80
+              },
+              "character_set": {
+                "type": "string",
+                "enum": [
+                  "latin-name",
+                  "unicode-letters"
+                ]
+              },
+              "styles": {
+                "minItems": 1,
+                "maxItems": 8,
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "pattern": "^[a-z][a-z0-9_-]{0,39}$"
+                    },
+                    "label": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 100
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "label"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "placements": {
+                "minItems": 1,
+                "maxItems": 8,
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "pattern": "^[a-z][a-z0-9_-]{0,39}$"
+                    },
+                    "label": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 100
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "label"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": [
+              "id",
+              "label",
+              "min_graphemes",
+              "max_graphemes",
+              "character_set",
+              "styles",
+              "placements"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "production_note": {
+          "type": "string",
+          "maxLength": 1000
+        }
+      },
+      "required": [
+        "version",
+        "revision",
+        "methods"
+      ],
+      "additionalProperties": false
+    },
+    "beauty": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "default": 1,
+          "type": "number",
+          "const": 1
+        },
+        "routineStage": {
+          "type": "string",
+          "enum": [
+            "cleanse",
+            "care",
+            "colour"
+          ]
+        },
+        "format": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "netQuantity": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 100000
+            },
+            "unit": {
+              "type": "string",
+              "enum": [
+                "g",
+                "ml"
+              ]
+            }
+          },
+          "required": [
+            "value",
+            "unit"
+          ],
+          "additionalProperties": false
+        },
+        "ingredients": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 6000
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "directions": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 4000
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "warnings": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 4000
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "shadeOptionName": {
+          "default": "Shade",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "shades": {
+          "default": [],
+          "maxItems": 100,
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 100
+              },
+              "code": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 40
+              },
+              "color": {
+                "type": "string",
+                "pattern": "^#[0-9a-fA-F]{6}$"
+              },
+              "ingredients": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "maxLength": 6000
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "value"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "sports": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "version": {
+          "default": 1,
+          "type": "number",
+          "const": 1
+        },
+        "activity": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "equipmentType": {
+          "type": "string",
+          "enum": [
+            "racket",
+            "shuttles",
+            "storage",
+            "recreational-accessory"
+          ]
+        },
+        "length": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 100000
+            },
+            "unit": {
+              "type": "string",
+              "enum": [
+                "mm",
+                "cm",
+                "m",
+                "in"
+              ]
+            }
+          },
+          "required": [
+            "value",
+            "unit"
+          ],
+          "additionalProperties": false
+        },
+        "weight": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 100000
+            },
+            "unit": {
+              "type": "string",
+              "enum": [
+                "g",
+                "kg"
+              ]
+            }
+          },
+          "required": [
+            "value",
+            "unit"
+          ],
+          "additionalProperties": false
+        },
+        "gripCircumference": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 100000
+            },
+            "unit": {
+              "type": "string",
+              "enum": [
+                "mm",
+                "cm",
+                "m",
+                "in"
+              ]
+            }
+          },
+          "required": [
+            "value",
+            "unit"
+          ],
+          "additionalProperties": false
+        },
+        "dimensions": {
+          "type": "object",
+          "properties": {
+            "length": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 100000
+            },
+            "width": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 100000
+            },
+            "height": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 100000
+            },
+            "unit": {
+              "type": "string",
+              "enum": [
+                "mm",
+                "cm",
+                "m",
+                "in"
+              ]
+            }
+          },
+          "required": [
+            "length",
+            "width",
+            "unit"
+          ],
+          "additionalProperties": false
+        },
+        "material": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "contents": {
+          "maxItems": 30,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          }
+        },
+        "conditions": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "care": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "compatibility": {
+          "oneOf": [
+            {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "const": "unconfirmed"
+                },
+                "note": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1000
+                }
+              },
+              "required": [
+                "status"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "const": "merchant-supplied"
+                },
+                "reference": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1000
+                },
+                "note": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1000
+                }
+              },
+              "required": [
+                "status",
+                "reference"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        }
+      },
+      "required": [
+        "activity",
+        "equipmentType"
+      ],
+      "additionalProperties": false
+    },
+    "books": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "book"
+            },
+            "authors": {
+              "minItems": 1,
+              "maxItems": 8,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              }
+            },
+            "subjects": {
+              "minItems": 1,
+              "maxItems": 16,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 100
+              }
+            },
+            "language": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "format": {
+              "type": "string",
+              "enum": [
+                "paperback",
+                "hardback",
+                "board-book",
+                "spiral-bound",
+                "other"
+              ]
+            },
+            "edition": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "publisher": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "publication_year": {
+              "type": "integer",
+              "minimum": 1450,
+              "maximum": 2200
+            },
+            "pages": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 10000
+            },
+            "dimensions_mm": {
+              "type": "object",
+              "properties": {
+                "width": {
+                  "type": "number",
+                  "exclusiveMinimum": 0,
+                  "maximum": 5000
+                },
+                "height": {
+                  "type": "number",
+                  "exclusiveMinimum": 0,
+                  "maximum": 5000
+                }
+              },
+              "required": [
+                "width",
+                "height"
+              ],
+              "additionalProperties": false
+            },
+            "isbn": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 32
+            },
+            "excerpt": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 12000
+                },
+                "permission": {
+                  "type": "string",
+                  "enum": [
+                    "merchant_owned",
+                    "licensed",
+                    "public_domain"
+                  ]
+                },
+                "attribution": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500
+                }
+              },
+              "required": [
+                "text",
+                "permission",
+                "attribution"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "stationery"
+            },
+            "paper_gsm": {
+              "type": "number",
+              "minimum": 10,
+              "maximum": 1500
+            },
+            "dimensions_mm": {
+              "type": "object",
+              "properties": {
+                "width": {
+                  "type": "number",
+                  "exclusiveMinimum": 0,
+                  "maximum": 5000
+                },
+                "height": {
+                  "type": "number",
+                  "exclusiveMinimum": 0,
+                  "maximum": 5000
+                }
+              },
+              "required": [
+                "width",
+                "height"
+              ],
+              "additionalProperties": false
+            },
+            "page_count": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 10000
+            },
+            "sheet_count": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 10000
+            },
+            "ruling": {
+              "type": "string",
+              "enum": [
+                "blank",
+                "lined",
+                "dotted",
+                "grid",
+                "other"
+              ]
+            },
+            "binding": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "included": {
+              "minItems": 1,
+              "maxItems": 20,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 300
+              }
+            },
+            "materials": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1000
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    }
+  },
+  "variant": {
+    "toys": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "type": "number",
+          "const": 1
+        },
+        "ageBands": {
+          "maxItems": 3,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "3-5",
+              "6-8",
+              "9-12"
+            ]
+          }
+        },
+        "ageStatement": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "interests": {
+          "maxItems": 12,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40,
+            "pattern": "^[a-z][a-z0-9-]*$"
+          }
+        },
+        "productType": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40,
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "contents": {
+          "maxItems": 30,
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "quantity": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 10000
+              }
+            },
+            "required": [
+              "label",
+              "quantity"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "contentsComplete": {
+          "type": "boolean"
+        },
+        "dimensions": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string",
+                  "maxLength": 160
+                },
+                "length": {
+                  "type": "number",
+                  "exclusiveMinimum": 0,
+                  "maximum": 10000
+                },
+                "width": {
+                  "type": "number",
+                  "exclusiveMinimum": 0,
+                  "maximum": 10000
+                },
+                "height": {
+                  "type": "number",
+                  "exclusiveMinimum": 0,
+                  "maximum": 10000
+                },
+                "unit": {
+                  "type": "string",
+                  "enum": [
+                    "cm",
+                    "mm"
+                  ]
+                }
+              },
+              "required": [
+                "unit"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "additionalDimensions": {
+          "maxItems": 20,
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "label": {
+                "type": "string",
+                "maxLength": 160
+              },
+              "length": {
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "maximum": 10000
+              },
+              "width": {
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "maximum": 10000
+              },
+              "height": {
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "maximum": 10000
+              },
+              "unit": {
+                "type": "string",
+                "enum": [
+                  "cm",
+                  "mm"
+                ]
+              }
+            },
+            "required": [
+              "unit"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "materials": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "finish": {
+          "type": "string",
+          "maxLength": 1000
+        },
+        "care": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "warnings": {
+          "maxItems": 20,
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "text": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2000
+              },
+              "sourceLabel": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "editionLabel": {
+                "type": "string",
+                "maxLength": 120
+              }
+            },
+            "required": [
+              "text",
+              "sourceLabel"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "food": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "netQuantity": {
+          "default": null,
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "type": "integer",
+                  "exclusiveMinimum": 0,
+                  "maximum": 1000000000
+                },
+                "unit": {
+                  "type": "string",
+                  "enum": [
+                    "g",
+                    "ml"
+                  ]
+                }
+              },
+              "required": [
+                "value",
+                "unit"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "furniture": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "assembled": {
+          "type": "object",
+          "properties": {
+            "unit": {
+              "type": "string",
+              "enum": [
+                "mm",
+                "cm",
+                "in"
+              ]
+            },
+            "width": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 100000
+            },
+            "depth": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 100000
+            },
+            "height": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 100000
+            },
+            "diameter": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 100000
+            }
+          },
+          "required": [
+            "unit"
+          ],
+          "additionalProperties": false
+        },
+        "package": {
+          "type": "object",
+          "properties": {
+            "unit": {
+              "type": "string",
+              "enum": [
+                "mm",
+                "cm",
+                "in"
+              ]
+            },
+            "width": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 100000
+            },
+            "depth": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 100000
+            },
+            "height": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 100000
+            },
+            "diameter": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 100000
+            }
+          },
+          "required": [
+            "unit"
+          ],
+          "additionalProperties": false
+        },
+        "seat_height": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 100000
+            },
+            "unit": {
+              "type": "string",
+              "enum": [
+                "mm",
+                "cm",
+                "in"
+              ]
+            }
+          },
+          "required": [
+            "value",
+            "unit"
+          ],
+          "additionalProperties": false
+        },
+        "weight": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 100000
+            },
+            "unit": {
+              "type": "string",
+              "enum": [
+                "g",
+                "kg"
+              ]
+            }
+          },
+          "required": [
+            "value",
+            "unit"
+          ],
+          "additionalProperties": false
+        },
+        "materials": {
+          "minItems": 1,
+          "maxItems": 20,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          }
+        },
+        "finish": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "assembly": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "assembled",
+                "required",
+                "not_supplied"
+              ]
+            },
+            "instructions": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "tools": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            }
+          },
+          "required": [
+            "status"
+          ],
+          "additionalProperties": false
+        },
+        "care": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        }
+      },
+      "additionalProperties": false
+    },
+    "sports": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "length": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 100000
+            },
+            "unit": {
+              "type": "string",
+              "enum": [
+                "mm",
+                "cm",
+                "m",
+                "in"
+              ]
+            }
+          },
+          "required": [
+            "value",
+            "unit"
+          ],
+          "additionalProperties": false
+        },
+        "weight": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 100000
+            },
+            "unit": {
+              "type": "string",
+              "enum": [
+                "g",
+                "kg"
+              ]
+            }
+          },
+          "required": [
+            "value",
+            "unit"
+          ],
+          "additionalProperties": false
+        },
+        "gripCircumference": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 100000
+            },
+            "unit": {
+              "type": "string",
+              "enum": [
+                "mm",
+                "cm",
+                "m",
+                "in"
+              ]
+            }
+          },
+          "required": [
+            "value",
+            "unit"
+          ],
+          "additionalProperties": false
+        },
+        "dimensions": {
+          "type": "object",
+          "properties": {
+            "length": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 100000
+            },
+            "width": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 100000
+            },
+            "height": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 100000
+            },
+            "unit": {
+              "type": "string",
+              "enum": [
+                "mm",
+                "cm",
+                "m",
+                "in"
+              ]
+            }
+          },
+          "required": [
+            "length",
+            "width",
+            "unit"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "books": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "book"
+            },
+            "authors": {
+              "minItems": 1,
+              "maxItems": 8,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              }
+            },
+            "subjects": {
+              "minItems": 1,
+              "maxItems": 16,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 100
+              }
+            },
+            "language": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "format": {
+              "type": "string",
+              "enum": [
+                "paperback",
+                "hardback",
+                "board-book",
+                "spiral-bound",
+                "other"
+              ]
+            },
+            "edition": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "publisher": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "publication_year": {
+              "type": "integer",
+              "minimum": 1450,
+              "maximum": 2200
+            },
+            "pages": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 10000
+            },
+            "dimensions_mm": {
+              "type": "object",
+              "properties": {
+                "width": {
+                  "type": "number",
+                  "exclusiveMinimum": 0,
+                  "maximum": 5000
+                },
+                "height": {
+                  "type": "number",
+                  "exclusiveMinimum": 0,
+                  "maximum": 5000
+                }
+              },
+              "required": [
+                "width",
+                "height"
+              ],
+              "additionalProperties": false
+            },
+            "isbn": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 32
+            }
+          },
+          "required": [
+            "kind",
+            "language",
+            "format"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "stationery"
+            },
+            "paper_gsm": {
+              "type": "number",
+              "minimum": 10,
+              "maximum": 1500
+            },
+            "dimensions_mm": {
+              "type": "object",
+              "properties": {
+                "width": {
+                  "type": "number",
+                  "exclusiveMinimum": 0,
+                  "maximum": 5000
+                },
+                "height": {
+                  "type": "number",
+                  "exclusiveMinimum": 0,
+                  "maximum": 5000
+                }
+              },
+              "required": [
+                "width",
+                "height"
+              ],
+              "additionalProperties": false
+            },
+            "page_count": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 10000
+            },
+            "sheet_count": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 10000
+            },
+            "ruling": {
+              "type": "string",
+              "enum": [
+                "blank",
+                "lined",
+                "dotted",
+                "grid",
+                "other"
+              ]
+            },
+            "binding": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "included": {
+              "minItems": 1,
+              "maxItems": 20,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 300
+              }
+            },
+            "materials": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1000
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    }
+  }
+}

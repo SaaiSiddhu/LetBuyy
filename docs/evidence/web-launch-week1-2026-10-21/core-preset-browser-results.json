@@ -1,0 +1,125 @@
+{
+  "scope": "Production-built local Merchant/Identity/Commerce with owned PostgreSQL and normal password login. No hosted/provider proof.",
+  "presets": [
+    {
+      "preset": "Forge",
+      "apply": true,
+      "reloaded": true,
+      "published": true,
+      "exactStoredValues": true,
+      "renderedPrimary": true,
+      "nonCachedHtml": true,
+      "labeledReadableCollectionLink": true,
+      "desktop": true,
+      "mobile": true
+    },
+    {
+      "preset": "Sense",
+      "apply": true,
+      "reloaded": true,
+      "published": true,
+      "exactStoredValues": true,
+      "renderedPrimary": true,
+      "nonCachedHtml": true,
+      "labeledReadableCollectionLink": true,
+      "desktop": true,
+      "mobile": true
+    },
+    {
+      "preset": "Aura",
+      "apply": true,
+      "reloaded": true,
+      "published": true,
+      "exactStoredValues": true,
+      "renderedPrimary": true,
+      "nonCachedHtml": true,
+      "labeledReadableCollectionLink": true,
+      "desktop": true,
+      "mobile": true
+    },
+    {
+      "preset": "Craft",
+      "apply": true,
+      "reloaded": true,
+      "published": true,
+      "exactStoredValues": true,
+      "renderedPrimary": true,
+      "nonCachedHtml": true,
+      "labeledReadableCollectionLink": true,
+      "desktop": true,
+      "mobile": true
+    },
+    {
+      "preset": "Refresh",
+      "apply": true,
+      "reloaded": true,
+      "published": true,
+      "exactStoredValues": true,
+      "renderedPrimary": true,
+      "nonCachedHtml": true,
+      "labeledReadableCollectionLink": true,
+      "desktop": true,
+      "mobile": true
+    },
+    {
+      "preset": "Ride",
+      "apply": true,
+      "reloaded": true,
+      "published": true,
+      "exactStoredValues": true,
+      "renderedPrimary": true,
+      "nonCachedHtml": true,
+      "labeledReadableCollectionLink": true,
+      "desktop": true,
+      "mobile": true
+    },
+    {
+      "preset": "Dawn",
+      "apply": true,
+      "reloaded": true,
+      "published": true,
+      "exactStoredValues": true,
+      "renderedPrimary": true,
+      "nonCachedHtml": true,
+      "labeledReadableCollectionLink": true,
+      "desktop": true,
+      "mobile": true
+    },
+    {
+      "preset": "Bloom",
+      "apply": true,
+      "reloaded": true,
+      "published": true,
+      "exactStoredValues": true,
+      "renderedPrimary": true,
+      "nonCachedHtml": true,
+      "labeledReadableCollectionLink": true,
+      "desktop": true,
+      "mobile": true
+    },
+    {
+      "preset": "Nova",
+      "apply": true,
+      "reloaded": true,
+      "published": true,
+      "exactStoredValues": true,
+      "renderedPrimary": true,
+      "nonCachedHtml": true,
+      "labeledReadableCollectionLink": true,
+      "desktop": true,
+      "mobile": true
+    },
+    {
+      "preset": "Summit",
+      "apply": true,
+      "reloaded": true,
+      "published": true,
+      "exactStoredValues": true,
+      "renderedPrimary": true,
+      "nonCachedHtml": true,
+      "labeledReadableCollectionLink": true,
+      "desktop": true,
+      "mobile": true
+    }
+  ]
+}

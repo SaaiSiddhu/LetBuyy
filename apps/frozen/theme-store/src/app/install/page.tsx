@@ -1,9 +1,13 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
-import { ArrowLeft, CheckCircle, ExternalLink, Input, Package, Store } from '@letbuyy/ui';
-import { ThemeService } from '@/lib/theme-service';
-import { getAdminUrl } from '@/lib/public-urls';
+import { ArrowLeft, CheckCircle, ExternalLink, Input, Select, Package, Store } from '@letbuyy/ui';
+import { MarketplaceInstallUnconfirmedError, ThemeService } from '@/lib/theme-service';
+import { LetbuyyApiError } from '@letbuyy/api-client';
+import { InstallThemeSchema, ThemeSlugParamSchema } from '@letbuyy/theme-engine';
+import { getAccountsUrl, getAdminUrl, getThemeMarketplaceUrl } from '@/lib/public-urls';
 import { ThemeInstallFeedbackToast, ThemeInstallSubmitButton } from '@/components/theme-action-feedback';
+import { installErrorMessage } from '@/lib/install-feedback';
+import { isRequestedInstallVersionCurrent } from '@/lib/install-selection';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = { title: 'Install Theme' };
@@ -11,6 +15,7 @@ export const metadata: Metadata = { title: 'Install Theme' };
 type InstallPageProps = {
     searchParams?: Promise<{
         theme?: string;
+        version?: string;
         error?: string;
     }>;
 };
@@ -34,8 +39,8 @@ async function installThemeAction(formData: FormData) {
 
     const slug = stringValue(formData.get('theme'));
     const storeId = stringValue(formData.get('store_id'));
-    const preset = stringValue(formData.get('preset')) || 'default';
     const confirmed = formData.get('confirm_install') === 'yes';
+    if (!ThemeSlugParamSchema.safeParse({ slug }).success) redirect('/themes');
 
     if (!slug || !storeId) {
         redirect(`/install?theme=${encodeURIComponent(slug)}&error=missing_store`);
@@ -44,29 +49,45 @@ async function installThemeAction(formData: FormData) {
         redirect(`/install?theme=${encodeURIComponent(slug)}&error=missing_confirmation`);
     }
 
+    const intent = InstallThemeSchema.safeParse({ store_id: storeId, expected_version: formData.get('expected_version'),
+        expected_package_id: formData.get('expected_package_id'), expected_package_version_id: formData.get('expected_package_version_id') });
+    if (!intent.success) redirect(`/install?theme=${encodeURIComponent(slug)}&error=selection_unavailable`);
+    let editorHref: string;
     try {
-        await ThemeService.installTheme(slug, storeId, {
-            preset,
-            marketplace_install: true,
-        });
+        const receipt = await ThemeService.installTheme(slug, storeId, { version: intent.data.expected_version,
+            packageId: intent.data.expected_package_id, packageVersionId: intent.data.expected_package_version_id });
+        const ownedStore = (await ThemeService.getUserStores(true)).find(store => store.id === storeId);
+        const subdomain = stringValue(ownedStore?.subdomain);
+        if (!subdomain) throw new MarketplaceInstallUnconfirmedError();
+        const query = new URLSearchParams({ theme_instance_id: receipt.theme_instance_id, theme_package_version_id: receipt.theme_package_version_id });
+        editorHref = getAdminUrl(`/${encodeURIComponent(subdomain)}/online-store/themes/${encodeURIComponent(receipt.theme.slug)}/editor?${query}`);
     } catch (error) {
-        const code = error instanceof Error && error.message.includes('purchase')
-            ? 'purchase_required'
-            : 'install_failed';
+        const code = error instanceof MarketplaceInstallUnconfirmedError ? 'install_unconfirmed'
+            : error instanceof LetbuyyApiError && ['THEME_VERSION_CONFLICT', 'THEME_INSTANCE_VERSION_CONFLICT'].includes(error.code) ? 'version_conflict'
+            : error instanceof Error && /purchase/i.test(error.message) ? 'purchase_required' : 'install_failed';
         redirect(`/install?theme=${encodeURIComponent(slug)}&error=${code}`);
     }
 
-    redirect(`/dashboard/installations?installed=${encodeURIComponent(slug)}`);
+    redirect(editorHref);
 }
 
 export default async function InstallThemePage({ searchParams }: InstallPageProps) {
     const params = await searchParams;
     const slug = params?.theme || '';
     const error = params?.error || '';
+    if (!await ThemeService.getSessionUser()) {
+        const query = new URLSearchParams({ theme: slug });
+        if (params?.version) query.set('version', params.version);
+        const returnTo = getThemeMarketplaceUrl(`/install?${query}`);
+        redirect(`${getAccountsUrl('/lookup')}?return_to=${encodeURIComponent(returnTo)}`);
+    }
     const [theme, stores] = await Promise.all([
         slug ? ThemeService.getThemeBySlug(slug) : Promise.resolve(null),
-        ThemeService.getUserStores(),
+        ThemeService.getUserStores(true).catch(() => null),
     ]);
+    const candidate = theme ? await ThemeService.getThemeInstallSelection(slug).catch(() => null) : null;
+    const selection = candidate && isRequestedInstallVersionCurrent(params?.version, candidate.version) ? candidate : null;
+    const changedVersion = candidate && params?.version !== undefined && !selection;
 
     if (!slug || !theme) {
         return (
@@ -100,23 +121,18 @@ export default async function InstallThemePage({ searchParams }: InstallPageProp
                     </div>
                     <div>
                         <h1 className="text-2xl font-bold mb-1">Install {stringValue(theme.name)}</h1>
-                        <p className="text-sm text-text-muted">Select a store to apply this approved marketplace theme.</p>
+                        <p className="text-sm text-text-muted">Add this theme to the selected store’s private library. Customize and publish separately.</p>
+                        {selection && <p className="text-sm text-text-muted mt-2">Version {selection.version}</p>}
                     </div>
                 </div>
 
                 {error && (
                     <div className="mb-6 rounded-lg border border-error/25 bg-error/10 px-4 py-3 text-sm text-error">
-                        {error === 'purchase_required'
-                            ? 'Purchase this theme before installing it.'
-                            : error === 'missing_store'
-                                ? 'Choose a store before installing.'
-                                : error === 'missing_confirmation'
-                                    ? 'Confirm the install impact before continuing.'
-                                    : 'Theme installation failed. Try another store or contact support.'}
+                        {installErrorMessage(error)}
                     </div>
                 )}
 
-                {stores.length === 0 ? (
+                {!selection ? <div role="alert" className="rounded-xl border border-border bg-surface/40 p-6"><h2 className="text-lg font-semibold">{changedVersion ? 'Theme version changed' : 'Package details unavailable'}</h2><p className="text-sm text-text-muted">{changedVersion ? 'Return to theme details to review its current version before adding it.' : 'Reload these details before adding this design. Its exact package version must be confirmed.'}</p><Link href={changedVersion ? `/themes/${encodeURIComponent(slug)}` : `/install?theme=${encodeURIComponent(slug)}`} className="btn-secondary inline-flex mt-3">{changedVersion ? 'Review current version' : 'Retry package details'}</Link></div> : stores === null ? <div role="alert" className="rounded-xl border border-border bg-surface/40 p-6"><h2 className="text-lg font-semibold">Store list unavailable</h2><p className="text-sm text-text-muted">Your stores could not be confirmed. Retry before adding the theme.</p><Link href={`/install?theme=${encodeURIComponent(slug)}`} className="btn-secondary inline-flex mt-3">Retry store list</Link></div> : stores.length === 0 ? (
                     <div className="rounded-xl border border-border bg-surface/40 p-6 text-center">
                         <Store className="w-8 h-8 text-text-subtle mx-auto mb-3" />
                         <h2 className="text-lg font-semibold mb-2">No stores found</h2>
@@ -129,48 +145,28 @@ export default async function InstallThemePage({ searchParams }: InstallPageProp
                 ) : (
                     <form action={installThemeAction} className="space-y-6">
                         <Input unstyled type="hidden" name="theme" value={slug} />
+                        <Input unstyled type="hidden" name="expected_version" value={selection.version} />
+                        <Input unstyled type="hidden" name="expected_package_id" value={selection.packageId} />
+                        <Input unstyled type="hidden" name="expected_package_version_id" value={selection.packageVersionId} />
                         <div>
                             <label htmlFor="store_id" className="block text-sm font-semibold text-text-heading mb-3">
                                 Store
                             </label>
-                            <select
+                            <Select unstyled
                                 id="store_id"
                                 name="store_id"
                                 required
                                 className="w-full px-4 py-3 rounded-lg bg-bg-card border border-border text-text-heading text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
                                 defaultValue=""
-                            >
-                                <option value="" disabled>Select a store</option>
-                                {stores.map((store) => {
+                                options={[{ value: '', label: 'Select a store', disabled: true }, ...stores.flatMap((store) => {
                                     const id = stringValue(store.id);
-                                    if (!id) return null;
-                                    return (
-                                        <option key={id} value={id}>
-                                            {storeName(store)}{storeSubtitle(store) ? ` - ${storeSubtitle(store)}` : ''}
-                                        </option>
-                                    );
-                                })}
-                            </select>
-                        </div>
-
-                        <div>
-                            <label htmlFor="preset" className="block text-sm font-semibold text-text-heading mb-3">
-                                Preset
-                            </label>
-                            <select
-                                id="preset"
-                                name="preset"
-                                className="w-full px-4 py-3 rounded-lg bg-bg-card border border-border text-text-heading text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
-                                defaultValue="default"
-                            >
-                                <option value="default">Default preset</option>
-                                <option value="conversion">Conversion focused</option>
-                                <option value="editorial">Editorial</option>
-                            </select>
+                                    return id ? [{ value: id, label: storeName(store) + (storeSubtitle(store) ? ` - ${storeSubtitle(store)}` : '') }] : [];
+                                })]}
+                            />
                         </div>
 
                         <div className="rounded-xl bg-surface/50 p-4 text-sm text-text-muted">
-                            Marketplace install creates a release for the selected store. You can preview, publish, and roll back from the marketplace installation history.
+                            Adding creates a private library instance. Your current live theme, catalog and existing drafts stay in place. Customize and publish in the merchant theme editor.
                         </div>
 
                         <div className="flex flex-col gap-3 rounded-xl border border-border bg-surface/40 p-4">
@@ -186,7 +182,7 @@ export default async function InstallThemePage({ searchParams }: InstallPageProp
                                     required
                                     className="mt-1 h-4 w-4 rounded border-border"
                                 />
-                                <span>I understand this install creates a store theme release and can be rolled back from installation history.</span>
+                                <span>Add this design to the selected store’s library. Publication is a separate action.</span>
                             </label>
                         </div>
 

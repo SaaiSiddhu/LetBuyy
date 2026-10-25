@@ -1,0 +1,24 @@
+- heading [level=1]: Customer accounts
+- heading "Customer accounts" [level=1]
+- button: Submit
+- heading "Sign-in links" [level=2]:
+- checkbox "Show sign-in links" [checked]
+- heading "Customer accounts" [level=2]:
+- link "Learn more":
+- link "Customize":
+- link "Manage":
+- link "return and cancellation rules":
+- checkbox "Set conditions and fees with ,[object Object]"
+- checkbox "Allow customers to see and spend store credit" [checked]
+- link "Manage":
+- button "Copy link":
+- status
+- status
+- status
+- paragraph
+- button "Close" [disabled]:
+- textbox "Work with Sidekick"
+- button "Add files and more":
+- button "Voice":
+- button "Open Sidekick":
+- status

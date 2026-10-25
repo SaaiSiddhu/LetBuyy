@@ -1,0 +1,133 @@
+{
+  "status": "ONE_SHARED_PROOF_WITH_13_FUNCTIONS_AND_5_PHASE_BODIES_BYTE_EXACT_TO_QUALIFIED_E71",
+  "functions": [
+    {
+      "name": "parseOwnRowCount",
+      "qualified": "5f352a85880b90c2bd04bf9048184f6c3d22b124a453576a82862a1c857dcf2d",
+      "shared": "5f352a85880b90c2bd04bf9048184f6c3d22b124a453576a82862a1c857dcf2d",
+      "byteExact": true
+    },
+    {
+      "name": "candidateErrorContext",
+      "qualified": "ff4b3ec74696e79c697c75fe6de556a7a99bc3f7f4bea062ab3d9fe3bade3321",
+      "shared": "ff4b3ec74696e79c697c75fe6de556a7a99bc3f7f4bea062ab3d9fe3bade3321",
+      "byteExact": true
+    },
+    {
+      "name": "applyCandidate",
+      "qualified": "07156d3284c68dd9ac0d3ad7d149496986b0ee6a38509f06c9a73f9d0d08726a",
+      "shared": "07156d3284c68dd9ac0d3ad7d149496986b0ee6a38509f06c9a73f9d0d08726a",
+      "byteExact": true
+    },
+    {
+      "name": "publisher",
+      "qualified": "de8b38fea7c9d347b4d8207cdb55243ed83d270e984ad415e18301164c3a13bc",
+      "shared": "de8b38fea7c9d347b4d8207cdb55243ed83d270e984ad415e18301164c3a13bc",
+      "byteExact": true
+    },
+    {
+      "name": "businessState",
+      "qualified": "f521ce75c3010e6e9d6ca984d1de89a64c2257399694b69eae82b72890841f4f",
+      "shared": "f521ce75c3010e6e9d6ca984d1de89a64c2257399694b69eae82b72890841f4f",
+      "byteExact": true
+    },
+    {
+      "name": "httpSnapshot",
+      "qualified": "86bd82fa3bf657a2315de2ca22fcf534890ab5e26a4f6e0ba5845b0c4a71ee65",
+      "shared": "86bd82fa3bf657a2315de2ca22fcf534890ab5e26a4f6e0ba5845b0c4a71ee65",
+      "byteExact": true
+    },
+    {
+      "name": "unrelatedCatalog",
+      "qualified": "821b9e5c472bac76c4ff5eb07f445ac2c495e8b76c19879eafed3d9fad686b3e",
+      "shared": "821b9e5c472bac76c4ff5eb07f445ac2c495e8b76c19879eafed3d9fad686b3e",
+      "byteExact": true
+    },
+    {
+      "name": "snapshot",
+      "qualified": "fcd036f532eea3f4488a7fa020f604d3e44c62ffdd5c3e4418da584c8ce45787",
+      "shared": "fcd036f532eea3f4488a7fa020f604d3e44c62ffdd5c3e4418da584c8ce45787",
+      "byteExact": true
+    },
+    {
+      "name": "profile",
+      "qualified": "c72bfb173eb5df192c93d2ac1ec9cadb0117db4afd6281f84094552ce4c5ff18",
+      "shared": "c72bfb173eb5df192c93d2ac1ec9cadb0117db4afd6281f84094552ce4c5ff18",
+      "byteExact": true
+    },
+    {
+      "name": "withoutTenant",
+      "qualified": "4e7cafd79d86f43c8f33858f3e844ffc3b917cafa5b4962c416352695eeff1a5",
+      "shared": "4e7cafd79d86f43c8f33858f3e844ffc3b917cafa5b4962c416352695eeff1a5",
+      "byteExact": true
+    },
+    {
+      "name": "dependencyCount",
+      "qualified": "60877e9955f158cd0e8051100119fe150312bafccae8e50714ee65d501c96ab5",
+      "shared": "60877e9955f158cd0e8051100119fe150312bafccae8e50714ee65d501c96ab5",
+      "byteExact": true
+    },
+    {
+      "name": "request",
+      "qualified": "5f4aab5bda99f74451d129270dd8f40c19cda89a3d6eccaf327a126c469d7af7",
+      "shared": "5f4aab5bda99f74451d129270dd8f40c19cda89a3d6eccaf327a126c469d7af7",
+      "byteExact": true
+    },
+    {
+      "name": "assertTenantDenied",
+      "qualified": "53b8a1d1f943f9ed8ded53e570b91ee8099efc11cc2ecbc241b840a3c576f949",
+      "shared": "53b8a1d1f943f9ed8ded53e570b91ee8099efc11cc2ecbc241b840a3c576f949",
+      "byteExact": true
+    }
+  ],
+  "phases": [
+    {
+      "phase": 1,
+      "qualified": "371617317126d646c1065cc79bc654a829237b92fb420fc2f3a7a97fc3c4e620",
+      "shared": "371617317126d646c1065cc79bc654a829237b92fb420fc2f3a7a97fc3c4e620",
+      "byteExact": true
+    },
+    {
+      "phase": 2,
+      "qualified": "5168284a9f87d49e9ec3d9e47f39b7c724a639e39e7b3e9d3895e17900691f38",
+      "shared": "b38215c3060214a5d69decf4adc8baf164f4458d4894513996f06d8e6c672abb",
+      "byteExact": false
+    },
+    {
+      "phase": 3,
+      "qualified": "d9bc49aa6a91ad23016c4e3ca707ab45e5e277b18d8b9e8c5ff0b21914ef555b",
+      "shared": "d9bc49aa6a91ad23016c4e3ca707ab45e5e277b18d8b9e8c5ff0b21914ef555b",
+      "byteExact": true
+    },
+    {
+      "phase": 4,
+      "qualified": "57b6daa377a705c02b26c066c06bf4bfab3ae897aaac3ec6ad934760c90b4e07",
+      "shared": "57b6daa377a705c02b26c066c06bf4bfab3ae897aaac3ec6ad934760c90b4e07",
+      "byteExact": true
+    },
+    {
+      "phase": 5,
+      "qualified": "56e6baddaee74b9e50a4abe6550b484acfe25229c3ccc1fcd3f4562416e2876c",
+      "shared": "56e6baddaee74b9e50a4abe6550b484acfe25229c3ccc1fcd3f4562416e2876c",
+      "byteExact": true
+    },
+    {
+      "phase": 6,
+      "qualified": "d1bcb00e8850981fabc72743ebaf1b97dab5c386605f1a2ae79ec34cdb8f85bf",
+      "shared": "d1bcb00e8850981fabc72743ebaf1b97dab5c386605f1a2ae79ec34cdb8f85bf",
+      "byteExact": true
+    },
+    {
+      "phase": 7,
+      "qualified": "0444f33437e934c899468ee23ccbb7444693f3e43c11ae4d41b47527dd15c656",
+      "shared": "9d610ed3e889ca7a8f7387de7162c851bb82ef55aa8a4bdc46683f8d26485a07",
+      "byteExact": false
+    }
+  ],
+  "intendedDelta": [
+    "Entry requires caller-selected hardened current baseline(false) or explicit historical qualifier(true).",
+    "Current UP must be a complete no-op, dependency0->0; historical qualification retains1->0 behavior.",
+    "Final source callback verifies only selected canonical SQL bytes for continuous CI; manual callback retains exact closed qualification admission.",
+    "Ordinary owned handle injected once by guarded entry, same Gateway and support; no extra framework."
+  ]
+}

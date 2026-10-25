@@ -1,0 +1,23 @@
+{
+  "recordedAt": "2026-10-25T03:50:49.175319+00:00",
+  "status": "ROOT_AUTHORIZED_VERIFIED_PG16_ROLE_SETTINGS_READER_CORRECTION_SAME_MUTABLE02_PATHS",
+  "parentGrant": "PRESERVED_RUNTIME07_PRIVATE_HARNESS_AMENDMENT_02.json",
+  "continuation": "PRESERVED_HARNESS02_SOURCE_CONTINUATION_03.json",
+  "owner": "01a16d03-613e-71b0-a591-07d4d24347d4",
+  "scope": "Only already mutable owned-database-provision.mjs andfocusedpure/nativeCASE-source tests; no newpath/copy/runtime/recoveryauthority",
+  "finding": {
+    "id": "PR-R05",
+    "priority": "P1",
+    "confirmedByRoot": "Actualoriginalread failed becausePG16 pg_authid lacksrolconfig; correctedseparateprivatebackupquery succeeded. Existing02 hasno pg_db_role_setting join.",
+    "affectedFunctions": [
+      "capturePreservedRoleProfile",
+      "measurePreservedDatabase rolesprofile"
+    ],
+    "required": "Readrawroleattributes/passwordhashes frompg_authid a andglobalroleconfig from LEFTJOIN pg_db_role_setting s ON s.setrole=a.oid AND s.setdatabase=0, s.setconfig ASrolconfig. Preserveallactualsettings/memberships/attributes, handlemissingglobalrow; do notsubstitutepg_roles maskedpasswords or printsecretvalues. PerDBsettingsseparateR6 gate.",
+    "evidence": "shared-runtime07/ORIGINAL_GLOBAL_ROLE_PRESERVATION_20261025_01.json; Rootreports20roles/8memberships/8ownedorders,private0600/fsynced/ignored,noDBwrite",
+    "classification": "VerifiedreaderSQLfault+readsuccess, notrestorePASS orfourthNative"
+  },
+  "RootPreservationChange": "POST_INTERRUPTION_PRESERVATION_CHECK_20261025_02.json: oldrunner54685ABSENT; runtime55109STOP/orphanPPID1; originalPG/volumeandfinalarchive stillpresent. Neveradopt/relabel/replacePID/SIGCONT orreap.",
+  "expectedChecks": "Actualreader-contract puretests ensure correctcatalogue join/nullcase/globalrolefields and realpasswordsource; sourceCASEproof forlater separatelyadmittedPostgreSQL, nocurrentDBexecution. Retainold01 source/failures, Rootoriginal488tablewitnessandnewprivateglobalbackup.",
+  "noScopeExpansion": "Allother02frozenpaths/guards andcurrentNativebudgetexhaustion unchanged"
+}

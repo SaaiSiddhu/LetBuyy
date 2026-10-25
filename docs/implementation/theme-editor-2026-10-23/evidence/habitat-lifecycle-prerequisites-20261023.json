@@ -1,0 +1,293 @@
+{
+  "recordedAt": "2026-10-23T13:03:19.502478+00:00",
+  "classification": "ACTUAL_PREREQUISITE_CHECK_ONLY_NO_RUNTIME_ACCEPTANCE",
+  "plan": {
+    "path": "docs/implementation/niche-themes-2026-10-23/habitat/installed-fixture-matrix.plan.json",
+    "sha256": "e635e388d772e51e97e8f30158dc9e3a79a6cdf205d2c3e99065ad5ae728cff1"
+  },
+  "sourceManifest": {
+    "path": "docs/implementation/niche-themes-2026-10-23/habitat/measurement-consumer-source-manifest.json",
+    "sha256": "1a134514165ff8f4b38427dbc6c425371db4de93e0e9a44bdbaf2c914d142940",
+    "observed": [
+      {
+        "path": "packages/theme-engine/src/habitat-discovery.ts",
+        "expected": "342843da57a6eef8488d906218d4225338f9f3c0afe2bbcc49073f3f34a1f873",
+        "actual": "342843da57a6eef8488d906218d4225338f9f3c0afe2bbcc49073f3f34a1f873",
+        "matches": true
+      },
+      {
+        "path": "packages/theme-engine/src/habitat-theme.ts",
+        "expected": "0144fdf830ab3c5ddf42ebfcb86258b99e74ed8a8d724469012479705352e8c3",
+        "actual": "0144fdf830ab3c5ddf42ebfcb86258b99e74ed8a8d724469012479705352e8c3",
+        "matches": true
+      },
+      {
+        "path": "packages/theme-engine/test/habitat.test.ts",
+        "expected": "fd1fa3d30be0841e41f00e4226fde5d23880ef31232d5c57c83ececdc3124bfc",
+        "actual": "fd1fa3d30be0841e41f00e4226fde5d23880ef31232d5c57c83ececdc3124bfc",
+        "matches": true
+      },
+      {
+        "path": "docs/implementation/niche-themes-2026-10-23/habitat/discovery-form-roundtrip.test.ts",
+        "expected": "4447aa81d52698f79fde7389b0f968480186f8ce0c951733df6fc65ecd895a73",
+        "actual": "4447aa81d52698f79fde7389b0f968480186f8ce0c951733df6fc65ecd895a73",
+        "matches": true
+      },
+      {
+        "path": "packages/commerce-core/src/storefront-discovery.ts",
+        "expected": "c8de3871a998df011de12791db90c868139903b5c84afb211d9e9de3a1997ff1",
+        "actual": "c8de3871a998df011de12791db90c868139903b5c84afb211d9e9de3a1997ff1",
+        "matches": true
+      },
+      {
+        "path": "services/api-gateway/src/lib/storefront-discovery.ts",
+        "expected": "fa47b2c867e916ab082e5c420eed18751e4c313f98dd1ae2b19ec26de00afa37",
+        "actual": "fa47b2c867e916ab082e5c420eed18751e4c313f98dd1ae2b19ec26de00afa37",
+        "matches": true
+      },
+      {
+        "path": "apps/commerce/web/src/lib/theme-engine/storefront-discovery.ts",
+        "expected": "b59b34fbe89cf44f13f9dba56107f993af2632d4d2ed28fe3f9694e87743cbfc",
+        "actual": "b59b34fbe89cf44f13f9dba56107f993af2632d4d2ed28fe3f9694e87743cbfc",
+        "matches": true
+      }
+    ],
+    "allMatch": true
+  },
+  "sourceCheckpoint": "v2-editor-source-release-checkpoint-03.json",
+  "runtimeBindings": null,
+  "totals": {
+    "PASS": 0,
+    "FAIL": 0,
+    "NOT_RUN": 26
+  },
+  "recipeHandling": "Seeded14-product checkpoint stays frozen. Expand same furniture product and create two probes through normal merchant UI after allocation. Use acknowledged durable IDs, never static alias UUIDs.",
+  "cases": [
+    {
+      "id": "HI-01",
+      "status": "NOT_RUN",
+      "requirement": "Fresh installed2.0.0 source/tenant bindings and catalog/instance/release proof",
+      "reason": "No fresh runtime/site/origins allocated. Coordinator accepted source checkpoint03, but native390, repaired387 native catalog retest, accepted389/390 application qualification and explicit launch grant remain prerequisites.",
+      "evidence": [],
+      "acknowledgedApi": null,
+      "durableReadback": null
+    },
+    {
+      "id": "HI-02",
+      "status": "NOT_RUN",
+      "requirement": "Existing baseline readback then single-plan integration of proposed records",
+      "reason": "No fresh runtime/site/origins allocated. Coordinator accepted source checkpoint03, but native390, repaired387 native catalog retest, accepted389/390 application qualification and explicit launch grant remain prerequisites.",
+      "evidence": [],
+      "acknowledgedApi": null,
+      "durableReadback": null
+    },
+    {
+      "id": "HI-03",
+      "status": "NOT_RUN",
+      "requirement": "Common and variant merchant save/reload validation and exact real UUIDs",
+      "reason": "No fresh runtime/site/origins allocated. Coordinator accepted source checkpoint03, but native390, repaired387 native catalog retest, accepted389/390 application qualification and explicit launch grant remain prerequisites.",
+      "evidence": [],
+      "acknowledgedApi": null,
+      "durableReadback": null
+    },
+    {
+      "id": "HI-04",
+      "status": "NOT_RUN",
+      "requirement": "PublishA anonymous isolation; saveB,publishB,restoreA,draftB preservation and reapply",
+      "reason": "No fresh runtime/site/origins allocated. Coordinator accepted source checkpoint03, but native390, repaired387 native catalog retest, accepted389/390 application qualification and explicit launch grant remain prerequisites.",
+      "evidence": [],
+      "acknowledgedApi": null,
+      "durableReadback": null
+    },
+    {
+      "id": "HI-05",
+      "status": "NOT_RUN",
+      "requirement": "Real collection membership and actual collection/search response facets/labels",
+      "reason": "No fresh runtime/site/origins allocated. Coordinator accepted source checkpoint03, but native390, repaired387 native catalog retest, accepted389/390 application qualification and explicit launch grant remain prerequisites.",
+      "evidence": [],
+      "acknowledgedApi": null,
+      "durableReadback": null
+    },
+    {
+      "id": "HI-06",
+      "status": "NOT_RUN",
+      "requirement": "Incomplete and unmatched two-option selections remain common and purchase-blocked",
+      "reason": "No fresh runtime/site/origins allocated. Coordinator accepted source checkpoint03, but native390, repaired387 native catalog retest, accepted389/390 application qualification and explicit launch grant remain prerequisites.",
+      "evidence": [],
+      "acknowledgedApi": null,
+      "durableReadback": null
+    },
+    {
+      "id": "HI-07",
+      "status": "NOT_RUN",
+      "requirement": "SelectA whole assembled/package inch groups and inherited/overridden facts",
+      "reason": "No fresh runtime/site/origins allocated. Coordinator accepted source checkpoint03, but native390, repaired387 native catalog retest, accepted389/390 application qualification and explicit launch grant remain prerequisites.",
+      "evidence": [],
+      "acknowledgedApi": null,
+      "durableReadback": null
+    },
+    {
+      "id": "HI-08",
+      "status": "NOT_RUN",
+      "requirement": "SelectB,thenD width-only group; no stale/inherited missing depth",
+      "reason": "No fresh runtime/site/origins allocated. Coordinator accepted source checkpoint03, but native390, repaired387 native catalog retest, accepted389/390 application qualification and explicit launch grant remain prerequisites.",
+      "evidence": [],
+      "acknowledgedApi": null,
+      "durableReadback": null
+    },
+    {
+      "id": "HI-09",
+      "status": "NOT_RUN",
+      "requirement": "HQ-01..HQ-07 same-variant query conjunctions and inclusive cm boundary",
+      "reason": "No fresh runtime/site/origins allocated. Coordinator accepted source checkpoint03, but native390, repaired387 native catalog retest, accepted389/390 application qualification and explicit launch grant remain prerequisites.",
+      "evidence": [],
+      "acknowledgedApi": null,
+      "durableReadback": null
+    },
+    {
+      "id": "HI-10",
+      "status": "NOT_RUN",
+      "requirement": "HQ-04 zero-result independent width/depth clear,sort/query preservation",
+      "reason": "No fresh runtime/site/origins allocated. Coordinator accepted source checkpoint03, but native390, repaired387 native catalog retest, accepted389/390 application qualification and explicit launch grant remain prerequisites.",
+      "evidence": [],
+      "acknowledgedApi": null,
+      "durableReadback": null
+    },
+    {
+      "id": "HI-11",
+      "status": "NOT_RUN",
+      "requirement": "HQ-08..HQ-09 dimensions-only and missing-axis capability/input behavior",
+      "reason": "No fresh runtime/site/origins allocated. Coordinator accepted source checkpoint03, but native390, repaired387 native catalog retest, accepted389/390 application qualification and explicit launch grant remain prerequisites.",
+      "evidence": [],
+      "acknowledgedApi": null,
+      "durableReadback": null
+    },
+    {
+      "id": "HI-12",
+      "status": "NOT_RUN",
+      "requirement": "Assembled filter versus larger package measurements; no access guarantee",
+      "reason": "No fresh runtime/site/origins allocated. Coordinator accepted source checkpoint03, but native390, repaired387 native catalog retest, accepted389/390 application qualification and explicit launch grant remain prerequisites.",
+      "evidence": [],
+      "acknowledgedApi": null,
+      "durableReadback": null
+    },
+    {
+      "id": "HI-13",
+      "status": "NOT_RUN",
+      "requirement": "UnavailableC retains own resolved facts and disables purchase; no client bypass",
+      "reason": "No fresh runtime/site/origins allocated. Coordinator accepted source checkpoint03, but native390, repaired387 native catalog retest, accepted389/390 application qualification and explicit launch grant remain prerequisites.",
+      "evidence": [],
+      "acknowledgedApi": null,
+      "durableReadback": null
+    },
+    {
+      "id": "HI-14",
+      "status": "NOT_RUN",
+      "requirement": "AcceptedA count2 authoritative cart/reload,then overstock5 returns409 and recovery2",
+      "reason": "No fresh runtime/site/origins allocated. Coordinator accepted source checkpoint03, but native390, repaired387 native catalog retest, accepted389/390 application qualification and explicit launch grant remain prerequisites.",
+      "evidence": [],
+      "acknowledgedApi": null,
+      "durableReadback": null
+    },
+    {
+      "id": "HI-15",
+      "status": "NOT_RUN",
+      "requirement": "New real localCOD through hosted UI and canonical quote/confirm acknowledgement",
+      "reason": "No fresh runtime/site/origins allocated. Coordinator accepted source checkpoint03, but native390, repaired387 native catalog retest, accepted389/390 application qualification and explicit launch grant remain prerequisites.",
+      "evidence": [],
+      "acknowledgedApi": null,
+      "durableReadback": null
+    },
+    {
+      "id": "HI-16",
+      "status": "NOT_RUN",
+      "requirement": "Later normal merchant edit without resetting inventory; old order facts/options/money immutable",
+      "reason": "No fresh runtime/site/origins allocated. Coordinator accepted source checkpoint03, but native390, repaired387 native catalog retest, accepted389/390 application qualification and explicit launch grant remain prerequisites.",
+      "evidence": [],
+      "acknowledgedApi": null,
+      "durableReadback": null
+    },
+    {
+      "id": "HI-17",
+      "status": "NOT_RUN",
+      "requirement": "Missing/malformed historical snapshot is unknown; no current-product fallback",
+      "reason": "No fresh runtime/site/origins allocated. Coordinator accepted source checkpoint03, but native390, repaired387 native catalog retest, accepted389/390 application qualification and explicit launch grant remain prerequisites.",
+      "evidence": [],
+      "acknowledgedApi": null,
+      "durableReadback": null
+    },
+    {
+      "id": "HQ-01",
+      "status": "NOT_RUN",
+      "reason": "No fresh runtime/site/origins allocated. Coordinator accepted source checkpoint03, but native390, repaired387 native catalog retest, accepted389/390 application qualification and explicit launch grant remain prerequisites. No runtime390 capability/witness response or live variant UUIDs exists to evaluate this query.",
+      "expectationReference": "docs/implementation/niche-themes-2026-10-23/habitat/installed-fixture-matrix.plan.json#HQ-01",
+      "evidence": [],
+      "actualQueryResponse": null
+    },
+    {
+      "id": "HQ-02",
+      "status": "NOT_RUN",
+      "reason": "No fresh runtime/site/origins allocated. Coordinator accepted source checkpoint03, but native390, repaired387 native catalog retest, accepted389/390 application qualification and explicit launch grant remain prerequisites. No runtime390 capability/witness response or live variant UUIDs exists to evaluate this query.",
+      "expectationReference": "docs/implementation/niche-themes-2026-10-23/habitat/installed-fixture-matrix.plan.json#HQ-02",
+      "evidence": [],
+      "actualQueryResponse": null
+    },
+    {
+      "id": "HQ-03",
+      "status": "NOT_RUN",
+      "reason": "No fresh runtime/site/origins allocated. Coordinator accepted source checkpoint03, but native390, repaired387 native catalog retest, accepted389/390 application qualification and explicit launch grant remain prerequisites. No runtime390 capability/witness response or live variant UUIDs exists to evaluate this query.",
+      "expectationReference": "docs/implementation/niche-themes-2026-10-23/habitat/installed-fixture-matrix.plan.json#HQ-03",
+      "evidence": [],
+      "actualQueryResponse": null
+    },
+    {
+      "id": "HQ-04",
+      "status": "NOT_RUN",
+      "reason": "No fresh runtime/site/origins allocated. Coordinator accepted source checkpoint03, but native390, repaired387 native catalog retest, accepted389/390 application qualification and explicit launch grant remain prerequisites. No runtime390 capability/witness response or live variant UUIDs exists to evaluate this query.",
+      "expectationReference": "docs/implementation/niche-themes-2026-10-23/habitat/installed-fixture-matrix.plan.json#HQ-04",
+      "evidence": [],
+      "actualQueryResponse": null
+    },
+    {
+      "id": "HQ-05",
+      "status": "NOT_RUN",
+      "reason": "No fresh runtime/site/origins allocated. Coordinator accepted source checkpoint03, but native390, repaired387 native catalog retest, accepted389/390 application qualification and explicit launch grant remain prerequisites. No runtime390 capability/witness response or live variant UUIDs exists to evaluate this query.",
+      "expectationReference": "docs/implementation/niche-themes-2026-10-23/habitat/installed-fixture-matrix.plan.json#HQ-05",
+      "evidence": [],
+      "actualQueryResponse": null
+    },
+    {
+      "id": "HQ-06",
+      "status": "NOT_RUN",
+      "reason": "No fresh runtime/site/origins allocated. Coordinator accepted source checkpoint03, but native390, repaired387 native catalog retest, accepted389/390 application qualification and explicit launch grant remain prerequisites. No runtime390 capability/witness response or live variant UUIDs exists to evaluate this query.",
+      "expectationReference": "docs/implementation/niche-themes-2026-10-23/habitat/installed-fixture-matrix.plan.json#HQ-06",
+      "evidence": [],
+      "actualQueryResponse": null
+    },
+    {
+      "id": "HQ-07",
+      "status": "NOT_RUN",
+      "reason": "No fresh runtime/site/origins allocated. Coordinator accepted source checkpoint03, but native390, repaired387 native catalog retest, accepted389/390 application qualification and explicit launch grant remain prerequisites. No runtime390 capability/witness response or live variant UUIDs exists to evaluate this query.",
+      "expectationReference": "docs/implementation/niche-themes-2026-10-23/habitat/installed-fixture-matrix.plan.json#HQ-07",
+      "evidence": [],
+      "actualQueryResponse": null
+    },
+    {
+      "id": "HQ-08",
+      "status": "NOT_RUN",
+      "reason": "No fresh runtime/site/origins allocated. Coordinator accepted source checkpoint03, but native390, repaired387 native catalog retest, accepted389/390 application qualification and explicit launch grant remain prerequisites. No runtime390 capability/witness response or live variant UUIDs exists to evaluate this query.",
+      "expectationReference": "docs/implementation/niche-themes-2026-10-23/habitat/installed-fixture-matrix.plan.json#HQ-08",
+      "evidence": [],
+      "actualQueryResponse": null
+    },
+    {
+      "id": "HQ-09",
+      "status": "NOT_RUN",
+      "reason": "No fresh runtime/site/origins allocated. Coordinator accepted source checkpoint03, but native390, repaired387 native catalog retest, accepted389/390 application qualification and explicit launch grant remain prerequisites. No runtime390 capability/witness response or live variant UUIDs exists to evaluate this query.",
+      "expectationReference": "docs/implementation/niche-themes-2026-10-23/habitat/installed-fixture-matrix.plan.json#HQ-09",
+      "evidence": [],
+      "actualQueryResponse": null
+    }
+  ],
+  "overallEditorWork": "IN_PROGRESS; this bounded report does not end all10 lifecycle work"
+}

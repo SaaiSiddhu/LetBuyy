@@ -1,0 +1,49 @@
+{
+  "recordedAt": "2026-10-24T01:22:54.603229+00:00",
+  "status": "ROOT_PERSISTENT_MARKETPLACE_RESTART_SOURCE_PROCESS_CONSERVATION_ADMITTED_FINITE_UI_REGRANTED",
+  "localId": "ed52fedf85eb",
+  "supersedesOldProcessMetadataOnly": "marketplace-persistent-local-startup-admission.json",
+  "sourceEpoch": "8c89302c8b1991d8bde035d9debe099f8460d24255a794c51a4157daec4f2082",
+  "startedAt": "2026-10-24T01:14:42.495Z",
+  "supervisorPid": 67051,
+  "childPids": [
+    67358,
+    67536,
+    68189,
+    69071,
+    69679
+  ],
+  "actualPidIdentitiesIndependentlyChecked": true,
+  "finalTransportHashesLoadedBeforeStartup": {
+    "scripts/dev/theme-marketplace-local.mjs": "67c1232c48fa0ce46d78911c76b34e1012fa218645d64ea037d96bf0c0f5889c",
+    "scripts/dev/theme-marketplace-local-support.mjs": "9f758f51d277174b043c7d6293323021b75a8a3bddeafe4493b02c1a988461b0",
+    "scripts/dev/theme-marketplace-worker.mjs": "1ea7059ac200f6634788431cb79d55df888df2add384d4eab5744e6f08b18fe0"
+  },
+  "allSevenProtectedFullTableHashesExactAcrossRestart": true,
+  "protectedSha256": "d573f7a7109fa17661faa6ead967ca6abd799558c2b591027dbeb2ac68757ab3",
+  "draftVersion": 1,
+  "draftConfigMd5": "899a958a04d16dcee424fc95e2985f14",
+  "ownerRestartEvidence": [
+    {
+      "path": "docs/implementation/theme-marketplace-2026-10-23/evidence/persistent-local-restart-ready.json",
+      "sha256": "da847623c7d92626fd7ce79598885597b8ce933eed4c5ad4fb6e4a38e4430cac"
+    },
+    {
+      "path": "docs/implementation/theme-marketplace-2026-10-23/evidence/persistent-local-stopped.json",
+      "sha256": "edc5fa0213d61252b8839f04537dcc0001044014cb69fbfa01d71c3424213e01"
+    },
+    {
+      "path": "docs/implementation/theme-marketplace-2026-10-23/evidence/persistent-local-protected-after-restart.json",
+      "sha256": "33c41324435a50ca9bd233a6e6b475b93420caac09675b9ce25fa0d4f249422c"
+    },
+    {
+      "path": "docs/implementation/theme-marketplace-2026-10-23/evidence/persistent-local-http-after-restart.json",
+      "sha256": "a1b7d0e24b1669be400ab86e01e557ff37fac01509a9ab39415b13e743a338fd"
+    }
+  ],
+  "coordinationRace": "Owner announced/completed restart before receiving first browser grant; Root held Editor after only an ordinary gallery GET, no login/Add/mutation. New metadata now checked; no product failure or duplicate request inferred.",
+  "browserLease": "Regranted sole Editor normal preview/new-domain sign-in/one same-selection Add/editor/library; no Save/Publish. No further owner restart while lease active.",
+  "normalAuthExpiry": "Unchanged",
+  "applicationShutdownExpiry": null,
+  "fullProgrammeAccepted": false
+}

@@ -1,0 +1,481 @@
+- navigation:
+  - link "Shopify Theme Store":
+    - /url: /
+    - generic: Shopify Theme Store
+  - button "Browse themes":
+    - text: Browse themes
+  - button "Search":
+  - generic "My Store 4":
+- main:
+  - button "Close demo":
+  - button "Desktop":
+  - button "Mobile" [active]:
+  - button "Maximize demo":
+  - button "Try theme":
+    - generic: Try theme
+  - iframe:
+    - link "Skip to content":
+      - /url: "#MainContent"
+    - region "Announcement":
+      - link "NEW FINS HAVE LANDED 🏄 SHOP NOW":
+        - /url: /collections/fins
+        - paragraph:
+          - text: NEW FINS HAVE LANDED 🏄 SHOP NOW
+    - banner:
+      - button "Menu":
+      - link "Ride logo":
+        - /url: /
+        - img "Ride logo"
+      - button "Search":
+      - link "Cart 2 items":
+        - /url: /cart
+        - generic: Cart
+        - generic: "2"
+        - generic: 2 items
+    - dialog "Item added to your cart":
+      - heading "Item added to your cart" [level=2]:
+        - text: Item added to your cart
+      - button "Close":
+      - img "FILIPE TOLEDO WILDFIRE"
+      - heading "FILIPE TOLEDO WILDFIRE" [level=3]
+      - term: "Size:"
+      - definition: 5'3"
+      - link "View my cart (2)":
+        - /url: /cart
+      - button "Check out"
+      - button "Continue shopping"
+    - main:
+      - region "Gallery Viewer":
+        - link "Skip to product information":
+          - /url: "#ProductInfo-template--17836803850408__main"
+        - button "Open media 1 in modal":
+          - generic: Open media 1 in modal
+        - button "Open media 2 in modal":
+          - generic: Open media 2 in modal
+        - button "Open media 3 in modal":
+          - generic: Open media 3 in modal
+        - button "Slide left" [disabled]:
+        - generic: "1"
+        - generic: /
+        - generic: of
+        - generic: "4"
+        - button "Slide right":
+      - paragraph: RIDE
+      - heading "FILIPE TOLEDO WILDFIRE" [level=1]
+      - status:
+        - generic: Regular price
+        - text: $330.00 USD
+      - group "Size":
+        - generic: Size
+        - radio "5'3\"" [checked]
+        - generic: 5'3"
+        - radio "5'11\""
+        - generic: 5'11"
+      - generic: Quantity
+      - button "Decrease quantity for FILIPE TOLEDO WILDFIRE":
+        - generic: Decrease quantity for FILIPE TOLEDO WILDFIRE
+      - spinbutton "Quantity": "2"
+      - button "Increase quantity for FILIPE TOLEDO WILDFIRE":
+        - generic: Increase quantity for FILIPE TOLEDO WILDFIRE
+      - button "Add to cart":
+        - generic: Add to cart
+      - button "Buy it now"
+      - paragraph:
+        - emphasis:
+          - generic: This is a demonstration store. You can purchase products like this from
+          - link "Softech":
+            - /url: https://www.softechsoftboards.com/
+          - text: .
+      - paragraph: More refined than most of its counterparts in the range, and with the scales tipping firmly towards performance, the FT wildfire raises the yardstick for softboard shredding.
+      - button "Share":
+        - text: Share
+      - heading "Collapsible content" [level=2]
+      - img "A man performs tricks on a blue surf board."
+      - button "DETAILS" [expanded]:
+        - heading "DETAILS" [level=3]
+      - region "DETAILS":
+        - paragraph:
+          - strong: "Size:"
+          - text: 5'3" / 5'11"
+          - strong: Dimensions
+          - text: ": 5'3 x 19 x 2 5/8 x 32L , 5'11 x 20 5/8 x 2 3/4 x 37L"
+          - strong: "Core:"
+          - text: 100% Waterproof X-Density EPS Foam Core
+          - strong: "Stringer:"
+          - text: Double Stringer
+          - strong: "Fin Setup:"
+          - text: Thruster (x3 FCS II Fin Setup)
+          - strong: "Fin System:"
+          - text: FCS II
+          - strong: "Volume:"
+          - text: "5'3\": 32L | 5'11\": 37L"
+        - paragraph:
+          - strong:
+            - text: + Leash Plug installed
+            - text: + FCS II Softflex Fins included
+      - button "TIPS FROM THE PROS":
+        - heading "TIPS FROM THE PROS" [level=3]
+      - button "SHIPPING":
+        - heading "SHIPPING" [level=3]
+      - heading "RIDE WITH US" [level=2]
+      - paragraph: Be the first to know about new collections and exclusive offers.
+      - textbox "Email"
+      - generic: Email
+      - button "Subscribe":
+    - contentinfo:
+      - heading "ABOUT RIDE" [level=2]
+      - list:
+        - link "STORIES":
+          - /url: /blogs/stories
+        - link "RIDE TEAM":
+          - /url: /pages/meet-the-team
+        - link "CONTACT":
+          - /url: /pages/contact
+      - paragraph: We find freedom in the waves, and our journey to find those waves is half the fun.
+      - list:
+        - link "Facebook":
+          - /url: https://facebook.com/shopify
+          - generic: Facebook
+        - link "Instagram":
+          - /url: http://instagram.com/shopify
+          - generic: Instagram
+        - link "YouTube":
+          - /url: https://www.youtube.com/shopify
+          - generic: YouTube
+      - generic: Payment methods
+      - list:
+        - img "Visa"
+        - img "Mastercard"
+        - img "American Express"
+        - img "PayPal"
+        - img "Diners Club"
+        - img "Discover"
+      - text: © 2026,
+      - link "theme-ride-demo":
+        - /url: /
+      - link "Powered by Shopify":
+        - /url: https://www.shopify.com?utm_campaign=poweredby&utm_medium=shopify&utm_source=onlinestore
+  - generic: View demo
+  - heading "Ride" [level=1]
+  - list:
+    - link "Overview":
+      - /url: "#overview"
+    - link "Features":
+      - /url: "#features"
+    - link "Reviews":
+      - /url: "#reviews"
+    - link "Support":
+      - /url: "#ReleaseNotes"
+  - generic: Free
+  - generic: •
+  - text: 39%
+  - button "View demo" [disabled]
+  - button "Try theme":
+    - generic: Try theme
+  - heading "Ride" [level=1]
+  - paragraph: Free
+  - paragraph: A distinct, dynamic theme that champions the world of sports.
+  - paragraph:
+    - text: by
+    - link "Shopify":
+      - /url: "#ReleaseNotes"
+  - figure "Sleek, sports-centric design A winning combination of a dark background, bold typography, and accent colors makes your sporting goods pop.":
+    - button "Sleek, sports-centric design":
+      - img "Sleek, sports-centric design"
+    - strong: Sleek, sports-centric design
+    - paragraph: A winning combination of a dark background, bold typography, and accent colors makes your sporting goods pop.
+  - figure "Innovative and flexible layout Unique page templates and asymmetrical layouts let you showcase products, teams, and everything in between.":
+    - button "Innovative and flexible layout":
+      - img "Innovative and flexible layout"
+    - strong: Innovative and flexible layout
+    - paragraph: Unique page templates and asymmetrical layouts let you showcase products, teams, and everything in between.
+  - figure "Advanced customization options Flexible design and customization settings to achieve your desired vision without having to touch any code.":
+    - button "Advanced customization options":
+      - img "Advanced customization options"
+    - strong: Advanced customization options
+    - paragraph: Flexible design and customization settings to achieve your desired vision without having to touch any code.
+  - separator:
+    - separator
+    - generic: WHAT'S INCLUDED
+    - separator
+  - heading "Features" [level=2]
+  - heading "Cart and checkout" [level=3]
+  - list:
+    - generic: Cart notes
+    - generic: In-store pickups
+    - generic: Quick buy
+  - heading "Marketing and conversion" [level=3]
+  - list:
+    - generic: Blogs
+    - generic: Cross-selling
+    - generic: FAQ page
+    - generic: Press coverage
+    - generic: Promo banners
+    - generic: Recommended products
+  - heading "Merchandising" [level=3]
+  - list:
+    - generic: Color swatches
+    - generic: High-resolution images
+    - generic: Image galleries
+    - generic: Image rollover
+    - generic: Image zoom
+    - generic: Ingredients or nutritional information
+    - generic: Lookbooks
+    - generic: Product videos
+    - generic: Shipping/delivery information
+    - generic: Size chart
+    - generic: Slideshow
+    - generic: Usage information
+  - heading "Product discovery" [level=3]
+  - list:
+    - generic: Collection page navigation
+    - generic: Enhanced search
+    - generic: Mega menu
+    - generic: Product filtering and sorting
+    - generic: Recommended products
+    - generic: Sticky header
+    - generic: Swatch filters
+  - separator:
+    - separator
+  - heading "Reviews" [level=2]
+  - note: 39% positive
+  - note: 23 reviews
+  - group "Positive reviews":
+    - generic: Positive reviews
+    - progressbar: 39%
+    - generic: "9"
+  - group "Neutral reviews":
+    - generic: Neutral reviews
+    - progressbar: 35%
+    - generic: "8"
+  - group "Negative reviews":
+    - generic: Negative reviews
+    - progressbar: 26%
+    - generic: "6"
+  - link "Write a review":
+    - /url: /themes/ride/styles/ride/reviews/new
+  - link "All reviews":
+    - /url: /themes/ride/presets/ride/reviews
+  - article:
+    - heading "Gloombear's Provisions" [level=3]
+    - time: Oct 16, 2026
+    - paragraph: This theme is the one and only that I have tried and I have only had a few issues which is more using Shopify than the actual theme, but that is all part of the learning curve. This theme has been amazing and I would recommend it to anyone just starting out.
+  - article:
+    - heading "Poggerz Supplies" [level=3]
+    - time: Dec 22, 2025
+    - paragraph: Have used this theme for years and its worked great for a FREE theme. Thanks for updates!!
+    - complementary "Merchant reply":
+      - heading "Reply from designer" [level=4]
+      - time: Dec 23, 2025
+      - paragraph: Hi, we appreciate you sharing your experience. It’s great to know the theme has worked well for you over the years, and we’re grateful for your support and feedback on the updates.
+  - article:
+    - heading "Popshop" [level=3]
+    - time: Dec 3, 2025
+    - paragraph: i love this dynamic design for my store. i failed with 2 other free themes, so just afraid to try and waste my time, i had to delete all my lists.is this happening because i use free themes. i don't like to pay until all listed properly to publish. advice please
+    - complementary "Merchant reply":
+      - heading "Reply from designer" [level=4]
+      - time: Dec 18, 2025
+      - paragraph: Hello, and thank you for your feedback. We’re not fully understanding your concern, but if you need advice or help with listing and publishing products while using free themes, our Support team (https://bit.ly/2AWw5VA) is available to assist you with your store setup.
+  - article:
+    - heading "Diogo Simões" [level=3]
+    - time: Nov 28, 2025
+    - paragraph: I need assistance, how do I disable a ripple effect when adding a product to cart or clicking on a button that opens a quick buy? I have a huge bubble being created every time I click... The rest of the theme is ok. I'd like to get help...
+    - complementary "Merchant reply":
+      - heading "Reply from designer" [level=4]
+      - time: Dec 18, 2025
+      - paragraph: Hello, and thank you for your feedback. We haven’t been able to reproduce the button ripple effect issue with a clean installation of the Ride theme. Please contact our Support team (https://bit.ly/2AWw5VA) for further assistance so they can help investigate and resolve this for you.
+  - heading "Designed by Shopify" [level=2]
+  - link "Get support":
+    - /url: https://support.shopify.com/
+  - link "All themes":
+    - /url: /designers/shopify
+  - heading "Version 16.1.0" [level=3]
+  - generic: •
+  - generic: October 09, 2026
+  - paragraph: Product disclosures now only show to buyers in the jurisdictions they apply to. For example, a California-only disclosure no longer appears for online shoppers in other locations.
+  - link "View details":
+    - /url: https://themes.shopify.com/themes/ride/presets/ride/modal_version_details?open_first=true
+  - link "All versions":
+    - /url: https://themes.shopify.com/themes/ride/presets/ride/modal_version_details
+  - heading "Theme documentation" [level=3]
+  - paragraph:
+    - link "View details":
+      - /url: https://help.shopify.com/en/manual/online-store/themes/themes-by-shopify/ride
+      - text: View details
+  - heading "Designer contact details" [level=3]
+  - paragraph: 151 O’Connor St, Ottawa, ON, ON, CA
+  - heading "More themes for sports" [level=2]
+  - link "View all":
+    - /url: https://themes.shopify.com/themes?industry%5B%5D=sports
+  - button "Previous" [disabled]:
+  - button "Next":
+  - link "Details about the Workout theme":
+    - /url: https://themes.shopify.com/themes/azimuth/presets/workout
+    - img "Workout"
+    - paragraph: Workout
+    - generic: $380
+    - status: New
+  - link "Details about the Attitude theme":
+    - /url: https://themes.shopify.com/themes/attitude/presets/attitude
+    - img "Attitude"
+    - paragraph: Attitude
+    - generic: $320
+    - status: New
+  - link "Details about the Outlet theme":
+    - /url: https://themes.shopify.com/themes/enterprise/presets/outlet
+    - img "Outlet"
+    - paragraph: Outlet
+    - generic: $420
+    - generic "90% positive":
+      - generic: 90%
+  - link "Details about the Duke theme":
+    - /url: https://themes.shopify.com/themes/symmetry/presets/duke
+    - img "Duke"
+    - paragraph: Duke
+    - generic: $420
+    - generic "94% positive":
+      - generic: 94%
+  - link "Details about the Terrain theme":
+    - /url: https://themes.shopify.com/themes/impulse/presets/terrain
+    - img "Terrain"
+    - paragraph: Terrain
+    - generic: $500
+    - generic "94% positive":
+      - generic: 94%
+  - link "Details about the Snow theme":
+    - /url: https://themes.shopify.com/themes/stretch/presets/snow
+    - img "Snow"
+    - paragraph: Snow
+    - generic: $400
+    - generic "88% positive":
+      - generic: 88%
+  - link "Details about the Vigor theme":
+    - /url: https://themes.shopify.com/themes/maximize/presets/vigor
+    - img "Vigor"
+    - paragraph: Vigor
+    - generic: $220
+    - generic "100% positive":
+      - generic: 100%
+  - link "Details about the Pedal theme":
+    - /url: https://themes.shopify.com/themes/envy/presets/pedal
+    - img "Pedal"
+    - paragraph: Pedal
+    - generic: $320
+    - generic "91% positive":
+      - generic: 91%
+    - status: New
+  - link "Details about the Vortex theme":
+    - /url: https://themes.shopify.com/themes/avante/presets/vortex
+    - img "Vortex"
+    - paragraph: Vortex
+    - generic: $380
+    - generic "100% positive":
+      - generic: 100%
+  - link "Details about the Mesh theme":
+    - /url: https://themes.shopify.com/themes/warehouse/presets/mesh
+    - img "Mesh"
+    - paragraph: Mesh
+    - generic: $320
+    - generic "84% positive":
+      - generic: 84%
+  - generic: Crafted for commerce
+  - heading "The world’s best online stores use Shopify themes" [level=2]
+  - term: Future proof
+  - definition: Regularly updated and always works with the newest Shopify features.
+  - term: Play before you pay
+  - definition: Customize until you love it. Only pay when you publish.
+  - term: Blazing fast checkout
+  - definition: Speed-tested so your customers check out in record time.
+  - term: Keep it forever
+  - definition: One-time payment, lifetime license for your store. No expiration.
+- contentinfo:
+  - heading "Top industries" [level=6]
+  - link "Clothing":
+    - /url: https://themes.shopify.com/themes?industry%5B%5D=clothing
+  - link "Beauty":
+    - /url: https://themes.shopify.com/themes?industry%5B%5D=beauty
+  - link "Jewelry and accessories":
+    - /url: https://themes.shopify.com/themes?industry%5B%5D=jewelry-and-accessories
+  - link "Home":
+    - /url: https://themes.shopify.com/themes?industry%5B%5D=home
+  - heading "Categories" [level=6]
+  - link "All themes":
+    - /url: https://themes.shopify.com/themes
+  - link "Free themes":
+    - /url: https://themes.shopify.com/themes?price=free
+  - heading "Support" [level=6]
+  - link "Shopify Help Center":
+    - /url: https://help.shopify.com/en/
+  - link "API Documentation":
+    - /url: https://shopify.dev/api
+  - link "Shopify Community":
+    - /url: https://community.shopify.com/c/shopify-community-en/ct-p/en
+  - link "Blogs":
+    - /url: https://www.shopify.com/blog
+  - heading "Shopify" [level=6]
+  - link "About":
+    - /url: https://www.shopify.com/about
+  - link "Partners":
+    - /url: https://www.shopify.com/partners
+  - link "Legal":
+    - /url: https://www.shopify.com/legal
+  - link "Service status":
+    - /url: https://shopifystatus.com
+  - separator
+  - link "Terms of Service":
+    - /url: https://www.shopify.com/legal/terms
+  - link "Privacy Policy":
+    - /url: https://www.shopify.com/legal/privacy
+  - link "Your Privacy Choices California Consumer Privacy Act (CCPA) Opt-Out Icon":
+    - /url: https://privacy.shopify.com/en
+    - text: Your Privacy Choices
+    - img "California Consumer Privacy Act (CCPA) Opt-Out Icon"
+  - link "Sitemap":
+    - /url: https://themes.shopify.com/sitemap
+  - combobox "Change your language":
+    - option "Català"
+    - option "Čeština"
+    - option "Dansk"
+    - option "Deutsch"
+    - option "Eesti"
+    - option "English" [selected]
+    - option "Español"
+    - option "Euskara"
+    - option "Français"
+    - option "Galego"
+    - option "Hrvatski"
+    - option "Indonesia"
+    - option "Italiano"
+    - option "Latviešu"
+    - option "Lietuvių"
+    - option "Magyar"
+    - option "Melayu"
+    - option "Nederlands"
+    - option "Norsk (bokmål)"
+    - option "Polski"
+    - option "Português (Brasil)"
+    - option "Português (Portugal)"
+    - option "Română"
+    - option "Slovenčina"
+    - option "Slovenščina"
+    - option "Suomi"
+    - option "Svenska"
+    - option "Tiếng Việt"
+    - option "Türkçe"
+    - option "Ελληνικά"
+    - option "Български"
+    - option "Русский"
+    - option "Српски"
+    - option "Українська"
+    - option "मराठी"
+    - option "हिन्दी"
+    - option "বাংলা"
+    - option "ગુજરાતી"
+    - option "தமிழ்"
+    - option "తెలుగు"
+    - option "ภาษาไทย"
+    - option "Ქართული"
+    - option "日本語"
+    - option "简体中文"
+    - option "繁體中文"
+    - option "한국어"

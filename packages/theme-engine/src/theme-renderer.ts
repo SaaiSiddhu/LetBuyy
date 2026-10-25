@@ -35,6 +35,7 @@ import { validateAndScopeCustomCss } from './custom-css-sanitizer';
 // SUSTAINED-G3 — the single canonical translation resolver (India-first fallback chain,
 // prototype-pollution-guarded). Do not reintroduce a second, duplicate lookup here.
 import { tLocale } from './theme-locale';
+import { fontFamilyWithFallback } from './experience-fonts';
 import type {
   BlockModel,
   SectionModel,
@@ -84,6 +85,8 @@ export interface LiquidCommerceDrops {
   request?: Record<string, unknown>;
   settings?: Record<string, unknown>;
   product?: unknown;
+  /** Validated public product drops keyed by the rendered section id. */
+  section_products?: Record<string, unknown[]>;
   collection?: unknown;
   collections?: unknown;
   cart?: unknown;
@@ -123,6 +126,8 @@ export interface LiquidRenderedBlock {
   html: string;
   settings: Record<string, unknown>;
   isAppBlock: boolean;
+  /** Safe attribute fragment for an inline block root, empty outside editor preview. */
+  editorAttributes?: string;
   /**
    * Phase T — rendered nested child blocks (depth-bounded).
    * Populated when a block's bundle definition carries nested block.blocks entries
@@ -545,6 +550,30 @@ function sanitizeCssTokenValue(value: string): string {
   return value.replace(/[<>{};@()]/g, '').trim().slice(0, 120);
 }
 
+function serializeLiquidFontFamily(value: string, fallback: string): string {
+  const generic = new Set(['serif', 'sans-serif', 'monospace', 'cursive', 'fantasy', 'system-ui', 'ui-serif', 'ui-sans-serif', 'ui-monospace', 'ui-rounded', 'math', 'emoji', 'fangsong', '-apple-system', 'blinkmacsystemfont']);
+  const cssWide = new Set(['inherit', 'initial', 'revert', 'revert-layer', 'unset']);
+  function serialize(input: string): string | null {
+    if (!input.trim() || input.length > 120 || /[\u0000-\u001f\u007f<>{};@()\\]/.test(input)) return null;
+    const families: string[] = [];
+    let quote = '', start = 0;
+    for (let i = 0; i < input.length; i++) {
+      const character = input[i]!;
+      if (character === '"' || character === "'") { if (!quote) quote = character; else if (quote === character) quote = ''; }
+      if (character === ',' && !quote) { families.push(input.slice(start, i).trim()); start = i + 1; }
+    }
+    if (quote) return null;
+    families.push(input.slice(start).trim());
+    const names = families.map(family => ((family.startsWith('"') && family.endsWith('"')) || (family.startsWith("'") && family.endsWith("'"))) ? family.slice(1, -1) : family);
+    if (names.some(name => !name || !/^[a-zA-Z0-9][a-zA-Z0-9 ,_-]*$/.test(name) && name !== '-apple-system')) return null;
+    if (names.length === 1 && cssWide.has(names[0]!.toLowerCase()) && !/^["']/.test(families[0]!)) return names[0]!.toLowerCase();
+    if (names.some((name, i) => cssWide.has(name.toLowerCase()) && !/^["']/.test(families[i]!))) return null;
+    if (names.length === 1 && !generic.has(names[0]!.toLowerCase())) return fontFamilyWithFallback(names[0]!);
+    return names.map((name, i) => generic.has(name.toLowerCase()) && !/^["']/.test(families[i]!) ? name : JSON.stringify(name)).join(', ');
+  }
+  return serialize(value) || serialize(fallback) || fontFamilyWithFallback('Inter');
+}
+
 function buildLiquidRootTokenBlock(bundle: LiquidThemePackageBundle): string {
   const current = (bundle.config?.settings_data?.current ?? {}) as Record<string, unknown>;
   const seen = new Set<string>();
@@ -552,7 +581,9 @@ function buildLiquidRootTokenBlock(bundle: LiquidThemePackageBundle): string {
   for (const [key, cssVar, fallback] of LIQUID_THEME_TOKEN_MAP) {
     const raw = current[key];
     const value = typeof raw === 'string' && raw.trim().length > 0 ? raw : fallback;
-    decls.push(`${cssVar}:${sanitizeCssTokenValue(value)};`);
+    const token = cssVar === '--font-body' || cssVar === '--font-display'
+      ? serializeLiquidFontFamily(value, fallback) : sanitizeCssTokenValue(value);
+    decls.push(`${cssVar}:${token};`);
     seen.add(cssVar);
   }
   if (!seen.has('--border-color')) decls.push('--border-color:rgba(0,0,0,0.1);');
@@ -754,6 +785,7 @@ async function renderLiquidTemplateSections(
                             id: sectionId,
                             type: resolvedType,
                             settings: resolvedSectionSettings,
+                            products: toLiquidDrop(input.liquidContext?.section_products?.[sectionId] ?? []),
                             blocks: renderedBlocks.map((block) => ({
                                 id: block.id,
                                 type: block.type,
@@ -761,6 +793,7 @@ async function renderLiquidTemplateSections(
                                 content: block.html,
                                 html: block.html,
                                 is_app_block: block.isAppBlock,
+                                editor_attributes: block.editorAttributes ?? '',
                                 // Phase T: expose rendered child blocks in the section-level block drop
                                 sub_blocks: (block.sub_blocks ?? []).map((child) => ({
                                     id: child.id,
@@ -769,6 +802,7 @@ async function renderLiquidTemplateSections(
                                     content: child.html,
                                     html: child.html,
                                     is_app_block: child.isAppBlock,
+                                    editor_attributes: child.editorAttributes ?? '',
                                 })),
                             })),
                             block_order: renderedBlocks.map((block) => block.id),
@@ -899,7 +933,7 @@ export class LiquidRenderer implements ThemeRenderer {
     // layoutHtml already gets below; this is the SAME raw input run through the SAME allowHeadMetadata
     // DOMPurify config, just also captured as plain CSS text for a caller that renders a real <style>
     // element instead of nesting a document. See sanitizeLiquidHeadStyleText's own doc comment.
-    const headStyleText = await sanitizeLiquidHeadStyleText(themeHeadAssets);
+    // Layout-owned styles are collected after the complete document is rendered below.
     const embedHeader = await renderLiquidEmbedRegion(input.liquidAppEmbeds?.header, { allowHeadMetadata: true });
     const contentForHeader = `${themeHeadAssets}${embedHeader}`;
     const contentForFooter = await renderLiquidEmbedRegion(input.liquidAppEmbeds?.footer);
@@ -995,7 +1029,7 @@ export class LiquidRenderer implements ThemeRenderer {
       sections: renderedSections,
       header: headerHtml,
       footer: footerHtml,
-      headStyleText,
+      headStyleText: await sanitizeLiquidHeadStyleText(layoutHtml, true),
     };
     const composition = composeLiquidStorefrontTheme(input, bundle, templateKey);
     s7ProfileMark('LiquidRenderer.render:total', s7RenderStart, { path: input.context.path, sanitizeCalls: s7ProfileSanitizeCallCount });
@@ -1139,6 +1173,7 @@ async function renderLiquidSectionBlocks(
   for (const blockId of blockIds) {
     const block = input.section.blocks[blockId];
     if (!block || block.disabled) continue;
+    const editorAttributes = input.input.context.previewMode ? `data-block-id="${escapeHtmlAttribute(blockId)}"` : '';
 
     if (isLiquidAppBlockType(block.type)) {
       // Phase Y — App-block crash isolation (RISK: one bad app block must not crash the
@@ -1169,34 +1204,29 @@ async function renderLiquidSectionBlocks(
         settings: appBlockSettings,
         html: appBlockHtml,
         isAppBlock: true,
+        editorAttributes,
       });
       continue;
     }
 
     const blockFile = input.bundle.blocks[block.type];
-    if (!blockFile) {
-      const sectionFile = input.bundle.sections[input.sectionType];
-      const inlineBlockAllowed = sectionFile?.schema.blocks.some((candidate) => candidate.type === block.type) === true;
-      if (inlineBlockAllowed) {
-        blocks.push({
-          id: blockId,
-          type: block.type,
-          settings: block.settings,
-          html: '',
-          isAppBlock: false,
-        });
-      }
-      continue;
-    }
+    const sectionFile = input.bundle.sections[input.sectionType];
+    const inlineBlockAllowed = sectionFile?.schema.blocks.some((candidate) => candidate.type === block.type) === true;
+    if (!blockFile && !inlineBlockAllowed) continue;
 
     // C1: block-level try/catch — a broken block source must not crash the enclosing section render.
     // On error the block is included with empty html so the section template can still render its structure.
     let blockHtml = '';
+    // Existing reusable parents retain their canonical child path. Newly exposed inline
+    // child drops include installed first-party reusable definitions only; app seams stay dormant.
+    const nestedBlocks = blockFile ? block.blocks ?? {} : Object.fromEntries(
+      Object.entries(block.blocks ?? {}).filter(([, child]) => !isLiquidAppBlockType(child.type) && Object.hasOwn(input.bundle.blocks, child.type)),
+    );
     // Phase T: render child blocks first (before the parent) so sub_blocks is available in the
     // parent block's Liquid scope.  Depth guard: stop at RENDERER_MAX_BLOCK_DEPTH silently.
     let subBlockResults: LiquidRenderedBlock[] = [];
     try {
-      if (depth < RENDERER_MAX_BLOCK_DEPTH && Object.keys(block.blocks ?? {}).length > 0) {
+      if (depth < RENDERER_MAX_BLOCK_DEPTH && Object.keys(nestedBlocks).length > 0) {
         // Treat the block's nested children as a pseudo-section for the recursive call.
         // Per-child crash isolation is provided by the inner try/catch in the recursive invocation.
         subBlockResults = await renderLiquidSectionBlocks(
@@ -1209,8 +1239,8 @@ async function renderLiquidSectionBlocks(
             section: {
               type: block.type,
               settings: block.settings,
-              blocks: block.blocks ?? {},
-              block_order: block.block_order ?? [],
+              blocks: nestedBlocks,
+              block_order: (block.block_order ?? []).filter(id => Object.hasOwn(nestedBlocks, id)),
               disabled: false,
             },
           },
@@ -1218,33 +1248,37 @@ async function renderLiquidSectionBlocks(
         );
       }
 
-      const rawBlockHtml = await input.engine.parseAndRender(
-        blockFile.source,
-        buildLiquidScope(input.input, input.bundle, {
-          section: {
-            id: input.sectionId,
-            type: input.sectionType,
-            settings: input.section.settings,
-          },
-          block: {
-            id: blockId,
-            type: block.type,
-            settings: block.settings,
-            schema: blockFile.schema,
-            // Phase T: thread rendered child blocks into the parent block's Liquid drop
-            sub_blocks: subBlockResults.map((child) => ({
-              id: child.id,
-              type: child.type,
-              settings: child.settings,
-              content: child.html,
-              html: child.html,
-              is_app_block: child.isAppBlock,
-            })),
-          },
-        }),
-        liquidRenderOptions,
-      );
-      blockHtml = await sanitizeRenderedHtml(String(rawBlockHtml));
+      if (blockFile) {
+        const rawBlockHtml = await input.engine.parseAndRender(
+          blockFile.source,
+          buildLiquidScope(input.input, input.bundle, {
+            section: {
+              id: input.sectionId,
+              type: input.sectionType,
+              settings: input.section.settings,
+            },
+            block: {
+              id: blockId,
+              type: block.type,
+              settings: block.settings,
+              schema: blockFile.schema,
+              editor_attributes: editorAttributes,
+              // Phase T: thread rendered child blocks into the parent block's Liquid drop
+              sub_blocks: subBlockResults.map((child) => ({
+                id: child.id,
+                type: child.type,
+                settings: child.settings,
+                content: child.html,
+                html: child.html,
+                is_app_block: child.isAppBlock,
+                editor_attributes: child.editorAttributes ?? '',
+              })),
+            },
+          }),
+          liquidRenderOptions,
+        );
+        blockHtml = await sanitizeRenderedHtml(String(rawBlockHtml));
+      }
     } catch (blockErr: unknown) {
       const msg = blockErr instanceof Error ? blockErr.message : String(blockErr);
       // Push warning into the input.input context is not available here; we swallow and leave html=''.
@@ -1259,6 +1293,7 @@ async function renderLiquidSectionBlocks(
       settings: block.settings,
       html: blockHtml,
       isAppBlock: false,
+      editorAttributes,
       sub_blocks: subBlockResults.length > 0 ? subBlockResults : undefined,
     });
   }
@@ -1289,7 +1324,9 @@ function buildLiquidScope(
       // challenge), so a form section can render a real message instead of a silent redirect.
       // Escaped like any other Liquid output ({{ }}, never `| raw`) — safe to display even though
       // it is caller-supplied, and never used for anything but display text.
-      query: filterBlockedSettingsKeys(input.context.searchParams || {}),
+      // Liquid synthesizes hash.size when the key is absent. A query map must
+      // expose an empty clothing-size filter, never the number of query keys.
+      query: { size: '', ...filterBlockedSettingsKeys(input.context.searchParams || {}) },
       error: (input.context.searchParams || {}).error || null,
       ...(asRecord(input.liquidContext?.request)),
     },
@@ -1505,7 +1542,11 @@ async function renderLiquidEmbedRegion(
 function registerLetbuyyLiquidFilters(engine: Liquid, bundle: LiquidThemePackageBundle, locale: string, basePath = ''): void {
   engine.registerFilter('money', (value: unknown) => formatLiquidMoney(value));
   engine.registerFilter('money_with_currency', (value: unknown, currency?: unknown) => formatLiquidMoney(value, currency));
-  engine.registerFilter('json', (value: unknown) => JSON.stringify(toLiquidDrop(value) ?? null).replace(/</g, '\\u003c'));
+  // JSON carriers stay inert through HTML attribute escaping and sanitization.
+  // JSON.parse restores the exact text; literal brackets/entities cannot become
+  // markup or make the sanitizer discard the complete data-* carrier.
+  engine.registerFilter('json', (value: unknown) => JSON.stringify(toLiquidDrop(value) ?? null)
+    .replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026'));
   engine.registerFilter('asset_url', (value: unknown) => safeLiquidUrl(value));
   engine.registerFilter('image_url', (value: unknown) => safeLiquidUrl(value));
   // S5/W2 — video embed URLs (YouTube/Vimeo) get the exact same scheme allowlist as images/assets:
@@ -1787,11 +1828,11 @@ export async function sanitizeRenderedHtml(
 // separate nodes before DOMPurify ever ran, and any injected tag (e.g. <script>) is stripped by
 // the same FORBID_TAGS/allowlist config the whole-document layout pass relies on — proven by the
 // adversarial test in liquid-s1-w5-adversarial-security.test.ts covering this function.
-export async function sanitizeLiquidHeadStyleText(rawHeadHtml: string): Promise<string> {
+export async function sanitizeLiquidHeadStyleText(rawHeadHtml: string, wholeDocument = false): Promise<string> {
   if (!rawHeadHtml || rawHeadHtml.trim() === '') return '';
   const { purify } = await getThemeDomPurify();
   const sanitizedDocument = purify.sanitize(
-    `<!doctype html><html><head>${rawHeadHtml}</head><body></body></html>`,
+    wholeDocument ? rawHeadHtml : `<!doctype html><html><head>${rawHeadHtml}</head><body></body></html>`,
     { ...LIQUID_RENDERED_HTML_DOMPURIFY_DOCUMENT_CONFIG, RETURN_DOM: true },
   );
   const head = sanitizedDocument.ownerDocument?.head;

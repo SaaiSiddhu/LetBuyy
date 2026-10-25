@@ -501,7 +501,7 @@ async function loadAiCreditProjection(
     const [{ data: creditConfig, error: creditError }, { data: usageTotal, error: usageError }] = await Promise.all([
         db
             .from('ai_credits')
-            .select('id,plan_credits,bonus_credits,total_purchased,reset_period,updated_at')
+            .select('id,plan_credits,bonus_credits,total_purchased,reset_period,last_reset_at,updated_at')
             .eq('store_id', storeId)
             .maybeSingle(),
         db.rpc('read_merchant_ai_usage_total', { p_store_id: storeId }),
@@ -536,6 +536,7 @@ async function loadAiCreditProjection(
         // The canonical table records last_reset_at, not a future reset_at.
         // No next reset is scheduled by this read-only projection.
         reset_at: null,
+        last_reset_at: config.last_reset_at || null,
         updated_at: config.updated_at || null,
         projection_source: 'ai_usage',
     };

@@ -1,0 +1,298 @@
+{
+  "load": "load completed",
+  "images": [
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 585
+    },
+    {
+      "alt": "Strawberry lemonade and matcha brekky drinks peeking out of a tote bag.",
+      "complete": true,
+      "naturalWidth": 650
+    },
+    {
+      "alt": "",
+      "complete": false,
+      "naturalWidth": 0
+    }
+  ],
+  "roles": [
+    {
+      "disabled": false,
+      "label": "Drinks\nBundles\nRecipes\nAbout\nCart",
+      "rect": {
+        "height": 95.75,
+        "width": 1440,
+        "x": 0,
+        "y": 42.34375
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgba(2, 9, 18, 0.75)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgba(2, 9, 18, 0.75)",
+        "fontFamily": "\"Anonymous Pro\", monospace",
+        "fontSize": "16.8px",
+        "fontWeight": "400",
+        "gap": "normal 21px",
+        "lineHeight": "29.6px",
+        "padding": "21px 52.5px"
+      },
+      "tag": "HEADER"
+    },
+    {
+      "disabled": false,
+      "label": "Green Bundle",
+      "rect": {
+        "height": 62.59375,
+        "width": 630,
+        "x": 705.75,
+        "y": 158.09375
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(2, 9, 18)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(2, 9, 18)",
+        "fontFamily": "Figtree, sans-serif",
+        "fontSize": "50px",
+        "fontWeight": "500",
+        "gap": "normal",
+        "lineHeight": "62.6px",
+        "padding": "0px"
+      },
+      "tag": "H1"
+    },
+    {
+      "disabled": false,
+      "label": "Decrease quantity for Green Bundle",
+      "rect": {
+        "height": 49.25,
+        "width": 45,
+        "x": 706.75,
+        "y": 416.296875
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(2, 9, 18)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(2, 9, 18)",
+        "fontFamily": "Arial",
+        "fontSize": "18.9px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "normal",
+        "padding": "0px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": false,
+      "label": "quantity",
+      "rect": {
+        "height": 49.25,
+        "width": 50,
+        "x": 751.75,
+        "y": 416.296875
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(2, 9, 18)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(2, 9, 18)",
+        "fontFamily": "Arial",
+        "fontSize": "14.7px",
+        "fontWeight": "500",
+        "gap": "normal",
+        "lineHeight": "normal",
+        "padding": "0px 5.25px"
+      },
+      "tag": "INPUT"
+    },
+    {
+      "disabled": false,
+      "label": "Increase quantity for Green Bundle",
+      "rect": {
+        "height": 49.25,
+        "width": 45,
+        "x": 801.75,
+        "y": 416.296875
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(2, 9, 18)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(2, 9, 18)",
+        "fontFamily": "Arial",
+        "fontSize": "18.9px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "normal",
+        "padding": "0px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": false,
+      "label": "Add to cart",
+      "rect": {
+        "height": 49.25,
+        "width": 462,
+        "x": 705.75,
+        "y": 491.796875
+      },
+      "styles": {
+        "backgroundColor": "rgb(252, 252, 252)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(2, 9, 18)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(2, 9, 18)",
+        "fontFamily": "\"Anonymous Pro\", monospace",
+        "fontSize": "15.75px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "18.75px",
+        "padding": "0px 31.5px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": false,
+      "label": "Buy it now",
+      "rect": {
+        "height": 49.25,
+        "width": 462,
+        "x": 705.75,
+        "y": 551.546875
+      },
+      "styles": {
+        "backgroundColor": "rgb(2, 9, 18)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(252, 252, 252)",
+        "borderRadius": "0px",
+        "boxShadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+        "color": "rgb(252, 252, 252)",
+        "fontFamily": "\"Anonymous Pro\", monospace",
+        "fontSize": "15.75px",
+        "fontWeight": "500",
+        "gap": "normal",
+        "lineHeight": "18.75px",
+        "padding": "15.75px 31.5px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": false,
+      "label": "Share",
+      "rect": {
+        "height": 25.1953125,
+        "width": 69.375,
+        "x": 705.75,
+        "y": 1197.984375
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(2, 9, 18)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(2, 9, 18)",
+        "fontFamily": "Arial",
+        "fontSize": "14.7px",
+        "fontWeight": "400",
+        "gap": "normal",
+        "lineHeight": "normal",
+        "padding": "1px 6px 1px 0px"
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "disabled": false,
+      "label": "Frequently asked questions",
+      "rect": {
+        "height": 37.5546875,
+        "width": 739.1953125,
+        "x": 350.3984375,
+        "y": 1411.9296875
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(2, 9, 18)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(2, 9, 18)",
+        "fontFamily": "Figtree, sans-serif",
+        "fontSize": "30px",
+        "fontWeight": "500",
+        "gap": "normal",
+        "lineHeight": "37.56px",
+        "padding": "0px"
+      },
+      "tag": "H2"
+    },
+    {
+      "disabled": false,
+      "label": "More plants. More often.",
+      "rect": {
+        "height": 187.78125,
+        "width": 279.953125,
+        "x": 128,
+        "y": 2355.390625
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(252, 252, 252)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(252, 252, 252)",
+        "fontFamily": "Figtree, sans-serif",
+        "fontSize": "50px",
+        "fontWeight": "500",
+        "gap": "normal",
+        "lineHeight": "62.6px",
+        "padding": "0px"
+      },
+      "tag": "H2"
+    },
+    {
+      "disabled": false,
+      "label": "Our drinks are bottled in glass, never plastic. It’s better for you, better for the planet",
+      "rect": {
+        "height": 150.21875,
+        "width": 494.75,
+        "x": 143.75,
+        "y": 3119.7890625
+      },
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "border": "0px none rgb(2, 9, 18)",
+        "borderRadius": "0px",
+        "boxShadow": "none",
+        "color": "rgb(2, 9, 18)",
+        "fontFamily": "Figtree, sans-serif",
+        "fontSize": "30px",
+        "fontWeight": "500",
+        "gap": "normal",
+        "lineHeight": "37.56px",
+        "padding": "0px"
+      },
+      "tag": "H2"
+    }
+  ],
+  "url": "https://theme-taste-demo.myshopify.com/products/green-bundle-1"
+}

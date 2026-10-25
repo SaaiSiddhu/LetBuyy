@@ -1,0 +1,15 @@
+{
+  "recordedAt": "2026-10-23T19:49:34.694588+00:00",
+  "runId": "f6074d90e894",
+  "url": "http://syn-threadline-ui-33be9d94.localhost:62076/product/d9bd8cae-b211-48c5-8440-5f446dc57c0e",
+  "anonymous": true,
+  "authenticationSupplied": false,
+  "status": 200,
+  "sha256": "1bba1cccab92d7c6309de51dfbf1384a96e0f7a754f339e495b4e5a332969587",
+  "checks": {
+    "productTitle": true,
+    "pantryPanel": true,
+    "commonIngredients": true,
+    "unselectedGuidance": false
+  }
+}

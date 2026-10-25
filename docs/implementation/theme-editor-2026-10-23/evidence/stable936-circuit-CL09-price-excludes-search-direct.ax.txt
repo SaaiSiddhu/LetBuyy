@@ -1,0 +1,55 @@
+Browser tab: 70, Title: "Search | Threadline", URL: "http://syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/search?collection_id=01f56eb8-89fa-4fc5-be47-02f3ec591f2f&electronics_kind=charger&max_price=1500".
+1 AXWebArea Search | Threadline, URL: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/search?collection_id=01f56eb8-89fa-4fc5-be47-02f3ec591f2f&electronics_kind=charger&max_price=1500
+	2 container
+		3 text Circuit 936 B — saved recovery draft.
+		4 container Description: Primary, ID: lb-nav-panel-header-default
+		5 link Description: Threadline, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b
+		6 container
+			7 text Search products, models and connectors
+			8 search text field (settable) Search products, models and connectors, ID: ct-header-search-header-default
+			9 button Search
+		10 link Description: Log in, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/customers/login
+		11 link Description: Cart ( 2 ), Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/cart
+		12 container Filter products by country of origin
+			13 container
+				14 text Country of origin
+				15 text field (settable) Country of origin, ID: lb-product-origin-filter
+				16 button Apply filter
+		17 text THE CONNECTION DESK
+		18 heading Search products, Value: 1
+			19 text Search products
+		20 text 0 products
+		21 container
+			22 text Search products, models and connectors
+			23 search text field (settable) Search products, models and connectors, ID: ct-search-forge-discovery-search
+			24 button Search
+		25 container
+			26 text Sort by
+			27 pop up button (collapsed, settable) Sort by, Value: Featured, ID: ct-sort-forge-results-search, Secondary Actions: Expand
+				28 menu
+					29 (selected) Featured
+					30 Price: low to high
+					31 Price: high to low
+					32 Newest
+					33 Name
+			34 button Sort
+		35 container Applied filters
+			36 link Description: Remove Collection: 01f56eb8-89fa-4fc5-be47-02f3ec591f2f, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/search?limit=20&sort=display_order&max_price=1500&electronics_kind=charger
+			37 link Description: Remove Maximum price: 1500, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/search?limit=20&sort=display_order&collection_id=01f56eb8-89fa-4fc5-be47-02f3ec591f2f&electronics_kind=charger
+			38 link Description: Remove Accessory type: charger, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/search?limit=20&sort=display_order&collection_id=01f56eb8-89fa-4fc5-be47-02f3ec591f2f&max_price=1500
+		39 heading No products match this selection., Value: 2
+			40 text No products match this selection.
+		41 text Your query is kept above. Try another model or a broader category.
+		42 link Description: Explore all products, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/products
+		43 container Product pages
+			44 text Page 1 of 0
+		45 heading Threadline, Value: 3
+			46 text Threadline
+		47 text Circuit 936 B footer saved
+		48 heading CONTACT, Value: 4
+			49 text CONTACT
+		50 link Description: Contact us, Value: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/contact
+		51 text © Threadline. All rights reserved.
+		52 link Description: Powered by LetBuyy, Value: letbuyy.com/
+
+The focused UI element is 1 AXWebArea Search | Threadline, URL: syn-threadline-ui-6815276b.localhost:50494/store/syn-threadline-ui-6815276b/search?collection_id=01f56eb8-89fa-4fc5-be47-02f3ec591f2f&electronics_kind=charger&max_price=1500

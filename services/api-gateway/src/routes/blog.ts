@@ -1,3 +1,4 @@
+import { resolveMerchantResourceStoreIds } from '../lib/tenant-context';
 import { Hono } from 'hono';
 import type { Env } from '../index';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
@@ -107,6 +108,7 @@ router.get('/posts/:id', async (c) => {
     const auth = c.get('auth');
     const postId = c.req.param('id');
     const db = getSupabaseAdmin(c);
+    const storeIds = await resolveMerchantResourceStoreIds(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
     if (!customUser) {
@@ -116,7 +118,7 @@ router.get('/posts/:id', async (c) => {
     const { data, error } = await db
         .from('blog_posts')
         .select('*, blog_categories(id, name, slug), blog_post_tags(tag_id, blog_tags(id, name, slug))')
-        .eq('id', postId)
+        .eq('id', postId).in('store_id', storeIds)
         .single();
 
     if (error || !data || !(await verifySiteOwnership(db, data.store_id, customUser.id, auth.user.storeId))) {
@@ -179,19 +181,20 @@ router.post('/posts', validate('json', CreateBlogPostSchema), async (c) => {
 });
 
 // PATCH /blog/posts/:id — Update a post
-router.patch('/posts/:id', async (c) => {
+router.patch('/posts/:id', validate('json', UpdateBlogPostSchema), async (c) => {
     const auth = c.get('auth');
     const postId = c.req.param('id');
-    const body = await c.req.json() as UpdateBlogPostInput;
+    const body = c.get('validatedBody') as UpdateBlogPostInput;
     const patch = body as Record<string, unknown>;
     const db = getSupabaseAdmin(c);
+    const storeIds = await resolveMerchantResourceStoreIds(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
     // Verify ownership
     const { data: existing } = await db
         .from('blog_posts')
         .select('store_id')
-        .eq('id', postId)
+        .eq('id', postId).in('store_id', storeIds)
         .single();
 
     const ownedPost = existing as BlogOwnerRow | null;
@@ -214,14 +217,15 @@ router.patch('/posts/:id', async (c) => {
         updates.published_at = new Date().toISOString();
     }
 
-    if (Object.keys(updates).length === 0) {
+    if (Object.keys(updates).length === 0 && !body.tag_ids) {
         return c.json({ error: { code: 'VALIDATION', message: 'No valid fields to update' } }, 400);
     }
 
+    if (Object.keys(updates).length === 0) updates.updated_at = new Date().toISOString();
     const { data, error } = await db
         .from('blog_posts')
         .update(updates)
-        .eq('id', postId)
+        .eq('id', postId).in('store_id', storeIds)
         .select()
         .single();
 
@@ -246,12 +250,13 @@ router.delete('/posts/:id', async (c) => {
     const auth = c.get('auth');
     const postId = c.req.param('id');
     const db = getSupabaseAdmin(c);
+    const storeIds = await resolveMerchantResourceStoreIds(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
     const { data: post } = await db
         .from('blog_posts')
         .select('store_id')
-        .eq('id', postId)
+        .eq('id', postId).in('store_id', storeIds)
         .single();
 
     const ownedPost = post as BlogOwnerRow | null;
@@ -262,7 +267,7 @@ router.delete('/posts/:id', async (c) => {
     const { error } = await db
         .from('blog_posts')
         .update({ status: 'archived' })
-        .eq('id', postId);
+        .eq('id', postId).in('store_id', storeIds);
 
     if (error) {
         return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
@@ -353,12 +358,13 @@ router.delete('/categories/:id', async (c) => {
     const auth = c.get('auth');
     const catId = c.req.param('id');
     const db = getSupabaseAdmin(c);
+    const storeIds = await resolveMerchantResourceStoreIds(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
     const { data: cat } = await db
         .from('blog_categories')
         .select('store_id')
-        .eq('id', catId)
+        .eq('id', catId).in('store_id', storeIds)
         .single();
 
     const ownedCategory = cat as BlogOwnerRow | null;
@@ -366,7 +372,7 @@ router.delete('/categories/:id', async (c) => {
         return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
     }
 
-    const { error } = await db.from('blog_categories').delete().eq('id', catId);
+    const { error } = await db.from('blog_categories').delete().eq('id', catId).in('store_id', storeIds);
 
     if (error) {
         return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
@@ -501,13 +507,14 @@ router.patch('/comments/:id', validate('json', UpdateBlogCommentSchema), async (
     const commentId = c.req.param('id');
     const body = c.get('validatedBody') as UpdateBlogCommentInput;
     const db = getSupabaseAdmin(c);
+    const storeIds = await resolveMerchantResourceStoreIds(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
     const selectExistingComment = (includeDeletedAtFilter: boolean) => {
         let request = db
             .from('blog_comments')
             .select('store_id')
-            .eq('id', commentId);
+            .eq('id', commentId).in('store_id', storeIds);
 
         if (includeDeletedAtFilter) request = request.is('deleted_at', null);
         return request.single();
@@ -527,7 +534,7 @@ router.patch('/comments/:id', validate('json', UpdateBlogCommentSchema), async (
     const { data, error } = await db
         .from('blog_comments')
         .update({ status: body.status, moderated_at: new Date().toISOString() })
-        .eq('id', commentId)
+        .eq('id', commentId).in('store_id', storeIds)
         .select('*, blog_posts(title)')
         .single();
 
@@ -542,13 +549,14 @@ router.delete('/comments/:id', async (c) => {
     const auth = c.get('auth');
     const commentId = c.req.param('id');
     const db = getSupabaseAdmin(c);
+    const storeIds = await resolveMerchantResourceStoreIds(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
     const selectExistingComment = (includeDeletedAtFilter: boolean) => {
         let request = db
             .from('blog_comments')
             .select('store_id')
-            .eq('id', commentId);
+            .eq('id', commentId).in('store_id', storeIds);
 
         if (includeDeletedAtFilter) request = request.is('deleted_at', null);
         return request.single();
@@ -568,7 +576,7 @@ router.delete('/comments/:id', async (c) => {
     const { error } = await db
         .from('blog_comments')
         .update({ deleted_at: new Date().toISOString() })
-        .eq('id', commentId);
+        .eq('id', commentId).in('store_id', storeIds);
 
     if (error) {
         return c.json({ success: false, error: { code: 'DB_ERROR', message: error.message } }, 500);

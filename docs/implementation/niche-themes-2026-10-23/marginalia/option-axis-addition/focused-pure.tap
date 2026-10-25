@@ -1,0 +1,64 @@
+TAP version 13
+# Subtest: first value of a new trailing axis preserves both bound Width rows one-to-one
+ok 1 - first value of a new trailing axis preserves both bound Width rows one-to-one
+  ---
+  duration_ms: 3.3435
+  type: 'test'
+  ...
+# Subtest: adding an empty axis preserves sparse and reordered rows without completing a Cartesian matrix
+ok 2 - adding an empty axis preserves sparse and reordered rows without completing a Cartesian matrix
+  ---
+  duration_ms: 0.474542
+  type: 'test'
+  ...
+# Subtest: a third axis extends only existing sparse combinations and retains mixed bound/new drafts
+ok 3 - a third axis extends only existing sparse combinations and retains mixed bound/new drafts
+  ---
+  duration_ms: 0.328834
+  type: 'test'
+  ...
+# Subtest: first explicit axis can extend a single default bound row without inventing identity
+ok 4 - first explicit axis can extend a single default bound row without inventing identity
+  ---
+  duration_ms: 0.168333
+  type: 'test'
+  ...
+# Subtest: later values retain old objects while new combinations receive no UUID, facts, SKU or stock
+ok 5 - later values retain old objects while new combinations receive no UUID, facts, SKU or stock
+  ---
+  duration_ms: 0.533333
+  type: 'test'
+  ...
+# Subtest: raw invalid fact drafts survive the axis edit and still block canonical save instead of being reset
+ok 6 - raw invalid fact drafts survive the axis edit and still block canonical save instead of being reset
+  ---
+  duration_ms: 3.46725
+  type: 'test'
+  ...
+# Subtest: ambiguous axes, duplicate IDs/tuples, occupied new slots and stale indices refuse atomically
+ok 7 - ambiguous axes, duplicate IDs/tuples, occupied new slots and stale indices refuse atomically
+  ---
+  duration_ms: 0.667958
+  type: 'test'
+  ...
+# Subtest: canonical axis, value, row-count and combined-label limits are enforced before producing an edit
+ok 8 - canonical axis, value, row-count and combined-label limits are enforced before producing an edit
+  ---
+  duration_ms: 0.916333
+  type: 'test'
+  ...
+# Subtest: new-product Cartesian creation and explicit existing-axis append/rename remain supported; generic deletion stays guarded
+ok 9 - new-product Cartesian creation and explicit existing-axis append/rename remain supported; generic deletion stays guarded
+  ---
+  duration_ms: 0.620167
+  type: 'test'
+  ...
+1..9
+# tests 9
+# suites 0
+# pass 9
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1068.760708

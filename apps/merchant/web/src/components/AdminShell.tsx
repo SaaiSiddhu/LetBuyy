@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
 import { MerchantNavigationLink } from './MerchantNavigationLink'
+import { MerchantNavigationProvider, MerchantNavigationFeedback } from './MerchantNavigationProvider'
 import HeaderBar from './HeaderBar'
 import TrialBanner from './TrialBanner'
 import { MerchantSecurityContext } from './security/MerchantSecurityContext'
@@ -64,15 +65,18 @@ export interface UserStore {
     status: string
 }
 
+export interface StoreSwitcherResult { stores: UserStore[]; unavailable: boolean }
+
 interface AdminShellProps {
     store: string
     storeData: StoreData
     user: SessionUser
     userStores: UserStore[]
+    userStoresPromise?: Promise<StoreSwitcherResult>
     children: React.ReactNode
 }
 
-export default function MerchantControlPlaneShell({ store, storeData, user, userStores, children }: AdminShellProps) {
+export default function MerchantControlPlaneShell({ store, storeData, user, userStores, userStoresPromise, children }: AdminShellProps) {
     const pathname = usePathname()
     const [sidebarOpen, setSidebarOpen] = useState(false)
     const [aiPanelOpen, setAiPanelOpen] = useState(false)
@@ -188,13 +192,14 @@ export default function MerchantControlPlaneShell({ store, storeData, user, user
         : `admin-panel-sidebar hidden lg:flex ${railClass}`
 
     return (
-        <NavigationLinkProvider linkComponent={MerchantNavigationLink}><ToastProvider>
+        <MerchantNavigationProvider><NavigationLinkProvider linkComponent={MerchantNavigationLink}><ToastProvider>
             <div className="admin-shell">
                 <HeaderBar
                     store={store}
                     storeData={storeData}
                     user={user}
                     userStores={userStores}
+                    userStoresPromise={userStoresPromise}
                     onMenuToggle={() => setSidebarOpen(o => !o)}
                     onSearchOpen={() => setCmdPaletteOpen(true)}
                     onAISidebarToggle={isSettingsPage ? () => {} : () => setAiPanelOpen(!aiPanelOpen)}
@@ -202,6 +207,7 @@ export default function MerchantControlPlaneShell({ store, storeData, user, user
                     isMenuOpen={sidebarOpen}
                     menuDrawerId={DRAWER_ID}
                 />
+                <MerchantNavigationFeedback />
 
                 {sidebarOpen && (
                     <Button
@@ -328,7 +334,7 @@ export default function MerchantControlPlaneShell({ store, storeData, user, user
                     />
                 )}
             </div>
-        </ToastProvider></NavigationLinkProvider>
+        </ToastProvider></NavigationLinkProvider></MerchantNavigationProvider>
     )
 }
 

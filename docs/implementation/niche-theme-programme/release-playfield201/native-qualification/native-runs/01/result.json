@@ -1,0 +1,63 @@
+{
+  "runId": "98f95df21bc7",
+  "image": "postgres:16-alpine",
+  "restImage": "public.ecr.aws/supabase/postgrest:v16.2",
+  "limits": {
+    "postgres": {
+      "memory": "1g",
+      "cpus": "2",
+      "pids": "512"
+    },
+    "rest": {
+      "memory": "256m",
+      "cpus": "1",
+      "pids": "256"
+    }
+  },
+  "jobs": 1,
+  "containers": [],
+  "reaped": [],
+  "suites": 1,
+  "gatewayDbSuites": 1,
+  "failedSuites": 1,
+  "tests": 0,
+  "assertionsPassed": 0,
+  "assertionsFailed": 0,
+  "cancelled": 0,
+  "skipped": 0,
+  "todo": 0,
+  "wallSeconds": 0,
+  "suiteSeconds": 0,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "results": [
+    {
+      "name": "playfield201-promotion.postgres",
+      "path": "services/api-gateway/src/__tests__/owned-db/playfield201-promotion.postgres.test.ts",
+      "kind": "gateway-db",
+      "cluster": "-",
+      "code": 70,
+      "timedOut": false,
+      "hasSummary": false,
+      "tests": 0,
+      "pass": 0,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "seconds": 0,
+      "firstFailure": "infrastructure: no real Docker daemon answers `docker info`; the gateway database lane needs one",
+      "failures": [
+        "infrastructure: no real Docker daemon answers `docker info`; the gateway database lane needs one (the sandbox docker shim models only Postgres run/exec/inspect: no labels, networks, volumes or published ports for a PostgREST sidecar)"
+      ],
+      "skips": [],
+      "ownership": "not started"
+    }
+  ]
+}

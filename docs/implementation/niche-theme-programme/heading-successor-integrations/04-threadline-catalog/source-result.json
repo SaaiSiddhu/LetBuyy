@@ -1,0 +1,59 @@
+{
+  "recordedAt": "2026-10-24T11:32:29.138940+00:00",
+  "owner": "01a164a4-a342-76d3-ab33-65e021ed57db",
+  "status": "SEALED_RELEASED_THREADLINE_OPT_IN_CATALOG_INTEGRATED_SOURCE_ONLY",
+  "sourceFiles": [
+    {
+      "path": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "afterSHA256": "3464bc35c39f811be3e785da8ff35499a1d38211244737aa45cc86e2a0a02c21"
+    },
+    {
+      "path": "packages/theme-engine/test/threadline-catalog-successor.test.ts",
+      "afterSHA256": "f1a03a9827edf521ee45d619da7869327a2ea0bb54c338fe5b9ef03ab1c708c4"
+    }
+  ],
+  "logs": [
+    {
+      "path": "docs/implementation/niche-theme-programme/heading-successor-integrations/04-threadline-catalog/source-tests.tap",
+      "sha256": "eca86f5d0d344a873ad881576e60a7c594e7963eb58ce9774700516b4c67c78a"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/heading-successor-integrations/04-threadline-catalog/source-tests.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/heading-successor-integrations/04-threadline-catalog/typecheck.log",
+      "sha256": "51d8a3aab61df1adefff5f4f09c9b94a8073a08f41619d8fc9cb219259379e51"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/heading-successor-integrations/04-threadline-catalog/typecheck.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/heading-successor-integrations/04-threadline-catalog/typecheck.json",
+      "sha256": "77627b85761fa7941b0b06bc2c586ebcdc7244267df4750874c89a8f952c0722"
+    }
+  ],
+  "checks": {
+    "composedSource": {
+      "tests": 55,
+      "PASS": 55,
+      "FAIL": 0,
+      "skipped": 0,
+      "overlap": "Includes previous32+Threadline20+3newcatalogue integration controls; not55newunique obligations"
+    },
+    "strictScopedTypecheck": {
+      "exitCode": 0,
+      "diagnostics": 0
+    },
+    "frozenDefaultBundles": "All20 exact pinned legacy/v200 outputs pass retainedCircuit gate"
+  },
+  "sourceLease": "completion-resume-resource-allocation-20261024-02.json; ends at this seal",
+  "notCertified": [
+    "Catalogue persistence/promotion",
+    "Installed UI",
+    "Actual provider payment",
+    "Theme lifecycle"
+  ],
+  "allTenCertified": false
+}

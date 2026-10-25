@@ -1,0 +1,237 @@
+{
+  "recordedAt": "2026-10-23T20:39:06.845Z",
+  "runId": "f6074d90e894",
+  "phase": "cohort-created",
+  "guardVerified": true,
+  "readOnly": true,
+  "scope": "Only four owned Circuit product records/specifications/real variants/inventory and protected Habitat version/cart hash; no credentials or customer fields",
+  "actual": {
+    "products": [
+      {
+        "id": "40c09bce-03ed-4c1f-8975-49aa8690192e",
+        "name": "Circuit lifecycle finish charger",
+        "price": 1900,
+        "stock": 3,
+        "images": [],
+        "country": "India",
+        "options": [
+          {
+            "id": "f5ffe6c5-d561-489c-a1c5-f96afc2dbfef",
+            "name": "Finish",
+            "values": [
+              "Graphite",
+              "Silver"
+            ],
+            "position": 0,
+            "created_at": "2026-10-23T20:36:49.573164+00:00",
+            "product_id": "40c09bce-03ed-4c1f-8975-49aa8690192e"
+          }
+        ],
+        "version": 7,
+        "category": "Accessories",
+        "isActive": true,
+        "metadata": {
+          "electronics": {
+            "kind": "charger",
+            "model": "Synthetic C65",
+            "connectors": [
+              {
+                "kind": "ac-plug",
+                "role": "power-input",
+                "count": 1
+              },
+              {
+                "kind": "usb-c",
+                "role": "power-output",
+                "count": 2
+              }
+            ],
+            "box_contents": [
+              {
+                "label": "Charger",
+                "quantity": 1
+              }
+            ],
+            "manufacturer": "Synthetic Lab",
+            "power_input_w": 70,
+            "power_output_w": 65
+          }
+        },
+        "variants": [
+          {
+            "id": "3a573464-e69c-4e4c-9905-a3c5814cf450",
+            "price": 1900,
+            "stock": 3,
+            "title": "Graphite",
+            "option1": "Graphite",
+            "option2": null,
+            "option3": null,
+            "metadata": {}
+          },
+          {
+            "id": "d9a7253b-d059-4cba-a6d9-b98ff87cbc7d",
+            "price": 1900,
+            "stock": 0,
+            "title": "Silver",
+            "option1": "Silver",
+            "option2": null,
+            "option3": null,
+            "metadata": {}
+          }
+        ],
+        "chargeTax": false,
+        "inventory": [
+          {
+            "id": "befbb298-1048-45b3-8c26-56196bcbbe97",
+            "reserved": 0,
+            "available": 0,
+            "variantId": "d9a7253b-d059-4cba-a6d9-b98ff87cbc7d"
+          },
+          {
+            "id": "c879dc7d-3300-4e2c-a0b7-84c56c803b64",
+            "reserved": 0,
+            "available": 3,
+            "variantId": "3a573464-e69c-4e4c-9905-a3c5814cf450"
+          },
+          {
+            "id": "c97a36a8-e637-4559-9326-eacf2f102f18",
+            "reserved": 0,
+            "available": 3,
+            "variantId": null
+          }
+        ]
+      },
+      {
+        "id": "8a85a44b-cb98-4b1b-a94d-2c2c395d6c1b",
+        "name": "Circuit lifecycle hub",
+        "price": 1200,
+        "stock": 8,
+        "images": [],
+        "country": "India",
+        "options": [],
+        "version": 3,
+        "category": "Accessories",
+        "isActive": true,
+        "metadata": {
+          "electronics": {
+            "kind": "hub",
+            "model": "Synthetic H1",
+            "connectors": [
+              {
+                "kind": "usb-c",
+                "role": "power-input",
+                "count": 1
+              },
+              {
+                "kind": "usb-c",
+                "role": "power-output",
+                "count": 2
+              },
+              {
+                "kind": "usb-a",
+                "role": "data",
+                "count": 1
+              }
+            ],
+            "box_contents": [
+              {
+                "label": "Hub",
+                "quantity": 1
+              }
+            ],
+            "manufacturer": "Synthetic Lab",
+            "power_input_w": 65,
+            "power_output_w": 45,
+            "pass_through_output_w": 60
+          }
+        },
+        "variants": [],
+        "chargeTax": false,
+        "inventory": [
+          {
+            "id": "193fefb5-14d2-4374-9cf0-6ea612852b24",
+            "reserved": 0,
+            "available": 8,
+            "variantId": null
+          }
+        ]
+      },
+      {
+        "id": "bb6dfffe-7141-4765-a1cc-5e865f51932a",
+        "name": "Circuit lifecycle one metre cable",
+        "price": 400,
+        "stock": 5,
+        "images": [],
+        "country": "India",
+        "options": [],
+        "version": 3,
+        "category": "Accessories",
+        "isActive": true,
+        "metadata": {
+          "electronics": {
+            "kind": "cable",
+            "model": "Synthetic L100",
+            "length_mm": 1000,
+            "connectors": [
+              {
+                "kind": "usb-c",
+                "role": "host",
+                "count": 1
+              },
+              {
+                "kind": "usb-c",
+                "role": "data",
+                "count": 1
+              }
+            ],
+            "box_contents": [
+              {
+                "label": "Cable",
+                "quantity": 1
+              }
+            ],
+            "manufacturer": "Synthetic Lab",
+            "data_rate_mbps": 480,
+            "power_capacity_w": 100
+          }
+        },
+        "variants": [],
+        "chargeTax": false,
+        "inventory": [
+          {
+            "id": "bd71ed9a-c783-4d5a-a1d2-8351be46f684",
+            "reserved": 0,
+            "available": 5,
+            "variantId": null
+          }
+        ]
+      },
+      {
+        "id": "da957f8e-aa00-4b2a-98b6-149398daf941",
+        "name": "Circuit lifecycle unknown accessory",
+        "price": 600,
+        "stock": 2,
+        "images": [],
+        "country": "India",
+        "options": [],
+        "version": 3,
+        "category": "Accessories",
+        "isActive": true,
+        "metadata": {},
+        "variants": [],
+        "chargeTax": false,
+        "inventory": [
+          {
+            "id": "e53de3c1-7a7f-43e7-b46d-f925f8bd8973",
+            "reserved": 0,
+            "available": 2,
+            "variantId": null
+          }
+        ]
+      }
+    ],
+    "siteOrders": 1,
+    "activeCartHash": "adf496fedcc702a0b1a8fe00407dd60a9e73ae2aabfb4fc15c2622f59eb637e0",
+    "habitatProductVersion": 31
+  }
+}

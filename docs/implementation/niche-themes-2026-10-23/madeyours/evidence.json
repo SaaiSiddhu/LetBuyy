@@ -1,0 +1,491 @@
+{
+  "generatedAt": "2026-10-23T09:41:09.197754+00:00",
+  "branch": "letbuyy/theme-release-performance-resume",
+  "head": "85aac99043d8dc10469e12cbb810609a3b6f1b0d",
+  "qualification": "Local canonical server snapshots/review producer and own factory/discovery are qualified by focused contracts,59 relevant owned PostgreSQL checks and a separate11-test scheduled ledger traversal. Both runs cleaned up; DB lane released. Installed/hydrated browser, full lifecycle, performance and production acceptance remain programme work.",
+  "sourceFiles": [
+    {
+      "path": "packages/theme-engine/src/madeyours-theme.ts",
+      "bytes": 18882,
+      "sha256": "c56bdba5b9e9376c4a296cadc2d4f31a33598a033692d2f6c21daa71b3e98193"
+    },
+    {
+      "path": "packages/theme-engine/src/madeyours-styles.ts",
+      "bytes": 11904,
+      "sha256": "5253e57fcb217526d7bf46e8ddc54b921a5f64ec42f69c7c0dae177eadb5ee6e"
+    },
+    {
+      "path": "packages/theme-engine/src/madeyours-discovery.ts",
+      "bytes": 5290,
+      "sha256": "d1fc0993efd1d876e67c60f997e6cea53efd65a4fd7aba69bafe377f02803eda"
+    },
+    {
+      "path": "packages/theme-engine/test/madeyours.test.ts",
+      "bytes": 16598,
+      "sha256": "c4f289d9b267311bdf0289203cdf638e405777cc4737405936fc65a96389cf3c"
+    },
+    {
+      "path": "packages/commerce-core/src/madeyours-facts.ts",
+      "bytes": 7554,
+      "sha256": "4428e76412e4189fe09815d18b9c2d7d8643c95f01822d783e536a6304b22813"
+    },
+    {
+      "path": "packages/commerce-core/test/madeyours-facts.test.ts",
+      "bytes": 6869,
+      "sha256": "5546ef3cee097abe41258b88e087eef6cc53f8ece7047d97547496ad879b4218"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/demo/madeyours-demo.ts",
+      "bytes": 5378,
+      "sha256": "dde879421819cdacea741a440a905d8f03216a20d99f1346dd4045d5e2784af6"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/demo/madeyours-demo.test.ts",
+      "bytes": 3644,
+      "sha256": "4aea9fa5ade5bdcd5f57dd40ee16f47547effcdc64b17073714e2482dbc024ef"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/madeyours-personalization.ts",
+      "bytes": 12432,
+      "sha256": "cc2f0f484eb4a63e8e7c81a143611b6ddad01936eb0b3300780beb8a4eaf4f48"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/madeyours-personalization.test.ts",
+      "bytes": 13285,
+      "sha256": "7f469b17a348bd923bb2c7721a583f6e1ef21c1901b29b0d0c4b8980c4ae268a"
+    },
+    {
+      "path": "apps/commerce/web/public/theme-assets/madeyours/v2/block.webp",
+      "bytes": 34834,
+      "sha256": "202b1f57d10f40f8306c7c9f7c25e51d6d850b39c486ba72f8ba18a85ddc65dc"
+    },
+    {
+      "path": "apps/commerce/web/public/theme-assets/madeyours/v2/hero.webp",
+      "bytes": 94696,
+      "sha256": "0befe5fe85c32b9d27f6fec68f5d5b6076d8878da8d81651c9e255f7d6689aaa"
+    },
+    {
+      "path": "apps/commerce/web/public/theme-assets/madeyours/v2/notebook.webp",
+      "bytes": 95704,
+      "sha256": "73c4886506b153e1d975cc8a57e66fd205354b4b41a6549c6f06219ef417a128"
+    },
+    {
+      "path": "apps/commerce/web/public/theme-assets/madeyours/v2/provenance.json",
+      "bytes": 2282,
+      "sha256": "9dd8da37928c0516929b2fdba5f2b3c53e8aeee4e48446fd82f023651b3ec4e2"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/niche-facts/madeyours-facts-editor.tsx",
+      "bytes": 11069,
+      "sha256": "f51a25256f3b1adc72c3a8251513dff635b34014a3a6fd85419e048f3a6c6e56"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/niche-facts/madeyours-facts-editor.test.tsx",
+      "bytes": 11868,
+      "sha256": "28528ed63ccfae1a082afc9c978326dbe63539cdcb6249f963f65f0c4bfb6720"
+    },
+    {
+      "path": "packages/commerce-core/src/product-fact-snapshot.ts",
+      "bytes": 14852,
+      "sha256": "0cbc6299ed4464bf7b46141ca786c98c7a01c2bea0ac93bb975caa790a1f3582"
+    },
+    {
+      "path": "packages/commerce-core/test/product-fact-snapshot.test.ts",
+      "bytes": 22087,
+      "sha256": "9408b77b8a08e72574fde966e71dfe28d6fa9a08db371da9e64e11f31065bd81"
+    },
+    {
+      "path": "packages/checkout-core/src/index.ts",
+      "bytes": 76932,
+      "sha256": "a67fc493111683a2d839995a3a1d40e4fef419a35f5414839793dd3555f747da"
+    },
+    {
+      "path": "packages/checkout-core/test/product-fact-binding.test.ts",
+      "bytes": 3832,
+      "sha256": "53993562ee2f5b84e75bd597d0a805bf61f9d5ca662c39dbeced946d84b56a16"
+    },
+    {
+      "path": "services/api-gateway/src/lib/cart-product-facts.ts",
+      "bytes": 4358,
+      "sha256": "19140df6be21304d0e5c764ad5175d55971253d45cf9255d32415c2f15d29c98"
+    },
+    {
+      "path": "services/api-gateway/src/routes/storefront/cart-routes.ts",
+      "bytes": 45739,
+      "sha256": "a92dc02137ff70c71336487b16f627ddf7b35213250a34c5cec835fd3fdf5588"
+    },
+    {
+      "path": "services/api-gateway/src/routes/checkout.ts",
+      "bytes": 75454,
+      "sha256": "2bee4e2e2d69a87e1acde3ab4e3009ee92f78f6e349b57ba8b0376d6ff47f68a"
+    },
+    {
+      "path": "services/api-gateway/src/execution/order-execution.adapter.ts",
+      "bytes": 23531,
+      "sha256": "fd2975fb31972c5e4c20952b6b48e7476ac81cf0a6bc8882d9f173bc4b719aa1"
+    },
+    {
+      "path": "services/api-gateway/src/execution/product-mutation.adapter.ts",
+      "bytes": 7663,
+      "sha256": "39a23ad08cc835d22bf0feb951c5ec44515e6c466f01be8cdd81800577d1257d"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/cart-order-fact-snapshots.postgres.test.ts",
+      "bytes": 49143,
+      "sha256": "c1f8c88126c57a0a08d6e75c05035da59adc918345e3080853ca1647d657d02f"
+    },
+    {
+      "path": "database/supabase/migrations/388_cart_order_fact_snapshots.sql",
+      "bytes": 90848,
+      "sha256": "9de7c35b68684cd5d3c752166e5c6ae0b33c64c6b1ea8ac353a82bcac936d2c3"
+    },
+    {
+      "path": "database/supabase/rollback/388_cart_order_fact_snapshots.rollback.sql",
+      "bytes": 70735,
+      "sha256": "12d10a0ef5043cfa330356dfae1b31b58df3c06f393c1d0db208ee4a9513ac5b"
+    },
+    {
+      "path": "packages/typescript/api-client/src/index.ts",
+      "bytes": 252594,
+      "sha256": "bca9564794dc06352982fbcaa04d91bb095402d0b3f63cdeb8cfa7feab0bad47"
+    },
+    {
+      "path": "tests/contracts/personalization-review-api-client.test.ts",
+      "bytes": 2833,
+      "sha256": "b7aee58c0f1b77be186a09cacfea0fb9c6120472ac25a64cc63ac71fa3e46386"
+    },
+    {
+      "path": "packages/commerce-core/src/index.ts",
+      "bytes": 47209,
+      "sha256": "b36af7e65c00d8b9d16fe84ffc7da522b6107c4010208cc224363fa90bdee6b9"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/hosted-checkout-buyer-ownership.postgres.test.ts",
+      "bytes": 46485,
+      "sha256": "a695fc3315cee62b9ef96c8dc280948a61f357c09f5cf1ff3f1adb79040da5f1"
+    },
+    {
+      "path": "tests/owned-db/money-ledger-reconciliation-traversal.postgres.test.ts",
+      "bytes": 49594,
+      "sha256": "0fbb8f1a556496310013886ac8e167a6719b146c75817280ee11ae2d5d70d2f9"
+    }
+  ],
+  "tests": {
+    "package-tests.tap": {
+      "tests": 22,
+      "pass": 22,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    "runtime-helper-tests.tap": {
+      "tests": 11,
+      "pass": 11,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    "merchant-editor-tests.tap": {
+      "tests": 8,
+      "pass": 8,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    "snapshot-contract-tests.tap": {
+      "tests": 14,
+      "pass": 14,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    "snapshot-tests.tap": {
+      "tests": 15,
+      "pass": 15,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    "editor-block-tests.tap": {
+      "tests": 13,
+      "pass": 13,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    "review-browser-wrapper-tests.tap": {
+      "tests": 1,
+      "pass": 1,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    "review-context-contract-tests.tap": {
+      "tests": 33,
+      "pass": 33,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    "discovery-contract-tests.tap": {
+      "tests": 7,
+      "pass": 7,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    "gateway-focused-tests.tap": {
+      "tests": 28,
+      "pass": 28,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    "cross-niche-snapshot-tests.tap": {
+      "tests": 31,
+      "pass": 31,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    "product-writer-unit-tests.tap": {
+      "tests": 6,
+      "pass": 6,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    "sdk-review-tests.tap": {
+      "tests": 3,
+      "pass": 3,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    "shared-contract-tests.tap": {
+      "tests": 51,
+      "pass": 51,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    }
+  },
+  "typechecks": [
+    {
+      "command": "pnpm exec tsc -p packages/theme-engine/tsconfig.json --noEmit --tsBuildInfoFile /private/tmp/madeyours-theme-engine.tsbuildinfo",
+      "exitCode": 0
+    },
+    {
+      "command": "pnpm exec tsc -p packages/commerce-core/tsconfig.json --noEmit --tsBuildInfoFile /private/tmp/madeyours-commerce-core.tsbuildinfo",
+      "exitCode": 0
+    },
+    {
+      "command": "pnpm exec tsc -p docs/implementation/niche-themes-2026-10-23/madeyours/scoped-typecheck.json --noEmit",
+      "exitCode": 0
+    },
+    {
+      "command": "pnpm exec tsc -p docs/implementation/niche-themes-2026-10-23/madeyours/merchant-editor-typecheck.json --noEmit",
+      "exitCode": 0
+    }
+  ],
+  "acceptedMockups": {
+    "freeze": "docs/research/shopify-product-intelligence/free-themes-niche-study-2026-10-22/visuals/madeyours-storybook/post-profile-freeze.json",
+    "verifiedFiles": 103,
+    "changed": [],
+    "verifiedAt": "2026-10-23T09:41:09.197754+00:00"
+  },
+  "sharedPipeline": [
+    "explicit v2 catalog dispatch; default Nova v1 remains",
+    "actual product-liquid-drop.ts validated namespace projection",
+    "unchanged global Liquid drop depth4 and generic JSON filter",
+    "exact inert JSON survives final DOM attribute decode",
+    "owned helper binds canonical lb-add-to-cart with explicit review guard",
+    "actual preview process block IDs and public-mode absence",
+    "mounted controlled merchant editor fields→canonical schema payload, invalid correction, explicit null removal"
+  ],
+  "pending": [
+    "Programme installed/hydrated browser, full theme lifecycle, authorized readback and performance acceptance under coordinator resource leases"
+  ],
+  "resourcesHeld": [],
+  "productionReleasePublished": false,
+  "browser": {
+    "recordedSnapshotStatus": "pass",
+    "captures": 58,
+    "interactions": 8,
+    "audit": "browser-audit.json",
+    "currentSourceQualification": "58 captures/8 scenarios pass at the recorded static source snapshot including the related-PDP correction. Later font/discovery changes are source-qualified only and need final programme browser review. No full hydrated/cart/DB/lifecycle claim follows from static captures.",
+    "allWidths": [
+      1440,
+      834,
+      390,
+      320
+    ]
+  },
+  "serverIntegration": {
+    "migration": "database/supabase/migrations/388_cart_order_fact_snapshots.sql",
+    "rollback": "database/supabase/rollback/388_cart_order_fact_snapshots.rollback.sql",
+    "databaseExecuted": true,
+    "ownedSuite": "services/api-gateway/src/__tests__/owned-db/cart-order-fact-snapshots.postgres.test.ts",
+    "sharedContracts": {
+      "passed": 51,
+      "failed": 0,
+      "evidence": "shared-contract-tests.tap"
+    },
+    "existingGatewayFocused": {
+      "passed": 28,
+      "failed": 0,
+      "evidence": "gateway-focused-tests.tap"
+    },
+    "sourceTypechecks": [
+      "checkout-source-typecheck.json",
+      "gateway-source-typecheck.json",
+      "sdk-source-typecheck.json"
+    ],
+    "fullGatewayTypecheck": {
+      "exitCode": 0,
+      "evidence": "gateway-typecheck.txt"
+    },
+    "productWriterUnit": {
+      "passed": 6,
+      "failed": 0,
+      "evidence": "product-writer-unit-tests.tap"
+    },
+    "ownedCasesPrepared": 23,
+    "dependency386": "dependency-386.json",
+    "reviewDisposition": "REVIEW-388-DISPOSITION.md",
+    "qualifiedOwnedCases": 23,
+    "currentReceipt": "final-gate-results.json",
+    "regressions": {
+      "authenticated": {
+        "passed": 10,
+        "failed": 0
+      },
+      "hostedBuyer": {
+        "passed": 15,
+        "failed": 0
+      },
+      "paymentRefundReconciliation": {
+        "passed": 11,
+        "failed": 0
+      },
+      "scheduledLedgerTraversal": {
+        "passed": 11,
+        "failed": 0,
+        "skipped": 0,
+        "runId": "68fc2c08fd36",
+        "evidence": "n7-isolated-results.json",
+        "reportedCount": "10 subtests plus parent",
+        "candidateReceipt": "n7-candidate-receipt.json",
+        "profile": "--prepared-transactions 2",
+        "priorAttempts": "Original shared-checkout env guard refusal and isolated initial checksum/profile failures are preserved; final N7 supersedes that gate only."
+      }
+    },
+    "independentFollowup": "../kindred/review-388-followup-results.json",
+    "ownedCleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    },
+    "sdkProducer": {
+      "passed": 3,
+      "failed": 0,
+      "evidence": "sdk-review-tests.tap"
+    },
+    "existingBrowserFetchWrapper": {
+      "passed": 1,
+      "failed": 0,
+      "evidence": "review-browser-wrapper-tests.tap"
+    },
+    "scheduledCleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    },
+    "databaseLaneReleased": true,
+    "originalCombinedReceiptNote": "final-gate-results.json retains59 passed and1 N7 launcher failure. It is not an all-green aggregate. n7-isolated-results.json independently closes the scheduled gate without rewriting that original receipt."
+  },
+  "factoryDiscovery": {
+    "themeDomainPassed": 22,
+    "discoveryPassed": 7,
+    "actualEditorTemplatesPassed": 21,
+    "baselineWireIssues": [],
+    "discoveryEvidence": "discovery-contract/report.json",
+    "factoryEvidence": "factory-source-roundtrip.json",
+    "sourceFrozenAndHandedBack": true
+  },
+  "testEvidenceScope": "TAP receipts describe their recorded runs and can overlap. Earlier helper/editor/snapshot receipts are historical; no aggregate total or current browser lifecycle qualification is inferred. The51-test shared contract receipt includes the earlier2-test SDK snapshot; the separate final SDK receipt has3 tests.",
+  "installedBuyerPreparation": {
+    "classification": "PREPARED_STATIC_DATA_ONLY_ALL23_RUNTIME_CASES_NOT_RUN",
+    "preparedAt": "2026-10-23T12:57:11.264264+00:00",
+    "matrix": "installed-buyer-lifecycle-matrix.md",
+    "plan": "installed-buyer-fixture.plan.json",
+    "validation": "installed-buyer-fixture-validation.json",
+    "staticDataChecks": 18,
+    "runtimeCases": 23,
+    "runtimePassed": 0,
+    "observations": [],
+    "sharedFixtureSourceEdited": false,
+    "resourcesStarted": [],
+    "frozenSourceFilesVerified": 15,
+    "files": [
+      {
+        "path": "installed-buyer-lifecycle-matrix.md",
+        "sha256": "2e4f9e28d9f2a92efed75fd1696bc594f650edbba5f3c3389d2c440932adf573"
+      },
+      {
+        "path": "installed-buyer-fixture.plan.json",
+        "sha256": "c3045d3295669dd9c38dea65339857ccd7fb2e63e349b611aa98b1dbad89fd3d"
+      },
+      {
+        "path": "validate-installed-buyer-fixture.ts",
+        "sha256": "16830a63724e727eefe9e65435b1ffa7e2a1a915ccf659d870c67c3c3350b710"
+      },
+      {
+        "path": "installed-buyer-fixture.tsconfig.json",
+        "sha256": "d0f4ab9815de911d01c9ecc47935bd3587822677f2e477080a98b8bb8fcc3602"
+      },
+      {
+        "path": "installed-buyer-fixture-validation.json",
+        "sha256": "be01599b627160565c586b2a076ebeb9b4f5147fc6ebcd5f602c5188a1be62fa"
+      },
+      {
+        "path": "installed-buyer-fixture-incorporation.json",
+        "sha256": "790fd8b2ce57cd5ae2bb7ce5666a20fe0da5f9ec49ca3b0d0f4584f8db9e3fd7"
+      },
+      {
+        "path": "installed-buyer-ui-setup.plan.json",
+        "sha256": "8b9878127d6aa0df7fde23f2f2f577c673d6b9c34a0200cc806e6c8ca2b0bae7"
+      },
+      {
+        "path": "installed-buyer-runtime-results.json",
+        "sha256": "74cade64811b1a60472ca87b76a46c03721c906c99f8b628dba8683d4549a172"
+      }
+    ],
+    "updatedAt": "2026-10-23T13:16:24.492588+00:00",
+    "runtimeLedger": "installed-buyer-runtime-results.json",
+    "executionAmendment": "installed-buyer-ui-setup.plan.json",
+    "incorporation": "installed-buyer-fixture-incorporation.json",
+    "currentSetupMethod": "NORMAL_MERCHANT_UI_AFTER_EXPLICIT_SHARED_FIXTURE_ALLOCATION",
+    "sharedFixtureAllocated": false
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "checkedAt": "2026-10-23T17:55:58.313000+00:00",
+  "classification": "ACTUAL_OWNER_NORMAL_UI_SAVE_RELOAD_EVIDENCE_INDEPENDENTLY_REVIEWED",
+  "runId": "f6074d90e894",
+  "preflightProduct": "Fixture Cloud Rinse; belongs to shared smoke, not Marginalia book fixture.",
+  "sourceEvidence": [
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-cloud-before-readback.json",
+      "sha256": "dd8b0d74e948798cc89e11dd5b2b3d391b303a4a063a0821e3caeb2b00006c36"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-cloud-saved-readback.json",
+      "sha256": "dc32bf6a2b8654b8ab23e5f06cca295b93ada45e6f88e273f392c290039427fc"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-cloud-saved-details-readback.json",
+      "sha256": "6c834e56899d354813aaa2ac0288b22f57ea54a8b98093ed0878bc90a32b4157"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-cloud-normal-save-stable.ax.txt",
+      "sha256": "bb44d10c3c9ca6db4dee061ba075067e5084f6797680aff5e476f7373ffa20e0"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-cloud-saved-reload.ax.txt",
+      "sha256": "d536c00870d1a27cd3c77f9d3877112f21678faf4fd69e679e96aa66c4828f3a"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-cloud-saved.png",
+      "sha256": "bb23eb0f4443f40c4026d5cf05736937f044497a032949b6049cd9be224487e1"
+    }
+  ],
+  "normalOriginSaveAndReload": "PASS",
+  "visibleSavedMessage": true,
+  "editedMarkerPersistedAfterFullReload": true,
+  "sameAcknowledgedProductUuid": true,
+  "sameAcknowledgedSiteUuid": true,
+  "visibleAndCanonicalPrice": 640,
+  "visibleAndCanonicalStock": 12,
+  "beforeVersion": 3,
+  "savedVersion": 6,
+  "inventoryDigestEqual": false,
+  "otherMetadataDigestEqual": false,
+  "preservationQualification": {
+    "status": "NOT_CLAIMED_PENDING_OWNER_CLASSIFICATION",
+    "details": {
+      "inventoryEvents": 0,
+      "inventoryAdjustments": 1,
+      "available": 12,
+      "newOtherNamespaceShape": {
+        "apparel": {
+          "kind": "object",
+          "empty": false,
+          "childKeys": [
+            "fit",
+            "care",
+            "unit",
+            "fabric",
+            "measurements"
+          ]
+        }
+      }
+    },
+    "noStockLossOrRootCauseInferred": true,
+    "sentToEditorAndThemes": true
+  },
+  "browserHttpsVerified": false,
+  "retainedUuidRenameVerified": false,
+  "marginalia16": {
+    "PASS": 0,
+    "FAIL": 0,
+    "NOT_RUN": 16
+  },
+  "marginaliaRuntimeBindingsAssigned": false,
+  "sideEffects": {
+    "browserControlled": false,
+    "apiWrites": 0,
+    "fixtureEdits": 0,
+    "sourceEdits": 0,
+    "osProbes": 0
+  }
+}

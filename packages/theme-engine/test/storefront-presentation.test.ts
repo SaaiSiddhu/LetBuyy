@@ -12,3 +12,10 @@ test('empty old configs get the same renderable default and finite theme values'
  const resolved=resolveStorefrontThemePresentation({}, {}, 'letbuyy-core','en-IN');
  assert.ok(resolved.templateConfig.liquidBundle||resolved.templateConfig.sections);assert.match(resolved.themeSettings.primaryColor,/^#[0-9a-f]{6}$/i);assert.equal(Number.isFinite(resolved.themeSettings.borderRadius),true);
 });
+test('the Liquid body font reaches the shared storefront and checkout presentation DTO',()=>{
+ const raw={themeId:'letbuyy-sense',themeSettings:{bodyFontFamily:'Lato',headingFontFamily:'Playfair Display'},sections:{template:[{id:'hero',type:'heroBanner',settings:{heading:'Synthetic'}}]}};
+ const resolved=resolveStorefrontThemePresentation(raw,{},'letbuyy-sense','en-IN');
+ assert.equal(resolved.themeSettings.fontFamily,'Lato');
+ assert.equal(resolved.themeSettings.headingFontFamily,'Playfair Display');
+ assert.equal(resolveStorefrontThemePresentation(raw,{font_family:'Inter'},'letbuyy-sense','en-IN').themeSettings.fontFamily,'Inter');
+});

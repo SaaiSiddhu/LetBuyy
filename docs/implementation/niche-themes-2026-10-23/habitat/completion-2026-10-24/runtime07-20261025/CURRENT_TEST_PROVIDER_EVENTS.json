@@ -1,0 +1,44 @@
+{
+  "recordedAt": "2026-10-24T21:03:31.839869+00:00",
+  "classification": "READONLY_CURRENT_LOG_FILTERED_TO_EXACT_HABITAT_PAYMENT_NO_KEYS_OR_SIGNATURE_VALUES",
+  "runId": "49ada80bc494",
+  "events": [
+    {
+      "runId": "49ada80bc494",
+      "receivedAt": "2026-10-24T20:47:04.433Z",
+      "event": "payment.authorized",
+      "paymentId": "pay_TrsleqZCaHyZcZ",
+      "providerOrderId": "order_TrslNGp2BitxTD",
+      "paymentStatus": "authorized",
+      "amount": 892000,
+      "currency": "INR",
+      "providerEventId": "TrslufryTHcRiG",
+      "signaturePresent": true,
+      "bodySha256": "56097b828c7cef66988e1c4022cbc2247593aecca0369e174c6809e73868dd82",
+      "canonicalStatus": 200
+    },
+    {
+      "runId": "49ada80bc494",
+      "receivedAt": "2026-10-24T20:47:05.369Z",
+      "event": "payment.captured",
+      "paymentId": "pay_TrsleqZCaHyZcZ",
+      "providerOrderId": "order_TrslNGp2BitxTD",
+      "paymentStatus": "captured",
+      "amount": 892000,
+      "currency": "INR",
+      "providerEventId": "TrslvhuYgzH7SM",
+      "signaturePresent": true,
+      "bodySha256": "a5d9cd937ce2b9b94ae7271cb380b90eddf2a190d2540d36d526ff00a04fe216",
+      "canonicalStatus": 200
+    }
+  ],
+  "equalsEarlierIndependentReaderSubset": true,
+  "sourceLog": {
+    "path": "/private/tmp/theme-completion-49ada80bc494-webhook-deliveries.json",
+    "recordedReaderWholeHash": "78311a38fc02b2415fc6c65b32fff98f5b99ed4968b5298c44d53e6e3cf8a471",
+    "wholeHashAtCurrentRead": "900b594f4e1fb638c22a39fefa0524885b40c0a7f2303ac6d34558dd3c9438f1",
+    "wholeLogChangedAsOtherPaymentsAppend": true,
+    "currentMatchingSubsetUnchanged": true
+  },
+  "businessMutationOrProviderCall": false
+}

@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-24T11:38:58.533142+00:00",
+  "status": "CURRENT_MAIN_TEST_SOURCE_AND_FULL_RUNTIME_CLOSURE_READY_FOR_INDEPENDENT_REVIEW_NOT_NATIVE_EXECUTION",
+  "nativeExecutionGranted": false,
+  "suite": {
+    "path": "services/api-gateway/src/__tests__/owned-db/playfield201-catalog394-qualification.manual.ts",
+    "beforeSHA256": "95dee5d4dd9dd2b9ad38dc2d42b4bb5a175e502c9731f3ddc499d21e601c1d07",
+    "afterSHA256": "918e5a79333d1c8d47b727a80c65b8ddff4b733c1da9f93f326ec9179478dd95"
+  },
+  "sourceProposal": {
+    "path": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private04/SOURCE_PROPOSAL.json",
+    "sha256": "5bc785ae48a0a9d2c9f10dbb473103a1542375abd913010f8a2893ac5ac8ced0"
+  },
+  "sourceWitness": {
+    "path": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private04/VALIDATION.json",
+    "sha256": "a8fef1285f7a8302c680b3bae152e3bd9171bc20d247c7d0efbce95bce35701c",
+    "sourceParseDiagnostics": 0,
+    "archiveTamperControls": 3,
+    "networkCalls": 0
+  },
+  "actualTransportCorrection": "Ownedproxy login isauthenticator, notpostgres. Existingservice_rolemembership/journalSELECT/guardEXECUTE used onlyforownedfixtureTEMPcreation; exactbackend/fulltenantcontextrestored beforeunchangedstrictpublicationguard. Separateapp_tenant42501journalrefusal retained. No privilege/production/SQL changes.",
+  "priorPrivate03AndRequesterAlternative": "REJECTED_FOR_NATIVE_USE duefalsepostgresloginassumption; historicalsourcewitnesses/patches untouched",
+  "inputClosure": {
+    "path": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private04/runtime-inventory/source-input-closure.v3.json",
+    "sha256": "d62d3b8237d4dff443614239bc8be198708161d18e30428e475aba1e378be8cf",
+    "files": 1155,
+    "literalEdges": 1954,
+    "actualJSEdges": 13,
+    "allActualMainHashesExact": true,
+    "historicalBuilderArchive": 61,
+    "migrationCount": 322,
+    "maximum": 393,
+    "candidate394outsideScan": true
+  },
+  "graph": {
+    "path": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private04/runtime-inventory/literal-import-graph.v3.json",
+    "sha256": "3d157aa07a6ea811fbffd7512588242185909babffc4cf8c3c654f512ed3a6b3"
+  },
+  "resolveOnlyChecker": {
+    "path": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private04/runtime-inventory/check-runtime-inventory.v3.mjs",
+    "sha256": "ce4134befa4a498a9cc05aff3ce5ff2c5189b1c7a41e136898c7dee38eaa8445",
+    "log": {
+      "path": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private04/runtime-inventory/independent-check.stdout",
+      "sha256": "5e985d354122ee7a2e60697ebd9e39c1f2a062c9b1f8e5a03807f5d885e18e64"
+    },
+    "exitCode": 0
+  },
+  "gatewayTypecheck": {
+    "command": "node node_modules/typescript/bin/tsc -p services/api-gateway/tsconfig.json --noEmit --incremental false",
+    "exitCode": 0,
+    "log": {
+      "path": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private04/gateway-typecheck.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "captureFailurePreserved": {
+    "file": "docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private04/runtime-inventory/capture.stderr.attempt01.snapshot",
+    "cause": "Capture script assumed proposaldata stillinoverlay; switchedread-only capturetoactualMain; correctedcaptureexit0. No test/native result affected."
+  },
+  "oldNativeEpochs": "01interrupted and02phase4failure preserved; no retry started",
+  "resourceState": {
+    "activeNative": null,
+    "activeBrowser": null,
+    "activeHeavyBuild": null,
+    "old936": "EXPIRED_NOT_ADOPTED",
+    "persistentMarketplaceAndUser9001": "Untouched"
+  },
+  "requiredNext": "Independent review exactsource/current1155closure; one newboundednativegrant; Mainadmission/closure explicitlybindcurrentfilesandfrozenarchive; standalonepreflightexit0inonetoolcall THEN exactrunnerinseparatecall. Original8phases/9TAP,defaultlatest393,jobs1,prepared2,600s,--no-reap. No394emissionuntilqualification."
+}

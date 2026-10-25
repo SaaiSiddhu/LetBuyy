@@ -153,7 +153,12 @@ router.post('/', async (c) => {
         const formData = await c.req.formData();
         const fileEntry = formData.get('file');
         const folderEntry = formData.get('folder');
-        const storeId = stringValue(formData.get('store_id')) || stringValue(formData.get('site_id'));
+        const bodyStoreId = stringValue(formData.get('store_id')) || stringValue(formData.get('site_id'));
+        const selectedStoreId = stringValue(c.req.header('X-Store-ID'));
+        if (bodyStoreId && selectedStoreId && bodyStoreId !== selectedStoreId) {
+            return c.json({ error: { code: 'FORBIDDEN', message: 'Selected store does not match this upload' } }, 403);
+        }
+        const storeId = bodyStoreId || selectedStoreId;
 
         if (
             !fileEntry ||

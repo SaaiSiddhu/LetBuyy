@@ -1,0 +1,2246 @@
+{
+  "body": {
+    "background": "rgb(244, 244, 244)",
+    "color": "rgba(43, 44, 45, 0.75)",
+    "font": "Jost, sans-serif",
+    "fontSize": "16px"
+  },
+  "controls": [
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Shop",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "United States | USD $",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "English",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Search",
+      "tag": "INPUT",
+      "type": "search"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose options",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Decrease quantity for White Marble",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Quantity for White Marble",
+      "tag": "INPUT",
+      "type": "number"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Increase quantity for White Marble",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Decrease quantity for Default Title",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Quantity for Default Title",
+      "tag": "INPUT",
+      "type": "number"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Increase quantity for Default Title",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose options",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose options",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Decrease quantity for Default Title",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Quantity for Default Title",
+      "tag": "INPUT",
+      "type": "number"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Increase quantity for Default Title",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose options",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose options",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose options",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Decrease quantity for Default Title",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Quantity for Default Title",
+      "tag": "INPUT",
+      "type": "number"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Increase quantity for Default Title",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose options",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose options",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose options",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose options",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Decrease quantity for Default Title",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Quantity for Default Title",
+      "tag": "INPUT",
+      "type": "number"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Increase quantity for Default Title",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose options",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": true,
+      "expanded": null,
+      "label": "Slide left",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Slide right",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "United States | USD $",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "English",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "View quantity rules\n",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Quantity for Dusk",
+      "tag": "INPUT",
+      "type": "number"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "View quantity rules\n",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Quantity for Ochre",
+      "tag": "INPUT",
+      "type": "number"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "View quantity rules\n",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Quantity for White",
+      "tag": "INPUT",
+      "type": "number"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "View quantity rules\n",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Quantity for Ivory",
+      "tag": "INPUT",
+      "type": "number"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "View quantity rules\n",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Quantity for Clover",
+      "tag": "INPUT",
+      "type": "number"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "View quantity rules\n",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Quantity for Mist",
+      "tag": "INPUT",
+      "type": "number"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "View quantity rules\n",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Quantity for Bone",
+      "tag": "INPUT",
+      "type": "number"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "View quantity rules\n",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Quantity for X-Small / Fawn",
+      "tag": "INPUT",
+      "type": "number"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "View quantity rules\n",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Quantity for X-Small / Raisin",
+      "tag": "INPUT",
+      "type": "number"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "View quantity rules\n",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Quantity for Small / Fawn",
+      "tag": "INPUT",
+      "type": "number"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "View quantity rules\n",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Quantity for Small / Raisin",
+      "tag": "INPUT",
+      "type": "number"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "View quantity rules\n",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Quantity for Medium / Fawn",
+      "tag": "INPUT",
+      "type": "number"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "View quantity rules\n",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Quantity for Medium / Raisin",
+      "tag": "INPUT",
+      "type": "number"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "View quantity rules\n",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Quantity for Large / Fawn",
+      "tag": "INPUT",
+      "type": "number"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "View quantity rules\n",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Quantity for Large / Raisin",
+      "tag": "INPUT",
+      "type": "number"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "View quantity rules\n",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Quantity for X-Large / Fawn",
+      "tag": "INPUT",
+      "type": "number"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "View quantity rules\n",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Quantity for X-Large / Raisin",
+      "tag": "INPUT",
+      "type": "number"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "View quantity rules\n",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Quantity for 1X / Fawn",
+      "tag": "INPUT",
+      "type": "number"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "View quantity rules\n",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Quantity for 1X / Raisin",
+      "tag": "INPUT",
+      "type": "number"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "View quantity rules\n",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Quantity for 2X / Fawn",
+      "tag": "INPUT",
+      "type": "number"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "View quantity rules\n",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Quantity for 2X / Raisin",
+      "tag": "INPUT",
+      "type": "number"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "View quantity rules\n",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Quantity for 3X / Fawn",
+      "tag": "INPUT",
+      "type": "number"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "View quantity rules\n",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Quantity for 3X / Raisin",
+      "tag": "INPUT",
+      "type": "number"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "View quantity rules\n",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "View quantity rules\n",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    }
+  ],
+  "headings": [
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 30,
+      "line": "0px",
+      "size": "42px",
+      "tag": "H1",
+      "text": "",
+      "weight": "500",
+      "width": 77.5,
+      "x": 170,
+      "y": 53
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 1,
+      "line": "32.4px",
+      "size": "25.2px",
+      "tag": "H2",
+      "text": "Country/region",
+      "weight": "500",
+      "width": 1,
+      "x": 920.3125,
+      "y": 48
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 1,
+      "line": "32.4px",
+      "size": "25.2px",
+      "tag": "H2",
+      "text": "Language",
+      "weight": "500",
+      "width": 1,
+      "x": 1098.9140625,
+      "y": 48
+    },
+    {
+      "font": "Jost, sans-serif",
+      "height": 19.5,
+      "line": "19.5px",
+      "size": "13px",
+      "tag": "H2",
+      "text": "",
+      "weight": "400",
+      "width": 282,
+      "x": 948,
+      "y": -99.296875
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 54,
+      "line": "54px",
+      "size": "42px",
+      "tag": "H2",
+      "text": "Industry-leading home goods",
+      "weight": "500",
+      "width": 553.3125,
+      "x": 170,
+      "y": 211
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 32.3984375,
+      "line": "32.4px",
+      "size": "25.2px",
+      "tag": "H2",
+      "text": "Proven bestsellers",
+      "weight": "500",
+      "width": 1100,
+      "x": 170,
+      "y": 556.4453125
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 17.546875,
+      "line": "17.55px",
+      "size": "13.65px",
+      "tag": "H3",
+      "text": "Brushed Cotton Sham",
+      "weight": "500",
+      "width": 170.3984375,
+      "x": 190,
+      "y": 897.109375
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 17.546875,
+      "line": "17.55px",
+      "size": "13.65px",
+      "tag": "H3",
+      "text": "Cape Side Table",
+      "weight": "500",
+      "width": 170.3984375,
+      "x": 412.3984375,
+      "y": 896.8359375
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 17.546875,
+      "line": "17.55px",
+      "size": "13.65px",
+      "tag": "H3",
+      "text": "Turkish Bath Bundle",
+      "weight": "500",
+      "width": 170.3984375,
+      "x": 634.796875,
+      "y": 896.8359375
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 17.546875,
+      "line": "17.55px",
+      "size": "13.65px",
+      "tag": "H3",
+      "text": "Women's Classic Crew",
+      "weight": "500",
+      "width": 170.3984375,
+      "x": 857.1953125,
+      "y": 896.703125
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 17.546875,
+      "line": "17.55px",
+      "size": "13.65px",
+      "tag": "H3",
+      "text": "Flange Pillow Cover",
+      "weight": "500",
+      "width": 170.3984375,
+      "x": 1079.59375,
+      "y": 896.8359375
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 17.546875,
+      "line": "17.55px",
+      "size": "13.65px",
+      "tag": "H3",
+      "text": "Berber Pillow Cover",
+      "weight": "500",
+      "width": 170.3984375,
+      "x": 190,
+      "y": 1339.7109375
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 17.546875,
+      "line": "17.55px",
+      "size": "13.65px",
+      "tag": "H3",
+      "text": "Turkish Cotton Towels",
+      "weight": "500",
+      "width": 170.3984375,
+      "x": 412.3984375,
+      "y": 1339.6484375
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 17.546875,
+      "line": "17.55px",
+      "size": "13.65px",
+      "tag": "H3",
+      "text": "Organic Cotton Sham",
+      "weight": "500",
+      "width": 170.3984375,
+      "x": 634.796875,
+      "y": 1340.0625
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 17.546875,
+      "line": "17.55px",
+      "size": "13.65px",
+      "tag": "H3",
+      "text": "Men's Cotton Pant",
+      "weight": "500",
+      "width": 170.3984375,
+      "x": 857.1953125,
+      "y": 1339.7890625
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 17.546875,
+      "line": "17.55px",
+      "size": "13.65px",
+      "tag": "H3",
+      "text": "Geo Flatweave Rug",
+      "weight": "500",
+      "width": 170.3984375,
+      "x": 1079.59375,
+      "y": 1339.6484375
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 32.3984375,
+      "line": "32.4px",
+      "size": "25.2px",
+      "tag": "H2",
+      "text": "Shop our top categories",
+      "weight": "500",
+      "width": 296.8828125,
+      "x": 170,
+      "y": 1572.609375
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 24.296875,
+      "line": "24.3px",
+      "size": "18.9px",
+      "tag": "H3",
+      "text": "Bath towels",
+      "weight": "500",
+      "width": 170.3984375,
+      "x": 190,
+      "y": 1892.40625
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 24.296875,
+      "line": "24.3px",
+      "size": "18.9px",
+      "tag": "H3",
+      "text": "Robes",
+      "weight": "500",
+      "width": 170.3984375,
+      "x": 412.3984375,
+      "y": 1892.40625
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 24.296875,
+      "line": "24.3px",
+      "size": "18.9px",
+      "tag": "H3",
+      "text": "Pillows",
+      "weight": "500",
+      "width": 170.3984375,
+      "x": 634.796875,
+      "y": 1892.40625
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 24.296875,
+      "line": "24.3px",
+      "size": "18.9px",
+      "tag": "H3",
+      "text": "Slippers",
+      "weight": "500",
+      "width": 170.3984375,
+      "x": 857.1953125,
+      "y": 1892.40625
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 24.296875,
+      "line": "24.3px",
+      "size": "18.9px",
+      "tag": "H3",
+      "text": "Rugs",
+      "weight": "500",
+      "width": 170.3984375,
+      "x": 1079.59375,
+      "y": 1892.40625
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 55.78125,
+      "line": "27.9px",
+      "size": "18.9px",
+      "tag": "H3",
+      "text": "\"My customers love these sheets.\"",
+      "weight": "500",
+      "width": 236,
+      "x": 185,
+      "y": 2130.0703125
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 55.78125,
+      "line": "27.9px",
+      "size": "18.9px",
+      "tag": "H3",
+      "text": "\"This duvet sells out quickly in my store.\"",
+      "weight": "500",
+      "width": 236,
+      "x": 463,
+      "y": 2130.0703125
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 55.78125,
+      "line": "27.9px",
+      "size": "18.9px",
+      "tag": "H3",
+      "text": "\"The quality is the best in the industry.\"",
+      "weight": "500",
+      "width": 236,
+      "x": 741,
+      "y": 2130.0703125
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 55.78125,
+      "line": "27.9px",
+      "size": "18.9px",
+      "tag": "H3",
+      "text": "\"The range of colors is incredible.\"",
+      "weight": "500",
+      "width": 236,
+      "x": 1019,
+      "y": 2130.0703125
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 32.3984375,
+      "line": "32.4px",
+      "size": "25.2px",
+      "tag": "H2",
+      "text": "New arrivals",
+      "weight": "500",
+      "width": 1100,
+      "x": 170,
+      "y": 2313.6484375
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 17.546875,
+      "line": "17.55px",
+      "size": "13.65px",
+      "tag": "H3",
+      "text": "Linen Pillow Cover",
+      "weight": "500",
+      "width": 191.1953125,
+      "x": 184,
+      "y": 2680.0390625
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 17.546875,
+      "line": "17.55px",
+      "size": "13.65px",
+      "tag": "H3",
+      "text": "Turkish Cotton Slippers",
+      "weight": "500",
+      "width": 191.1953125,
+      "x": 427.1953125,
+      "y": 2680.0390625
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 17.546875,
+      "line": "17.55px",
+      "size": "13.65px",
+      "tag": "H3",
+      "text": "Cloud Cotton Robe",
+      "weight": "500",
+      "width": 191.1953125,
+      "x": 670.390625,
+      "y": 2680.0390625
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 17.546875,
+      "line": "17.55px",
+      "size": "13.65px",
+      "tag": "H3",
+      "text": "Turkish Cotton Towels",
+      "weight": "500",
+      "width": 191.1953125,
+      "x": 913.5859375,
+      "y": 2680.0390625
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 17.546875,
+      "line": "17.55px",
+      "size": "13.65px",
+      "tag": "H3",
+      "text": "Cotton Duvet Set",
+      "weight": "500",
+      "width": 191.1953125,
+      "x": 1156.78125,
+      "y": 2680.3359375
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 17.546875,
+      "line": "17.55px",
+      "size": "13.65px",
+      "tag": "H3",
+      "text": "Waffle Towels",
+      "weight": "500",
+      "width": 191.1953125,
+      "x": 1399.9765625,
+      "y": 2680
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 32.3984375,
+      "line": "32.4px",
+      "size": "25.2px",
+      "tag": "H2",
+      "text": "You're set up for success",
+      "weight": "500",
+      "width": 307.453125,
+      "x": 170,
+      "y": 2967.8828125
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 27.890625,
+      "line": "27.9px",
+      "size": "18.9px",
+      "tag": "H3",
+      "text": "Free swatches",
+      "weight": "500",
+      "width": 216,
+      "x": 195,
+      "y": 3075.28125
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 27.890625,
+      "line": "27.9px",
+      "size": "18.9px",
+      "tag": "H3",
+      "text": "Color consults",
+      "weight": "500",
+      "width": 216,
+      "x": 473,
+      "y": 3075.28125
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 27.890625,
+      "line": "27.9px",
+      "size": "18.9px",
+      "tag": "H3",
+      "text": "Merchandising guide",
+      "weight": "500",
+      "width": 216,
+      "x": 751,
+      "y": 3075.28125
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 27.890625,
+      "line": "27.9px",
+      "size": "18.9px",
+      "tag": "H3",
+      "text": "Professional care",
+      "weight": "500",
+      "width": 216,
+      "x": 1029,
+      "y": 3075.28125
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 24.296875,
+      "line": "24.3px",
+      "size": "18.9px",
+      "tag": "H2",
+      "text": "Ordering",
+      "weight": "500",
+      "width": 358.6640625,
+      "x": 170,
+      "y": 3323.5625
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 24.296875,
+      "line": "24.3px",
+      "size": "18.9px",
+      "tag": "H2",
+      "text": "Resources",
+      "weight": "500",
+      "width": 358.671875,
+      "x": 540.6640625,
+      "y": 3323.5625
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 24.296875,
+      "line": "24.3px",
+      "size": "18.9px",
+      "tag": "H2",
+      "text": "About",
+      "weight": "500",
+      "width": 358.6640625,
+      "x": 911.3359375,
+      "y": 3323.5625
+    },
+    {
+      "font": "Jost, sans-serif",
+      "height": 19.5,
+      "line": "19.5px",
+      "size": "13px",
+      "tag": "H2",
+      "text": "Country/region",
+      "weight": "400",
+      "width": 187.328125,
+      "x": 170,
+      "y": 3629.9453125
+    },
+    {
+      "font": "Jost, sans-serif",
+      "height": 19.5,
+      "line": "19.5px",
+      "size": "13px",
+      "tag": "H2",
+      "text": "Language",
+      "weight": "400",
+      "width": 103.625,
+      "x": 367.328125,
+      "y": 3629.9453125
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 32.3984375,
+      "line": "32.4px",
+      "size": "25.2px",
+      "tag": "H3",
+      "text": "",
+      "weight": "500",
+      "width": 928,
+      "x": 341,
+      "y": 126
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 32.3984375,
+      "line": "32.4px",
+      "size": "25.2px",
+      "tag": "H3",
+      "text": "",
+      "weight": "500",
+      "width": 928,
+      "x": 341,
+      "y": 126
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 32.3984375,
+      "line": "32.4px",
+      "size": "25.2px",
+      "tag": "H3",
+      "text": "",
+      "weight": "500",
+      "width": 928,
+      "x": 341,
+      "y": 126
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 32.3984375,
+      "line": "32.4px",
+      "size": "25.2px",
+      "tag": "H3",
+      "text": "",
+      "weight": "500",
+      "width": 928,
+      "x": 341,
+      "y": 126
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 32.3984375,
+      "line": "32.4px",
+      "size": "25.2px",
+      "tag": "H3",
+      "text": "",
+      "weight": "500",
+      "width": 928,
+      "x": 341,
+      "y": 126
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 32.3984375,
+      "line": "32.4px",
+      "size": "25.2px",
+      "tag": "H3",
+      "text": "",
+      "weight": "500",
+      "width": 928,
+      "x": 341,
+      "y": 126
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 32.3984375,
+      "line": "32.4px",
+      "size": "25.2px",
+      "tag": "H3",
+      "text": "",
+      "weight": "500",
+      "width": 928,
+      "x": 341,
+      "y": 126
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 32.3984375,
+      "line": "32.4px",
+      "size": "25.2px",
+      "tag": "H3",
+      "text": "",
+      "weight": "500",
+      "width": 928,
+      "x": 341,
+      "y": 126
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 32.3984375,
+      "line": "32.4px",
+      "size": "25.2px",
+      "tag": "H3",
+      "text": "",
+      "weight": "500",
+      "width": 928,
+      "x": 341,
+      "y": 126
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 32.3984375,
+      "line": "32.4px",
+      "size": "25.2px",
+      "tag": "H3",
+      "text": "",
+      "weight": "500",
+      "width": 928,
+      "x": 341,
+      "y": 126
+    },
+    {
+      "font": "\"DM Sans\", sans-serif",
+      "height": 32.3984375,
+      "line": "32.4px",
+      "size": "25.2px",
+      "tag": "H3",
+      "text": "",
+      "weight": "500",
+      "width": 928,
+      "x": 341,
+      "y": 126
+    }
+  ],
+  "links": [
+    {
+      "text": "Skip to content",
+      "url": "https://theme-trade-demo.myshopify.com/#MainContent"
+    },
+    {
+      "text": "",
+      "url": "https://theme-trade-demo.myshopify.com/"
+    },
+    {
+      "text": "Marketing resources",
+      "url": "https://theme-trade-demo.myshopify.com/blogs/news"
+    },
+    {
+      "text": "Become a wholesale partner",
+      "url": "https://theme-trade-demo.myshopify.com/pages/company-account-request"
+    },
+    {
+      "text": "Cart",
+      "url": "https://theme-trade-demo.myshopify.com/cart"
+    },
+    {
+      "text": "",
+      "url": "https://theme-trade-demo.myshopify.com/cart"
+    },
+    {
+      "text": "Shop all",
+      "url": "https://theme-trade-demo.myshopify.com/collections/all"
+    },
+    {
+      "text": "Brushed Cotton Sham",
+      "url": "https://theme-trade-demo.myshopify.com/products/euro-sham-brushed-cotton"
+    },
+    {
+      "text": "Cape Side Table",
+      "url": "https://theme-trade-demo.myshopify.com/products/cape-side-table"
+    },
+    {
+      "text": "Turkish Bath Bundle",
+      "url": "https://theme-trade-demo.myshopify.com/products/starter-bathroom-bundle"
+    },
+    {
+      "text": "Women's Classic Crew",
+      "url": "https://theme-trade-demo.myshopify.com/products/womens-classic-crew-sweatshirt"
+    },
+    {
+      "text": "Flange Pillow Cover",
+      "url": "https://theme-trade-demo.myshopify.com/products/classic-flange-pillow-cover"
+    },
+    {
+      "text": "Berber Pillow Cover",
+      "url": "https://theme-trade-demo.myshopify.com/products/berber-pillow-cover"
+    },
+    {
+      "text": "Turkish Cotton Towels",
+      "url": "https://theme-trade-demo.myshopify.com/products/classic-towels"
+    },
+    {
+      "text": "Organic Cotton Sham",
+      "url": "https://theme-trade-demo.myshopify.com/products/brushed-cotton-euro-sham-1"
+    },
+    {
+      "text": "Men's Cotton Pant",
+      "url": "https://theme-trade-demo.myshopify.com/products/mens-organic-cotton-pant-1"
+    },
+    {
+      "text": "Geo Flatweave Rug",
+      "url": "https://theme-trade-demo.myshopify.com/products/geo-flatweave-rug"
+    },
+    {
+      "text": "Bath towels",
+      "url": "https://theme-trade-demo.myshopify.com/collections/bath-towels"
+    },
+    {
+      "text": "Robes",
+      "url": "https://theme-trade-demo.myshopify.com/collections/robes"
+    },
+    {
+      "text": "Pillows",
+      "url": "https://theme-trade-demo.myshopify.com/collections/decorative-pillows"
+    },
+    {
+      "text": "Slippers",
+      "url": "https://theme-trade-demo.myshopify.com/collections/slippers"
+    },
+    {
+      "text": "Rugs",
+      "url": "https://theme-trade-demo.myshopify.com/collections/rugs"
+    },
+    {
+      "text": "Shop sheets",
+      "url": "https://theme-trade-demo.myshopify.com/products/linen-top-sheet"
+    },
+    {
+      "text": "Shop duvets",
+      "url": "https://theme-trade-demo.myshopify.com/products/down-alternative-duvet"
+    },
+    {
+      "text": "Shop towels",
+      "url": "https://theme-trade-demo.myshopify.com/products/starter-bathroom-bundle"
+    },
+    {
+      "text": "Shop sheets",
+      "url": "https://theme-trade-demo.myshopify.com/products/linen-top-sheet-1"
+    },
+    {
+      "text": "Linen Pillow Cover",
+      "url": "https://theme-trade-demo.myshopify.com/products/cloud-linen-gauze-pillow-cover"
+    },
+    {
+      "text": "Turkish Cotton Slippers",
+      "url": "https://theme-trade-demo.myshopify.com/products/classic-slippers"
+    },
+    {
+      "text": "Cloud Cotton Robe",
+      "url": "https://theme-trade-demo.myshopify.com/products/robe-cloud-cotton"
+    },
+    {
+      "text": "Turkish Cotton Towels",
+      "url": "https://theme-trade-demo.myshopify.com/products/classic-towels"
+    },
+    {
+      "text": "Cotton Duvet Set",
+      "url": "https://theme-trade-demo.myshopify.com/products/duvet-cover-set-brushed-cotton"
+    },
+    {
+      "text": "Waffle Towels",
+      "url": "https://theme-trade-demo.myshopify.com/products/waffle-bath-towel"
+    },
+    {
+      "text": "Learn more",
+      "url": "https://theme-trade-demo.myshopify.com/blogs/news/free-fabric-swatches"
+    },
+    {
+      "text": "Read tips",
+      "url": "https://theme-trade-demo.myshopify.com/blogs/news/effective-color-consultations"
+    },
+    {
+      "text": "See guide",
+      "url": "https://theme-trade-demo.myshopify.com/blogs/news/merchandising-tricks-from-a-pro"
+    },
+    {
+      "text": "Get started",
+      "url": "https://theme-trade-demo.myshopify.com/blogs/news/professional-care-instructions"
+    },
+    {
+      "text": "Shop all",
+      "url": "https://theme-trade-demo.myshopify.com/collections/all"
+    },
+    {
+      "text": "Shipping",
+      "url": "https://theme-trade-demo.myshopify.com/pages/shipping-policy"
+    },
+    {
+      "text": "Returns",
+      "url": "https://theme-trade-demo.myshopify.com/pages/return-policy"
+    },
+    {
+      "text": "FAQ",
+      "url": "https://theme-trade-demo.myshopify.com/pages/faq"
+    },
+    {
+      "text": "Marketing resources",
+      "url": "https://theme-trade-demo.myshopify.com/blogs/news"
+    },
+    {
+      "text": "Become a wholesale partner",
+      "url": "https://theme-trade-demo.myshopify.com/pages/company-account-request"
+    },
+    {
+      "text": "About us",
+      "url": "https://theme-trade-demo.myshopify.com/pages/about-us"
+    },
+    {
+      "text": "Contact",
+      "url": "https://theme-trade-demo.myshopify.com/pages/contact"
+    },
+    {
+      "text": "theme-trade-demo",
+      "url": "https://theme-trade-demo.myshopify.com/"
+    },
+    {
+      "text": "",
+      "url": "https://theme-trade-demo.myshopify.com/products/euro-sham-brushed-cotton"
+    },
+    {
+      "text": "",
+      "url": "https://theme-trade-demo.myshopify.com/products/euro-sham-brushed-cotton"
+    },
+    {
+      "text": "",
+      "url": "https://theme-trade-demo.myshopify.com/cart"
+    },
+    {
+      "text": "",
+      "url": "https://theme-trade-demo.myshopify.com/products/womens-classic-crew-sweatshirt"
+    },
+    {
+      "text": "",
+      "url": "https://theme-trade-demo.myshopify.com/products/womens-classic-crew-sweatshirt"
+    },
+    {
+      "text": "",
+      "url": "https://theme-trade-demo.myshopify.com/cart"
+    },
+    {
+      "text": "",
+      "url": "https://theme-trade-demo.myshopify.com/products/classic-flange-pillow-cover"
+    },
+    {
+      "text": "",
+      "url": "https://theme-trade-demo.myshopify.com/products/classic-flange-pillow-cover"
+    },
+    {
+      "text": "",
+      "url": "https://theme-trade-demo.myshopify.com/cart"
+    },
+    {
+      "text": "",
+      "url": "https://theme-trade-demo.myshopify.com/products/classic-towels"
+    },
+    {
+      "text": "",
+      "url": "https://theme-trade-demo.myshopify.com/products/classic-towels"
+    },
+    {
+      "text": "",
+      "url": "https://theme-trade-demo.myshopify.com/products/brushed-cotton-euro-sham-1"
+    },
+    {
+      "text": "",
+      "url": "https://theme-trade-demo.myshopify.com/products/brushed-cotton-euro-sham-1"
+    },
+    {
+      "text": "",
+      "url": "https://theme-trade-demo.myshopify.com/products/mens-organic-cotton-pant-1"
+    },
+    {
+      "text": "",
+      "url": "https://theme-trade-demo.myshopify.com/products/mens-organic-cotton-pant-1"
+    },
+    {
+      "text": "",
+      "url": "https://theme-trade-demo.myshopify.com/products/cloud-linen-gauze-pillow-cover"
+    },
+    {
+      "text": "",
+      "url": "https://theme-trade-demo.myshopify.com/products/cloud-linen-gauze-pillow-cover"
+    },
+    {
+      "text": "",
+      "url": "https://theme-trade-demo.myshopify.com/products/classic-slippers"
+    },
+    {
+      "text": "",
+      "url": "https://theme-trade-demo.myshopify.com/products/classic-slippers"
+    },
+    {
+      "text": "",
+      "url": "https://theme-trade-demo.myshopify.com/products/robe-cloud-cotton"
+    },
+    {
+      "text": "",
+      "url": "https://theme-trade-demo.myshopify.com/products/robe-cloud-cotton"
+    },
+    {
+      "text": "",
+      "url": "https://theme-trade-demo.myshopify.com/products/classic-towels"
+    },
+    {
+      "text": "",
+      "url": "https://theme-trade-demo.myshopify.com/products/classic-towels"
+    },
+    {
+      "text": "",
+      "url": "https://theme-trade-demo.myshopify.com/products/waffle-bath-towel"
+    },
+    {
+      "text": "",
+      "url": "https://theme-trade-demo.myshopify.com/products/waffle-bath-towel"
+    }
+  ],
+  "sections": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715911045142__image_banner",
+      "rect": {
+        "height": 323,
+        "width": 1440,
+        "x": 0,
+        "y": 99
+      },
+      "tag": "SECTION",
+      "text": "WELCOME TO TRADE WHOLESALE\n\nIndustry-leading home goods\nShop all"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715911045142__multicolumn",
+      "rect": {
+        "height": 61.6484375,
+        "width": 1440,
+        "x": 0,
+        "y": 422
+      },
+      "tag": "SECTION",
+      "text": ""
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715911045142__rich_text",
+      "rect": {
+        "height": 36.796875,
+        "width": 1440,
+        "x": 0,
+        "y": 483.6484375
+      },
+      "tag": "SECTION",
+      "text": "No order minimums | Exclusive pricing| Dedicated support"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715911045142__featured_collection1",
+      "rect": {
+        "height": 984.1640625,
+        "width": 1440,
+        "x": 0,
+        "y": 520.4453125
+      },
+      "tag": "SECTION",
+      "text": "Proven bestsellers\nBrushed Cotton Sham\nRegular price\n$59.00 USD\nChoose options\nCape Side Table\nRegular price\n$499.00 USD\nDecrease quantity for White Marble\nIncrease quantity for Wh"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715911045142__collection_list",
+      "rect": {
+        "height": 459.09375,
+        "width": 1440,
+        "x": 0,
+        "y": 1504.609375
+      },
+      "tag": "SECTION",
+      "text": "Shop our top categories\nBath towels\nRobes\nPillows\nSlippers\nRugs"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715911045142__multicolumn1",
+      "rect": {
+        "height": 293.9453125,
+        "width": 1440,
+        "x": 0,
+        "y": 1963.703125
+      },
+      "tag": "SECTION",
+      "text": "\"My customers love these sheets.\"\nShop sheets \n\"This duvet sells out quickly in my store.\"\nShop duvets \n\"The quality is the best in the industry.\"\nShop towels \n\"The range of colors"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715911045142__featured_collection2",
+      "rect": {
+        "height": 646.234375,
+        "width": 1440,
+        "x": 0,
+        "y": 2257.6484375
+      },
+      "tag": "SECTION",
+      "text": "New arrivals\nLinen Pillow Cover\nRegular price\n$59.00 USD\nChoose options\nTurkish Cotton Slippers\nRegular price\n$39.00 USD\nChoose options\nCloud Cotton Robe\nRegular price\n$109.00 USD\n"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--22715911045142__multicolumn2",
+      "rect": {
+        "height": 343.6796875,
+        "width": 1440,
+        "x": 0,
+        "y": 2903.8828125
+      },
+      "tag": "SECTION",
+      "text": "You're set up for success\nFree swatches\n\nSwatches let customers shop confidently.\n\nLearn more \nColor consults\n\nHelp your clients find the perfect look for their home.\n\nRead tips \nM"
+    }
+  ],
+  "title": "theme-trade-demo",
+  "url": "https://theme-trade-demo.myshopify.com/",
+  "viewport": {
+    "dpr": 1,
+    "height": 1000,
+    "width": 1440
+  },
+  "formGroups": [],
+  "grids": [
+    {
+      "className": "multicolumn-list contains-content-container grid grid--2-col-tablet-down grid--6-col-desktop slider slider--tablet grid--peek",
+      "columns": "none",
+      "display": "flex",
+      "gap": "12px",
+      "height": 37.6484375,
+      "tag": "UL",
+      "width": 1100
+    },
+    {
+      "className": "grid product-grid contains-card contains-card--product grid--5-col-desktop grid--2-col-tablet-down",
+      "columns": "none",
+      "display": "flex",
+      "gap": "12px",
+      "height": 833.765625,
+      "tag": "UL",
+      "width": 1100
+    },
+    {
+      "className": "collection-list contains-card contains-card--collection grid grid--5-col-desktop grid--1-col-tablet-down collection-list--5-items",
+      "columns": "none",
+      "display": "flex",
+      "gap": "12px",
+      "height": 288.6953125,
+      "tag": "UL",
+      "width": 1100
+    },
+    {
+      "className": "multicolumn-list contains-content-container grid grid--1-col-tablet-down grid--4-col-desktop slider slider--tablet grid--peek",
+      "columns": "none",
+      "display": "flex",
+      "gap": "12px",
+      "height": 157.9453125,
+      "tag": "UL",
+      "width": 1100
+    },
+    {
+      "className": "grid product-grid contains-card contains-card--product grid--5-col-desktop grid--2-col-tablet-down slider slider--desktop",
+      "columns": "none",
+      "display": "flex",
+      "gap": "12px",
+      "height": 446.8359375,
+      "tag": "UL",
+      "width": 1440
+    },
+    {
+      "className": "multicolumn-list contains-content-container grid grid--1-col-tablet-down grid--4-col-desktop",
+      "columns": "none",
+      "display": "flex",
+      "gap": "12px",
+      "height": 189.28125,
+      "tag": "UL",
+      "width": 1100
+    }
+  ],
+  "images": [
+    {
+      "alt": "A retail store display showing home goods like towels, blankets and decor. ",
+      "complete": true,
+      "naturalWidth": 1440,
+      "rect": {
+        "height": 323,
+        "width": 1440
+      }
+    },
+    {
+      "alt": "Dawn logo",
+      "complete": true,
+      "naturalWidth": 173,
+      "rect": {
+        "height": 37.6484375,
+        "width": 87.546875
+      }
+    },
+    {
+      "alt": "Studio logo",
+      "complete": true,
+      "naturalWidth": 173,
+      "rect": {
+        "height": 37.6484375,
+        "width": 100.390625
+      }
+    },
+    {
+      "alt": "Sense logo",
+      "complete": true,
+      "naturalWidth": 173,
+      "rect": {
+        "height": 37.6484375,
+        "width": 94.1171875
+      }
+    },
+    {
+      "alt": "Origin logo",
+      "complete": true,
+      "naturalWidth": 173,
+      "rect": {
+        "height": 37.6484375,
+        "width": 142.0625
+      }
+    },
+    {
+      "alt": "Spotlight logo",
+      "complete": true,
+      "naturalWidth": 173,
+      "rect": {
+        "height": 37.6484375,
+        "width": 88.578125
+      }
+    },
+    {
+      "alt": "Craft logo",
+      "complete": true,
+      "naturalWidth": 173,
+      "rect": {
+        "height": 37.6484375,
+        "width": 94.1171875
+      }
+    },
+    {
+      "alt": "Brushed Cotton Sham",
+      "complete": true,
+      "naturalWidth": 267,
+      "rect": {
+        "height": 239.265625,
+        "width": 186.3984375
+      }
+    },
+    {
+      "alt": "Cape Side Table",
+      "complete": true,
+      "naturalWidth": 267,
+      "rect": {
+        "height": 238.9921875,
+        "width": 186.3984375
+      }
+    },
+    {
+      "alt": "Turkish Bath Bundle",
+      "complete": true,
+      "naturalWidth": 267,
+      "rect": {
+        "height": 238.9921875,
+        "width": 186.3984375
+      }
+    },
+    {
+      "alt": "Women's Classic Crew",
+      "complete": true,
+      "naturalWidth": 267,
+      "rect": {
+        "height": 238.859375,
+        "width": 186.3984375
+      }
+    },
+    {
+      "alt": "Flange Pillow Cover",
+      "complete": true,
+      "naturalWidth": 267,
+      "rect": {
+        "height": 238.9921875,
+        "width": 186.3984375
+      }
+    }
+  ],
+  "bodyText": "Skip to content\n\nFree towel display with orders over $2,500\n\nShop\nMarketing resources\nBecome a wholesale partner\nCountry/region\nUnited States | USD $\nLanguage\nEnglish\nCart\n\nWELCOME TO TRADE WHOLESALE\n\nIndustry-leading home goods\nShop all\n\nNo order minimums | Exclusive pricing| Dedicated support\n\nProven bestsellers\nBrushed Cotton Sham\nRegular price\n$59.00 USD\nChoose options\nCape Side Table\nRegular price\n$499.00 USD\nDecrease quantity for White Marble\nIncrease quantity for White Marble\nTurkish Bath Bundle\nRegular price\n$467.00 USD\nDecrease quantity for Default Title\nIncrease quantity for Default Title\nWomen's Classic Crew\nRegular price\n$59.00 USD\nChoose options\nSold out\nFlange Pillow Cover\nRegular price\n$49.00 USD\nChoose options\nBerber Pillow Cover\nRegular price\n$99.00 USD\nDecrease quantity for Default Title\nIncrease quantity for Default Title\nTurkish Cotton Towels\nRegular price\nFrom $14.00 USD\nChoose options\nOrganic Cotton Sham\nRegular price\n$59.00 USD\nChoose options\nMen's Cotton Pant\nRegular price\n$74.00 USD\nChoose options\nGeo Flatweave Rug\nRegular price\n$69.00 USD\nDecrease quantity for Default Title\nIncrease quantity for Default Title\nShop our top categories\nBath towels\nRobes\nPillows\nSlippers\nRugs\n\"My customers love these sheets.\"\nShop sheets \n\"This duvet sells out quickly in my store.\"\nShop duvets \n\"The quality is the best in the industry.\"\nShop towels \n\"The range of colors is incredible.\"\nShop sheets \nNew arrivals\nLinen Pillow Cover\nRegular price\n$59.00 USD\nChoose options\nTurkish Cotton Slippers\nRegular price\n$39.00 USD\nChoose options\nCloud Cotton Robe\nRegular price\n$109.00 USD\nChoose options\nTurkish Cotton Towels\nRegular price\nFrom $14.00 USD\nChoose options\nCotton Duvet Set\nRegular price\n$109.00 USD\nDecrease quantity for Default Title\nIncrease quantity for Default Title\nWaffle Towels\nRegular price\nFrom $29.00 USD\nChoose options\n1\n/\nof\n2\nYou're set up for success\nFree swatches\n\nSwatches let customers shop confidently.\n\nLearn more \nColor consults\n\nHelp your clients find the perfect look for their home.\n\nRead tips \nMerchandising guide\n\nTips from a pro for your retail space.\n\nSee guide \nProfessional care\n\nCare advice for keeping products at their best.\n\nGet started \nOrdering\nShop all\nShipping\nReturns\nResources\nFAQ\nMarketing resources\nBecome a wholesale partner\nAbout\nAbout us\nContact\nFacebook\nInstagram\nYouTube\nTikTok\nX (Twitter)\nCountry/region\nUnited States | USD $\nLanguage\nEnglish\nPayment methods\n© 2026, theme-trade-demo Powered by Shopify"
+}

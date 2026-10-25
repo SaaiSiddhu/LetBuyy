@@ -1,0 +1,198 @@
+{
+  "recordedAt": "2026-10-23T16:52:53.724302+00:00",
+  "status": "EXACT_HISTORICAL_INPUTS_ARCHIVED_AND_VERIFIED_BEFORE_ANY_ACTIVE_CONSUMER_EDIT",
+  "native391SourceSha256": "d549131349081802288196440f21bf1f7387543da126a1e5460cc44117a6044c",
+  "native389390SourceSha256": "c162f341fae53183bb73606322ebb291e339700562cd5f499918dd8602376739",
+  "fileCount": 31,
+  "files": [
+    {
+      "originalPath": "services/api-gateway/src/__tests__/owned-db/theme-shared-groups.postgres.test.ts",
+      "archivePath": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/historical-before-active-392/services/api-gateway/src/__tests__/owned-db/theme-shared-groups.postgres.test.ts.snapshot",
+      "sha256": "d549131349081802288196440f21bf1f7387543da126a1e5460cc44117a6044c",
+      "bytes": 33370
+    },
+    {
+      "originalPath": "services/api-gateway/src/__tests__/owned-db/niche-theme-promotion.postgres.test.ts",
+      "archivePath": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/historical-before-active-392/services/api-gateway/src/__tests__/owned-db/niche-theme-promotion.postgres.test.ts.snapshot",
+      "sha256": "c162f341fae53183bb73606322ebb291e339700562cd5f499918dd8602376739",
+      "bytes": 41419
+    },
+    {
+      "originalPath": "docs/implementation/threadline-2026-10-22/shared-group-durability/admission.json",
+      "archivePath": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/historical-before-active-392/docs/implementation/threadline-2026-10-22/shared-group-durability/admission.json.snapshot",
+      "sha256": "90e5d74b5b22ce70f0138aa4225d5e0f958004ee017cd40ec90ab22ccb632744",
+      "bytes": 556
+    },
+    {
+      "originalPath": "docs/implementation/threadline-2026-10-22/promotion-qualification/admission.json",
+      "archivePath": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/historical-before-active-392/docs/implementation/threadline-2026-10-22/promotion-qualification/admission.json.snapshot",
+      "sha256": "5cedad1d50cbed67fdb1f60b0f94c45c6838eaca797c9800bf2f6768822b9688",
+      "bytes": 693
+    },
+    {
+      "originalPath": "docs/implementation/niche-theme-programme/shared-groups391-draft-admission.json",
+      "archivePath": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/historical-before-active-392/docs/implementation/niche-theme-programme/shared-groups391-draft-admission.json.snapshot",
+      "sha256": "a3f95b0619ffe8fe4f6cf6a4e9b40f7b9ff7ed29a9dc86f01b4ac5dfc740e376",
+      "bytes": 2365
+    },
+    {
+      "originalPath": "docs/implementation/niche-theme-programme/shared-groups391-native-admission.json",
+      "archivePath": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/historical-before-active-392/docs/implementation/niche-theme-programme/shared-groups391-native-admission.json.snapshot",
+      "sha256": "f22a9c45e6b9305a56904cb21904ff6e0f96c5274bcf66a15fe4e65400ed31f6",
+      "bytes": 1975
+    },
+    {
+      "originalPath": "docs/implementation/niche-theme-programme/shared-groups391-latest-native-admission.json",
+      "archivePath": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/historical-before-active-392/docs/implementation/niche-theme-programme/shared-groups391-latest-native-admission.json.snapshot",
+      "sha256": "5c4b1d8cefdf118e249a57e2aee2a8164728de383e319e9788616e5cdfdbf307",
+      "bytes": 1238
+    },
+    {
+      "originalPath": "docs/implementation/niche-theme-programme/release-v2-final-admission.json",
+      "archivePath": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/historical-before-active-392/docs/implementation/niche-theme-programme/release-v2-final-admission.json.snapshot",
+      "sha256": "6e026f1adc4be82414e174a92e125d846aad4fab9119d48841350db14f22b1b6",
+      "bytes": 9639
+    },
+    {
+      "originalPath": "docs/implementation/niche-theme-programme/native389390-final-admission.json",
+      "archivePath": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/historical-before-active-392/docs/implementation/niche-theme-programme/native389390-final-admission.json.snapshot",
+      "sha256": "c4a309bc230dbe80cd785733ff94d1203d9ed94696946a9486d64ea0957b3a6f",
+      "bytes": 5362
+    },
+    {
+      "originalPath": "docs/implementation/threadline-2026-10-22/shared-group-durability/qualification.json",
+      "archivePath": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/historical-before-active-392/docs/implementation/threadline-2026-10-22/shared-group-durability/qualification.json.snapshot",
+      "sha256": "83d81cd81559bc10a61f98ddba566fe4461bedb2130b58b46d10b82e9ee42622",
+      "bytes": 26997
+    },
+    {
+      "originalPath": "docs/implementation/threadline-2026-10-22/shared-group-durability/latest-qualification.json",
+      "archivePath": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/historical-before-active-392/docs/implementation/threadline-2026-10-22/shared-group-durability/latest-qualification.json.snapshot",
+      "sha256": "18f4ac8a27a9d0e4d63227ddb3816f26e8ebbefe2f07a9c2ddf47f7a64dec7e0",
+      "bytes": 11313
+    },
+    {
+      "originalPath": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-evidence-manifest.json",
+      "archivePath": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/historical-before-active-392/docs/implementation/threadline-2026-10-22/shared-group-durability/native-evidence-manifest.json.snapshot",
+      "sha256": "5aa2242bff4fc528d54aaaef5cd431a813dd90a3045cb6f6bbf7d3649acbddd4",
+      "bytes": 5518
+    },
+    {
+      "originalPath": "docs/implementation/threadline-2026-10-22/shared-group-durability/latest-native-evidence-manifest.json",
+      "archivePath": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/historical-before-active-392/docs/implementation/threadline-2026-10-22/shared-group-durability/latest-native-evidence-manifest.json.snapshot",
+      "sha256": "beb5f278cda0807dea4228240ee9d7b5aa4b08cd76dbdaf26a94b9df2591992e",
+      "bytes": 5770
+    },
+    {
+      "originalPath": "docs/implementation/threadline-2026-10-22/promotion-qualification/qualification.json",
+      "archivePath": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/historical-before-active-392/docs/implementation/threadline-2026-10-22/promotion-qualification/qualification.json.snapshot",
+      "sha256": "f209f4d9a9f7f0e467b21069f3bb803ec052fa17f388693695221df78c51a1d8",
+      "bytes": 9055
+    },
+    {
+      "originalPath": "docs/implementation/niche-theme-programme/circuit-search392-native-admission.json",
+      "archivePath": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/historical-before-active-392/docs/implementation/niche-theme-programme/circuit-search392-native-admission.json.snapshot",
+      "sha256": "1238543d37f951a0402f05ee94e7dca85284e3dc6bfb149073da387de95673cc",
+      "bytes": 2099
+    },
+    {
+      "originalPath": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-qualification.json",
+      "archivePath": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/historical-before-active-392/docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-qualification.json.snapshot",
+      "sha256": "b44f4d9ad37798dcdca3c31ad30dfeb93bebbf60fd0c843274da18945d342aa2",
+      "bytes": 6423
+    },
+    {
+      "originalPath": "docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-evidence-manifest.json",
+      "archivePath": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/historical-before-active-392/docs/implementation/niche-themes-2026-10-23/circuit/discovery/search392/native-evidence-manifest.json.snapshot",
+      "sha256": "1f3ed10009cdc8f9e4e3b9002aad805c3dc55465b40615e080fb2b3af313b283",
+      "bytes": 92844
+    },
+    {
+      "originalPath": "docs/implementation/niche-theme-programme/release-v2/proposals/81e91859ebc8c497a49da337d064e1885a76964839d14e39f4a0a3de2283f47f/manifest.json",
+      "archivePath": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/historical-before-active-392/docs/implementation/niche-theme-programme/release-v2/proposals/81e91859ebc8c497a49da337d064e1885a76964839d14e39f4a0a3de2283f47f/manifest.json.snapshot",
+      "sha256": "c0e8d5b7338a70a797a2acc24976700a146f8df4f9a3716d55fab4c03e8cf515",
+      "bytes": 11078
+    },
+    {
+      "originalPath": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/result.json",
+      "archivePath": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/historical-before-active-392/docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/result.json.snapshot",
+      "sha256": "3af1783022ef9988ad2373d9004d3e1f9a195fa7e229917a2c93f6e78329817c",
+      "bytes": 66344
+    },
+    {
+      "originalPath": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/source-before.json",
+      "archivePath": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/historical-before-active-392/docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/source-before.json.snapshot",
+      "sha256": "01859cb8dd135456e3f962b079982babd8e3f967f7b46435f9d9bc0cb1a8b284",
+      "bytes": 16596
+    },
+    {
+      "originalPath": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/source-after.json",
+      "archivePath": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/historical-before-active-392/docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/source-after.json.snapshot",
+      "sha256": "8b96e398020537ef2ca8f5e782c8b3e9f14a89d393bbc73c2249849143ce5de1",
+      "bytes": 16687
+    },
+    {
+      "originalPath": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/run-binding.json",
+      "archivePath": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/historical-before-active-392/docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/run-binding.json.snapshot",
+      "sha256": "e1ccd9d0e0167e7327d62c6cf4c5a4ebb0a282f19cd5b28b53eda1da67e91893",
+      "bytes": 1083
+    },
+    {
+      "originalPath": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/evidence-copy-receipt.json",
+      "archivePath": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/historical-before-active-392/docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/01/evidence-copy-receipt.json.snapshot",
+      "sha256": "d894fbb4c75d6267dc0001d2db24ba01587a849d2954b059439ee5a10f0041f7",
+      "bytes": 5706
+    },
+    {
+      "originalPath": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/02/result.json",
+      "archivePath": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/historical-before-active-392/docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/02/result.json.snapshot",
+      "sha256": "4a398a665f46104abd83cbedb66b906803542afdbc80d5da2e8d2f8c1fd5e3db",
+      "bytes": 66542
+    },
+    {
+      "originalPath": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/02/source-before.json",
+      "archivePath": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/historical-before-active-392/docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/02/source-before.json.snapshot",
+      "sha256": "42027f273a0a83489a32fd3c14da3671c8e4ebad38cba6a6223a9415dcb82c3b",
+      "bytes": 23851
+    },
+    {
+      "originalPath": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/02/source-after.json",
+      "archivePath": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/historical-before-active-392/docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/02/source-after.json.snapshot",
+      "sha256": "34fdc47d4350c77d4a1adf714296061b0f1705084c310dee506d05760c234e2b",
+      "bytes": 23466
+    },
+    {
+      "originalPath": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/02/run-binding.json",
+      "archivePath": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/historical-before-active-392/docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/02/run-binding.json.snapshot",
+      "sha256": "b04dfce9dae27423b56a52af47853ba4b1cbf96f22f1e17543fb103d94b485b3",
+      "bytes": 1013
+    },
+    {
+      "originalPath": "docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/02/evidence-copy-receipt.json",
+      "archivePath": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/historical-before-active-392/docs/implementation/threadline-2026-10-22/shared-group-durability/native-runs/02/evidence-copy-receipt.json.snapshot",
+      "sha256": "8195ded51ef86c2019781b6b8671945d1f241aeabd9b4c07f7aa6349897bc5b6",
+      "bytes": 5706
+    },
+    {
+      "originalPath": "docs/implementation/threadline-2026-10-22/promotion-qualification/native-runs/06/result.json",
+      "archivePath": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/historical-before-active-392/docs/implementation/threadline-2026-10-22/promotion-qualification/native-runs/06/result.json.snapshot",
+      "sha256": "5fe9172f3af72be38fb45c5024270b048adce6d2eeea451b73be6e26bcea7797",
+      "bytes": 65945
+    },
+    {
+      "originalPath": "docs/implementation/threadline-2026-10-22/promotion-qualification/native-runs/06/source-before.json",
+      "archivePath": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/historical-before-active-392/docs/implementation/threadline-2026-10-22/promotion-qualification/native-runs/06/source-before.json.snapshot",
+      "sha256": "ac1a89ef8da6e48da9518e615e579e36d65b788bd7f62a677fcd8c03ebd2d484",
+      "bytes": 11719
+    },
+    {
+      "originalPath": "docs/implementation/threadline-2026-10-22/promotion-qualification/native-runs/06/source-after.json",
+      "archivePath": "docs/implementation/threadline-2026-10-22/shared-group-durability/dependent-latest392/historical-before-active-392/docs/implementation/threadline-2026-10-22/promotion-qualification/native-runs/06/source-after.json.snapshot",
+      "sha256": "9d35aca419f49d6c8007546f22afea216cbff9316c3c4c22b89b50cd35e6cecf",
+      "bytes": 1853
+    }
+  ],
+  "originalAdmissionsAndRootReceiptsWillRemainImmutable": true,
+  "restoration": "Restore archive bytes into their original repository-relative paths in an isolated checkout with corresponding pinned inputs; snapshots are not executable at the archive path. Historical results apply only to the archived source identities.",
+  "activeSourcesEditedAtArchiveTime": false
+}

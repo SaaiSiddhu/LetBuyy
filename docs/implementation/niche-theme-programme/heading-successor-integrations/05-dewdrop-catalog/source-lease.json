@@ -1,0 +1,40 @@
+{
+  "recordedAt": "2026-10-24T11:41:58.037503+00:00",
+  "owner": "01a164a4-a342-76d3-ab33-65e021ed57db",
+  "status": "FRESH_TWO_PATH_ROOT_DEWDROP_CATALOG_INTEGRATION",
+  "authority": "completion-resume-resource-allocation-20261024-02.json",
+  "files": [
+    {
+      "path": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "beforeSHA256": "3464bc35c39f811be3e785da8ff35499a1d38211244737aa45cc86e2a0a02c21"
+    },
+    {
+      "path": "packages/theme-engine/test/threadline-catalog-successor.test.ts",
+      "beforeSHA256": "f1a03a9827edf521ee45d619da7869327a2ea0bb54c338fe5b9ef03ab1c708c4"
+    }
+  ],
+  "sealedLeafSourceEvidence": [
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/completion-2026-10-24/proposals/successor-v201/RESULTS.json",
+      "sha256": "01c459a5f46e58f384e400904ef4f1638d6eb2525d468daaa9f4a3f1763f7da6",
+      "bytes": 4612
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/dewdrop/completion-2026-10-24/proposals/successor-v201/ARTIFACT_MANIFEST.json",
+      "sha256": "e1b78fed6fabdb5c15a4d71fa3467fa91f72789d057a8ef78c91a9f240aee191",
+      "bytes": 71798
+    },
+    {
+      "path": "packages/theme-engine/src/dewdrop-theme-v201.ts",
+      "sha256": "3b276b6513f0860092a8f2bdf03217c9f8d8a1fa27de9d7318e886d3bb8ea10c",
+      "bytes": 3500
+    },
+    {
+      "path": "packages/theme-engine/test/dewdrop-successor.test.ts",
+      "sha256": "f55099590620c5036efb2dc70507e9e0d49e2238225df25b036edb2800e2b6b4",
+      "bytes": 15654
+    }
+  ],
+  "scope": "Explicitdesign200/dewdrop201 optin; samefrozen/defaultoutputs; no runtime/cataloguepersistence/migration/native",
+  "expires": "First integration seal"
+}

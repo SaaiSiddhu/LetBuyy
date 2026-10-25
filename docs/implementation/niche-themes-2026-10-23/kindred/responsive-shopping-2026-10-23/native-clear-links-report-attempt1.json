@@ -1,0 +1,1276 @@
+{
+  "generatedAt": "2026-10-23T13:22:26.590Z",
+  "status": "FAIL",
+  "sourceHashes": [
+    {
+      "file": "apps/commerce/web/src/app/store/[subdomain]/liquid-theme.css",
+      "sha256": "f7f31610c85bf37430fe96fe5cbde8366d3fd9b30e0e43fe7ebfa0ecf3d2f24b"
+    },
+    {
+      "file": "packages/theme-engine/src/kindred-theme.ts",
+      "sha256": "3a47dc979dbdf5dce395fd44a858e007567820f4fac569fade603ff6da4fd551"
+    },
+    {
+      "file": "packages/theme-engine/src/kindred-discovery.ts",
+      "sha256": "14dd29777737158a61287bf54e98571c6b3abf1e07ec542d2e7f678180ad473f"
+    },
+    {
+      "file": "packages/theme-engine/src/kindred-styles.ts",
+      "sha256": "15e6670f6556a7b9cfd8e56891088f0abe9a8ffa1105822be1a1902ecd7282cf"
+    },
+    {
+      "file": "packages/theme-engine/src/theme-renderer.ts",
+      "sha256": "794cbc6ff9ae71f995560f302e1b0d5f0d4ff4da59fa31191585851b1e822164"
+    },
+    {
+      "file": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "sha256": "cc11490138ae5c2f13ab022a60b4cc2fe7d8fc5eb766dbf087eeb227d6050d6e"
+    },
+    {
+      "file": "packages/commerce-core/src/storefront-discovery.ts",
+      "sha256": "c8de3871a998df011de12791db90c868139903b5c84afb211d9e9de3a1997ff1"
+    },
+    {
+      "file": "apps/commerce/web/src/lib/theme-engine/storefront-discovery.ts",
+      "sha256": "b59b34fbe89cf44f13f9dba56107f993af2632d4d2ed28fe3f9694e87743cbfc"
+    },
+    {
+      "file": "services/api-gateway/src/lib/storefront-discovery.ts",
+      "sha256": "fa47b2c867e916ab082e5c420eed18751e4c313f98dd1ae2b19ec26de00afa37"
+    },
+    {
+      "file": "apps/commerce/web/src/lib/theme-engine/product-liquid-drop.ts",
+      "sha256": "452a2ecfc206c908afae43f04ba1177f63770815f5f6b895c22f37396c352513"
+    },
+    {
+      "file": "apps/commerce/web/src/lib/theme-engine/liquid-page-assembly.ts",
+      "sha256": "e87118f925cca189a94f7c934c7270175305842b210cbf5ea3bf5bec785ea765"
+    },
+    {
+      "file": "apps/commerce/web/src/lib/demo/kindred-demo.ts",
+      "sha256": "ec8dadf3750e18f5caac7ebc7c1478a72f1b17ef589f21054e82fa7d2f33c213"
+    },
+    {
+      "file": "apps/commerce/web/src/lib/demo/catalog-demo-dispatch.ts",
+      "sha256": "da96f8ef94d79e956a433dbe0eee17726ee99e702a3226561c3f8aeb917782a5"
+    }
+  ],
+  "rows": [
+    {
+      "width": 320,
+      "state": "filters",
+      "route": "collection",
+      "status": "PASS",
+      "initialUrl": "http://127.0.0.1:43275/store/kindred-qa-filters/products?limit=1&sort=display_order&min_price=1000&max_price=2000&occasion=birthday&recipient=friend",
+      "clearLinks": [
+        {
+          "key": "min_price",
+          "value": "1000",
+          "href": "/store/kindred-qa-filters/products?limit=1&sort=display_order&max_price=2000&occasion=birthday&recipient=friend",
+          "text": "Remove Minimum price: 1000 ×",
+          "status": "PASS",
+          "actualUrl": "http://127.0.0.1:43275/store/kindred-qa-filters/products?limit=1&sort=display_order&max_price=2000&occasion=birthday&recipient=friend",
+          "parsed": {
+            "page": 1,
+            "limit": 1,
+            "sort": "display_order",
+            "max_price": 2000,
+            "occasion": "birthday",
+            "recipient": "friend"
+          }
+        },
+        {
+          "key": "max_price",
+          "value": "2000",
+          "href": "/store/kindred-qa-filters/products?limit=1&sort=display_order&min_price=1000&occasion=birthday&recipient=friend",
+          "text": "Remove Maximum price: 2000 ×",
+          "status": "PASS",
+          "actualUrl": "http://127.0.0.1:43275/store/kindred-qa-filters/products?limit=1&sort=display_order&min_price=1000&occasion=birthday&recipient=friend",
+          "parsed": {
+            "page": 1,
+            "limit": 1,
+            "sort": "display_order",
+            "min_price": 1000,
+            "occasion": "birthday",
+            "recipient": "friend"
+          }
+        },
+        {
+          "key": "occasion",
+          "value": "birthday",
+          "href": "/store/kindred-qa-filters/products?limit=1&sort=display_order&min_price=1000&max_price=2000&recipient=friend",
+          "text": "Remove Occasion: Birthday ×",
+          "status": "PASS",
+          "actualUrl": "http://127.0.0.1:43275/store/kindred-qa-filters/products?limit=1&sort=display_order&min_price=1000&max_price=2000&recipient=friend",
+          "parsed": {
+            "page": 1,
+            "limit": 1,
+            "sort": "display_order",
+            "min_price": 1000,
+            "max_price": 2000,
+            "recipient": "friend"
+          }
+        },
+        {
+          "key": "recipient",
+          "value": "friend",
+          "href": "/store/kindred-qa-filters/products?limit=1&sort=display_order&min_price=1000&max_price=2000&occasion=birthday",
+          "text": "Remove Recipient: A friend ×",
+          "status": "PASS",
+          "actualUrl": "http://127.0.0.1:43275/store/kindred-qa-filters/products?limit=1&sort=display_order&min_price=1000&max_price=2000&occasion=birthday",
+          "parsed": {
+            "page": 1,
+            "limit": 1,
+            "sort": "display_order",
+            "min_price": 1000,
+            "max_price": 2000,
+            "occasion": "birthday"
+          }
+        }
+      ],
+      "initialDom": {
+        "productCards": 1,
+        "executableNodes": 0,
+        "noProductsFound": false
+      },
+      "recovery": {
+        "url": "http://127.0.0.1:43275/store/kindred-qa-filters/products?limit=1&sort=display_order",
+        "productCards": 1,
+        "parsed": {
+          "page": 1,
+          "limit": 1,
+          "sort": "display_order"
+        }
+      }
+    },
+    {
+      "width": 320,
+      "state": "filters",
+      "route": "search",
+      "status": "PASS",
+      "initialUrl": "http://127.0.0.1:43275/store/kindred-qa-filters/search?limit=1&sort=display_order&min_price=1000&max_price=2000&occasion=birthday&recipient=friend",
+      "clearLinks": [
+        {
+          "key": "min_price",
+          "value": "1000",
+          "href": "/store/kindred-qa-filters/search?limit=1&sort=display_order&max_price=2000&occasion=birthday&recipient=friend",
+          "text": "Remove Minimum price: 1000 ×",
+          "status": "PASS",
+          "actualUrl": "http://127.0.0.1:43275/store/kindred-qa-filters/search?limit=1&sort=display_order&max_price=2000&occasion=birthday&recipient=friend",
+          "parsed": {
+            "page": 1,
+            "limit": 1,
+            "sort": "display_order",
+            "max_price": 2000,
+            "occasion": "birthday",
+            "recipient": "friend"
+          }
+        },
+        {
+          "key": "max_price",
+          "value": "2000",
+          "href": "/store/kindred-qa-filters/search?limit=1&sort=display_order&min_price=1000&occasion=birthday&recipient=friend",
+          "text": "Remove Maximum price: 2000 ×",
+          "status": "PASS",
+          "actualUrl": "http://127.0.0.1:43275/store/kindred-qa-filters/search?limit=1&sort=display_order&min_price=1000&occasion=birthday&recipient=friend",
+          "parsed": {
+            "page": 1,
+            "limit": 1,
+            "sort": "display_order",
+            "min_price": 1000,
+            "occasion": "birthday",
+            "recipient": "friend"
+          }
+        },
+        {
+          "key": "occasion",
+          "value": "birthday",
+          "href": "/store/kindred-qa-filters/search?limit=1&sort=display_order&min_price=1000&max_price=2000&recipient=friend",
+          "text": "Remove Occasion: Birthday ×",
+          "status": "PASS",
+          "actualUrl": "http://127.0.0.1:43275/store/kindred-qa-filters/search?limit=1&sort=display_order&min_price=1000&max_price=2000&recipient=friend",
+          "parsed": {
+            "page": 1,
+            "limit": 1,
+            "sort": "display_order",
+            "min_price": 1000,
+            "max_price": 2000,
+            "recipient": "friend"
+          }
+        },
+        {
+          "key": "recipient",
+          "value": "friend",
+          "href": "/store/kindred-qa-filters/search?limit=1&sort=display_order&min_price=1000&max_price=2000&occasion=birthday",
+          "text": "Remove Recipient: A friend ×",
+          "status": "PASS",
+          "actualUrl": "http://127.0.0.1:43275/store/kindred-qa-filters/search?limit=1&sort=display_order&min_price=1000&max_price=2000&occasion=birthday",
+          "parsed": {
+            "page": 1,
+            "limit": 1,
+            "sort": "display_order",
+            "min_price": 1000,
+            "max_price": 2000,
+            "occasion": "birthday"
+          }
+        }
+      ],
+      "initialDom": {
+        "productCards": 1,
+        "executableNodes": 0,
+        "noProductsFound": false
+      },
+      "recovery": {
+        "url": "http://127.0.0.1:43275/store/kindred-qa-filters/search?limit=1&sort=display_order",
+        "productCards": 1,
+        "parsed": {
+          "page": 1,
+          "limit": 1,
+          "sort": "display_order"
+        }
+      }
+    },
+    {
+      "width": 320,
+      "state": "cross-query",
+      "route": "collection",
+      "status": "FAIL",
+      "initialUrl": "http://127.0.0.1:43275/store/kindred-qa-cross-query/products?page=2&limit=1&search=gift&category=Ready-made+gifts&country_of_origin=India&sort=price-desc&min_price=1000&max_price=2000&connector=hdmi&connector=usb-c&occasion=birthday&recipient=friend",
+      "clearLinks": [],
+      "initialDom": {
+        "productCards": 0,
+        "executableNodes": 0,
+        "noProductsFound": false
+      },
+      "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\nfalse !== true\n"
+    },
+    {
+      "width": 320,
+      "state": "cross-query",
+      "route": "search",
+      "status": "FAIL",
+      "initialUrl": "http://127.0.0.1:43275/store/kindred-qa-cross-query/search?page=2&limit=1&search=gift&category=Ready-made+gifts&country_of_origin=India&sort=price-desc&min_price=1000&max_price=2000&connector=hdmi&connector=usb-c&occasion=birthday&recipient=friend",
+      "clearLinks": [],
+      "initialDom": {
+        "productCards": 0,
+        "executableNodes": 0,
+        "noProductsFound": false
+      },
+      "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\nfalse !== true\n"
+    },
+    {
+      "width": 320,
+      "state": "empty",
+      "route": "collection",
+      "status": "FAIL",
+      "initialUrl": "http://127.0.0.1:43275/store/kindred-qa-empty/products?limit=1&sort=display_order&min_price=1000&max_price=2000&occasion=retirement&recipient=friend",
+      "clearLinks": [],
+      "initialDom": {
+        "productCards": 0,
+        "executableNodes": 0,
+        "noProductsFound": false
+      },
+      "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\nfalse !== true\n"
+    },
+    {
+      "width": 320,
+      "state": "empty",
+      "route": "search",
+      "status": "FAIL",
+      "initialUrl": "http://127.0.0.1:43275/store/kindred-qa-empty/search?limit=1&sort=display_order&min_price=1000&max_price=2000&occasion=retirement&recipient=friend",
+      "clearLinks": [],
+      "initialDom": {
+        "productCards": 0,
+        "executableNodes": 0,
+        "noProductsFound": false
+      },
+      "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\nfalse !== true\n"
+    },
+    {
+      "width": 320,
+      "state": "long-labels",
+      "route": "collection",
+      "status": "PASS",
+      "initialUrl": "http://127.0.0.1:43275/store/kindred-qa-long-labels/products?limit=1&sort=display_order&min_price=1000&max_price=2000&occasion=birthday&recipient=friend",
+      "clearLinks": [
+        {
+          "key": "min_price",
+          "value": "1000",
+          "href": "/store/kindred-qa-long-labels/products?limit=1&sort=display_order&max_price=2000&occasion=birthday&recipient=friend",
+          "text": "Remove Minimum price: 1000 ×",
+          "status": "PASS",
+          "actualUrl": "http://127.0.0.1:43275/store/kindred-qa-long-labels/products?limit=1&sort=display_order&max_price=2000&occasion=birthday&recipient=friend",
+          "parsed": {
+            "page": 1,
+            "limit": 1,
+            "sort": "display_order",
+            "max_price": 2000,
+            "occasion": "birthday",
+            "recipient": "friend"
+          }
+        },
+        {
+          "key": "max_price",
+          "value": "2000",
+          "href": "/store/kindred-qa-long-labels/products?limit=1&sort=display_order&min_price=1000&occasion=birthday&recipient=friend",
+          "text": "Remove Maximum price: 2000 ×",
+          "status": "PASS",
+          "actualUrl": "http://127.0.0.1:43275/store/kindred-qa-long-labels/products?limit=1&sort=display_order&min_price=1000&occasion=birthday&recipient=friend",
+          "parsed": {
+            "page": 1,
+            "limit": 1,
+            "sort": "display_order",
+            "min_price": 1000,
+            "occasion": "birthday",
+            "recipient": "friend"
+          }
+        },
+        {
+          "key": "occasion",
+          "value": "birthday",
+          "href": "/store/kindred-qa-long-labels/products?limit=1&sort=display_order&min_price=1000&max_price=2000&recipient=friend",
+          "text": "Remove Occasion: जन्मदिन — A thoughtfully chosen celebration for someone whose everyday matters <img src=x onerror=bad()> ×",
+          "status": "PASS",
+          "actualUrl": "http://127.0.0.1:43275/store/kindred-qa-long-labels/products?limit=1&sort=display_order&min_price=1000&max_price=2000&recipient=friend",
+          "parsed": {
+            "page": 1,
+            "limit": 1,
+            "sort": "display_order",
+            "min_price": 1000,
+            "max_price": 2000,
+            "recipient": "friend"
+          }
+        },
+        {
+          "key": "recipient",
+          "value": "friend",
+          "href": "/store/kindred-qa-long-labels/products?limit=1&sort=display_order&min_price=1000&max_price=2000&occasion=birthday",
+          "text": "Remove Recipient: A friend — बहुत लंबे व्यापारी द्वारा दिए गए नाम और विवरण \"quoted\" <script>inert</script> ×",
+          "status": "PASS",
+          "actualUrl": "http://127.0.0.1:43275/store/kindred-qa-long-labels/products?limit=1&sort=display_order&min_price=1000&max_price=2000&occasion=birthday",
+          "parsed": {
+            "page": 1,
+            "limit": 1,
+            "sort": "display_order",
+            "min_price": 1000,
+            "max_price": 2000,
+            "occasion": "birthday"
+          }
+        }
+      ],
+      "initialDom": {
+        "productCards": 1,
+        "executableNodes": 0,
+        "noProductsFound": false
+      },
+      "recovery": {
+        "url": "http://127.0.0.1:43275/store/kindred-qa-long-labels/products?limit=1&sort=display_order",
+        "productCards": 1,
+        "parsed": {
+          "page": 1,
+          "limit": 1,
+          "sort": "display_order"
+        }
+      }
+    },
+    {
+      "width": 320,
+      "state": "long-labels",
+      "route": "search",
+      "status": "PASS",
+      "initialUrl": "http://127.0.0.1:43275/store/kindred-qa-long-labels/search?limit=1&sort=display_order&min_price=1000&max_price=2000&occasion=birthday&recipient=friend",
+      "clearLinks": [
+        {
+          "key": "min_price",
+          "value": "1000",
+          "href": "/store/kindred-qa-long-labels/search?limit=1&sort=display_order&max_price=2000&occasion=birthday&recipient=friend",
+          "text": "Remove Minimum price: 1000 ×",
+          "status": "PASS",
+          "actualUrl": "http://127.0.0.1:43275/store/kindred-qa-long-labels/search?limit=1&sort=display_order&max_price=2000&occasion=birthday&recipient=friend",
+          "parsed": {
+            "page": 1,
+            "limit": 1,
+            "sort": "display_order",
+            "max_price": 2000,
+            "occasion": "birthday",
+            "recipient": "friend"
+          }
+        },
+        {
+          "key": "max_price",
+          "value": "2000",
+          "href": "/store/kindred-qa-long-labels/search?limit=1&sort=display_order&min_price=1000&occasion=birthday&recipient=friend",
+          "text": "Remove Maximum price: 2000 ×",
+          "status": "PASS",
+          "actualUrl": "http://127.0.0.1:43275/store/kindred-qa-long-labels/search?limit=1&sort=display_order&min_price=1000&occasion=birthday&recipient=friend",
+          "parsed": {
+            "page": 1,
+            "limit": 1,
+            "sort": "display_order",
+            "min_price": 1000,
+            "occasion": "birthday",
+            "recipient": "friend"
+          }
+        },
+        {
+          "key": "occasion",
+          "value": "birthday",
+          "href": "/store/kindred-qa-long-labels/search?limit=1&sort=display_order&min_price=1000&max_price=2000&recipient=friend",
+          "text": "Remove Occasion: जन्मदिन — A thoughtfully chosen celebration for someone whose everyday matters <img src=x onerror=bad()> ×",
+          "status": "PASS",
+          "actualUrl": "http://127.0.0.1:43275/store/kindred-qa-long-labels/search?limit=1&sort=display_order&min_price=1000&max_price=2000&recipient=friend",
+          "parsed": {
+            "page": 1,
+            "limit": 1,
+            "sort": "display_order",
+            "min_price": 1000,
+            "max_price": 2000,
+            "recipient": "friend"
+          }
+        },
+        {
+          "key": "recipient",
+          "value": "friend",
+          "href": "/store/kindred-qa-long-labels/search?limit=1&sort=display_order&min_price=1000&max_price=2000&occasion=birthday",
+          "text": "Remove Recipient: A friend — बहुत लंबे व्यापारी द्वारा दिए गए नाम और विवरण \"quoted\" <script>inert</script> ×",
+          "status": "PASS",
+          "actualUrl": "http://127.0.0.1:43275/store/kindred-qa-long-labels/search?limit=1&sort=display_order&min_price=1000&max_price=2000&occasion=birthday",
+          "parsed": {
+            "page": 1,
+            "limit": 1,
+            "sort": "display_order",
+            "min_price": 1000,
+            "max_price": 2000,
+            "occasion": "birthday"
+          }
+        }
+      ],
+      "initialDom": {
+        "productCards": 1,
+        "executableNodes": 0,
+        "noProductsFound": false
+      },
+      "recovery": {
+        "url": "http://127.0.0.1:43275/store/kindred-qa-long-labels/search?limit=1&sort=display_order",
+        "productCards": 1,
+        "parsed": {
+          "page": 1,
+          "limit": 1,
+          "sort": "display_order"
+        }
+      }
+    },
+    {
+      "width": 768,
+      "state": "filters",
+      "route": "collection",
+      "status": "PASS",
+      "initialUrl": "http://127.0.0.1:43275/store/kindred-qa-filters/products?limit=1&sort=display_order&min_price=1000&max_price=2000&occasion=birthday&recipient=friend",
+      "clearLinks": [
+        {
+          "key": "min_price",
+          "value": "1000",
+          "href": "/store/kindred-qa-filters/products?limit=1&sort=display_order&max_price=2000&occasion=birthday&recipient=friend",
+          "text": "Remove Minimum price: 1000 ×",
+          "status": "PASS",
+          "actualUrl": "http://127.0.0.1:43275/store/kindred-qa-filters/products?limit=1&sort=display_order&max_price=2000&occasion=birthday&recipient=friend",
+          "parsed": {
+            "page": 1,
+            "limit": 1,
+            "sort": "display_order",
+            "max_price": 2000,
+            "occasion": "birthday",
+            "recipient": "friend"
+          }
+        },
+        {
+          "key": "max_price",
+          "value": "2000",
+          "href": "/store/kindred-qa-filters/products?limit=1&sort=display_order&min_price=1000&occasion=birthday&recipient=friend",
+          "text": "Remove Maximum price: 2000 ×",
+          "status": "PASS",
+          "actualUrl": "http://127.0.0.1:43275/store/kindred-qa-filters/products?limit=1&sort=display_order&min_price=1000&occasion=birthday&recipient=friend",
+          "parsed": {
+            "page": 1,
+            "limit": 1,
+            "sort": "display_order",
+            "min_price": 1000,
+            "occasion": "birthday",
+            "recipient": "friend"
+          }
+        },
+        {
+          "key": "occasion",
+          "value": "birthday",
+          "href": "/store/kindred-qa-filters/products?limit=1&sort=display_order&min_price=1000&max_price=2000&recipient=friend",
+          "text": "Remove Occasion: Birthday ×",
+          "status": "PASS",
+          "actualUrl": "http://127.0.0.1:43275/store/kindred-qa-filters/products?limit=1&sort=display_order&min_price=1000&max_price=2000&recipient=friend",
+          "parsed": {
+            "page": 1,
+            "limit": 1,
+            "sort": "display_order",
+            "min_price": 1000,
+            "max_price": 2000,
+            "recipient": "friend"
+          }
+        },
+        {
+          "key": "recipient",
+          "value": "friend",
+          "href": "/store/kindred-qa-filters/products?limit=1&sort=display_order&min_price=1000&max_price=2000&occasion=birthday",
+          "text": "Remove Recipient: A friend ×",
+          "status": "PASS",
+          "actualUrl": "http://127.0.0.1:43275/store/kindred-qa-filters/products?limit=1&sort=display_order&min_price=1000&max_price=2000&occasion=birthday",
+          "parsed": {
+            "page": 1,
+            "limit": 1,
+            "sort": "display_order",
+            "min_price": 1000,
+            "max_price": 2000,
+            "occasion": "birthday"
+          }
+        }
+      ],
+      "initialDom": {
+        "productCards": 1,
+        "executableNodes": 0,
+        "noProductsFound": false
+      },
+      "recovery": {
+        "url": "http://127.0.0.1:43275/store/kindred-qa-filters/products?limit=1&sort=display_order",
+        "productCards": 1,
+        "parsed": {
+          "page": 1,
+          "limit": 1,
+          "sort": "display_order"
+        }
+      }
+    },
+    {
+      "width": 768,
+      "state": "filters",
+      "route": "search",
+      "status": "PASS",
+      "initialUrl": "http://127.0.0.1:43275/store/kindred-qa-filters/search?limit=1&sort=display_order&min_price=1000&max_price=2000&occasion=birthday&recipient=friend",
+      "clearLinks": [
+        {
+          "key": "min_price",
+          "value": "1000",
+          "href": "/store/kindred-qa-filters/search?limit=1&sort=display_order&max_price=2000&occasion=birthday&recipient=friend",
+          "text": "Remove Minimum price: 1000 ×",
+          "status": "PASS",
+          "actualUrl": "http://127.0.0.1:43275/store/kindred-qa-filters/search?limit=1&sort=display_order&max_price=2000&occasion=birthday&recipient=friend",
+          "parsed": {
+            "page": 1,
+            "limit": 1,
+            "sort": "display_order",
+            "max_price": 2000,
+            "occasion": "birthday",
+            "recipient": "friend"
+          }
+        },
+        {
+          "key": "max_price",
+          "value": "2000",
+          "href": "/store/kindred-qa-filters/search?limit=1&sort=display_order&min_price=1000&occasion=birthday&recipient=friend",
+          "text": "Remove Maximum price: 2000 ×",
+          "status": "PASS",
+          "actualUrl": "http://127.0.0.1:43275/store/kindred-qa-filters/search?limit=1&sort=display_order&min_price=1000&occasion=birthday&recipient=friend",
+          "parsed": {
+            "page": 1,
+            "limit": 1,
+            "sort": "display_order",
+            "min_price": 1000,
+            "occasion": "birthday",
+            "recipient": "friend"
+          }
+        },
+        {
+          "key": "occasion",
+          "value": "birthday",
+          "href": "/store/kindred-qa-filters/search?limit=1&sort=display_order&min_price=1000&max_price=2000&recipient=friend",
+          "text": "Remove Occasion: Birthday ×",
+          "status": "PASS",
+          "actualUrl": "http://127.0.0.1:43275/store/kindred-qa-filters/search?limit=1&sort=display_order&min_price=1000&max_price=2000&recipient=friend",
+          "parsed": {
+            "page": 1,
+            "limit": 1,
+            "sort": "display_order",
+            "min_price": 1000,
+            "max_price": 2000,
+            "recipient": "friend"
+          }
+        },
+        {
+          "key": "recipient",
+          "value": "friend",
+          "href": "/store/kindred-qa-filters/search?limit=1&sort=display_order&min_price=1000&max_price=2000&occasion=birthday",
+          "text": "Remove Recipient: A friend ×",
+          "status": "PASS",
+          "actualUrl": "http://127.0.0.1:43275/store/kindred-qa-filters/search?limit=1&sort=display_order&min_price=1000&max_price=2000&occasion=birthday",
+          "parsed": {
+            "page": 1,
+            "limit": 1,
+            "sort": "display_order",
+            "min_price": 1000,
+            "max_price": 2000,
+            "occasion": "birthday"
+          }
+        }
+      ],
+      "initialDom": {
+        "productCards": 1,
+        "executableNodes": 0,
+        "noProductsFound": false
+      },
+      "recovery": {
+        "url": "http://127.0.0.1:43275/store/kindred-qa-filters/search?limit=1&sort=display_order",
+        "productCards": 1,
+        "parsed": {
+          "page": 1,
+          "limit": 1,
+          "sort": "display_order"
+        }
+      }
+    },
+    {
+      "width": 768,
+      "state": "cross-query",
+      "route": "collection",
+      "status": "FAIL",
+      "initialUrl": "http://127.0.0.1:43275/store/kindred-qa-cross-query/products?page=2&limit=1&search=gift&category=Ready-made+gifts&country_of_origin=India&sort=price-desc&min_price=1000&max_price=2000&connector=hdmi&connector=usb-c&occasion=birthday&recipient=friend",
+      "clearLinks": [],
+      "initialDom": {
+        "productCards": 0,
+        "executableNodes": 0,
+        "noProductsFound": false
+      },
+      "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\nfalse !== true\n"
+    },
+    {
+      "width": 768,
+      "state": "cross-query",
+      "route": "search",
+      "status": "FAIL",
+      "initialUrl": "http://127.0.0.1:43275/store/kindred-qa-cross-query/search?page=2&limit=1&search=gift&category=Ready-made+gifts&country_of_origin=India&sort=price-desc&min_price=1000&max_price=2000&connector=hdmi&connector=usb-c&occasion=birthday&recipient=friend",
+      "clearLinks": [],
+      "initialDom": {
+        "productCards": 0,
+        "executableNodes": 0,
+        "noProductsFound": false
+      },
+      "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\nfalse !== true\n"
+    },
+    {
+      "width": 768,
+      "state": "empty",
+      "route": "collection",
+      "status": "FAIL",
+      "initialUrl": "http://127.0.0.1:43275/store/kindred-qa-empty/products?limit=1&sort=display_order&min_price=1000&max_price=2000&occasion=retirement&recipient=friend",
+      "clearLinks": [],
+      "initialDom": {
+        "productCards": 0,
+        "executableNodes": 0,
+        "noProductsFound": false
+      },
+      "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\nfalse !== true\n"
+    },
+    {
+      "width": 768,
+      "state": "empty",
+      "route": "search",
+      "status": "FAIL",
+      "initialUrl": "http://127.0.0.1:43275/store/kindred-qa-empty/search?limit=1&sort=display_order&min_price=1000&max_price=2000&occasion=retirement&recipient=friend",
+      "clearLinks": [],
+      "initialDom": {
+        "productCards": 0,
+        "executableNodes": 0,
+        "noProductsFound": false
+      },
+      "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\nfalse !== true\n"
+    },
+    {
+      "width": 768,
+      "state": "long-labels",
+      "route": "collection",
+      "status": "PASS",
+      "initialUrl": "http://127.0.0.1:43275/store/kindred-qa-long-labels/products?limit=1&sort=display_order&min_price=1000&max_price=2000&occasion=birthday&recipient=friend",
+      "clearLinks": [
+        {
+          "key": "min_price",
+          "value": "1000",
+          "href": "/store/kindred-qa-long-labels/products?limit=1&sort=display_order&max_price=2000&occasion=birthday&recipient=friend",
+          "text": "Remove Minimum price: 1000 ×",
+          "status": "PASS",
+          "actualUrl": "http://127.0.0.1:43275/store/kindred-qa-long-labels/products?limit=1&sort=display_order&max_price=2000&occasion=birthday&recipient=friend",
+          "parsed": {
+            "page": 1,
+            "limit": 1,
+            "sort": "display_order",
+            "max_price": 2000,
+            "occasion": "birthday",
+            "recipient": "friend"
+          }
+        },
+        {
+          "key": "max_price",
+          "value": "2000",
+          "href": "/store/kindred-qa-long-labels/products?limit=1&sort=display_order&min_price=1000&occasion=birthday&recipient=friend",
+          "text": "Remove Maximum price: 2000 ×",
+          "status": "PASS",
+          "actualUrl": "http://127.0.0.1:43275/store/kindred-qa-long-labels/products?limit=1&sort=display_order&min_price=1000&occasion=birthday&recipient=friend",
+          "parsed": {
+            "page": 1,
+            "limit": 1,
+            "sort": "display_order",
+            "min_price": 1000,
+            "occasion": "birthday",
+            "recipient": "friend"
+          }
+        },
+        {
+          "key": "occasion",
+          "value": "birthday",
+          "href": "/store/kindred-qa-long-labels/products?limit=1&sort=display_order&min_price=1000&max_price=2000&recipient=friend",
+          "text": "Remove Occasion: जन्मदिन — A thoughtfully chosen celebration for someone whose everyday matters <img src=x onerror=bad()> ×",
+          "status": "PASS",
+          "actualUrl": "http://127.0.0.1:43275/store/kindred-qa-long-labels/products?limit=1&sort=display_order&min_price=1000&max_price=2000&recipient=friend",
+          "parsed": {
+            "page": 1,
+            "limit": 1,
+            "sort": "display_order",
+            "min_price": 1000,
+            "max_price": 2000,
+            "recipient": "friend"
+          }
+        },
+        {
+          "key": "recipient",
+          "value": "friend",
+          "href": "/store/kindred-qa-long-labels/products?limit=1&sort=display_order&min_price=1000&max_price=2000&occasion=birthday",
+          "text": "Remove Recipient: A friend — बहुत लंबे व्यापारी द्वारा दिए गए नाम और विवरण \"quoted\" <script>inert</script> ×",
+          "status": "PASS",
+          "actualUrl": "http://127.0.0.1:43275/store/kindred-qa-long-labels/products?limit=1&sort=display_order&min_price=1000&max_price=2000&occasion=birthday",
+          "parsed": {
+            "page": 1,
+            "limit": 1,
+            "sort": "display_order",
+            "min_price": 1000,
+            "max_price": 2000,
+            "occasion": "birthday"
+          }
+        }
+      ],
+      "initialDom": {
+        "productCards": 1,
+        "executableNodes": 0,
+        "noProductsFound": false
+      },
+      "recovery": {
+        "url": "http://127.0.0.1:43275/store/kindred-qa-long-labels/products?limit=1&sort=display_order",
+        "productCards": 1,
+        "parsed": {
+          "page": 1,
+          "limit": 1,
+          "sort": "display_order"
+        }
+      }
+    },
+    {
+      "width": 768,
+      "state": "long-labels",
+      "route": "search",
+      "status": "PASS",
+      "initialUrl": "http://127.0.0.1:43275/store/kindred-qa-long-labels/search?limit=1&sort=display_order&min_price=1000&max_price=2000&occasion=birthday&recipient=friend",
+      "clearLinks": [
+        {
+          "key": "min_price",
+          "value": "1000",
+          "href": "/store/kindred-qa-long-labels/search?limit=1&sort=display_order&max_price=2000&occasion=birthday&recipient=friend",
+          "text": "Remove Minimum price: 1000 ×",
+          "status": "PASS",
+          "actualUrl": "http://127.0.0.1:43275/store/kindred-qa-long-labels/search?limit=1&sort=display_order&max_price=2000&occasion=birthday&recipient=friend",
+          "parsed": {
+            "page": 1,
+            "limit": 1,
+            "sort": "display_order",
+            "max_price": 2000,
+            "occasion": "birthday",
+            "recipient": "friend"
+          }
+        },
+        {
+          "key": "max_price",
+          "value": "2000",
+          "href": "/store/kindred-qa-long-labels/search?limit=1&sort=display_order&min_price=1000&occasion=birthday&recipient=friend",
+          "text": "Remove Maximum price: 2000 ×",
+          "status": "PASS",
+          "actualUrl": "http://127.0.0.1:43275/store/kindred-qa-long-labels/search?limit=1&sort=display_order&min_price=1000&occasion=birthday&recipient=friend",
+          "parsed": {
+            "page": 1,
+            "limit": 1,
+            "sort": "display_order",
+            "min_price": 1000,
+            "occasion": "birthday",
+            "recipient": "friend"
+          }
+        },
+        {
+          "key": "occasion",
+          "value": "birthday",
+          "href": "/store/kindred-qa-long-labels/search?limit=1&sort=display_order&min_price=1000&max_price=2000&recipient=friend",
+          "text": "Remove Occasion: जन्मदिन — A thoughtfully chosen celebration for someone whose everyday matters <img src=x onerror=bad()> ×",
+          "status": "PASS",
+          "actualUrl": "http://127.0.0.1:43275/store/kindred-qa-long-labels/search?limit=1&sort=display_order&min_price=1000&max_price=2000&recipient=friend",
+          "parsed": {
+            "page": 1,
+            "limit": 1,
+            "sort": "display_order",
+            "min_price": 1000,
+            "max_price": 2000,
+            "recipient": "friend"
+          }
+        },
+        {
+          "key": "recipient",
+          "value": "friend",
+          "href": "/store/kindred-qa-long-labels/search?limit=1&sort=display_order&min_price=1000&max_price=2000&occasion=birthday",
+          "text": "Remove Recipient: A friend — बहुत लंबे व्यापारी द्वारा दिए गए नाम और विवरण \"quoted\" <script>inert</script> ×",
+          "status": "PASS",
+          "actualUrl": "http://127.0.0.1:43275/store/kindred-qa-long-labels/search?limit=1&sort=display_order&min_price=1000&max_price=2000&occasion=birthday",
+          "parsed": {
+            "page": 1,
+            "limit": 1,
+            "sort": "display_order",
+            "min_price": 1000,
+            "max_price": 2000,
+            "occasion": "birthday"
+          }
+        }
+      ],
+      "initialDom": {
+        "productCards": 1,
+        "executableNodes": 0,
+        "noProductsFound": false
+      },
+      "recovery": {
+        "url": "http://127.0.0.1:43275/store/kindred-qa-long-labels/search?limit=1&sort=display_order",
+        "productCards": 1,
+        "parsed": {
+          "page": 1,
+          "limit": 1,
+          "sort": "display_order"
+        }
+      }
+    },
+    {
+      "width": 1440,
+      "state": "filters",
+      "route": "collection",
+      "status": "PASS",
+      "initialUrl": "http://127.0.0.1:43275/store/kindred-qa-filters/products?limit=1&sort=display_order&min_price=1000&max_price=2000&occasion=birthday&recipient=friend",
+      "clearLinks": [
+        {
+          "key": "min_price",
+          "value": "1000",
+          "href": "/store/kindred-qa-filters/products?limit=1&sort=display_order&max_price=2000&occasion=birthday&recipient=friend",
+          "text": "Remove Minimum price: 1000 ×",
+          "status": "PASS",
+          "actualUrl": "http://127.0.0.1:43275/store/kindred-qa-filters/products?limit=1&sort=display_order&max_price=2000&occasion=birthday&recipient=friend",
+          "parsed": {
+            "page": 1,
+            "limit": 1,
+            "sort": "display_order",
+            "max_price": 2000,
+            "occasion": "birthday",
+            "recipient": "friend"
+          }
+        },
+        {
+          "key": "max_price",
+          "value": "2000",
+          "href": "/store/kindred-qa-filters/products?limit=1&sort=display_order&min_price=1000&occasion=birthday&recipient=friend",
+          "text": "Remove Maximum price: 2000 ×",
+          "status": "PASS",
+          "actualUrl": "http://127.0.0.1:43275/store/kindred-qa-filters/products?limit=1&sort=display_order&min_price=1000&occasion=birthday&recipient=friend",
+          "parsed": {
+            "page": 1,
+            "limit": 1,
+            "sort": "display_order",
+            "min_price": 1000,
+            "occasion": "birthday",
+            "recipient": "friend"
+          }
+        },
+        {
+          "key": "occasion",
+          "value": "birthday",
+          "href": "/store/kindred-qa-filters/products?limit=1&sort=display_order&min_price=1000&max_price=2000&recipient=friend",
+          "text": "Remove Occasion: Birthday ×",
+          "status": "PASS",
+          "actualUrl": "http://127.0.0.1:43275/store/kindred-qa-filters/products?limit=1&sort=display_order&min_price=1000&max_price=2000&recipient=friend",
+          "parsed": {
+            "page": 1,
+            "limit": 1,
+            "sort": "display_order",
+            "min_price": 1000,
+            "max_price": 2000,
+            "recipient": "friend"
+          }
+        },
+        {
+          "key": "recipient",
+          "value": "friend",
+          "href": "/store/kindred-qa-filters/products?limit=1&sort=display_order&min_price=1000&max_price=2000&occasion=birthday",
+          "text": "Remove Recipient: A friend ×",
+          "status": "PASS",
+          "actualUrl": "http://127.0.0.1:43275/store/kindred-qa-filters/products?limit=1&sort=display_order&min_price=1000&max_price=2000&occasion=birthday",
+          "parsed": {
+            "page": 1,
+            "limit": 1,
+            "sort": "display_order",
+            "min_price": 1000,
+            "max_price": 2000,
+            "occasion": "birthday"
+          }
+        }
+      ],
+      "initialDom": {
+        "productCards": 1,
+        "executableNodes": 0,
+        "noProductsFound": false
+      },
+      "recovery": {
+        "url": "http://127.0.0.1:43275/store/kindred-qa-filters/products?limit=1&sort=display_order",
+        "productCards": 1,
+        "parsed": {
+          "page": 1,
+          "limit": 1,
+          "sort": "display_order"
+        }
+      }
+    },
+    {
+      "width": 1440,
+      "state": "filters",
+      "route": "search",
+      "status": "PASS",
+      "initialUrl": "http://127.0.0.1:43275/store/kindred-qa-filters/search?limit=1&sort=display_order&min_price=1000&max_price=2000&occasion=birthday&recipient=friend",
+      "clearLinks": [
+        {
+          "key": "min_price",
+          "value": "1000",
+          "href": "/store/kindred-qa-filters/search?limit=1&sort=display_order&max_price=2000&occasion=birthday&recipient=friend",
+          "text": "Remove Minimum price: 1000 ×",
+          "status": "PASS",
+          "actualUrl": "http://127.0.0.1:43275/store/kindred-qa-filters/search?limit=1&sort=display_order&max_price=2000&occasion=birthday&recipient=friend",
+          "parsed": {
+            "page": 1,
+            "limit": 1,
+            "sort": "display_order",
+            "max_price": 2000,
+            "occasion": "birthday",
+            "recipient": "friend"
+          }
+        },
+        {
+          "key": "max_price",
+          "value": "2000",
+          "href": "/store/kindred-qa-filters/search?limit=1&sort=display_order&min_price=1000&occasion=birthday&recipient=friend",
+          "text": "Remove Maximum price: 2000 ×",
+          "status": "PASS",
+          "actualUrl": "http://127.0.0.1:43275/store/kindred-qa-filters/search?limit=1&sort=display_order&min_price=1000&occasion=birthday&recipient=friend",
+          "parsed": {
+            "page": 1,
+            "limit": 1,
+            "sort": "display_order",
+            "min_price": 1000,
+            "occasion": "birthday",
+            "recipient": "friend"
+          }
+        },
+        {
+          "key": "occasion",
+          "value": "birthday",
+          "href": "/store/kindred-qa-filters/search?limit=1&sort=display_order&min_price=1000&max_price=2000&recipient=friend",
+          "text": "Remove Occasion: Birthday ×",
+          "status": "PASS",
+          "actualUrl": "http://127.0.0.1:43275/store/kindred-qa-filters/search?limit=1&sort=display_order&min_price=1000&max_price=2000&recipient=friend",
+          "parsed": {
+            "page": 1,
+            "limit": 1,
+            "sort": "display_order",
+            "min_price": 1000,
+            "max_price": 2000,
+            "recipient": "friend"
+          }
+        },
+        {
+          "key": "recipient",
+          "value": "friend",
+          "href": "/store/kindred-qa-filters/search?limit=1&sort=display_order&min_price=1000&max_price=2000&occasion=birthday",
+          "text": "Remove Recipient: A friend ×",
+          "status": "PASS",
+          "actualUrl": "http://127.0.0.1:43275/store/kindred-qa-filters/search?limit=1&sort=display_order&min_price=1000&max_price=2000&occasion=birthday",
+          "parsed": {
+            "page": 1,
+            "limit": 1,
+            "sort": "display_order",
+            "min_price": 1000,
+            "max_price": 2000,
+            "occasion": "birthday"
+          }
+        }
+      ],
+      "initialDom": {
+        "productCards": 1,
+        "executableNodes": 0,
+        "noProductsFound": false
+      },
+      "recovery": {
+        "url": "http://127.0.0.1:43275/store/kindred-qa-filters/search?limit=1&sort=display_order",
+        "productCards": 1,
+        "parsed": {
+          "page": 1,
+          "limit": 1,
+          "sort": "display_order"
+        }
+      }
+    },
+    {
+      "width": 1440,
+      "state": "cross-query",
+      "route": "collection",
+      "status": "FAIL",
+      "initialUrl": "http://127.0.0.1:43275/store/kindred-qa-cross-query/products?page=2&limit=1&search=gift&category=Ready-made+gifts&country_of_origin=India&sort=price-desc&min_price=1000&max_price=2000&connector=hdmi&connector=usb-c&occasion=birthday&recipient=friend",
+      "clearLinks": [],
+      "initialDom": {
+        "productCards": 0,
+        "executableNodes": 0,
+        "noProductsFound": false
+      },
+      "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\nfalse !== true\n"
+    },
+    {
+      "width": 1440,
+      "state": "cross-query",
+      "route": "search",
+      "status": "FAIL",
+      "initialUrl": "http://127.0.0.1:43275/store/kindred-qa-cross-query/search?page=2&limit=1&search=gift&category=Ready-made+gifts&country_of_origin=India&sort=price-desc&min_price=1000&max_price=2000&connector=hdmi&connector=usb-c&occasion=birthday&recipient=friend",
+      "clearLinks": [],
+      "initialDom": {
+        "productCards": 0,
+        "executableNodes": 0,
+        "noProductsFound": false
+      },
+      "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\nfalse !== true\n"
+    },
+    {
+      "width": 1440,
+      "state": "empty",
+      "route": "collection",
+      "status": "FAIL",
+      "initialUrl": "http://127.0.0.1:43275/store/kindred-qa-empty/products?limit=1&sort=display_order&min_price=1000&max_price=2000&occasion=retirement&recipient=friend",
+      "clearLinks": [],
+      "initialDom": {
+        "productCards": 0,
+        "executableNodes": 0,
+        "noProductsFound": false
+      },
+      "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\nfalse !== true\n"
+    },
+    {
+      "width": 1440,
+      "state": "empty",
+      "route": "search",
+      "status": "FAIL",
+      "initialUrl": "http://127.0.0.1:43275/store/kindred-qa-empty/search?limit=1&sort=display_order&min_price=1000&max_price=2000&occasion=retirement&recipient=friend",
+      "clearLinks": [],
+      "initialDom": {
+        "productCards": 0,
+        "executableNodes": 0,
+        "noProductsFound": false
+      },
+      "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\nfalse !== true\n"
+    },
+    {
+      "width": 1440,
+      "state": "long-labels",
+      "route": "collection",
+      "status": "PASS",
+      "initialUrl": "http://127.0.0.1:43275/store/kindred-qa-long-labels/products?limit=1&sort=display_order&min_price=1000&max_price=2000&occasion=birthday&recipient=friend",
+      "clearLinks": [
+        {
+          "key": "min_price",
+          "value": "1000",
+          "href": "/store/kindred-qa-long-labels/products?limit=1&sort=display_order&max_price=2000&occasion=birthday&recipient=friend",
+          "text": "Remove Minimum price: 1000 ×",
+          "status": "PASS",
+          "actualUrl": "http://127.0.0.1:43275/store/kindred-qa-long-labels/products?limit=1&sort=display_order&max_price=2000&occasion=birthday&recipient=friend",
+          "parsed": {
+            "page": 1,
+            "limit": 1,
+            "sort": "display_order",
+            "max_price": 2000,
+            "occasion": "birthday",
+            "recipient": "friend"
+          }
+        },
+        {
+          "key": "max_price",
+          "value": "2000",
+          "href": "/store/kindred-qa-long-labels/products?limit=1&sort=display_order&min_price=1000&occasion=birthday&recipient=friend",
+          "text": "Remove Maximum price: 2000 ×",
+          "status": "PASS",
+          "actualUrl": "http://127.0.0.1:43275/store/kindred-qa-long-labels/products?limit=1&sort=display_order&min_price=1000&occasion=birthday&recipient=friend",
+          "parsed": {
+            "page": 1,
+            "limit": 1,
+            "sort": "display_order",
+            "min_price": 1000,
+            "occasion": "birthday",
+            "recipient": "friend"
+          }
+        },
+        {
+          "key": "occasion",
+          "value": "birthday",
+          "href": "/store/kindred-qa-long-labels/products?limit=1&sort=display_order&min_price=1000&max_price=2000&recipient=friend",
+          "text": "Remove Occasion: जन्मदिन — A thoughtfully chosen celebration for someone whose everyday matters <img src=x onerror=bad()> ×",
+          "status": "PASS",
+          "actualUrl": "http://127.0.0.1:43275/store/kindred-qa-long-labels/products?limit=1&sort=display_order&min_price=1000&max_price=2000&recipient=friend",
+          "parsed": {
+            "page": 1,
+            "limit": 1,
+            "sort": "display_order",
+            "min_price": 1000,
+            "max_price": 2000,
+            "recipient": "friend"
+          }
+        },
+        {
+          "key": "recipient",
+          "value": "friend",
+          "href": "/store/kindred-qa-long-labels/products?limit=1&sort=display_order&min_price=1000&max_price=2000&occasion=birthday",
+          "text": "Remove Recipient: A friend — बहुत लंबे व्यापारी द्वारा दिए गए नाम और विवरण \"quoted\" <script>inert</script> ×",
+          "status": "PASS",
+          "actualUrl": "http://127.0.0.1:43275/store/kindred-qa-long-labels/products?limit=1&sort=display_order&min_price=1000&max_price=2000&occasion=birthday",
+          "parsed": {
+            "page": 1,
+            "limit": 1,
+            "sort": "display_order",
+            "min_price": 1000,
+            "max_price": 2000,
+            "occasion": "birthday"
+          }
+        }
+      ],
+      "initialDom": {
+        "productCards": 1,
+        "executableNodes": 0,
+        "noProductsFound": false
+      },
+      "recovery": {
+        "url": "http://127.0.0.1:43275/store/kindred-qa-long-labels/products?limit=1&sort=display_order",
+        "productCards": 1,
+        "parsed": {
+          "page": 1,
+          "limit": 1,
+          "sort": "display_order"
+        }
+      }
+    },
+    {
+      "width": 1440,
+      "state": "long-labels",
+      "route": "search",
+      "status": "PASS",
+      "initialUrl": "http://127.0.0.1:43275/store/kindred-qa-long-labels/search?limit=1&sort=display_order&min_price=1000&max_price=2000&occasion=birthday&recipient=friend",
+      "clearLinks": [
+        {
+          "key": "min_price",
+          "value": "1000",
+          "href": "/store/kindred-qa-long-labels/search?limit=1&sort=display_order&max_price=2000&occasion=birthday&recipient=friend",
+          "text": "Remove Minimum price: 1000 ×",
+          "status": "PASS",
+          "actualUrl": "http://127.0.0.1:43275/store/kindred-qa-long-labels/search?limit=1&sort=display_order&max_price=2000&occasion=birthday&recipient=friend",
+          "parsed": {
+            "page": 1,
+            "limit": 1,
+            "sort": "display_order",
+            "max_price": 2000,
+            "occasion": "birthday",
+            "recipient": "friend"
+          }
+        },
+        {
+          "key": "max_price",
+          "value": "2000",
+          "href": "/store/kindred-qa-long-labels/search?limit=1&sort=display_order&min_price=1000&occasion=birthday&recipient=friend",
+          "text": "Remove Maximum price: 2000 ×",
+          "status": "PASS",
+          "actualUrl": "http://127.0.0.1:43275/store/kindred-qa-long-labels/search?limit=1&sort=display_order&min_price=1000&occasion=birthday&recipient=friend",
+          "parsed": {
+            "page": 1,
+            "limit": 1,
+            "sort": "display_order",
+            "min_price": 1000,
+            "occasion": "birthday",
+            "recipient": "friend"
+          }
+        },
+        {
+          "key": "occasion",
+          "value": "birthday",
+          "href": "/store/kindred-qa-long-labels/search?limit=1&sort=display_order&min_price=1000&max_price=2000&recipient=friend",
+          "text": "Remove Occasion: जन्मदिन — A thoughtfully chosen celebration for someone whose everyday matters <img src=x onerror=bad()> ×",
+          "status": "PASS",
+          "actualUrl": "http://127.0.0.1:43275/store/kindred-qa-long-labels/search?limit=1&sort=display_order&min_price=1000&max_price=2000&recipient=friend",
+          "parsed": {
+            "page": 1,
+            "limit": 1,
+            "sort": "display_order",
+            "min_price": 1000,
+            "max_price": 2000,
+            "recipient": "friend"
+          }
+        },
+        {
+          "key": "recipient",
+          "value": "friend",
+          "href": "/store/kindred-qa-long-labels/search?limit=1&sort=display_order&min_price=1000&max_price=2000&occasion=birthday",
+          "text": "Remove Recipient: A friend — बहुत लंबे व्यापारी द्वारा दिए गए नाम और विवरण \"quoted\" <script>inert</script> ×",
+          "status": "PASS",
+          "actualUrl": "http://127.0.0.1:43275/store/kindred-qa-long-labels/search?limit=1&sort=display_order&min_price=1000&max_price=2000&occasion=birthday",
+          "parsed": {
+            "page": 1,
+            "limit": 1,
+            "sort": "display_order",
+            "min_price": 1000,
+            "max_price": 2000,
+            "occasion": "birthday"
+          }
+        }
+      ],
+      "initialDom": {
+        "productCards": 1,
+        "executableNodes": 0,
+        "noProductsFound": false
+      },
+      "recovery": {
+        "url": "http://127.0.0.1:43275/store/kindred-qa-long-labels/search?limit=1&sort=display_order",
+        "productCards": 1,
+        "parsed": {
+          "page": 1,
+          "limit": 1,
+          "sort": "display_order"
+        }
+      }
+    }
+  ],
+  "pageErrors": [],
+  "blockedExternalRequests": [],
+  "scope": "Native independent clear clicks and actual admitted empty DOM/recovery; static fixture only, not live SQL/installed correctness.",
+  "browserClosed": true
+}

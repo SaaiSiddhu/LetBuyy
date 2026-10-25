@@ -1,0 +1,105 @@
+{
+  "recordedAt": "2026-10-25T00:26:12.803179+00:00",
+  "status": "AMENDED_PRIVATE02_SOURCE_PLAN_NOT_ADMISSION_NOT_EXECUTED",
+  "entry": "services/api-gateway/src/__tests__/owned-db/first-party-order-heading211-qualification.manual.ts",
+  "requiredRootAdmissionPath": "docs/implementation/niche-theme-programme/completion-2026-10-24/order-heading211-integration01/NATIVE_ADMISSION.json",
+  "requiredRootStatus": "ROOT_ONE_FRESH_ORDER_HEADING211_NATIVE",
+  "sourceClosure": {
+    "path": "native-source-closure.json",
+    "sha256": "27a621aed16e2fd6e801bf3891ac8ed67e4809ffdcd1c4969d2587ec0bc7f7a1",
+    "files": 1080,
+    "runtimeModules": 477,
+    "edges": 3730,
+    "migrationCount": 322,
+    "migrationMaximum": 393,
+    "migrationCeiling": null,
+    "threeNegativeInventoryGuards": "PASS",
+    "modulesExecutedByDiscovery": false
+  },
+  "sourceFilesMustEqual": "native-source-closure.json#/files",
+  "faithfulBootstrapSha256": "39c75abc670ba8907a9a48eb9be6ee9f100d23c99b175080a729d8e7fc022c87",
+  "setupSql": [
+    {
+      "path": "docs/implementation/niche-theme-programme/release-playfield201/proposals394/f5f54a8009732ff71ba248e1f3356f58441e8b2340225c47b19e5ac386ac790e/394_playfield_catalog_201.up.draft.sql",
+      "sha256": "7d3c4991c84c128cfba8aff096c04a0288d9142a144c97dddac8d0072633aa1e"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-integration01/cart-edit03.qualified-up.proposal.sql",
+      "sha256": "830259374dbc0692f7d5d07651f7bc1028d8689452ad9dc7544aba99bef545a1"
+    },
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/circuit/completion-2026-10-24/facet-private-implementation-03/UNNUMBERED_circuit_facets.up.proposal.sql",
+      "sha256": "3127cff5318a958b490c5c8faea2719b3d49fc208ffa195350b52e109dc20224"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/child-customization-integration01/customization210.up.proposal.sql",
+      "sha256": "2266fe0f95b7fcb1364dfded188b318a311d91c7431c67af7c0c78d3707cfa29"
+    }
+  ],
+  "proposalHashes": {
+    "heading211.up.proposal.sql": "4a85c78213c099bc99d3535afe3dc5784f37eb78f171ced68432a03f670a9cf7",
+    "heading211.down.proposal.sql": "9ffd060bad1bcba960128107d9f7a4140c29d3fcdc0543049da85da102014025"
+  },
+  "preparedEffectBudget": "EIGHT_NATIVE_SITES_INSTALLS_DRAFTS_RELEASES_FOUR_RPC_ORDERS_NOT_THEME_UI_CASES",
+  "positiveControls": "Four210 canonical installs/saved drafts/published releases and four211 installs/saved drafts/releases after UP. Four secondary canonical-RPC native conservation orders on prior210 sites, not primary HI15/HI17/browser/provider proof. Normal existing211 editor reads after DOWN must retain211 and preserve all public rows.",
+  "profile": "Faithful322 migrations through393, no ceiling, exact four qualified Runtime07 SQL proposals, guarded owned pooled SQL proxy. Positive populated catalog before app_tenant global SELECT/UPDATE and private mutation-function denials. Service-role positive controls. Relations/ACL/RLS/policies/functions/constraints snapshots stay unchanged.",
+  "phases": [
+    {
+      "id": "1",
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "2",
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "3",
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "4",
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "5",
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "6",
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "7",
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "8",
+      "status": "NOT_RUN"
+    }
+  ],
+  "phase2b": "Additional positive211 installed-work setup; NOT_RUN",
+  "cleanupOwner": "Future separately admitted exclusive native runner; no resource exists from preparation",
+  "MainIntegrationOrNumberedMigration": "NOT_GRANTED",
+  "limitations": [
+    "No PG/PLpgSQL/native/compiled Worker verification occurred. Syntax/source discovery and static SQL policy checks are not native qualification.",
+    "Root must independently review/admit current source, dependency/image/bootstrap/profile, effect budget and cleanup before any execution."
+  ],
+  "amendmentReviewFindings": "HEADING211-R01/R02",
+  "preparedRefusalControls": 42,
+  "nestedCheckpointControlDirections": 34,
+  "strictSqlWitness": "All public rows/captures/security profile across UP/DOWN/replay/refusals; no telemetry exemption for SQL.",
+  "httpWitness": "Four known authenticated editor GETs only; immediate before/after snapshots, exact echoed request/trace IDs and actor/status/dimensions; complete operational mirror equality and byte/field preservation of every pre-existing row. Every business/unclassified table unchanged.",
+  "sourceTypeEvidence": "TYPE_COMPARISON.json",
+  "oneCohortResourcePlan": {
+    "maxWallSeconds": 600,
+    "maxNativeCohorts": 1,
+    "concurrency": "Only after separately allocated exclusive native slot; MadeYours current reservation not taken",
+    "outerSupervisorDeadlineRequired": true,
+    "nodeTimeoutSeconds": 600,
+    "synchronousSqlPreemption": "Node timer alone cannot preempt synchronous psql; future root runner must enforce the600s outer deadline and owned cleanup",
+    "failure": "Stop at first failed dependency or exhausted budget; leave later phases NOT_RUN, retain raw failures and owned cleanup",
+    "actualResourceGrant": false
+  },
+  "actualNATIVE_ADMISSIONCreated": false,
+  "earlier61SuitesRerun": false
+}

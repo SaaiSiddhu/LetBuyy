@@ -1,0 +1,115 @@
+{
+  "classification": "CONTROL_SOURCE_COMPILER_ONLY",
+  "diagnostics": [
+    {
+      "line": null,
+      "code": 2688,
+      "message": "Cannot find type definition file for 'node'.\n  The file is in the program because:\n    Entry point of type library 'node' specified in compilerOptions"
+    },
+    {
+      "file": "dependency-launcher-smoke.ts",
+      "line": 4,
+      "code": 2591,
+      "message": "Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node` and then add 'node' to the types field in your tsconfig."
+    },
+    {
+      "file": "qualification-inputs.ts",
+      "line": 2,
+      "code": 2307,
+      "message": "Cannot find module 'node:assert/strict' or its corresponding type declarations."
+    },
+    {
+      "file": "qualification-inputs.ts",
+      "line": 3,
+      "code": 2307,
+      "message": "Cannot find module 'node:fs' or its corresponding type declarations."
+    },
+    {
+      "file": "qualification-inputs.ts",
+      "line": 4,
+      "code": 2307,
+      "message": "Cannot find module 'node:path' or its corresponding type declarations."
+    },
+    {
+      "file": "qualification-inputs.ts",
+      "line": 5,
+      "code": 2307,
+      "message": "Cannot find module 'node:module' or its corresponding type declarations."
+    },
+    {
+      "file": "qualification-inputs.ts",
+      "line": 7,
+      "code": 2307,
+      "message": "Cannot find module 'node:crypto' or its corresponding type declarations."
+    },
+    {
+      "file": "qualification-inputs.ts",
+      "line": 25,
+      "code": 7006,
+      "message": "Parameter 'name' implicitly has an 'any' type."
+    },
+    {
+      "file": "qualification-inputs.ts",
+      "line": 25,
+      "code": 7006,
+      "message": "Parameter 'a' implicitly has an 'any' type."
+    },
+    {
+      "file": "qualification-inputs.ts",
+      "line": 25,
+      "code": 7006,
+      "message": "Parameter 'b' implicitly has an 'any' type."
+    },
+    {
+      "file": "qualification-inputs.ts",
+      "line": 25,
+      "code": 7006,
+      "message": "Parameter 'name' implicitly has an 'any' type."
+    },
+    {
+      "file": "qualification-inputs.ts",
+      "line": 63,
+      "code": 2503,
+      "message": "Cannot find namespace 'NodeJS'."
+    },
+    {
+      "file": "qualification-inputs.ts",
+      "line": 71,
+      "code": 18048,
+      "message": "'launcherPin' is possibly 'undefined'."
+    },
+    {
+      "file": "qualification-inputs.ts",
+      "line": 71,
+      "code": 18048,
+      "message": "'launcherPin' is possibly 'undefined'."
+    },
+    {
+      "file": "qualification-inputs.ts",
+      "line": 72,
+      "code": 1470,
+      "message": "The 'import.meta' meta-property is not allowed in files which will build into CommonJS output."
+    },
+    {
+      "file": "qualification-inputs.ts",
+      "line": 112,
+      "code": 2591,
+      "message": "Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node` and then add 'node' to the types field in your tsconfig."
+    },
+    {
+      "file": "qualification-inputs.ts",
+      "line": 139,
+      "code": 2591,
+      "message": "Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node` and then add 'node' to the types field in your tsconfig."
+    },
+    {
+      "file": "qualification-inputs.ts",
+      "line": 156,
+      "code": 2339,
+      "message": "Property 'text' does not exist on type 'Expression'."
+    }
+  ],
+  "businessSourceImports": [],
+  "sourceFiles": 66,
+  "applicationModulesExecuted": false
+}

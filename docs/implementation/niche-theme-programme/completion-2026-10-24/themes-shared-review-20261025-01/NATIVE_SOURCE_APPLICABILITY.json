@@ -1,0 +1,89 @@
+{
+  "recordedAt": "2026-10-24T19:54:35.282730+00:00",
+  "cohorts": [
+    {
+      "cohort": "cart",
+      "closurePath": "shared-integration01/native-inputs07/source-closure.json",
+      "closureSha256": "86c97611ff1597d07afc304c1a5549cbef9f27c0aa357ae3f8657d0dfd1286a9",
+      "count": 1079,
+      "historicalSourceRoot": "/private/tmp/letbuyy-shared-integration-20261024-01",
+      "historicalMissing": [],
+      "historicalCurrentDrifts": [],
+      "currentCandidateDrifts": [
+        {
+          "path": "apps/commerce/web/src/lib/theme-engine/madeyours-cart-edit.test.ts",
+          "qualified": "3f74fcfc13b0fb919cbfac25b8c7f2604bdb4092dd359c0a765c1bffaaf12a21",
+          "currentCandidate": "20a6e375c77c56d3e7f9177bec9c57aa9f186d645e1d891ed9b5ca3e49a51b9c"
+        },
+        {
+          "path": "apps/commerce/web/src/lib/theme-engine/personalization-review-client.ts",
+          "qualified": "e8a27859e28e247e4ca38e6866684aba149ff2bb866b84a0ac134a736b7b50ab",
+          "currentCandidate": "950b3bf975a3eb2e9759b95a1a976dfa649567442835cc71113ba94bddc2fba3"
+        },
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/cart-edit02.proposed-down.sql",
+          "qualified": "247515f8d020ac923064aa3d2dceefb583ae6768cd11db1f9bcbb42bdf176240",
+          "currentCandidate": "ee05697bcbbdeaa7cbdd629d4735a11798b43def4d3d2684323b26d34f633650"
+        },
+        {
+          "path": "docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/cart-edit02.proposed-up.sql",
+          "qualified": "830259374dbc0692f7d5d07651f7bc1028d8689452ad9dc7544aba99bef545a1",
+          "currentCandidate": "07af75f775dbee28a69984d445b695905c17b175511cc4d15296bcca245b9710"
+        },
+        {
+          "path": "packages/theme-engine/src/first-party-theme-catalog.ts",
+          "qualified": "c240566161f45b1875caf65b68b9d7eae9be38bf9ec0b8390ead3eadb6d21757",
+          "currentCandidate": "2a1775243185e982f19f511738167c280d237fc6d15ed2dd72844e425dc62488"
+        },
+        {
+          "path": "packages/theme-engine/src/theme-renderer.ts",
+          "qualified": "794cbc6ff9ae71f995560f302e1b0d5f0d4ff4da59fa31191585851b1e822164",
+          "currentCandidate": "1d21dea29e120b076c911efe2ca303616c279ac3af94ad3e86adfd2f281d38c2"
+        },
+        {
+          "path": "pnpm-lock.yaml",
+          "qualified": "15fd89109bbc17e0624e29d5a1b56db07e19f1f880c44d9a9abf847b52b6d09a",
+          "currentCandidate": "c9ff37ec9c3ba0e11afc90a0bb1e29e793af80e68d56562410885aaa77fd48d0"
+        },
+        {
+          "path": "services/api-gateway/src/routes/checkout.ts",
+          "qualified": "d4600bb711dff02d00e3b77587a0b5d2e9c2020f22dcf065ad673171859aad9c",
+          "currentCandidate": "7451f294972a43fbbecf8a470bfd9e89ea77466a36e6e61f725aa143235b5d3e"
+        },
+        {
+          "path": "services/api-gateway/src/routes/storefront/cart-routes.ts",
+          "qualified": "afbf61a1f31716d81c61a7710a73b9698ca376a505c46de152edc9749dfaaab9",
+          "currentCandidate": "6a8a62399e128de98578929c75812c08d49055981145b96f43fd7a8df9f67eb7"
+        }
+      ]
+    },
+    {
+      "cohort": "child",
+      "closurePath": "child-customization-integration01/native-inputs04/source-closure.json",
+      "closureSha256": "f425e94a59c3ad371efcbbd63473ef163fbeef57f937c3fa68ad87e25a41fa10",
+      "count": 696,
+      "historicalSourceRoot": "/Volumes/Projects/LetBuyy",
+      "historicalMissing": [],
+      "historicalCurrentDrifts": [
+        "pnpm-lock.yaml"
+      ],
+      "currentCandidateDrifts": [
+        {
+          "path": "pnpm-lock.yaml",
+          "qualified": "15fd89109bbc17e0624e29d5a1b56db07e19f1f880c44d9a9abf847b52b6d09a",
+          "currentCandidate": "c9ff37ec9c3ba0e11afc90a0bb1e29e793af80e68d56562410885aaa77fd48d0"
+        }
+      ]
+    },
+    {
+      "cohort": "webhook",
+      "closurePath": "razorpay-webhook-first-repair01/native04/SOURCE_PINS.before.json",
+      "closureSha256": "b46133eba0bdb982e14ee48f118844591d0fc870b7d9eee4d995d24931ecca80",
+      "count": 4,
+      "historicalSourceRoot": "/Volumes/Projects/LetBuyy",
+      "historicalMissing": [],
+      "historicalCurrentDrifts": [],
+      "currentCandidateDrifts": []
+    }
+  ]
+}

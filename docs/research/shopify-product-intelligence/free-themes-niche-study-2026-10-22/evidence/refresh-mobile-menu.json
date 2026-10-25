@@ -1,0 +1,1205 @@
+{
+  "body": {
+    "background": "rgb(239, 240, 245)",
+    "color": "rgba(14, 27, 77, 0.75)",
+    "font": "Questrial, sans-serif",
+    "fontSize": "15.75px"
+  },
+  "controls": [
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": "true",
+      "label": "Menu",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "About",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "true",
+      "label": "",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "SUMMARY",
+      "type": ""
+    },
+    {
+      "disabled": false,
+      "expanded": "false",
+      "label": "Search",
+      "tag": "INPUT",
+      "type": "search"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Search",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Previous slide",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Next slide",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Add to cart",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Add to cart",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Add to cart",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Add to cart",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": true,
+      "expanded": null,
+      "label": "Slide left",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Slide right",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose options",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose options",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Choose options",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Add to cart",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": true,
+      "expanded": null,
+      "label": "Slide left",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Slide right",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Email",
+      "tag": "INPUT",
+      "type": "email"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Subscribe",
+      "tag": "BUTTON",
+      "type": "submit"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    },
+    {
+      "disabled": false,
+      "expanded": null,
+      "label": "Close",
+      "tag": "BUTTON",
+      "type": "button"
+    }
+  ],
+  "headings": [
+    {
+      "font": "Archivo, sans-serif",
+      "height": 28.296875,
+      "line": "28.3px",
+      "size": "22px",
+      "tag": "H2",
+      "text": "",
+      "weight": "700",
+      "width": 326,
+      "x": 406.75,
+      "y": 396.3515625
+    },
+    {
+      "font": "Archivo, sans-serif",
+      "height": 59.4296875,
+      "line": "0px",
+      "size": "33px",
+      "tag": "H1",
+      "text": "",
+      "weight": "700",
+      "width": 135.75,
+      "x": 127.125,
+      "y": 48.9765625
+    },
+    {
+      "font": "Archivo, sans-serif",
+      "height": 84.890625,
+      "line": "42.45px",
+      "size": "33px",
+      "tag": "H2",
+      "text": "Your hair, but better.",
+      "weight": "700",
+      "width": 316.5,
+      "x": 36.75,
+      "y": 517.40625
+    },
+    {
+      "font": "Archivo, sans-serif",
+      "height": 84.890625,
+      "line": "42.45px",
+      "size": "33px",
+      "tag": "H2",
+      "text": "Keep things simple.",
+      "weight": "700",
+      "width": 316.5,
+      "x": 426.75,
+      "y": 517.40625
+    },
+    {
+      "font": "Archivo, sans-serif",
+      "height": 42.4453125,
+      "line": "42.45px",
+      "size": "33px",
+      "tag": "H2",
+      "text": "So fresh, so clean.",
+      "weight": "700",
+      "width": 299.84375,
+      "x": 816.75,
+      "y": 524.75
+    },
+    {
+      "font": "Archivo, sans-serif",
+      "height": 56.59375,
+      "line": "28.3px",
+      "size": "22px",
+      "tag": "H2",
+      "text": "Meet the internet's favorite skincare.",
+      "weight": "700",
+      "width": 358.5,
+      "x": 15.75,
+      "y": 871.546875
+    },
+    {
+      "font": "Archivo, sans-serif",
+      "height": 16.9765625,
+      "line": "16.98px",
+      "size": "13.2px",
+      "tag": "H3",
+      "text": "Face Moisturizer",
+      "weight": "700",
+      "width": 128.25,
+      "x": 37.75,
+      "y": 1175.5546875
+    },
+    {
+      "font": "Archivo, sans-serif",
+      "height": 16.9765625,
+      "line": "16.98px",
+      "size": "13.2px",
+      "tag": "H3",
+      "text": "Eye Stick 2.0",
+      "weight": "700",
+      "width": 128.25,
+      "x": 224,
+      "y": 1175.5546875
+    },
+    {
+      "font": "Archivo, sans-serif",
+      "height": 33.953125,
+      "line": "16.98px",
+      "size": "13.2px",
+      "tag": "H3",
+      "text": "Face Wash - Travel Size",
+      "weight": "700",
+      "width": 128.25,
+      "x": 37.75,
+      "y": 1543.1328125
+    },
+    {
+      "font": "Archivo, sans-serif",
+      "height": 16.9765625,
+      "line": "16.98px",
+      "size": "13.2px",
+      "tag": "H3",
+      "text": "Face Wash",
+      "weight": "700",
+      "width": 128.25,
+      "x": 224,
+      "y": 1543.1328125
+    },
+    {
+      "font": "Archivo, sans-serif",
+      "height": 82.875,
+      "line": "27.625px",
+      "size": "18.7px",
+      "tag": "H3",
+      "text": "\"The formulas are sophisticated. They have an effortless quality to them.\"",
+      "weight": "700",
+      "width": 328.75,
+      "x": 31.5,
+      "y": 1830.9453125
+    },
+    {
+      "font": "Archivo, sans-serif",
+      "height": 82.875,
+      "line": "27.625px",
+      "size": "18.7px",
+      "tag": "H3",
+      "text": "\"Affordable and a genuinely handsome addition to your shower ledge.\"",
+      "weight": "700",
+      "width": 328.75,
+      "x": 390,
+      "y": 1830.9453125
+    },
+    {
+      "font": "Archivo, sans-serif",
+      "height": 82.875,
+      "line": "27.625px",
+      "size": "18.7px",
+      "tag": "H3",
+      "text": "\"Easily cleans dirt and grime without drying skin at a price that can’t be beaten.\"",
+      "weight": "700",
+      "width": 328.75,
+      "x": 748.5,
+      "y": 1830.9453125
+    },
+    {
+      "font": "Archivo, sans-serif",
+      "height": 82.875,
+      "line": "27.625px",
+      "size": "18.7px",
+      "tag": "H3",
+      "text": "\"Perfect soothing hydration for after a long run or a day out in the sun.\"",
+      "weight": "700",
+      "width": 328.75,
+      "x": 1107,
+      "y": 1830.9453125
+    },
+    {
+      "font": "Archivo, sans-serif",
+      "height": 56.59375,
+      "line": "56.6px",
+      "size": "44px",
+      "tag": "H2",
+      "text": "Hair.",
+      "weight": "700",
+      "width": 99.046875,
+      "x": 55.75,
+      "y": 2438.453125
+    },
+    {
+      "font": "Archivo, sans-serif",
+      "height": 56.59375,
+      "line": "56.6px",
+      "size": "44px",
+      "tag": "H2",
+      "text": "Body.",
+      "weight": "700",
+      "width": 121.484375,
+      "x": 55.75,
+      "y": 3257.578125
+    },
+    {
+      "font": "Archivo, sans-serif",
+      "height": 56.59375,
+      "line": "56.6px",
+      "size": "44px",
+      "tag": "H2",
+      "text": "Face.",
+      "weight": "700",
+      "width": 119.203125,
+      "x": 55.75,
+      "y": 4048.953125
+    },
+    {
+      "font": "Archivo, sans-serif",
+      "height": 56.59375,
+      "line": "56.6px",
+      "size": "44px",
+      "tag": "H2",
+      "text": "Kits.",
+      "weight": "700",
+      "width": 99.96875,
+      "x": 55.75,
+      "y": 4876.8671875
+    },
+    {
+      "font": "Archivo, sans-serif",
+      "height": 16.9765625,
+      "line": "16.98px",
+      "size": "13.2px",
+      "tag": "H3",
+      "text": "Body Duo",
+      "weight": "700",
+      "width": 128.25,
+      "x": 37.75,
+      "y": 5508.375
+    },
+    {
+      "font": "Archivo, sans-serif",
+      "height": 16.9765625,
+      "line": "16.98px",
+      "size": "13.2px",
+      "tag": "H3",
+      "text": "Face and Body Kit",
+      "weight": "700",
+      "width": 128.25,
+      "x": 224,
+      "y": 5508.375
+    },
+    {
+      "font": "Archivo, sans-serif",
+      "height": 16.9765625,
+      "line": "16.98px",
+      "size": "13.2px",
+      "tag": "H3",
+      "text": "Hair and Body Kit",
+      "weight": "700",
+      "width": 128.25,
+      "x": 37.75,
+      "y": 5881
+    },
+    {
+      "font": "Archivo, sans-serif",
+      "height": 16.9765625,
+      "line": "16.98px",
+      "size": "13.2px",
+      "tag": "H3",
+      "text": "Face Kit",
+      "weight": "700",
+      "width": 128.25,
+      "x": 224,
+      "y": 5881
+    },
+    {
+      "font": "Archivo, sans-serif",
+      "height": 339.5625,
+      "line": "42.45px",
+      "size": "33px",
+      "tag": "H2",
+      "text": "We make the world's best-smelling men's products. They're 100% vegan, no harmful chemicals and made in the USA.",
+      "weight": "700",
+      "width": 318.5,
+      "x": 35.75,
+      "y": 6157.2109375
+    },
+    {
+      "font": "Archivo, sans-serif",
+      "height": 27.625,
+      "line": "27.625px",
+      "size": "18.7px",
+      "tag": "H3",
+      "text": "Natural ingredients that work.",
+      "weight": "700",
+      "width": 306,
+      "x": 42,
+      "y": 6686.328125
+    },
+    {
+      "font": "Archivo, sans-serif",
+      "height": 27.625,
+      "line": "27.625px",
+      "size": "18.7px",
+      "tag": "H3",
+      "text": "Fast, free shipping in the USA.",
+      "weight": "700",
+      "width": 306,
+      "x": 42,
+      "y": 6964.7578125
+    },
+    {
+      "font": "Archivo, sans-serif",
+      "height": 27.625,
+      "line": "27.625px",
+      "size": "18.7px",
+      "tag": "H3",
+      "text": "More than 1000 5-star reviews.",
+      "weight": "700",
+      "width": 306,
+      "x": 42,
+      "y": 7243.1875
+    },
+    {
+      "font": "Archivo, sans-serif",
+      "height": 27.625,
+      "line": "27.625px",
+      "size": "18.7px",
+      "tag": "H3",
+      "text": "Quality products at a fair price.",
+      "weight": "700",
+      "width": 306,
+      "x": 42,
+      "y": 7521.6171875
+    },
+    {
+      "font": "Archivo, sans-serif",
+      "height": 56.59375,
+      "line": "28.3px",
+      "size": "22px",
+      "tag": "H2",
+      "text": "Indulge in some light bathroom reading.",
+      "weight": "700",
+      "width": 358.5,
+      "x": 15.75,
+      "y": 7731.4921875
+    },
+    {
+      "font": "Archivo, sans-serif",
+      "height": 84.890625,
+      "line": "28.3px",
+      "size": "22px",
+      "tag": "H3",
+      "text": "Certified cruelty-free: we've joined Leaping Bunny",
+      "weight": "700",
+      "width": 293.5,
+      "x": 48.25,
+      "y": 8079.09375
+    },
+    {
+      "font": "Archivo, sans-serif",
+      "height": 56.59375,
+      "line": "28.3px",
+      "size": "22px",
+      "tag": "H3",
+      "text": "Everything you need to know about Eye Stick 2.0",
+      "weight": "700",
+      "width": 293.5,
+      "x": 420.75,
+      "y": 8079.09375
+    },
+    {
+      "font": "Archivo, sans-serif",
+      "height": 56.59375,
+      "line": "28.3px",
+      "size": "22px",
+      "tag": "H3",
+      "text": "5 new year’s resolutions for 2022",
+      "weight": "700",
+      "width": 293.5,
+      "x": 793.25,
+      "y": 8079.09375
+    },
+    {
+      "font": "Archivo, sans-serif",
+      "height": 84.890625,
+      "line": "42.45px",
+      "size": "33px",
+      "tag": "H2",
+      "text": "Get 10% off your first order.",
+      "weight": "700",
+      "width": 310,
+      "x": 40,
+      "y": 8473.46875
+    },
+    {
+      "font": "Archivo, sans-serif",
+      "height": 22.640625,
+      "line": "22.64px",
+      "size": "17.6px",
+      "tag": "H2",
+      "text": "Shop",
+      "weight": "700",
+      "width": 310,
+      "x": 40,
+      "y": 8750.109375
+    },
+    {
+      "font": "Archivo, sans-serif",
+      "height": 22.640625,
+      "line": "22.64px",
+      "size": "17.6px",
+      "tag": "H2",
+      "text": "About",
+      "weight": "700",
+      "width": 310,
+      "x": 40,
+      "y": 9023.34375
+    },
+    {
+      "font": "Archivo, sans-serif",
+      "height": 22.640625,
+      "line": "22.64px",
+      "size": "17.6px",
+      "tag": "H2",
+      "text": "Our mission",
+      "weight": "700",
+      "width": 310,
+      "x": 40,
+      "y": 9296.578125
+    }
+  ],
+  "links": [
+    {
+      "text": "Skip to content",
+      "url": "https://theme-refresh-demo.myshopify.com/#MainContent"
+    },
+    {
+      "text": "",
+      "url": "https://theme-refresh-demo.myshopify.com/collections/all"
+    },
+    {
+      "text": "Hair",
+      "url": "https://theme-refresh-demo.myshopify.com/collections/hair"
+    },
+    {
+      "text": "Body",
+      "url": "https://theme-refresh-demo.myshopify.com/collections/body"
+    },
+    {
+      "text": "Face",
+      "url": "https://theme-refresh-demo.myshopify.com/collections/face"
+    },
+    {
+      "text": "Kits",
+      "url": "https://theme-refresh-demo.myshopify.com/collections/kits"
+    },
+    {
+      "text": "",
+      "url": "https://theme-refresh-demo.myshopify.com/pages/our-story"
+    },
+    {
+      "text": "",
+      "url": "https://theme-refresh-demo.myshopify.com/blogs/news"
+    },
+    {
+      "text": "",
+      "url": "https://theme-refresh-demo.myshopify.com/pages/contact"
+    },
+    {
+      "text": "",
+      "url": "https://theme-refresh-demo.myshopify.com/"
+    },
+    {
+      "text": "Cart",
+      "url": "https://theme-refresh-demo.myshopify.com/cart"
+    },
+    {
+      "text": "Shop shampoo",
+      "url": "https://theme-refresh-demo.myshopify.com/products/shampoo-2"
+    },
+    {
+      "text": "Shop hair",
+      "url": "https://theme-refresh-demo.myshopify.com/collections/hair"
+    },
+    {
+      "text": "Shop body",
+      "url": "https://theme-refresh-demo.myshopify.com/collections/body"
+    },
+    {
+      "text": "Face Moisturizer",
+      "url": "https://theme-refresh-demo.myshopify.com/products/face-moisturizer"
+    },
+    {
+      "text": "Eye Stick 2.0",
+      "url": "https://theme-refresh-demo.myshopify.com/products/eye-stick-2-0"
+    },
+    {
+      "text": "Face Wash - Travel Size",
+      "url": "https://theme-refresh-demo.myshopify.com/products/face-wash-travel-size"
+    },
+    {
+      "text": "Face Wash",
+      "url": "https://theme-refresh-demo.myshopify.com/products/face-wash"
+    },
+    {
+      "text": "Shop hair",
+      "url": "https://theme-refresh-demo.myshopify.com/collections/hair"
+    },
+    {
+      "text": "Shop body",
+      "url": "https://theme-refresh-demo.myshopify.com/collections/body"
+    },
+    {
+      "text": "Shop face",
+      "url": "https://theme-refresh-demo.myshopify.com/collections/face"
+    },
+    {
+      "text": "Shop kits",
+      "url": "https://theme-refresh-demo.myshopify.com/collections/kits"
+    },
+    {
+      "text": "Body Duo",
+      "url": "https://theme-refresh-demo.myshopify.com/products/body-duo"
+    },
+    {
+      "text": "Face and Body Kit",
+      "url": "https://theme-refresh-demo.myshopify.com/products/bigger-3-kit-2"
+    },
+    {
+      "text": "Hair and Body Kit",
+      "url": "https://theme-refresh-demo.myshopify.com/products/shower-kit"
+    },
+    {
+      "text": "Face Kit",
+      "url": "https://theme-refresh-demo.myshopify.com/products/face-kit"
+    },
+    {
+      "text": "View all",
+      "url": "https://theme-refresh-demo.myshopify.com/blogs/news"
+    },
+    {
+      "text": "Certified cruelty-free: we've joined Leaping Bunny",
+      "url": "https://theme-refresh-demo.myshopify.com/blogs/news/certified-cruelty-free-huron-joins-the-leaping-bunny-program"
+    },
+    {
+      "text": "Everything you need to know about Eye Stick 2.0",
+      "url": "https://theme-refresh-demo.myshopify.com/blogs/news/everything-you-need-to-know-about-eye-stick-2-0"
+    },
+    {
+      "text": "5 new year’s resolutions for 2022",
+      "url": "https://theme-refresh-demo.myshopify.com/blogs/news/5-good-new-year-s-resolutions-for-2022"
+    },
+    {
+      "text": "Hair",
+      "url": "https://theme-refresh-demo.myshopify.com/collections/hair"
+    },
+    {
+      "text": "Body",
+      "url": "https://theme-refresh-demo.myshopify.com/collections/body"
+    },
+    {
+      "text": "Face",
+      "url": "https://theme-refresh-demo.myshopify.com/collections/face"
+    },
+    {
+      "text": "Kits",
+      "url": "https://theme-refresh-demo.myshopify.com/collections/kits"
+    },
+    {
+      "text": "Our story",
+      "url": "https://theme-refresh-demo.myshopify.com/pages/our-story"
+    },
+    {
+      "text": "Shipping and returns",
+      "url": "https://theme-refresh-demo.myshopify.com/pages/shipping-and-returns"
+    },
+    {
+      "text": "Contact",
+      "url": "https://theme-refresh-demo.myshopify.com/pages/contact"
+    },
+    {
+      "text": "Blog",
+      "url": "https://theme-refresh-demo.myshopify.com/blogs/news"
+    },
+    {
+      "text": "theme-refresh-demo",
+      "url": "https://theme-refresh-demo.myshopify.com/"
+    }
+  ],
+  "sections": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--16044337955068__1650475219262621a2",
+      "rect": {
+        "height": 708.140625,
+        "width": 390,
+        "x": 0,
+        "y": 118.40625
+      },
+      "tag": "SECTION",
+      "text": "Your hair, but better.\nLather up with our newest shampoo for clean, strong, and healthy hair.\nShop shampoo\nKeep things simple.\nBuild an easy-care hair routine you'll actually want "
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--16044337955068__featured_collection",
+      "rect": {
+        "height": 910.9765625,
+        "width": 390,
+        "x": 0,
+        "y": 826.546875
+      },
+      "tag": "SECTION",
+      "text": "Meet the internet's favorite skincare.\nFace Moisturizer\nRegular price\n$16.00\nAdd to cart\nEye Stick 2.0\nRegular price\n$18.00\nAdd to cart\nSale\nFace Wash - Travel Size\nRegular price\n$"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--16044337955068__1650906547c6f40b2a",
+      "rect": {
+        "height": 299.796875,
+        "width": 390,
+        "x": 0,
+        "y": 1737.5234375
+      },
+      "tag": "SECTION",
+      "text": "\"The formulas are sophisticated. They have an effortless quality to them.\"\n\"Affordable and a genuinely handsome addition to your shower ledge.\"\n\"Easily cleans dirt and grime withou"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--16044337955068__165047683886f3d6d6",
+      "rect": {
+        "height": 823.4765625,
+        "width": 390,
+        "x": 0,
+        "y": 2037.3203125
+      },
+      "tag": "DIV",
+      "text": "Hair.\n\nStart from the top: great hair starts with a healthy scalp. We’ve got you covered with a range of expert formulas to keep your hair in tip-top shape and your style in mint c"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--16044337955068__16504767252779d85d",
+      "rect": {
+        "height": 791.375,
+        "width": 390,
+        "x": 0,
+        "y": 2860.796875
+      },
+      "tag": "DIV",
+      "text": "Body.\n\nCaring for your body shouldn’t start and end with a hot shower. Show it some love with powerhouse formulas to keep your skin clean and healthy.\n\nShop body"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--16044337955068__165047652283ef13bf",
+      "rect": {
+        "height": 791.375,
+        "width": 390,
+        "x": 0,
+        "y": 3652.171875
+      },
+      "tag": "DIV",
+      "text": "Face.\n\nLet’s face it. A lot of men just aren’t that into skincare. We’re going to change all that. Because when you look great, you feel great. It’s that simple.\n\nShop face"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--16044337955068__16504769644ec2dade",
+      "rect": {
+        "height": 827.9140625,
+        "width": 390,
+        "x": 0,
+        "y": 4443.546875
+      },
+      "tag": "DIV",
+      "text": "Kits.\n\nBundle up and save on our best combo kits for face, body, and hair. These thoughtful combinations have everything you need to look great and feel fresh, day after day.\n\nShop"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--16044337955068__1650476970b2a3fab3",
+      "rect": {
+        "height": 776.25,
+        "width": 390,
+        "x": 0,
+        "y": 5287.2109375
+      },
+      "tag": "SECTION",
+      "text": "Sale\nBody Duo\nRegular price\n$28.00 \nSale price\n$26.00\nChoose options\nFace and Body Kit\nRegular price\n$41.00\nChoose options\nHair and Body Kit\nRegular price\n$39.00\nChoose options\nFac"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--16044337955068__16504773614ee3d75e",
+      "rect": {
+        "height": 478.3125,
+        "width": 390,
+        "x": 0,
+        "y": 6063.4609375
+      },
+      "tag": "SECTION",
+      "text": "WHY CHOOSE REFRESH?\n\nWe make the world's best-smelling men's products. They're 100% vegan, no harmful chemicals and made in the USA."
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--16044337955068__multicolumn",
+      "rect": {
+        "height": 1144.71875,
+        "width": 390,
+        "x": 0,
+        "y": 6541.7734375
+      },
+      "tag": "SECTION",
+      "text": "Natural ingredients that work.\n\nClinically tested, allergy tested, and won’t irritate skin.\n\nFast, free shipping in the USA.\n\nWe offer fast, free shipping on all orders over $40.\n\n"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--16044337955068__1650477363cddf34c9",
+      "rect": {
+        "height": 741.9765625,
+        "width": 390,
+        "x": 0,
+        "y": 7686.4921875
+      },
+      "tag": "SECTION",
+      "text": "Indulge in some light bathroom reading.\nView all\nCertified cruelty-free: we've joined Leaping Bunny\nAPRIL 21, 2022\n\nWe’re excited to announce that we are now Leaping Bunny certifie"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "gap": "normal",
+      "grid": "none",
+      "id": "shopify-section-template--16044337955068__1650477665daecd0d5",
+      "rect": {
+        "height": 276.640625,
+        "width": 390,
+        "x": 0,
+        "y": 8428.46875
+      },
+      "tag": "SECTION",
+      "text": "Get 10% off your first order.\n\nPlus get early access to new launches and our best self-care tips.\n\nEmail"
+    }
+  ],
+  "title": "theme-refresh-demo",
+  "url": "https://theme-refresh-demo.myshopify.com/",
+  "viewport": {
+    "dpr": 1,
+    "height": 844,
+    "width": 390
+  },
+  "formGroups": [],
+  "grids": [
+    {
+      "className": "slideshow banner banner--medium grid grid--1-col slider slider--everywhere banner--mobile-bottom",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 662.140625,
+      "tag": "DIV",
+      "width": 390
+    },
+    {
+      "className": "slideshow__slide grid__item grid--1-col slider__slide",
+      "columns": "none",
+      "display": "flex",
+      "gap": "normal",
+      "height": 662.140625,
+      "tag": "DIV",
+      "width": 390
+    },
+    {
+      "className": "slideshow__slide grid__item grid--1-col slider__slide",
+      "columns": "none",
+      "display": "flex",
+      "gap": "normal",
+      "height": 662.140625,
+      "tag": "DIV",
+      "width": 390
+    },
+    {
+      "className": "slideshow__slide grid__item grid--1-col slider__slide",
+      "columns": "none",
+      "display": "flex",
+      "gap": "normal",
+      "height": 662.140625,
+      "tag": "DIV",
+      "width": 390
+    },
+    {
+      "className": "grid product-grid contains-card grid--4-col-desktop grid--2-col-tablet-down",
+      "columns": "none",
+      "display": "flex",
+      "gap": "14px",
+      "height": 738.1328125,
+      "tag": "UL",
+      "width": 358.5
+    },
+    {
+      "className": "multicolumn-list contains-content-container grid grid--1-col-tablet-down grid--4-col-desktop slider slider--mobile grid--peek",
+      "columns": "none",
+      "display": "flex",
+      "gap": "14px",
+      "height": 162.796875,
+      "tag": "UL",
+      "width": 390
+    },
+    {
+      "className": "image-with-text__grid grid grid--gapless grid--1-col grid--2-col-tablet image-with-text__grid--reverse",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 778.4765625,
+      "tag": "DIV",
+      "width": 358.5
+    },
+    {
+      "className": "image-with-text__grid grid grid--gapless grid--1-col grid--3-col-tablet",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 746.375,
+      "tag": "DIV",
+      "width": 358.5
+    },
+    {
+      "className": "image-with-text__grid grid grid--gapless grid--1-col grid--2-col-tablet image-with-text__grid--reverse",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 746.375,
+      "tag": "DIV",
+      "width": 358.5
+    },
+    {
+      "className": "image-with-text__grid grid grid--gapless grid--1-col grid--3-col-tablet",
+      "columns": "none",
+      "display": "flex",
+      "gap": "0px",
+      "height": 782.9140625,
+      "tag": "DIV",
+      "width": 358.5
+    },
+    {
+      "className": "grid product-grid contains-card grid--4-col-desktop grid--2-col-tablet-down",
+      "columns": "none",
+      "display": "flex",
+      "gap": "14px",
+      "height": 731.25,
+      "tag": "UL",
+      "width": 358.5
+    },
+    {
+      "className": "multicolumn-list contains-content-container grid grid--1-col-tablet-down grid--4-col-desktop",
+      "columns": "none",
+      "display": "flex",
+      "gap": "14px",
+      "height": 1099.71875,
+      "tag": "UL",
+      "width": 390
+    },
+    {
+      "className": "blog__posts articles-wrapper contains-card grid grid--peek grid--2-col-tablet grid--3-col-desktop slider slider--tablet",
+      "columns": "none",
+      "display": "flex",
+      "gap": "14px",
+      "height": 472.984375,
+      "tag": "UL",
+      "width": 390
+    },
+    {
+      "className": "blog__post grid__item article slider__slide slider__slide--full-width",
+      "columns": "none",
+      "display": "flex",
+      "gap": "normal",
+      "height": 472.984375,
+      "tag": "LI",
+      "width": 358.5
+    },
+    {
+      "className": "blog__post grid__item article slider__slide slider__slide--full-width",
+      "columns": "none",
+      "display": "flex",
+      "gap": "normal",
+      "height": 472.984375,
+      "tag": "LI",
+      "width": 358.5
+    }
+  ],
+  "images": [
+    {
+      "alt": "",
+      "complete": true,
+      "naturalWidth": 390,
+      "rect": {
+        "height": 357,
+        "width": 390
+      }
+    },
+    {
+      "alt": "Shampoo, conditioner, hair gel, and hair styler bottles are lined up against a deep blue background. ",
+      "complete": true,
+      "naturalWidth": 390,
+      "rect": {
+        "height": 357,
+        "width": 390
+      }
+    },
+    {
+      "alt": "Left image shows shower gel getting pumped onto a red shower loofah. Right image shows a man lathering up with the loofah in the shower. ",
+      "complete": true,
+      "naturalWidth": 390,
+      "rect": {
+        "height": 357,
+        "width": 390
+      }
+    },
+    {
+      "alt": "Face Moisturizer",
+      "complete": true,
+      "naturalWidth": 177,
+      "rect": {
+        "height": 179.21875,
+        "width": 136.6484375
+      }
+    },
+    {
+      "alt": "Face Moisturizer",
+      "complete": true,
+      "naturalWidth": 177,
+      "rect": {
+        "height": 179.21875,
+        "width": 136.6484375
+      }
+    },
+    {
+      "alt": "Under Eye Cream Serum white bottle against grey background",
+      "complete": true,
+      "naturalWidth": 177,
+      "rect": {
+        "height": 179.21875,
+        "width": 136.6484375
+      }
+    },
+    {
+      "alt": "Eye Stick 2.0",
+      "complete": true,
+      "naturalWidth": 177,
+      "rect": {
+        "height": 179.21875,
+        "width": 136.6484375
+      }
+    },
+    {
+      "alt": "Exfoliate face cleanser travel size face wash for men ",
+      "complete": true,
+      "naturalWidth": 177,
+      "rect": {
+        "height": 179.21875,
+        "width": 136.6484375
+      }
+    },
+    {
+      "alt": "Face Wash - Travel Size",
+      "complete": true,
+      "naturalWidth": 177,
+      "rect": {
+        "height": 179.21875,
+        "width": 136.6484375
+      }
+    },
+    {
+      "alt": "Face Wash for Men white bottle against grey",
+      "complete": true,
+      "naturalWidth": 177,
+      "rect": {
+        "height": 179.21875,
+        "width": 136.6484375
+      }
+    },
+    {
+      "alt": "Face Wash",
+      "complete": true,
+      "naturalWidth": 177,
+      "rect": {
+        "height": 179.21875,
+        "width": 136.6484375
+      }
+    },
+    {
+      "alt": "Forbes",
+      "complete": true,
+      "naturalWidth": 359,
+      "rect": {
+        "height": 43.171875,
+        "width": 172.0546875
+      }
+    }
+  ],
+  "bodyText": "Skip to content\n\nFree shipping on orders $40+\n\nHair\nBody\nFace\nKits\nAbout\nTwitter\nFacebook\nInstagram\nTikTok\nYouTube\nCart\nYour hair, but better.\nLather up with our newest shampoo for clean, strong, and healthy hair.\nShop shampoo\nKeep things simple.\nBuild an easy-care hair routine you'll actually want to follow.\nShop hair\nSo fresh, so clean.\nGet a quality clean with powerhouse formulas to keep your skin smelling fresh and looking healthy.\nShop body\n1\n/\nof\n3\nMeet the internet's favorite skincare.\nFace Moisturizer\nRegular price\n$16.00\nAdd to cart\nEye Stick 2.0\nRegular price\n$18.00\nAdd to cart\nSale\nFace Wash - Travel Size\nRegular price\n$10.00 \nSale price\n$5.00\nAdd to cart\nFace Wash\nRegular price\n$14.00\nAdd to cart\n\"The formulas are sophisticated. They have an effortless quality to them.\"\n\"Affordable and a genuinely handsome addition to your shower ledge.\"\n\"Easily cleans dirt and grime without drying skin at a price that can’t be beaten.\"\n\"Perfect soothing hydration for after a long run or a day out in the sun.\"\n1\n/\nof\n4\nHair.\n\nStart from the top: great hair starts with a healthy scalp. We’ve got you covered with a range of expert formulas to keep your hair in tip-top shape and your style in mint condition.\n\nShop hair\nBody.\n\nCaring for your body shouldn’t start and end with a hot shower. Show it some love with powerhouse formulas to keep your skin clean and healthy.\n\nShop body\nFace.\n\nLet’s face it. A lot of men just aren’t that into skincare. We’re going to change all that. Because when you look great, you feel great. It’s that simple.\n\nShop face\nKits.\n\nBundle up and save on our best combo kits for face, body, and hair. These thoughtful combinations have everything you need to look great and feel fresh, day after day.\n\nShop kits\nSale\nBody Duo\nRegular price\n$28.00 \nSale price\n$26.00\nChoose options\nFace and Body Kit\nRegular price\n$41.00\nChoose options\nHair and Body Kit\nRegular price\n$39.00\nChoose options\nFace Kit\nRegular price\n$45.00\nAdd to cart\n\nWHY CHOOSE REFRESH?\n\nWe make the world's best-smelling men's products. They're 100% vegan, no harmful chemicals and made in the USA.\nNatural ingredients that work.\n\nClinically tested, allergy tested, and won’t irritate skin.\n\nFast, free shipping in the USA.\n\nWe offer fast, free shipping on all orders over $40.\n\nMore than 1000 5-star reviews.\n\nOur customers love us! Try our products and you’ll see why.\n\nQuality products at a fair price.\n\nLook good and smell fresh without ever breaking the bank.\n\nIndulge in some light bathroom reading.\nView all\nCertified cruelty-free: we've joined Leaping Bunny\nAPRIL 21, 2022\n\nWe’re excited to announce that we are now Leaping Bunny certified as a cruelty-free brand.\n\nEverything you need to know about Eye Stick 2.0\nAPRIL 21, 2022\n\nWhat it is, how to use it, and how it'll keep you looking and feeling your best for years to come.\n\n5 new year’s resolutions for 2022\nAPRIL 21, 2022\n\nWe got specific, so you don’t have to. Consider these resolutions to kick off 2022!\n\n1\n/\nof\n3\nGet 10% off your first order.\n\nPlus get early access to new launches and our best self-care tips.\n\nEmail\nShop\nHair\nBody\nFace\nKits\nAbout\nOur story\nShipping and returns\nContact\nBlog\nOur mission\n\nWe make the internet's favorite men's products. No harmful chemicals and made in the USA.\n\nTwitter\nFacebook\nInstagram\nTikTok\nYouTube\n© 2026, theme-refresh-demo Powered by Shopify"
+}

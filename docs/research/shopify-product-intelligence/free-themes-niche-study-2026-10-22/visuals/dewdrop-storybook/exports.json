@@ -1,0 +1,767 @@
+[
+  {
+    "scene": "01-home-top",
+    "title": "Home · opening",
+    "device": "desktop",
+    "file": "images/01-home-top-desktop.png",
+    "capturedAt": "2026-10-23T01:57:14.203Z",
+    "viewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1000,
+    "capture": "full-page",
+    "bytes": 738797,
+    "sha256": "18173fdcfbacc7743b1b5e0ab96896a2871814b5b3a364b9aaf6d0f57cd2b671"
+  },
+  {
+    "scene": "01-home-top",
+    "title": "Home · opening",
+    "device": "tablet",
+    "file": "images/01-home-top-tablet.png",
+    "capturedAt": "2026-10-23T01:57:14.305Z",
+    "viewport": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "width": 834,
+    "height": 1112,
+    "capture": "full-page",
+    "bytes": 392525,
+    "sha256": "88bdf47ceb69409c435ff2c515b3f8bef6fc48baee0f68be19f6f5c1d278c40e"
+  },
+  {
+    "scene": "01-home-top",
+    "title": "Home · opening",
+    "device": "mobile",
+    "file": "images/01-home-top-mobile.png",
+    "capturedAt": "2026-10-23T01:57:14.400Z",
+    "viewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 1359,
+    "capture": "full-page",
+    "bytes": 241834,
+    "sha256": "957df9ce9019da8a8bcf3540711a8f1a1a5777e61fd613a4c8fdcdfb4c048e28"
+  },
+  {
+    "scene": "02-home-bottom",
+    "title": "Home · continuation",
+    "device": "desktop",
+    "file": "images/02-home-bottom-desktop.png",
+    "capturedAt": "2026-10-23T01:57:14.637Z",
+    "viewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1966,
+    "capture": "full-page",
+    "bytes": 1509744,
+    "sha256": "38f709b0d0ac43e4a06b8579503e855bf02f588de4bd6dc5e6ab83be9439e1d0"
+  },
+  {
+    "scene": "02-home-bottom",
+    "title": "Home · continuation",
+    "device": "tablet",
+    "file": "images/02-home-bottom-tablet.png",
+    "capturedAt": "2026-10-23T01:57:14.772Z",
+    "viewport": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "width": 834,
+    "height": 1891,
+    "capture": "full-page",
+    "bytes": 700342,
+    "sha256": "7a566680d89ddf07b6b707b82c92676906077a6d9b70223e5598a91c10fc9672"
+  },
+  {
+    "scene": "02-home-bottom",
+    "title": "Home · continuation",
+    "device": "mobile",
+    "file": "images/02-home-bottom-mobile.png",
+    "capturedAt": "2026-10-23T01:57:14.880Z",
+    "viewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 2575,
+    "capture": "full-page",
+    "bytes": 424775,
+    "sha256": "4c41dbe4ee75820f645537b60958b76465a8d81c0c6629a90edbe78478240575"
+  },
+  {
+    "scene": "03-collection",
+    "title": "Shop by use",
+    "device": "desktop",
+    "file": "images/03-collection-desktop.png",
+    "capturedAt": "2026-10-23T01:57:15.012Z",
+    "viewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1787,
+    "capture": "full-page",
+    "bytes": 321693,
+    "sha256": "61ace815da57e4b226b2ba8edd2af803684033ba0e9f220d38a807bae78fe3c9"
+  },
+  {
+    "scene": "03-collection",
+    "title": "Shop by use",
+    "device": "tablet",
+    "file": "images/03-collection-tablet.png",
+    "capturedAt": "2026-10-23T01:57:15.129Z",
+    "viewport": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "width": 834,
+    "height": 2086,
+    "capture": "full-page",
+    "bytes": 273006,
+    "sha256": "213e65554a0ce0801848fc14cedf9813f40d7fabb1c257c27bc5b20700ed94e3"
+  },
+  {
+    "scene": "03-collection",
+    "title": "Shop by use",
+    "device": "mobile",
+    "file": "images/03-collection-mobile.png",
+    "capturedAt": "2026-10-23T01:57:15.249Z",
+    "viewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 2409,
+    "capture": "full-page",
+    "bytes": 237791,
+    "sha256": "bb7d680edcd88167ff31d8025df32323218f7a628dd4128a6aefa9f2a07909ff"
+  },
+  {
+    "scene": "04-product-selection",
+    "title": "PDP · shade selection",
+    "device": "desktop",
+    "file": "images/04-product-selection-desktop.png",
+    "capturedAt": "2026-10-23T01:57:15.422Z",
+    "viewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1147,
+    "capture": "full-page",
+    "bytes": 594035,
+    "sha256": "a4137a2caf85ada89940b0d4038ea19414db67d198d7aebc536c25d2ab9a67b4"
+  },
+  {
+    "scene": "04-product-selection",
+    "title": "PDP · shade selection",
+    "device": "tablet",
+    "file": "images/04-product-selection-tablet.png",
+    "capturedAt": "2026-10-23T01:57:15.541Z",
+    "viewport": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "width": 834,
+    "height": 1285,
+    "capture": "full-page",
+    "bytes": 356080,
+    "sha256": "7bd98eff4a08d824b8affac9b6b0946481c71ea82211d2edffbebaabbb900783"
+  },
+  {
+    "scene": "04-product-selection",
+    "title": "PDP · shade selection",
+    "device": "mobile",
+    "file": "images/04-product-selection-mobile.png",
+    "capturedAt": "2026-10-23T01:57:15.642Z",
+    "viewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 1694,
+    "capture": "full-page",
+    "bytes": 280153,
+    "sha256": "911bb5f9c58cf0ba34dd8350c01aab37c5516a7b9d6aaad33dde41f9d0e133f9"
+  },
+  {
+    "scene": "05-product-facts",
+    "title": "PDP · ingredients & use",
+    "device": "desktop",
+    "file": "images/05-product-facts-desktop.png",
+    "capturedAt": "2026-10-23T01:57:15.763Z",
+    "viewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1323,
+    "capture": "full-page",
+    "bytes": 508968,
+    "sha256": "eb172a4b54d88d29678e1ee736d3965dc2200c25147e481c67977094ac872380"
+  },
+  {
+    "scene": "05-product-facts",
+    "title": "PDP · ingredients & use",
+    "device": "tablet",
+    "file": "images/05-product-facts-tablet.png",
+    "capturedAt": "2026-10-23T01:57:15.859Z",
+    "viewport": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "width": 834,
+    "height": 1414,
+    "capture": "full-page",
+    "bytes": 316507,
+    "sha256": "4a8e1560aa6df9f682e00cf12b8c7d9cafb3f426f3671609b639c3e0ac6a52e6"
+  },
+  {
+    "scene": "05-product-facts",
+    "title": "PDP · ingredients & use",
+    "device": "mobile",
+    "file": "images/05-product-facts-mobile.png",
+    "capturedAt": "2026-10-23T01:57:15.958Z",
+    "viewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 1763,
+    "capture": "full-page",
+    "bytes": 254804,
+    "sha256": "b478d7135d6d77d32c2cd92649ef75e275cc862aea04d9221659955f6c037350"
+  },
+  {
+    "scene": "06-product-continuation",
+    "title": "PDP · your routine",
+    "device": "desktop",
+    "file": "images/06-product-continuation-desktop.png",
+    "capturedAt": "2026-10-23T01:57:16.115Z",
+    "viewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1783,
+    "capture": "full-page",
+    "bytes": 803921,
+    "sha256": "97940a56fe83d6504e6c0fc01475b0e3d5897dac9f9b33af51464c01c3d6f9cd"
+  },
+  {
+    "scene": "06-product-continuation",
+    "title": "PDP · your routine",
+    "device": "tablet",
+    "file": "images/06-product-continuation-tablet.png",
+    "capturedAt": "2026-10-23T01:57:16.257Z",
+    "viewport": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "width": 834,
+    "height": 2219,
+    "capture": "full-page",
+    "bytes": 645512,
+    "sha256": "58d8636948979e54731c6d1c7d265e8e5d8db72af968af2101b1561649c52798"
+  },
+  {
+    "scene": "06-product-continuation",
+    "title": "PDP · your routine",
+    "device": "mobile",
+    "file": "images/06-product-continuation-mobile.png",
+    "capturedAt": "2026-10-23T01:57:16.343Z",
+    "viewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 2191,
+    "capture": "full-page",
+    "bytes": 245391,
+    "sha256": "6b1c549d4d659565dd651cb21f817401c00edbf8b6e772ef9bd823c9464e41c7"
+  },
+  {
+    "scene": "07-cart",
+    "title": "Your bag",
+    "device": "desktop",
+    "file": "images/07-cart-desktop.png",
+    "capturedAt": "2026-10-23T01:57:16.448Z",
+    "viewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1336,
+    "capture": "full-page",
+    "bytes": 225338,
+    "sha256": "bc28b7287faa9f7bc02fbb98c1cc70088092e0afccbe9a5087e89800d070f379"
+  },
+  {
+    "scene": "07-cart",
+    "title": "Your bag",
+    "device": "tablet",
+    "file": "images/07-cart-tablet.png",
+    "capturedAt": "2026-10-23T01:57:16.550Z",
+    "viewport": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "width": 834,
+    "height": 2119,
+    "capture": "full-page",
+    "bytes": 220787,
+    "sha256": "228fcf7d5c432c8b1da6ae26a61bc127458cffea6e87f603c52a5445449f419e"
+  },
+  {
+    "scene": "07-cart",
+    "title": "Your bag",
+    "device": "mobile",
+    "file": "images/07-cart-mobile.png",
+    "capturedAt": "2026-10-23T01:57:16.634Z",
+    "viewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 2256,
+    "capture": "full-page",
+    "bytes": 168194,
+    "sha256": "205d61311671e60776b59c54a5453972b400bbc9b4f1a937bc27b10017c66318"
+  },
+  {
+    "scene": "08-checkout-address",
+    "title": "Checkout · address",
+    "device": "desktop",
+    "file": "images/08-checkout-address-desktop.png",
+    "capturedAt": "2026-10-23T01:57:16.713Z",
+    "viewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1516,
+    "capture": "full-page",
+    "bytes": 137152,
+    "sha256": "4ef45778a178dac7b8c6abbefca42565aac4713c5ed64d15326a3d89b5db22e1"
+  },
+  {
+    "scene": "08-checkout-address",
+    "title": "Checkout · address",
+    "device": "tablet",
+    "file": "images/08-checkout-address-tablet.png",
+    "capturedAt": "2026-10-23T01:57:16.804Z",
+    "viewport": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "width": 834,
+    "height": 2099,
+    "capture": "full-page",
+    "bytes": 132302,
+    "sha256": "c9647d411bc1865490a89d29ab7b9ac2319aa2dd9da7d50ea3e77ce5a412aa70"
+  },
+  {
+    "scene": "08-checkout-address",
+    "title": "Checkout · address",
+    "device": "mobile",
+    "file": "images/08-checkout-address-mobile.png",
+    "capturedAt": "2026-10-23T01:57:16.885Z",
+    "viewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 2102,
+    "capture": "full-page",
+    "bytes": 116208,
+    "sha256": "02dc1c0aa320b93e50d53ef758bc62ebe2ae866872a6d0cb9cf68344291e1123"
+  },
+  {
+    "scene": "13-orders",
+    "title": "Order history",
+    "device": "desktop",
+    "file": "images/13-orders-desktop.png",
+    "capturedAt": "2026-10-23T01:57:17.694Z",
+    "viewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1180,
+    "capture": "full-page",
+    "bytes": 153377,
+    "sha256": "33c81f5f40a393799ebb5ea57275b2fab5ddbd48f2a296a0c68893cf72c3fc31"
+  },
+  {
+    "scene": "13-orders",
+    "title": "Order history",
+    "device": "tablet",
+    "file": "images/13-orders-tablet.png",
+    "capturedAt": "2026-10-23T01:57:17.771Z",
+    "viewport": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "width": 834,
+    "height": 1472,
+    "capture": "full-page",
+    "bytes": 133766,
+    "sha256": "dd1f35c2019ed14c81a363213d45c8be096aff51f8be7bfe0c9249201269e7cb"
+  },
+  {
+    "scene": "13-orders",
+    "title": "Order history",
+    "device": "mobile",
+    "file": "images/13-orders-mobile.png",
+    "capturedAt": "2026-10-23T01:57:17.850Z",
+    "viewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 1822,
+    "capture": "full-page",
+    "bytes": 113370,
+    "sha256": "3851a01fa332abce5cdbb60f4a4a1e0cc2ea9b6b0686839b72de82586b364170"
+  },
+  {
+    "scene": "14-order-detail",
+    "title": "Owned order detail",
+    "device": "desktop",
+    "file": "images/14-order-detail-desktop.png",
+    "capturedAt": "2026-10-23T01:57:17.950Z",
+    "viewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1725,
+    "capture": "full-page",
+    "bytes": 176026,
+    "sha256": "ab664c2ec32971102385efc6d8d568961147fb7f5c88be81c15ed768b530e1ee"
+  },
+  {
+    "scene": "14-order-detail",
+    "title": "Owned order detail",
+    "device": "tablet",
+    "file": "images/14-order-detail-tablet.png",
+    "capturedAt": "2026-10-23T01:57:18.041Z",
+    "viewport": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "width": 834,
+    "height": 2019,
+    "capture": "full-page",
+    "bytes": 163250,
+    "sha256": "af19cc78e18603f34e66e552b662070af5dd6a290210d80de5fc0fbc2f421919"
+  },
+  {
+    "scene": "14-order-detail",
+    "title": "Owned order detail",
+    "device": "mobile",
+    "file": "images/14-order-detail-mobile.png",
+    "capturedAt": "2026-10-23T01:57:18.116Z",
+    "viewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 2328,
+    "capture": "full-page",
+    "bytes": 140972,
+    "sha256": "5adfd19e942cddf1d62f4258d6239f234997375967a3b8272fbbea8845b93ae7"
+  },
+  {
+    "scene": "15-addresses",
+    "title": "Saved addresses",
+    "device": "desktop",
+    "file": "images/15-addresses-desktop.png",
+    "capturedAt": "2026-10-23T01:57:18.185Z",
+    "viewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1747,
+    "capture": "full-page",
+    "bytes": 149131,
+    "sha256": "4de83d1a996bb160ea227f0aaf292d75e3cc164b43db4f75e636753417569dde"
+  },
+  {
+    "scene": "15-addresses",
+    "title": "Saved addresses",
+    "device": "tablet",
+    "file": "images/15-addresses-tablet.png",
+    "capturedAt": "2026-10-23T01:57:18.256Z",
+    "viewport": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "width": 834,
+    "height": 2041,
+    "capture": "full-page",
+    "bytes": 135805,
+    "sha256": "e148b739507d5e17150a5bbc43be52258d60d4ffae7c9362562b559fbd3b5c4d"
+  },
+  {
+    "scene": "15-addresses",
+    "title": "Saved addresses",
+    "device": "mobile",
+    "file": "images/15-addresses-mobile.png",
+    "capturedAt": "2026-10-23T01:57:18.317Z",
+    "viewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 2610,
+    "capture": "full-page",
+    "bytes": 123243,
+    "sha256": "c92ab11a082680e2f30f18b190cad0265dcca4adde23b3b690866aaa60a8f453"
+  },
+  {
+    "scene": "10-sign-in",
+    "title": "LetBuyy · sign in",
+    "device": "desktop",
+    "file": "images/10-sign-in-desktop.png",
+    "capturedAt": "2026-10-23T01:59:53.147Z",
+    "viewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1000,
+    "capture": "full-page",
+    "bytes": 91930,
+    "sha256": "65395c46b11a633bb018ccf951c8d8b380751703435e005edd33ef3fb2a6cc02"
+  },
+  {
+    "scene": "10-sign-in",
+    "title": "LetBuyy · sign in",
+    "device": "tablet",
+    "file": "images/10-sign-in-tablet.png",
+    "capturedAt": "2026-10-23T01:59:53.203Z",
+    "viewport": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "width": 834,
+    "height": 1112,
+    "capture": "full-page",
+    "bytes": 84235,
+    "sha256": "f83996177d6968ebc22a1f3caaabbfad956ed011cfc2afe0020925edb7fbd22b"
+  },
+  {
+    "scene": "10-sign-in",
+    "title": "LetBuyy · sign in",
+    "device": "mobile",
+    "file": "images/10-sign-in-mobile.png",
+    "capturedAt": "2026-10-23T01:59:53.259Z",
+    "viewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 1177,
+    "capture": "full-page",
+    "bytes": 67398,
+    "sha256": "ef944309885449f1b47e39396e54ae831949063ba8ca5ee650008171d1406e44"
+  },
+  {
+    "scene": "11-create-account",
+    "title": "LetBuyy · create account",
+    "device": "desktop",
+    "file": "images/11-create-account-desktop.png",
+    "capturedAt": "2026-10-23T01:59:53.320Z",
+    "viewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1235,
+    "capture": "full-page",
+    "bytes": 117994,
+    "sha256": "dbefa213e4619868d2d673e22818cd27cea0959ca01eb92f5004b8e949ca6f72"
+  },
+  {
+    "scene": "11-create-account",
+    "title": "LetBuyy · create account",
+    "device": "tablet",
+    "file": "images/11-create-account-tablet.png",
+    "capturedAt": "2026-10-23T01:59:53.373Z",
+    "viewport": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "width": 834,
+    "height": 1169,
+    "capture": "full-page",
+    "bytes": 106273,
+    "sha256": "ddcd5846a8806fc833d972f2f23e5e7951dcc3706a3f706e14d129c1a3250202"
+  },
+  {
+    "scene": "11-create-account",
+    "title": "LetBuyy · create account",
+    "device": "mobile",
+    "file": "images/11-create-account-mobile.png",
+    "capturedAt": "2026-10-23T01:59:53.427Z",
+    "viewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 1445,
+    "capture": "full-page",
+    "bytes": 89567,
+    "sha256": "ee8c8c8c5abea9ddb0f07b28343c9bd3a5c828824308ee7a2ee546736a3c2db2"
+  },
+  {
+    "scene": "09-checkout-review",
+    "title": "Checkout · review & pay",
+    "device": "desktop",
+    "file": "images/09-checkout-review-desktop.png",
+    "capturedAt": "2026-10-23T03:32:10.836Z",
+    "viewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1309,
+    "capture": "full-page",
+    "bytes": 142700,
+    "sha256": "44fbf3aa4a0df34f6b0ad2b68dacc57aa5a9b105337779a93363505c8dc60075"
+  },
+  {
+    "scene": "09-checkout-review",
+    "title": "Checkout · review & pay",
+    "device": "tablet",
+    "file": "images/09-checkout-review-tablet.png",
+    "capturedAt": "2026-10-23T03:32:10.911Z",
+    "viewport": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "width": 834,
+    "height": 1872,
+    "capture": "full-page",
+    "bytes": 137449,
+    "sha256": "f0e2c8a8da836133c5792436df1226e48c621c6e41117feeeae99291fffe20ea"
+  },
+  {
+    "scene": "09-checkout-review",
+    "title": "Checkout · review & pay",
+    "device": "mobile",
+    "file": "images/09-checkout-review-mobile.png",
+    "capturedAt": "2026-10-23T03:32:10.989Z",
+    "viewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 1727,
+    "capture": "full-page",
+    "bytes": 116966,
+    "sha256": "0b8a03609cf0c9c0dd84a14a5c0d332c132c8369c2532d9e61fed406ba473201"
+  },
+  {
+    "scene": "12-profile",
+    "title": "Profile overview",
+    "device": "desktop",
+    "file": "images/12-profile-desktop.png",
+    "capturedAt": "2026-10-23T03:32:11.061Z",
+    "viewport": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1
+    },
+    "width": 1440,
+    "height": 1617,
+    "capture": "full-page",
+    "bytes": 142049,
+    "sha256": "308a59c89677e8d368889d64e7ee3ee3091542bb31fbab16c2477e1eb9f16c65"
+  },
+  {
+    "scene": "12-profile",
+    "title": "Profile overview",
+    "device": "tablet",
+    "file": "images/12-profile-tablet.png",
+    "capturedAt": "2026-10-23T03:32:11.122Z",
+    "viewport": {
+      "width": 834,
+      "height": 1112,
+      "dpr": 1
+    },
+    "width": 834,
+    "height": 1907,
+    "capture": "full-page",
+    "bytes": 132072,
+    "sha256": "dca3ac2c129477d98527110151d1b50e2867ff38b0dda9d5abff3e1c41ffed27"
+  },
+  {
+    "scene": "12-profile",
+    "title": "Profile overview",
+    "device": "mobile",
+    "file": "images/12-profile-mobile.png",
+    "capturedAt": "2026-10-23T03:32:11.190Z",
+    "viewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1
+    },
+    "width": 390,
+    "height": 2205,
+    "capture": "full-page",
+    "bytes": 112639,
+    "sha256": "a8cfa7bdd4c275f0cf2395cd230ba654b05e742d36ce711d2bf9496b66325684"
+  }
+]

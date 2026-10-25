@@ -1,0 +1,82 @@
+[
+  {
+    "file": "assets/GEIST-OFL-LICENSE.txt",
+    "bytes": 4368,
+    "sha256": "930853ee1daa68554d9e35c8a9175affb74f699fad9a5da6ee5ebe76379d9137"
+  },
+  {
+    "file": "assets/LibreBaskerville-OFL.txt",
+    "bytes": 4542,
+    "sha256": "3624eddd4c8f8a908130a417ae7cd089c9da69899c4e0ca1a5217d0a6fae16fd"
+  },
+  {
+    "file": "assets/Lucide-LICENSE.txt",
+    "bytes": 2004,
+    "sha256": "3c57143f22dac950efebf84002e360bba5458c7b90fe583b0667aaaef1a7256e"
+  },
+  {
+    "file": "assets/SourceSans3-OFL.txt",
+    "bytes": 4579,
+    "sha256": "09746787287a289323b0ec3cff4d1a4a801331b82b7207c1e186f5d26619a392"
+  },
+  {
+    "file": "assets/field-notes-cover.png",
+    "bytes": 3184744,
+    "sha256": "04790e121b1feac6f17f940bad7601f25a9995fa5271e92324cfcea7a3bb04aa"
+  },
+  {
+    "file": "assets/font-provider.css",
+    "bytes": 1210,
+    "sha256": "d0b7f7f418e400c1228dfe241b3d644ba092b4564ba8f7e352a09061c2a04a6c"
+  },
+  {
+    "file": "assets/fonts.css",
+    "bytes": 957,
+    "sha256": "ddf977c836283a209dec36e9109a94797ca4e0ecb77490013775db3d65196ee5"
+  },
+  {
+    "file": "assets/geist-sans-latin.woff2",
+    "bytes": 28356,
+    "sha256": "1b5ebfb3a01a97343ac96873e6d59a8cb285c66012b6a1ac509cb2765e995ba8"
+  },
+  {
+    "file": "assets/letbuyy-logo.svg",
+    "bytes": 11674,
+    "sha256": "503005328241f667159cf9be50b5952745c4b88df0dd6127ed1bec9f88bc986b"
+  },
+  {
+    "file": "assets/libre-bold.ttf",
+    "bytes": 106752,
+    "sha256": "8b008ffdae31b314657cb8e28d822da09893035d06bad9b1ab53ea762549cbd1"
+  },
+  {
+    "file": "assets/libre-regular.ttf",
+    "bytes": 106728,
+    "sha256": "f5bc4341f15de5e877d8d95b6b14b33e9a3da1f8fef4ed0700ed407f096cffb6"
+  },
+  {
+    "file": "assets/notebook.png",
+    "bytes": 2308770,
+    "sha256": "566ec87064ff92d9cb484f0c4c3e851d23019c6a805d12790cb4a96ea022862b"
+  },
+  {
+    "file": "assets/small-thought-cover.png",
+    "bytes": 2802914,
+    "sha256": "dbf7aa058817f6bcc8a1b2f2ad6a8d2acf9ff31b296478b7c1d6de3651cf94ff"
+  },
+  {
+    "file": "assets/source-bold.ttf",
+    "bytes": 234640,
+    "sha256": "83a72786970a93a8c48eaead886c995676d512c0ee7164138f8ea76ea847d75c"
+  },
+  {
+    "file": "assets/source-regular.ttf",
+    "bytes": 234708,
+    "sha256": "20ab9752bd19a373dba627393b6c142e6cf8fc2f219119a8e0cb1442ef679ec5"
+  },
+  {
+    "file": "assets/source-semibold.ttf",
+    "bytes": 234680,
+    "sha256": "950e66c48e5e60c9407421d0fa601047176f17e0d22a598bbd084dde45a98be2"
+  }
+]

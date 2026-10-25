@@ -1,0 +1,64 @@
+TAP version 13
+# Subtest: letbuyy-aura: native changed-value inputs validate and project all three declared fields while base stays immutable
+ok 1 - letbuyy-aura: native changed-value inputs validate and project all three declared fields while base stays immutable
+  ---
+  duration_ms: 19.543708
+  type: 'test'
+  ...
+# Subtest: letbuyy-bloom: native changed-value inputs validate and project all three declared fields while base stays immutable
+ok 2 - letbuyy-bloom: native changed-value inputs validate and project all three declared fields while base stays immutable
+  ---
+  duration_ms: 11.896792
+  type: 'test'
+  ...
+# Subtest: letbuyy-craft: native changed-value inputs validate and project all three declared fields while base stays immutable
+ok 3 - letbuyy-craft: native changed-value inputs validate and project all three declared fields while base stays immutable
+  ---
+  duration_ms: 10.69375
+  type: 'test'
+  ...
+# Subtest: letbuyy-dawn: native changed-value inputs validate and project all three declared fields while base stays immutable
+ok 4 - letbuyy-dawn: native changed-value inputs validate and project all three declared fields while base stays immutable
+  ---
+  duration_ms: 12.589291
+  type: 'test'
+  ...
+# Subtest: letbuyy-forge: native changed-value inputs validate and project all three declared fields while base stays immutable
+ok 5 - letbuyy-forge: native changed-value inputs validate and project all three declared fields while base stays immutable
+  ---
+  duration_ms: 11.258875
+  type: 'test'
+  ...
+# Subtest: letbuyy-nova: native changed-value inputs validate and project all three declared fields while base stays immutable
+ok 6 - letbuyy-nova: native changed-value inputs validate and project all three declared fields while base stays immutable
+  ---
+  duration_ms: 17.252834
+  type: 'test'
+  ...
+# Subtest: letbuyy-refresh: native changed-value inputs validate and project all three declared fields while base stays immutable
+ok 7 - letbuyy-refresh: native changed-value inputs validate and project all three declared fields while base stays immutable
+  ---
+  duration_ms: 8.467792
+  type: 'test'
+  ...
+# Subtest: letbuyy-ride: native changed-value inputs validate and project all three declared fields while base stays immutable
+ok 8 - letbuyy-ride: native changed-value inputs validate and project all three declared fields while base stays immutable
+  ---
+  duration_ms: 8.290042
+  type: 'test'
+  ...
+# Subtest: letbuyy-summit: native changed-value inputs validate and project all three declared fields while base stays immutable
+ok 9 - letbuyy-summit: native changed-value inputs validate and project all three declared fields while base stays immutable
+  ---
+  duration_ms: 8.9495
+  type: 'test'
+  ...
+1..9
+# tests 9
+# suites 0
+# pass 9
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 832.489292

@@ -1,0 +1,537 @@
+{
+  "status": "SPECIFICATION_NOT_EXECUTED_DATABASE_OR_BROWSER_TESTS",
+  "cases": [
+    {
+      "id": "MD-01",
+      "lane": "owned-PG/integration",
+      "fixture": "Three available canonical products have sports.length 254mm,25.4cm,10in respectively; required activity/equipment supplied.",
+      "query": {
+        "length_value": 25.4,
+        "length_unit": "cm"
+      },
+      "expected": {
+        "matches": 3,
+        "equipment_length": {
+          "available": true,
+          "allowed_units": [
+            "mm",
+            "cm",
+            "m",
+            "in"
+          ]
+        },
+        "equivalentQueries": [
+          "254 mm",
+          "0.254 m",
+          "10 in"
+        ]
+      },
+      "status": "PENDING_QUALIFICATION"
+    },
+    {
+      "id": "MD-02",
+      "lane": "owned-PG/integration",
+      "fixture": "One common sports.length 67.5cm; selected canonical variant overrides whole length object to700mm.",
+      "query": {
+        "length_value": 700,
+        "length_unit": "mm"
+      },
+      "expected": {
+        "matchingVariant": "override UUID only",
+        "equipment_length": {
+          "available": true,
+          "allowed_units": [
+            "mm",
+            "cm",
+            "m",
+            "in"
+          ]
+        },
+        "negative": "67.5cm must not match the overriding variant"
+      },
+      "status": "PENDING_QUALIFICATION"
+    },
+    {
+      "id": "MD-03",
+      "lane": "owned-PG/security",
+      "fixture": "Variant A available:67.5cm,sizeS,price500; B available:70cm,sizeM,price1000.",
+      "query": {
+        "size": "M",
+        "length_value": 675,
+        "length_unit": "mm"
+      },
+      "expected": {
+        "count": 0,
+        "equipment_length": {
+          "available": false,
+          "allowed_units": []
+        },
+        "invariant": "Never combine length from A with size or price from B"
+      },
+      "status": "PENDING_QUALIFICATION"
+    },
+    {
+      "id": "MD-04",
+      "lane": "owned-PG/regression",
+      "fixture": "Same variants as MD-03.",
+      "query": {
+        "size": "M",
+        "length_value": 700,
+        "length_unit": "mm",
+        "min_price": 1000
+      },
+      "expected": {
+        "matchingVariant": "B only",
+        "equipment_length": {
+          "available": true,
+          "allowed_units": [
+            "mm",
+            "cm",
+            "m",
+            "in"
+          ]
+        }
+      },
+      "status": "PENDING_QUALIFICATION"
+    },
+    {
+      "id": "MD-05",
+      "lane": "owned-PG/integration",
+      "fixture": "Only measured variant is quantity0; another available variant has valid sports but no length.",
+      "query": {},
+      "expected": {
+        "equipment_length": {
+          "available": false,
+          "allowed_units": []
+        },
+        "invariant": "Basic sold-out visibility is unchanged; sold-out evidence never enables capability"
+      },
+      "status": "PENDING_QUALIFICATION"
+    },
+    {
+      "id": "MD-06",
+      "lane": "owned-PG/integration",
+      "fixture": "Simple product without canonical variants, stock1, valid sports.length10in.",
+      "query": {},
+      "expected": {
+        "equipment_length": {
+          "available": true,
+          "allowed_units": [
+            "mm",
+            "cm",
+            "m",
+            "in"
+          ]
+        }
+      },
+      "status": "PENDING_QUALIFICATION"
+    },
+    {
+      "id": "MD-07",
+      "lane": "owned-PG/integration",
+      "fixture": "Same simple product but stock0 orNULL.",
+      "query": {},
+      "expected": {
+        "equipment_length": {
+          "available": false,
+          "allowed_units": []
+        }
+      },
+      "status": "PENDING_QUALIFICATION"
+    },
+    {
+      "id": "MD-08",
+      "lane": "owned-PG/security",
+      "fixture": "Product mirror JSON claims available length; canonical variant rows contain no valid length witnesses.",
+      "query": {},
+      "expected": {
+        "equipment_length": {
+          "available": false,
+          "allowed_units": []
+        },
+        "invariant": "Canonical relational variant authority only; no mirror fallback"
+      },
+      "status": "PENDING_QUALIFICATION"
+    },
+    {
+      "id": "MD-09",
+      "lane": "owned-PG/security",
+      "fixture": "Missing sports; null sports; malformed sports; length.value string,zero,negative,nonfinite-equivalent or invalid unit.",
+      "query": {},
+      "expected": {
+        "equipment_length": {
+          "available": false,
+          "allowed_units": []
+        },
+        "sqlException": false
+      },
+      "status": "PENDING_QUALIFICATION"
+    },
+    {
+      "id": "MD-10",
+      "lane": "owned-PG/security",
+      "fixture": "Valid common sports length, explicit selected variant sports namespace malformed/invalid.",
+      "query": {},
+      "expected": {
+        "equipment_length": {
+          "available": false,
+          "allowed_units": []
+        },
+        "invariant": "Preserve386 invalid-selected-namespace suppression; never inherit past explicit invalid override"
+      },
+      "status": "PENDING_QUALIFICATION"
+    },
+    {
+      "id": "MD-11",
+      "lane": "owned-PG/contract",
+      "fixture": "Valid common sports and valid variant with weight only.",
+      "query": {},
+      "expected": {
+        "equipment_length": {
+          "available": true,
+          "allowed_units": [
+            "mm",
+            "cm",
+            "m",
+            "in"
+          ]
+        },
+        "invariant": "Preserve existing absent-length inheritance after full namespace validation"
+      },
+      "status": "PENDING_QUALIFICATION"
+    },
+    {
+      "id": "MD-12",
+      "lane": "owned-PG/contract",
+      "fixture": "Sports dimensions.length or gripCircumference exists, but sports.length omitted.",
+      "query": {},
+      "expected": {
+        "equipment_length": {
+          "available": false,
+          "allowed_units": []
+        },
+        "invariant": "Never infer the canonical length predicate from another measurement"
+      },
+      "status": "PENDING_QUALIFICATION"
+    },
+    {
+      "id": "MD-13",
+      "lane": "owned-PG/security",
+      "fixture": "Raw product metadata includes forged _equipment_length_mm sibling without valid sports facts.",
+      "query": {},
+      "expected": {
+        "equipment_length": {
+          "available": false,
+          "allowed_units": []
+        }
+      },
+      "status": "PENDING_QUALIFICATION"
+    },
+    {
+      "id": "MD-14",
+      "lane": "owned-PG/regression",
+      "fixture": "Only valid normalized positive length100000m available.",
+      "query": {},
+      "expected": {
+        "equipment_length": {
+          "available": true,
+          "allowed_units": [
+            "m"
+          ]
+        },
+        "invariant": "Do not advertise units requiring input above100000"
+      },
+      "status": "PENDING_QUALIFICATION"
+    },
+    {
+      "id": "MD-15",
+      "lane": "owned-PG/regression",
+      "fixture": "Only valid normalized positive length100000in available.",
+      "query": {},
+      "expected": {
+        "equipment_length": {
+          "available": true,
+          "allowed_units": [
+            "m",
+            "in"
+          ]
+        }
+      },
+      "status": "PENDING_QUALIFICATION"
+    },
+    {
+      "id": "MD-16",
+      "lane": "owned-PG/regression",
+      "fixture": "Valid positive tiny source length rounds to0 at existing0.001mm precision.",
+      "query": {},
+      "expected": {
+        "equipment_length": {
+          "available": false,
+          "allowed_units": []
+        },
+        "invariant": "No new query/rounding semantics; rounded-zero witness cannot advertise a positive representable measurement"
+      },
+      "status": "PENDING_QUALIFICATION"
+    },
+    {
+      "id": "MD-17",
+      "lane": "owned-PG/security",
+      "fixture": "Measured products are deleted,inactive,in another store,outside collection,or not in allowed product IDs.",
+      "query": {
+        "collection_id": "owned collection UUID"
+      },
+      "expected": {
+        "equipment_length": {
+          "available": false,
+          "allowed_units": []
+        },
+        "invariant": "All existing scope/search/base restrictions still apply"
+      },
+      "status": "PENDING_QUALIFICATION"
+    },
+    {
+      "id": "MD-18",
+      "lane": "owned-PG/regression",
+      "fixture": "Measured available product fails the current search,category,country,other fact or price predicate.",
+      "query": {
+        "search": "no match"
+      },
+      "expected": {
+        "equipment_length": {
+          "available": false,
+          "allowed_units": []
+        },
+        "invariant": "Capability is current fully-matched cohort, not unfiltered store or relaxed-length alternatives"
+      },
+      "status": "PENDING_QUALIFICATION"
+    },
+    {
+      "id": "MD-19",
+      "lane": "owned-PG/regression",
+      "fixture": "Measured witness exists in total matched cohort, but requested page is empty/out-of-range.",
+      "query": {
+        "page": 10000,
+        "limit": 1
+      },
+      "expected": {
+        "data": [],
+        "equipment_length": {
+          "available": true,
+          "allowed_units": [
+            "mm",
+            "cm",
+            "m",
+            "in"
+          ]
+        },
+        "invariant": "Capability covers matched cohort before pagination"
+      },
+      "status": "PENDING_QUALIFICATION"
+    },
+    {
+      "id": "MD-20",
+      "lane": "projection/Liquid/form-contract",
+      "fixture": "RPC count0,facets[],matches[],equipment_length unavailable; valid active length pair.",
+      "query": {
+        "length_value": 67.5,
+        "length_unit": "cm",
+        "page": 2,
+        "connector": [
+          "usb-c",
+          "hdmi"
+        ],
+        "category": "Accessories",
+        "country_of_origin": "India",
+        "limit": 1
+      },
+      "expected": {
+        "equipment_length": {
+          "available": false,
+          "allowed_units": []
+        },
+        "recovery": "Display applied67.5cm as current selection,not supported-unit evidence; offer paired clear outside available-only form; preserve pair in sort form until cleared; both collection/search"
+      },
+      "status": "PENDING_QUALIFICATION"
+    },
+    {
+      "id": "MD-21",
+      "lane": "projection/Liquid/form-contract",
+      "fixture": "Same empty response as MD-20, but no active measurement pair.",
+      "query": {},
+      "expected": {
+        "lengthChooserVisible": false,
+        "fabricatedUnitFacets": false
+      },
+      "status": "PENDING_QUALIFICATION"
+    },
+    {
+      "id": "MD-22",
+      "lane": "contract/transport",
+      "fixture": "Both endpoints use same canonical metadata extension; old RPC omits measurement_capabilities.",
+      "query": {},
+      "expected": {
+        "oldResponseAccepted": true,
+        "capability": "unknown/unsupported,not available",
+        "activePairRecovery": "preserved from validated query only"
+      },
+      "status": "PENDING_QUALIFICATION"
+    },
+    {
+      "id": "MD-23",
+      "lane": "contract/transport",
+      "fixture": "Malformed present capability:unknown unit,duplicates,out-of-order,more than4,false+nonempty,true+empty,null or unknown nested keys.",
+      "query": {},
+      "expected": {
+        "result": "Sanitized unavailable/error,never silently strip or invent availability"
+      },
+      "status": "PENDING_QUALIFICATION"
+    },
+    {
+      "id": "MD-24",
+      "lane": "contract/navigation",
+      "fixture": "Active length pair and repeated connectors,collection,category,country,search,sort,limit; clear length.",
+      "query": {
+        "length_value": 25.4,
+        "length_unit": "cm",
+        "page": 2,
+        "connector": [
+          "usb-c",
+          "hdmi"
+        ],
+        "limit": 1
+      },
+      "expected": {
+        "removed": [
+          "length_value",
+          "length_unit"
+        ],
+        "page": 1,
+        "allUnrelatedValuesPreserved": true,
+        "baseRoutePreserved": true
+      },
+      "status": "PENDING_QUALIFICATION"
+    },
+    {
+      "id": "MD-25",
+      "lane": "owned-PG/regression",
+      "fixture": "Identical qualified386 seed/query matrix across all nine namespaces; compare pre/post390 output minus new field.",
+      "query": {
+        "matrix": "no filters,all filters,sorts,collection,productIds,pagination"
+      },
+      "expected": {
+        "preexistingDataCountFacetsMatches": "deeply equal",
+        "persistedProductPrice": "unchanged",
+        "otherNamespaceHelpers": "unchanged"
+      },
+      "status": "PENDING_QUALIFICATION"
+    },
+    {
+      "id": "MD-26",
+      "lane": "owned-PG/rollback",
+      "fixture": "Capture target/all helper definitions,pg_proc fields,ACL/grantor/options,comments,dependencies and business-table rows; UP\u2192DOWN\u2192UP.",
+      "query": {},
+      "expected": {
+        "down": "Exact qualified386 definition and source digest restored; all non-body fields identical; no business-row writes",
+        "secondUp": "Same proposed source digest and behavior"
+      },
+      "status": "PENDING_QUALIFICATION"
+    },
+    {
+      "id": "MD-27",
+      "lane": "owned-PG/security/rollback",
+      "fixture": "Before UP or DOWN mutate one helper body/owner/ACL(default public grant,anon,authenticated,app_tenant,authenticator,service grant option)/overload/default/search_path/cost/volatility/strictness/definer/parallel/support.",
+      "query": {},
+      "expected": {
+        "result": "Admission refuses atomically; zero additional catalog/data change; no repair or ACL widening"
+      },
+      "status": "PENDING_QUALIFICATION"
+    },
+    {
+      "id": "MD-28",
+      "lane": "owned-PG/security",
+      "fixture": "Invoke browse/helper as anon,authenticated,app_tenant,authenticator; positive service_role control in owned fixture.",
+      "query": {},
+      "expected": {
+        "untrustedRoles": "Denied identically before/after",
+        "service_role": "Allowed with existing RLS/invoker behavior",
+        "crossTenant": "No new access"
+      },
+      "status": "PENDING_QUALIFICATION"
+    },
+    {
+      "id": "MD-29",
+      "lane": "owned-PG/rollback",
+      "fixture": "Repeat UP on390 state or repeat DOWN on386 state.",
+      "query": {},
+      "expected": {
+        "result": "Fail-closed source-profile guard; transaction unchanged; runner applies each leg once"
+      },
+      "status": "PENDING_QUALIFICATION"
+    },
+    {
+      "id": "MD-30",
+      "lane": "owned-PG/managed-catalog-guard",
+      "fixture": "Managed non-super postgres role with exact approved catalog fence; then tampered/missing fence or missing relation locks.",
+      "query": {},
+      "expected": {
+        "validFence": "Normal paired proposal permitted only after review",
+        "invalidFence": "Refused before body replacement; no SET ROLE/security-definer shortcut"
+      },
+      "status": "PENDING_QUALIFICATION"
+    },
+    {
+      "id": "MD-31",
+      "lane": "owned-PG/performance",
+      "fixture": "Representative finite store and variant cohort; EXPLAIN ANALYZE baseline/proposal in owned PG.",
+      "query": {},
+      "expected": {
+        "calls": "One existing browse RPC only",
+        "newScans": "At most four bounded probes of existing materialized matched_candidates; no additional products/backend query",
+        "payload": "Four unit strings maximum; no measurement values,counts,IDs or metadata growth with witness count",
+        "evidence": "Measure plan,time,buffers and response bytes; no unmeasured performance claim"
+      },
+      "status": "PENDING_QUALIFICATION"
+    },
+    {
+      "id": "MD-32",
+      "lane": "browser/E2E",
+      "fixture": "Fresh isolated owned store with measured products and real extended API response,after metadata consumers and390 are reviewed/qualified.",
+      "query": {
+        "surfaces": [
+          "Trailmark collection",
+          "Trailmark search"
+        ]
+      },
+      "expected": {
+        "proof": "Apply equivalent length+unit pair; normal URL/results agree; zero-results paired clear recovers; sorts preserve repeats; no owner tabs/cookies touched"
+      },
+      "status": "PENDING_QUALIFICATION"
+    },
+    {
+      "id": "MD-33",
+      "lane": "furniture-inventory-only",
+      "fixture": "Furniture has assembled width/depth but no material/finish; or only material/finish and no dimensions.",
+      "query": {},
+      "expected": {
+        "finding": "Current Habitat per-key positive-facet gate correctly hides dimensions without proof;386 supplies no width/depth capability or numeric threshold facets, so real assembled dimensions cannot enable controls.",
+        "scope": "No furniture metadata/query/SQL change in390; needs separate allocation"
+      },
+      "status": "PENDING_QUALIFICATION"
+    },
+    {
+      "id": "MD-34",
+      "lane": "owned-PG/security/rollback + source-contract",
+      "status": "PENDING_QUALIFICATION",
+      "fixture": "On an otherwise exact qualified profile, alter only the raw ACL grantor for an owner/service_role EXECUTE entry to a non-owner role in the proven-owned disposable catalog mutant; keep allowed grantee, EXECUTE bit and grant option unchanged. Do not create this mutant in a shared/managed/held store.",
+      "query": {},
+      "expected": {
+        "upAndDown": "Both admission profiles reject before function replacement",
+        "noAdditionalChange": "Snapshot immediately after mutant creation equals snapshot after rejection; mutation is not repaired or normalized",
+        "positiveControl": "The exact owner-granted baseline must pass the same qualification lane",
+        "distinguishingAssertion": "Reject non-owner grantor even when grantee and grant-option checks pass; before/after preservation alone is not admission"
+      }
+    }
+  ],
+  "count": 34,
+  "qualificationBoundary": "Root must review and allocate fresh owned PG lane before any SQL application or source promotion"
+}

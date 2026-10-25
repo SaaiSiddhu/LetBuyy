@@ -1,0 +1,84 @@
+{
+  "recordedAt": "2026-10-23T19:09:08.884567+00:00",
+  "status": "PLAYFIELD201_DISTRIBUTION_SOURCE_SEMANTIC_BLOCKER_REPORTED_NO_CAPTURE_NO_DB",
+  "rootSourceAdmissionSha256": "c7eeecfc5474a89a928e974a5c1332122d6efb0424cd15ad7126ae7e365e5f75",
+  "confirmedRawFactorySha256": "c8a1defdf97a0d8d9bf1060c86d5a1727d458747e56353db88f44b456a8bfc5d",
+  "sourceProtectionCount": 616,
+  "sourceProtectionAllExact": true,
+  "immutableHistoricalArtifactsModified": false,
+  "migrationMaximum": 392,
+  "393ReservedForFutureCatalogProposal": true,
+  "migration393Emitted": false,
+  "nativeTestSourceCreated": false,
+  "nativeTestPlan": {
+    "path": "docs/implementation/niche-theme-programme/release-playfield201/NATIVE-TEST-PLAN.md",
+    "sha256": "1f6b590abb80e754b6679dd5fe1b5664db94b0983edf990c90a55aae57a20210",
+    "bytes": 7213
+  },
+  "sourceBlocker": {
+    "path": "docs/implementation/niche-theme-programme/release-playfield201/semantic-blocker.json",
+    "sha256": "d4f5c0bc25232919340dd63918441e4d3197b623656e04d1cd5b19d4c24c9803",
+    "bytes": 2868
+  },
+  "packagingTestStatus": {
+    "namedTestsExecuted": 0,
+    "fileSetupFailures": 1,
+    "skip": 0,
+    "pass": 0,
+    "evidence": {
+      "path": "docs/implementation/niche-theme-programme/release-playfield201/proposal-tests-01.tap",
+      "sha256": "ac0ad6f7bbb6ce3223fd3907680d68f502f1832608de72dc7dcde20ef773b688",
+      "bytes": 2443
+    },
+    "assertionWasNotWeakened": true
+  },
+  "preparedOfflineGeneratorAndTestsOnly": true,
+  "immutableCaptureOrPairedSqlArtifactWritten": false,
+  "sourceFactoryOrOrderWrapperOrHydrationEdited": false,
+  "nativeDatabaseBrowserRuntimeCandidateAction": false,
+  "existingFixturesTabsLoginsTouched": false,
+  "requiredNext": "Root/source-owner narrow preservation fix +new exactsourceadmission/rawdigest; then distribution capture/proposal tests and source freeze before any owned native lane",
+  "fileCount": 8,
+  "files": [
+    {
+      "path": "docs/implementation/niche-theme-programme/release-playfield201/NATIVE-TEST-PLAN.md",
+      "sha256": "1f6b590abb80e754b6679dd5fe1b5664db94b0983edf990c90a55aae57a20210",
+      "bytes": 7213
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/release-playfield201/README.md",
+      "sha256": "7c7ff8307f11128d7aaa72b2e001983606ac9c9294531a63f4485ad0bfc96cce",
+      "bytes": 3047
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/release-playfield201/generate-playfield201.test.ts",
+      "sha256": "6537c4c59fc7e7a2d12d82d3c7feb68df4fbf658723f795553d3c31affdcc6fc",
+      "bytes": 5514
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/release-playfield201/generate-playfield201.ts",
+      "sha256": "54f9f2e0052bf4f6a442cfe66357e8274edcd1645377adbaf69f137ba1e88e5c",
+      "bytes": 18829
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/release-playfield201/preparation-source-after.json",
+      "sha256": "eed155ba2237c1be0f9dee6f0a9d56b73ea3705619744d33b7942d99dde538ab",
+      "bytes": 115499
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/release-playfield201/preparation-source-before.json",
+      "sha256": "d85029aa87af6cc9cfd07789970dccb3c81c7923a47cdda7f471ecffdbe60f69",
+      "bytes": 115780
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/release-playfield201/proposal-tests-01.tap",
+      "sha256": "ac0ad6f7bbb6ce3223fd3907680d68f502f1832608de72dc7dcde20ef773b688",
+      "bytes": 2443
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/release-playfield201/semantic-blocker.json",
+      "sha256": "d4f5c0bc25232919340dd63918441e4d3197b623656e04d1cd5b19d4c24c9803",
+      "bytes": 2868
+    }
+  ]
+}

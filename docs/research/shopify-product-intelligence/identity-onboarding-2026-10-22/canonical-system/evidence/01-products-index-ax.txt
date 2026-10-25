@@ -1,0 +1,98 @@
+Browser tab: 1, Title: "[store] · Products · Shopify", URL: "https://admin.shopify.com/store/[store]/products".
+0 AXWebArea [store] · Products · Shopify, URL: admin.shopify.com/store/[store]/products
+	1 container app
+		2 container AppFrame
+			135 text Products
+			4 container AppFrameChrome
+				5 link Description: Skip to content, Value: admin.shopify.com/store/[store]/products#AppFrameMain
+				6 container AppFrameBevel
+					7 container Description: Navigation, ID: AppFrameNav
+						8 container
+							9 image Shopify
+							10 button (expanded) Description: Collapse navigation, Secondary Actions: Collapse
+							11 button Search
+								12 text Search
+							13 container scroll-container
+								14 content list
+									15 link Description: Home, Value: admin.shopify.com/store/[store]
+									16 container
+										17 link (collapsed) Description: Orders, Value: admin.shopify.com/store/[store]/orders, Secondary Actions: Expand
+									18 container
+										19 link (expanded) Description: Products, Value: admin.shopify.com/store/[store]/products, Secondary Actions: Collapse
+										129 content list
+											130 link Description: Collections, Value: admin.shopify.com/store/[store]/collections
+											131 link Description: Inventory, Value: admin.shopify.com/store/[store]/products/inventory
+											132 link Description: Purchase orders, Value: admin.shopify.com/store/[store]/purchase_orders
+											133 link Description: Transfers, Value: admin.shopify.com/store/[store]/transfers
+											134 link Description: Gift cards, Value: admin.shopify.com/store/[store]/gift_cards
+									20 container
+										21 link (collapsed) Description: Customers, Value: admin.shopify.com/store/[store]/customers, Secondary Actions: Expand
+									22 container
+										23 link (collapsed) Description: Growth, Value: admin.shopify.com/store/[store]/growth, Secondary Actions: Expand
+									24 link Description: Discounts, Value: admin.shopify.com/store/[store]/discounts
+									25 container
+										26 link (collapsed) Description: Content, Value: admin.shopify.com/store/[store]/content/metaobjects, Secondary Actions: Expand
+									27 container
+										28 link (collapsed) Description: Markets, Value: admin.shopify.com/store/[store]/markets, Secondary Actions: Expand
+									29 container
+										30 link (collapsed) Description: Analytics, Value: admin.shopify.com/store/[store]/analytics, Secondary Actions: Expand
+								31 content list
+									32 container
+										33 button Sales channels
+											34 text Sales channels
+										35 content list
+											36 sortable Online Store
+												37 content list
+													136 link Description: Online Store, Value: admin.shopify.com/store/[store]/themes?[query omitted]
+											43 sortable Agentic
+												44 content list
+													45 link Description: Agentic, Value: admin.shopify.com/store/[store]/apps/agentic?[query omitted]
+									46 container
+										47 button Apps
+											48 text Apps
+										49 button Add
+											50 text Add
+							51 container
+								52 content list
+									53 link Description: Settings, Value: admin.shopify.com/store/[store]/settings
+									54 container
+										55 button (collapsed) Description: [account], Secondary Actions: Expand
+											56 container [store]
+											57 text [store]
+										58 button (collapsed) Description: Alerts Feed - 0 unread alerts, Secondary Actions: Expand
+								59 link Description: Trial ends in 2 days Subscribe for ₹20, Value: admin.shopify.com/store/[store]/subscribe/checkout
+					60 container AppFrameMain
+						137 container
+							138 container
+								139 container
+									140 heading Products, Value: 1
+										141 text Products
+								142 button View as
+									143 text View as
+							144 container
+								145 tab group
+									146 tab (selected, disabled, settable, boolean) All, Value: 1, ID: all
+								147 button (disabled) Create new view, ID: create-new-view
+									148 text Create new view
+								149 button (disabled) Search and filter results
+								150 button (disabled, collapsed) Description: Sort the results, Secondary Actions: Expand
+								151 heading Add your products, Value: 2
+									152 text Add your products
+								153 text Start by stocking your store with products your customers will love
+								154 link Description: Add product, Value: admin.shopify.com/store/[store]/products/new
+								155 button Import
+									156 text Import
+								157 heading Find products to sell, Value: 3
+									158 text Find products to sell
+								159 text Have dropshipping or print on demand products shipped directly from the supplier to your customer, and only pay for what you sell.
+								160 link Description: Discover products to sell, Value: apps.shopify.com/login/authenticate?[query omitted]
+				121 container
+					122 container Sidekick
+						123 container
+							124 container
+								125 text field (settable) Description: Work with Sidekick, ID: :r74p:
+								126 button Add files and more
+								127 button Voice
+								128 button Open Sidekick
+
+The focused UI element is 19 link (expanded) Description: Products, URL: admin.shopify.com/store/[store]/products, Secondary Actions: Collapse

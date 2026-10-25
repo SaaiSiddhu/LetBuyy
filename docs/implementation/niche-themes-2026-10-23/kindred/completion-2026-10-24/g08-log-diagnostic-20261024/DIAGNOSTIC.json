@@ -1,0 +1,108 @@
+{
+  "recordedAt": "2026-10-24T08:51:04.307112+00:00",
+  "classification": "NEW_RETAINED_LOG_ATTRIBUTION_NOT_RUNTIME_RETEST_OR_FIX",
+  "goalTurnClassification": "PROGRESS",
+  "observedFailure": {
+    "G08": "Tablet iframe820 complete error",
+    "digest": "1136306685",
+    "requestId": "90c8e7c0-1fed-4027-acba-92fb80bf140e",
+    "failingOperation": "StoreService.getPreviewStoreBySubdomain",
+    "HTTPStatus": 404,
+    "code": "NOT_FOUND",
+    "gatewayMessage": "Preview session not found or expired"
+  },
+  "established": [
+    "The exact UI error digest appears in retained commerce log with this failing preview read and API404/NOT_FOUND.",
+    "Current StoreService wraps the API read failure in StorefrontStoreError; preview content loads through this service.",
+    "Gateway session lookup binds store_id and token_hash and requires expires_at later than now; no matching row produces the observed404 message.",
+    "Merchant requests ttl_seconds900; canonical adapter returns expires_at. The observed parent source reads token/session/revision/template but does not retain expires_at.",
+    "CenterPanel preview URL depends on viewport and remounts the iframe when it changes while using the supplied preview token. Existing Retry preview invokes syncPreviewDraft and requests a fresh authorized session."
+  ],
+  "hypothesesNotEstablished": [
+    "This particular session expired rather than being missing, revoked, wrong-store or mismatched. No DB/session secret was read.",
+    "A Tablet CSS/layout defect caused the failure. The stack attributes a failed preview credential read, not styling.",
+    "A particular new refresh implementation is correct or regression-free. No shared patch or runtime retest was performed."
+  ],
+  "ownerRequest": {
+    "owner": "Existing shared Theme Editor/preview owner under Themes allocator",
+    "scope": "Current bounded preview-credential lifecycle and error/recovery fix; not a new renderer or credential bypass",
+    "proposedContract": [
+      "Treat preview session expiry as finite and tenant/draft/template/revision bound. Preserve gateway validation and no-public/unpublished fallback.",
+      "Use returned expiry/current authority or explicit normal user recovery to acquire a valid session before obsolete credentials are reused after a long idle/viewport transition.",
+      "Bind fresh session and previewContext to the latest store/theme/template/revision and discard retired late responses; preserve dirty/saved draft and conflict state.",
+      "Deduplicate/limit refresh and retry demand; do not keep polling or extend expired owner fixture leases.",
+      "Keep transport/unavailable versus absent/expired outcomes distinct and actionable; never render unpublished data through public fallback."
+    ],
+    "requiredAcceptance": [
+      "Fresh session Desktop/Tablet/Mobile actual content widths.",
+      "Owned session expiration or forced fixture time boundary after normal saved draft; viewport transition and normal retry recover without data loss.",
+      "Missing/wrong-store/revoked/invalid session fail closed and expose no private draft.",
+      "Late session responses after identity/template/revision changes cannot replace current preview.",
+      "No duplicate Save/business mutation or publication through retry; exact saved-state preservation and current request correlation.",
+      "G08 retest independent of KQA01 exact768long-brand regression."
+    ]
+  },
+  "sources": [
+    {
+      "path": "apps/commerce/web/src/lib/store-service.ts",
+      "currentSha256": "ff9ed354467fd8d0ca3a89fd3890d14b554a945243f07fa200415bcd73a852f5",
+      "candidateSha256": "ff9ed354467fd8d0ca3a89fd3890d14b554a945243f07fa200415bcd73a852f5",
+      "candidateEqualsCurrent": true
+    },
+    {
+      "path": "apps/commerce/web/src/app/preview/preview-content.tsx",
+      "currentSha256": "a7d1236632a30d534c6ced99a8f18392459cc100303d6d9a7bbff4db7ee73efa",
+      "candidateSha256": "a7d1236632a30d534c6ced99a8f18392459cc100303d6d9a7bbff4db7ee73efa",
+      "candidateEqualsCurrent": true
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/CenterPanel.tsx",
+      "currentSha256": "9f1f7e384214bdee7d3d8ce9956e3b849043e281d4c242c36aa6d27c1547f453",
+      "candidateSha256": "9f1f7e384214bdee7d3d8ce9956e3b849043e281d4c242c36aa6d27c1547f453",
+      "candidateEqualsCurrent": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx",
+      "currentSha256": "8fe3b25fa551758fd4b9bf2c040b9cbc8810f71df331f5b1b39559790c2c637c",
+      "candidateSha256": "8fe3b25fa551758fd4b9bf2c040b9cbc8810f71df331f5b1b39559790c2c637c",
+      "candidateEqualsCurrent": true
+    },
+    {
+      "path": "services/api-gateway/src/routes/storefront/public-routes.ts",
+      "currentSha256": "21a7e4e2ffc46c1d50305a8b08360ddbac86edd06058b921a6ff06729a37163c",
+      "candidateSha256": "21a7e4e2ffc46c1d50305a8b08360ddbac86edd06058b921a6ff06729a37163c",
+      "candidateEqualsCurrent": true
+    },
+    {
+      "path": "services/api-gateway/src/routes/themes.ts",
+      "currentSha256": "01ec865cb8d878485dee67c5665df1091b514bd822ddc036d5b99bdbcaf54f8d",
+      "candidateSha256": "01ec865cb8d878485dee67c5665df1091b514bd822ddc036d5b99bdbcaf54f8d",
+      "candidateEqualsCurrent": true
+    },
+    {
+      "path": "services/api-gateway/src/execution/theme-execution.adapter.ts",
+      "currentSha256": "df46632ce72b129a0cda8137f29d64e9165aba468c9cf934968ebb3d2fda3f29",
+      "candidateSha256": "e35cdc441ddebe10d6e2f39d15967ef853ca380cbbf939889c8d30fecca32b72",
+      "candidateEqualsCurrent": false
+    }
+  ],
+  "sourceOrArtifactWrites": 0,
+  "runtimeBrowserDatabaseBuildCalls": 0,
+  "fixtureRestartOrKeepalive": false,
+  "sharedHelpers": {
+    "themes": "AWAITING_EXPLICIT_MESSAGE_RESUME_AUTHORIZATION",
+    "editor": "AWAITING_EXPLICIT_MESSAGE_RESUME_AUTHORIZATION",
+    "marketplace": "NOT_RESUMED_PRESERVE_RUNNING_LOCAL_APP"
+  },
+  "activeBrowserLease": null,
+  "activeSharedWriter": null,
+  "nextAction": "Allocator resumes shared preview owner and grants exact current source/runtime scope; Kindred audits matching result, no duplicate shared patch.",
+  "fullThemeCertification": false,
+  "sourceComparisonLimit": "Whole theme-execution.adapter.ts differs from retained candidate; the relevant createPreviewSession method fragment is byte-identical. This does not qualify unrelated current adapter changes.",
+  "previewSessionMethodFragment": {
+    "candidateEqualsCurrent": true,
+    "sha256": "9f9da35acbd645e10560ab8c132c99784686df44e985b13f812dbb47b0701cb5",
+    "start": "async createPreviewSession",
+    "end": "Phase Q marker"
+  }
+}

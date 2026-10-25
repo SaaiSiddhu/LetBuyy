@@ -1,0 +1,124 @@
+{
+  "home": {
+    "body": 414,
+    "document": 314,
+    "page": "home",
+    "viewport": 320
+  },
+  "product": {
+    "body": 414,
+    "content": [
+      {
+        "class": "lb-product-detail",
+        "left": 24,
+        "right": 290,
+        "scroll": 266,
+        "width": 266
+      },
+      {
+        "class": "lb-product-detail__cta lb-product-detail__cta--primary",
+        "left": 40,
+        "right": 274,
+        "scroll": 234,
+        "width": 234
+      },
+      {
+        "class": "",
+        "left": 40,
+        "right": 274,
+        "scroll": 234,
+        "width": 234
+      }
+    ],
+    "document": 314,
+    "page": "product",
+    "viewport": 320
+  },
+  "cart": {
+    "body": 411,
+    "content": [
+      {
+        "class": "",
+        "left": 16,
+        "right": 298,
+        "scroll": 0,
+        "width": 282
+      },
+      {
+        "class": "lb-liquid-cart__item",
+        "left": 0,
+        "right": 0,
+        "scroll": 0,
+        "width": 0
+      },
+      {
+        "class": "lb-liquid-cart__checkout",
+        "left": 0,
+        "right": 0,
+        "scroll": 0,
+        "width": 0
+      }
+    ],
+    "document": 314,
+    "page": "cart",
+    "viewport": 320
+  },
+  "dialog": {
+    "dialog": {
+      "left": -6,
+      "right": 314,
+      "scroll": 320,
+      "width": 320
+    },
+    "focus": "Close cart",
+    "modal": true,
+    "viewport": 320
+  },
+  "header": {
+    "actions": [
+      {
+        "class": "lb-header__toggle",
+        "height": 44,
+        "label": "Menu",
+        "left": 20,
+        "right": 42,
+        "width": 22
+      },
+      {
+        "class": "lb-header__brand",
+        "height": 29.7578125,
+        "label": "Threadline",
+        "left": 66,
+        "right": 219.625,
+        "width": 153.625
+      },
+      {
+        "class": "lb-header__search-toggle",
+        "height": 44,
+        "label": "Search",
+        "left": 243.625,
+        "right": 287.625,
+        "width": 44
+      },
+      {
+        "class": "lb-header__account",
+        "height": 44,
+        "label": "Log in",
+        "left": 295.625,
+        "right": 339.625,
+        "width": 44
+      },
+      {
+        "class": "lb-header__cart",
+        "height": 44,
+        "label": "Cart (0)",
+        "left": 347.625,
+        "right": 414.1015625,
+        "width": 66.4765625
+      }
+    ],
+    "bodyWidth": 414,
+    "documentWidth": 314,
+    "viewport": 320
+  }
+}

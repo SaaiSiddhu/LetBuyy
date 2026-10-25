@@ -1,0 +1,120 @@
+{
+  "recordedAt": "2026-10-24T09:22:30.973566+00:00",
+  "classification": "APPLIED_PRIVATE_PANTRY201_SUCCESSOR_SOURCE_QUALIFIED_NOT_MAIN_OR_INSTALLED",
+  "privateVersion": "2.0.1",
+  "versionNumber": 3,
+  "stableSlug": "letbuyy-refresh",
+  "stableCatalogId": "7b669c70-0000-4000-8000-000000000005",
+  "baseSourcesCurrent": true,
+  "baseChecks": {
+    "packages/theme-engine/src/first-party-theme-catalog.ts": "48e8126f5681d91fb1780b521bd5d53c4bf933156ca2b97c64932d95e0800605",
+    "packages/theme-engine/src/pantry-theme.ts": "9c440d32f146b8155ba78f522da52979fd09a0f3d32c4b25e5c3e289ef390925",
+    "packages/theme-engine/src/theme-bundle.ts": "cdbad4b28277431a3ab06e56ed0ce16539e04837bb107f5f951a3df39a92ed76",
+    "packages/theme-engine/src/niche-order-presentation.ts": "6c5f89356bab085cc8a3a359c5caad4503dc8442176df0b8a1558b849d651ac3",
+    "packages/theme-engine/src/theme-renderer.ts": "794cbc6ff9ae71f995560f302e1b0d5f0d4ff4da59fa31191585851b1e822164",
+    "packages/theme-engine/src/theme-document.ts": "7ba285a54d71a01545c4cb1e4a3c1540a30caae2db793079b2b3cb32b8612412",
+    "packages/theme-engine/src/portable-to-liquid.ts": "c981e822ec3f51bd7975e72862a957fc011b14a7f8984cdd0b38f8ba9a27803b",
+    "packages/theme-engine/src/index.ts": "1544081a6b4e1c7c276ed6cbfd1a9bd39fdbe10fca6406cd72b7ba1eb1d584e5",
+    "packages/theme-engine/package.json": "8eec1e66946b79412200297e8755d67f6769fe49beec86c5d7eeb2ccf013b763",
+    "pnpm-lock.yaml": "15fd89109bbc17e0624e29d5a1b56db07e19f1f880c44d9a9abf847b52b6d09a"
+  },
+  "source": {
+    "materializedPrivatePath": "docs/implementation/niche-themes-2026-10-23/pantry/completion-2026-10-24/private-pantry201-successor-20261024-01/src/pantry-theme-v201.ts",
+    "materializedSha256": "dd6097bcbc5ba0ea760ee91b5b66a91600e6c3bd04e40af8ed62774f93c0f845",
+    "canonicalImportNormalizedSha256": "a36fd4fe59da895b4f48e08e3b2882bc8a5e0fc99c0d57487a476e17219f38bf"
+  },
+  "proposedCatalogue": {
+    "materializedPath": "docs/implementation/niche-themes-2026-10-23/pantry/completion-2026-10-24/private-pantry201-successor-20261024-01/src/first-party-theme-catalog.proposed.ts",
+    "sha256": "89736fdd02cd43acb290ae22b6fcc480d43854dac5c677aec01396ebc40fee29",
+    "canonicalImportNormalizedSha256": "8647b2bf5b8c010f69e160bea8234dc713e1622a9a4799506a067e8d0ad99747",
+    "MainWriter": "Themes/Root",
+    "MainApplied": false,
+    "scope": "Import createPantryThemeV201, add pantryVersion optional selector and refresh-only opt-in dispatch under existingdesignVersion2.0.0; all default/legacy outputs preserved"
+  },
+  "tests": {
+    "command": "PANTRY_201_EPOCH=<new finite epoch> node --import tsx --test --test-concurrency=1 docs/implementation/niche-themes-2026-10-23/pantry/completion-2026-10-24/private-pantry201-successor-20261024-01/successor.test.mts",
+    "testSourceSha256": "553d69f11981ed4f7d711919176da918b05b8386d7d20cc47d6d74c44f7ed002",
+    "red": {
+      "exitCode": 1,
+      "counts": {
+        "tests": 14,
+        "pass": 4,
+        "fail": 10,
+        "cancelled": 0,
+        "skipped": 0
+      },
+      "tapSha256": "3a1a54b2ca1005bb33067b64efaf8bc4151a535b2dd8a7101e91d682d2ff4c03"
+    },
+    "green": {
+      "exitCode": 0,
+      "counts": {
+        "tests": 14,
+        "pass": 14,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0
+      },
+      "tapSha256": "d896adfd841033196ba3813b1373a77aed39d26d2cf2b26fddc2a39f7044e0ab"
+    },
+    "redRenders": 15,
+    "greenRenders": 20,
+    "renderLimit": "Pure deterministic source renders and unpersisted synthetic order, not buyer/cart/order-history acceptance"
+  },
+  "typecheck": {
+    "exitCode": 0,
+    "command": "node node_modules/typescript/bin/tsc --noEmit --strict --skipLibCheck --target ES2022 --module ESNext --moduleResolution Bundler --allowImportingTsExtensions --esModuleInterop <private wrapper> <private proposed catalogue>",
+    "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "preservation": {
+    "MainSourcesUnchanged": true,
+    "old13TestPacket": "UNCHANGED; all32 previously sealed file hashes verified; no suite rerun",
+    "frozen200ArtifactSha256": "39866e8607d2f0e98bd6abafd4d33141e915b44140d2e8f70c2893462dae8cf9",
+    "M1FilesChecked": 99,
+    "M1Mismatches": 0,
+    "merchantValues": "Existing Pantry200 templates/config/blocks cloned and preserved; no defaults regeneration;201idempotent validation/clone preserves subsequent edits",
+    "canonicalOrderFacts": "withNicheOrderPresentation applied before version bump; marker/style exactlyonce; order.number retained; missing facts stay unrecorded"
+  },
+  "attemptHistory": [
+    {
+      "file": "red01.tap",
+      "counts": {
+        "tests": 14,
+        "pass": 3,
+        "fail": 11,
+        "cancelled": 0,
+        "skipped": 0
+      },
+      "scope": "Initial stub/ignored-selector baseline"
+    },
+    {
+      "file": "green01.tap",
+      "counts": {
+        "tests": 14,
+        "pass": 13,
+        "fail": 1,
+        "cancelled": 0,
+        "skipped": 0
+      },
+      "reason": "One harness assertion read Document.textContent (null); actual missing-facts element rendered correctly. Fixed inspector to read body, preserved failed epoch; no production relaxation."
+    },
+    {
+      "file": "red-final.tap",
+      "scope": "Same final test source, untouched stub/ignored selector baseline"
+    },
+    {
+      "file": "green02.tap",
+      "scope": "Final applied201 wrapper and proposed selector"
+    }
+  ],
+  "sourceOnlyActions": true,
+  "MainMigrationNativeBrowserProviderRuntimeActions": false,
+  "installedAcceptance": "NOT_RUN",
+  "versionCatalogueAdmission": "PENDING_ROOT_AND_INDEPENDENT_REVIEW",
+  "fullThemeCertified": false,
+  "patchCheck": {
+    "command": "git apply --check docs/implementation/niche-themes-2026-10-23/pantry/completion-2026-10-24/private-pantry201-successor-20261024-01/candidate.patch",
+    "exitCode": 0,
+    "MainWritten": false
+  }
+}

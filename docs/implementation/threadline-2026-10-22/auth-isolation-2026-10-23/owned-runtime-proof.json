@@ -1,0 +1,30 @@
+{
+  "capturedAt": "2026-10-23T06:54:11.611Z",
+  "runId": "ff9941a78139",
+  "resources": [
+    {
+      "name": "letbuyy-exec-ff9941a78139-rest-1",
+      "runId": "ff9941a78139",
+      "ownerPid": "72634",
+      "role": "postgrest",
+      "running": true
+    },
+    {
+      "name": "letbuyy-exec-72634-mvklpyzb-a02550",
+      "runId": "ff9941a78139",
+      "ownerPid": "72634",
+      "role": "postgres",
+      "running": true
+    }
+  ],
+  "networks": [
+    "letbuyy-exec-ff9941a78139-1-net"
+  ],
+  "volumes": [
+    "letbuyy-exec-ff9941a78139-1-data"
+  ],
+  "reapingDisabled": true,
+  "oldRunsNotQueriedOrChanged": true,
+  "held": true,
+  "runnerFinalExitOrCleanupNotClaimed": true
+}

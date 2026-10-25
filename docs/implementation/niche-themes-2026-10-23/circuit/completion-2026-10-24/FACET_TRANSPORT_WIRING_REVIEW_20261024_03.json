@@ -1,0 +1,33 @@
+{
+  "recordedAt": "2026-10-24T12:22:20.754980+00:00",
+  "classification": "CURRENT_SOURCE_TRANSPORT_REVIEW_NOT_HTTP_BROWSER_ACCEPTANCE",
+  "newAdditionalProductionPathsRequiredByThisReview": 0,
+  "checks": [
+    {
+      "path": "packages/typescript/api-client/src/index.ts",
+      "sha256": "7e37e13f53aef6f034e0b0312947122231e1ada01adb70f1b51d8bcb6859b40e",
+      "observation": "SDK query type aliases canonical StorefrontDiscoveryQueryInput; serializer iterates supplied Object.entries and preserves repeated array values"
+    },
+    {
+      "path": "services/api-gateway/src/lib/storefront-discovery.ts",
+      "sha256": "fa47b2c867e916ab082e5c420eed18751e4c313f98dd1ae2b19ec26de00afa37",
+      "observation": "Worker strict request/RPC/response contracts import canonical domain schemas, with one browse_storefront_products_v1 RPC"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/discovery-route-query.ts",
+      "sha256": "4d09769d8038f69b2aa31c4122f83102b8cd8368a654806e03f86e2757cd45f5",
+      "observation": "Actual storefront route parser invokes canonical strict schema and keeps scalar-repeat denial"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/data-binding-engine.ts",
+      "sha256": "4b8334b7e07e64209d3585671ff98a4c7c359719424715119e3a2ea2d667e56d",
+      "observation": "Listing data binding uses routeDiscoveryQuery; no hardcoded new-key transport list"
+    },
+    {
+      "path": "packages/theme-engine/src/circuit-discovery.ts",
+      "sha256": "160c6a61a567f87bbcab20bf337336ede6e748c1326110ab977f61ec9c14523b",
+      "observation": "Circuit forms preserve server-supplied discovery_query_fields and render same-response electronics_facets; no local product matcher required"
+    }
+  ],
+  "requiredActualProof": "Corrected03 owned native actual Worker routes plus new coherent storefront/preview browser acceptance; neither executed here"
+}

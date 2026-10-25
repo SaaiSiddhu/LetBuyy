@@ -201,7 +201,8 @@ export default function AiStudioPage() {
     if (loading) {
         return (
             <Page>
-                <PageHeader
+                <PageHeader identity="settings"
+                    recipe="index"
                     title="AI Studio"
                     description="Monitor AI credits and the tools available to speed up merchant content work."
                     breadcrumbs={[{ label: 'Store' }, { label: 'AI Studio' }]}
@@ -222,7 +223,8 @@ export default function AiStudioPage() {
 
     return (
         <Page>
-            <PageHeader
+            <PageHeader identity="settings"
+                recipe="index"
                 title="AI Studio"
                 description="Monitor AI credits and the tools available to speed up merchant content work."
                 breadcrumbs={[{ label: 'Store' }, { label: 'AI Studio' }]}

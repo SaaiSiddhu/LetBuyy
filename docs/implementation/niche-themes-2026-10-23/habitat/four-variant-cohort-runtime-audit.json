@@ -1,0 +1,104 @@
+{
+  "recordedAt": "2026-10-23T20:01:57.384121+00:00",
+  "runId": "f6074d90e894",
+  "status": "PASS_FROZEN_COHORT_DATA_AND_FULL_RELOAD_SCOPE",
+  "productId": "54301d6f-f54e-4209-95a0-4fbc32bcf8e6",
+  "version": 30,
+  "aliasesBoundToActualAcknowledgedUUIDs": {
+    "A": "07d32ed4-62ca-43dc-a605-b11f97c0a791",
+    "B": "50982c60-e567-42b4-85e4-2b893b234a4a",
+    "C": "30e7bb70-6ef0-4175-83f0-16368a3e9fda",
+    "D": "b1c16f63-5d1c-4ab0-995c-552b45f11fab"
+  },
+  "variantChecks": [
+    {
+      "alias": "A",
+      "id": "07d32ed4-62ca-43dc-a605-b11f97c0a791",
+      "tuple": [
+        "48 in",
+        "Natural"
+      ],
+      "price": 8900,
+      "inventoryQty": 4,
+      "metadataExactlyFrozenRecipe": true
+    },
+    {
+      "alias": "B",
+      "id": "50982c60-e567-42b4-85e4-2b893b234a4a",
+      "tuple": [
+        "130 cm",
+        "Black"
+      ],
+      "price": 9300,
+      "inventoryQty": 3,
+      "metadataExactlyFrozenRecipe": true
+    },
+    {
+      "alias": "C",
+      "id": "30e7bb70-6ef0-4175-83f0-16368a3e9fda",
+      "tuple": [
+        "Common size",
+        "Natural"
+      ],
+      "price": 8700,
+      "inventoryQty": 0,
+      "metadataExactlyFrozenRecipe": true
+    },
+    {
+      "alias": "D",
+      "id": "b1c16f63-5d1c-4ab0-995c-552b45f11fab",
+      "tuple": [
+        "48 in width only",
+        "Natural"
+      ],
+      "price": 9000,
+      "inventoryQty": 2,
+      "metadataExactlyFrozenRecipe": true
+    }
+  ],
+  "commonMetadataExactlyFrozenRecipe": true,
+  "noMissingAxesOrGroupsFilled": true,
+  "originalAandCUUIDsRetained": true,
+  "stockActualAvailableAndVariantInventoryQty": [
+    4,
+    3,
+    0,
+    2
+  ],
+  "oldWidthValueOrderRetained": {
+    "actual": [
+      "48 in",
+      "Common size",
+      "130 cm",
+      "48 in width only"
+    ],
+    "preparedCreateArray": [
+      "48 in",
+      "130 cm",
+      "Common size",
+      "48 in width only"
+    ],
+    "observation": "Same four exact values; original two remain ordered before newly appended values. No field/value or four-combination expectation changed."
+  },
+  "actualReloadedCategoryCountryTaxTrackOOSStatus": "Exact expected Furniture/India/taxfalse/tracked/OOSfalse/active",
+  "publishedThemeReactivation": {
+    "releaseId": "3a3356f7-5a77-4dd4-84a5-bdbcdf4a3810",
+    "contentHashExactB": true,
+    "anonymous200": true
+  },
+  "notClaimed": "Not all26 cases or purchase acceptance. No cartdigest invariance claim across intervening Pantry flow.",
+  "evidence": [
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-habitat-axis-four-cohort-saved-readback.json",
+      "sha256": "0b3df43bf3f3296c958535a7cf529b704dc43be92aa3d72d1e10dc4c71388c7b"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-habitat-four-cohort-reloaded.ax.txt",
+      "sha256": "a93710841d0dc456501b4f07c41e7e60123f3c3edcf9f763792af12d8b802227"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-habitat-four-cohort-activation.json",
+      "sha256": "81d878a0dca5f35336ac473f84888100ef9583559f460f80daf254b14ddd0890"
+    }
+  ]
+}

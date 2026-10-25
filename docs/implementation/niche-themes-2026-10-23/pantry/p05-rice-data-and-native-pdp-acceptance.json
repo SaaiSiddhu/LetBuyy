@@ -1,0 +1,38 @@
+{
+  "recordedAt": "2026-10-23T16:21:51.773999+00:00",
+  "classification": "ACTUAL_ENTERPRISE_BASELINE_P05_RICE_PDP_WITH_CANONICAL_DATA_PASS",
+  "caseId": "P05",
+  "status": "PASS",
+  "runId": "9cd50e893016",
+  "candidateSourceManifestSha256": "c85083b28b6cfc8696679189d682a9e35b93f7603e54117e60a264aa109fcf0a",
+  "observed": {
+    "canonicalRicePrice": 220,
+    "canonicalStock": 4,
+    "canonicalNoVariants": true,
+    "canonicalCommonNet": {
+      "value": 1000,
+      "unit": "g"
+    },
+    "actualNativeQuantity": 2,
+    "actualNativeTotalNet": {
+      "value": 2000,
+      "unit": "g"
+    },
+    "actualNativeUnitPriceText": "\u20b922.00 / 100 g",
+    "controllerReportedCrossProductFactLeak": false
+  },
+  "evidence": [
+    {
+      "path": "docs/implementation/niche-themes-2026-10-23/pantry/rice-canonical-data-witness.json",
+      "sha256": "64a62339f59adb9c42310495cc8cd4802c507d54d6ec5c5bb2c3b17bc416aea9"
+    },
+    {
+      "path": "docs/implementation/theme-editor-2026-10-23/evidence/pantry-P05-rice-two-packs.ax.txt",
+      "sha256": "32264bdc310635537f84d2cc77574e8b2bd33f783f448bc70e64e41f947267ed"
+    }
+  ],
+  "limits": [
+    "No responsive0x0 screenshot acceptance",
+    "No cart/order/stale-cart result inferred"
+  ]
+}

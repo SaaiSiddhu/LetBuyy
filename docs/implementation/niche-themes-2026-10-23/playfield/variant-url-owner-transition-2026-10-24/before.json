@@ -1,0 +1,13 @@
+{
+  "classification": "P2_DUPLICATE_OWNER_TRANSITION_SOURCE_ONLY",
+  "priorSourceReleaseSha256": "8518ac7cf4a736f3d18bf903742365db46b81cf2009a92b1f0639763c73c89cd",
+  "sourcePins": {
+    "apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx": "17dd019d60d69d81c6bd5d7306fd354528d1ad9400095f695c29c093a3780294",
+    "apps/commerce/web/src/lib/theme-engine/variant-selection-url.ts": "290b94804e758325f8262a4dd53bdc81ddbbf30b4ae1a811f7affacde5158ed1",
+    "apps/commerce/web/src/lib/theme-engine/variant-selection-url.test.ts": "117413e6fe0bfd1295f5aba2fa12f817f2559a676796ee34d10802ab373b9a54"
+  },
+  "preservedFiles": 684,
+  "branch": "letbuyy/theme-release-performance-resume",
+  "head": "85aac99043d8dc10469e12cbb810609a3b6f1b0d",
+  "scope": "Existing native picker/test/docs only. No runtime/candidate/browser/API/SQL/distribution mutation."
+}

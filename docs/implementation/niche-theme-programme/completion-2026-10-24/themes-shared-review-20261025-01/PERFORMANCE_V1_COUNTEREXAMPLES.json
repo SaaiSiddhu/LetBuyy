@@ -1,0 +1,38 @@
+{
+  "recordedAt": "2026-10-24T20:40:05.083Z",
+  "classification": "PURE_MODEL_COUNTEREXAMPLES_USING_EXACT_SEALED_V1_FUNCTIONS_NOT_NATIVE",
+  "suiteSha256": "f311aaaaa156dc9cbf21dd19efce7b9a1fa8eb4cd7dbc80056c177498e8d148d",
+  "reproduced": [
+    {
+      "finding": "PERF-R02",
+      "counterexample": "Sequential products scan plus unrelated relation index is wrongly accepted",
+      "observed": {
+        "accepted": true,
+        "attributedPid": 123,
+        "productsNodes": 1,
+        "acceptedIndexRelations": [
+          "unrelated_relation"
+        ],
+        "stubSqlCalls": 1,
+        "stubLogCalls": 1
+      }
+    },
+    {
+      "finding": "PERF-R05",
+      "counterexample": "Missing JSON for expected PID skips forward and accepts another PID record",
+      "observed": {
+        "accepted": true,
+        "attributedPid": 123,
+        "productsNodes": 2,
+        "acceptedIndexRelations": [
+          "products"
+        ],
+        "stubSqlCalls": 1,
+        "stubLogCalls": 1
+      }
+    }
+  ],
+  "actualSQLCalls": 0,
+  "actualChildProcesses": 0,
+  "DockerDatabaseBrowserProviderNetworkActions": 0
+}

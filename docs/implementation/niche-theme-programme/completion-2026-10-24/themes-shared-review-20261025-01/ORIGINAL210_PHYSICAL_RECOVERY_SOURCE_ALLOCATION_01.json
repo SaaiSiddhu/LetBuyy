@@ -1,0 +1,96 @@
+{
+  "recordedAt": "2026-10-25T06:00:10.029961+00:00",
+  "expiresAt": "2026-10-25T07:00:10.029961+00:00",
+  "ends": "First sealed source handoff or expiry, whichever earlier",
+  "status": "GRANTED_ROOT_SOLE_PRIVATE_FOUR_PATH_SOURCE_PREPARATION_AND_PURE_FAKE_TESTS_NO_ACTUAL_RESOURCE_AUTHORITY",
+  "owner": "01a16ce5-e5ba-7191-ab2c-a1b76947d2b5",
+  "privateRoot": "/private/tmp/letbuyy-original210-physical-recovery-prep-20261025-01",
+  "durableOutput": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/original210-physical-recovery-prep01",
+  "authority": "Actual human resume user01a17051-60f8-7fe2-bf0e-87647ea64e7f and confirmation01a17051-aabe-7e93-954b-da5059e385df observed in live Root read_thread; Root current exact source-only prep request. Old Themes pause is historical; attempted misreadpause dispatch was rejected/no effects, no newhumanpause.",
+  "designReview": {
+    "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/themes-shared-review-20261025-01/ORIGINAL210_PHYSICAL_RECOVERY_DESIGN_REVIEW_01.json",
+    "sha256": "5947a572c44503c1e24462d60c079f614b4add38daf3839414aa37d7c0afc1fb"
+  },
+  "readOnlyBase": {
+    "root": "/private/tmp/letbuyy-original210-recovery-20261025-02",
+    "handoff": {
+      "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/original210-recovery-candidate02/HANDOFF.json",
+      "sha256": "2198dfab3dda68408f0e6f0a5fd6d606a1dd71ff845cf54430b812e9c36a650b"
+    },
+    "sourceManifest": {
+      "path": "/private/tmp/letbuyy-original210-recovery-20261025-02/SOURCE_MANIFEST.json",
+      "sha256": "e788d42762e96277e1ad1fc302df8d27f52daa2c7335cc5868abde55d6b6118b"
+    },
+    "firstPartySourceFiles": 6548
+  },
+  "exactSourceContext": [
+    {
+      "path": "scripts/governance/owned-database-provision.mjs",
+      "beforeCandidate02Sha256": "a46b1ce3e9b61cc571853c807fe1174215a0104a80a86f6b82bf003403cc288d",
+      "beforeMainSha256": "e537a426bf0284a32d49728f31ea55d5d265f1dc5562ccb527a36c55eaaa0db7",
+      "classification": "MUTABLE_EXISTING"
+    },
+    {
+      "path": "scripts/governance/run-executable-suites.mjs",
+      "beforeCandidate02Sha256": "42c65e181e5f561112af2f132289a6e6d265fea98c007e6000ce8f467f95b557",
+      "beforeMainSha256": "022085746f83c94979889a303044aa3b4503d53606f3f1e2ad3bd3084bc75213",
+      "classification": "MUTABLE_EXISTING"
+    },
+    {
+      "path": "scripts/governance/owned-preserved-physical-recovery.mjs",
+      "beforeCandidate02Sha256": null,
+      "beforeMainSha256": null,
+      "classification": "NEW"
+    },
+    {
+      "path": "tests/governance/owned-preserved-physical-recovery.test.mjs",
+      "beforeCandidate02Sha256": null,
+      "beforeMainSha256": null,
+      "classification": "NEW"
+    }
+  ],
+  "exactMutableCount": 4,
+  "readOnlyCriticalPins": [
+    {
+      "path": "scripts/governance/executable-pg-fixture.mjs",
+      "sha256": "87ec35378879a1c0072e4b7f025d4be12a621c65e1938fc471108cc6c5af6fdc"
+    },
+    {
+      "path": "scripts/governance/owned-fixture-guard.mjs",
+      "sha256": "c94f451113535b4c89a1a37d441453ba7803b08e46a328097c7086e1d22835f8"
+    },
+    {
+      "path": "database/supabase/migrations/360_subscription_tax_quote_snapshot.sql",
+      "sha256": "341a56d190f40140f1a6cfd5d2a2de587d6ff1cdf050b71203f06c9b438c313d"
+    }
+  ],
+  "requirements": [
+    "PHYS01",
+    "PHYS02",
+    "PHYS03",
+    "PHYS04",
+    "PHYS05",
+    "PHYS06",
+    "PHYS07",
+    "PHYS08",
+    "PHYS09",
+    "PHYS10"
+  ],
+  "permitted": [
+    "Materialize NEW private read-only-base copy/import closure and change only exact four source paths. Record all inputs/before-after hashes; never mutate Main or candidate01/02/oldprivateproposals.",
+    "New helper handles sourceadmission/physicalarchive/hydration/verification proposal, and exact existing runner/provisioner integration; tests use recordingfakes exclusively. No real Docker/Postgres/processservice/build/tsxIPC/backup action even as a test. Pure node tests/import/syntax controls may run with all externalexecutors replaced.",
+    "Reuse accepted candidate02 businesssource/vendor and existing semanticprofiles. Copy-local dependency metadata/wrappers may only rebind rootpaths with exact byte delta receipts; any semantic/newdependency/runtime expansion returns for review.",
+    "Seal exact modifiedsource, fakecontrols, manifest/links/wrappers and command proposal if prepared. Source manifest counts must distinguish6548base+2newfirstparty=6550 for fullcopy, versus smalleractualmaterializedclosure. No install, broadsuite rerun or fabricated archive/proof.",
+    "Fresh execution question may be prepared only after independent source/command review resolves identified inventory/transport/WAL/checkpoint gaps; old approvals04/05/06 allconsumed."
+  ],
+  "forbidden": [
+    "All actual backup/sourcecheckpoint/WALswitch, Dockercontainer/volume/network/helper creation, PGwrite/restore/provision/boot, Native/appbuild/staging/serve/browser/provider/publiccallback/keygeneration",
+    "All guard/journal/OID rebinding/disabling/backfill; session_replication_role skip; role/database recreation/bootstrap/migrationreplay in physicalbranch",
+    "Originalorfailedcopy signal/adoption/relabel/reap/delete/mount or copiedprivatecredentials in evidence/output",
+    "Main/businesssource/vendor/ordinaryownershipguard/executable-pg-fixture/suite-support changes outside exact scope",
+    "Any re-use of old execution permission or false GRANTEDresource receipt"
+  ],
+  "nativeResourceAuthority": "NONE: all earlier per-attempt allowances consumed; actual sourcebackup+helper+PGboot requires separately sealed/reviewed command and fresh directhuman permission.",
+  "actualNativeActionsByThemes": 0,
+  "fullThemeCertificates": 0
+}

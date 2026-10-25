@@ -1,0 +1,67 @@
+{
+  "recordedAt": "2026-10-24T23:58:07.529565+00:00",
+  "reviewer": "Themes /01a164a4-a342-76d3-ab33-65e021ed57db",
+  "authority": "RESUME_AUTHORITY_20261025_02.json",
+  "nativeDatabaseBrowserProviderMainBuildActions": 0,
+  "fullThemeCertificate": false,
+  "status": "GRANTED_EXACT_PRIVATE_NATIVE_CASE_AMENDMENT_AND_CLOSURE_PREPARATION_ONLY",
+  "owner": "01a16d03-613e-71b0-a591-07d4d24347d4",
+  "review": "THREADLINE_APPAREL_PROVENANCE_REVIEW_02.json",
+  "sealedBeforeRoot": "/private/tmp/letbuyy-apparel-provenance-prep-20261025-02",
+  "privateRoot": "/private/tmp/letbuyy-apparel-provenance-prep-20261025-03",
+  "durableOutput": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-provenance03",
+  "expiresAt": "2026-10-25T01:28:07.529565+00:00",
+  "ends": "First sealed handoff or expiry",
+  "mutableSourceOverlayPaths": [
+    "services/api-gateway/src/__tests__/owned-db/apparel-cart-order-provenance-qualification.manual.ts"
+  ],
+  "sevenOtherOverlayPathsReadOnly": [
+    {
+      "path": "packages/commerce-core/src/product-fact-snapshot.ts",
+      "sha256": "2f20d1555ff729e11215d8bee70a85391d7f473523b3a75b2b9e2b6ed1723ae3"
+    },
+    {
+      "path": "packages/commerce-core/src/product-facts-summary.ts",
+      "sha256": "e9ead6d7d043022ab1886a9a75fde03ba088ffcaaa2a748e5d5dcf5722560913"
+    },
+    {
+      "path": "packages/theme-engine/src/niche-order-presentation.ts",
+      "sha256": "63e5a3836f9602a843df27bc61be28572ab8c5491a2ae4f60d38e04acd5d686b"
+    },
+    {
+      "path": "services/api-gateway/src/lib/cart-product-facts.ts",
+      "sha256": "57bdd378f890b55b241c70141ba366c732b9bc458829f179b1359c94e9908fc1"
+    },
+    {
+      "path": "packages/commerce-core/test/apparel-order-history.test.ts",
+      "sha256": "46112ebd032ad054d13829e04435c8da8ec22e9fc35cf15a1f00e43d4cb095bc"
+    },
+    {
+      "path": "packages/theme-engine/test/threadline-order-facts-v211.test.ts",
+      "sha256": "714179af00e3f76811c08ebd23abd4308675adbff6d224a06b4bed13b5d7cec9"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/order-fact-readback.test.ts",
+      "sha256": "dcf663fd71f5ebdc1bc5017bbf9e6ad9473aa3544698789eeef0459bd3018049"
+    }
+  ],
+  "supportPolicy": "Same existing canonical support only. One fresh private source materialization from sealed candidate6547 pinned sources plus exact8overlays is permitted solely for source/dependency inventory/type validation. No new package/dependency/runtime, build outputs, env files, keys, DB or discovered app-module evaluation.",
+  "required": [
+    "Resolve APPAREL-NATIVE-R01/R02/R03, retaining scoped HTTP witness honestly and full-public witness for SQL-only conservation. Reuse existing qualification patterns; no disabled telemetry/permissions.",
+    "Retain paired UP/DOWN byte-exact and preserve sealed02. Prepare complete actual runtime/import/export/runner/SQL/bootstrap/deploy/manifest/lock/tool dependency closure, with missing/corrupt/incomplete-input negative checks.",
+    "Native file must refuse absent future allocator admission, verify exact sealed source/proposal hashes, full322/max393/no ceiling actual migration list and exact fourUP application order before baseline. Capture actual baseline full creator profile only in future admitted fresh native, not current runtime07.",
+    "Prepare precise one-cohort600s jobs1/no-reap/prepared2 envelope/effect budget/cleanup; do not write actual NATIVE_ADMISSION or run DB/native/Docker/module probe.",
+    "Run only necessary pure/source/type checks on actual changed leaf; do not rerun unchanged16/45/1 source suites or inflate coverage. Return exact sealed manifests/HANDOFF."
+  ],
+  "metadataArtifactsAllowed": [
+    "SOURCE_MANIFEST.json",
+    "ARTIFACT_MANIFEST.json",
+    "HANDOFF.json",
+    "NATIVE_PREPARATION_PLAN.json",
+    "native-source-closure.json",
+    "read-only source inventory and verification scripts",
+    "bounded pure/type evidence"
+  ],
+  "NoMainCandidateSqlBodyNativeDatabaseBuildBrowserProviderOrPublicChanges": true,
+  "habitatSoleCatalogueOwner": true
+}

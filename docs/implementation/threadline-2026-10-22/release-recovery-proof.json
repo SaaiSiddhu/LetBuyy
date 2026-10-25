@@ -1,0 +1,20 @@
+{
+  "before": {
+    "packageVersion": "2.0.0",
+    "releaseId": "989b28fb-c8f1-4019-9890-22a80d9b91d4",
+    "sourceDraftVersion": 2,
+    "releaseSha256": "5676a063d14cece1542c949b3f2e464119ff7ddb97d1e81c2cbaf77f2410045a",
+    "orders": 0,
+    "installed": 1
+  },
+  "after": {
+    "packageVersion": "2.0.0",
+    "releaseId": "564c8be4-97a2-405f-901a-40653cba9fe8",
+    "sourceDraftVersion": null,
+    "releaseSha256": "5676a063d14cece1542c949b3f2e464119ff7ddb97d1e81c2cbaf77f2410045a",
+    "orders": 0,
+    "installed": 1
+  },
+  "restoredExactSnapshot": true,
+  "newRelease": true
+}

@@ -1,0 +1,1157 @@
+{
+  "recordedAt": "2026-10-24T12:56:53.350666+00:00",
+  "classification": "ACTUAL_201_SOURCE_DATA_EVIDENCE_ADDENDUM_NO_RUNTIME_PROMOTION",
+  "identity": {
+    "slug": "letbuyy-sense",
+    "version": "2.0.1",
+    "bundleSha256": "bc53034a4b715778036e80bebd24ead37babe9c0a86b1e6831d8c7933ea45ab2"
+  },
+  "gate": {
+    "status": "PASS_SOURCE_DATA_CONTRACT",
+    "PASS": 46,
+    "FAIL": 0,
+    "scope": "Oneindexsourcefixture;44nonappsectiondatacontracts,protectedseamnonactivation,globalsettings; actualcanonicalpurefunctions."
+  },
+  "sourcePins": {
+    "count": 179,
+    "beforeAfterExact": true,
+    "before": {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/source-pins-before.json",
+      "sha256": "4fcf846491c511a2102cc1a9fd50554351efd2f23141bab3854b442a0ae3ab4a",
+      "bytes": 41888
+    },
+    "after": {
+      "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/source-pins-after.json",
+      "sha256": "4fcf846491c511a2102cc1a9fd50554351efd2f23141bab3854b442a0ae3ab4a",
+      "bytes": 41888
+    }
+  },
+  "originalCoverage": {
+    "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/COVERAGE.json",
+    "sha256": "136af07745f0ec16703ccb820b57a91b3f009ed2876678aaab3dccd3974cd7e9",
+    "bytes": 707668
+  },
+  "originalInventory": {
+    "path": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/CAPABILITY_INVENTORY.json",
+    "sha256": "1571c45506787158e994d47c5f0917bbd050dbf55b8ce55342115f46ce6f0d54",
+    "bytes": 295113
+  },
+  "fieldMapping": {
+    "firstPartySourceValueRetention": 135,
+    "protectedFieldCount": 6,
+    "missingFirstPartyFields": [],
+    "unexpectedEditedFields": [],
+    "globalNamespace": "Inventoryglobal/<presentationgroup>/<field>maps toactualcanonicalsourcecontracttheme/<field>; originalcaseIDunchanged.",
+    "protectedFieldIds": [
+      "section/app-block-slot/title",
+      "section/app-block-slot/slot",
+      "block/app-block-slot/@app/extension_handle",
+      "block/app-block-slot/@app/slot",
+      "block/spotlight/@app/extension_handle",
+      "block/spotlight/@app/slot"
+    ],
+    "sourceEvidenceByExistingCase": [
+      {
+        "caseId": "TL-ED-FIELD-section/customer-orders/heading",
+        "fieldId": "section/customer-orders/heading",
+        "canonicalSourceFieldId": "section/customer-orders/heading",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/customer-order-detail/heading",
+        "fieldId": "section/customer-order-detail/heading",
+        "canonicalSourceFieldId": "section/customer-order-detail/heading",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/customer-account/heading",
+        "fieldId": "section/customer-account/heading",
+        "canonicalSourceFieldId": "section/customer-account/heading",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/customer-login/heading",
+        "fieldId": "section/customer-login/heading",
+        "canonicalSourceFieldId": "section/customer-login/heading",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/customer-register/heading",
+        "fieldId": "section/customer-register/heading",
+        "canonicalSourceFieldId": "section/customer-register/heading",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/customer-settings/heading",
+        "fieldId": "section/customer-settings/heading",
+        "canonicalSourceFieldId": "section/customer-settings/heading",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/customer-wishlist/heading",
+        "fieldId": "section/customer-wishlist/heading",
+        "canonicalSourceFieldId": "section/customer-wishlist/heading",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/customer-addresses/heading",
+        "fieldId": "section/customer-addresses/heading",
+        "canonicalSourceFieldId": "section/customer-addresses/heading",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/cart-summary/heading",
+        "fieldId": "section/cart-summary/heading",
+        "canonicalSourceFieldId": "section/cart-summary/heading",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/search-box/placeholder",
+        "fieldId": "section/search-box/placeholder",
+        "canonicalSourceFieldId": "section/search-box/placeholder",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/collection-banner/showDescription",
+        "fieldId": "section/collection-banner/showDescription",
+        "canonicalSourceFieldId": "section/collection-banner/showDescription",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/collection-product-list/title",
+        "fieldId": "section/collection-product-list/title",
+        "canonicalSourceFieldId": "section/collection-product-list/title",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/blog-listing/heading",
+        "fieldId": "section/blog-listing/heading",
+        "canonicalSourceFieldId": "section/blog-listing/heading",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/password-gate/heading",
+        "fieldId": "section/password-gate/heading",
+        "canonicalSourceFieldId": "section/password-gate/heading",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/announcement-bar/text",
+        "fieldId": "section/announcement-bar/text",
+        "canonicalSourceFieldId": "section/announcement-bar/text",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/announcement-bar/linkLabel",
+        "fieldId": "section/announcement-bar/linkLabel",
+        "canonicalSourceFieldId": "section/announcement-bar/linkLabel",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/announcement-bar/linkHref",
+        "fieldId": "section/announcement-bar/linkHref",
+        "canonicalSourceFieldId": "section/announcement-bar/linkHref",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/about-section/title",
+        "fieldId": "section/about-section/title",
+        "canonicalSourceFieldId": "section/about-section/title",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/about-section/content",
+        "fieldId": "section/about-section/content",
+        "canonicalSourceFieldId": "section/about-section/content",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/about-section/image",
+        "fieldId": "section/about-section/image",
+        "canonicalSourceFieldId": "section/about-section/image",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/about-section/linkLabel",
+        "fieldId": "section/about-section/linkLabel",
+        "canonicalSourceFieldId": "section/about-section/linkLabel",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/about-section/linkUrl",
+        "fieldId": "section/about-section/linkUrl",
+        "canonicalSourceFieldId": "section/about-section/linkUrl",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/banner-carousel/title",
+        "fieldId": "section/banner-carousel/title",
+        "canonicalSourceFieldId": "section/banner-carousel/title",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/banner-carousel/autoplay",
+        "fieldId": "section/banner-carousel/autoplay",
+        "canonicalSourceFieldId": "section/banner-carousel/autoplay",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-block/banner-carousel/slide/heading",
+        "fieldId": "block/banner-carousel/slide/heading",
+        "canonicalSourceFieldId": "block/banner-carousel/slide/heading",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-block/banner-carousel/slide/image",
+        "fieldId": "block/banner-carousel/slide/image",
+        "canonicalSourceFieldId": "block/banner-carousel/slide/image",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-block/banner-carousel/slide/link",
+        "fieldId": "block/banner-carousel/slide/link",
+        "canonicalSourceFieldId": "block/banner-carousel/slide/link",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/brand-marquee/title",
+        "fieldId": "section/brand-marquee/title",
+        "canonicalSourceFieldId": "section/brand-marquee/title",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-block/brand-marquee/brand/name",
+        "fieldId": "block/brand-marquee/brand/name",
+        "canonicalSourceFieldId": "block/brand-marquee/brand/name",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/category-grid/title",
+        "fieldId": "section/category-grid/title",
+        "canonicalSourceFieldId": "section/category-grid/title",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/category-grid/subtitle",
+        "fieldId": "section/category-grid/subtitle",
+        "canonicalSourceFieldId": "section/category-grid/subtitle",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/category-grid/collection1",
+        "fieldId": "section/category-grid/collection1",
+        "canonicalSourceFieldId": "section/category-grid/collection1",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/category-grid/collection2",
+        "fieldId": "section/category-grid/collection2",
+        "canonicalSourceFieldId": "section/category-grid/collection2",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/category-grid/collection3",
+        "fieldId": "section/category-grid/collection3",
+        "canonicalSourceFieldId": "section/category-grid/collection3",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/contact-form/title",
+        "fieldId": "section/contact-form/title",
+        "canonicalSourceFieldId": "section/contact-form/title",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/contact-form/subtitle",
+        "fieldId": "section/contact-form/subtitle",
+        "canonicalSourceFieldId": "section/contact-form/subtitle",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/contact-form/showPhone",
+        "fieldId": "section/contact-form/showPhone",
+        "canonicalSourceFieldId": "section/contact-form/showPhone",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/cta-section/heading",
+        "fieldId": "section/cta-section/heading",
+        "canonicalSourceFieldId": "section/cta-section/heading",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/cta-section/subheading",
+        "fieldId": "section/cta-section/subheading",
+        "canonicalSourceFieldId": "section/cta-section/subheading",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/cta-section/ctaText",
+        "fieldId": "section/cta-section/ctaText",
+        "canonicalSourceFieldId": "section/cta-section/ctaText",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/cta-section/ctaLink",
+        "fieldId": "section/cta-section/ctaLink",
+        "canonicalSourceFieldId": "section/cta-section/ctaLink",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/featured-products/requireSelection",
+        "fieldId": "section/featured-products/requireSelection",
+        "canonicalSourceFieldId": "section/featured-products/requireSelection",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/featured-products/title",
+        "fieldId": "section/featured-products/title",
+        "canonicalSourceFieldId": "section/featured-products/title",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/featured-products/subtitle",
+        "fieldId": "section/featured-products/subtitle",
+        "canonicalSourceFieldId": "section/featured-products/subtitle",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/featured-products/image",
+        "fieldId": "section/featured-products/image",
+        "canonicalSourceFieldId": "section/featured-products/image",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/featured-products/product1",
+        "fieldId": "section/featured-products/product1",
+        "canonicalSourceFieldId": "section/featured-products/product1",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/featured-products/product2",
+        "fieldId": "section/featured-products/product2",
+        "canonicalSourceFieldId": "section/featured-products/product2",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/featured-products/product3",
+        "fieldId": "section/featured-products/product3",
+        "canonicalSourceFieldId": "section/featured-products/product3",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/featured-products/productLimit",
+        "fieldId": "section/featured-products/productLimit",
+        "canonicalSourceFieldId": "section/featured-products/productLimit",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/experience-timeline/title",
+        "fieldId": "section/experience-timeline/title",
+        "canonicalSourceFieldId": "section/experience-timeline/title",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-block/experience-timeline/experience/title",
+        "fieldId": "block/experience-timeline/experience/title",
+        "canonicalSourceFieldId": "block/experience-timeline/experience/title",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-block/experience-timeline/experience/company",
+        "fieldId": "block/experience-timeline/experience/company",
+        "canonicalSourceFieldId": "block/experience-timeline/experience/company",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-block/experience-timeline/experience/period",
+        "fieldId": "block/experience-timeline/experience/period",
+        "canonicalSourceFieldId": "block/experience-timeline/experience/period",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/faq-accordion/title",
+        "fieldId": "section/faq-accordion/title",
+        "canonicalSourceFieldId": "section/faq-accordion/title",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/faq-accordion/allowMultipleOpen",
+        "fieldId": "section/faq-accordion/allowMultipleOpen",
+        "canonicalSourceFieldId": "section/faq-accordion/allowMultipleOpen",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-block/faq-accordion/faq-item/question",
+        "fieldId": "block/faq-accordion/faq-item/question",
+        "canonicalSourceFieldId": "block/faq-accordion/faq-item/question",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-block/faq-accordion/faq-item/answer",
+        "fieldId": "block/faq-accordion/faq-item/answer",
+        "canonicalSourceFieldId": "block/faq-accordion/faq-item/answer",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/footer/storeName",
+        "fieldId": "section/footer/storeName",
+        "canonicalSourceFieldId": "section/footer/storeName",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/footer/tagline",
+        "fieldId": "section/footer/tagline",
+        "canonicalSourceFieldId": "section/footer/tagline",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/footer/contactEmail",
+        "fieldId": "section/footer/contactEmail",
+        "canonicalSourceFieldId": "section/footer/contactEmail",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/footer/contactPhone",
+        "fieldId": "section/footer/contactPhone",
+        "canonicalSourceFieldId": "section/footer/contactPhone",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/footer/instagramUrl",
+        "fieldId": "section/footer/instagramUrl",
+        "canonicalSourceFieldId": "section/footer/instagramUrl",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/footer/facebookUrl",
+        "fieldId": "section/footer/facebookUrl",
+        "canonicalSourceFieldId": "section/footer/facebookUrl",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/footer/twitterUrl",
+        "fieldId": "section/footer/twitterUrl",
+        "canonicalSourceFieldId": "section/footer/twitterUrl",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-block/footer/link/label",
+        "fieldId": "block/footer/link/label",
+        "canonicalSourceFieldId": "block/footer/link/label",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-block/footer/link/href",
+        "fieldId": "block/footer/link/href",
+        "canonicalSourceFieldId": "block/footer/link/href",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/header/storeName",
+        "fieldId": "section/header/storeName",
+        "canonicalSourceFieldId": "section/header/storeName",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/header/showSearch",
+        "fieldId": "section/header/showSearch",
+        "canonicalSourceFieldId": "section/header/showSearch",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/header/showCart",
+        "fieldId": "section/header/showCart",
+        "canonicalSourceFieldId": "section/header/showCart",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/header/behavior",
+        "fieldId": "section/header/behavior",
+        "canonicalSourceFieldId": "section/header/behavior",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/header/menu",
+        "fieldId": "section/header/menu",
+        "canonicalSourceFieldId": "section/header/menu",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/header/layout",
+        "fieldId": "section/header/layout",
+        "canonicalSourceFieldId": "section/header/layout",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-block/header/link/label",
+        "fieldId": "block/header/link/label",
+        "canonicalSourceFieldId": "block/header/link/label",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-block/header/link/href",
+        "fieldId": "block/header/link/href",
+        "canonicalSourceFieldId": "block/header/link/href",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/hero-banner/eyebrow",
+        "fieldId": "section/hero-banner/eyebrow",
+        "canonicalSourceFieldId": "section/hero-banner/eyebrow",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/hero-banner/heading",
+        "fieldId": "section/hero-banner/heading",
+        "canonicalSourceFieldId": "section/hero-banner/heading",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/hero-banner/subheading",
+        "fieldId": "section/hero-banner/subheading",
+        "canonicalSourceFieldId": "section/hero-banner/subheading",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/hero-banner/ctaText",
+        "fieldId": "section/hero-banner/ctaText",
+        "canonicalSourceFieldId": "section/hero-banner/ctaText",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/hero-banner/ctaLink",
+        "fieldId": "section/hero-banner/ctaLink",
+        "canonicalSourceFieldId": "section/hero-banner/ctaLink",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/hero-banner/secondaryText",
+        "fieldId": "section/hero-banner/secondaryText",
+        "canonicalSourceFieldId": "section/hero-banner/secondaryText",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/hero-banner/secondaryLink",
+        "fieldId": "section/hero-banner/secondaryLink",
+        "canonicalSourceFieldId": "section/hero-banner/secondaryLink",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/hero-banner/image",
+        "fieldId": "section/hero-banner/image",
+        "canonicalSourceFieldId": "section/hero-banner/image",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/hero-banner/secondImage",
+        "fieldId": "section/hero-banner/secondImage",
+        "canonicalSourceFieldId": "section/hero-banner/secondImage",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/hero-banner/imageFocus",
+        "fieldId": "section/hero-banner/imageFocus",
+        "canonicalSourceFieldId": "section/hero-banner/imageFocus",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/marquee/text",
+        "fieldId": "section/marquee/text",
+        "canonicalSourceFieldId": "section/marquee/text",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/portfolio-grid/title",
+        "fieldId": "section/portfolio-grid/title",
+        "canonicalSourceFieldId": "section/portfolio-grid/title",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-block/portfolio-grid/project/title",
+        "fieldId": "block/portfolio-grid/project/title",
+        "canonicalSourceFieldId": "block/portfolio-grid/project/title",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-block/portfolio-grid/project/summary",
+        "fieldId": "block/portfolio-grid/project/summary",
+        "canonicalSourceFieldId": "block/portfolio-grid/project/summary",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-block/portfolio-grid/project/link",
+        "fieldId": "block/portfolio-grid/project/link",
+        "canonicalSourceFieldId": "block/portfolio-grid/project/link",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/product-detail/showGallery",
+        "fieldId": "section/product-detail/showGallery",
+        "canonicalSourceFieldId": "section/product-detail/showGallery",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/product-detail/showDescription",
+        "fieldId": "section/product-detail/showDescription",
+        "canonicalSourceFieldId": "section/product-detail/showDescription",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/product-detail/showReviews",
+        "fieldId": "section/product-detail/showReviews",
+        "canonicalSourceFieldId": "section/product-detail/showReviews",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/product-detail/showBuyNow",
+        "fieldId": "section/product-detail/showBuyNow",
+        "canonicalSourceFieldId": "section/product-detail/showBuyNow",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/product-detail/showGarmentFacts",
+        "fieldId": "section/product-detail/showGarmentFacts",
+        "canonicalSourceFieldId": "section/product-detail/showGarmentFacts",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/product-grid/title",
+        "fieldId": "section/product-grid/title",
+        "canonicalSourceFieldId": "section/product-grid/title",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/product-grid/subtitle",
+        "fieldId": "section/product-grid/subtitle",
+        "canonicalSourceFieldId": "section/product-grid/subtitle",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/product-grid/columns",
+        "fieldId": "section/product-grid/columns",
+        "canonicalSourceFieldId": "section/product-grid/columns",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/product-grid/productLimit",
+        "fieldId": "section/product-grid/productLimit",
+        "canonicalSourceFieldId": "section/product-grid/productLimit",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/product-grid/collectionId",
+        "fieldId": "section/product-grid/collectionId",
+        "canonicalSourceFieldId": "section/product-grid/collectionId",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/rich-content/title",
+        "fieldId": "section/rich-content/title",
+        "canonicalSourceFieldId": "section/rich-content/title",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/rich-content/body",
+        "fieldId": "section/rich-content/body",
+        "canonicalSourceFieldId": "section/rich-content/body",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/services-grid/title",
+        "fieldId": "section/services-grid/title",
+        "canonicalSourceFieldId": "section/services-grid/title",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-block/services-grid/service/title",
+        "fieldId": "block/services-grid/service/title",
+        "canonicalSourceFieldId": "block/services-grid/service/title",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-block/services-grid/service/description",
+        "fieldId": "block/services-grid/service/description",
+        "canonicalSourceFieldId": "block/services-grid/service/description",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-block/services-grid/service/link",
+        "fieldId": "block/services-grid/service/link",
+        "canonicalSourceFieldId": "block/services-grid/service/link",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/skills-section/title",
+        "fieldId": "section/skills-section/title",
+        "canonicalSourceFieldId": "section/skills-section/title",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-block/skills-section/skill/name",
+        "fieldId": "block/skills-section/skill/name",
+        "canonicalSourceFieldId": "block/skills-section/skill/name",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-block/skills-section/skill/level",
+        "fieldId": "block/skills-section/skill/level",
+        "canonicalSourceFieldId": "block/skills-section/skill/level",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/testimonials/title",
+        "fieldId": "section/testimonials/title",
+        "canonicalSourceFieldId": "section/testimonials/title",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-block/testimonials/testimonial/quote",
+        "fieldId": "block/testimonials/testimonial/quote",
+        "canonicalSourceFieldId": "block/testimonials/testimonial/quote",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-block/testimonials/testimonial/author",
+        "fieldId": "block/testimonials/testimonial/author",
+        "canonicalSourceFieldId": "block/testimonials/testimonial/author",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/trust-badges/fitText",
+        "fieldId": "section/trust-badges/fitText",
+        "canonicalSourceFieldId": "section/trust-badges/fitText",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/trust-badges/serviceText",
+        "fieldId": "section/trust-badges/serviceText",
+        "canonicalSourceFieldId": "section/trust-badges/serviceText",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/trust-badges/supportText",
+        "fieldId": "section/trust-badges/supportText",
+        "canonicalSourceFieldId": "section/trust-badges/supportText",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/newsletter-signup/title",
+        "fieldId": "section/newsletter-signup/title",
+        "canonicalSourceFieldId": "section/newsletter-signup/title",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/newsletter-signup/subtitle",
+        "fieldId": "section/newsletter-signup/subtitle",
+        "canonicalSourceFieldId": "section/newsletter-signup/subtitle",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/newsletter-signup/buttonLabel",
+        "fieldId": "section/newsletter-signup/buttonLabel",
+        "canonicalSourceFieldId": "section/newsletter-signup/buttonLabel",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/spotlight/heading",
+        "fieldId": "section/spotlight/heading",
+        "canonicalSourceFieldId": "section/spotlight/heading",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/spotlight/subheading",
+        "fieldId": "section/spotlight/subheading",
+        "canonicalSourceFieldId": "section/spotlight/subheading",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-block/spotlight/badge/label",
+        "fieldId": "block/spotlight/badge/label",
+        "canonicalSourceFieldId": "block/spotlight/badge/label",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/video-hero/heading",
+        "fieldId": "section/video-hero/heading",
+        "canonicalSourceFieldId": "section/video-hero/heading",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/video-hero/subheading",
+        "fieldId": "section/video-hero/subheading",
+        "canonicalSourceFieldId": "section/video-hero/subheading",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-section/video-hero/videoUrl",
+        "fieldId": "section/video-hero/videoUrl",
+        "canonicalSourceFieldId": "section/video-hero/videoUrl",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-global/colors/primaryColor",
+        "fieldId": "global/colors/primaryColor",
+        "canonicalSourceFieldId": "theme/primaryColor",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-global/colors/secondaryColor",
+        "fieldId": "global/colors/secondaryColor",
+        "canonicalSourceFieldId": "theme/secondaryColor",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-global/colors/accentColor",
+        "fieldId": "global/colors/accentColor",
+        "canonicalSourceFieldId": "theme/accentColor",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-global/colors/backgroundColor",
+        "fieldId": "global/colors/backgroundColor",
+        "canonicalSourceFieldId": "theme/backgroundColor",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-global/colors/textColor",
+        "fieldId": "global/colors/textColor",
+        "canonicalSourceFieldId": "theme/textColor",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-global/colors/surfaceColor",
+        "fieldId": "global/colors/surfaceColor",
+        "canonicalSourceFieldId": "theme/surfaceColor",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-global/typography/headingFontFamily",
+        "fieldId": "global/typography/headingFontFamily",
+        "canonicalSourceFieldId": "theme/headingFontFamily",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-global/typography/bodyFontFamily",
+        "fieldId": "global/typography/bodyFontFamily",
+        "canonicalSourceFieldId": "theme/bodyFontFamily",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-global/appearance/borderRadius",
+        "fieldId": "global/appearance/borderRadius",
+        "canonicalSourceFieldId": "theme/borderRadius",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-global/seo/metaDescription",
+        "fieldId": "global/seo/metaDescription",
+        "canonicalSourceFieldId": "theme/metaDescription",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-global/seo/socialImageUrl",
+        "fieldId": "global/seo/socialImageUrl",
+        "canonicalSourceFieldId": "theme/socialImageUrl",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      },
+      {
+        "caseId": "TL-ED-FIELD-global/seo/faviconUrl",
+        "fieldId": "global/seo/faviconUrl",
+        "canonicalSourceFieldId": "theme/faviconUrl",
+        "sourceOnly": "PASS_CANONICAL_VALUE_RETENTION",
+        "runtimeStatus": "NOT_RUN",
+        "evidence": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/shared-source-contract-run01/letbuyy-sense__2.0.1/result.json"
+      }
+    ]
+  },
+  "sourceFacts": {
+    "inputBundleUnchanged": true,
+    "actualUICallbacksExecuted": 0,
+    "nestedPermissionInferenceMade": false,
+    "realResourceOwnershipProved": false,
+    "appInstancesGenerated": 0,
+    "noSourceTestRerun": true
+  },
+  "stillRequired": [
+    "All26originalinstalledobligations and318runtimeoperationrecords",
+    "NormalUIactions/limits/nestedchildren/undo/recovery",
+    "Realownedforeignmissingresourcebindings/media",
+    "Actualsaveack/reload/preview/publish/publicreadback",
+    "Buyeridentity/cart/COD/actualRazorpayTestMode/webhooks/ledger/history",
+    "Currentinstalledsource/artifact/runtime/controllerlineage",
+    "Security/quality/performance/independentreview"
+  ],
+  "original26StatusesPreserved": true,
+  "runtimeRowStatusNotChanged": "RuntimeoperationstatusesretainNOT_RUN; sourcefacetisadditionalprovenance,notbrowsercasepass.",
+  "countingRule": "46sourcecasefamiliescover135sourcefieldvalues; do notsumwithMain20/composed94/original26/318requirements asuniquelifecyclepasses.",
+  "FULL_THEME_CERTIFIED": false
+}

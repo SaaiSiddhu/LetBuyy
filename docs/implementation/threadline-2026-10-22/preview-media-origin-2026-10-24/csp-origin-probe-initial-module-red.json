@@ -1,0 +1,12 @@
+{
+  "recordedAt": "2026-10-23T18:37:45.499021+00:00",
+  "classification": "PRESERVED_OPTIONAL_PURE_PROBE_LOADER_FAILURE_BEFORE_ASSERTIONS_NOT_PRODUCT_FAILURE",
+  "exitCode": 1,
+  "commandShape": "node --import tsx --input-type=module; named ESM import of config/security/next-security-headers.ts",
+  "error": "SyntaxError: The requested module does not provide an export named createContentSecurityPolicy",
+  "cause": "This repository loads this TypeScript module as CommonJS; use existing require loader contract instead of named ESM import",
+  "policyAssertionsExecuted": 0,
+  "existing29RegressionResultUnchanged": "PASS",
+  "sourceChangeRequired": false,
+  "appOrDatabaseOrBrowserStarted": false
+}

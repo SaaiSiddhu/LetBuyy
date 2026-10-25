@@ -1,0 +1,20 @@
+{
+  "capturedAt": "2026-10-23T04:24:01.032Z",
+  "classification": "DOM_REPRODUCED_NOT_BROWSER_OR_SERVICE_ACCEPTANCE",
+  "task": "Click the second of two identical-label editable blocks in the same registered section.",
+  "expected": {
+    "sectionId": "owned-section",
+    "blockId": "second"
+  },
+  "actual": {
+    "data": {
+      "type": "letbuyy:theme-editor:section-select",
+      "sectionId": "owned-section",
+      "sectionType": "Synthetic section"
+    },
+    "origin": "https://admin.example.test"
+  },
+  "exactBlockIdentityPreserved": false,
+  "storefrontActivationPrevented": true,
+  "caveat": "Synthetic DOM supplies editable metadata. Current generated inline block output still needs its own metadata/render trace. No installed theme was changed."
+}

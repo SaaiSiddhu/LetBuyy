@@ -1,0 +1,35 @@
+{
+  "recordedAt": "2026-10-24T05:33:35.309186+00:00",
+  "status": "ROOT_GRANTED_ONE_NATIVE04_AFTER_PRECISE_HTTP_ATTRIBUTION_REPAIR",
+  "sourceReview": {
+    "path": "docs/implementation/niche-theme-programme/publisher-acl393-http-attribution-root-source-review.json",
+    "sha256": "36af98eb0b3b28f1d680022d3cbad1123d024e05da4a9668d73c5ef8a096202e"
+  },
+  "actualStrictAdmission": {
+    "path": "docs/implementation/niche-theme-programme/publisher-acl393/admission.json",
+    "sha256": "6203c3736932414ffc32de9f910bb6ca623add55ff19c9c82d3cbebf53955531"
+  },
+  "allocation": {
+    "status": "ROOT_PUBLISHER_ACL393_NATIVE_SOURCE_ADMITTED_ONE_FRESH_DEFAULT_LATEST392",
+    "suitePath": "services/api-gateway/src/__tests__/owned-db/theme-publisher-acl.postgres.test.ts",
+    "suiteSha256": "e71b15856e4868d28f249d8debf7f758de31cf61715bd10c0844ce79c2bc66b2",
+    "allocationPath": "docs/implementation/niche-theme-programme/publisher-acl393-source-allocation.json",
+    "allocationSha256": "e0e70d9145957272c33042f22f8a51bfe365a60a638a794704d04e425c22ea98",
+    "manifestPath": "docs/implementation/niche-theme-programme/publisher-acl393/case-operand-repair/v2/manifest.json",
+    "manifestSha256": "e5db28e52ef55bb7da76d42a547a9d5b48c4969a138ea0ccfd24f201555d597d",
+    "inputClosurePath": "docs/implementation/niche-theme-programme/publisher-acl393/source-input-closure.json",
+    "inputClosureSha256": "2851f65451c43154e5f896d6bb0a7964a521307471baac90947c528a6ef42e16",
+    "sourceMigrationMaximum": 392,
+    "sourceMigrationCount": 321,
+    "migrationCeiling": null,
+    "candidateMigration": 393,
+    "candidateOutsideMigrationScan": true,
+    "nativeLease": "GRANTED_ONE_FRESH_DEFAULT_LATEST392_JOBS1_NO_REAP_PREPARED2_600S",
+    "recordedAt": "2026-10-24T05:33:35.309186+00:00"
+  },
+  "expectedTAP": 8,
+  "allSevenPhasesMandatory": true,
+  "sourceClosureFrozen": true,
+  "lane": "Official unchangedrunner gateway-db/jobs1/no-reap/prepared2/timeout600/defaultLATEST392/noceiling; freshownedresources/newnative-runs04 only.",
+  "limits": "No source/SQL/profile/guard weakening, retry/emission,394/nativecount/current936/Mkt actions. On failure stop with complete provenance/cleanup and exact attribution."
+}

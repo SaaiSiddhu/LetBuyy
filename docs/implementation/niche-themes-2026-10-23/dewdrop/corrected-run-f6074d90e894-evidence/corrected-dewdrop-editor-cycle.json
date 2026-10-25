@@ -1,0 +1,120 @@
+{
+  "recordedAt": "2026-10-23T18:18:42.142707+00:00",
+  "runId": "f6074d90e894",
+  "scope": "ACTUAL_DEWDROP_EDITOR_TEMPLATE_AND_SHARED_GROUP_CYCLE_NOT_FULL30_ACCEPTANCE",
+  "normalInstallVersion": "2.0.0",
+  "templateSaveAndFullReload": "PASS",
+  "privateNewerDraftPublicA": "PASS",
+  "sharedAnnouncementAndFooterSaveFullReloadPreviewPublic": "PASS",
+  "liveParentPreviewAndInspectorSelection": "PASS",
+  "previewMedia": "FAIL_CLOUD_IMAGE_POLICY_DIAGNOSTIC_OPEN",
+  "phases": {
+    "A": {
+      "recordedAt": "2026-10-23T17:59:45.309664+00:00",
+      "runId": "f6074d90e894",
+      "phase": "A",
+      "proofStatus": 200,
+      "proof": {
+        "packageVersion": "2.0.0",
+        "releaseId": "c68c4117-a6f1-430a-b321-ac76c5e7b145",
+        "sourceDraftVersion": 4,
+        "releaseSha256": "57bdde21eb6270428d8d3f84255d1a2c79b25881a666ebd31352025e80aaaf91",
+        "orders": 0,
+        "installed": 1,
+        "editorObservations": {
+          "captureFailures": 0,
+          "records": []
+        }
+      },
+      "publicReadback": {
+        "url": "http://syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94",
+        "httpStatus": 200,
+        "expectedHeading": "Dewdrop saved heading A f6074d90e894",
+        "expectedFound": true,
+        "otherHeadingFound": false
+      }
+    },
+    "B": {
+      "recordedAt": "2026-10-23T18:13:50.743560+00:00",
+      "runId": "f6074d90e894",
+      "phase": "B",
+      "proofStatus": 200,
+      "proof": {
+        "packageVersion": "2.0.0",
+        "releaseId": "b8cab43c-b81c-476f-a63e-50a2f1a59399",
+        "sourceDraftVersion": 7,
+        "releaseSha256": "f81297f28b702a26f4183b21501f6cd6564d520e40a81175d8e768ed07bee2c3",
+        "orders": 0,
+        "installed": 1,
+        "editorObservations": {
+          "captureFailures": 0,
+          "records": []
+        }
+      },
+      "publicReadback": {
+        "url": "http://syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94",
+        "httpStatus": 200,
+        "expectedHeading": "Dewdrop saved heading B f6074d90e894",
+        "expectedFound": true,
+        "otherHeadingFound": false
+      }
+    },
+    "restoreA": {
+      "recordedAt": "2026-10-23T18:17:34.486357+00:00",
+      "runId": "f6074d90e894",
+      "phase": "restored-A",
+      "proofStatus": 200,
+      "proof": {
+        "packageVersion": "2.0.0",
+        "releaseId": "41f399d3-7df2-42ff-a916-85fea3c7a8c6",
+        "sourceDraftVersion": null,
+        "releaseSha256": "57bdde21eb6270428d8d3f84255d1a2c79b25881a666ebd31352025e80aaaf91",
+        "orders": 0,
+        "installed": 1,
+        "editorObservations": {
+          "captureFailures": 0,
+          "records": []
+        }
+      },
+      "publicReadback": {
+        "url": "http://syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94",
+        "httpStatus": 200,
+        "expectedHeading": "Dewdrop saved heading A f6074d90e894",
+        "expectedFound": true,
+        "otherHeadingFound": false
+      }
+    },
+    "reapplyB": {
+      "recordedAt": "2026-10-23T18:18:42.070746+00:00",
+      "runId": "f6074d90e894",
+      "phase": "reapplied-B",
+      "proofStatus": 200,
+      "proof": {
+        "packageVersion": "2.0.0",
+        "releaseId": "9930c66a-c042-4583-9275-c737c71ba7c6",
+        "sourceDraftVersion": 9,
+        "releaseSha256": "f81297f28b702a26f4183b21501f6cd6564d520e40a81175d8e768ed07bee2c3",
+        "orders": 0,
+        "installed": 1,
+        "editorObservations": {
+          "captureFailures": 0,
+          "records": []
+        }
+      },
+      "publicReadback": {
+        "url": "http://syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94",
+        "httpStatus": 200,
+        "expectedHeading": "Dewdrop saved heading B f6074d90e894",
+        "expectedFound": true,
+        "otherHeadingFound": false
+      }
+    }
+  },
+  "restoredExactAHash": true,
+  "retainedDraftBActualAx": "corrected-dewdrop-retained-b-after-restore-a.ax.txt",
+  "reappliedExactBHash": true,
+  "normalTrustedHostedForm": "PASS_AFTER_EXACT_LEAF_TRUST",
+  "orderSubmitted": false,
+  "wholeB00": "PARTIAL_REMAINING_EXACT_INSTALLED_BINDINGS_MEDIA_AND_COMMON_CONTROLS",
+  "all30": "OPEN"
+}

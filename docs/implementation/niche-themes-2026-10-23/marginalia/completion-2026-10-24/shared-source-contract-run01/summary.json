@@ -1,0 +1,16 @@
+{
+  "classification": "SERIAL_SOURCE_CONTRACT_BATCH_NOT_THEME_CERTIFICATION",
+  "inputs": [
+    {
+      "identity": {
+        "slug": "letbuyy-dawn",
+        "version": "2.0.0",
+        "bundleSha256": "d98a0388e3775d4f00dec8c992316af74d8255fd993cc08fc47032b7b4a8aee0"
+      },
+      "pass": 46,
+      "fail": 0,
+      "scope": "SOURCE_DATA_CONTRACT_ONLY_NOT_UI_RESOURCE_OR_INSTALLED_ACCEPTANCE",
+      "sourcePinsExact": true
+    }
+  ]
+}

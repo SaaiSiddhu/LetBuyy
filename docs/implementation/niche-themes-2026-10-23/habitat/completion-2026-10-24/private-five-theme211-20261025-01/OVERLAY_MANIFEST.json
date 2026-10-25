@@ -1,0 +1,54 @@
+{
+  "recordedAt": "2026-10-25T01:11:55.379219+00:00",
+  "mutablePaths": [
+    {
+      "path": "packages/theme-engine/src/first-party-theme-catalog.ts",
+      "MainBeforeSha256": "2a1775243185e982f19f511738167c280d237fc6d15ed2dd72844e425dc62488",
+      "parentSha256": "8e07a42c1dbad8e64e1b16a008a403a201e7207214d44a0e63313b666da10086",
+      "privateSha256": "0ba796998bef64d70742f6d77f146c70ae7e28e2c6d34db5ea7590414bca112a",
+      "overlay": "overlay/packages/theme-engine/src/first-party-theme-catalog.ts",
+      "diff": "diffs/packages__theme-engine__src__first-party-theme-catalog.ts.diff"
+    },
+    {
+      "path": "packages/theme-engine/test/first-party-five-theme-v211.test.ts",
+      "MainBeforeSha256": null,
+      "parentSha256": null,
+      "privateSha256": "2636f9b7632e6ea8d0e5a1eba5204dbf745c9d70bd48854a818755203746206e",
+      "overlay": "overlay/packages/theme-engine/test/first-party-five-theme-v211.test.ts",
+      "diff": "diffs/packages__theme-engine__test__first-party-five-theme-v211.test.ts.diff"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/five-theme211-integration01/generate-sense211-proposal.ts",
+      "MainBeforeSha256": null,
+      "parentSha256": null,
+      "privateSha256": "867c128b6b887ba7e255db902ccc5bfdb24296416df2759915fb70b3799ae35a",
+      "overlay": "overlay/docs/implementation/niche-theme-programme/completion-2026-10-24/five-theme211-integration01/generate-sense211-proposal.ts",
+      "diff": "diffs/docs__implementation__niche-theme-programme__completion-2026-10-24__five-theme211-integration01__generate-sense211-proposal.ts.diff"
+    }
+  ],
+  "readOnlyAcceptedApparelHelper": {
+    "path": "packages/theme-engine/src/niche-order-presentation.ts",
+    "from": "/private/tmp/letbuyy-apparel-provenance-prep-20261025-04/packages/theme-engine/src/niche-order-presentation.ts",
+    "sha256": "63e5a3836f9602a843df27bc61be28572ab8c5491a2ae4f60d38e04acd5d686b",
+    "mutable": false
+  },
+  "preservedSeals": [
+    {
+      "path": "private-heading211-20261025-01/HANDOFF.json",
+      "sealedFiles": 31,
+      "stillExact": true
+    },
+    {
+      "path": "private-heading211-20261025-02/HANDOFF.json",
+      "sealedFiles": 29,
+      "stillExact": true
+    },
+    {
+      "path": "private-heading211-native-source-20261025-03/HANDOFF.json",
+      "sealedFiles": 25,
+      "stillExact": true
+    }
+  ],
+  "MainApplied": false,
+  "parentRootsModified": false
+}

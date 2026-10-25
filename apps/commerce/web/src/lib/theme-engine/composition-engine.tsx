@@ -1,6 +1,11 @@
+import { storefrontDiscoveryUrl } from '@letbuyy/commerce-core';
+import type { CatalogDemoContent } from '../demo/catalog-demo-dispatch';
+import { assertCatalogDemoScope, catalogDemoReadOnlyHtml, selectCatalogDemoProducts, CATALOG_DEMO_POLICIES } from './catalog-demo-data';
+import { productToLiquidDrop } from './product-liquid-drop';
 import { headers } from 'next/headers';
 import type { StorefrontCollectionSummary } from '@letbuyy/api-client';
 import { loadCollectionDiscovery } from './collection-discovery';
+import { findDiscoveryPage, routeDiscoveryQuery, projectDiscoveryPage, productDiscoveryWitness, hasDiscoveryFilters } from './storefront-discovery';
 import {
     normalizeAppBlockInstances,
     type AppBlockInstance,
@@ -27,7 +32,6 @@ import {
 import { getStorefrontBuyerAccountDrop, getStorefrontBuyerOrderDrop, getStorefrontBuyerWishlistDrop, type LiquidBuyerDrop, type LiquidBuyerWishlistDrop } from '@/lib/buyer-order-drop';
 import { ProductService } from '@/lib/product-service';
 import { ContentService } from '@/lib/content-service';
-import { createStorefrontApiClient, storefrontReadInit } from '@/lib/api/client';
 import { StorefrontProductOriginFilter } from './product-origin-filter';
 
 function RenderSectionList({
@@ -88,6 +92,7 @@ function LiquidRenderedHtml({
     basePath,
     storeId,
     variantProductIds,
+    interactive = true,
 }: {
     html: string;
     headStyleText?: string;
@@ -95,6 +100,7 @@ function LiquidRenderedHtml({
     basePath: string;
     storeId: string;
     variantProductIds: string[];
+    interactive?: boolean;
 }) {
     return (
         <>
@@ -119,7 +125,7 @@ function LiquidRenderedHtml({
                 data-editor-mode={editorMode ? 'true' : 'false'}
                 dangerouslySetInnerHTML={{ __html: html }}
             />
-            <LiquidHydrationIslands basePath={basePath} storeId={storeId} variantProductIds={variantProductIds} />
+            {interactive && <LiquidHydrationIslands basePath={basePath} storeId={storeId} variantProductIds={variantProductIds} />}
         </>
     );
 }
@@ -264,51 +270,6 @@ async function resolveLiquidProductBasePath(subdomain: string): Promise<string> 
         ? '' : `/store/${subdomain}`;
 }
 
-function productSlug(product: SectionRenderData['product']): string {
-    if (!product) return '';
-    const explicitSlug = 'slug' in product && typeof product.slug === 'string' ? product.slug : '';
-    if (explicitSlug) return explicitSlug;
-
-    return product.name
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-|-$/g, '') || product.id;
-}
-
-function productToLiquidDrop(product: SectionRenderData['product'], basePath = ''): Record<string, unknown> | null {
-    if (!product) return null;
-
-    const handle = productSlug(product);
-    return {
-        id: product.id,
-        handle,
-        title: product.name,
-        name: product.name,
-        description: product.description,
-        // T2a — kept as MAJOR units (rupees), matching product-grid.tsx's own `₹{product.price}` and
-        // this same field's OTHER consumer, `data-product-price` on the add-to-cart/wishlist islands
-        // (whose client-side formatCartMoney also expects major units, no /100). The Liquid
-        // `money_with_currency` filter expects MINOR units (matches order/cart data) — templates that
-        // display this field convert at the call site (`| times: 100 | money_with_currency: ...`)
-        // rather than this drop carrying two differently-scaled fields under one name.
-        price: product.price,
-        compare_at_price: product.compareAtPrice,
-        currency: product.currency || 'INR',
-        url: `${basePath}/product/${product.id}`,
-        featured_image: product.images[0] || null,
-        images: product.images,
-        available: product.stock > 0 && product.isActive !== false,
-        stock: product.stock,
-        tags: product.tags || [],
-        variants: product.variants || [],
-        options: product.variantOptions || [],
-        rating: product.rating ?? 0,
-        review_count: product.reviewCount ?? 0,
-        reviews: [],
-        in_wishlist: false,
-    };
-}
-
 function collectLiquidProducts(sectionData: Map<string, SectionRenderData>, basePath = ''): Record<string, unknown>[] {
     const products = new Map<string, Record<string, unknown>>();
 
@@ -422,30 +383,14 @@ function reviewToLiquidDrop(review: ProductReviewItem): Record<string, unknown> 
     };
 }
 
-// D4: Attempt to fetch the real collection metadata from the gateway when route.type === 'collection'
-// and SectionRenderData does not already carry it. Returns null on any error (fall-through to synthesis).
-async function fetchCollectionMeta(
-    subdomain: string,
-    slug: string,
-): Promise<{ id: string; title: string; description?: string | null } | null> {
-    try {
-        const client = createStorefrontApiClient(
-            storefrontReadInit(60, [`storefront:${subdomain}:collections`, `storefront:${subdomain}:collection:${slug}`]),
-        );
-        // The storefront API client does not have a dedicated getCollection method.
-        // Use listProducts with the collection param which triggers the gateway to resolve it.
-        // As a best-effort approach, use the existing listProducts call with the collection filter.
-        // We cannot call a non-existent getCollectionWithProducts method; instead we rely on what
-        // SectionRenderData.collection carries from the page.tsx route handler (the primary source).
-        // If that is absent (Liquid path without a page.tsx collection fetch), fall back gracefully.
-        void client; // typed reference to avoid unused-variable warning
-        return null;
-    } catch {
-        return null;
-    }
+function legacyDiscoveryPageUrl(plan: StorefrontRenderPlan, path: string, page: number): string {
+    if (plan.route.discoveryQuery) return storefrontDiscoveryUrl(path, routeDiscoveryQuery(plan.route), { page });
+    const query = new URLSearchParams(plan.route.searchParams);
+    query.set('page', String(page));
+    return `${path}?${query}`;
 }
 
-async function buildLiquidCommerceContext({
+export async function buildLiquidCommerceContext({
     store,
     plan,
     sectionData,
@@ -457,6 +402,7 @@ async function buildLiquidCommerceContext({
     page,
     productBasePath,
     discoveredCollections,
+    catalogDemo,
 }: {
     store: StoreModel;
     plan: StorefrontRenderPlan;
@@ -469,9 +415,16 @@ async function buildLiquidCommerceContext({
     page?: Record<string, unknown> | null;
     productBasePath?: string;
     discoveredCollections: StorefrontCollectionSummary[];
+    catalogDemo?: CatalogDemoContent;
 }): Promise<LiquidCommerceDrops> {
     const basePath = productBasePath ?? await resolveLiquidProductBasePath(plan.route.subdomain);
-    const products = collectLiquidProducts(sectionData, basePath);
+    const listing = plan.route.type === 'collection' || plan.route.type === 'search';
+    const discoveryPage = catalogDemo ? undefined : findDiscoveryPage(sectionData);
+    const products: Record<string, unknown>[] = catalogDemo && listing
+        ? selectCatalogDemoProducts(catalogDemo, plan.route).products.map(product => productToLiquidDrop(product, basePath)).filter((product): product is Record<string, unknown> => Boolean(product))
+        : discoveryPage && listing
+            ? discoveryPage.data.map(product => ({ ...productToLiquidDrop(product, basePath), ...productDiscoveryWitness(discoveryPage, product.id) }))
+            : collectLiquidProducts(sectionData, basePath);
     const product = products[0] || null;
     const reviewData = collectLiquidProductReviews(sectionData);
     if (product && reviewData) {
@@ -485,65 +438,36 @@ async function buildLiquidCommerceContext({
     }
     const boundCollection = collectLiquidCollectionMeta(sectionData);
 
-    // D4: On collection routes, if SectionRenderData didn't carry collection metadata from the
-    // page handler, attempt to fetch it from the gateway. Wrapped in try/catch so errors never
-    // break the page — synthesis is the fallback.
-    let resolvedCollectionMeta: { id: string; title: string; description?: string | null } | null = boundCollection ?? null;
-    if (plan.route.type === 'collection' && !boundCollection && plan.route.resourceSlug) {
-        resolvedCollectionMeta = await fetchCollectionMeta(plan.route.subdomain, plan.route.resourceSlug).catch(() => null);
-    }
-
-    const collection = plan.route.type === 'collection' || products.length > 0
+    const resolvedCollectionMeta = boundCollection;
+    const query = discoveryPage?.discovery?.query ?? (listing ? routeDiscoveryQuery(plan.route) : undefined);
+    const routePath = plan.route.path.split('?')[0];
+    const storePrefix = `/store/${plan.route.subdomain}`;
+    const publicPath = basePath === '' && (routePath === storePrefix || routePath.startsWith(storePrefix + '/')) ? routePath.slice(storePrefix.length) || '/' : routePath;
+    const projection = discoveryPage && query ? projectDiscoveryPage(discoveryPage, publicPath, query, Boolean(resolvedCollectionMeta)) : null;
+    const pageState = Array.from(sectionData.values()).find(data => data.pagination)?.pagination;
+    const demoSelection = catalogDemo && listing ? selectCatalogDemoProducts(catalogDemo, plan.route) : null;
+    const collection = listing || products.length > 0
         ? {
             id: resolvedCollectionMeta?.id || plan.route.resourceId || plan.route.resourceSlug || 'all-products',
             handle: plan.route.resourceSlug || 'all-products',
-            // D4: prefer real collection title from SectionRenderData or gateway fetch; fall back to synthesis.
-            title: resolvedCollectionMeta?.title
-                || (plan.route.resourceSlug === 'all-products' || !plan.route.resourceSlug ? 'All Products' : plan.route.resourceSlug),
+            title: resolvedCollectionMeta?.title || (plan.route.type === 'search' ? 'Search products' : !plan.route.resourceSlug || ['all','all-products'].includes(plan.route.resourceSlug) ? 'All Products' : plan.route.resourceSlug),
             description: resolvedCollectionMeta?.description ?? null,
             products,
+            ...(projection?.collection ?? {}),
+            ...(!projection && pageState ? { total: pageState.total, pagination: {
+                page: pageState.page, limit: pageState.limit,
+                previous_url: pageState.page > 1 ? legacyDiscoveryPageUrl(plan, publicPath, pageState.page - 1) : null,
+                next_url: pageState.has_more ? legacyDiscoveryPageUrl(plan, publicPath, pageState.page + 1) : null,
+            } } : {}),
         }
         : null;
-
-    // D5: Build the search drop when the route carries a search term.
-    // The storefront search is URL-param based (/shop?search=<term>). On SSR we extract the
-    // search term from plan.route.path when it contains '?search=' or route.type === 'search'.
-    // We fetch products from the gateway using listProducts with the search query param.
-    // If the fetch fails, we return a structural placeholder (performed=true, results=[]).
-    let searchDrop: Record<string, unknown> | null = null;
-    const routePath = plan.route.path ?? '';
-    const searchTermMatch = routePath.match(/[?&]search=([^&]*)/);
-    const searchTerm = plan.route.searchParams?.search
-        || (searchTermMatch ? decodeURIComponent(searchTermMatch[1] || '') : '');
-    if ((plan.route.type === 'search' || searchTerm) && searchTerm.trim()) {
-        try {
-            const searchResults = await createStorefrontApiClient(
-                storefrontReadInit(30, [`storefront:${plan.route.subdomain}:search`]),
-            ).storefront.listProducts(plan.route.subdomain, {
-                search: searchTerm.trim(),
-                limit: 50,
-                ...(plan.route.searchParams?.category ? { category: plan.route.searchParams.category } : {}),
-                ...(plan.route.searchParams?.country_of_origin ? { country_of_origin: plan.route.searchParams.country_of_origin } : {}),
-                ...(plan.route.searchParams?.page ? { page: Number(plan.route.searchParams.page) || 1 } : {}),
-            });
-            const resultProducts = (searchResults?.data ?? []).map((p) => productToLiquidDrop(p as unknown as SectionRenderData['product'], basePath)).filter(Boolean);
-            searchDrop = {
-                terms: searchTerm.trim(),
-                results: resultProducts,
-                results_count: resultProducts.length,
-                performed: true,
-            };
-        } catch {
-            // Gateway search failed — return structural placeholder so templates don't error.
-            searchDrop = {
-                terms: searchTerm.trim(),
-                results: [],
-                results_count: 0,
-                performed: true,
-                error: true,
-            };
-        }
-    }
+    // Search and collection are projections of the SAME loaded page, including real zero/past-end.
+    const searchTerm = query?.search ?? plan.route.searchParams?.search ?? '';
+    const searchDrop = plan.route.type === 'search' || searchTerm ? {
+        terms: searchTerm, results: products,
+        ...(discoveryPage ? { results_count: discoveryPage.total } : demoSelection ? { results_count: demoSelection.pagination.total } : pageState ? { results_count: pageState.total } : {}),
+        performed: Boolean(searchTerm || query && hasDiscoveryFilters(query)),
+    } : null;
 
     // D1-B: Build Shopify-convention linklists from StoreModel.navigation.
     // active is computed from plan.route.path for the top-level links.
@@ -592,7 +516,7 @@ async function buildLiquidCommerceContext({
     // read from (ContentService.getPolicy), so it — not a hardcoded list — decides which links
     // are real. One list call, cached the same 60s window as pages/blog. A fetch failure must
     // not break every page's footer, so it degrades to "no published policies" rather than throwing.
-    const publishedPolicyTypes = await ContentService.listPolicies(plan.route.subdomain)
+    const publishedPolicyTypes = catalogDemo ? CATALOG_DEMO_POLICIES : await ContentService.listPolicies(plan.route.subdomain)
         .then((policies) => policies.map((policy) => policy.policyType).filter((type): type is string => Boolean(type)))
         .catch(() => []);
 
@@ -605,6 +529,7 @@ async function buildLiquidCommerceContext({
             locale: store.locale || 'en',
             currency: 'INR',
             policies: publishedPolicyTypes,
+            ...(projection?.shop ?? {}),
             // T5/W1 — store.logoUrl is already resolved (site_settings.logo_url overriding
             // sites.logo_url, see store-service.ts:718) but was never threaded through to Liquid.
             // null (not '') when absent, so `{% if shop.logo_url %}` degrades to the text lockup
@@ -612,11 +537,13 @@ async function buildLiquidCommerceContext({
             logo_url: store.logoUrl || null,
         },
         product,
+        ...(listing && query ? { request: { path: publicPath, query } } : {}),
+        section_products: Object.fromEntries(Array.from(sectionData.entries()).map(([id, data]) => [id, (data.products ?? []).map(p => productToLiquidDrop(p, basePath)).filter((p): p is Record<string, unknown> => p !== null)])),
         collection,
         collections: discoveredCollections.map(item => ({
-            id: item.id, handle: item.id, title: item.title, description: item.description, image: item.image_url,
+            id: item.id, handle: catalogDemo && 'handle' in item ? item.handle : item.id, title: item.title, description: item.description, image: item.image_url,
         })),
-        cart: collectLiquidCart(sectionData, plan),
+        cart: catalogDemo ? { items: [], item_count: null, total: null, subtotal: null, currency: 'INR', source: 'catalog_demo_unavailable' } : collectLiquidCart(sectionData, plan),
         customer,
         buyer,
         buyer_wishlist: buyerWishlist,
@@ -644,6 +571,8 @@ async function renderLiquidPlan({
     liquidPage,
     collectionSummaries,
     afterContentHtml,
+    catalogDemo,
+    discoveryPreviewToken,
 }: {
     store: StoreModel;
     plan: StorefrontRenderPlan;
@@ -652,9 +581,12 @@ async function renderLiquidPlan({
     liquidPage?: Record<string, unknown> | null;
     collectionSummaries?: StorefrontCollectionSummary[];
     afterContentHtml?: string;
+    catalogDemo?: CatalogDemoContent;
+    discoveryPreviewToken?: string;
 }): Promise<ReturnType<typeof assembleLiquidPageFromRenderResult> | null> {
     if (plan.rendererEngine !== 'liquid' || !plan.liquidBundle) return null;
-    const productBasePath = await resolveLiquidProductBasePath(plan.route.subdomain);
+    if (catalogDemo) assertCatalogDemoScope(catalogDemo, store.id, plan.route);
+    const productBasePath = catalogDemo ? '' : await resolveLiquidProductBasePath(plan.route.subdomain);
 
     const orderRoute = plan.route.type === 'customer_orders' || plan.route.type === 'customer_order';
     const buyerAccountRoute = plan.route.type === 'customer_account'
@@ -667,11 +599,11 @@ async function renderLiquidPlan({
         || plan.route.type === 'search';
     // Store-customer identity and LetBuyy buyer identity are separate principals.
     // Canonical orders come only from the verified buyer_order_links surface.
-    let customer = orderRoute ? null : await getStorefrontCustomerDrop(store.id);
+    let customer = catalogDemo || orderRoute ? null : await getStorefrontCustomerDrop(store.id);
     const orderId = plan.route.type === 'customer_order' ? plan.route.path.split('/').filter(Boolean).at(-1) : undefined;
-    const buyerOrderView = orderRoute ? await getStorefrontBuyerOrderDrop(store.id, orderId, plan.route.searchParams?.cursor) : null;
-    const buyerAccountView = buyerAccountRoute ? await getStorefrontBuyerAccountDrop(store.id) : null;
-    let buyerWishlist = buyerWishlistRoute
+    const buyerOrderView = !catalogDemo && orderRoute ? await getStorefrontBuyerOrderDrop(store.id, orderId, plan.route.searchParams?.cursor) : null;
+    const buyerAccountView = !catalogDemo && buyerAccountRoute ? await getStorefrontBuyerAccountDrop(store.id) : null;
+    let buyerWishlist = !catalogDemo && buyerWishlistRoute
         ? await getStorefrontBuyerWishlistDrop(store.id)
         : { authenticated: false, buyerId: null, linked: false, unavailable: false, storeAccountUnavailable: false, productIds: [], products: [] };
     const buyer = buyerOrderView?.buyer ?? buyerAccountView?.buyer ?? null;
@@ -698,10 +630,11 @@ async function renderLiquidPlan({
     // Read failures are outside the renderer fallback: unavailable discovery must never
     // become a false empty collection grid (or an unrelated legacy React page).
     const needsCollectionDiscovery = plan.template.sections.some(section => section.type === 'category-grid' && section.isVisible !== false);
-    const discoveredCollections = needsCollectionDiscovery
-        ? collectionSummaries ?? await loadCollectionDiscovery(plan.route.subdomain)
+    const discoveredCollections = catalogDemo ? catalogDemo.collections : needsCollectionDiscovery
+        ? collectionSummaries ?? await loadCollectionDiscovery(plan.route.subdomain, discoveryPreviewToken)
         : [];
 
+    const commerceContext = await buildLiquidCommerceContext({ store, plan, sectionData, customer, buyer, buyerWishlist, buyerUnavailable, orderDetail, page: liquidPage, productBasePath, discoveredCollections, catalogDemo });
     const renderer = createThemeRenderer('liquid');
     try {
         const result = await renderer.render({
@@ -725,14 +658,15 @@ async function renderLiquidPlan({
             },
             liquidBundle: plan.liquidBundle,
             liquidTemplateKey: plan.liquidTemplateKey || plan.template.id,
-            liquidAppBlocks: buildLiquidAppBlocks(store.templateConfig.appBlocks),
-            liquidAppEmbeds: buildLiquidAppEmbeds(store.templateConfig.appBlocks),
-            liquidContext: await buildLiquidCommerceContext({ store, plan, sectionData, customer, buyer, buyerWishlist, buyerUnavailable, orderDetail, page: liquidPage, productBasePath, discoveredCollections }),
+            liquidAppBlocks: catalogDemo ? {} : buildLiquidAppBlocks(store.templateConfig.appBlocks),
+            liquidAppEmbeds: catalogDemo ? { header: [], footer: [] } : buildLiquidAppEmbeds(store.templateConfig.appBlocks),
+            liquidContext: commerceContext,
         });
 
         if (result.status !== 'rendered' || !result.liquid) return null;
 
-        return assembleLiquidPageFromRenderResult(result.liquid, { beforeContentHtml: productOriginFilterMarkup(plan.route, editorMode), afterContentHtml });
+        const assembled = assembleLiquidPageFromRenderResult(result.liquid, { beforeContentHtml: catalogDemo ? '' : productOriginFilterMarkup(plan.route, editorMode), afterContentHtml });
+        return catalogDemo ? { ...assembled, html: await catalogDemoReadOnlyHtml(assembled.html, catalogDemo) } : assembled;
     } catch (err: unknown) {
         // Defense-in-depth: renderer should not throw after C1, but guard any unexpected failure
         // (e.g. OOM in LiquidJS, JSDOM init failure). Fall back to React; the lb:canary:render
@@ -764,6 +698,8 @@ export default async function StorefrontCompositionEngine({
     liquidPage,
     collectionSummaries,
     afterContentHtml,
+    catalogDemo,
+    discoveryPreviewToken,
 }: {
     store: StoreModel;
     plan: StorefrontRenderPlan;
@@ -772,10 +708,12 @@ export default async function StorefrontCompositionEngine({
     liquidPage?: Record<string, unknown> | null;
     collectionSummaries?: StorefrontCollectionSummary[];
     afterContentHtml?: string;
+    catalogDemo?: CatalogDemoContent;
+    discoveryPreviewToken?: string;
 }) {
     const renderStart = Date.now();
-    const liquidResult = await renderLiquidPlan({ store, plan, sectionData, editorMode, liquidPage, collectionSummaries, afterContentHtml });
-    const engine = liquidResult ? 'liquid' : 'react';
+    const liquidResult = await renderLiquidPlan({ store, plan, sectionData, editorMode, liquidPage, collectionSummaries, afterContentHtml, catalogDemo, discoveryPreviewToken });
+    const engine = liquidResult ? 'liquid' : catalogDemo ? 'unavailable' : 'react';
     // Canary telemetry (Document 6 §4): structured log consumed by monitoring pipeline.
     console.log(JSON.stringify({
         event: 'lb:canary:render',
@@ -800,6 +738,7 @@ export default async function StorefrontCompositionEngine({
                     html={liquidResult.html}
                     headStyleText={liquidResult.headStyleText}
                     editorMode={editorMode}
+                    interactive={!catalogDemo}
                     basePath={`/store/${plan.route.subdomain}`}
                     storeId={store.id}
                     variantProductIds={Array.from(new Set(Array.from(sectionData.values()).flatMap(data => [...(data.products || []), ...(data.product ? [data.product] : [])]).filter(product => Boolean(product.variants?.length)).map(product => product.id)))}
@@ -823,6 +762,7 @@ export default async function StorefrontCompositionEngine({
     // 3. StorefrontSectionGroupRenderer already handles empty sectionGroups gracefully (returns null).
     // 4. This path is only reached when the Liquid renderer itself failed — a defense-in-depth path.
     //    Normal React plans (rendererEngine!=='liquid') go through layout's React chrome as before.
+    if (catalogDemo) return <section role="status"><h1>The sample store could not render</h1><p>This version is unavailable. Return to the catalog and retry.</p></section>;
     const isLiquidFallback = plan.rendererEngine === 'liquid';
 
     if (isLiquidFallback) {

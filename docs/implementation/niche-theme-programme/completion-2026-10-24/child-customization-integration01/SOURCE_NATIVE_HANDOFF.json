@@ -1,0 +1,34 @@
+{
+  "recordedAt": "2026-10-24T16:32:18.835179+00:00",
+  "status": "ALL10_CUSTOMIZATION_SOURCE_ACTIONS_SECURITY_AND_NATIVE_SQL_QUALIFIED_BROWSER_PENDING",
+  "version": "2.1.0",
+  "versionNumber": 5,
+  "sourceCases": 31,
+  "actualEditorCallbackCases": 24,
+  "retainedSecurityRegressionCases": 45,
+  "nativeRunId": "909a07fa1663",
+  "nativeCohortPass": 1,
+  "nativePhases": [
+    "all10 immutable210 captures plus missing frozenThreadline200 capture",
+    "all-public-table conservation",
+    "strict UP replay",
+    "paired DOWN restores prior pointers and retains captures",
+    "strict DOWN replay",
+    "final UP/replay"
+  ],
+  "qualifiedInlineContexts": 103,
+  "sourcePinsVerifiedAfter": 696,
+  "verifiedReceipts": 4,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "canonicalMigrationsEmitted": false,
+  "browserPending": true,
+  "peerReviewPending": true,
+  "fullThemeCertificates": 0
+}

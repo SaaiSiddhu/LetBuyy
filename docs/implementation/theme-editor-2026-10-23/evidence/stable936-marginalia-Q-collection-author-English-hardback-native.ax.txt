@@ -1,0 +1,82 @@
+Browser tab: 77, Title: "Lifecycle books | Threadline", URL: "http://syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/collections/d5609b77-743c-45b5-b435-814f2ca95058?limit=1&country_of_origin=India&collection_id=d5609b77-743c-45b5-b435-814f2ca95058&page=1&search=Marginalia+lifecycle&books_author=Mira+Sen&books_subject=&books_language=English&books_format=hardback&books_kind=book&sort=price-asc".
+1 AXWebArea Lifecycle books | Threadline, URL: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/collections/d5609b77-743c-45b5-b435-814f2ca95058?limit=1&country_of_origin=India&collection_id=d5609b77-743c-45b5-b435-814f2ca95058&page=1&search=Marginalia+lifecycle&books_author=Mira+Sen&books_subject=&books_language=English&books_format=hardback&books_kind=book&sort=price-asc
+	2 container
+		3 container Description: Primary, ID: lb-nav-panel-header-default
+		4 link Description: Threadline, Value: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b
+		5 button (collapsed) Description: Search, Secondary Actions: Expand
+		6 link Description: Log in, Value: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/customers/login
+		7 link Description: Cart ( 0 ), Value: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/cart
+		8 container Filter products by country of origin
+			9 container
+				10 text Country of origin
+				11 text field (settable) Country of origin, Value: India, ID: lb-product-origin-filter
+				12 button Apply filter
+				13 link Description: Clear origin filter, Value: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/collections/d5609b77-743c-45b5-b435-814f2ca95058?limit=1&search=Marginalia+lifecycle&sort=price-asc&collection_id=d5609b77-743c-45b5-b435-814f2ca95058&books_kind=book&books_author=Mira+Sen&books_language=English&books_format=hardback
+		14 container
+			15 text Search
+			16 search text field (settable) Search, Value: Marginalia lifecycle
+			17 button (expanded) Book and paper filters, Secondary Actions: Collapse
+				18 text Book and paper filters
+			19 container Book editions
+				20 container
+					21 text Author
+					22 text field (settable) Author, Value: Mira Sen
+				23 container
+					24 text Subject
+					25 text field (settable) Subject
+				26 container
+					27 text Language
+					28 text field (settable) Language, Value: English
+				29 container
+					30 text Format
+					31 pop up button (collapsed, settable) Format, Value: hardback, Secondary Actions: Expand
+						32 menu
+							33 Any format
+							34 paperback
+							35 (selected) hardback
+							36 board book
+							37 spiral bound
+							38 other
+			39 container
+				40 text Product type
+				41 pop up button (collapsed, settable) Product type, Value: Books, Secondary Actions: Expand
+					42 menu
+						43 Books and stationery
+						44 (selected) Books
+						45 Stationery
+			46 text Sort
+			47 pop up button (collapsed, settable) Sort, Value: Price: low to high, Secondary Actions: Expand
+				48 menu
+					49 Featured
+					50 Title
+					51 (selected) Price: low to high
+					52 Price: high to low
+					53 Newest
+			54 button Apply
+		55 container Applied filters
+			56 link Description: Remove Country of origin: India, Value: syn-threadline-ui-6815276b.localhost:58091/collections/d5609b77-743c-45b5-b435-814f2ca95058?limit=1&search=Marginalia+lifecycle&sort=price-asc&collection_id=d5609b77-743c-45b5-b435-814f2ca95058&books_kind=book&books_author=Mira+Sen&books_language=English&books_format=hardback
+			57 link Description: Remove Product type: book, Value: syn-threadline-ui-6815276b.localhost:58091/collections/d5609b77-743c-45b5-b435-814f2ca95058?limit=1&search=Marginalia+lifecycle&country_of_origin=India&sort=price-asc&collection_id=d5609b77-743c-45b5-b435-814f2ca95058&books_author=Mira+Sen&books_language=English&books_format=hardback
+			58 link Description: Remove Author: Mira Sen, Value: syn-threadline-ui-6815276b.localhost:58091/collections/d5609b77-743c-45b5-b435-814f2ca95058?limit=1&search=Marginalia+lifecycle&country_of_origin=India&sort=price-asc&collection_id=d5609b77-743c-45b5-b435-814f2ca95058&books_kind=book&books_language=English&books_format=hardback
+			59 link Description: Remove Language: English, Value: syn-threadline-ui-6815276b.localhost:58091/collections/d5609b77-743c-45b5-b435-814f2ca95058?limit=1&search=Marginalia+lifecycle&country_of_origin=India&sort=price-asc&collection_id=d5609b77-743c-45b5-b435-814f2ca95058&books_kind=book&books_author=Mira+Sen&books_format=hardback
+			60 link Description: Remove Book format: hardback, Value: syn-threadline-ui-6815276b.localhost:58091/collections/d5609b77-743c-45b5-b435-814f2ca95058?limit=1&search=Marginalia+lifecycle&country_of_origin=India&sort=price-asc&collection_id=d5609b77-743c-45b5-b435-814f2ca95058&books_kind=book&books_author=Mira+Sen&books_language=English
+		61 heading Lifecycle books, Value: 1
+			62 text Lifecycle books
+		63 text 1 products
+		64 container
+			65 link Description: Image not supplied, Value: syn-threadline-ui-6815276b.localhost:58091/product/f2382fe0-6a3e-4241-9aef-9a54c765433f
+			66 heading Marginalia lifecycle book, Value: 3
+				67 link Description: Marginalia lifecycle book, Value: syn-threadline-ui-6815276b.localhost:58091/product/f2382fe0-6a3e-4241-9aef-9a54c765433f
+			68 text Multiple editions — check language and format
+			69 text INR 420.00
+			70 link Description: View editions, Value: syn-threadline-ui-6815276b.localhost:58091/product/f2382fe0-6a3e-4241-9aef-9a54c765433f
+		71 container Product pages
+			72 text Page 1
+		73 heading Threadline, Value: 3
+			74 text Threadline
+		75 heading CONTACT, Value: 4
+			76 text CONTACT
+		77 link Description: Contact us, Value: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/contact
+		78 text © Threadline. All rights reserved.
+		79 link Description: Powered by LetBuyy, Value: letbuyy.com/
+
+The focused UI element is 1 AXWebArea Lifecycle books | Threadline, URL: syn-threadline-ui-6815276b.localhost:58091/store/syn-threadline-ui-6815276b/collections/d5609b77-743c-45b5-b435-814f2ca95058?limit=1&country_of_origin=India&collection_id=d5609b77-743c-45b5-b435-814f2ca95058&page=1&search=Marginalia+lifecycle&books_author=Mira+Sen&books_subject=&books_language=English&books_format=hardback&books_kind=book&sort=price-asc

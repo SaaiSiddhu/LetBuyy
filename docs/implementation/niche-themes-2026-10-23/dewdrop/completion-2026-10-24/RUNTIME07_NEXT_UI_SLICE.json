@@ -1,0 +1,408 @@
+{
+  "schemaVersion": 1,
+  "recordedAtUtc": "2026-10-25T01:31:11.865574+00:00",
+  "classification": "FINITE_RUNTIME07_BROWSER_QUEUE_INPUT_NOT_ASSIGNMENT_REPLACEMENT_OR_BROWSER_RESULT",
+  "sliceId": "DD-R07-01",
+  "theme": "Dewdrop",
+  "queue": {
+    "existingFile": "docs/implementation/niche-theme-programme/capture-schedule.json",
+    "entry": "buyerQueue[key=dewdrop]",
+    "proposedPosition": 3,
+    "controller": "01a166eb-66bb-7042-bb47-2aaafef26f53",
+    "submission": "Existing owner COVERAGE.nextSlice and RUNBOOK are queue inputs; shared queue/source files are not edited and no outgoing chat message sent.",
+    "status": "PRESERVATION_MAINTENANCE_HELD_FOR_QUALIFIED_ROOT_RECOVERY_AND_EDITOR_ALLOCATION",
+    "batchProviderPurchasesFirst": true,
+    "currentRoutingObservation": {
+      "recordedAtUtc": "2026-10-24T20:28:53.891414+00:00",
+      "buyerController": "01a16ce5-e5ba-7191-ab2c-a1b76947d2b5",
+      "EditorRole": "Read-only payment/ledger/HMAC correlation; browser-idle.",
+      "evidence": "Coordinator actual20:23UTC PantryTestORD10002 confirmed/cart0 and latest message states continuing Dewdrop. No owner browser lease or shared queue mutation."
+    }
+  },
+  "authority": {
+    "coordinatorThread": "01a16ce5-e5ba-7191-ab2c-a1b76947d2b5",
+    "humanMessageId": "01a16f3d-1550-7092-b91e-f4786c38abe8",
+    "verifiedDirectly": true,
+    "resumeReceipt": {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/HUMAN_RESUME_20261025.json",
+      "sha256": "e7cc69390865d45e4d5623555c39a6c0d3c1e931a143866aee1822f15f033d4b",
+      "bytes": 1003
+    },
+    "readinessGate": {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/SHARED_READINESS_GATE.json",
+      "sha256": "4ade007d9b12f9694f73c540bc331c404f7474c01a0934885d38cb8895c66ffb",
+      "bytes": 4458
+    }
+  },
+  "runtime": {
+    "runId": "49ada80bc494",
+    "candidate": "/private/tmp/letbuyy-shared-completion-20261024-06",
+    "runnerPid": 54685,
+    "siteId": "02049de4-41c3-4b10-b5b2-a60a6b5e82bf",
+    "subdomain": "syn-threadline-ui-ae3f0477",
+    "origins": {
+      "identityOrigin": "http://accounts.threadline-49ada80bc494.localhost:64593",
+      "merchantOrigin": "http://admin.threadline-49ada80bc494.localhost:64594",
+      "commerceOrigin": "http://syn-threadline-ui-ae3f0477.localhost:64595",
+      "checkoutOrigin": "https://checkout.localhost:64597",
+      "apiOrigin": "http://127.0.0.1:64598"
+    },
+    "version": "letbuyy-aura@2.1.0",
+    "sourceFiles": 6547,
+    "candidateSealed": true,
+    "runtimeIdentity": {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/RUNTIME_READY_REDACTED.json",
+      "sha256": "135ec6e3129b2eb1fe8e4e0364f785586ab527be780ce376bc0a113e27875bf3",
+      "bytes": 1135
+    },
+    "providerExpiryUtc": "2026-10-24T22:20:00+00:00",
+    "providerExpiryIst": "25 October 2026 03:50 IST",
+    "extensionAuthorized": false,
+    "liveness": "Controller revalidates current runner/window at admission; no owner liveness probe or process adoption here.",
+    "currentLiveness": "Exact parent54685/runtime55109 SIGSTOP for preservation; automatic continuation is forbidden. No live endpoints adopted."
+  },
+  "currentScope": {
+    "newlyClosedRequirement": "DD-PAY-01 shared Test-infrastructure admission PASS; Themes independent shared review ACCEPTED for SHARED-09/10 only. Dewdrop DD-PAY-02 NOT_RUN.",
+    "retainedOriginal30": {
+      "PASS": 26,
+      "FAIL": 1,
+      "BLOCKED": 3
+    },
+    "freshOriginalCasesClosed": 0,
+    "primaryTarget": "COMPLETED_SCOPED_TEST_PURCHASE_AND_BOTH_IMMEDIATE_HISTORIES; next actualM05 and retainedD02/O05/S01",
+    "originalIdsSupportingSlice": [
+      "B00",
+      "P01",
+      "P02",
+      "C01",
+      "O01",
+      "O02"
+    ],
+    "expandedIds": [
+      "DD-COM-02",
+      "DD-COM-03",
+      "DD-PAY-02",
+      "DD-COM-07"
+    ],
+    "laterPriority": [
+      "M05",
+      "D02",
+      "O05",
+      "S01"
+    ],
+    "noCreditTransfer": "The old COD quantity2/1140 requirements stay intact. The proposed q1 Test purchase is additional provider evidence, not replacement H01/O01/O02 original COD proof."
+  },
+  "inputs": {
+    "productKey": "tint",
+    "expectedProductName": "Fixture Soft Colour",
+    "expectedHandle": "syn-soft-colour-49ada80bc494",
+    "productId": null,
+    "selectedVariantId": null,
+    "bindIds": "Actual current canonical readback before action; never old936UUIDs, labels, row index or RGB as identity.",
+    "selectedOptions": {
+      "Shade name": "Pink Clay",
+      "पैक आकार": "एक इकाई"
+    },
+    "sourceRecipeOnlyNotLiveProof": {
+      "path": "/private/tmp/letbuyy-shared-completion-20261024-06/services/api-gateway/src/__tests__/owned-db/threadline-qa-fixture.ts",
+      "sha256": "8e0880ac5f1b699d99faa4e4a47b9b6966d79a984858807a51b2d04eee65f997",
+      "bytes": 30733
+    },
+    "plannedFacts": {
+      "schemaVersion": 1,
+      "routineStage": "colour",
+      "format": "Lip tint",
+      "netQuantity": {
+        "value": 6,
+        "unit": "ml"
+      },
+      "ingredients": "Common tint v1: fixture oil and wax; see named shade ingredients.",
+      "directions": "Fixture directions v1: use as supplied.",
+      "warnings": "Fixture warning v1: external use only.",
+      "shadeOptionName": "Shade name",
+      "shades": [
+        {
+          "value": "Rosewater",
+          "code": "RW01",
+          "color": "#a36a65",
+          "ingredients": "Rosewater v1: fixture oil, CI 77491."
+        },
+        {
+          "value": "Pink Clay",
+          "code": "PC02",
+          "color": "#a36a65",
+          "ingredients": "Pink Clay v1: fixture oil, CI 77492."
+        },
+        {
+          "value": "Terracotta",
+          "code": "TC03",
+          "color": "#89534a",
+          "ingredients": null
+        }
+      ]
+    },
+    "plannedPriceMajor": 560,
+    "plannedCurrency": "INR",
+    "testQuantity": 1,
+    "stockRule": "Read actual available quantity. Seed recipe4 is not live stock proof; preserve legitimate consumption and do not refill."
+  },
+  "proposedEffectBudget": {
+    "themeInstalls": 1,
+    "testPurchaseIntents": 1,
+    "capturedOrders": 1,
+    "pinkClayQuantity": 1,
+    "newProductsFirstSlice": 0,
+    "productFactsEditsFirstSlice": 0,
+    "stockRefills": 0,
+    "archiveOrDeleteFirstSlice": 0,
+    "otherOwnersCartOrOrdersMutated": 0,
+    "binding": "Controller/allocator must admit exact IDs, release/revision, current owned cart boundary and effect budget before action."
+  },
+  "steps": [
+    {
+      "id": "DD-R07-01.1",
+      "cases": [
+        "B00"
+      ],
+      "action": "Normal merchant Dewdrop2.1.0 install/editor/save/reload/preview/publish and public readback, or explicit current-scope reuse for already executed subclauses. Bind package/version/instance/release IDs and manifest checksum.",
+      "expect": "Correct Dewdrop presentation and site; installation alone creates no products and does not silently publish. Full original B00 remains open until its A/B/restore/reapply clauses are witnessed."
+    },
+    {
+      "id": "DD-R07-01.2",
+      "cases": [
+        "P01",
+        "DD-COM-02"
+      ],
+      "action": "Open actual Fixture Soft Colour; keyboard/select Rosewater then Pink Clay; expand Pink Clay ingredients. Bind actual distinct UUIDs/options, equal suppliedRGB, PC02, common/selected ingredients and6ml.",
+      "expect": "Pressed states, price and selected facts follow exact variant identity; no RGB-based merge or inferred claims."
+    },
+    {
+      "id": "DD-R07-01.3",
+      "cases": [
+        "P02"
+      ],
+      "action": "If within the finite purchase slice, observe Terracotta OOS/disabled UI, then restore Pink Clay. Do not issue unbudgeted direct cart probes.",
+      "expect": "No fallback purchase. UI clause is separate from required409 backend negative; do not mark whole P02passed from UI only."
+    },
+    {
+      "id": "DD-R07-01.4",
+      "cases": [
+        "DD-COM-02",
+        "DD-COM-03",
+        "DD-PAY-02"
+      ],
+      "action": "At clean assigned cart boundary, add Pink Clay q1, await server acknowledgement and full reload. Normal contact/address/shipping quote and real Razorpay Test Mode checkout; use actual provider-created popup and explicit demo-bank Test Success.",
+      "expect": "Server unit560 if live source unchanged; exact options/accepted facts. Actual quote owns shipping/tax/discount/total. Do not preclaim580 orreuse another theme/cart. No keys, browser/session injection, invented popup URL or live charge."
+    },
+    {
+      "id": "DD-R07-01.5",
+      "cases": [
+        "DD-PAY-02"
+      ],
+      "action": "Join actual browser confirmation to local/provider order/payment IDs, amount/currency, signed processed authorized/captured callbacks, completed checkout and buyer cart retirement. Reconcile uncertain commit against original intent before any retry.",
+      "expect": "Exactly one intended Dewdrop paid/confirmed order and balanced capture ledger; stock decremented exactlyq1. A new intent/secondcapture is outside budget."
+    },
+    {
+      "id": "DD-R07-01.6",
+      "cases": [
+        "DD-COM-07"
+      ],
+      "action": "Immediately record normal buyer Liquid order and merchant order page/API readbacks for this actual Test order, before beauty edits. Read approved immutable fact projection and snapshot digest through owner-approved proof only.",
+      "expect": "Pink Clay/PC02/6ml, accepted common and shade ingredients, exact options, quantity/money from order. No current-product history fallback, raw snapshot/private supplier/cost exposure. Complete after-edit immutability remains pending."
+    },
+    {
+      "id": "DD-R07-01.7",
+      "cases": [
+        "M05"
+      ],
+      "action": "Next independent normal slice: explicit normal collection membership saves/reload, accurate nonzero/zero merchant counts and actual routine editor resource targets. Include owned/foreign/empty/unavailable distinctions under exact allocated data.",
+      "expect": "Retained2/1/1 only if those currentbindings are observed; empty/missing never means all products. No source/native count replaces actual UI."
+    }
+  ],
+  "negativeFollowup": {
+    "D02": "Actual current discovery metadata/chooser positives plus separately admitted missing/malformed/unsupported backend compatibility faults and recovery; old20component passes do not close live branch.",
+    "O05": "A own/merchant positives, normalB/missing/foreign signed scope denials, actual unavailable buyer context, observed HTTP statuses and no facts/raw-snapshot leak; prior401/403 authdenial is not unavailable.",
+    "S01": "Use retained S01_STOCK_QUALIFIED_SETUP_PROPOSAL_20261024.json only under allocated one-new-product/variant/stock3 normal UI creation; actual hostile format/PDP/discovery and supported positive-controlled network observation, then benign restore. Preserve mainTint/order/stock.",
+    "scope": "Unadmitted fault/network controls hold dependent branches only; do not hold normal purchase/M05. No production flags, fake browser responses or unsupported observers.",
+    "sourceConditions": {
+      "classification": "SOURCE_CONDITIONS_FOR_CONTROLLER_ADMISSION_NOT_FAULT_EXECUTION_OR_PERMISSION",
+      "recordedAtUtc": "2026-10-24T20:32:29.457961+00:00",
+      "D02": {
+        "source": {
+          "path": "/private/tmp/letbuyy-shared-completion-20261024-06/apps/commerce/web/src/lib/theme-engine/storefront-discovery.ts",
+          "sha256": "9656afd1b3e56b153c5dd69c544f97c9286776b6f2a7f5dbb6599d12459f4f14",
+          "lines": [
+            22,
+            39
+          ]
+        },
+        "missingMetadataBasic": "Actual same-response page.discovery undefined with valid basic page and no niche filter; basic products remain browsable and no niche chooser.",
+        "unsupportedNiche": "Actual page.discovery undefined plus valid requested routine_stage/format/shade triggers UNSUPPORTED_DISCOVERY_FILTER. Unknown arbitrary query or ordinary zero matches does not prove this branch.",
+        "malformedMetadata": "Actual present metadata failing schema/query/row-consistency checks triggers unavailable, not broad catalog fallback.",
+        "admissionNeeded": "Controller/allocator-owned supported scoped backend compatibility/fault context and restoration on this same sealed run. No production flag, hidden API or browser response interception is proposed."
+      },
+      "O05": {
+        "sources": [
+          {
+            "path": "/private/tmp/letbuyy-shared-completion-20261024-06/apps/commerce/web/src/lib/buyer-auth/data-session.ts",
+            "sha256": "f0210b43a38ac85253fd613e5f59c77ef93a352ec042e4489ae6e3cd1f5a8439",
+            "lines": [
+              31,
+              44
+            ]
+          },
+          {
+            "path": "/private/tmp/letbuyy-shared-completion-20261024-06/apps/commerce/web/src/lib/buyer-order-drop.ts",
+            "sha256": "c854c31af611a21c85601e12c6bbcbee5479ae2e644bcd6865e1f10f31e6fa8a",
+            "lines": [
+              144,
+              188
+            ]
+          },
+          {
+            "path": "/private/tmp/letbuyy-shared-completion-20261024-06/apps/commerce/web/src/lib/theme-engine/composition-engine.tsx",
+            "sha256": "c7c4e98ddebf6a9c707d77e3f66cab975f894edab36e6f65c7ab58604bda2ef7",
+            "lines": [
+              602,
+              612
+            ]
+          }
+        ],
+        "positive": "Current ownbuyer profile/order and normal merchant order must succeed before each scoped denial/fault context.",
+        "unavailableBranch": "Session resolution exception, non401/403 profile failure/malformed email, order-detail5xx or mapping/transport exception yields unavailable. Missing/foreignsession and401/403 return guest/null; they are distinct.",
+        "admissionNeeded": "Supported precisely scoped backend/transport fault with positive-before/after and normal Liquid unavailable view, recorded realHTTP status where present. Do not disable user accounts, corrupt history or replace buyer session."
+      },
+      "S01": {
+        "setup": "S01_STOCK_QUALIFIED_SETUP_PROPOSAL_20261024.json",
+        "admissionNeeded": "Separate normal-UI active stock3 securityproduct/variant plus supported controller network observer. Run harmless known-request positive control, then bounded hostile interval, then benign restoration; never infer no network from inertDOM. No security purchase planned."
+      },
+      "M05": {
+        "normalLane": "Normal collection membership/save/reload and merchant listing count. No fault control required for corrected2/1/1 positives. Empty/foreign/unavailable remain separately witnessed.",
+        "stockConsumption": "Do not reset Tint stock to4 after Test/COD. Baseline currentAPIbeforestock records4/4/0 at20:30:10Z; preserve actual sales and exact UUIDs."
+      }
+    }
+  },
+  "historyFollowup": {
+    "originalCOD": "Retain original C01q2→H01 normalCOD→O01/O02 original facts/quantity/1140 requirements and genuine replay/stale/negative clauses. If samePink stock remains sufficient, append a new owned COD after Test; budget separately.",
+    "afterEdits": "Only after initialbuyerANDmerchant witnesses, normal sameUUID fact/price/axis edits with stock omitted, then both histories/snapshot hashes unchanged; archive separately and restore only permitted productscope, never stock.",
+    "oldOrders": "Historical936COD84a52d92-6cb4-46bb-b941-8d7f37e8cb74 and legacy36b89194-f491-49ab-b42c-401029a4a58c remain historical and are not recreated/adopted.",
+    "joinKey": "runId+siteId+orderId+paymentId+releaseId; orderNumber alone is insufficient because old/new fixtures both use ORD-20261024-10000."
+  },
+  "evidenceNeeded": [
+    "exact installed/source/package/release/revision lineage",
+    "actual actor/session class; existing buyerSSO is not signup",
+    "normal UI actions, screenshots/accessibility and declared DOM observation",
+    "redacted statuses/requestIDs/response hashes with browser/API evidence classes separate",
+    "current local/provider order/payment/event IDs and amounts/currency",
+    "exact expected andactual order/inventory/ledger/cart/outbox effects",
+    "initial buyer+merchant immutable beauty facts and later sameUUID comparison",
+    "all failed attempts, restoration, owner/reviewer acceptance"
+  ],
+  "forbidden": [
+    "Reading providerkeys/secret/privateState credentials in this owner chat",
+    "Own browser/native/build/runtime or another stack",
+    "Sealedcandidate/Main/sharedqueue writes",
+    "Copying930/936orolderfixture sessions/cart/IDs",
+    "Automaticnewintent retry orstockrefill",
+    "Calling sharedsmoke aDewdropTestpurchase orfullcertificate"
+  ],
+  "result": {
+    "browserExecuted": true,
+    "freshCasePasses": 0,
+    "LOCAL_E2E_VERIFIED": false,
+    "RAZORPAY_TEST_VERIFIED": false,
+    "REVIEW_ACCEPTED": false,
+    "FULL_THEME_CERTIFIED": false,
+    "scopedExpandedPurchasePass": "DD-PAY-02",
+    "actualEvidence": "runtime07/DEWDROP_TEST_PURCHASE_10003.json",
+    "actualOrderId": "5b7e729e-46dd-4bfd-b040-fcd44a534e9d",
+    "paymentId": "pay_TrsWOjFmQm62M0",
+    "openFinding": "R07-HOSTED-CAPTURE-FLAG-01"
+  },
+  "nextExecutableSlice": {
+    "sliceId": "DD-R07-02",
+    "priority": "M05 actual normal merchant membership/save/reload/list count retest, then separately admitted D02/O05/S01 negatives. No owner browser/source lease is assumed.",
+    "M05Inputs": "Normal current UI discovery of existing Cleanse/Care/Colour collections, expected ownedmemberproducts CloudRinse+PalmWash /DailyVeil /SoftColour for2/1/1. Bind actual UUIDs and resourceids before writes; no label/seedfile asliveproof.",
+    "preservation": "Product5dd7adcb…/Pinkvariant3f9775d7… nowavailable3; do not restore seed4. Originalorder snapshot0d5c1d2b… immutable. Afteredit/archive onlyafteradmittedlaterhistorylane.",
+    "provider": "Intended oneTestcapture is complete. No new provider intent or secondcapture in this continuation.",
+    "M05NormalUiContract": {
+      "declaredContext": {
+        "template": "index",
+        "sectionType": "category-grid",
+        "instanceId": "aura-routine-pathways",
+        "visibleName": "Routine pathways",
+        "fields": [
+          {
+            "id": "collection1",
+            "label": "Stage 1 collection",
+            "target": "Cleanse",
+            "expectedMembers": 2
+          },
+          {
+            "id": "collection2",
+            "label": "Stage 2 collection",
+            "target": "Care",
+            "expectedMembers": 1
+          },
+          {
+            "id": "collection3",
+            "label": "Stage 3 collection",
+            "target": "Colour",
+            "expectedMembers": 1
+          }
+        ],
+        "declarationScope": "Existing inventoried schema; current2.1.0 delta retains this surface. Normal installed schema and each actual selected resource ID still must be observed."
+      },
+      "actualCurrentProductIdsFromPublicBrowserLinks": {
+        "Fixture Cloud Rinse": "42f2f82a-2822-46ed-96a5-c3825205f96d",
+        "Fixture Palm Wash": "cd470820-830e-4550-8ca6-3d8336dd771c",
+        "Fixture Daily Veil": "46822e8b-1fd2-4aa1-b0cf-0ebc9f278d3c",
+        "Fixture Soft Colour": "5dd7adcb-50c2-4453-9602-a669139b4270"
+      },
+      "collectionIds": null,
+      "finiteProposedNormalSteps": [
+        "Normal merchant Collections list and each existing owned Cleanse/Care/Colour detail: bind actual collectionUUID/handle, select exact membership, Save and reopen. Capture actual counts2/1/1 from the list, not selected-checkbox count alone.",
+        "Current Dewdrop home Routine pathways, real Stage1/2/3 collection pickers: bind those exact ownedresources, acknowledge Save, fullreload and Publish under current controller grant.",
+        "Public links must carry actual boundcollection targets and render exact members. Existing default ?routine_stage links are not an executed selected-resource witness.",
+        "A normal ownedemptycollection needs separate admitted creation/reuse; prove it remains empty. Foreign/unavailable resource controls require separately admitted exactscope; no claims from ownedpositive alone."
+      ],
+      "doNot": [
+        "No default-label, dropdown-index or sourcefixture IDs as a livebinding substitute.",
+        "No product stock edit or Test payment retry.",
+        "No reset of consumed Pink Clay to seedstock4.",
+        "No source fixes or fake discovery/buyer fault response."
+      ]
+    }
+  },
+  "executionDisposition": "DD-R07-01 consumed: actual intended oneTestcapture and both immediate histories complete. Do not repeat its purchase steps. Next is DD-R07-02 under sole-controller scheduling.",
+  "resume02": {
+    "recordedAtUtc": "2026-10-24T23:54:15.189971+00:00",
+    "authority": {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/HUMAN_RESUME_20261025_02.json",
+      "sha256": "3d1bb457e0a3637169a914dcb43b6f7cde7117c464a341cf2035106a8c5aa821"
+    },
+    "packet": "runtime07/RESUME02_NEXT_ACCEPTANCE.json",
+    "status": "READY_MAPPING_HELD_FOR_ROOT_RECOVERY_AND_BROWSER_ADMISSION",
+    "noDuplicatePayment": true
+  },
+  "maintenance": {
+    "recordedAtUtc": "2026-10-25T01:31:11.865574+00:00",
+    "status": "OWNED_QA_MAINTENANCE_STOPPED_FOR_DATA_PRESERVATION",
+    "receipt": {
+      "path": "docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/PRESERVATION_STOP_EXECUTION_20261025_01.json",
+      "sha256": "996da731d7150632928bb0c7d5f9214906f62c4f2e063a6e9e9900067710cdaf",
+      "bytes": 1313,
+      "evidenceClass": "EXISTING_ROOT_PRESERVATION_MAINTENANCE_RECEIPT"
+    },
+    "projectPaused": false,
+    "stoppedOriginalParent": 54685,
+    "stoppedRuntime": 55109,
+    "browserFence": "Root reports fully saved Playfieldv17/cart0; no Dewdrop active-theme inference.",
+    "automaticContinuationAllowed": false,
+    "restriction": "Do not SIGCONT after expiry: due cleanup timers may execute immediately. API, checkout and parent-hosted REST are unavailable during maintenance. Requires qualified preserved-runtime recovery.",
+    "recoveryOwner": "Root only; qualified preserved recovery required",
+    "browserQueueOwner": "Editor",
+    "liveApiDbBrowserProviderTestsAllowed": false,
+    "ownerRecoverySignalsOrPrivateBackupReads": 0
+  }
+}

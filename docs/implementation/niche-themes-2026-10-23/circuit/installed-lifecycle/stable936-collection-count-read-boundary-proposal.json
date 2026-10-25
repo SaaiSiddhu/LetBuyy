@@ -1,0 +1,221 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-24T04:09:30.876814+00:00",
+  "classification": "SOURCE_ONLY_CANONICAL_READ_BOUNDARY_PROPOSAL_NO_CODE_SQL_OR_PERMISSION_CHANGE",
+  "runId": "936e5f577646",
+  "decisionRequestedFrom": "Root architecture/tenancy review; no infrastructure decision requested from the end user",
+  "recommendation": "Complete the existing collection-membership adapter with one purpose-bound, fixed count-only operation using the existing service-role SELECT authority, inside a verified/locked app_tenant transaction. Admit it only after its security gates pass; otherwise take the separately scoped paired RLS read-policy closure. Do not pretend current app_tenant direct junction SELECT is permitted.",
+  "criticalExistingSnapshotAcl": {
+    "actualSource": "361:281 revokes EXECUTE on collection_membership_snapshot_v1 from service_role as well as app_tenant and the API roles. Its function is SQL STABLE SECURITY INVOKER at211-212; no EXECUTE regrant is present after that statement. The exact callable ACL must be verified in the owned qualification before choosing any RPC call.",
+    "consequence": "Do not assume that setting role service_role makes the private snapshot callable, do not attempt it and then override its permission failure, and do not grant EXECUTE. The small proposal instead fixes one count-only table read using the existing SELECT grant361:79; it leaves the private snapshot and mutating apply API untouched. If Root requires an existing RPC rather than that fixed statement, this option is inadmissible under current source ACLs and the policy-closure option must be reviewed."
+  },
+  "optionA_FixedExistingReadOperation": {
+    "ownership": "The existing collection-membership.adapter.ts owns the read projection, list query semantics and DTO assembly. After the active393 native input closure ends and Root grants it, tenant-transaction.ts owns only the fixed security operation and restoration, using its existing private frame checks. No generic elevated callback, SQL argument, role parameter, raw product reader or new read RPC is exposed.",
+    "inputs": "Only the canonical resolver OwnedStoreScope, its registered active tenant transaction, a validated pagination intent and parent identities/revisions actually returned by that transaction RLS read. Parent/page witnesses must be internal or revalidated from the RLS query, never trusted caller-provided IDs. The HTTP API accepts no capability token, ID batch or SQL/role selector.",
+    "orderedProtocol": [
+      "1. Resolve current owner using resolveOwnedStoreScope and validate the canonical shared list query. Enter withTenantTx(scope.tenant); absence of its pool is503 without REST fallback. Bind the resolver actor with the existing frame mechanism. All ordinary statements execute as app_tenant.",
+      "2. Verify the registered transaction/context and acquire a shared owner-site lock with the SAME live owner predicate as canonical verifySiteOwnership: undeleted site ID and custom_user_id OR user_id matching the canonical actor, plus the signed session store restriction. This prevents ownership transfer during the bounded read; do not accept a claim-only ownership substitution.",
+      "3. Read the bounded parent page and its total under RLS, explicit store_id/deleted filters and deterministic created_at DESC plus id DESC tie-break. Lock selected parent rows shared before counting. Derive IDs and membership versions only from those actual owned rows. Reject duplicates, unexpected identity/version and oversized witnesses. The parent total/page must use one statement snapshot so an empty/out-of-range page still has the correct total.",
+      "4. Recheck ownership/parent witnesses and full context before privilege change. Acquire the same-frame busy guard so another count or publication operation cannot nest/interleave. Capture the allowed relation/role/ACL profile and backend identity. No ownership or parent-page query is deferred into the elevated window.",
+      "5. Create one fixed, internal savepoint. Temporarily select exactly service_role for exactly one module-owned statement. Its fixed operation counts collection_products joined to the explicitly selected, undeleted parents, with both the validated site parameter and the derived bounded parent IDs repeated in the predicate. It returns only one scalar nonnegative integer count per known parent, never product IDs, product records, buyer data or a full raw snapshot. LEFT-join counting must represent a confirmed empty parent as0, while a missing parent/count result is an error.",
+      "6. Immediately restore app_tenant. Verify current_user/role, registered frame, site/request/actor GUCs, JWT subject, backend and owner/parent identity/revision before releasing the savepoint or returning any value. Verify the permission/profile hash remains unchanged; this operation never grants permission or changes a policy. Counts must cover the exact parent set once each and be safe integers consistent with the membership limit, including unavailable assignments.",
+      "7. On any query/role/context/shape/profile fault, roll back to the savepoint before restoration checks. Poison the transaction frame on every fault, including caught exceptions; restoration failure or lost connection aborts the whole outer transaction and must not permit pool reuse with elevated state. A caller cannot catch a count failure and continue ordinary SQL. No query retry under a different role, raw snapshot RPC fallback, no-op mutation or empty-success recovery is allowed.",
+      "8. After app_tenant restoration, emit a bounded structured read-audit/log event to the EXISTING logging/telemetry path, with a fixed operation name, sanitized outcome/code, safe correlation identifier, parent count and duration. No raw SQL/error message, products/IDs, names, addresses, auth headers, cart/order capabilities or full scope object. Do not copy the publisher business audit INSERT: a read changes no business table, receipt, outbox or audit row. This is log/telemetry auditing, not a claim of a transactional durable audit row; if governance demands the latter, stop for a separately approved design rather than silently add writes."
+    ],
+    "fixedProfiles": [
+      "Context: actual registered withTenantTx client/frame, app_tenant before/after, exact same validated site/request/actor/subject, no poisoned/busy frame, and same backend. Within the single read window only the fixed service_role is valid, with all other context unchanged.",
+      "Ownership: undeleted site and canonical actor match custom_user_id OR user_id as in auth-user.ts40-66; signed store restriction still matches. Keep owner row and selected collection parent/revision locks across the operation.",
+      "Relations: fixed public.collections and public.collection_products identities, schema/owner/column/unique-link shape and expected ACL/role profile; service_role retains only its already-approved junction SELECT, app_tenant direct junction and private snapshot EXECUTE remain denied. Unknown privilege expansion/profile drift fails closed rather than becoming a runtime migration.",
+      "Isolation: all ordinary reads remain subject to RLS and explicit parent store/deleted filters. The count window repeats those predicates and accepts only the positively derived parent set. Do not tie count availability to the publisher function profile or invoke the publication capability; there is no ordinary-publish dependency."
+    ],
+    "returnAndErrorContract": "Return the canonical shared collection summary/list projection with required numeric product_count; never derive it from missing Collection.product_ids defaults, first100 choices or public active/filter totals. Missing pool/profile/table/permission/invalid shape gives sanitized AppError503 COLLECTION_LIST_UNAVAILABLE; invalid query400, real authorization403/404 preserved. Legitimate empty owned parent/list is distinct from any error. Known errors use AppError/formatAppError; unexpected failures log only safe structured metadata and expose no DB_ERROR text.",
+    "safetyLimit": "The current private snapshot is NOT made callable. This is not a generic role-switch abstraction: one fixed count-only operation, one existing adapter caller, no business writes and no new database object or privilege. If this restriction cannot be enforced or proven, do not ship optionA."
+  },
+  "CODE_R4_PaginationCompletion": {
+    "currentFact": "Existing handler607-646 is unpaginated StoreScopedQuery-only, SDK returns a bare Collection[] and the BFF/UI preserve only that array. It is incorrect to claim pagination is already retained.",
+    "proposedContract": "Use the existing canonical page/limit/paginated-envelope conventions, with finite validated bounds and stable created_at DESC,id DESC order. Add/derive the collection list query schema at the canonical domain export and the intentional shared CollectionSummary read schema. Count only the returned page parents; separately expose the RLS-visible parent total even on an empty/past-end page. Counts are full assignments regardless of the product-picker page size.",
+    "clientCompletion": "Change the single canonical SDK list method to the existing typed paginated response convention and pass page metadata through the existing merchant BFF. The merchant list must forward validated page/limit and expose the existing pagination UI pattern; do not silently truncate to the first100 collections or fetch every page behind the user. Additional precise BFF/page/domain-query source scope is therefore needed beyond the original numeric-only pass-through assumption.",
+    "knownSingleConsumer": "Source search found products.collections.list used by apps/merchant/web/src/app/api/stores/[store]/collections/route.ts; confirm its exact compile consumer closure before the later edit. No compatibility-only second list endpoint or parallel collection DTO is proposed."
+  },
+  "optionB_PairedSQLReadPolicyClosure": {
+    "purpose": "If the fixed operation cannot meet the isolation/audit/profile gates, separately scope a canonical junction SELECT/RLS closure and then keep count SQL entirely app_tenant. Root/tenancy owner allocates the next sequential UP/DOWN migration; do not edit361, prior392/discovery or the separate393/394 security owner inputs.",
+    "requiredClosure": "Preflight exact existing ACL/policy/owner/role/registry profiles. Add only necessary app_tenant SELECT, with FORCE RLS and a parent-collection-to-store GUC policy appropriate for a junction without store_id. Do not mistakenly compare collection_id/product_id directly to site ID. Account for every existing permissive policy: a broad PUBLIC USING(true) policy cannot remain OR-combined with a supposedly restrictive new tenant policy. Preserve the sole guarded membership mutator and deny direct DML. Extend the existing tenant registry/governance mapping if its indirect-table model requires it.",
+    "rollback": "Pair DOWN with exact provenance and profile guards and prove restoration/re-UP in the owned lane. An application using this count path must fail503 if rolled back to a profile without its read authority; it must never fall back to service-role REST or fake0.",
+    "costAndBenefit": "Stronger ordinary RLS path and no elevated window, but larger schema/ACL/policy/registry/security surface and heavier9-class/red-team/rollback qualification. It exceeds the present no-migration/no-grant source lease and must not be improvised as a count-display edit."
+  },
+  "exactCallsitePlanAfterRootDecision": [
+    {
+      "path": "services/api-gateway/src/routes/products.ts",
+      "scope": "Only the existing collection LIST branch/import handoff: shared query validation, resolveOwnedStoreScope, adapter call and standard paginated response; remove raw DB_ERROR and missing-table empty fallback."
+    },
+    {
+      "path": "services/api-gateway/src/execution/collection-membership.adapter.ts",
+      "scope": "Existing owner gains summary/page projection, ordinary tenant parent read, exact count witness mapping, typed result validation and sanitized failure handling. Preserve existing read/replace membership paths."
+    },
+    {
+      "path": "services/api-gateway/src/lib/tenant-transaction.ts",
+      "scope": "Only AFTER active393 native input closure and a separate Root grant: add the single fixed count security operation using the existing private frame/context guards. No refactoring or reuse of the publisher body/profile, no generic elevated callback."
+    },
+    {
+      "path": "packages/shared-types/src/index.ts",
+      "scope": "Intentional canonical collection read-summary export with required safe numeric full-assignment count; do not change creation/mutation authority or reuse default product_ids as count."
+    },
+    {
+      "path": "packages/commerce-core/src/index.ts",
+      "scope": "Explicitly review a canonical collection list page/limit query derived from existing store-scoped/pagination contracts; this is extra source scope, not currently assumed granted."
+    },
+    {
+      "path": "packages/typescript/api-client/src/index.ts",
+      "scope": "Only canonical collection list request/typed paginated response/validation; preserve create/update/membership SDK commands."
+    },
+    {
+      "path": "apps/merchant/web/src/app/api/stores/[store]/collections/route.ts",
+      "scope": "If completing pagination now, separately grant only GET query forwarding and paginated metadata pass-through; store authority remains resolved from the owned path, never caller query."
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/products/collections/page.tsx",
+      "scope": "If completing pagination now, separately grant canonical summary consumption and existing-style page controls; no local collection DTO, fabricated0 or N+1 picker/read fallback."
+    },
+    {
+      "path": "focused contract test source and ONE dedicated owned native qualification source",
+      "scope": "Exact filenames/runner cohort to be agreed before writing/running. No ordinary publisher dependency; one qualified source/test pass after review, never mutate the current936 UI fixture."
+    }
+  ],
+  "positiveFirstQualificationGates": [
+    "Actual production Gateway + owned PostgreSQL + canonical SDK: A owns its parent page with counts0/2/1/1; B independently sees its own known positive rows. Only then assert A cannot select B parents/store and forged scopes/IDs are denied BEFORE the role window.",
+    "Full assigned count: more than100 assigned products (within canonical membership limit), inactive and explicitly unavailable assignments, genuine empty collection0; compare with canonical membership snapshot cardinality without exposing IDs through the count operation. Public active/filter totals and picker-page lengths must not substitute.",
+    "Pagination: deterministic ties, multiple pages without omission/duplicates, past-end total, true empty owned store and invalid page/limit. Verify BFF/SDK/UI metadata and navigation, not first-page truncation.",
+    "Current denied privileges remain denied: app_tenant raw junction SELECT/private snapshot EXECUTE and direct DML do not become available. All relevant ACL, function and RLS profiles match before/after, with no grant/policy change in optionA.",
+    "Fault/security: wrong actor/site/request/JWT subject, foreign/mixed/duplicate parent witness, membership revision/owner transfer race, borrowed/unregistered or poisoned transaction, nested/re-entrant count/publication operation, role/profile drift and unexpected/missing/duplicate/negative/unsafe count results all fail without any partial summary.",
+    "Actual named failures: pool missing, parent read/query failure, count permission/query failure, statement abort, role switch/restore failure, rollback-to-savepoint failure, connection loss/cancellation. Assert sanitized503 rather than empty-success/fake0, full outer abort when restoration cannot be proved, and correct ordinary app_tenant/GUC state on a subsequent A/B pooled transaction.",
+    "No side effects: exact protected business-table/receipt/outbox/audit hashes remain equal across the read and all denied/fault probes; only bounded safe log/telemetry audit records may be emitted. Logs and public errors contain no raw products/PII/capabilities/SQL/private injected error strings.",
+    "Source contract controls: real RED SDK acceptance test for missing/non-numeric counts before strict read contract, schema validation, fixed-operation/no-callback/no-role-parameter and single-existing-adapter callsite constraints. Run one full Gateway/SDK noEmit and scoped lint only after the permitted source closure is stable; report unrelated shared WIP diagnostics honestly.",
+    "OptionB additionally needs full tenancy red-team/registry, permission UP/DOWN/re-UP and wrong-site GUC tests; never remove/weaken RT1/RT2/RT7. Both options require Root-admitted native execution and later sole-Editor list/save/reload checks with the current held cart/membership/order/money state conserved."
+  ],
+  "currentDisposition": {
+    "codeEdits": 0,
+    "sqlEditsOrExecutions": 0,
+    "testsOrBuilds": 0,
+    "browserNetworkDataOrRuntimeActions": 0,
+    "tenantTransactionFrozen": true,
+    "SourceOnlyProposalComplete": true,
+    "nativeRun": "NOT_GRANTED/NOT_RUN",
+    "next": "Root selects admissible existing-winner boundary and grants exact files only after the frozen393 native closure ends. No user infrastructure approval question is requested by this proposal; current code/data/permissions stay unchanged."
+  },
+  "sourcePins": [
+    {
+      "path": "/Volumes/Projects/LetBuyy/services/api-gateway/src/lib/tenant-transaction.ts",
+      "relativePath": "services/api-gateway/src/lib/tenant-transaction.ts",
+      "sha256": "8cbaa6e78b6cb4b580bd20168b194c6c4f9f77d9601de816cc02eec68dd6917c",
+      "lines": [
+        14,
+        22,
+        34,
+        83,
+        107,
+        110,
+        114,
+        117,
+        121,
+        126,
+        145,
+        159
+      ]
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/services/api-gateway/src/lib/tenant-context.ts",
+      "relativePath": "services/api-gateway/src/lib/tenant-context.ts",
+      "sha256": "d00e0cd85c1dc529440f757a3d0ac71cbcc26791ceabac2973cd31236c4aa70c",
+      "lines": [
+        185,
+        192,
+        205,
+        220,
+        229
+      ]
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/services/api-gateway/src/lib/auth-user.ts",
+      "relativePath": "services/api-gateway/src/lib/auth-user.ts",
+      "sha256": "672c441b2d2f57c21b1b94df79da5ae0f608d3d55b6ec7c6265e8bf007296bb1",
+      "lines": [
+        40,
+        46,
+        50,
+        55,
+        57
+      ]
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/services/api-gateway/src/execution/collection-membership.adapter.ts",
+      "relativePath": "services/api-gateway/src/execution/collection-membership.adapter.ts",
+      "sha256": "de4f7d0f588133307286ef0db942f8174b7a8c0c99a92a848df9cbb01a06a61b",
+      "lines": [
+        21,
+        26,
+        30,
+        33,
+        40,
+        52
+      ]
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/services/api-gateway/src/routes/products.ts",
+      "relativePath": "services/api-gateway/src/routes/products.ts",
+      "sha256": "2b7c02e074499856a27a7b767702141c44aae3b3ba2e5ad56e2d01e3a5c54176",
+      "lines": [
+        607,
+        617,
+        625,
+        629,
+        639,
+        642,
+        645
+      ]
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/database/supabase/migrations/361_collection_membership.sql",
+      "relativePath": "database/supabase/migrations/361_collection_membership.sql",
+      "sha256": "a15fdd1112ae0971fba49042cd00ef5220a48946aff3d32e2358932875d72534",
+      "lines": [
+        78,
+        79,
+        211,
+        212,
+        216,
+        219,
+        281,
+        283
+      ]
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/packages/typescript/api-client/src/index.ts",
+      "relativePath": "packages/typescript/api-client/src/index.ts",
+      "sha256": "bca9564794dc06352982fbcaa04d91bb095402d0b3f63cdeb8cfa7feab0bad47",
+      "lines": [
+        4950,
+        4951,
+        5707,
+        5712,
+        5823
+      ]
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/packages/shared-types/src/index.ts",
+      "relativePath": "packages/shared-types/src/index.ts",
+      "sha256": "d050c4e49249332f6026fc8fdfabf62021c7659bbbdd4070a944f04d41384362",
+      "lines": [
+        1427,
+        1453
+      ]
+    },
+    {
+      "path": "/Volumes/Projects/LetBuyy/packages/commerce-core/src/index.ts",
+      "relativePath": "packages/commerce-core/src/index.ts",
+      "sha256": "b36af7e65c00d8b9d16fe84ffc7da522b6107c4010208cc224363fa90bdee6b9",
+      "lines": [
+        272
+      ]
+    }
+  ]
+}

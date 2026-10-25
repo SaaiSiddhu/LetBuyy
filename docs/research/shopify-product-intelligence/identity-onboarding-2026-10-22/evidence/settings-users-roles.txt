@@ -1,0 +1,21 @@
+- heading [level=1]: Users
+- button "Export":
+- button "Import":
+- button "Add users":
+- heading "Users" [level=1]
+- heading "Users" [level=2]:
+- table:
+- checkbox "Select all users"
+- checkbox "Select user"
+- link "[test identity]":
+- button:
+- button "Learn more about users":
+- status
+- status
+- status
+- button "Close" [disabled]:
+- textbox "Work with Sidekick"
+- button "Add files and more":
+- button "Voice":
+- button "Open Sidekick":
+- status

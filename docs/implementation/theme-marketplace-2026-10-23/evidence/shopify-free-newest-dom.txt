@@ -1,0 +1,430 @@
+- navigation:
+  - link "Shopify Theme Store":
+    - /url: /
+    - generic: Shopify Theme Store
+  - button "Browse themes":
+    - text: Browse themes
+  - button "Search":
+  - generic "My Store 4":
+- main:
+  - heading "Browse all themes" [level=1]
+  - paragraph: "Filtered by:"
+  - button "Remove \"Free\" filter":
+    - text: Free
+  - complementary:
+    - heading "Search filters" [level=2]
+    - link "Skip to search results":
+      - /url: "#SearchResults"
+    - button "Collapse price filters" [expanded]:
+      - generic: Collapse price filters
+      - generic: Price
+    - group "Filter by price":
+      - generic: Filter by price
+      - region "Collapse price filters":
+        - list:
+          - checkbox "Free (24 matching themes)" [checked] [active]
+          - text: Free
+          - generic: "24"
+          - checkbox "Paid (1322 matching themes)"
+          - generic: Paid
+          - generic: "1322"
+    - button "Collapse industry filters" [expanded]:
+      - generic: Collapse industry filters
+      - generic: Industry
+    - group "Filter by industry":
+      - generic: Filter by industry
+      - region "Collapse industry filters":
+        - list:
+          - checkbox "Art (0 matching themes)"
+          - generic: Art
+          - checkbox "Auto (0 matching themes)"
+          - generic: Auto
+          - checkbox "Bags (0 matching themes)"
+          - generic: Bags
+          - checkbox "Beauty (0 matching themes)"
+          - generic: Beauty
+          - checkbox "Clothing (0 matching themes)"
+          - generic: Clothing
+          - checkbox "Electronics (0 matching themes)"
+          - generic: Electronics
+          - checkbox "Entertainment (0 matching themes)"
+          - generic: Entertainment
+          - checkbox "Food and drink (0 matching themes)"
+          - generic: Food and drink
+          - checkbox "Garden (0 matching themes)"
+          - generic: Garden
+          - checkbox "Hardware (0 matching themes)"
+          - generic: Hardware
+          - checkbox "Home (0 matching themes)"
+          - generic: Home
+          - checkbox "Jewelry and accessories (0 matching themes)"
+          - generic: Jewelry and accessories
+          - checkbox "Kids (0 matching themes)"
+          - generic: Kids
+          - checkbox "Office (0 matching themes)"
+          - generic: Office
+          - checkbox "Pets (0 matching themes)"
+          - generic: Pets
+          - checkbox "Services (0 matching themes)"
+          - generic: Services
+          - checkbox "Shoes (0 matching themes)"
+          - generic: Shoes
+          - checkbox "Sports (0 matching themes)"
+          - generic: Sports
+          - checkbox "Toys (0 matching themes)"
+          - generic: Toys
+          - checkbox "Wellness (0 matching themes)"
+          - generic: Wellness
+    - button "Collapse filters for catalog size" [expanded]:
+      - generic: Collapse filters for catalog size
+      - generic: Catalog size
+    - group "Filter by catalog size":
+      - generic: Filter by catalog size
+      - region "Collapse filters for catalog size":
+        - list:
+          - checkbox "One Product (27 matching themes)" [disabled]
+          - generic: One Product
+          - generic: "0"
+          - checkbox "Few (2-10) (102 matching themes)"
+          - generic: Few (2-10)
+          - generic: "1"
+          - checkbox "Some (11-100+) (888 matching themes)"
+          - generic: Some (11-100+)
+          - generic: "20"
+          - checkbox "Lots (500+) (329 matching themes)"
+          - generic: Lots (500+)
+          - generic: "3"
+    - button "Collapse feature filters" [expanded]:
+      - generic: Collapse feature filters
+      - generic: Features
+    - group "Filter by feature":
+      - generic: Filter by feature
+      - region "Collapse feature filters":
+        - list:
+          - checkbox "Account menu (599 matching themes)"
+          - generic: Account menu
+          - generic: "10"
+          - checkbox "Age verifier (838 matching themes)" [disabled]
+          - generic: Age verifier
+          - generic: "0"
+          - checkbox "Back-to-top button (973 matching themes)" [disabled]
+          - generic: Back-to-top button
+          - generic: "0"
+          - checkbox "Before/after image slider (906 matching themes)" [disabled]
+          - generic: Before/after image slider
+          - generic: "0"
+          - checkbox "Breadcrumbs (1197 matching themes)" [disabled]
+          - generic: Breadcrumbs
+          - generic: "0"
+          - checkbox "Color swatches (1306 matching themes)"
+          - generic: Color swatches
+          - generic: "23"
+          - checkbox "Combined listing (790 matching themes)"
+          - generic: Combined listing
+          - generic: "7"
+          - checkbox "Countdown timer (1089 matching themes)" [disabled]
+          - generic: Countdown timer
+          - generic: "0"
+          - checkbox "EU translations (EN, FR, IT, DE, ES) (1222 matching themes)"
+          - generic: EU translations (EN, FR, IT, DE, ES)
+          - generic: "10"
+          - checkbox "In-menu promos (1202 matching themes)"
+          - generic: In-menu promos
+          - generic: "10"
+          - checkbox "Infinite scroll (856 matching themes)"
+          - generic: Infinite scroll
+          - generic: "10"
+          - checkbox "Mega menu (1296 matching themes)"
+          - generic: Mega menu
+          - generic: "24"
+          - checkbox "Quantity pricing (465 matching themes)"
+          - generic: Quantity pricing
+          - generic: "3"
+          - checkbox "Quick order list (365 matching themes)"
+          - generic: Quick order list
+          - generic: "1"
+          - checkbox "Quick view (1254 matching themes)"
+          - generic: Quick view
+          - generic: "11"
+          - checkbox "Right-to-left (714 matching themes)" [disabled]
+          - generic: Right-to-left
+          - generic: "0"
+          - checkbox "Sign in with Shop (844 matching themes)"
+          - generic: Sign in with Shop
+          - generic: "10"
+          - checkbox "Sticky header (1327 matching themes)"
+          - generic: Sticky header
+          - generic: "24"
+          - checkbox "Stock counter (1227 matching themes)"
+          - generic: Stock counter
+          - generic: "13"
+          - checkbox "Swatch filters (1152 matching themes)"
+          - generic: Swatch filters
+          - generic: "23"
+  - heading "Matching themes" [level=2]
+  - heading "24 themes" [level=3]
+  - generic: Sort
+  - combobox "Sort":
+    - option "Relevance"
+    - option "Newest" [selected]
+    - 'option "Price: low to high"'
+    - 'option "Price: high to low"'
+  - link "Details about the Fabric theme":
+    - /url: /themes/fabric/presets/fabric?surface_inter_position=1&surface_intra_position=1&surface_type=all
+    - img "Fabric"
+    - paragraph: Fabric
+    - generic: Free
+    - generic "30% positive":
+      - generic: 30%
+  - link "Details about the Savor theme":
+    - /url: /themes/savor/presets/savor?surface_inter_position=1&surface_intra_position=2&surface_type=all
+    - img "Savor"
+    - paragraph: Savor
+    - generic: Free
+    - generic "24% positive":
+      - generic: 24%
+  - link "Details about the Vessel theme":
+    - /url: /themes/vessel/presets/vessel?surface_inter_position=1&surface_intra_position=3&surface_type=all
+    - img "Vessel"
+    - paragraph: Vessel
+    - generic: Free
+    - generic "29% positive":
+      - generic: 29%
+  - link "Details about the Dwell theme":
+    - /url: /themes/dwell/presets/dwell?surface_inter_position=1&surface_intra_position=4&surface_type=all
+    - img "Dwell"
+    - paragraph: Dwell
+    - generic: Free
+    - generic "28% positive":
+      - generic: 28%
+  - link "Details about the Tinker theme":
+    - /url: /themes/tinker/presets/tinker?surface_inter_position=1&surface_intra_position=5&surface_type=all
+    - img "Tinker"
+    - paragraph: Tinker
+    - generic: Free
+    - generic "36% positive":
+      - generic: 36%
+  - link "Details about the Pitch theme":
+    - /url: /themes/pitch/presets/pitch?surface_inter_position=1&surface_intra_position=6&surface_type=all
+    - img "Pitch"
+    - paragraph: Pitch
+    - generic: Free
+    - generic "33% positive":
+      - generic: 33%
+  - link "Details about the Atelier theme":
+    - /url: /themes/atelier/presets/atelier?surface_inter_position=1&surface_intra_position=7&surface_type=all
+    - img "Atelier"
+    - paragraph: Atelier
+    - generic: Free
+    - generic "29% positive":
+      - generic: 29%
+  - link "Details about the Heritage theme":
+    - /url: /themes/heritage/presets/heritage?surface_inter_position=1&surface_intra_position=8&surface_type=all
+    - img "Heritage"
+    - paragraph: Heritage
+    - generic: Free
+    - generic "50% positive":
+      - generic: 50%
+  - link "Details about the Ritual theme":
+    - /url: /themes/ritual/presets/ritual?surface_inter_position=1&surface_intra_position=9&surface_type=all
+    - img "Ritual"
+    - paragraph: Ritual
+    - generic: Free
+    - generic "32% positive":
+      - generic: 32%
+  - link "Details about the Horizon theme":
+    - /url: /themes/horizon/presets/horizon?surface_inter_position=1&surface_intra_position=10&surface_type=all
+    - img "Horizon"
+    - paragraph: Horizon
+    - generic: Free
+    - generic "36% positive":
+      - generic: 36%
+  - link "Details about the Rise theme":
+    - /url: /themes/rise/presets/rise?surface_inter_position=1&surface_intra_position=11&surface_type=all
+    - img "Rise"
+    - paragraph: Rise
+    - generic: Free
+    - generic "39% positive":
+      - generic: 39%
+  - link "Details about the Trade theme":
+    - /url: /themes/trade/presets/trade?surface_inter_position=1&surface_intra_position=12&surface_type=all
+    - img "Trade"
+    - paragraph: Trade
+    - generic: Free
+    - generic "32% positive":
+      - generic: 32%
+  - link "Details about the Spotlight theme":
+    - /url: /themes/spotlight/presets/spotlight?surface_inter_position=1&surface_intra_position=13&surface_type=all
+    - img "Spotlight"
+    - paragraph: Spotlight
+    - generic: Free
+    - generic "38% positive":
+      - generic: 38%
+  - link "Details about the Publisher theme":
+    - /url: /themes/publisher/presets/publisher?surface_inter_position=1&surface_intra_position=14&surface_type=all
+    - img "Publisher"
+    - paragraph: Publisher
+    - generic: Free
+    - generic "50% positive":
+      - generic: 50%
+  - link "Details about the Origin theme":
+    - /url: /themes/origin/presets/origin?surface_inter_position=1&surface_intra_position=15&surface_type=all
+    - img "Origin"
+    - paragraph: Origin
+    - generic: Free
+    - generic "45% positive":
+      - generic: 45%
+  - link "Details about the Refresh theme":
+    - /url: /themes/refresh/presets/refresh?surface_inter_position=1&surface_intra_position=16&surface_type=all
+    - img "Refresh"
+    - paragraph: Refresh
+    - generic: Free
+    - generic "38% positive":
+      - generic: 38%
+  - link "Details about the Colorblock theme":
+    - /url: /themes/colorblock/presets/colorblock?surface_inter_position=1&surface_intra_position=17&surface_type=all
+    - img "Colorblock"
+    - paragraph: Colorblock
+    - generic: Free
+    - generic "43% positive":
+      - generic: 43%
+  - link "Details about the Ride theme":
+    - /url: /themes/ride/presets/ride?surface_inter_position=1&surface_intra_position=18&surface_type=all
+    - img "Ride"
+    - paragraph: Ride
+    - generic: Free
+    - generic "39% positive":
+      - generic: 39%
+  - link "Details about the Studio theme":
+    - /url: /themes/studio/presets/studio?surface_inter_position=1&surface_intra_position=19&surface_type=all
+    - img "Studio"
+    - paragraph: Studio
+    - generic: Free
+    - generic "44% positive":
+      - generic: 44%
+  - link "Details about the Taste theme":
+    - /url: /themes/taste/presets/taste?surface_inter_position=1&surface_intra_position=20&surface_type=all
+    - img "Taste"
+    - paragraph: Taste
+    - generic: Free
+    - generic "50% positive":
+      - generic: 50%
+  - link "Details about the Sense theme":
+    - /url: /themes/sense/presets/sense?surface_inter_position=1&surface_intra_position=21&surface_type=all
+    - img "Sense"
+    - paragraph: Sense
+    - generic: Free
+    - generic "36% positive":
+      - generic: 36%
+  - link "Details about the Crave theme":
+    - /url: /themes/crave/presets/crave?surface_inter_position=1&surface_intra_position=22&surface_type=all
+    - img "Crave"
+    - paragraph: Crave
+    - generic: Free
+    - generic "33% positive":
+      - generic: 33%
+  - link "Details about the Craft theme":
+    - /url: /themes/craft/presets/craft?surface_inter_position=1&surface_intra_position=23&surface_type=all
+    - img "Craft"
+    - paragraph: Craft
+    - generic: Free
+    - generic "56% positive":
+      - generic: 56%
+  - link "Details about the Dawn theme":
+    - /url: /themes/dawn/presets/dawn?surface_inter_position=1&surface_intra_position=24&surface_type=all
+    - img "Dawn"
+    - paragraph: Dawn
+    - generic: Free
+    - generic "36% positive":
+      - generic: 36%
+- contentinfo:
+  - heading "Top industries" [level=6]
+  - link "Clothing":
+    - /url: https://themes.shopify.com/themes?industry%5B%5D=clothing
+  - link "Beauty":
+    - /url: https://themes.shopify.com/themes?industry%5B%5D=beauty
+  - link "Jewelry and accessories":
+    - /url: https://themes.shopify.com/themes?industry%5B%5D=jewelry-and-accessories
+  - link "Home":
+    - /url: https://themes.shopify.com/themes?industry%5B%5D=home
+  - heading "Categories" [level=6]
+  - link "All themes":
+    - /url: https://themes.shopify.com/themes
+  - link "Free themes":
+    - /url: https://themes.shopify.com/themes?price=free
+  - heading "Support" [level=6]
+  - link "Shopify Help Center":
+    - /url: https://help.shopify.com/en/
+  - link "API Documentation":
+    - /url: https://shopify.dev/api
+  - link "Shopify Community":
+    - /url: https://community.shopify.com/c/shopify-community-en/ct-p/en
+  - link "Blogs":
+    - /url: https://www.shopify.com/blog
+  - heading "Shopify" [level=6]
+  - link "About":
+    - /url: https://www.shopify.com/about
+  - link "Partners":
+    - /url: https://www.shopify.com/partners
+  - link "Legal":
+    - /url: https://www.shopify.com/legal
+  - link "Service status":
+    - /url: https://shopifystatus.com
+  - separator
+  - link "Terms of Service":
+    - /url: https://www.shopify.com/legal/terms
+  - link "Privacy Policy":
+    - /url: https://www.shopify.com/legal/privacy
+  - link "Your Privacy Choices California Consumer Privacy Act (CCPA) Opt-Out Icon":
+    - /url: https://privacy.shopify.com/en
+    - text: Your Privacy Choices
+    - img "California Consumer Privacy Act (CCPA) Opt-Out Icon"
+  - link "Sitemap":
+    - /url: https://themes.shopify.com/sitemap
+  - combobox "Change your language":
+    - option "Català"
+    - option "Čeština"
+    - option "Dansk"
+    - option "Deutsch"
+    - option "Eesti"
+    - option "English" [selected]
+    - option "Español"
+    - option "Euskara"
+    - option "Français"
+    - option "Galego"
+    - option "Hrvatski"
+    - option "Indonesia"
+    - option "Italiano"
+    - option "Latviešu"
+    - option "Lietuvių"
+    - option "Magyar"
+    - option "Melayu"
+    - option "Nederlands"
+    - option "Norsk (bokmål)"
+    - option "Polski"
+    - option "Português (Brasil)"
+    - option "Português (Portugal)"
+    - option "Română"
+    - option "Slovenčina"
+    - option "Slovenščina"
+    - option "Suomi"
+    - option "Svenska"
+    - option "Tiếng Việt"
+    - option "Türkçe"
+    - option "Ελληνικά"
+    - option "Български"
+    - option "Русский"
+    - option "Српски"
+    - option "Українська"
+    - option "मराठी"
+    - option "हिन्दी"
+    - option "বাংলা"
+    - option "ગુજરાતી"
+    - option "தமிழ்"
+    - option "తెలుగు"
+    - option "ภาษาไทย"
+    - option "Ქართული"
+    - option "日本語"
+    - option "简体中文"
+    - option "繁體中文"
+    - option "한국어"

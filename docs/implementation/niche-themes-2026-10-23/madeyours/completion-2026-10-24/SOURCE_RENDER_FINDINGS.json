@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "classification": "CONFIRMED_IN_PROCESS_LIQUID_OUTPUT_FAILURES_NOT_INSTALLED_BROWSER_RESULTS",
+  "theme": "MadeYours",
+  "packageVersion": "2.0.0",
+  "actualCommand": "node --import tsx docs/implementation/niche-themes-2026-10-23/madeyours/completion-2026-10-24/source-render-probe.mjs",
+  "exitCode": 1,
+  "evidence": "source-render-contracts/02/report.json",
+  "summary": { "total": 7, "pass": 5, "fail": 2, "error": 0, "fetchCalls": 0 },
+  "findings": [
+    {
+      "id": "MY-SRC-F01",
+      "caseId": "MY-C-FIELD-customer-order-detail-heading",
+      "sourceCase": "SRC-ORDER-HEADING",
+      "status": "OPEN",
+      "severity": "P2",
+      "observed": "Actual Liquid renders Order #SOURCE-ONLY-1 before and after editing the declared heading. Full rendered output is byte-identical.",
+      "cause": "Inherited canonical customer-order-detail schema declares heading but its H1 is hardcoded to Order # plus order.number.",
+      "sources": ["packages/theme-engine/src/theme-bundle.ts:3085", "packages/theme-engine/src/theme-bundle.ts:3090", "packages/theme-engine/src/niche-order-presentation.ts"],
+      "sharedOwner": "Existing allocator-assigned canonical theme/package owner; Threadline TL-F04 already investigates the same inherited field.",
+      "nextAction": "Consume this actual output witness in the existing shared-owner investigation. Allocate one compatible versioned output-binding correction, preserving default Order plus immutable order number, escaping and all accepted2.0.0/M1/release bytes. Do not add a second per-theme renderer or edit frozen source."
+    },
+    {
+      "id": "MY-SRC-F02",
+      "caseId": "MY-C-THEME-FIELD-seo-faviconUrl",
+      "sourceCase": "SRC-FAVICON",
+      "status": "OPEN",
+      "severity": "P2",
+      "observed": "Setting the declared faviconUrl to a safe HTTPS synthetic asset produces no rel=icon link; rendered output is byte-identical to the blank baseline.",
+      "cause": "Canonical layout intentionally omits favicon/OpenGraph output while the public setting descriptor still promises an icon. The source comment identifies the shared head/sanitizer boundary. No buyer browser result is claimed.",
+      "sources": ["packages/theme-engine/src/theme-bundle.ts:2508", "packages/theme-engine/src/theme-bundle.ts:2553", "packages/theme-engine/src/theme-renderer.ts"],
+      "sharedOwner": "Existing allocator-assigned shared head/renderer owner; scope and security review required before an implementation choice.",
+      "nextAction": "Allocate the existing canonical owner to reconcile the advertised favicon control with the safe application head/export contract. Preserve sanitizer invariants and frozen versions. Do not broaden the allowlist or invent an unsafe raw-HTML workaround from this source-only witness."
+    }
+  ],
+  "positiveControls": ["Global primary colour changed actual CSS token", "Heading font changed serialized first font with canonical fallback", "Body generic font changed actual CSS token", "Hero heading changed and escaped markup", "Meta description used canonical strip_html output"],
+  "preservedAttempts": [
+    { "path": "source-render-contracts/01/setup-failure.json", "class": "Dependency resolution failure before cases; corrected using declared theme-engine dependency, no install." },
+    { "path": "source-render-contracts/01/report.json", "class": "First7-case source witness:3PASS/4FAIL; two overstrict oracle expectations corrected, not product fixes." },
+    { "path": "source-render-contracts/01/expectation-adjudication.json", "class": "Explains valid named-font fallback and plain-text metadata behavior; original source/results preserved." }
+  ],
+  "acceptanceEffect": "Two exact required field controls have demonstrated source-output failures. Original23 and additive installed/browser operations remain NOT_RUN; no runtime or certification credit.",
+  "writes": { "mainSource": 0, "frozenArtifacts": 0, "database": 0, "browser": 0, "providers": 0 }
+}

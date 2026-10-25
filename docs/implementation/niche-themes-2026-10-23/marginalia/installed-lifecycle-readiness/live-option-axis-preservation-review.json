@@ -1,0 +1,73 @@
+{
+  "reviewedAt": "2026-10-23T19:43:38.332917+00:00",
+  "classification": "INDEPENDENT_SAVED_LIVE_PRESERVATION_REVIEW_NOT_MG_CASE",
+  "runId": "f6074d90e894",
+  "merchantOrigin": "http://admin.threadline-f6074d90e894.localhost:54183",
+  "runtimeAdmission": {
+    "path": "docs/implementation/niche-theme-programme/supplemental-merchant-axis-runtime-admission.json",
+    "sha256": "e57d2e9241272fafb0bbfb74f71456f259adeedefa74cc9fc6d1d7f1dd54cbdf"
+  },
+  "sourcePinsVerified": {
+    "axisFiles": 4,
+    "a483MetadataHelper": true
+  },
+  "controllerReceipt": {
+    "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-habitat-controlled-axis-positive.json",
+    "sha256": "601edfdc33fa6cfa44f0b52eefcffcf183bb887ba919466705630152a22a86ba"
+  },
+  "beforeReadback": {
+    "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-habitat-axis-before-readback.json",
+    "sha256": "8a99c646076c82294b751c5866ea9445b0af34673f59637c87f1848c9afd2101"
+  },
+  "afterReadback": {
+    "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-habitat-axis-first-axis-saved-readback.json",
+    "sha256": "a3d1208ba832d587309c6a49bdb6ace1f40adfc3e3d2d5a9b4accaf1ef20cee4"
+  },
+  "fullReloadAX": {
+    "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-habitat-controlled-first-natural-reloaded.ax.txt",
+    "sha256": "8f92e77032715fa84c4d58ef71cf6675d123bc814035a78e864fb34312eb8d34"
+  },
+  "fullReloadImage": {
+    "path": "docs/implementation/theme-editor-2026-10-23/evidence/corrected-habitat-controlled-first-natural-reloaded.jpg",
+    "sha256": "da2981ee64d337d0c15d31654ba427a79fd389c6502b2c6d6358590ae56c38ff"
+  },
+  "verdicts": {
+    "normalExistingHostSessionNoManualTransfer": "PASS_CONTROLLER_RECEIPT",
+    "normalOneSaveThenFullReload": "PASS_CONTROLLER_RECEIPT_AND_AX",
+    "sameTwoDurableVariantIds": "PASS_ACKNOWLEDGED_CANONICAL_READBACK",
+    "rawVariantFactsPricesSkuCompare": "PASS_ACKNOWLEDGED_CANONICAL_READBACK",
+    "commonMetadataAndTrulyAbsentApparel": "PASS_ACKNOWLEDGED_CANONICAL_READBACK",
+    "inventoryBusinessStockCartOrders": "PASS_ACKNOWLEDGED_CANONICAL_READBACK",
+    "correctGeneratedTitlesAndSavedOptionValueList": "PASS_READBACK_AND_RELOAD_AX",
+    "explicitCanonicalVariantOptionTupleValues": "PENDING_REPORT_CURRENTLY_EXPOSES_ROWKEYS_ONLY"
+  },
+  "observed": {
+    "productId": "54301d6f-f54e-4209-95a0-4fbc32bcf8e6",
+    "sameVariantIds": [
+      "07d32ed4-62ca-43dc-a605-b11f97c0a791",
+      "30e7bb70-6ef0-4175-83f0-16368a3e9fda"
+    ],
+    "versionBefore": 8,
+    "versionAfter": 16,
+    "variantStock": [
+      4,
+      3
+    ],
+    "cartDigestUnchanged": true,
+    "orders": 0,
+    "originalWidthOptionRowIdReplaced": true
+  },
+  "limits": [
+    "No inference of actual option1/2/3 from row titles; requested explicit tuple/options values through existing approved owner readback route.",
+    "Whole Habitat four-variant cohort and later new-row canonical UUID proof remain pending; no Habitat26 acceptance.",
+    "Only furniture true-absence control observed; no live all9/private-sibling claim.",
+    "Original62075 merchant/tab21/draft remain preserved; supplemental54183 client uses same canonical f607 backend/identity, not a replacement issuer or seed.",
+    "No Marginalia installed case, fixture binding or active lease inferred."
+  ],
+  "sideEffectsHere": {
+    "sourceEdits": false,
+    "testsOrBuilds": false,
+    "browserOrHttpOrDbOrOsControls": false,
+    "taskScopedMessages": 2
+  }
+}

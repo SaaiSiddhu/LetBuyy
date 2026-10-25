@@ -1,0 +1,463 @@
+TAP version 13
+# Subtest: explicit Trailmark opt-in advances only the stable package version/number
+not ok 1 - explicit Trailmark opt-in advances only the stable package version/number
+  ---
+  duration_ms: 15.733
+  type: 'test'
+  location: '/private/tmp/trailmark-v201-20261024-01/test/successor.test.ts:1:3930'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    '2.0.0' !== '2.0.1'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: '2.0.1'
+  actual: '2.0.0'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/private/tmp/trailmark-v201-20261024-01/test/successor.test.ts:52:10)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.start (node:internal/test_runner/test:944:17)
+    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)
+  ...
+# Subtest: all ten legacy and2.0.0 default catalogue outputs remain exact
+ok 2 - all ten legacy and2.0.0 default catalogue outputs remain exact
+  ---
+  duration_ms: 202.964
+  type: 'test'
+  ...
+# Subtest: Trailmark option alone does not opt legacy or another theme into successor
+ok 3 - Trailmark option alone does not opt legacy or another theme into successor
+  ---
+  duration_ms: 40.867209
+  type: 'test'
+  ...
+# Subtest: actual schema and JSON document roundtrip retain custom collection/search/order headings
+not ok 4 - actual schema and JSON document roundtrip retain custom collection/search/order headings
+  ---
+  duration_ms: 7.001416
+  type: 'test'
+  location: '/private/tmp/trailmark-v201-20261024-01/test/successor.test.ts:1:5087'
+  failureType: 'testCodeFailure'
+  error: "Cannot read properties of undefined (reading 'type')"
+  code: 'ERR_TEST_FAILURE'
+  name: 'TypeError'
+  stack: |-
+    TestContext.<anonymous> (/private/tmp/trailmark-v201-20261024-01/test/successor.test.ts:69:83)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: collection: a custom heading changes the normal named collection H1
+not ok 5 - collection: a custom heading changes the normal named collection H1
+  ---
+  duration_ms: 336.733667
+  type: 'test'
+  location: '/private/tmp/trailmark-v201-20261024-01/test/successor.test.ts:1:6015'
+  failureType: 'testCodeFailure'
+  error: |-
+    The input did not match the regular expression /<h1>CLUB_ALPHA<\/h1>/. Input:
+    
+    '<div class="tm-theme"><section data-section-id="ride-collection"><div class="tm-wrap tm-section"><div class="tm-heading"><div><span class="tm-eyebrow">ACTIVITY / EQUIPMENT</span><h1>Court time</h1><p>0 products</p></div></div><div class="tm-discovery"><aside class="tm-facets" aria-label="Equipment filters">\n' +
+      '\n' +
+      '\n' +
+      '\n' +
+      '<form class="tm-discovery-form" method="get" action="/collection">\n' +
+      '<label>Search equipment<input type="search" name="search" value="" maxlength="200" placeholder="Rackets, shuttles, sleeves"></label>\n' +
+      '\n' +
+      '\n' +
+      '\n' +
+      '\n' +
+      '<button class="tm-button" type="submit">Apply</button>\n' +
+      '</form>\n' +
+      '\n' +
+      '\n' +
+      '</aside><div><p class="tm-empty">No matching equipment. Your search is retained; clear a filter or browse a broader category.</p><nav class="tm-pagination" aria-label="Product pages"></nav></div></div></div></section>\n' +
+      '</div>'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual: |-
+    <div class="tm-theme"><section data-section-id="ride-collection"><div class="tm-wrap tm-section"><div class="tm-heading"><div><span class="tm-eyebrow">ACTIVITY / EQUIPMENT</span><h1>Court time</h1><p>0 products</p></div></div><div class="tm-discovery"><aside class="tm-facets" aria-label="Equipment filters">
+    
+    
+    
+    <form class="tm-discovery-form" method="get" action="/collection">
+    <label>Search equipment<input type="search" name="search" value="" maxlength="200" placeholder="Rackets, shuttles, sleeves"></label>
+    
+    
+    
+    
+    <button class="tm-button" type="submit">Apply</button>
+    </form>
+    
+    
+    </aside><div><p class="tm-empty">No matching equipment. Your search is retained; clear a filter or browse a broader category.</p><nav class="tm-pagination" aria-label="Product pages"></nav></div></div></div></section>
+    </div>
+  operator: 'match'
+  stack: |-
+    TestContext.<anonymous> (/private/tmp/trailmark-v201-20261024-01/test/successor.test.ts:78:12)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: collection: blank/absent override preserves exact default output and legacy fallback
+ok 6 - collection: blank/absent override preserves exact default output and legacy fallback
+  ---
+  duration_ms: 114.323208
+  type: 'test'
+  ...
+# Subtest: collection: actual canonical escaping retains hostile heading as text
+not ok 7 - collection: actual canonical escaping retains hostile heading as text
+  ---
+  duration_ms: 21.703292
+  type: 'test'
+  location: '/private/tmp/trailmark-v201-20261024-01/test/successor.test.ts:1:6834'
+  failureType: 'testCodeFailure'
+  error: |-
+    The input did not match the regular expression /&lt;img src=x onerror=alert\(1\)&gt;/. Input:
+    
+    '<div class="tm-theme"><section data-section-id="ride-collection"><div class="tm-wrap tm-section"><div class="tm-heading"><div><span class="tm-eyebrow">ACTIVITY / EQUIPMENT</span><h1>Court time</h1><p>0 products</p></div></div><div class="tm-discovery"><aside class="tm-facets" aria-label="Equipment filters">\n' +
+      '\n' +
+      '\n' +
+      '\n' +
+      '<form class="tm-discovery-form" method="get" action="/collection">\n' +
+      '<label>Search equipment<input type="search" name="search" value="" maxlength="200" placeholder="Rackets, shuttles, sleeves"></label>\n' +
+      '\n' +
+      '\n' +
+      '\n' +
+      '\n' +
+      '<button class="tm-button" type="submit">Apply</button>\n' +
+      '</form>\n' +
+      '\n' +
+      '\n' +
+      '</aside><div><p class="tm-empty">No matching equipment. Your search is retained; clear a filter or browse a broader category.</p><nav class="tm-pagination" aria-label="Product pages"></nav></div></div></div></section>\n' +
+      '</div>'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual: |-
+    <div class="tm-theme"><section data-section-id="ride-collection"><div class="tm-wrap tm-section"><div class="tm-heading"><div><span class="tm-eyebrow">ACTIVITY / EQUIPMENT</span><h1>Court time</h1><p>0 products</p></div></div><div class="tm-discovery"><aside class="tm-facets" aria-label="Equipment filters">
+    
+    
+    
+    <form class="tm-discovery-form" method="get" action="/collection">
+    <label>Search equipment<input type="search" name="search" value="" maxlength="200" placeholder="Rackets, shuttles, sleeves"></label>
+    
+    
+    
+    
+    <button class="tm-button" type="submit">Apply</button>
+    </form>
+    
+    
+    </aside><div><p class="tm-empty">No matching equipment. Your search is retained; clear a filter or browse a broader category.</p><nav class="tm-pagination" aria-label="Product pages"></nav></div></div></div></section>
+    </div>
+  operator: 'match'
+  stack: |-
+    TestContext.<anonymous> (/private/tmp/trailmark-v201-20261024-01/test/successor.test.ts:88:12)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: search: a custom heading changes the normal named collection H1
+not ok 8 - search: a custom heading changes the normal named collection H1
+  ---
+  duration_ms: 48.418208
+  type: 'test'
+  location: '/private/tmp/trailmark-v201-20261024-01/test/successor.test.ts:1:6015'
+  failureType: 'testCodeFailure'
+  error: |-
+    The input did not match the regular expression /<h1>CLUB_ALPHA<\/h1>/. Input:
+    
+    '<div class="tm-theme"><section data-section-id="ride-search"><div class="tm-wrap tm-section"><div class="tm-heading"><div><span class="tm-eyebrow">ACTIVITY / EQUIPMENT</span><h1>Court time</h1><p>0 products</p></div></div><div class="tm-discovery"><aside class="tm-facets" aria-label="Equipment filters">\n' +
+      '\n' +
+      '\n' +
+      '\n' +
+      '<form class="tm-discovery-form" method="get" action="/search">\n' +
+      '<label>Search equipment<input type="search" name="search" value="" maxlength="200" placeholder="Rackets, shuttles, sleeves"></label>\n' +
+      '\n' +
+      '\n' +
+      '\n' +
+      '\n' +
+      '<button class="tm-button" type="submit">Apply</button>\n' +
+      '</form>\n' +
+      '\n' +
+      '\n' +
+      '</aside><div><p class="tm-empty">No matching equipment. Your search is retained; clear a filter or browse a broader category.</p><nav class="tm-pagination" aria-label="Product pages"></nav></div></div></div></section>\n' +
+      '</div>'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual: |-
+    <div class="tm-theme"><section data-section-id="ride-search"><div class="tm-wrap tm-section"><div class="tm-heading"><div><span class="tm-eyebrow">ACTIVITY / EQUIPMENT</span><h1>Court time</h1><p>0 products</p></div></div><div class="tm-discovery"><aside class="tm-facets" aria-label="Equipment filters">
+    
+    
+    
+    <form class="tm-discovery-form" method="get" action="/search">
+    <label>Search equipment<input type="search" name="search" value="" maxlength="200" placeholder="Rackets, shuttles, sleeves"></label>
+    
+    
+    
+    
+    <button class="tm-button" type="submit">Apply</button>
+    </form>
+    
+    
+    </aside><div><p class="tm-empty">No matching equipment. Your search is retained; clear a filter or browse a broader category.</p><nav class="tm-pagination" aria-label="Product pages"></nav></div></div></div></section>
+    </div>
+  operator: 'match'
+  stack: |-
+    TestContext.<anonymous> (/private/tmp/trailmark-v201-20261024-01/test/successor.test.ts:78:12)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: search: blank/absent override preserves exact default output and legacy fallback
+ok 9 - search: blank/absent override preserves exact default output and legacy fallback
+  ---
+  duration_ms: 105.796041
+  type: 'test'
+  ...
+# Subtest: search: actual canonical escaping retains hostile heading as text
+not ok 10 - search: actual canonical escaping retains hostile heading as text
+  ---
+  duration_ms: 25.080042
+  type: 'test'
+  location: '/private/tmp/trailmark-v201-20261024-01/test/successor.test.ts:1:6834'
+  failureType: 'testCodeFailure'
+  error: |-
+    The input did not match the regular expression /&lt;img src=x onerror=alert\(1\)&gt;/. Input:
+    
+    '<div class="tm-theme"><section data-section-id="ride-search"><div class="tm-wrap tm-section"><div class="tm-heading"><div><span class="tm-eyebrow">ACTIVITY / EQUIPMENT</span><h1>Court time</h1><p>0 products</p></div></div><div class="tm-discovery"><aside class="tm-facets" aria-label="Equipment filters">\n' +
+      '\n' +
+      '\n' +
+      '\n' +
+      '<form class="tm-discovery-form" method="get" action="/search">\n' +
+      '<label>Search equipment<input type="search" name="search" value="" maxlength="200" placeholder="Rackets, shuttles, sleeves"></label>\n' +
+      '\n' +
+      '\n' +
+      '\n' +
+      '\n' +
+      '<button class="tm-button" type="submit">Apply</button>\n' +
+      '</form>\n' +
+      '\n' +
+      '\n' +
+      '</aside><div><p class="tm-empty">No matching equipment. Your search is retained; clear a filter or browse a broader category.</p><nav class="tm-pagination" aria-label="Product pages"></nav></div></div></div></section>\n' +
+      '</div>'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual: |-
+    <div class="tm-theme"><section data-section-id="ride-search"><div class="tm-wrap tm-section"><div class="tm-heading"><div><span class="tm-eyebrow">ACTIVITY / EQUIPMENT</span><h1>Court time</h1><p>0 products</p></div></div><div class="tm-discovery"><aside class="tm-facets" aria-label="Equipment filters">
+    
+    
+    
+    <form class="tm-discovery-form" method="get" action="/search">
+    <label>Search equipment<input type="search" name="search" value="" maxlength="200" placeholder="Rackets, shuttles, sleeves"></label>
+    
+    
+    
+    
+    <button class="tm-button" type="submit">Apply</button>
+    </form>
+    
+    
+    </aside><div><p class="tm-empty">No matching equipment. Your search is retained; clear a filter or browse a broader category.</p><nav class="tm-pagination" aria-label="Product pages"></nav></div></div></div></section>
+    </div>
+  operator: 'match'
+  stack: |-
+    TestContext.<anonymous> (/private/tmp/trailmark-v201-20261024-01/test/successor.test.ts:88:12)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: order heading consumes declared setting and retains authoritative number
+not ok 11 - order heading consumes declared setting and retains authoritative number
+  ---
+  duration_ms: 50.558792
+  type: 'test'
+  location: '/private/tmp/trailmark-v201-20261024-01/test/successor.test.ts:1:7122'
+  failureType: 'testCodeFailure'
+  error: |-
+    The input did not match the regular expression /<h1>RECEIPT_ALPHA #SOURCE-1042<\/h1>/. Input:
+    
+    '<div class="tm-theme"><section class="lb-order-detail" data-section-id="customer-order-detail-default">\n' +
+      '  \n' +
+      '  \n' +
+      '  <h1>Order #SOURCE-1042</h1>\n' +
+      '  <p class="lb-order-detail__status">Status: pending_cod</p>\n' +
+      '  <ul class="lb-order-detail__items"><li><span class="lb-order-detail__title">Synthetic recorded racket</span><span class="lb-order-detail__qty">1</span><span class="lb-order-detail__line">INR 1,800.00</span><details class="lb-order-facts"><summary>Saved product details</summary><p class="lb-order-facts__text">Saved options\n' +
+      'Length: 26.5 in\n' +
+      '\n' +
+      'Equipment details\n' +
+      'Activity: Badminton\n' +
+      'Equipment type: racket\n' +
+      'Length: 26.5 in\n' +
+      'Weight: 80 g\n' +
+      'Dimensions: Length 26.5 in · Width 10 in\n' +
+      'Materials: Not recorded with this order.\n' +
+      'Contents: Not recorded with this order.\n' +
+      'Use conditions: Not recorded with this order.\n' +
+      'Compatibility status: Unconfirmed.\n' +
+      'Compatibility reference: Not recorded with this order.</p></details></li></ul>\n' +
+      '  <p class="lb-order-detail__total">Total: INR 1,800.00</p>\n' +
+      '  \n' +
+      '  <ol class="lb-order-detail__timeline"></ol>\n' +
+      '  \n' +
+      '  \n' +
+      '  \n' +
+      '</section>\n' +
+      '</div>'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual: |-
+    <div class="tm-theme"><section class="lb-order-detail" data-section-id="customer-order-detail-default">
+      
+      
+      <h1>Order #SOURCE-1042</h1>
+      <p class="lb-order-detail__status">Status: pending_cod</p>
+      <ul class="lb-order-detail__items"><li><span class="lb-order-detail__title">Synthetic recorded racket</span><span class="lb-order-detail__qty">1</span><span class="lb-order-detail__line">INR 1,800.00</span><details class="lb-order-facts"><summary>Saved product details</summary><p class="lb-order-facts__text">Saved options
+    Length: 26.5 in
+    
+    Equipment details
+    Activity: Badminton
+    Equipment type: racket
+    Length: 26.5 in
+    Weight: 80 g
+    Dimensions: Length 26.5 in · Width 10 in
+    Materials: Not recorded with this order.
+    Contents: Not recorded with this order.
+    Use conditions: Not recorded with this order.
+    Compatibility status: Unconfirmed.
+    Compatibility reference: Not recorded with this order.</p></details></li></ul>
+      <p class="lb-order-detail__total">Total: INR 1,800.00</p>
+      
+      <ol class="lb-order-detail__timeline"></ol>
+      
+      
+      
+    </section>
+    </div>
+  operator: 'match'
+  stack: |-
+    TestContext.<anonymous> (/private/tmp/trailmark-v201-20261024-01/test/successor.test.ts:94:10)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: order defaults/clear preserve exact prior output including canonical saved equipment facts
+ok 12 - order defaults/clear preserve exact prior output including canonical saved equipment facts
+  ---
+  duration_ms: 57.903917
+  type: 'test'
+  ...
+# Subtest: order heading is escaped; recorded facts never fall back to current catalogue
+not ok 13 - order heading is escaped; recorded facts never fall back to current catalogue
+  ---
+  duration_ms: 33.49125
+  type: 'test'
+  location: '/private/tmp/trailmark-v201-20261024-01/test/successor.test.ts:1:7986'
+  failureType: 'testCodeFailure'
+  error: |-
+    The input did not match the regular expression /&lt;script&gt;HEADING&lt;\/script&gt; #SOURCE-1042/. Input:
+    
+    '<div class="tm-theme"><section class="lb-order-detail" data-section-id="customer-order-detail-default">\n' +
+      '  \n' +
+      '  \n' +
+      '  <h1>Order #SOURCE-1042</h1>\n' +
+      '  <p class="lb-order-detail__status">Status: pending_cod</p>\n' +
+      '  <ul class="lb-order-detail__items"><li><span class="lb-order-detail__title">Synthetic recorded racket</span><span class="lb-order-detail__qty">1</span><span class="lb-order-detail__line">INR 1,800.00</span><details class="lb-order-facts"><summary>Saved product details</summary><p class="lb-order-facts__text">Saved options\n' +
+      'Length: 26.5 in\n' +
+      '\n' +
+      'Equipment details\n' +
+      'Activity: Badminton\n' +
+      'Equipment type: racket\n' +
+      'Length: 26.5 in\n' +
+      'Weight: 80 g\n' +
+      'Dimensions: Length 26.5 in · Width 10 in\n' +
+      'Materials: Not recorded with this order.\n' +
+      'Contents: Not recorded with this order.\n' +
+      'Use conditions: Not recorded with this order.\n' +
+      'Compatibility status: Unconfirmed.\n' +
+      'Compatibility reference: Not recorded with this order.</p></details></li></ul>\n' +
+      '  <p class="lb-order-detail__total">Total: INR 1,800.00</p>\n' +
+      '  \n' +
+      '  <ol class="lb-order-detail__timeline"></ol>\n' +
+      '  \n' +
+      '  \n' +
+      '  \n' +
+      '</section>\n' +
+      '</div>'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual: |-
+    <div class="tm-theme"><section class="lb-order-detail" data-section-id="customer-order-detail-default">
+      
+      
+      <h1>Order #SOURCE-1042</h1>
+      <p class="lb-order-detail__status">Status: pending_cod</p>
+      <ul class="lb-order-detail__items"><li><span class="lb-order-detail__title">Synthetic recorded racket</span><span class="lb-order-detail__qty">1</span><span class="lb-order-detail__line">INR 1,800.00</span><details class="lb-order-facts"><summary>Saved product details</summary><p class="lb-order-facts__text">Saved options
+    Length: 26.5 in
+    
+    Equipment details
+    Activity: Badminton
+    Equipment type: racket
+    Length: 26.5 in
+    Weight: 80 g
+    Dimensions: Length 26.5 in · Width 10 in
+    Materials: Not recorded with this order.
+    Contents: Not recorded with this order.
+    Use conditions: Not recorded with this order.
+    Compatibility status: Unconfirmed.
+    Compatibility reference: Not recorded with this order.</p></details></li></ul>
+      <p class="lb-order-detail__total">Total: INR 1,800.00</p>
+      
+      <ol class="lb-order-detail__timeline"></ol>
+      
+      
+      
+    </section>
+    </div>
+  operator: 'match'
+  stack: |-
+    TestContext.<anonymous> (/private/tmp/trailmark-v201-20261024-01/test/successor.test.ts:104:10)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: only version metadata and two section outputs differ from canonical2.0.0
+ok 14 - only version metadata and two section outputs differ from canonical2.0.0
+  ---
+  duration_ms: 9.526792
+  type: 'test'
+  ...
+# Subtest: successor is pure/idempotent, preserves merchant values/IDs and discards stale checksum
+ok 15 - successor is pure/idempotent, preserves merchant values/IDs and discards stale checksum
+  ---
+  duration_ms: 8.352709
+  type: 'test'
+  ...
+# Subtest: unknown successor or altered base contracts fail closed
+ok 16 - unknown successor or altered base contracts fail closed
+  ---
+  duration_ms: 10.6765
+  type: 'test'
+  ...
+1..16
+# tests 16
+# suites 0
+# pass 8
+# fail 8
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1463.726916

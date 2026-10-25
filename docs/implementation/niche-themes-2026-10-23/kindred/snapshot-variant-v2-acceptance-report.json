@@ -1,0 +1,62 @@
+{
+  "date": "2026-10-23T08:39:48.684118+00:00",
+  "scope": "Independent pure canonical public API acceptance for variant-bound review-v2; not endpoint/DB/PG acceptance",
+  "tests": {
+    "passed": 18,
+    "failed": 0,
+    "skipped": 0,
+    "original17OraclesRetained": true,
+    "log": "niche-snapshot-variant-v2-acceptance.log"
+  },
+  "typecheck": {
+    "status": "passed",
+    "log": "snapshot-variant-v2-typecheck.log"
+  },
+  "changes": [
+    "Two legitimate review calls pass selected_variant?.id ?? null",
+    "A review echo on variantB rejected with PERSONALIZATION_STALE while B own review succeeds",
+    "Explicit null valid for unvarianted SKU, rejected when replayed on a selected variant",
+    "Missing/undefined/empty variant context cannot mint a review, public context schema requires explicit variant",
+    "Exact independently computed SHA-256 review-v2 domain is asserted; old review-v1 product-only digest is rejected",
+    "Historical snapshot version1 readback remains valid; sameRGB/options/NFC/stale/removal/deep-freeze/duplicate saved-option negatives retained"
+  ],
+  "oraclePreservation": "snapshot-variant-v2-oracle-preservation.json",
+  "sources": [
+    {
+      "path": "packages/commerce-core/test/niche-order-snapshot-acceptance.test.ts",
+      "bytes": 27582,
+      "sha256": "bb0af5f8b0e7ace5f46567d6343d07949a1a2e3876514f3ddefc2b6f53a46f4d"
+    },
+    {
+      "path": "packages/commerce-core/src/product-fact-snapshot.ts",
+      "bytes": 14852,
+      "sha256": "0cbc6299ed4464bf7b46141ca786c98c7a01c2bea0ac93bb975caa790a1f3582"
+    },
+    {
+      "path": "packages/commerce-core/src/index.ts",
+      "bytes": 47209,
+      "sha256": "b36af7e65c00d8b9d16fe84ffc7da522b6107c4010208cc224363fa90bdee6b9"
+    }
+  ],
+  "originalEvidencePreserved": [
+    "IMMUTABLE_FACTS_ACCEPTANCE.md",
+    "niche-snapshot-acceptance-report.json",
+    "niche-snapshot-acceptance.log",
+    "REVIEW_388_SECURITY_ROLLBACK.md",
+    "review-388-manifest.json"
+  ],
+  "factoryReceipt": {
+    "state": "complete_released",
+    "report": "SUBTITLE_FACTORY_FIX.md",
+    "sourceSha256": "643581f20c99ee39717a6db888309da0d3e5579c63a663ef5d583f5b829d6669",
+    "testSha256": "4a4a9875324b10dc92234a7751ff9aab514e4ced0605df5fd6c58176b7fc7a48",
+    "sourceWireFlowsPassed": 21,
+    "failed": 0
+  },
+  "notVerified": [
+    "Worker endpoint/SDK integration",
+    "real PG privileges/concurrency/rollback",
+    "buyer/merchant persisted order routing"
+  ],
+  "productionEditsByReviewer": false
+}

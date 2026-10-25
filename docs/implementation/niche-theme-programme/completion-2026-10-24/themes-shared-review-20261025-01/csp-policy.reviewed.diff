@@ -1,0 +1,21 @@
+--- docs/implementation/niche-theme-programme/completion-2026-10-24/razorpay-csp-redirect-repair01/next-security-headers.ts.before
++++ config/security/next-security-headers.ts
+@@ -1,6 +1,7 @@
+ export type SecurityHeaderOptions = {
+   frameAncestors?: string[];
+   reportOnly?: boolean;
++  razorpayCheckoutForms?: boolean;
+ };
+ 
+ function splitOrigins(value: string | undefined): string[] {
+@@ -94,7 +95,9 @@
+     `frame-src ${frameSrc.join(' ')}`,
+     `frame-ancestors ${frameAncestors.join(' ')}`,
+     "base-uri 'self'",
+-    "form-action 'self'",
++    options.razorpayCheckoutForms
++      ? "form-action 'self' https://api.razorpay.com"
++      : "form-action 'self'",
+     "object-src 'none'",
+   ].join('; ');
+ }

@@ -1,0 +1,33 @@
+{
+  "recordedAt": "2026-10-23T13:24:33.823815+00:00",
+  "status": "Prepared only; runtime start awaits native green and coordinator slot",
+  "candidate": "/private/tmp/letbuyy-marketplace-candidate-20261023-110027",
+  "sourceRefresh": "Refresh only changed source/dependencies/migrations in the owned candidate from the frozen reviewed shared checkout; preserve candidate-only public environment file, evidence and generated output",
+  "fixture": "Existing reviewed threadline-lifecycle.postgres.test.ts + holdThreadlineBrowserFixture default profile",
+  "database": {
+    "throughMigration": 388,
+    "preparedTransactions": 2,
+    "jobs": 1,
+    "noReap": true,
+    "promotion389or390DraftsApplied": false
+  },
+  "runtimeModes": {
+    "api": "real Gateway + owned PostgreSQL/PostgREST through reviewed HTTP bridge",
+    "identity": "Next dev, isolated accounts.threadline-<run>.localhost host",
+    "admin": "Next dev, isolated admin.threadline-<run>.localhost host",
+    "demo": "Next dev; marketplace public frames use localhost:<freshCommercePort> root origin",
+    "marketplace": "Existing own Next dev refreshed in place at localhost:9005 with current public origins"
+  },
+  "ports": "Only9005 reused after confirming its owned PID/candidate; all fixture ports allocated free on127.0.0.1; no unrelated listeners stopped",
+  "guard": "Existing verified owned database/runtime supervisor; explicit loopback environment; normal auth, no bypass/cookie/session manipulation",
+  "publicFramePolicy": "Existing candidate-only NEXT_PUBLIC_THEME_MARKETPLACE_URL=http://localhost:9005; exact /theme-preview allowlist; protected pages unchanged",
+  "stateFile": "Fresh unique private0600 threadline-marketplace-current-<timestamp>-state.json; no credential/control values printed or stored in tracked evidence",
+  "retention": "Keep refreshed own local fixture running for the user within its reviewed hold lifetime; do not finish/delete it after verification; report its run/ports/session separately; preserve user/ff994/e359 resources",
+  "verification": [
+    "API public catalog and exact Threadline descriptor",
+    "marketplace9005 home/gallery/detail",
+    "embedded sample store HTTP200 and exact framing headers",
+    "marketplace sandbox wrapper and real browser rendered sample content",
+    "Add link version preconditions and normal auth/store-selection health, no fabricated private install success"
+  ]
+}

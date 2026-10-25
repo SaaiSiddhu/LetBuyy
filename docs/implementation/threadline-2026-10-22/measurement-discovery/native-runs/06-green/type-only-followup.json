@@ -1,0 +1,7 @@
+{
+  "scope": "Only explicit [string,string] tuple return annotation added for URLSearchParams TypeScript compatibility; all runtime assertions and emitted code unchanged",
+  "before": "docs/implementation/threadline-2026-10-22/measurement-discovery/native-runs/06-green/suite.ts",
+  "after": "services/api-gateway/src/__tests__/owned-db/storefront-measurement-discovery.postgres.test.ts",
+  "identicalEmittedJavascript": true,
+  "emittedSha256": "23474d684630e75e0cd9f5dbd0b26e50854c8eaacda823f32ce32ad2c79c4ba6"
+}

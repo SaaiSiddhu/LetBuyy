@@ -1,0 +1,90 @@
+{
+  "id": "section-featured-products",
+  "status": "PASS_SOURCE_DATA_CONTRACT",
+  "observed": {
+    "type": "featured-products",
+    "group": "template",
+    "firstId": "section-2dd348d5-15f0-4946-a7fd-fd12ea13fd7f",
+    "finalId": "section-dc79273f-e40f-4cf9-8c50-c828d3476e82",
+    "phases": [
+      {
+        "phase": "edited",
+        "data": {
+          "type": "featured-products",
+          "settings": {
+            "title": "Source fixture title",
+            "subtitle": "Source fixture subtitle",
+            "requireSelection": false,
+            "product1": "22222222-2222-4222-8222-222222222222",
+            "product2": "22222222-2222-4222-8222-222222222222",
+            "product3": "22222222-2222-4222-8222-222222222222",
+            "productLimit": 1
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      {
+        "phase": "hidden-reordered",
+        "data": {
+          "type": "featured-products",
+          "settings": {
+            "title": "Source fixture title",
+            "subtitle": "Source fixture subtitle",
+            "requireSelection": false,
+            "product1": "22222222-2222-4222-8222-222222222222",
+            "product2": "22222222-2222-4222-8222-222222222222",
+            "product3": "22222222-2222-4222-8222-222222222222",
+            "productLimit": 1
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": true
+        }
+      },
+      {
+        "phase": "shown",
+        "data": {
+          "type": "featured-products",
+          "settings": {
+            "title": "Source fixture title",
+            "subtitle": "Source fixture subtitle",
+            "requireSelection": false,
+            "product1": "22222222-2222-4222-8222-222222222222",
+            "product2": "22222222-2222-4222-8222-222222222222",
+            "product3": "22222222-2222-4222-8222-222222222222",
+            "productLimit": 1
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      {
+        "phase": "removed",
+        "pinnedGroupSectionRetained": false
+      },
+      {
+        "phase": "readded",
+        "data": {
+          "type": "featured-products",
+          "settings": {
+            "title": "Source fixture title",
+            "subtitle": "Source fixture subtitle",
+            "requireSelection": false,
+            "product1": "22222222-2222-4222-8222-222222222222",
+            "product2": "22222222-2222-4222-8222-222222222222",
+            "product3": "22222222-2222-4222-8222-222222222222",
+            "productLimit": 1
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      }
+    ],
+    "actualUICallbacksExecuted": false,
+    "resourceAuthorityProved": false
+  }
+}

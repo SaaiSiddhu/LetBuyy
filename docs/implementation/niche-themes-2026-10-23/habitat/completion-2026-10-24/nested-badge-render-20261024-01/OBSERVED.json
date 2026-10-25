@@ -1,0 +1,15 @@
+{
+  "recordedAt": "2026-10-24T11:32:23.395Z",
+  "classification": "ACTUAL_SOURCE_RENDER_ONLY_NOT_MOUNTED_UI_OR_DB",
+  "frozenFactorySha256": "2a652a7435f8a8a6ff699f02db829ce1ae1399d5b7609471d9e7192eb13ccd3d",
+  "sourceBadgeSha256": "eb17e9a70ed037e2d92d2b070d702bb1d56afd20a4fe9761a590202a8d9b985f",
+  "rootHostPositive": true,
+  "childVisible": false,
+  "grandchildVisible": false,
+  "rendererStatus": "rendered",
+  "warnings": [],
+  "sourceUnmutated": true,
+  "providerCalls": 0,
+  "browserActions": 0,
+  "databaseActions": 0
+}

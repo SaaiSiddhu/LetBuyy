@@ -1,0 +1,60 @@
+{
+  "recordedAt": "2026-10-24T07:02:59.346787+00:00",
+  "status": "ROOT_EXACT_SIX_CANDIDATE_FILES_MATERIALIZATION_GRANTED_NO_NATIVE_OR_CANONICAL_EMISSION_YET",
+  "candidateRoot": "/private/tmp/threadline-playfield201-catalog394-20261024-v1",
+  "files": [
+    {
+      "path": "docs/implementation/niche-theme-programme/release-playfield201/proposals394/f5f54a8009732ff71ba248e1f3356f58441e8b2340225c47b19e5ac386ac790e/394_playfield_catalog_201.down.draft.sql",
+      "sha256": "95eba7428207ee3d525b396bcdf9bd9965c819820c9bae95c16887649fede657",
+      "origin": "candidate-overlay",
+      "actual": "/private/tmp/threadline-playfield201-catalog394-20261024-v1/overlay/docs/implementation/niche-theme-programme/release-playfield201/proposals394/f5f54a8009732ff71ba248e1f3356f58441e8b2340225c47b19e5ac386ac790e/394_playfield_catalog_201.down.draft.sql"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/release-playfield201/proposals394/f5f54a8009732ff71ba248e1f3356f58441e8b2340225c47b19e5ac386ac790e/394_playfield_catalog_201.up.draft.sql",
+      "sha256": "7d3c4991c84c128cfba8aff096c04a0288d9142a144c97dddac8d0072633aa1e",
+      "origin": "candidate-overlay",
+      "actual": "/private/tmp/threadline-playfield201-catalog394-20261024-v1/overlay/docs/implementation/niche-theme-programme/release-playfield201/proposals394/f5f54a8009732ff71ba248e1f3356f58441e8b2340225c47b19e5ac386ac790e/394_playfield_catalog_201.up.draft.sql"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/release-playfield201/proposals394/f5f54a8009732ff71ba248e1f3356f58441e8b2340225c47b19e5ac386ac790e/letbuyy-bloom-2.0.1.json",
+      "sha256": "68bd7e7031f4e330d09fa7a7643c4159266c7ef04885917fe40320e4f9810c23",
+      "origin": "candidate-overlay",
+      "actual": "/private/tmp/threadline-playfield201-catalog394-20261024-v1/overlay/docs/implementation/niche-theme-programme/release-playfield201/proposals394/f5f54a8009732ff71ba248e1f3356f58441e8b2340225c47b19e5ac386ac790e/letbuyy-bloom-2.0.1.json"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/release-playfield201/proposals394/f5f54a8009732ff71ba248e1f3356f58441e8b2340225c47b19e5ac386ac790e/manifest.json",
+      "sha256": "a363ce4d0fed00f8989194d9e531da11939f2e4d1bf3f97bf4b3863ece0887f1",
+      "origin": "candidate-overlay",
+      "actual": "/private/tmp/threadline-playfield201-catalog394-20261024-v1/overlay/docs/implementation/niche-theme-programme/release-playfield201/proposals394/f5f54a8009732ff71ba248e1f3356f58441e8b2340225c47b19e5ac386ac790e/manifest.json"
+    },
+    {
+      "path": "docs/implementation/niche-theme-programme/release-playfield201/proposals394/f5f54a8009732ff71ba248e1f3356f58441e8b2340225c47b19e5ac386ac790e/semantic-diff.json",
+      "sha256": "5cbf422c27f9e18bd2f58c5194b46bc3524c82374eaf67bc929e7fb692faf563",
+      "origin": "candidate-overlay",
+      "actual": "/private/tmp/threadline-playfield201-catalog394-20261024-v1/overlay/docs/implementation/niche-theme-programme/release-playfield201/proposals394/f5f54a8009732ff71ba248e1f3356f58441e8b2340225c47b19e5ac386ac790e/semantic-diff.json"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/playfield201-catalog394-qualification.manual.ts",
+      "sha256": "95dee5d4dd9dd2b9ad38dc2d42b4bb5a175e502c9731f3ddc499d21e601c1d07",
+      "origin": "candidate-overlay",
+      "actual": "/private/tmp/threadline-playfield201-catalog394-20261024-v1/overlay/services/api-gateway/src/__tests__/owned-db/playfield201-catalog394-qualification.manual.ts"
+    }
+  ],
+  "inputCount": 1089,
+  "frozenMainInputs": 1083,
+  "allActualInputHashesIndependentlyVerified": true,
+  "closureSha256": "bc02ecb99fee93e9596f2b3a6623d743062bee0ba5bb5645828cab1d198f50e4",
+  "graphSha256": "97b05782831db7ff4142aef927923c6017c6369977cf0ab7c9e0a9768bf34426",
+  "publicPackageSHA": "68bd7e7031f4e330d09fa7a7643c4159266c7ef04885917fe40320e4f9810c23",
+  "rootIndependentPreflight": {
+    "pass": 8,
+    "fail": 0,
+    "log": "/private/tmp/threadline-playfield201-catalog394-20261024-v1/root-independent-preflight.tap",
+    "withoutTsxSetupErrorPreserved": true
+  },
+  "sqlReview": "Both embedded payloads independently byte-compared to original qualified proposal. Outside payload, exactly first provenance header and393-to394 markers; no schema, RPC, ACL or installed data rewrite.",
+  "manualReview": "Existing eight phase bodies and nine TAP obligations retained under sequence/baseline mapping; only new fresh394 admission/proposal gates and current393 inventory guards. Original aa26/manual/history preserved.",
+  "next": "Place only the six absent pinned paths; evidence/closure copies allowed. Verify all1089 actual Main inputs afterward, then await separate native grant. Do not touch checkout11, canonical migrations/rollback393 or create canonical394 yet.",
+  "nativeExecuted": false,
+  "canonical394Emitted": false
+}

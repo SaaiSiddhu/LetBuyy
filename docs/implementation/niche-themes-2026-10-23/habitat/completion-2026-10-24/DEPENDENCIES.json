@@ -1,0 +1,82 @@
+{
+  "recordedAt": "2026-10-24T08:53:55.142583+00:00",
+  "authority": "File-based preparation handoff; not resource leases",
+  "dependencies": [
+    {
+      "id": "HAB-DEP-ALLOCATION",
+      "owner": "existing Themes allocator when explicitly resumed",
+      "status": "HUMAN_RESUMED_FRESH_CANDIDATE_AND_SOLE_EDITOR_LEASE_PENDING",
+      "need": "Current admitted candidate, exact synthetic store/draft/resource scope, serialized controller and cleanup owner. Queue4 is reservation only.",
+      "files": [
+        "EXECUTION_STATE.json",
+        "CAPABILITY_INVENTORY.json",
+        "COVERAGE.json"
+      ],
+      "authorizationEvidence": "RESUME_RECONCILIATION_20261024_01.json"
+    },
+    {
+      "id": "HAB-DEP-CHECKOUT",
+      "owner": "existing MadeYours private correction / allocator",
+      "status": "EXISTING_OWNER_NO_DUPLICATE_FIX",
+      "need": "Existing owner qualifies checkout08 affected7 only, retaining original15 provider/buyer results and failures. No independent stack, old936 patch or native rerun by Habitat."
+    },
+    {
+      "id": "HAB-DEP-COUNTS",
+      "owner": "Circuit / allocator",
+      "status": "QUALIFIED_SOURCE_REUSE_UI_RETEST_PENDING",
+      "need": "Reuse count02 eight-stage proof, integrate exact source in new admitted runtime, normal merchant counts/recovery retest; do not rerun unchanged PG batch."
+    },
+    {
+      "id": "HAB-DEP-PREVIEW",
+      "owner": "existing Editor/shared preview owner when resumed",
+      "status": "EXISTING_OWNER_SHARED_FIX_OR_DIAGNOSIS",
+      "need": "Kindred820 actual preview error diagnosis/currentsource Desktop/Tablet/Mobile prerequisite; do not copy repair."
+    },
+    {
+      "id": "HAB-DEP-EDITOR-OPS",
+      "owner": "existing Editor/shared editor owner when resumed",
+      "status": "SEALED03_SOURCE_RECEIPT_RECONCILED_FRESH_UI_PENDING",
+      "need": "Reuse sealed03/03a wiring and six verified current files. Reusable-parent omitted/empty/list semantics plus flat controls; do not recurse inline-only parents. Habitat badge render outlet needs private02 remedy reviewed/admitted. Current UI/recovery/security effects remain NOT_RUN.",
+      "sourceEvidence": [
+        "editor/page.tsx:805-817",
+        "SectionTreePanel.tsx:212-233",
+        "BlockChildRow.tsx:137-147",
+        "SHARED_BLOCK_CONTROL_RECONCILIATION.json",
+        "NESTING_RECONCILIATION.json"
+      ]
+    },
+    {
+      "id": "HAB-DEP-COMPAT",
+      "owner": "allocator + canonical API/editor owner",
+      "status": "PREEXISTING_GAP_UNALLOCATED",
+      "need": "Approved legacy capability-absence transport control and an actually allocated genuine furniture historical snapshot control (HI11/HI17). No DOM/API response fabrication or invented primary history."
+    },
+    {
+      "id": "HAB-DEP-IDENTITY",
+      "owner": "allocator/canonical identity owner + Editor",
+      "status": "NORMAL_BROWSER_PROOF_NOT_ADMITTED",
+      "need": "Owned new synthetic normal signup/verification capture/signin/consent/PKCE/store entry and realm/site/buyer negative controls; preserve existing users/sessions."
+    },
+    {
+      "id": "HAB-DEP-RAZORPAY",
+      "owner": "single shared provider owner allocated by Themes",
+      "status": "API_AUTH_HTTP200_VERIFIED_INGRESS_SECRET_RUNTIME_AND_PURCHASE_UNVERIFIED",
+      "need": "Existing designated provider owner binds supplied credentials securely after fresh admission. No independent provider call/key copying. Accepted public HTTPS canonical receiver, matching webhook secret/account/runtime, actual per-theme purchase and shared adversarial lineage still required.",
+      "receipt": "docs/implementation/niche-theme-programme/completion-2026-10-24/razorpay-test-credential-preflight-network-20261024.json"
+    },
+    {
+      "id": "HAB-DEP-INHERITED-HEADING",
+      "owner": "Themes/current versioned heading correction owner",
+      "status": "PRIVATE02_EIGHT_SOURCE_PASS_REVIEW_AND_EXACT_INTEGRATION_PENDING",
+      "need": "Review private02 canonical order-heading plus evidenced reusable-child outlet remedy. Preserve immutable2.0.0; only explicit successor opt-in via exact shared grant. No main edit here.",
+      "sourceEvidence": [
+        "SCHEMA_FIELD_EFFECTS.json#/specialOpenInheritedField",
+        "private-order-heading-v201/PROPOSAL.json",
+        "private-order-heading-v201/QUALIFICATION.json",
+        "private-habitat-v201-02/PROPOSAL.json",
+        "private-habitat-v201-02/QUALIFICATION.json"
+      ]
+    }
+  ],
+  "updatedAt": "2026-10-24T11:38:47.427330+00:00"
+}

@@ -1,0 +1,35 @@
+{
+  "recordedAt": "2026-10-25T05:51:48.025314+00:00",
+  "status": "ACTUAL_LOGICAL_RESTORE02_FAILED_GUARD_IDENTITY_PRESERVED",
+  "humanApproval": "NATIVE_RESTORE_HUMAN_APPROVAL_20261025_06.json",
+  "runId": "63e975c7e742",
+  "runnerPid": 2168,
+  "terminalExit": 71,
+  "wholeParentSeconds": 7.106666708,
+  "testsStarted": 0,
+  "appsOrBrowserOrProviderStarted": 0,
+  "sourceGuardRef": "database/supabase/migrations/360_subscription_tax_quote_snapshot.sql:1102",
+  "actualError": "360 refuses changed historical custody verifier identity or definition",
+  "reason": "Guard compares historical journal object OID/owner/functiondefinition and embedded birth OIDs. Logical restore recreates object identities. Do not disable or rebind it to make a test pass.",
+  "readOnlyDiagnosis": "original210-recovery-candidate02/future-restore-rehearsal02/READONLY_FAILURE_DIAGNOSIS02.json",
+  "newCopyDisposition": "Protected PG/network/volume retained; transactional restore rolled back; zero non-system relations; no cleanup/adoption/retry",
+  "originalSourceBusinessWrites": 0,
+  "otherLocalAppActions": 0,
+  "testBudget": "Approval04 3/3 consumed; approval05 one attempt consumed; approval06 one attempt consumed. No further attempt currently admitted.",
+  "nextAction": "Review consistent physical cluster backup/recovery preserving internal identities; read-only compatibility evidence prepared. No backup/provision/boot or source guard change authorized by this record.",
+  "fullCertificates": 0,
+  "evidence": [
+    {
+      "path": "original210-recovery-candidate02/future-restore-rehearsal02/whole-parent-terminal.json",
+      "sha256": "88ad59a89cdea910361818ae25f2fd4878f3fe72fd6f7e1779587c69235f91af"
+    },
+    {
+      "path": "original210-recovery-candidate02/future-restore-rehearsal02/result.json",
+      "sha256": "1ebb0aae570926f17f1bcd5310fc068e5d69b890a5f4be6adc544038a3bd21a8"
+    },
+    {
+      "path": "original210-recovery-candidate02/future-restore-rehearsal02/READONLY_FAILURE_DIAGNOSIS02.json",
+      "sha256": "8214a7ad03f7bb7205b1499343a6b769b76fa7c08cb2d0f5b80b3495a02813a3"
+    }
+  ]
+}

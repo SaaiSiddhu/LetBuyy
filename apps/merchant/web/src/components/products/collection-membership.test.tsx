@@ -14,7 +14,7 @@ const product = (id = pid, name = 'Synthetic assigned product') => ({ id, name, 
 const collections = [{ id: cid, title: 'Synthetic collection', is_active: true }, { id: otherCid, title: 'Second collection', is_active: true }]
 const snapshot = (version = 7, ids = [pid], id = cid) => ({ collection_id: id, store_id: siteId,
     membership_version: version, product_ids: ids, products: ids.map(value => product(value)), unavailable_product_ids: [] })
-const response = (data: unknown, status = 200, meta?: unknown) => new Response(JSON.stringify(status < 400 ? { data, ...(meta ? { meta } : {}) } : { error: { code: 'SYNTHETIC_FAILURE', message: 'Synthetic membership read failed' } }),
+const response = (data: unknown, status = 200, meta?: unknown) => new Response(JSON.stringify(status < 400 ? { success: true, data: data === collections ? collections.map(row => ({ ...row, store_id: siteId, description: null, created_at: '2026-10-25T00:00:00Z', membership_version: 7, product_count: 1 })) : data, ...(meta ? { meta } : data === collections ? { meta: { page: 1, per_page: 20, total: collections.length, total_pages: 1, has_next: false, has_prev: false } } : {}) } : { error: { code: 'SYNTHETIC_FAILURE', message: 'Synthetic membership read failed' } }),
     { status, headers: { 'Content-Type': 'application/json' } })
 const choices = (data = [product()], hasNext = false, page = 1) => response(data, 200, { page, per_page: 100, has_next: hasNext, total: hasNext ? 101 : data.length })
 type Transport = (url: string, init?: RequestInit) => Promise<Response>
@@ -62,7 +62,7 @@ async function mount(transport: Transport) {
     }
     return { container, text, button, click, checkbox, toggle, render, remount: async () => { key++; await render() }, storage: dom.window.sessionStorage, close }
 }
-function base(url: string) { return url.endsWith('/collections') ? response(collections) : url.includes('/collections/') ? response(snapshot()) : choices() }
+function base(url: string) { return /\/collections(?:\?|$)/.test(url) ? response(collections) : url.includes('/collections/') ? response(snapshot()) : choices() }
 
 test('a failed membership read never becomes an intentional empty save; explicit retry restores current selection', async () => {
     let reads = 0, puts = 0
@@ -83,7 +83,7 @@ test('choice-read HTTP errors and malformed or wrong-collection snapshots fence 
         let puts = 0
         const h = await mount(async (url, init) => {
             if (init?.method === 'PUT') { puts++; return response(null, 503) }
-            if (url.endsWith('/collections')) return response(collections)
+            if (/\/collections(?:\?|$)/.test(url)) return response(collections)
             if (url.includes('/collections/')) return response(mode === 'missing-version' ? { collection_id: cid, product_ids: [] } : snapshot(7, [pid], mode === 'wrong-collection' ? otherCid : cid))
             return mode === 'choices-fail' ? response(null, 503) : choices()
         })
@@ -95,7 +95,7 @@ test('existing page pagination stays <=100 and preserves an assigned product out
     const requests: string[] = [], commands: any[] = []
     const h = await mount(async (url, init) => {
         if (init?.method === 'PUT') { commands.push(JSON.parse(String(init.body))); return response(snapshot(19, commands[0].product_ids)) }
-        if (url.endsWith('/collections')) return response(collections)
+        if (/\/collections(?:\?|$)/.test(url)) return response(collections)
         if (url.includes('/collections/')) return response(snapshot())
         requests.push(url); return url.includes('page=2') ? choices([product(laterPid, 'Later page choice')], false, 2) : choices([product('22222222-2222-4222-8222-222222222224', 'First page choice')], true)
     })
@@ -161,7 +161,7 @@ test('explicit unavailable assignment is visible and is removed only by the owne
     const h=await mount(async(url,init)=>{
         if(init?.method==='PUT'){const body=JSON.parse(String(init.body));commands.push(body);return response(snapshot(11,body.product_ids))}
         if(url.includes('/collections/'))return response({...snapshot(),products:[],unavailable_product_ids:[pid]})
-        if(url.endsWith('/collections'))return response(collections)
+        if(/\/collections(?:\?|$)/.test(url))return response(collections)
         return choices([])
     })
     try{await h.click('Manage products');assert.equal(h.checkbox('Unavailable assigned product').checked,true);assert.equal(commands.length,0);await h.toggle('Unavailable assigned product');await h.click('Save products');assert.deepEqual(commands[0].product_ids,[]);assert.equal(commands[0].expected_version,7)}
@@ -178,7 +178,7 @@ test('an unmounted membership reply cannot clear a newer mounted editor pending 
             if(calls.length===2)return response(snapshot(19,body.product_ids));
             current=snapshot(29,body.product_ids);return newReply.promise;
         }
-        if(url.endsWith('/collections'))return response(collections);
+        if(/\/collections(?:\?|$)/.test(url))return response(collections);
         if(url.includes('/collections/'))return response(current);
         return choices();
     });

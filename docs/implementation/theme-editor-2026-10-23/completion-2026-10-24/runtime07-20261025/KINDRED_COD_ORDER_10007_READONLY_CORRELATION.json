@@ -1,0 +1,186 @@
+{
+  "recordedAt": "2026-10-25T00:21:27.017026+00:00",
+  "runId": "49ada80bc494",
+  "theme": "Kindred",
+  "version": "2.1.0",
+  "orderNumber": "ORD-20261025-10007",
+  "orderId": "79023a7b-628b-49e1-aef4-491e51eaacd2",
+  "classification": "BOUNDED_READONLY_COD_ORDER_CHECKOUT_INVENTORY_CORRELATION",
+  "ownership": {
+    "container": "letbuyy-exec-54685-mvmssydy-fe81e9",
+    "database": "letbuyy_exec_theme_completion_razorpay_browser_manual_ts",
+    "labelsAndRunMarkerVerified": true,
+    "originalOwnerPidLabel": 54685
+  },
+  "observed": {
+    "items": [
+      {
+        "id": "a4a03f05-99bc-4400-92ce-ca5fe855be67",
+        "name": "Kindred lifecycle gift box",
+        "price": 1100.0,
+        "total": 1100.0,
+        "quantity": 1,
+        "productId": "c2936536-9d8e-4e4b-825a-f83335e9ffe9",
+        "variantId": null,
+        "variantTitle": null,
+        "snapshotSha256": "f4a25ef4e159a8f51e2a70a482cbf320d3639a262b61da214f193f506252e91d",
+        "productSnapshot": {
+          "sku": "SYN-EDITOR-gifts-49ada80bc494",
+          "name": "Kindred lifecycle gift box",
+          "niche": {
+            "facts": {
+              "gifts": {
+                "contents": [
+                  {
+                    "care": "Hand wash.",
+                    "label": "Mug",
+                    "detail": "300 ml",
+                    "quantity": 1
+                  },
+                  {
+                    "label": "Notebook",
+                    "quantity": 1
+                  },
+                  {
+                    "label": "Pen",
+                    "quantity": 1
+                  }
+                ],
+                "mediaRoles": {
+                  "openBox": 0,
+                  "closedBox": 1
+                },
+                "schemaVersion": 1
+              }
+            },
+            "version": 1
+          },
+          "price": 1100.0,
+          "total": 1100.0,
+          "images": [
+            "http://syn-threadline-ui-ae3f0477.localhost:64595/theme-assets/kindred/v2/little-pause-open.webp",
+            "http://syn-threadline-ui-ae3f0477.localhost:64595/theme-assets/kindred/v2/little-pause-closed.webp"
+          ],
+          "cart_id": "9367c343-88de-4712-ba62-2e4945322f5f",
+          "quantity": 1,
+          "product_id": "c2936536-9d8e-4e4b-825a-f83335e9ffe9",
+          "variant_id": null,
+          "cart_line_id": "c2936536-9d8e-4e4b-825a-f83335e9ffe9",
+          "variant_title": null,
+          "product_version": 3,
+          "snapshot_fingerprint": "4d19d182b2e8e5931eec57f7fd9ba0eff404a5ba3f62f6aa4b31dfef8f6ff893",
+          "configuration_fingerprint": null
+        }
+      }
+    ],
+    "order": {
+      "id": "79023a7b-628b-49e1-aef4-491e51eaacd2",
+      "total": 1120.0,
+      "status": "pending_cod",
+      "currency": "INR",
+      "createdAt": "2026-10-25T00:12:18.519826+00:00",
+      "paymentId": null,
+      "orderNumber": "ORD-20261025-10007",
+      "paymentMethod": "cod",
+      "paymentStatus": "pending",
+      "themeReleaseId": null,
+      "themeInstanceId": null
+    },
+    "payments": [],
+    "inventoryNow": [
+      {
+        "id": "f6c26a8d-6ae3-47b8-a765-3b5267b2012f",
+        "productId": "c2936536-9d8e-4e4b-825a-f83335e9ffe9",
+        "updatedAt": "2026-10-25T00:12:18.519826+00:00",
+        "locationId": "6e4baabc-b0c7-46ce-8be0-98395d9ef30c",
+        "onHandQuantity": 8,
+        "reservedQuantity": 0,
+        "availableQuantity": 7,
+        "committedQuantity": 1
+      }
+    ],
+    "inventoryEvents": [
+      {
+        "id": "ee9c77c2-c02b-414e-a4a4-32c2ae6c07d1",
+        "orderId": "79023a7b-628b-49e1-aef4-491e51eaacd2",
+        "createdAt": "2026-10-25T00:12:18.519826+00:00",
+        "eventType": "sale_committed",
+        "productId": "c2936536-9d8e-4e4b-825a-f83335e9ffe9",
+        "variantId": null,
+        "quantityDelta": -1,
+        "onHandQuantity": 8,
+        "reservedQuantity": 0,
+        "availableQuantity": 7,
+        "committedQuantity": 1
+      }
+    ],
+    "checkoutSessions": [
+      {
+        "id": "2bf10f2d-438a-430a-9186-2823da4d6f3e",
+        "cartId": "9367c343-88de-4712-ba62-2e4945322f5f",
+        "siteId": "02049de4-41c3-4b10-b5b2-a60a6b5e82bf",
+        "status": "completed",
+        "orderId": "79023a7b-628b-49e1-aef4-491e51eaacd2",
+        "currency": "INR",
+        "subtotal": 0.0,
+        "taxTotal": 0.0,
+        "grandTotal": 0.0,
+        "confirmedAt": "2026-10-25T00:12:18.558+00:00",
+        "checkoutState": "completed",
+        "discountTotal": 0.0,
+        "paymentIntent": {
+          "mode": "sandbox",
+          "status": "authorized",
+          "provider": "cod"
+        },
+        "paymentMethod": "cod",
+        "shippingTotal": 0.0,
+        "capturePostedToLedger": false
+      },
+      {
+        "id": "1b791eb5-b344-477c-b748-5271ac564c57",
+        "cartId": null,
+        "siteId": "02049de4-41c3-4b10-b5b2-a60a6b5e82bf",
+        "status": "completed",
+        "orderId": "79023a7b-628b-49e1-aef4-491e51eaacd2",
+        "currency": "INR",
+        "subtotal": 1100.0,
+        "taxTotal": 0.0,
+        "grandTotal": 1120.0,
+        "confirmedAt": null,
+        "checkoutState": "contact",
+        "discountTotal": 0.0,
+        "paymentIntent": {},
+        "paymentMethod": "cod",
+        "shippingTotal": 20.0,
+        "capturePostedToLedger": null
+      }
+    ],
+    "captureTransactions": [],
+    "durableWebhookEvents": []
+  },
+  "orderLinkedLedger": [],
+  "checks": {
+    "oneOwnedPendingCodOrder": true,
+    "oneIntendedGiftQuantityOne": true,
+    "exactTotal1120": true,
+    "completedConfirmedHostedCodCheckout": true,
+    "noOnlinePaymentReferenceOrPaymentRows": true,
+    "noCaptureOrOrderLinkedFinancialPosting": true,
+    "oneGiftInventoryConsumption": true,
+    "stock8to7": true
+  },
+  "status": "PASS_FINITE_LOCAL_COD_CORRELATION",
+  "uiReceipt": {
+    "path": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/completion-2026-10-24/shared-runtime07/root-browser-queue/KINDRED_COD_ORDER_10007_UI_RECEIPT.json",
+    "sha256": "19c97bfdd3c727af2e42eaac658304421df3322e9f8aa36348e6aafe6118df57",
+    "scope": "Existing actual controller UI evidence; no new browser run by this reader"
+  },
+  "caseScope": "Supports originalG12 local COD evidence only; G13 original-intent replay not performed, no Razorpay/Test capture credit and no full-row/theme certification.",
+  "captureFlagScope": "False capturePostedToLedger is expected for unpaid COD; not counted as another paid-session metadata defect.",
+  "businessMutations": 0,
+  "browserActions": 0,
+  "providerCalls": 0,
+  "providerSecretsRead": false,
+  "fullThemeCertified": false
+}

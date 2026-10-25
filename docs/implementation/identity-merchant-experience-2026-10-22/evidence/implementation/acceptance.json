@@ -1,0 +1,161 @@
+{
+  "date": "2026-10-22",
+  "head": "85aac99043d8dc10469e12cbb810609a3b6f1b0d",
+  "scope": "First protected navigation/editing slice, uncommitted local source. A pass below does not certify every route, browser, role or provider.",
+  "browser": [
+    {
+      "scenario": "Create form native Back",
+      "result": "pass",
+      "evidence_class": "normal browser on retained real local stack",
+      "observed": "Back on a dirty new product retained the form and opened the departure dialog. Stay retained input."
+    },
+    {
+      "scenario": "Create product, Save and leave to Products",
+      "result": "pass",
+      "evidence_class": "normal browser and real local persistence",
+      "observed": "Actions disabled while saving; destination arrived after the synthetic Draft item was acknowledged and appeared in Products."
+    },
+    {
+      "scenario": "Existing product edit, Save and leave to Settings",
+      "result": "pass",
+      "evidence_class": "normal browser and real local persistence",
+      "observed": "Description edit remained protected; acknowledged completion reached requested Settings."
+    },
+    {
+      "scenario": "General Settings Stay, Discard and leave, Save and leave",
+      "result": "pass",
+      "evidence_class": "normal browser and real local persistence/readback",
+      "observed": "Stay retained Tagline and restored the initiating link on desktop. Discard restored the saved empty value before departure to Business details. Save and leave reached Billing; returning to General read back the saved synthetic Tagline. The fixture Tagline was restored to empty through normal Save."
+    },
+    {
+      "scenario": "Clean bar and task focus",
+      "result": "pass",
+      "evidence_class": "browser DOM/AX plus shared regression",
+      "observed": "Clean General has one main and no Save/Discard controls. After removing a focused dirty bar through explicit Discard, focus returned to General h1. The same shared clean-transition behavior is tested for acknowledged save."
+    },
+    {
+      "scenario": "Responsive departure dialog",
+      "result": "pass for exercised viewports",
+      "evidence_class": "browser geometry, AX, computed styles and screenshots",
+      "viewports": [
+        {
+          "width": 1440,
+          "height": 1000
+        },
+        {
+          "width": 768,
+          "height": 1024
+        },
+        {
+          "width": 390,
+          "height": 844
+        }
+      ],
+      "observed": "No horizontal overflow. At 390 px close and footer actions measured 44 px high, close 44 px wide. Mobile SaveBar Save measured 44 px high. Dialog uses existing text rgb(17,24,39) on white; no palette replacement."
+    }
+  ],
+  "automated": [
+    {
+      "command": "pnpm --filter @letbuyy/merchant-web test",
+      "result": "pass",
+      "counts": [
+        210,
+        810
+      ],
+      "note": "Product protection 14 is included in 210, not an additional end-to-end count."
+    },
+    {
+      "command": "pnpm --filter @letbuyy/ui test --maxWorkers=2",
+      "result": "pass",
+      "tests": 56,
+      "files": 4
+    },
+    {
+      "command": "node --import tsx --test src/components/products/product-conflict.test.tsx",
+      "cwd": "apps/merchant/web",
+      "result": "pass",
+      "tests": 14,
+      "note": "Real maintained editor/provider, synthetic HTTP. Includes exact command recovery, late replies, newer drafts, validation, in-flight departure and scoped ordinary draft restore."
+    },
+    {
+      "command": "typecheck for @letbuyy/merchant-web, @letbuyy/ui, @letbuyy/identity-platform, @letbuyy/admin-web",
+      "result": "pass"
+    },
+    {
+      "command": "pnpm --filter @letbuyy/merchant-web build",
+      "environment": "owned disposable checkout, no copied environment files",
+      "result": "pass"
+    },
+    {
+      "command": "pnpm --filter @letbuyy/ui build-storybook",
+      "environment": "owned disposable checkout after dependency restoration",
+      "result": "pass",
+      "note": "Includes Clean, Dirty, Saving and Unconfirmed form specimens and explicit standalone main semantics."
+    },
+    {
+      "command": "targeted merchant component ESLint",
+      "result": "pass with 2 unchanged AdminShell warnings; 0 errors"
+    },
+    {
+      "command": "stylelint apps/merchant/web/src/app/globals.css",
+      "result": "pass"
+    },
+    {
+      "command": "shared public API and token-variable snapshots; design-token and mobile bridge parity",
+      "result": "pass"
+    },
+    {
+      "command": "shared token-alias validator",
+      "result": "fail",
+      "note": "Existing color duplicate groups remain outside the allowlist. Only the intentional 44 px touch-target alias was added to its existing 44 px group; no color group was baselined away."
+    },
+    {
+      "command": "node scripts/validate-governance.mjs",
+      "environment": "owned disposable checkout only",
+      "result": "fail",
+      "counts": {
+        "PASS": 112,
+        "FAIL": 2,
+        "BLOCKED": 0,
+        "SKIP": 0,
+        "NOT_APPLICABLE": 1
+      },
+      "failures": [
+        "validate-design-system.mjs: 389 arbitrary-radius matches versus baseline 388 in combined source",
+        "migration-safety-validator.mjs:382_threadline_catalog_v2.sql matches TRUNCATE in embedded Liquid/copy; observed token is data, not proof of destructive SQL"
+      ]
+    }
+  ],
+  "remaining": [
+    "Production-like authenticated latency p50/p95 and representative 100+ catalog benchmark",
+    "Full rapid, failed, superseded and cancelled navigation matrix",
+    "Other-browser same-document Back compatibility; beforeunload does not intercept every SPA traversal or termination",
+    "Physical mobile keyboard/safe-area and assistive-device acceptance",
+    "Store switching, full permission/session-expiry and every editor family acceptance",
+    "Create-product lost-response command identity/reconciliation; existing durable edit recovery must not be claimed for creates",
+    "Broader identity/MFA, collections, domains, theme and capability packages in the existing programme"
+  ],
+  "preserved": [
+    "Current color values, font families and rendered layout",
+    "Mandatory session and current-store authorization and private prefetch=false policy",
+    "Existing immutable edit intents, versions and idempotency",
+    "Sole identity issuer, tenant/API contracts and Liquid draft/release authority",
+    "Retained database, environment files and unrelated user/concurrent source changes"
+  ],
+  "local_fixture": {
+    "store": "UX Research Fixture",
+    "visibility": "draft/private",
+    "new_product": "UX Work Protection Check",
+    "product_status": "Draft",
+    "price_inr": 199,
+    "stock": 0,
+    "general_tagline_after_test": ""
+  },
+  "exclusions": "This slice did not run database migrations/resets, deploy/push/merge, purchase/register domains, transact payments, send external messages, change security factors or activate frozen apps.",
+  "health": {
+    "classification": "anonymous entry reachability only; not complete journey acceptance",
+    "merchant_entry_http": 307,
+    "identity_lookup_http": 200,
+    "gateway_health_http": 200
+  }
+}
